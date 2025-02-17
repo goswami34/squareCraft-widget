@@ -1,0 +1,17 @@
+{
+    "env": {
+      "browser": true,
+      "es6": true
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+      "no-undef": "error",
+      "no-unused-vars": "error",
+      "no-console": "warn",
+      "eqeqeq": "error",
+      "semi": ["error", "always"],
+      "quotes": ["error", "double"],
+      "indent": ["error", 2]
+    }
+  }
+  
