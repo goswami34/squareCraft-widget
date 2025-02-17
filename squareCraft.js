@@ -21,9 +21,6 @@
     return pageElement ? pageElement.getAttribute("data-page-sections") : null;
   }
 
-  //hello amit how are you ? 
-  //gello
-
   let pageId = getPageId();
   if (!pageId) console.warn("⚠️ No page ID found. Plugin may not work correctly.");
 
@@ -254,9 +251,7 @@
         "font-size": document.getElementById("squareCraftFontSize").value + "px",
         "background-color": document.getElementById("squareCraftBgColor").value,
         "border-radius": document.getElementById("squareCraftBorderRadius").value + "px",
-        "font-family": document.getElementById("squareCraft-font-family").querySelector("p","h1","h2","h3","h4","h5","a",
-          "span","b","i",
-        ).textContent // Use the selected font family
+        "font-family": document.getElementById("squareCraft-font-family").querySelector("p").textContent // Use the selected font family
       };
 
       await saveModifications(selectedElement.id, css);
