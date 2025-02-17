@@ -502,7 +502,6 @@
 
         <label>Border Radius:</label>
         <input type="range" id="squareCraftBorderRadius" min="0" max="50" value="0">
-        <p>Border Radius: <span id="borderRadiusValue">0px</span></p>
 
         <div id="squareCraft-font-family" class="squareCraft-flex squareCraft-col-span-8 squareCraft-cursor-pointer squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center squareCraft-h-full">
             <div class="squareCraft-bg-494949 squareCraft-w-full squareCraft-px-2 squareCraft-py-1px ">
