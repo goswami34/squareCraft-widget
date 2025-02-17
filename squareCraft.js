@@ -131,12 +131,27 @@
   }
 
   // font family dropdown
+  // async function fontfamilies() {
+  //   const response = await fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk");
+  //   const data = await response.json();
+  //   console.log(data);
+  //   return data;
+  // }
+
   async function fontfamilies() {
     const response = await fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk");
     const data = await response.json();
-    console.log(data);
-    return data;
-  }
+    
+    const fontFamilyDropdown = document.getElementById("squareCraft-font-family");
+    if (fontFamilyDropdown) {
+        data.items.forEach(font => {
+            const option = document.createElement("option");
+            option.value = font.family;
+            option.textContent = font.family;
+            fontFamilyDropdown.appendChild(option);
+        });
+    }
+}
 
   fontfamilies();
 
@@ -164,7 +179,7 @@
 
         <div id="squareCraft-font-family" class="squareCraft-flex squareCraft-col-span-8 squareCraft-cursor-pointer squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center squareCraft-h-full">
             <div class="squareCraft-bg-494949 squareCraft-w-full squareCraft-px-2 squareCraft-py-1px ">
-                <p class="squareCraft-text-sm squareCraft-font-light">Sf Pro sans</p>
+                <p class="squareCraft-text-sm squareCraft-font-light"></p>
             </div>
             <div class="squareCraft-bg-3f3f3f squareCraft-px-2" style="height: 27px; padding: 0 8px;">
                 <img class="squareCraft-h-full squareCraft-rotate-180" width="12px"
@@ -204,7 +219,8 @@
       let css = {
         "font-size": document.getElementById("squareCraftFontSize").value + "px",
         "background-color": document.getElementById("squareCraftBgColor").value,
-        "border-radius": document.getElementById("squareCraftBorderRadius").value + "px"
+        "border-radius": document.getElementById("squareCraftBorderRadius").value + "px",
+        "font-family": document.getElementById("squareCraftFontFamily").value // Add this line
       };
 
       await saveModifications(selectedElement.id, css);
