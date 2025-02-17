@@ -428,7 +428,7 @@
     fontDropdown.style.cursor = "pointer";
 
     // Default selected font
-    let selectedFont = "Arial";  // You can change the default
+    let selectedFont = "Please select the font";  // You can change the default
     fontDropdown.querySelector("p").textContent = selectedFont;
 
     // Create dropdown list (hidden by default)
