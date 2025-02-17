@@ -130,16 +130,6 @@
     }
   }
 
-  // font family dropdown
-  async function fontfamilies() {
-    const response = await fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk");
-    const data = await response.json();
-    console.log(data);
-    return data;
-  }
-
-  fontfamilies();
-
   function createWidget() {
     const widgetContainer = document.createElement("div");
     widgetContainer.id = "squarecraft-widget-container";
@@ -161,16 +151,6 @@
         <label>Border Radius:</label>
         <input type="range" id="squareCraftBorderRadius" min="0" max="50" value="0">
         <p>Border Radius: <span id="borderRadiusValue">0px</span></p>
-
-        <div id="squareCraft-font-family" class="squareCraft-flex squareCraft-col-span-8 squareCraft-cursor-pointer squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center squareCraft-h-full">
-            <div class="squareCraft-bg-494949 squareCraft-w-full squareCraft-px-2 squareCraft-py-1px ">
-                <p class="squareCraft-text-sm squareCraft-font-light">Sf Pro sans</p>
-            </div>
-            <div class="squareCraft-bg-3f3f3f squareCraft-px-2" style="height: 27px; padding: 0 8px;">
-                <img class="squareCraft-h-full squareCraft-rotate-180" width="12px"
-                    src="https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg" alt="">
-            </div>
-        </div>
 
         <button id="squareCraftPublish" style="width: 100%; padding: 10px; background: #EF7C2F; color: white;">
           Publish Changes
