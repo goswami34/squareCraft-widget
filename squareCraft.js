@@ -47,26 +47,50 @@
   /**
    * 🎨 Apply Styles to an Element & Ensure Persistence
    */
-  function applyStylesToElement(elementId, css) {
+  // function applyStylesToElement(elementId, css) {
+  //   if (!elementId || !css || appliedStyles.has(elementId)) return;
+
+  //   let styleTag = document.getElementById(`style-${elementId}`);
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = `style-${elementId}`;
+  //     document.head.appendChild(styleTag);
+  //   }
+
+  //   let cssText = `#${elementId} { `;
+  //   Object.keys(css).forEach(prop => {
+  //     cssText += `${prop}: ${css[prop]} !important; `;
+  //   });
+  //   cssText += "}";
+
+  //   styleTag.innerHTML = cssText;
+  //   appliedStyles.add(elementId);
+  //   console.log(`✅ Styles Persisted for ${elementId}`);
+  // }
+
+  function applyStylesToElements(elementId, css) {
     if (!elementId || !css || appliedStyles.has(elementId)) return;
 
     let styleTag = document.getElementById(`style-${elementId}`);
     if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = `style-${elementId}`;
-      document.head.appendChild(styleTag);
+        styleTag = document.createElement("style");
+        styleTag.id = `style-${elementId}`;
+        document.head.appendChild(styleTag);
     }
 
-    let cssText = `#${elementId} { `;
+    let cssText = `#${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} h6, #${elementId} a, #${elementId} p, #${elementId} b, #${elementId} i, #${elementId} span { `;
+    
     Object.keys(css).forEach(prop => {
-      cssText += `${prop}: ${css[prop]} !important; `;
+        cssText += `${prop}: ${css[prop]} !important; `;
     });
+    
     cssText += "}";
 
     styleTag.innerHTML = cssText;
     appliedStyles.add(elementId);
     console.log(`✅ Styles Persisted for ${elementId}`);
-  }
+}
+
 
   /**
    * 📡 Fetch & Apply Stored Modifications After Page Load
@@ -221,7 +245,8 @@
       return;
     }
 
-    applyStylesToElement(elementId, css);
+    // applyStylesToElement(elementId, css);
+    applyStylesToElements(elementId, css);
     console.log("📡 Saving modifications for:", { pageId, elementId, css });
 
     const modificationData = {
