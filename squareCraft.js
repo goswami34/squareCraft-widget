@@ -345,6 +345,9 @@
             </div>
         </div>
 
+        <label for="squareCraft-font-weight">Font Weight:</label>
+        <select id="squareCraft-font-weight" style="width: 100%; padding: 5px; background: #2c2c2c; color: white; border-radius: 6px; border: 1px solid #585858;">
+
         <button id="squareCraftPublish" style="width: 100%; padding: 10px; background: #EF7C2F; color: white;">
           Publish Changes
         </button>
