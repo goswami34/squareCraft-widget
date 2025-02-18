@@ -47,50 +47,26 @@
   /**
    * 🎨 Apply Styles to an Element & Ensure Persistence
    */
-  // function applyStylesToElement(elementId, css) {
-  //   if (!elementId || !css || appliedStyles.has(elementId)) return;
-
-  //   let styleTag = document.getElementById(`style-${elementId}`);
-  //   if (!styleTag) {
-  //     styleTag = document.createElement("style");
-  //     styleTag.id = `style-${elementId}`;
-  //     document.head.appendChild(styleTag);
-  //   }
-
-  //   let cssText = `#${elementId} { `;
-  //   Object.keys(css).forEach(prop => {
-  //     cssText += `${prop}: ${css[prop]} !important; `;
-  //   });
-  //   cssText += "}";
-
-  //   styleTag.innerHTML = cssText;
-  //   appliedStyles.add(elementId);
-  //   console.log(`✅ Styles Persisted for ${elementId}`);
-  // }
-
-  function applyStylesToElements(elementId, css) {
+  function applyStylesToElement(elementId, css) {
     if (!elementId || !css || appliedStyles.has(elementId)) return;
 
     let styleTag = document.getElementById(`style-${elementId}`);
     if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = `style-${elementId}`;
-        document.head.appendChild(styleTag);
+      styleTag = document.createElement("style");
+      styleTag.id = `style-${elementId}`;
+      document.head.appendChild(styleTag);
     }
 
-    let cssText = `#${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} h6, #${elementId} a, #${elementId} p, #${elementId} b, #${elementId} i, #${elementId} span { `;
-    
+    let cssText = `#${elementId} { `;
     Object.keys(css).forEach(prop => {
-        cssText += `${prop}: ${css[prop]} !important; `;
+      cssText += `${prop}: ${css[prop]} !important; `;
     });
-    
     cssText += "}";
 
     styleTag.innerHTML = cssText;
     appliedStyles.add(elementId);
     console.log(`✅ Styles Persisted for ${elementId}`);
-}
-
+  }
 
   /**
    * 📡 Fetch & Apply Stored Modifications After Page Load
@@ -142,111 +118,13 @@
   /**
    * 💾 Save Modifications for Selected Element
    */
-  // async function saveModifications(elementId, css) {
-  //   if (!pageId || !elementId || !css) {
-  //     console.warn("⚠️ Missing required data to save modifications.");
-  //     return;
-  //   }
-
-  //   applyStylesToElement(elementId, css);
-  //   console.log("📡 Saving modifications for:", { pageId, elementId, css });
-
-  //   const modificationData = {
-  //     userId,
-  //     token,
-  //     widgetId,
-  //     modifications: [{ pageId, elements: [{ elementId, css }] }],
-  //   };
-
-  //   try {
-  //     const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-  //         "userId": userId,
-  //         "pageId": pageId,
-  //         "widget-id": widgetId,
-  //       },
-  //       body: JSON.stringify(modificationData),
-  //     });
-
-  //     console.log("✅ Changes Saved Successfully!", await response.json());
-  //   } catch (error) {
-  //     console.error("❌ Error saving modifications:", error);
-  //   }
-  // }
-
-  // async function fontfamilies() {
-  //   const response = await fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk");
-  //   const data = await response.json();
-    
-  //   const fontDropdown = document.getElementById("squareCraft-font-family");
-  //   fontDropdown.style.position = "relative";
-  //   fontDropdown.style.cursor = "pointer";
-
-  //   // Default selected font
-  //   let selectedFont = "Please select the font";  // You can change the default
-  //   fontDropdown.querySelector("p").textContent = selectedFont;
-
-  //   // Create dropdown list (hidden by default)
-  //   const fontList = document.createElement("div");
-  //   fontList.style.position = "absolute";
-  //   fontList.style.top = "100%";
-  //   fontList.style.left = "0";
-  //   fontList.style.width = "100%";
-  //   fontList.style.background = "#2c2c2c";
-  //   fontList.style.border = "1px solid #585858";
-  //   fontList.style.borderRadius = "6px";
-  //   fontList.style.overflowY = "auto";
-  //   fontList.style.maxHeight = "200px";
-  //   fontList.style.display = "none";
-  //   fontList.style.zIndex = "1000";
-
-  //   data.items.forEach(font => {
-  //     const option = document.createElement("div");
-  //     option.textContent = font.family;
-  //     option.style.padding = "8px";
-  //     option.style.cursor = "pointer";
-  //     option.style.fontFamily = font.family;
-
-  //     option.addEventListener("click", () => {
-  //       selectedFont = font.family;
-  //       fontDropdown.querySelector("p").textContent = selectedFont;
-  //       fontList.style.display = "none"; // Hide after selection
-
-  //       // Apply the selected font to the target element
-  //       if (selectedElement) {
-  //         selectedElement.style.fontFamily = selectedFont;
-  //       }
-  //     });
-
-  //     fontList.appendChild(option);
-  //   });
-
-  //   fontDropdown.appendChild(fontList);
-
-  //   // Toggle dropdown on click
-  //   fontDropdown.addEventListener("click", (event) => {
-  //     event.stopPropagation(); // Prevent closing when clicking the dropdown
-  //     fontList.style.display = fontList.style.display === "block" ? "none" : "block";
-  //   });
-
-  //   // Close dropdown when clicking outside
-  //   document.addEventListener("click", () => {
-  //     fontList.style.display = "none";
-  //   });
-  // }
-
-
   async function saveModifications(elementId, css) {
     if (!pageId || !elementId || !css) {
       console.warn("⚠️ Missing required data to save modifications.");
       return;
     }
 
-    // applyStylesToElement(elementId, css);
-    applyStylesToElements(elementId, css);
+    applyStylesToElement(elementId, css);
     console.log("📡 Saving modifications for:", { pageId, elementId, css });
 
     const modificationData = {
@@ -257,7 +135,7 @@
     };
 
     try {
-      await fetch("https://webefo-backend.vercel.app/api/v1/modifications", {
+      const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -269,7 +147,7 @@
         body: JSON.stringify(modificationData),
       });
 
-      console.log("✅ Changes Saved Successfully!");
+      console.log("✅ Changes Saved Successfully!", await response.json());
     } catch (error) {
       console.error("❌ Error saving modifications:", error);
     }
@@ -283,9 +161,11 @@
     fontDropdown.style.position = "relative";
     fontDropdown.style.cursor = "pointer";
 
-    let selectedFont = "Please select the font";
+    // Default selected font
+    let selectedFont = "Please select the font";  // You can change the default
     fontDropdown.querySelector("p").textContent = selectedFont;
 
+    // Create dropdown list (hidden by default)
     const fontList = document.createElement("div");
     fontList.style.position = "absolute";
     fontList.style.top = "100%";
@@ -309,13 +189,11 @@
       option.addEventListener("click", () => {
         selectedFont = font.family;
         fontDropdown.querySelector("p").textContent = selectedFont;
-        fontList.style.display = "none"; 
+        fontList.style.display = "none"; // Hide after selection
 
+        // Apply the selected font to the target element
         if (selectedElement) {
           selectedElement.style.fontFamily = selectedFont;
-          
-          // ✅ Automatically save modifications when font is selected
-          saveModifications(selectedElement.id, { "font-family": selectedFont });
         }
       });
 
@@ -323,16 +201,18 @@
     });
 
     fontDropdown.appendChild(fontList);
+
+    // Toggle dropdown on click
     fontDropdown.addEventListener("click", (event) => {
-      event.stopPropagation();
+      event.stopPropagation(); // Prevent closing when clicking the dropdown
       fontList.style.display = fontList.style.display === "block" ? "none" : "block";
     });
 
+    // Close dropdown when clicking outside
     document.addEventListener("click", () => {
       fontList.style.display = "none";
     });
   }
-
 
   fontfamilies();
 
@@ -361,7 +241,6 @@
         <input type="range" id="squareCraftBorderRadius" min="0" max="50" value="0">
         <p>Border Radius: <span id="borderRadiusValue">0px</span></p>
 
-
         <div id="squareCraft-font-family" class="squareCraft-flex squareCraft-col-span-8 squareCraft-cursor-pointer squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center squareCraft-h-full">
             <div class="squareCraft-bg-494949 squareCraft-w-full squareCraft-px-2 squareCraft-py-1px ">
                 <p class="squareCraft-text-sm squareCraft-font-light"></p>
@@ -370,8 +249,6 @@
                     src="https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg" alt="">
             </div>
         </div>
-
-        
 
         <button id="squareCraftPublish" style="width: 100%; padding: 10px; background: #EF7C2F; color: white;">
           Publish Changes
