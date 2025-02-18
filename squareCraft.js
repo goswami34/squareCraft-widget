@@ -66,9 +66,10 @@
         }
       );
 
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      // if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
       const data = await response.json();
+      console.log(data)
       if (!data.modifications || data.modifications.length === 0) {
         console.warn("⚠️ No styles found for this page.");
         return;
