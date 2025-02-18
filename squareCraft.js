@@ -81,10 +81,10 @@
           elements.forEach(({ elementId, css }) => {
             applyStylesToElement(elementId, css);
 
-            if (css["font-family"]) {
+            if (css["family"]) {
               const fontDropdown = document.getElementById("squareCraft-font-family").querySelector("p");
               if (fontDropdown) {
-                fontDropdown.textContent = css["font-family"];
+                fontDropdown.textContent = css["family"];
               }
             }
           });
