@@ -153,6 +153,67 @@
     }
   }
 
+  // async function fontfamilies() {
+  //   const response = await fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk");
+  //   const data = await response.json();
+    
+  //   const fontDropdown = document.getElementById("squareCraft-font-family");
+  //   fontDropdown.style.position = "relative";
+  //   fontDropdown.style.cursor = "pointer";
+
+  //   // Default selected font
+  //   let selectedFont = "Please select the font";  // You can change the default
+  //   fontDropdown.querySelector("p").textContent = selectedFont;
+
+  //   // Create dropdown list (hidden by default)
+  //   const fontList = document.createElement("div");
+  //   fontList.style.position = "absolute";
+  //   fontList.style.top = "100%";
+  //   fontList.style.left = "0";
+  //   fontList.style.width = "100%";
+  //   fontList.style.background = "#2c2c2c";
+  //   fontList.style.border = "1px solid #585858";
+  //   fontList.style.borderRadius = "6px";
+  //   fontList.style.overflowY = "auto";
+  //   fontList.style.maxHeight = "200px";
+  //   fontList.style.display = "none";
+  //   fontList.style.zIndex = "1000";
+
+  //   data.items.forEach(font => {
+  //     const option = document.createElement("div");
+  //     option.textContent = font.family;
+  //     option.style.padding = "8px";
+  //     option.style.cursor = "pointer";
+  //     option.style.fontFamily = font.family;
+
+  //     option.addEventListener("click", () => {
+  //       selectedFont = font.family;
+  //       fontDropdown.querySelector("p").textContent = selectedFont;
+  //       fontList.style.display = "none"; // Hide after selection
+
+  //       // Apply the selected font to the target element
+  //       if (selectedElement) {
+  //         selectedElement.style.fontFamily = selectedFont;
+  //       }
+  //     });
+
+  //     fontList.appendChild(option);
+  //   });
+
+  //   fontDropdown.appendChild(fontList);
+
+  //   // Toggle dropdown on click
+  //   fontDropdown.addEventListener("click", (event) => {
+  //     event.stopPropagation(); // Prevent closing when clicking the dropdown
+  //     fontList.style.display = fontList.style.display === "block" ? "none" : "block";
+  //   });
+
+  //   // Close dropdown when clicking outside
+  //   document.addEventListener("click", () => {
+  //     fontList.style.display = "none";
+  //   });
+  // }
+
   async function fontfamilies() {
     const response = await fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk");
     const data = await response.json();
@@ -161,11 +222,9 @@
     fontDropdown.style.position = "relative";
     fontDropdown.style.cursor = "pointer";
 
-    // Default selected font
-    let selectedFont = "Please select the font";  // You can change the default
+    let selectedFont = "Please select the font";
     fontDropdown.querySelector("p").textContent = selectedFont;
 
-    // Create dropdown list (hidden by default)
     const fontList = document.createElement("div");
     fontList.style.position = "absolute";
     fontList.style.top = "100%";
@@ -180,39 +239,42 @@
     fontList.style.zIndex = "1000";
 
     data.items.forEach(font => {
-      const option = document.createElement("div");
-      option.textContent = font.family;
-      option.style.padding = "8px";
-      option.style.cursor = "pointer";
-      option.style.fontFamily = font.family;
+        const option = document.createElement("div");
+        option.textContent = font.family;
+        option.style.padding = "8px";
+        option.style.cursor = "pointer";
+        option.style.fontFamily = font.family;
 
-      option.addEventListener("click", () => {
-        selectedFont = font.family;
-        fontDropdown.querySelector("p").textContent = selectedFont;
-        fontList.style.display = "none"; // Hide after selection
+        option.addEventListener("click", async () => {
+            selectedFont = font.family;
+            fontDropdown.querySelector("p").textContent = selectedFont;
+            fontList.style.display = "none";
 
-        // Apply the selected font to the target element
-        if (selectedElement) {
-          selectedElement.style.fontFamily = selectedFont;
-        }
-      });
+            // Apply font-family to the selected element
+            if (selectedElement) {
+                selectedElement.style.fontFamily = selectedFont;
 
-      fontList.appendChild(option);
+                // Save the modification immediately
+                let css = { "font-family": selectedFont };
+                await saveModifications(selectedElement.id, css);
+            }
+        });
+
+        fontList.appendChild(option);
     });
 
     fontDropdown.appendChild(fontList);
 
-    // Toggle dropdown on click
     fontDropdown.addEventListener("click", (event) => {
-      event.stopPropagation(); // Prevent closing when clicking the dropdown
-      fontList.style.display = fontList.style.display === "block" ? "none" : "block";
+        event.stopPropagation();
+        fontList.style.display = fontList.style.display === "block" ? "none" : "block";
     });
 
-    // Close dropdown when clicking outside
     document.addEventListener("click", () => {
-      fontList.style.display = "none";
+        fontList.style.display = "none";
     });
-  }
+}
+
 
   fontfamilies();
 
