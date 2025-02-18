@@ -336,8 +336,6 @@
         <input type="range" id="squareCraftBorderRadius" min="0" max="50" value="0">
         <p>Border Radius: <span id="borderRadiusValue">0px</span></p>
 
-        // <label for="squareCraft-font-weight">Font Weight:</label>
-        // <select id="squareCraft-font-weight" style="width: 100%; padding: 5px; background: #2c2c2c; color: white; border-radius: 6px; border: 1px solid #585858;">
 
         <div id="squareCraft-font-family" class="squareCraft-flex squareCraft-col-span-8 squareCraft-cursor-pointer squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center squareCraft-h-full">
             <div class="squareCraft-bg-494949 squareCraft-w-full squareCraft-px-2 squareCraft-py-1px ">
