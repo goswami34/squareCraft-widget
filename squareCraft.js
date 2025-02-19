@@ -412,6 +412,15 @@ async function fontfamilies() {
             </div>
         </div>
 
+        <div id="squareCraft-font-weight" class="squareCraft-flex squareCraft-col-span-8 squareCraft-cursor-pointer squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center squareCraft-h-full">
+            <div class="squareCraft-bg-494949 squareCraft-w-full squareCraft-px-2 squareCraft-py-1px ">
+                <p class="squareCraft-text-sm squareCraft-font-light"></p>
+            </div <div class="squareCraft-bg-3f3f3f squareCraft-px-2" style="height: 27px; padding: 0 8px;">
+                <img class="squareCraft-h-full squareCraft-rotate-180" width="12px"
+                    src="https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg" alt="">
+            </div>
+        </div>
+
         <button id="squareCraftPublish" style="width: 100%; padding: 10px; background: #EF7C2F; color: white;">
           Publish Changes
         </button>
