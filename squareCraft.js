@@ -47,26 +47,51 @@
   /**
    * 🎨 Apply Styles to an Element & Ensure Persistence
    */
-  function applyStylesToElement(elementId, css) {
-    if (!elementId || !css || appliedStyles.has(elementId)) return;
+  // function applyStylesToElement(elementId, css) {
+  //   if (!elementId || !css || appliedStyles.has(elementId)) return;
 
-    let styleTag = document.getElementById(`style-${elementId}`);
-    if (!styleTag) {
+  //   let styleTag = document.getElementById(`style-${elementId}`);
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = `style-${elementId}`;
+  //     document.head.appendChild(styleTag);
+  //   }
+
+  //   let cssText = `#${elementId} { `;
+  //   Object.keys(css).forEach(prop => {
+  //     cssText += `${prop}: ${css[prop]} !important; `;
+  //   });
+  //   cssText += "}";
+
+  //   styleTag.innerHTML = cssText;
+  //   appliedStyles.add(elementId);
+  //   console.log(`✅ Styles Persisted for ${elementId}`);
+  // }
+
+  /**
+ * 🎨 Apply Styles to an Element & Ensure Persistence
+ */
+function applyStylesToElement(elementId, css) {
+  if (!elementId || !css || appliedStyles.has(elementId)) return;
+
+  let styleTag = document.getElementById(`style-${elementId}`);
+  if (!styleTag) {
       styleTag = document.createElement("style");
       styleTag.id = `style-${elementId}`;
       document.head.appendChild(styleTag);
-    }
-
-    let cssText = `#${elementId} { `;
-    Object.keys(css).forEach(prop => {
-      cssText += `${prop}: ${css[prop]} !important; `;
-    });
-    cssText += "}";
-
-    styleTag.innerHTML = cssText;
-    appliedStyles.add(elementId);
-    console.log(`✅ Styles Persisted for ${elementId}`);
   }
+
+  let cssText = `#${elementId}, #${elementId} * { `; // Apply to element & all children
+  Object.keys(css).forEach(prop => {
+      cssText += `${prop}: ${css[prop]} !important; `;
+  });
+  cssText += "}";
+
+  styleTag.innerHTML = cssText;
+  appliedStyles.add(elementId);
+  console.log(`✅ Styles Persisted for ${elementId}`);
+}
+
 
   /**
    * 📡 Fetch & Apply Stored Modifications After Page Load
@@ -326,22 +351,35 @@ async function fontfamilies() {
       });
 
       // Click event to select font
+      // option.addEventListener("click", async () => {
+      //     selectedFont = font.family;
+      //     selectedFontText.textContent = selectedFont;
+      //     selectedFontText.style.fontFamily = selectedFont;
+      //     fontList.style.display = "none";
+
+      //     // Apply font-family to selected element
+      //     if (selectedElement) {
+      //         selectedElement.style.fontFamily = selectedFont;
+      //         let css = { "font-family": selectedFont };
+      //         await saveModifications(selectedElement.id, css);
+      //     }
+
+      //     // Update font-weight dropdown based on selected font
+      //     updateFontWeightDropdown(font.variants);
+      // });
       option.addEventListener("click", async () => {
-          selectedFont = font.family;
-          selectedFontText.textContent = selectedFont;
-          selectedFontText.style.fontFamily = selectedFont;
-          fontList.style.display = "none";
-
-          // Apply font-family to selected element
-          if (selectedElement) {
-              selectedElement.style.fontFamily = selectedFont;
-              let css = { "font-family": selectedFont };
-              await saveModifications(selectedElement.id, css);
-          }
-
-          // Update font-weight dropdown based on selected font
-          updateFontWeightDropdown(font.variants);
-      });
+        selectedFont = font.family;
+        selectedFontText.textContent = selectedFont;
+        selectedFontText.style.fontFamily = selectedFont;
+        fontList.style.display = "none";
+    
+        // Apply font-family to the selected element and all its child elements
+        if (selectedElement) {
+            let css = { "font-family": selectedFont };
+            await saveModifications(selectedElement.id, css);
+            applyStylesToElement(selectedElement.id, css);
+        }
+    });
 
       fontList.appendChild(option);
   });
