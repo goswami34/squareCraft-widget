@@ -630,8 +630,6 @@ fontfamilies();
 
 
 
-
-
   function attachEventListeners() {
     document.body.addEventListener("click", (event) => {
         let block = event.target.closest('[id^="block-"]');
