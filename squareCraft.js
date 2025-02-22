@@ -675,13 +675,29 @@ fontfamilies();
       }
     });
 
-    fontSizeInput.addEventListener("input", function () {
-      if (selectedElement) {
-        let css = { "font-size": `${fontSizeInput.value}px` };
-        applyStylesToElement(selectedElement.id, css);
-        saveModifications(selectedElement.id, css);
+    // fontSizeInput.addEventListener("input", function () {
+    //   if (selectedElement) {
+    //     let css = { "font-size": `${fontSizeInput.value}px` };
+    //     applyStylesToElement(selectedElement.id, css);
+    //     saveModifications(selectedElement.id, css);
+    //   }
+    // });
+
+    fontSizeInput.addEventListener("input", () => {
+      if (!selectedElement) {
+        console.warn("No element selected for font-size update.");
+        return;
       }
+      const value = parseInt(fontSizeInput.value, 10);
+      if (isNaN(value)) {
+        console.warn("Invalid font-size value.");
+        return;
+      }
+      const css = { "font-size": `${value}px` };
+      applyStylesToElement(selectedElement.id, css);
+      saveModifications(selectedElement.id, css);
     });
+    
 
     const letterSpacingInput = document.getElementById("squareCraftLetterSpacingInput");
     const letterSpacingDropdown = document.getElementById("squareCraftLetterSpacingDropdown");
