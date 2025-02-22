@@ -389,7 +389,9 @@
 
             </div>
                 
-            <div class="squareCraft-mt-2"> </div>
+            <button id="squareCraftPublish" style="width: 100%; padding: 10px; background: #EF7C2F; color: white;">
+              Publish Changes
+            </button>
         </div>
     
     </div>
