@@ -60,29 +60,32 @@
     if (!pageId) console.warn(":warning: No page ID found. Plugin may not work correctly.");
   
     function applyStylesToElement(elementId, css) {
-        if (!elementId || !css) return;
-    
-        let styleTag = document.getElementById(`style-${elementId}`);
-        if (styleTag) {
-            styleTag.remove();  
-        }
-    
-        styleTag = document.createElement("style");
-        styleTag.id = `style-${elementId}`;
-        document.head.appendChild(styleTag);
-    
-        let cssText = `#${elementId} { `;
-        Object.keys(css).forEach(prop => {
-            cssText += `${prop}: ${css[prop]} !important; `;
-        });
-        cssText += "}";
-    
-        styleTag.innerHTML = cssText;
-        appliedStyles.set(elementId, css);  // Store styles locally
-    
-        console.log(`✔️ Styles Applied Locally for ${elementId}`);
+      if (!elementId || !css) return;
+  
+      let styleTag = document.getElementById(`style-${elementId}`);
+      if (styleTag) {
+        styleTag.remove();  // Remove the old styles before adding new ones
+      }
+  
+      styleTag = document.createElement("style");
+      styleTag.id = `style-${elementId}`;
+      document.head.appendChild(styleTag);
+  
+      let cssText = `#${elementId} { `;
+      Object.keys(css).forEach(prop => {
+          cssText += `${prop}: ${css[prop]} !important; `;
+      });
+      cssText += "}";
+      
+  
+      if (css["border-radius"]) {
+        cssText += `#${elementId} { overflow: hidden !important; }`;
+      }
+  
+      styleTag.innerHTML = cssText;
+      appliedStyles.add(elementId);
+      console.log(`:white_check_mark: Styles Persisted for ${elementId}`);
     }
-    
 
     
     
@@ -666,18 +669,6 @@
   
   // Call the function
   fontfamilies();
-
-
-  document.querySelector(".squareCraft-publish-button").addEventListener("click", async function () {
-    console.log("🛠️ Publishing changes...");
-
-    for (let [elementId, css] of appliedStyles.entries()) {
-        await saveModifications(elementId, css);
-    }
-
-    console.log("✅ All changes published successfully!");
-});
-
   
   
   function attachEventListeners() {
