@@ -621,6 +621,7 @@
   window.addEventListener("load", () => {
     createWidget();  // Ensure widget is created first
     setTimeout(makeWidgetDraggable, 500); // Apply draggability after it's added to DOM
+    setTimeout(attachEventListeners, 1500);
   });
   
   
@@ -712,101 +713,45 @@
   
   
   
-    function attachEventListeners() {
-      document.body.addEventListener("click", (event) => {
-          let block = event.target.closest('[id^="block-"]');
-          const widget = document.getElementById("squarecraft-widget-container");
-      
-          if (block) {
-              document.querySelectorAll(".squareCraft-outline").forEach(el => {
-                  el.classList.remove("squareCraft-outline");
-                  el.style.outline = ""; 
-              });
-      
-              block.classList.add("squareCraft-outline");
-              block.style.outline = "2px dashed #EF7C2F"; 
-              selectedElement = block;
-      
-              widget.classList.remove("squareCraft-hidden");
-      
-          } else if (!widget.contains(event.target)) {
-              widget.classList.add("squareCraft-hidden");
-          }
-      });
-      
-      ;
-      
-  
-      const fontSizeInput = document.getElementById("squareCraftFontSizeInput");
-      const fontSizeDropdown = document.getElementById("squareCraftFontSizeDropdown");
-      const fontSizeOptions = document.getElementById("squareCraftFontSizeOptions");
-  
-      fontSizeDropdown.addEventListener("click", function () {
-        fontSizeOptions.classList.toggle("squareCraft-hidden");
-      });
-  
-      fontSizeOptions.addEventListener("click", function (event) {
-        if (!event.target.classList.contains("squareCraft-dropdown-item")) return;
-        fontSizeInput.value = event.target.dataset.value;
-        fontSizeOptions.classList.add("squareCraft-hidden");
-  
-        if (selectedElement) {
-          let css = { "font-size": `${event.target.dataset.value}px` };
-          applyStylesToElement(selectedElement.id, css);
-          saveModifications(selectedElement.id, css);
+  function attachEventListeners() {
+    setTimeout(() => {
+        const fontSizeInput = document.getElementById("squareCraftFontSizeInput");
+        const fontSizeDropdown = document.getElementById("squareCraftFontSizeDropdown");
+        const fontSizeOptions = document.getElementById("squareCraftFontSizeOptions");
+
+        if (!fontSizeInput || !fontSizeDropdown || !fontSizeOptions) {
+            console.error("❌ Font size elements not found. Skipping event attachment.");
+            return;
         }
-      });
-  
-      fontSizeInput.addEventListener("input", function () {
-        if (selectedElement) {
-          let css = { "font-size": `${fontSizeInput.value}px` };
-          applyStylesToElement(selectedElement.id, css);
-          saveModifications(selectedElement.id, css);
-        }
-      });
-  
-      const letterSpacingInput = document.getElementById("squareCraftLetterSpacingInput");
-      const letterSpacingDropdown = document.getElementById("squareCraftLetterSpacingDropdown");
-      const letterSpacingOptions = document.getElementById("squareCraftLetterSpacingOptions");
-  
-      letterSpacingDropdown.addEventListener("click", function () {
-        letterSpacingOptions.classList.toggle("squareCraft-hidden");
-      });
-  
-      letterSpacingOptions.addEventListener("click", function (event) {
-        if (!event.target.classList.contains("squareCraft-dropdown-item")) return;
-        letterSpacingInput.value = event.target.dataset.value;
-        letterSpacingOptions.classList.add("squareCraft-hidden");
-  
-        if (selectedElement) {
-          let css = { "letter-spacing": `${event.target.dataset.value}px` };
-          applyStylesToElement(selectedElement.id, css);
-          saveModifications(selectedElement.id, css);
-        }
-      });
-  
-      letterSpacingInput.addEventListener("input", function () {
-        if (selectedElement) {
-          let css = { "letter-spacing": `${letterSpacingInput.value}px` };
-          applyStylesToElement(selectedElement.id, css);
-          saveModifications(selectedElement.id, css);
-        }
-      });
-  
-      // Text Alignment Handling
-      document.querySelectorAll(".alignment-icon").forEach(icon => {
-        icon.addEventListener("click", async function () {
-          if (!selectedElement) return;
-          const alignment = this.getAttribute("data-align");
-  
-          let css = { "text-align": alignment };
-          applyStylesToElement(selectedElement.id, css);
-          await saveModifications(selectedElement.id, css);
-  
-          console.log(`✅ Applied text alignment: ${alignment} to ${selectedElement.id}`);
+
+        fontSizeDropdown.addEventListener("click", function () {
+            fontSizeOptions.classList.toggle("squareCraft-hidden");
         });
-      });
-    }
+
+        fontSizeOptions.addEventListener("click", function (event) {
+            if (!event.target.classList.contains("squareCraft-dropdown-item")) return;
+            fontSizeInput.value = event.target.dataset.value;
+            fontSizeOptions.classList.add("squareCraft-hidden");
+
+            if (selectedElement) {
+                let css = { "font-size": `${event.target.dataset.value}px` };
+                applyStylesToElement(selectedElement.id, css);
+                saveModifications(selectedElement.id, css);
+            }
+        });
+
+        fontSizeInput.addEventListener("input", function () {
+            if (selectedElement) {
+                let css = { "font-size": `${fontSizeInput.value}px` };
+                applyStylesToElement(selectedElement.id, css);
+                saveModifications(selectedElement.id, css);
+            }
+        });
+
+        console.log("✅ Event listeners attached successfully.");
+    }, 1000); // Delay ensures the elements exist before attaching listeners
+}
+
   
   
   
