@@ -620,23 +620,7 @@
             option.style.background = "transparent";
         });
   
-        // Click event to select font
-        // option.addEventListener("click", async () => {
-        //     selectedFont = font.family;
-        //     selectedFontText.textContent = selectedFont;
-        //     selectedFontText.style.fontFamily = selectedFont;
-        //     fontList.style.display = "none";
-  
-        //     // Apply font-family to selected element
-        //     if (selectedElement) {
-        //         selectedElement.style.fontFamily = selectedFont;
-        //         let css = { "font-family": selectedFont };
-        //         await saveModifications(selectedElement.id, css);
-        //     }
-  
-        //     // Update font-weight dropdown based on selected font
-        //     updateFontWeightDropdown(font.variants);
-        // });
+
         option.addEventListener("click", async () => {
           selectedFont = font.family;
           selectedFontText.textContent = selectedFont;
