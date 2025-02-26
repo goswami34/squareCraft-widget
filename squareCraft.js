@@ -242,8 +242,7 @@
 
                  <div id="squareCraft-font-family" 
                     class="squareCraft-flex  squareCraft-bg-494949 squareCraft-h-9 squareCraft-col-span-7 squareCraft-cursor-pointer squareCraft-rounded-6px squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
-                    <div class=" squareCraft-w-full   squareCraft-px-2  ">
-                    </div>
+                   
                    
                  </div>
 
