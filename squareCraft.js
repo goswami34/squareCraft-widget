@@ -86,6 +86,90 @@
       appliedStyles.add(elementId);
       console.log(`:white_check_mark: Styles Persisted for ${elementId}`);
     }
+
+    async function fontfamilies() {
+        let currentPage = 1;
+        const perPage = 20;
+        const fontDropdown = document.getElementById("squareCraft-font-family");
+    
+        if (!fontDropdown) {
+            console.error("❌ Font family dropdown container not found.");
+            return;
+        }
+    
+        // Create dropdown list if not already created
+        let fontList = document.getElementById("squareCraft-font-list");
+        if (!fontList) {
+            fontList = document.createElement("div");
+            fontList.id = "squareCraft-font-list";
+            fontList.classList.add("squareCraft-absolute", "squareCraft-top-full", "squareCraft-left-0", 
+                "squareCraft-w-full", "squareCraft-max-h-200px", "squareCraft-overflow-y-auto", 
+                "squareCraft-hidden", "squareCraft-z-1000", "squareCraft-border", "squareCraft-border-585858", 
+                "squareCraft-rounded-6px", "squareCraft-bg-2c2c2c");
+            
+            fontDropdown.appendChild(fontList);
+        }
+    
+        async function loadMoreFonts() {
+            try {
+                const response = await fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk");
+                const data = await response.json();
+                const fonts = data.items.slice((currentPage - 1) * perPage, currentPage * perPage);
+    
+                fonts.forEach(font => {
+                    const option = document.createElement("div");
+                    option.textContent = font.family;
+                    option.style.fontFamily = font.family;
+                    option.classList.add("squareCraft-py-1px", "squareCraft-text-white", "squareCraft-text-sm", 
+                        "squareCraft-cursor-pointer", "squareCraft-px-2");
+    
+                    option.addEventListener("mouseover", () => option.classList.add("squareCraft-bg-494949"));
+                    option.addEventListener("mouseout", () => option.classList.remove("squareCraft-bg-494949"));
+    
+                    option.addEventListener("click", async () => {
+                        document.querySelector("#squareCraft-font-family p").textContent = font.family;
+                        document.querySelector("#squareCraft-font-family p").style.fontFamily = font.family;
+                        fontList.classList.add("squareCraft-hidden");
+    
+                        if (selectedElement) {
+                            let css = { "font-family": font.family };
+                            await saveModifications(selectedElement.id, css);
+                            applyStylesToElement(selectedElement.id, css);
+                        }
+                    });
+    
+                    fontList.appendChild(option);
+                });
+    
+                currentPage++;
+            } catch (error) {
+                console.error("❌ Error fetching Google Fonts:", error);
+            }
+        }
+    
+        // Toggle dropdown visibility
+        fontDropdown.addEventListener("click", (event) => {
+            event.stopPropagation();
+            fontList.classList.toggle("squareCraft-hidden");
+    
+            if (fontList.children.length === 0) {
+                loadMoreFonts();
+            }
+        });
+    
+        // Hide dropdown when clicking outside
+        document.addEventListener("click", (event) => {
+            if (!fontDropdown.contains(event.target)) {
+                fontList.classList.add("squareCraft-hidden");
+            }
+        });
+    }
+    
+    // Initialize font dropdown
+    setTimeout(() => {
+        fontfamilies();
+    }, 1000);
+    
   
     async function fetchModifications(retries = 3) {
       if (!pageId) return;
@@ -236,6 +320,7 @@
                  <img src="https://fatin-webefo.github.io/squareCraft-Plugin/public/eye.svg" width="12px" />
               </div>
               <div class="squareCraft-mt-2  squareCraft-grid squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2 squareCraft-px-2">
+
                  <div id="squareCraft-font-family" 
                     class="squareCraft-flex  squareCraft-bg-494949 squareCraft-h-9 squareCraft-col-span-7 squareCraft-cursor-pointer squareCraft-rounded-6px squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
                     <div class=" squareCraft-w-full   squareCraft-px-2  ">
@@ -246,6 +331,8 @@
                           src="https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg" alt="">
                     </div>
                  </div>
+
+
                  <div class="squareCraft-flex squareCraft-bg-transparent squareCraft-h-9 squareCraft-text-color-white squareCraft-justify-between squareCraft-col-span-4   squareCraft-rounded-6px squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-items-center ">
                     <div class="squareCraft-flex squareCraft-text-color-white squareCraft-items-center ">
                        <div class="squareCraft-flex squareCraft-text-color-white squareCraft-justify-between squareCraft-col-span-4 squareCraft-rounded-6px squareCraft-items-center  ">
