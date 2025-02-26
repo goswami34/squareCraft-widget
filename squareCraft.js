@@ -574,6 +574,7 @@
     selectedFontText.textContent = selectedFont;
     selectedFontText.style.flexGrow = "1"; 
     selectedFontText.style.fontSize = "14px";
+    selectedFontText.classList.add("squareCraft-universal");
   
     // Dropdown arrow icon
     const dropdownArrow = document.createElement("img");
