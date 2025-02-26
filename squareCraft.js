@@ -243,12 +243,8 @@
                  <div id="squareCraft-font-family" 
                     class="squareCraft-flex  squareCraft-bg-494949 squareCraft-h-9 squareCraft-col-span-7 squareCraft-cursor-pointer squareCraft-rounded-6px squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
                     <div class=" squareCraft-w-full   squareCraft-px-2  ">
-                       <p class="squareCraft-text-sm  squareCraft-poppins  squareCraft-font-light">Sf Pro sans</p>
                     </div>
-                    <div class="squareCraft-bg-3f3f3f squareCraft-px-2" style="height: 27px; padding: 0 8px;">
-                       <img class=" squareCraft-rotate-180" width="12px"
-                          src="https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg" alt="">
-                    </div>
+                   
                  </div>
 
 
