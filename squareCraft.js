@@ -567,7 +567,6 @@
     fontDropdown.style.display = "flex";
     fontDropdown.style.alignItems = "center";
     fontDropdown.style.justifyContent = "space-between";
-    fontDropdown.style.padding = "10px";
     fontDropdown.style.cursor = "pointer";
   
     let selectedFont = "Select a Font";  
