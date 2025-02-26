@@ -59,33 +59,58 @@
     let pageId = getPageId();
     if (!pageId) console.warn(":warning: No page ID found. Plugin may not work correctly.");
   
-    function applyStylesToElement(elementId, css) {
-      if (!elementId || !css) return;
+    // function applyStylesToElement(elementId, css) {
+    //   if (!elementId || !css) return;
   
-      let styleTag = document.getElementById(`style-${elementId}`);
-      if (styleTag) {
-        styleTag.remove();  // Remove the old styles before adding new ones
-      }
+    //   let styleTag = document.getElementById(`style-${elementId}`);
+    //   if (styleTag) {
+    //     styleTag.remove();  // Remove the old styles before adding new ones
+    //   }
   
-      styleTag = document.createElement("style");
-      styleTag.id = `style-${elementId}`;
-      document.head.appendChild(styleTag);
+    //   styleTag = document.createElement("style");
+    //   styleTag.id = `style-${elementId}`;
+    //   document.head.appendChild(styleTag);
   
-      let cssText = `#${elementId} { `;
-      Object.keys(css).forEach(prop => {
-          cssText += `${prop}: ${css[prop]} !important; `;
-      });
-      cssText += "}";
+    //   let cssText = `#${elementId} { `;
+    //   Object.keys(css).forEach(prop => {
+    //       cssText += `${prop}: ${css[prop]} !important; `;
+    //   });
+    //   cssText += "}";
       
   
-      if (css["border-radius"]) {
-        cssText += `#${elementId} { overflow: hidden !important; }`;
-      }
+    //   if (css["border-radius"]) {
+    //     cssText += `#${elementId} { overflow: hidden !important; }`;
+    //   }
   
-      styleTag.innerHTML = cssText;
-      appliedStyles.add(elementId);
-      console.log(`:white_check_mark: Styles Persisted for ${elementId}`);
+    //   styleTag.innerHTML = cssText;
+    //   appliedStyles.add(elementId);
+    //   console.log(`:white_check_mark: Styles Persisted for ${elementId}`);
+    // }
+
+    function applyStylesToElement(elementId, css) {
+        if (!elementId || !css) return;
+    
+        let styleTag = document.getElementById(`style-${elementId}`);
+        if (styleTag) {
+            styleTag.remove();  
+        }
+    
+        styleTag = document.createElement("style");
+        styleTag.id = `style-${elementId}`;
+        document.head.appendChild(styleTag);
+    
+        let cssText = `#${elementId} { `;
+        Object.keys(css).forEach(prop => {
+            cssText += `${prop}: ${css[prop]} !important; `;
+        });
+        cssText += "}";
+    
+        styleTag.innerHTML = cssText;
+        appliedStyles.set(elementId, css);  // Store locally, do not save yet
+    
+        console.log(`✔️ Styles Applied Locally for ${elementId}`);
     }
+    
 
     
     
@@ -405,10 +430,13 @@
            <div class="squareCraft-mt-4">
               <div
                  class="squareCraft-flex  squareCraft-items-center squareCraft-justify-between squareCraft-gap-2">
-                 <div
-                    class="squareCraft-cursor-pointer squareCraft-poppins squareCraft-bg-color-EF7C2F squareCraft-w-full squareCraft-font-light squareCraft-flex squareCraft-items-center squareCraft-text-sm squareCraft-py-1 squareCraft-rounded-6px squareCraft-text-color-white squareCraft-justify-center">
+                 <div class="squareCraft-cursor-pointer squareCraft-poppins squareCraft-bg-color-EF7C2F 
+                    squareCraft-w-full squareCraft-font-light squareCraft-flex squareCraft-items-center 
+                    squareCraft-text-sm squareCraft-py-1 squareCraft-rounded-6px squareCraft-text-color-white 
+                    squareCraft-justify-center squareCraft-publish-button">
                     Publish
-                 </div>
+                </div>
+
                  <div
                     class="squareCraft-cursor-pointer squareCraft-poppins squareCraft-bg-3f3f3f squareCraft-w-full squareCraft-text-color-white squareCraft-font-light squareCraft-flex squareCraft-text-sm squareCraft-py-1 squareCraft-rounded-6px squareCraft-items-center squareCraft-justify-center">
                     Reset
@@ -422,6 +450,17 @@
       makeWidgetDraggable();
       setInterval(makeWidgetDraggable, 1000);
     }
+
+    document.querySelector(".squareCraft-publish-button").addEventListener("click", async function () {
+        console.log("🛠️ Publishing changes...");
+    
+        for (let [elementId, css] of appliedStyles.entries()) {
+            await saveModifications(elementId, css);
+        }
+    
+        console.log("✅ All changes published successfully!");
+    });
+    
   
     function createWidgetIcon() {
       if (document.getElementById("squarecraft-widget-icon")) return;
@@ -637,19 +676,32 @@
         //     // Update font-weight dropdown based on selected font
         //     updateFontWeightDropdown(font.variants);
         // });
-        option.addEventListener("click", async () => {
-          selectedFont = font.family;
-          selectedFontText.textContent = selectedFont;
-          selectedFontText.style.fontFamily = selectedFont;
-          fontList.style.display = "none";
+    //     option.addEventListener("click", async () => {
+    //       selectedFont = font.family;
+    //       selectedFontText.textContent = selectedFont;
+    //       selectedFontText.style.fontFamily = selectedFont;
+    //       fontList.style.display = "none";
       
-          // Apply font-family to the selected element and all its child elements
-          if (selectedElement) {
-              let css = { "font-family": selectedFont };
-              await saveModifications(selectedElement.id, css);
-              applyStylesToElement(selectedElement.id, css);
-          }
-      });
+    //       // Apply font-family to the selected element and all its child elements
+    //       if (selectedElement) {
+    //           let css = { "font-family": selectedFont };
+    //           await saveModifications(selectedElement.id, css);
+    //           applyStylesToElement(selectedElement.id, css);
+    //       }
+    //   });
+
+    option.addEventListener("click", async () => {
+        selectedFont = font.family;
+        selectedFontText.textContent = selectedFont;
+        selectedFontText.style.fontFamily = selectedFont;
+        fontList.style.display = "none";
+    
+        // Apply font-family to the selected element and all its child elements
+        if (selectedElement) {
+            let css = { "font-family": selectedFont };
+            applyStylesToElement(selectedElement.id, css);  // Apply locally only
+        }
+    });
   
         fontList.appendChild(option);
     });
