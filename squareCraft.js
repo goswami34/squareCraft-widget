@@ -405,12 +405,10 @@
            <div class="squareCraft-mt-4">
               <div
                  class="squareCraft-flex  squareCraft-items-center squareCraft-justify-between squareCraft-gap-2">
-                 <div class="squareCraft-cursor-pointer squareCraft-poppins squareCraft-bg-color-EF7C2F 
-                    squareCraft-w-full squareCraft-font-light squareCraft-flex squareCraft-items-center 
-                    squareCraft-text-sm squareCraft-py-1 squareCraft-rounded-6px squareCraft-text-color-white 
-                    squareCraft-justify-center squareCraft-publish-button">
+                 <div
+                    class="squareCraft-cursor-pointer squareCraft-poppins squareCraft-bg-color-EF7C2F squareCraft-w-full squareCraft-font-light squareCraft-flex squareCraft-items-center squareCraft-text-sm squareCraft-py-1 squareCraft-rounded-6px squareCraft-text-color-white squareCraft-justify-center">
                     Publish
-                </div>
+                 </div>
                  <div
                     class="squareCraft-cursor-pointer squareCraft-poppins squareCraft-bg-3f3f3f squareCraft-w-full squareCraft-text-color-white squareCraft-font-light squareCraft-flex squareCraft-text-sm squareCraft-py-1 squareCraft-rounded-6px squareCraft-items-center squareCraft-justify-center">
                     Reset
@@ -622,7 +620,23 @@
             option.style.background = "transparent";
         });
   
-
+        // Click event to select font
+        // option.addEventListener("click", async () => {
+        //     selectedFont = font.family;
+        //     selectedFontText.textContent = selectedFont;
+        //     selectedFontText.style.fontFamily = selectedFont;
+        //     fontList.style.display = "none";
+  
+        //     // Apply font-family to selected element
+        //     if (selectedElement) {
+        //         selectedElement.style.fontFamily = selectedFont;
+        //         let css = { "font-family": selectedFont };
+        //         await saveModifications(selectedElement.id, css);
+        //     }
+  
+        //     // Update font-weight dropdown based on selected font
+        //     updateFontWeightDropdown(font.variants);
+        // });
         option.addEventListener("click", async () => {
           selectedFont = font.family;
           selectedFontText.textContent = selectedFont;
