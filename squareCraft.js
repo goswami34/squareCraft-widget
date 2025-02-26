@@ -637,32 +637,19 @@
         //     // Update font-weight dropdown based on selected font
         //     updateFontWeightDropdown(font.variants);
         // });
-    //     option.addEventListener("click", async () => {
-    //       selectedFont = font.family;
-    //       selectedFontText.textContent = selectedFont;
-    //       selectedFontText.style.fontFamily = selectedFont;
-    //       fontList.style.display = "none";
+        option.addEventListener("click", async () => {
+          selectedFont = font.family;
+          selectedFontText.textContent = selectedFont;
+          selectedFontText.style.fontFamily = selectedFont;
+          fontList.style.display = "none";
       
-    //       // Apply font-family to the selected element and all its child elements
-    //       if (selectedElement) {
-    //           let css = { "font-family": selectedFont };
-    //           await saveModifications(selectedElement.id, css);
-    //           applyStylesToElement(selectedElement.id, css);
-    //       }
-    //   });
-
-    option.addEventListener("click", async () => {
-        selectedFont = font.family;
-        selectedFontText.textContent = selectedFont;
-        selectedFontText.style.fontFamily = selectedFont;
-        fontList.style.display = "none";
-    
-        // Apply font-family to the selected element and all its child elements
-        if (selectedElement) {
-            let css = { "font-family": selectedFont };
-            applyStylesToElement(selectedElement.id, css);  // Apply locally only
-        }
-    });
+          // Apply font-family to the selected element and all its child elements
+          if (selectedElement) {
+              let css = { "font-family": selectedFont };
+              await saveModifications(selectedElement.id, css);
+              applyStylesToElement(selectedElement.id, css);
+          }
+      });
   
         fontList.appendChild(option);
     });
