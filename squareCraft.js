@@ -416,7 +416,7 @@
            <div class="squareCraft-mt-4">
               <div
                  class="squareCraft-flex  squareCraft-items-center squareCraft-justify-between squareCraft-gap-2">
-                 <div
+                 <div id="squareCraftPublish"
                     class="squareCraft-cursor-pointer squareCraft-poppins squareCraft-bg-color-EF7C2F squareCraft-w-full squareCraft-font-light squareCraft-flex squareCraft-items-center squareCraft-text-sm squareCraft-py-1 squareCraft-rounded-6px squareCraft-text-color-white squareCraft-justify-center">
                     Publish
                  </div>
