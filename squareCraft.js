@@ -71,7 +71,8 @@
       styleTag.id = `style-${elementId}`;
       document.head.appendChild(styleTag);
   
-      let cssText = `#${elementId} { `;
+      let cssText = `#${elementId}, #${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} p, #${elementId} span { `;
+
       Object.keys(css).forEach(prop => {
           cssText += `${prop}: ${css[prop]} !important; `;
       });
