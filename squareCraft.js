@@ -284,25 +284,17 @@
 
               <div class="squareCraft-mt-2  squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2 ">
               
-                 <div class="squareCraft-flex squareCraft-bg-494949  squareCraft-col-span-6  squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
-                    <div class="  squareCraft-px-2 squareCraft-w-full  ">
-                       <select id="squareCraftFontWeight" style="width: 100%; padding: 6px; background: #2c2c2c; color: white; border: 1px solid #585858; border-radius: 6px;">
-                            <option value="100">Thin (100)</option>
-                            <option value="200">Extra Light (200)</option>
-                            <option value="300">Light (300)</option>
-                            <option value="400" selected>Regular (400)</option>
-                            <option value="500">Medium (500)</option>
-                            <option value="600">Semi Bold (600)</option>
-                            <option value="700">Bold (700)</option>
-                            <option value="800">Extra Bold (800)</option>
-                            <option value="900">Black (900)</option>
-                        </select>
-                    </div>
-                    <div class="squareCraft-bg-3f3f3f squareCraft-px-2" style="height: 27px; padding: 0 8px;">
-                       <img class=" squareCraft-mx-auto squareCraft-rotate-180" width="10px"
-                          src="https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg" alt="">
-                    </div>
-                 </div>
+                    <select id="squareCraftFontWeight" style="width: 100%; padding: 6px; background: #2c2c2c; color: white; border: 1px solid #585858; border-radius: 6px;">
+                        <option value="100">Thin (100)</option>
+                        <option value="200">Extra Light (200)</option>
+                        <option value="300">Light (300)</option>
+                        <option value="400" selected>Regular (400)</option>
+                        <option value="500">Medium (500)</option>
+                        <option value="600">Semi Bold (600)</option>
+                        <option value="700">Bold (700)</option>
+                        <option value="800">Extra Bold (800)</option>
+                        <option value="900">Black (900)</option>
+                    </select>
 
 
                  <div class="squareCraft-flex squareCraft-justify-between squareCraft-col-span-4  squareCraft-rounded-6px squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-items-center ">
