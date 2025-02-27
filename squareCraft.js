@@ -697,43 +697,32 @@
  
   
   function attachEventListeners() {
-    setTimeout(() => {
-        const fontSizeInput = document.getElementById("squareCraftFontSizeInput");
-        const fontSizeDropdown = document.getElementById("squareCraftFontSizeDropdown");
-        const fontSizeOptions = document.getElementById("squareCraftFontSizeOptions");
+    document.body.addEventListener("click", (event) => {
+      let block = event.target.closest('[id^="block-"]');
+      if (!block) return;
 
-        if (!fontSizeInput || !fontSizeDropdown || !fontSizeOptions) {
-            console.error("❌ Font size elements not found. Skipping event attachment.");
-            return;
-        }
+      if (selectedElement) selectedElement.style.outline = "";
+      selectedElement = block;
+      selectedElement.style.outline = "2px dashed #EF7C2F";
 
-        fontSizeDropdown.addEventListener("click", function () {
-            fontSizeOptions.classList.toggle("squareCraft-hidden");
-        });
+      console.log(`✅ Selected Element: ${selectedElement.id}`);
+    });
 
-        fontSizeOptions.addEventListener("click", function (event) {
-            if (!event.target.classList.contains("squareCraft-dropdown-item")) return;
-            fontSizeInput.value = event.target.dataset.value;
-            fontSizeOptions.classList.add("squareCraft-hidden");
+    document.getElementById("squareCraftPublish").addEventListener("click", async () => {
+      if (!selectedElement) {
+        console.warn("⚠️ No element selected.");
+        return;
+      }
 
-            if (selectedElement) {
-                let css = { "font-size": `${event.target.dataset.value}px` };
-                applyStylesToElement(selectedElement.id, css);
-                saveModifications(selectedElement.id, css);
-            }
-        });
+      let css = {
+        "font-family": document.getElementById("squareCraft-font-family").querySelector("p").textContent,
+        "font-weight": document.getElementById("squareCraftFontWeight").value // Use selected font weight
 
-        fontSizeInput.addEventListener("input", function () {
-            if (selectedElement) {
-                let css = { "font-size": `${fontSizeInput.value}px` };
-                applyStylesToElement(selectedElement.id, css);
-                saveModifications(selectedElement.id, css);
-            }
-        });
+      };
 
-        console.log("✅ Event listeners attached successfully.");
-    }, 1000); // Delay ensures the elements exist before attaching listeners
-}
+      await saveModifications(selectedElement.id, css);
+    });
+  }
 
   
   
