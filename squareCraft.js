@@ -713,11 +713,17 @@ fontfamilies();
 
       await saveModifications(selectedElement.id, css);
     });
+
+    // Add this event listener for font-weight dropdown
+    document.getElementById("squareCraftFontWeight").addEventListener("change", () => {
+        if (selectedElement) {
+            let css = { "font-weight": document.getElementById("squareCraftFontWeight").value };
+            applyStylesToElement(selectedElement.id, css);
+            saveModifications(selectedElement.id, css);
+        }
+    });
   }
 
-  
-  
-  
   
     document.addEventListener("DOMContentLoaded", function () {
       createWidgetIcon();
