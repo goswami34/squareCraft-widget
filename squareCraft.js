@@ -284,6 +284,7 @@
 
               <div class="squareCraft-mt-2  squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2 ">
               
+                 <label>Font Weight:</label>
                     <select id="squareCraftFontWeight" style="width: 100%; padding: 6px; background: #2c2c2c; color: white; border: 1px solid #585858; border-radius: 6px;">
                         <option value="100">Thin (100)</option>
                         <option value="200">Extra Light (200)</option>
