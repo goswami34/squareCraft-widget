@@ -708,7 +708,7 @@ fontfamilies();
       let css = {
         "font-family": document.getElementById("squareCraft-font-family").querySelector("p").textContent,
         "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
-        "font-aligment-icon": document.document.querySelectorAll(".alignment-icon").value,
+        "font-aligment-icon": document.document.querySelectorAll(".alignment-icon").value
 
       };
 
