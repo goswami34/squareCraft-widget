@@ -659,6 +659,9 @@
               await saveModifications(selectedElement.id, css);
               applyStylesToElement(selectedElement.id, css);
           }
+
+          // Update font-weight dropdown dynamically
+          updateFontWeightDropdown(font.variants);
       });
   
         fontList.appendChild(option);
