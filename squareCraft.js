@@ -282,9 +282,7 @@
                  </div>
               </div>
 
-              <div class="squareCraft-mt-2  squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2 ">
-              
-                 <label>Font Weight:</label>
+               <label>Font Weight:</label>
                     <select id="squareCraftFontWeight" style="width: 100%; padding: 6px; background: #2c2c2c; color: white; border: 1px solid #585858; border-radius: 6px;">
                         <option value="100">Thin (100)</option>
                         <option value="200">Extra Light (200)</option>
@@ -297,6 +295,10 @@
                         <option value="900">Black (900)</option>
                     </select>
 
+
+              <div class="squareCraft-mt-2  squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2 ">
+              
+                
 
                  <div class="squareCraft-flex squareCraft-justify-between squareCraft-col-span-4  squareCraft-rounded-6px squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-items-center ">
                     <div class="squareCraft-flex squareCraft-mx-auto squareCraft-items-center squareCraft-justify-center">
