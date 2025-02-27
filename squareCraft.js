@@ -313,6 +313,7 @@
                        src="https://fatin-webefo.github.io/squareCraft-Plugin/public/gap.svg" alt="">
                  </div>
               </div>
+
               <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2 ">
                  <div class="squareCraft-flex squareCraft-col-span-5 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
                     <div
@@ -334,6 +335,8 @@
                           class="squareCraft-cursor-pointer alignment-icon    squareCraft-mx-auto "  alt="">
                     </div>
                  </div>
+
+
                  <div class="squareCraft-flex squareCraft-text-color-white squareCraft-justify-between squareCraft-col-span-3 
                     squareCraft-rounded-6px squareCraft-border squareCraft-border-solid squareCraft-border-585858 
                     squareCraft-items-center squareCraft-w-full ">
@@ -719,6 +722,17 @@ fontfamilies();
             saveModifications(selectedElement.id, css);
         }
     });
+
+    document.querySelectorAll(".alignment-icon").forEach(icon => {
+        icon.addEventListener("click", async function () {
+          if (!selectedElement) return;
+          const alignment = this.getAttribute("data-align");
+          let css = { "text-align": alignment };
+          applyStylesToElement(selectedElement.id, css);
+          await saveModifications(selectedElement.id, css);
+          console.log(`:white_check_mark: Applied text alignment: ${alignment} to ${selectedElement.id}`);
+        });
+      });
   }
 
   
