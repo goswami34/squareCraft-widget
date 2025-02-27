@@ -682,20 +682,11 @@
     }
 }
 
-// Call the function
 fontfamilies();
 
-// Event Listener for Font-Weight Dropdown Change
-document.getElementById("squareCraftFontWeight").addEventListener("change", function () {
-    if (selectedElement) {
-        let selectedWeight = this.value;
-        let css = { "font-weight": selectedWeight };
-
-        applyStylesToElement(selectedElement.id, css);
-        saveModifications(selectedElement.id, css);
-    }
-});
-
+  
+ 
+  
   function attachEventListeners() {
     document.body.addEventListener("click", (event) => {
       let block = event.target.closest('[id^="block-"]');
@@ -723,7 +714,14 @@ document.getElementById("squareCraftFontWeight").addEventListener("change", func
       await saveModifications(selectedElement.id, css);
     });
 
-   
+    // Add this event listener for font-weight dropdown
+    document.getElementById("squareCraftFontWeight").addEventListener("change", () => {
+        if (selectedElement) {
+            let css = { "font-weight": document.getElementById("squareCraftFontWeight").value };
+            applyStylesToElement(selectedElement.id, css);
+            saveModifications(selectedElement.id, css);
+        }
+    });
   }
 
   
