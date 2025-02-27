@@ -685,15 +685,7 @@
 fontfamilies();
 
 
-document.getElementById("squareCraftFontWeight").addEventListener("change", function () {
-    if (selectedElement) {
-        let selectedWeight = this.value;
-        let css = { "font-weight": selectedWeight };
 
-        applyStylesToElement(selectedElement.id, css);
-        saveModifications(selectedElement.id, css);
-    }
-});
   
  
   
