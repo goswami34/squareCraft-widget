@@ -557,6 +557,16 @@
     setTimeout(makeWidgetDraggable, 500); // Apply draggability after it's added to DOM
     setTimeout(attachEventListeners, 1500);
   });
+
+  document.getElementById("squareCraftFontSize").addEventListener("input", function () {
+    if (selectedElement) {
+        let fontSize = this.value + "px";  
+        let css = { "font-size": fontSize };
+        applyStylesToElement(selectedElement.id, css);
+        saveModifications(selectedElement.id, css);
+    }
+});
+
   
   
     async function loadFontsWithPagination(page = 1, perPage = 20) {
@@ -829,7 +839,10 @@ fontfamilies();
           let block = event.target.closest('[id^="block-"]');
           if (!block) return;
   
-          if (selectedElement) selectedElement.style.outline = "";
+          if (selectedElement) {
+            selectedElement.style.fontSize = fontSizes + "px"; 
+        }
+        
           selectedElement = block;
           selectedElement.style.outline = "2px dashed #EF7C2F";
   
