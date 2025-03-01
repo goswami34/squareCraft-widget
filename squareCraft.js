@@ -283,7 +283,7 @@
               </div>
 
               <label>Font Size:</label>
-              <input type="number" id="squareCraftFontSizeInput" value="16" min="10" max="50" style="width: 100%;">
+              <input type="number" id="squareCraftFontSize" value="16" min="10" max="50" style="width: 100%;">
 
                <label>Font Weight:</label>
                     <select id="squareCraftFontWeight" style="width: 100%; padding: 6px; background: #2c2c2c; color: white; border: 1px solid #585858; border-radius: 6px;">
@@ -717,7 +717,7 @@ fontfamilies();
         "font-family": document.getElementById("squareCraft-font-family").querySelector("p").textContent,
         "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
         "font-aligment-icon": document.document.querySelectorAll(".alignment-icon").value,
-        "font-size": document.getElementById("squareCraftFontSizeInput").value + "px",
+        "font-size": document.getElementById("squareCraftFontSize").value + "px",
 
       };
 
