@@ -362,6 +362,8 @@
                  </div>
   
               </div>
+
+
               <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2">
                  <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
                     <div
@@ -381,6 +383,8 @@
                     </div>
                  </div>
               </div>
+
+
               <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2">
                  <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
                     <div
@@ -708,7 +712,8 @@ fontfamilies();
       let css = {
         "font-family": document.getElementById("squareCraft-font-family").querySelector("p").textContent,
         "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
-        "font-aligment-icon": document.document.querySelectorAll(".alignment-icon").value
+        "font-aligment-icon": document.document.querySelectorAll(".alignment-icon").value,
+        "font-size": document.getElementById("squareCraftFontSizeInput").value + "px",
 
       };
 
