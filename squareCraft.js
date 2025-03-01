@@ -558,14 +558,7 @@
     setTimeout(attachEventListeners, 1500);
   });
 
-  document.getElementById("squareCraftFontSize").addEventListener("input", function () {
-    if (selectedElement) {
-        let fontSize = this.value + "px";  
-        let css = { "font-size": fontSize };
-        applyStylesToElement(selectedElement.id, css);
-        saveModifications(selectedElement.id, css);
-    }
-});
+
 
   
   
@@ -753,6 +746,16 @@ fontfamilies();
           console.log(`:white_check_mark: Applied text alignment: ${alignment} to ${selectedElement.id}`);
         });
       });
+
+
+      document.getElementById("squareCraftFontSize").addEventListener("input", function () {
+        if (selectedElement) {
+            let fontSize = this.value + "px";  
+            let css = { "font-size": fontSize };
+            applyStylesToElement(selectedElement.id, css);
+            saveModifications(selectedElement.id, css);
+        }
+    });
   }
 
   
