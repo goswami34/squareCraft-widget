@@ -691,6 +691,24 @@
 
 fontfamilies();
 
+document.getElementById("squareCraftFontSizeOptions").addEventListener("click", function (event) {
+  if (event.target.classList.contains("squareCraft-dropdown-item")) {
+      let selectedSize = event.target.dataset.value;
+      let fontSizeInput = document.getElementById("squareCraftFontSizeInput");
+      fontSizeInput.value = selectedSize;
+
+      if (selectedElement) {
+          let css = { "font-size": `${selectedSize}px` };
+          applyStylesToElement(selectedElement.id, css);
+          saveModifications(selectedElement.id, css);
+      }
+
+      this.classList.add("squareCraft-hidden"); // Hide dropdown
+      console.log(`✅ Font size applied: ${selectedSize}px`);
+  }
+});
+
+
   function attachEventListeners() {
     document.body.addEventListener("click", (event) => {
       let block = event.target.closest('[id^="block-"]');
@@ -719,6 +737,16 @@ fontfamilies();
 
       await saveModifications(selectedElement.id, css);
     });
+
+    document.getElementById("squareCraftFontSizeInput").addEventListener("input", function () {
+      if (selectedElement) {
+          let newFontSize = `${this.value}px`;
+          let css = { "font-size": newFontSize };
+          applyStylesToElement(selectedElement.id, css);
+          saveModifications(selectedElement.id, css);
+          console.log(`✅ Font size updated: ${newFontSize}`);
+      }
+  });
 
     // Add this event listener for font-weight dropdown
     document.getElementById("squareCraftFontWeight").addEventListener("change", () => {
