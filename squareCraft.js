@@ -817,9 +817,13 @@ fontfamilies();
       fetchModifications();
       makeWidgetDraggable();
   
-      const fontSizeInput = document.getElementById("squareCraftFontSizeInput");
-      const dropdownArrow = document.getElementById("squareCraftFontSizeDropdown");
-      const dropdownOptions = document.getElementById("squareCraftFontSizeOptions");
+      // const fontSizeInput = document.getElementById("squareCraftFontSizeInput");
+      // const dropdownArrow = document.getElementById("squareCraftFontSizeDropdown");
+      // const dropdownOptions = document.getElementById("squareCraftFontSizeOptions");
+
+      const fontSizeInput = document.getElementById("squareCraftFontSize");
+      const dropdownArrow = document.getElementById("squareCraftFontSize");
+      const dropdownOptions = document.getElementById("squareCraftFontSize");
   
       document.body.addEventListener("click", (event) => {
           let block = event.target.closest('[id^="block-"]');
