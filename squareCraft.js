@@ -473,70 +473,137 @@
   
     setInterval(makeWidgetDraggable, 1000);
   
-    function makeWidgetDraggable() {
-      const widget = document.getElementById("squarecraft-widget-container");
+  //   function makeWidgetDraggable() {
+  //     const widget = document.getElementById("squarecraft-widget-container");
   
-      if (!widget) {
-          console.warn("❌ Widget not found.");
-          return;
-      }
+  //     if (!widget) {
+  //         console.warn("❌ Widget not found.");
+  //         return;
+  //     }
   
-      // Apply styles to allow free movement
-      widget.style.position = "fixed"; // Change from "absolute" to "fixed" for full-page dragging
-      widget.style.cursor = "grab";
-      widget.style.zIndex = "99999"; // Ensure it's above other elements
+  //     // Apply styles to allow free movement
+  //     widget.style.position = "fixed"; // Change from "absolute" to "fixed" for full-page dragging
+  //     widget.style.cursor = "grab";
+  //     widget.style.zIndex = "99999"; // Ensure it's above other elements
   
-      let offsetX = 0, offsetY = 0, isDragging = false;
+  //     let offsetX = 0, offsetY = 0, isDragging = false;
   
-      widget.addEventListener("mousedown", (event) => {
-          event.preventDefault();
-          isDragging = true;
+  //     widget.addEventListener("mousedown", (event) => {
+  //         event.preventDefault();
+  //         isDragging = true;
   
-          offsetX = event.clientX - widget.getBoundingClientRect().left;
-          offsetY = event.clientY - widget.getBoundingClientRect().top;
+  //         offsetX = event.clientX - widget.getBoundingClientRect().left;
+  //         offsetY = event.clientY - widget.getBoundingClientRect().top;
   
-          widget.style.transition = "none";
-          widget.style.userSelect = "none";
-          widget.style.cursor = "grabbing";
+  //         widget.style.transition = "none";
+  //         widget.style.userSelect = "none";
+  //         widget.style.cursor = "grabbing";
   
-          document.addEventListener("mousemove", moveAt);
-          document.addEventListener("mouseup", stopDragging);
-      });
+  //         document.addEventListener("mousemove", moveAt);
+  //         document.addEventListener("mouseup", stopDragging);
+  //     });
   
-      function moveAt(event) {
-          if (!isDragging) return;
+  //     function moveAt(event) {
+  //         if (!isDragging) return;
   
-          let newX = event.clientX - offsetX;
-          let newY = event.clientY - offsetY;
-          newX = Math.max(0, Math.min(window.innerWidth - widget.offsetWidth, newX));
-          newY = Math.max(0, Math.min(window.innerHeight - widget.offsetHeight, newY));
+  //         let newX = event.clientX - offsetX;
+  //         let newY = event.clientY - offsetY;
+  //         newX = Math.max(0, Math.min(window.innerWidth - widget.offsetWidth, newX));
+  //         newY = Math.max(0, Math.min(window.innerHeight - widget.offsetHeight, newY));
   
-          widget.style.left = `${newX}px`;
-          widget.style.top = `${newY}px`;
-      }
+  //         widget.style.left = `${newX}px`;
+  //         widget.style.top = `${newY}px`;
+  //     }
   
-      function stopDragging() {
-          isDragging = false;
-          widget.style.cursor = "grab";
-          document.removeEventListener("mousemove", moveAt);
-          document.removeEventListener("mouseup", stopDragging);
+  //     function stopDragging() {
+  //         isDragging = false;
+  //         widget.style.cursor = "grab";
+  //         document.removeEventListener("mousemove", moveAt);
+  //         document.removeEventListener("mouseup", stopDragging);
   
-          localStorage.setItem("widget_X", widget.style.left);
-          localStorage.setItem("widget_Y", widget.style.top);
-      }
+  //         localStorage.setItem("widget_X", widget.style.left);
+  //         localStorage.setItem("widget_Y", widget.style.top);
+  //     }
   
-      let lastX = localStorage.getItem("widget_X");
-      let lastY = localStorage.getItem("widget_Y");
-      if (lastX && lastY) {
-          widget.style.left = lastX;
-          widget.style.top = lastY;
-      } else {
-          widget.style.left = "50px"; // Default position
-          widget.style.top = "50px";
-      }
+  //     let lastX = localStorage.getItem("widget_X");
+  //     let lastY = localStorage.getItem("widget_Y");
+  //     if (lastX && lastY) {
+  //         widget.style.left = lastX;
+  //         widget.style.top = lastY;
+  //     } else {
+  //         widget.style.left = "50px"; // Default position
+  //         widget.style.top = "50px";
+  //     }
   
-      console.log("✅ Fully Flexible Widget Dragging Enabled.");
-  }
+  //     console.log("✅ Fully Flexible Widget Dragging Enabled.");
+  // }
+
+  function makeWidgetDraggable() {
+    const widget = document.getElementById("squarecraft-widget-container");
+
+    if (!widget) {
+        console.warn(":x: Widget not found.");
+        return;
+    }
+    widget.style.position = "fixed";
+    widget.style.cursor = "grab";
+    widget.style.zIndex = "999";
+
+    let offsetX = 0, offsetY = 0, isDragging = false;
+
+    widget.addEventListener("mousedown", (event) => {
+        if (event.target.tagName === "INPUT" || event.target.tagName === "SELECT" || event.target.isContentEditable) {
+            return; 
+        }
+
+        event.preventDefault();
+        isDragging = true;
+
+        offsetX = event.clientX - widget.getBoundingClientRect().left;
+        offsetY = event.clientY - widget.getBoundingClientRect().top;
+
+        widget.style.transition = "none";
+        widget.style.userSelect = "none";
+        widget.style.cursor = "grabbing";
+
+        document.addEventListener("mousemove", moveAt);
+        document.addEventListener("mouseup", stopDragging);
+    });
+
+    function moveAt(event) {
+        if (!isDragging) return;
+
+        let newX = event.clientX - offsetX;
+        let newY = event.clientY - offsetY;
+        newX = Math.max(0, Math.min(window.innerWidth - widget.offsetWidth, newX));
+        newY = Math.max(0, Math.min(window.innerHeight - widget.offsetHeight, newY));
+
+        widget.style.left = `${newX}px`;
+        widget.style.top = `${newY}px`;
+    }
+
+    function stopDragging() {
+        isDragging = false;
+        widget.style.cursor = "grab";
+        document.removeEventListener("mousemove", moveAt);
+        document.removeEventListener("mouseup", stopDragging);
+
+        // Save last position in localStorage
+        localStorage.setItem("widget_X", widget.style.left);
+        localStorage.setItem("widget_Y", widget.style.top);
+    }
+
+    // Restore last saved position
+    let lastX = localStorage.getItem("widget_X");
+    let lastY = localStorage.getItem("widget_Y");
+    if (lastX && lastY) {
+        widget.style.left = lastX;
+        widget.style.top = lastY;
+    } else {
+        widget.style.left = "50px"; // Default position
+        widget.style.top = "50px";
+    }
+}
   
   
   
