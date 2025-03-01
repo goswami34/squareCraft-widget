@@ -822,8 +822,8 @@ fontfamilies();
       // const dropdownOptions = document.getElementById("squareCraftFontSizeOptions");
 
       const fontSizeInput = document.getElementById("squareCraftFontSize");
-      const dropdownArrow = document.getElementById("squareCraftFontSize");
-      const dropdownOptions = document.getElementById("squareCraftFontSize");
+      const dropdownArrow = document.getElementById("squareCraftFontSizeDropdown");
+      const dropdownOptions = document.getElementById("squareCraftFontSizeOptions");
   
       document.body.addEventListener("click", (event) => {
           let block = event.target.closest('[id^="block-"]');
