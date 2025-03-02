@@ -213,13 +213,7 @@
       }
   }
   
-  // Attach event listener to the reset button
-  document.getElementById("squareCraftReset").addEventListener("click", async () => {
-      const confirmReset = confirm("Are you sure you want to reset all modifications?");
-      if (confirmReset) {
-          await resetModifications();
-      }
-  });
+ 
   
   
     function createWidget() {
@@ -838,6 +832,14 @@ fontfamilies();
             saveModifications(selectedElement.id, css);
         }
     });
+
+     // Attach event listener to the reset button
+    document.getElementById("squareCraftReset").addEventListener("click", async () => {
+      const confirmReset = confirm("Are you sure you want to reset all modifications?");
+      if (confirmReset) {
+          await resetModifications();
+      }
+  });
 
   //   document.getElementById("squareCraftFontSizeInput").addEventListener("input", function () {
   //     if (selectedElement) {
