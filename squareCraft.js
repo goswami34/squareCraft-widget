@@ -746,7 +746,7 @@ fontfamilies();
         "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
         "font-aligment-icon": document.document.querySelectorAll(".alignment-icon").value,
         "font-size": document.getElementById("squareCraftFontSize").value + "px",
-        "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
+        // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
 
       };
 
@@ -783,14 +783,14 @@ fontfamilies();
         }
     });
 
-    document.getElementById("squareCraftFontSizeInput").addEventListener("input", function () {
-      if (selectedElement) {
-          let fontSize = this.value + "px";  
-          let css = { "font-size": fontSize };
-          applyStylesToElement(selectedElement.id, css);
-          saveModifications(selectedElement.id, css);
-      }
-  });
+  //   document.getElementById("squareCraftFontSizeInput").addEventListener("input", function () {
+  //     if (selectedElement) {
+  //         let fontSize = this.value + "px";  
+  //         let css = { "font-size": fontSize };
+  //         applyStylesToElement(selectedElement.id, css);
+  //         saveModifications(selectedElement.id, css);
+  //     }
+  // });
   }
 
   
@@ -870,7 +870,6 @@ fontfamilies();
       // const dropdownOptions = document.getElementById("squareCraftFontSizeOptions");
 
       const fontSizeInput = document.getElementById("squareCraftFontSize");
-      const fontSizeInput2 = document.getElementById("squareCraftFontSizeInput");
       const dropdownArrow = document.getElementById("squareCraftFontSizeDropdown");
       const dropdownOptions = document.getElementById("squareCraftFontSizeOptions");
   
