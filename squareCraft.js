@@ -254,8 +254,8 @@
                           <div class="squareCraft-font-size-container squareCraft-poppins squareCraft-universal squareCraft-flex squareCraft-justify-between squareCraft-items-center squareCraft-flex squareCraft-items-center  
                              squareCraft-rounded-6px 
                              ">
-                             <input type="text" id="squareCraftFontSizeInput" value="16" 
-                                class="squareCraft-font-size-input squareCraft-font-light squareCraft-text-sm squareCraft-text-color-white 
+                             
+                            <input type="number" id="squareCraftFontSize" min="10" max="50" style="width: 100%;" class="squareCraft-font-size-input squareCraft-font-light squareCraft-text-sm squareCraft-text-color-white 
                                 squareCraft-bg-transparent  squareCraft-universal squareCraft-font-light">
                                   <div class="squareCraft-v-line"></div>
                              <div class="squareCraft-flex squareCraft-items-center  squareCraft-justify-center  squareCraft-items-center">
