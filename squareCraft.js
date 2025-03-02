@@ -166,6 +166,61 @@
         console.error(":x: Error saving modifications:", error);
       }
     }
+
+
+    async function resetModifications() {
+      const userId = localStorage.getItem("squareCraft_u_id");
+      const token = localStorage.getItem("squareCraft_auth_token");
+  
+      if (!userId || !token) {
+          console.warn("⚠️ User ID or token missing. Cannot reset modifications.");
+          return;
+      }
+  
+      try {
+          // Step 1: Call API to delete all elements
+          const response = await fetch("http://localhost:8000/api/v1/modifications/elements", {
+              method: "DELETE",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`,
+                  "userId": userId,
+              },
+          });
+  
+          if (!response.ok) {
+              console.error("❌ Error resetting modifications:", await response.json());
+              return;
+          }
+  
+          console.log("✅ Modifications reset successfully!");
+  
+          // Step 2: Remove all injected styles
+          document.querySelectorAll("style[id^='style-']").forEach(styleTag => styleTag.remove());
+  
+          // Step 3: Clear stored data in localStorage
+          localStorage.removeItem("squareCraft_auth_token");
+          localStorage.removeItem("squareCraft_u_id");
+          localStorage.removeItem("squareCraft_w_id");
+  
+          // Step 4: Reset UI elements to default values
+          document.getElementById("squareCraftFontSize").value = "16";
+          document.getElementById("squareCraftFontWeight").value = "400";
+  
+          console.log("🎯 Reset complete. All styles and elements removed.");
+      } catch (error) {
+          console.error("❌ Error resetting modifications:", error);
+      }
+  }
+  
+  // Attach event listener to the reset button
+  document.getElementById("squareCraftReset").addEventListener("click", async () => {
+      const confirmReset = confirm("Are you sure you want to reset all modifications?");
+      if (confirmReset) {
+          await resetModifications();
+      }
+  });
+  
   
     function createWidget() {
       const widgetContainer = document.createElement("div");
