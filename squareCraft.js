@@ -248,7 +248,7 @@
                  </div>
 
                 <div>
-                  <input type="number" id="squareCraftFontSize" value="16" min="10" max="50" style="width: 80px;">
+                  <input type="number" id="squareCraftFontSize" value="16" min="10" max="50" style="width: 80px; background-color: gray; color: white;">
                 </div>
                  
 
