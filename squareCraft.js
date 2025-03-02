@@ -256,7 +256,7 @@
 
               
 
-               <div>
+               <div style="margin:20px 10px;">
                 <label>Font Weight:</label>
                 <select id="squareCraftFontWeight" style="width: 100%; padding: 6px; background: #2c2c2c; color: white; border: 1px solid #585858; border-radius: 6px; margin:4px;">
                     <option value="100">Thin (100)</option>
