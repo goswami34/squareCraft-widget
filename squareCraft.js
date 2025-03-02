@@ -248,6 +248,7 @@
                  </div>
 
                 <div>
+                  <label style="font-size: 12px;">Font Size:</label>
                   <input type="number" id="squareCraftFontSize" value="16" min="10" max="50" style="width: 80px; background-color: gray; color: white;">
                 </div>
                  
