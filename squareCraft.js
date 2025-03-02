@@ -249,7 +249,7 @@
 
 
                  <div>
-                  <label>Font Size:</label>
+                  
                   <input type="number" id="squareCraftFontSize" min="10" max="50" style="width: 100%;"> 
                  </div>
 
