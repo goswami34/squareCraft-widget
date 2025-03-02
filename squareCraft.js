@@ -418,7 +418,7 @@
                     Publish Changes
                 </button>
                 
-                 <button id="squareCraftReset" style="width: 100%; padding: 10px; background: #EF7C2F; color: white;">
+                 <button id="squareCraftReset" style="width: 100%; padding: 10px; background: #9f988e; color: white;">
                     Reset
                 </button>
               </div>
