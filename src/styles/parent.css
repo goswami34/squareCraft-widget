@@ -890,3 +890,8 @@ font-size: 12px !important;
   margin: 0 !important;
   padding: 0 !important;
 }
+
+#squareCraftFontSize::placeholder {
+  color: white;
+  opacity: 1; /* Ensure full visibility */
+}
