@@ -405,18 +405,6 @@
                       
                     </div>
                  </div>
-  
-                 <div class="squareCraft-flex squareCraft-col-span-5 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
-                    <div
-                       class="squareCraft-flex squareCraft-poppins  squareCraft-items-center squareCraft-justify-between squareCraft-w-full ">
-                      <p class=" squareCraft-mx-2 squareCraft-w-full squareCraft-text-center squareCraft-universal squareCraft-text-sm ">RLT</p>
-                       <div class="squareCraft-v-line"></div>
-                      <p class=" squareCraft-universal  squareCraft-text-sm squareCraft-text-center squareCraft-w-full squareCraft-mx-auto">LTR</p>
-                       <div class="squareCraft-v-line"></div>
-                       <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-2" width="12px"
-                       src="https://fatin-webefo.github.io/squareCraft-Plugin/public/dot.svg" alt="">                  
-                    </div>
-                 </div>
               </div>
              
   
@@ -788,6 +776,7 @@ fontfamilies();
         "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
         "font-aligment-icon": document.document.querySelectorAll(".alignment-icon").value,
         "font-size": document.getElementById("squareCraftFontSize").value + "px",
+        "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
 
       };
 
@@ -823,6 +812,15 @@ fontfamilies();
             saveModifications(selectedElement.id, css);
         }
     });
+
+    document.getElementById("squareCraftFontSizeInput").addEventListener("input", function () {
+      if (selectedElement) {
+          let fontSize = this.value + "px";  
+          let css = { "font-size": fontSize };
+          applyStylesToElement(selectedElement.id, css);
+          saveModifications(selectedElement.id, css);
+      }
+  });
   }
 
   
@@ -902,6 +900,7 @@ fontfamilies();
       // const dropdownOptions = document.getElementById("squareCraftFontSizeOptions");
 
       const fontSizeInput = document.getElementById("squareCraftFontSize");
+      const fontSizeInput2 = document.getElementById("squareCraftFontSizeInput");
       const dropdownArrow = document.getElementById("squareCraftFontSizeDropdown");
       const dropdownOptions = document.getElementById("squareCraftFontSizeOptions");
   

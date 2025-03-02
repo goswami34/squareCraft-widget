@@ -868,8 +868,8 @@ font-size: 12px !important;
 .squareCraft-cursor-pointer {
   cursor: pointer !important;
 }
-.squareCraft-z-9999 {
-  z-index: 9999 !important;
+.squareCraft-z-99999 {
+  z-index: 99999 !important;
 }
 
 .squareCraft-hidden {
