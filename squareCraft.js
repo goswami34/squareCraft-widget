@@ -255,8 +255,7 @@
                              squareCraft-rounded-6px 
                              ">
                           
-                            <input type="number" id="squareCraftFontSize" min="10" max="50" style="width: 100%;" class="squareCraft-font-size-input squareCraft-font-light squareCraft-text-sm squareCraft-text-color-white 
-                                squareCraft-bg-transparent  squareCraft-universal squareCraft-font-light">
+                            <input type="number" id="squareCraftFontSize" min="10" max="50" style="width: 100%;">
                                   <div class="squareCraft-v-line"></div>
                              <div class="squareCraft-flex squareCraft-items-center  squareCraft-justify-center  squareCraft-items-center">
                                 <p class="squareCraft-flex squareCraft-font-light squareCraft-text-sm squareCraft-px-1_5 squareCraft-items-center squareCraft-justify-center squareCraft-items-center">
