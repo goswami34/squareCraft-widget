@@ -248,41 +248,14 @@
                  </div>
 
 
-                 <div class="squareCraft-flex squareCraft-bg-transparent squareCraft-h-9 squareCraft-text-color-white squareCraft-justify-between squareCraft-col-span-4   squareCraft-rounded-6px squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-items-center ">
-                    <div class="squareCraft-flex squareCraft-text-color-white squareCraft-items-center ">
-                       <div class="squareCraft-flex squareCraft-text-color-white squareCraft-justify-between squareCraft-col-span-4 squareCraft-rounded-6px squareCraft-items-center  ">
-                          <div class="squareCraft-font-size-container squareCraft-poppins squareCraft-universal squareCraft-flex squareCraft-justify-between squareCraft-items-center squareCraft-flex squareCraft-items-center  
-                             squareCraft-rounded-6px 
-                             ">
-                          
-                            <input type="number" id="squareCraftFontSize" min="10" max="50" style="width: 100%;">
-                                  <div class="squareCraft-v-line"></div>
-                             <div class="squareCraft-flex squareCraft-items-center  squareCraft-justify-center  squareCraft-items-center">
-                                <p class="squareCraft-flex squareCraft-font-light squareCraft-text-sm squareCraft-px-1_5 squareCraft-items-center squareCraft-justify-center squareCraft-items-center">
-                                   px
-                             </div>
-                             <div class="squareCraft-bg-3f3f3f squareCraft-px-2 squareCraft-ml-1" style="height: 27px; padding: 0 8px; border-radius: 0px 5px 5px 0px;">
-                                <img class=" squareCraft-rotate-180 " width="12px" 
-                                   src="https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg" alt="">
-                             </div>
-                          </div>
-
-                          <div id="squareCraftFontSizeOptions" class="squareCraft-hidden  squareCraft-h-44 squareCraft-font-sm squareCraft-bg-3f3f3f squareCraft-w-20
-                             squareCraft-rounded-6px squareCraft-border squareCraft-border-585858 squareCraft-absolute 
-                             squareCraft-mt-1">
-                             ${fontSizes?.map(size => `
-                             <div class="squareCraft-dropdown-item squareCraft-py-1px squareCraft-text-center  squareCraft-text-sm" 
-                                data-value="${size}">${size}</div>
-                             `).join('')}
-                          </div>
-                       </div>
-                    </div>
-                    <div class="squareCraft-border-r squareCraft-border-585858 "></div>
+                 <div>
+                  <label>Font Size:</label>
+                  <input type="number" id="squareCraftFontSize" min="10" max="50" style="width: 100%;"> 
                  </div>
+
               </div>
 
-              <label>Font Size:</label>
-              <input type="number" id="squareCraftFontSize" min="10" max="50" style="width: 100%;">
+              
 
                <label>Font Weight:</label>
                     <select id="squareCraftFontWeight" style="width: 100%; padding: 6px; background: #2c2c2c; color: white; border: 1px solid #585858; border-radius: 6px;">
