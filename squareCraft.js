@@ -869,7 +869,7 @@ fontfamilies();
       // const dropdownArrow = document.getElementById("squareCraftFontSizeDropdown");
       // const dropdownOptions = document.getElementById("squareCraftFontSizeOptions");
 
-      const fontSizeInput = document.getElementById("squareCraftFontSize");
+      const fontSize = document.getElementById("squareCraftFontSize");
       const dropdownArrow = document.getElementById("squareCraftFontSizeDropdown");
       const dropdownOptions = document.getElementById("squareCraftFontSizeOptions");
   
