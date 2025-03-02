@@ -248,14 +248,12 @@
                  </div>
 
 
-                 <div>
-                  
-                  <input type="number" id="squareCraftFontSize" min="10" max="50" style="width: 100%;"> 
-                 </div>
+                 
 
               </div>
 
-              <input type="number" id="squareCraftFontSize" min="10" max="50" style="width: 100%;"> 
+              <label>Font Size:</label>
+              <input type="number" id="squareCraftFontSize" value="16" min="10" max="50" style="width: 100%;">
 
                <label>Font Weight:</label>
                     <select id="squareCraftFontWeight" style="width: 100%; padding: 6px; background: #2c2c2c; color: white; border: 1px solid #585858; border-radius: 6px;">
