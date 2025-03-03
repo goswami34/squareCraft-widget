@@ -449,15 +449,15 @@
                        class="squareCraft-flex squareCraft-px-2 squareCraft-items-center squareCraft-justify-between squareCraft-w-full ">
                       <p class="squareCraft-font-bold squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer elements-font-style" data-style="bold">B</p>
                        <div class="squareCraft-v-line"></div>
-                      <a href="#  class="squareCraft-font-italic squareCraft-universal  squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="italic">I</p>
+                      <p  class="squareCraft-font-italic squareCraft-universal  squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="italic">I</p>
                        <div class="squareCraft-v-line"></div>
-                     <a href="# class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="underline">U</a>
+                     <p class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="underline">U</p>
                        <div class="squareCraft-v-line"></div> 
-                       <a href="# class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="dotted">abc</a>
+                       <p  class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="dotted">abc</p>
                        <div class="squareCraft-v-line"></div> 
                        <img id="squareCraftTextAlignJustify" data-style="line-through"
                        src="https://fatin-webefo.github.io/squareCraft-plugin/public/T.png"
-                       class="squareCraft-cursor-pointer elements-font-style"  alt="">
+                       class="squareCraft-cursor-pointer ele5ments-font-style"  alt="">
                       
                     </div>
                  </div>
