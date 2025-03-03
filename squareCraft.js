@@ -457,7 +457,7 @@
                        <div class="squareCraft-v-line"></div> 
                        <img id="squareCraftTextAlignJustify" data-style="line-through"
                        src="https://fatin-webefo.github.io/squareCraft-Plugin/public/T.png"
-                       class="squareCraft-cursor-pointer squareCraft-cursor-pointer  elements-font-style"  alt="">
+                       class="squareCraft-cursor-pointer elements-font-style"  alt="">
                       
                     </div>
                  </div>
