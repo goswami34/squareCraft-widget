@@ -308,10 +308,10 @@
               <div class="squareCraft-flex squareCraft-p-2 squareCraft-items-center squareCraft-justify-between">
                  <div class="squareCraft-flex squareCraft-gap-2 squareCraft-items-center">
                     <img loading="lazy"
-                       src="https://fatin-webefo.github.io/squareCraft-Plugin/public/T.svg" alt="">
+                       src="https://fatin-webefo.github.io/squareCraft-plugin/public/T.svg" alt="">
                     <p class="squareCraft-universal squareCraft-poppins">Typography</p>
                  </div>
-                 <img src="https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg" alt="">
+                 <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt="">
               </div>
               <div class="squareCraft-h-1px squareCraft-bg-3f3f3f"></div>
               <div
@@ -342,7 +342,7 @@
               </div>
               <div class=" squareCraft-mt-2 squareCraft-px-2 squareCraft-flex squareCraft-justify-between">
                  <p class="squareCraft-text-sm squareCraft-universal squareCraft-poppins">Text</p>
-                 <img src="https://fatin-webefo.github.io/squareCraft-Plugin/public/eye.svg" width="12px" />
+                 <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/eye.svg" width="12px" />
               </div>
               <div class="squareCraft-mt-2  squareCraft-grid squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2 squareCraft-px-2" >
 
@@ -382,14 +382,14 @@
                  <div class="squareCraft-flex squareCraft-justify-between squareCraft-col-span-4  squareCraft-rounded-6px squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-items-center ">
                     <div class="squareCraft-flex squareCraft-mx-auto squareCraft-items-center squareCraft-justify-center">
                        <img class=" squareCraft-rounded-6px squareCraft-rotate-180" width="12px"
-                          src="https://fatin-webefo.github.io/squareCraft-Plugin/public/dot.svg" alt="">
+                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
                     </div>
                       <div class="squareCraft-v-line"></div>
                     <div class="squareCraft-flex squareCraft-mx-auto squareCraft-items-center squareCraft-justify-center squareCraft-border squareCraft-border-585858 squareCraft-w-13px squareCraft-border-solid squareCraft-h-13px">
                     </div>
                       <div class="squareCraft-v-line"></div>
                     <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-flex squareCraft-mx-auto squareCraft-items-center squareCraft-justify-center" width="12px"
-                       src="https://fatin-webefo.github.io/squareCraft-Plugin/public/gap.svg" alt="">
+                       src="https://fatin-webefo.github.io/squareCraft-plugin/public/gap.svg" alt="">
                  </div>
               </div>
 
@@ -398,19 +398,19 @@
                     <div
                        class="squareCraft-flex squareCraft-items-center squareCraft-justify-between squareCraft-w-full ">
                        <img id="squareCraftTextAlignLeft" data-align="left"
-                          src="https://fatin-webefo.github.io/squareCraft-Plugin/public/alignment (1).svg"
+                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (1).svg"
                           class="squareCraft-cursor-pointer alignment-icon   squareCraft-mx-auto"  alt="">
                        <div class="squareCraft-v-line"></div>
                        <img id="squareCraftTextAlignRight" data-align="right"
-                          src="https://fatin-webefo.github.io/squareCraft-Plugin/public/alignment (3).svg"
+                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (3).svg"
                           class="squareCraft-cursor-pointer alignment-icon    squareCraft-mx-auto"  alt="">
                        <div class="squareCraft-v-line"></div>
                        <img id="squareCraftTextAlignCenter" data-align="center"
-                          src="https://fatin-webefo.github.io/squareCraft-Plugin/public/alignment (2).svg"
+                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (2).svg"
                           class="squareCraft-cursor-pointer alignment-icon    squareCraft-mx-auto"  alt="">
                        <div class="squareCraft-v-line"></div>
                        <img id="squareCraftTextAlignJustify" data-align="justify"
-                          src="https://fatin-webefo.github.io/squareCraft-Plugin/public/alignment (4).svg"
+                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (4).svg"
                           class="squareCraft-cursor-pointer alignment-icon    squareCraft-mx-auto "  alt="">
                     </div>
                  </div>
@@ -426,7 +426,7 @@
                           squareCraft-bg-transparent squareCraft-w-full  squareCraft-py-1px squareCraft-font-light">
                        <div class="">
                           <img id="squareCraftLetterSpacingDropdown"
-                             src="https://fatin-webefo.github.io/squareCraft-Plugin/public/line-spacing.svg"
+                             src="https://fatin-webefo.github.io/squareCraft-plugin/public/line-spacing.svg"
                              class=" squareCraft-px-1 squareCraft-ml-1 squareCraft-mx-auto squareCraft-cursor-pointer" >
                        </div>
                     </div>
@@ -456,7 +456,7 @@
                        <a href="# class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="dotted">abc</a>
                        <div class="squareCraft-v-line"></div> 
                        <img id="squareCraftTextAlignJustify" data-style="line-through"
-                       src="https://fatin-webefo.github.io/squareCraft-Plugin/public/T.png"
+                       src="https://fatin-webefo.github.io/squareCraft-plugin/public/T.png"
                        class="squareCraft-cursor-pointer elements-font-style"  alt="">
                       
                     </div>
@@ -477,7 +477,7 @@
                        <p class=" squareCraft-universal  squareCraft-text-sm squareCraft-text-center squareCraft-w-full squareCraft-mx-auto">AG</p>
                        <div class="squareCraft-v-line"></div> 
                        <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5" width="12px"
-                       src="https://fatin-webefo.github.io/squareCraft-Plugin/public/dot.svg" alt="">
+                       src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
                       
                     </div>
                  </div>
