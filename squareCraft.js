@@ -443,21 +443,21 @@
               </div>
 
 
-              <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2">
+              <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2" --------->
                  <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
                     <div
                        class="squareCraft-flex squareCraft-px-2 squareCraft-items-center squareCraft-justify-between squareCraft-w-full ">
-                      <p class="squareCraft-font-bold squareCraft-universal squareCraft-text-sm  ">B</p>
+                      <p class="squareCraft-font-bold squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer elements-font-style" data-style="bold">B</p>
                        <div class="squareCraft-v-line"></div>
-                      <p class="squareCraft-font-italic squareCraft-universal  squareCraft-text-sm squareCraft-text-center squareCraft-mx-auto">I</p>
+                      <p class="squareCraft-font-italic squareCraft-universal  squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="italic">I</p>
                        <div class="squareCraft-v-line"></div>
-                     <p class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-text-center squareCraft-mx-auto">U</p>
+                     <p class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="underline">U</p>
                        <div class="squareCraft-v-line"></div> 
-                       <p class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-text-center squareCraft-mx-auto">abc</p>
+                       <p class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="dotted">abc</p>
                        <div class="squareCraft-v-line"></div> 
-                       <img id="squareCraftTextAlignJustify" data-align="justify"
+                       <img id="squareCraftTextAlignJustify" data-style="line-through"
                        src="https://fatin-webefo.github.io/squareCraft-Plugin/public/T.png"
-                       class="squareCraft-cursor-pointer  "  alt="">
+                       class="squareCraft-cursor-pointer squareCraft-cursor-pointer  elements-font-style"  alt="">
                       
                     </div>
                  </div>
@@ -853,6 +853,7 @@ fontfamilies();
         "font-aligment-icon": document.document.querySelectorAll(".alignment-icon").value,
         "font-size": document.getElementById("squareCraftFontSize").value + "px",
         // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
+        "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
 
       };
 
@@ -878,6 +879,16 @@ fontfamilies();
           console.log(`:white_check_mark: Applied text alignment: ${alignment} to ${selectedElement.id}`);
         });
       });
+
+    document.querySelectorAll(".elements-font-style").forEach(fontStyle => {
+      fontStyle.addEventListener("click", async function () {
+        if (!selectedElement) return;
+        let css = { "font-style": this.getAttribute("data-style") };
+        applyStylesToElement(selectedElement.id, css);
+        await saveModifications(selectedElement.id, css);
+        console.log(`:white_check_mark: Applied font style: ${this.getAttribute("data-style")} to ${selectedElement.id}`);
+      })
+    })
 
 
       document.getElementById("squareCraftFontSize").addEventListener("input", function () {
