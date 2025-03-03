@@ -168,50 +168,100 @@
     }
 
 
-    async function resetModifications() {
-      const userId = localStorage.getItem("squareCraft_u_id");
-      const token = localStorage.getItem("squareCraft_auth_token");
+  //   async function resetModifications() {
+  //     const userId = localStorage.getItem("squareCraft_u_id");
+  //     const token = localStorage.getItem("squareCraft_auth_token");
   
-      if (!userId || !token) {
-          console.warn("⚠️ User ID or token missing. Cannot reset modifications.");
-          return;
-      }
+  //     if (!userId || !token) {
+  //         console.warn("⚠️ User ID or token missing. Cannot reset modifications.");
+  //         return;
+  //     }
   
-      try {
-          // Step 1: Call API to delete all elements
-          const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications/elements", {
-              method: "DELETE",
-              headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": `Bearer ${token}`,
-                  "userId": userId,
-              },
-          });
+  //     try {
+  //         // Step 1: Call API to delete all elements
+  //         const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications/elements", {
+  //             method: "DELETE",
+  //             headers: {
+  //                 "Content-Type": "application/json",
+  //                 "Authorization": `Bearer ${token}`,
+  //                 "userId": userId,
+  //             },
+  //         });
   
-          if (!response.ok) {
-              console.error("❌ Error resetting modifications:", await response.json());
-              return;
-          }
+  //         if (!response.ok) {
+  //             console.error("❌ Error resetting modifications:", await response.json());
+  //             return;
+  //         }
   
-          console.log("✅ Modifications reset successfully!");
+  //         console.log("✅ Modifications reset successfully!");
   
-          // Step 2: Remove all injected styles
-          document.querySelectorAll("style[id^='style-']").forEach(styleTag => styleTag.remove());
+  //         // Step 2: Remove all injected styles
+  //         document.querySelectorAll("style[id^='style-']").forEach(styleTag => styleTag.remove());
   
-          // Step 3: Clear stored data in localStorage
-          localStorage.removeItem("squareCraft_auth_token");
-          localStorage.removeItem("squareCraft_u_id");
-          localStorage.removeItem("squareCraft_w_id");
+  //         // Step 3: Clear stored data in localStorage
+  //         localStorage.removeItem("squareCraft_auth_token");
+  //         localStorage.removeItem("squareCraft_u_id");
+  //         localStorage.removeItem("squareCraft_w_id");
   
-          // Step 4: Reset UI elements to default values
-          document.getElementById("squareCraftFontSize").value = "16";
-          document.getElementById("squareCraftFontWeight").value = "400";
+  //         // Step 4: Reset UI elements to default values
+  //         document.getElementById("squareCraftFontSize").value = "16";
+  //         document.getElementById("squareCraftFontWeight").value = "400";
   
-          console.log("🎯 Reset complete. All styles and elements removed.");
-      } catch (error) {
-          console.error("❌ Error resetting modifications:", error);
-      }
-  }
+  //         console.log("🎯 Reset complete. All styles and elements removed.");
+  //     } catch (error) {
+  //         console.error("❌ Error resetting modifications:", error);
+  //     }
+  // }
+
+  async function resetModifications() {
+    const userId = localStorage.getItem("squareCraft_u_id");
+    const token = localStorage.getItem("squareCraft_auth_token");
+    const widgetId = localStorage.getItem("squareCraft_w_id");
+    const pageId = getPageId(); // Ensure pageId is retrieved
+
+    if (!userId || !token || !widgetId || !pageId) {
+        console.warn("⚠️ User ID, token, widget ID, or page ID missing. Cannot reset modifications.");
+        return;
+    }
+
+    try {
+        // Step 1: Call API to delete all elements
+        const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications/elements", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+                "userId": userId,
+                "widget-id": widgetId,  // ✅ Ensure this is sent
+                "pageId": pageId         // ✅ Ensure this is sent
+            },
+        });
+
+        if (!response.ok) {
+            console.error("❌ Error resetting modifications:", await response.json());
+            return;
+        }
+
+        console.log("✅ Modifications reset successfully!");
+
+        // Step 2: Remove all injected styles
+        document.querySelectorAll("style[id^='style-']").forEach(styleTag => styleTag.remove());
+
+        // Step 3: Clear stored data in localStorage (Only UI-related, not user credentials)
+        localStorage.removeItem("squareCraft_auth_token");
+        localStorage.removeItem("squareCraft_u_id");
+        localStorage.removeItem("squareCraft_w_id");
+
+        // Step 4: Reset UI elements to default values
+        document.getElementById("squareCraftFontSize").value = "16";
+        document.getElementById("squareCraftFontWeight").value = "400";
+
+        console.log("🎯 Reset complete. All styles and elements removed.");
+    } catch (error) {
+        console.error("❌ Error resetting modifications:", error);
+    }
+}
+
   
  
   
