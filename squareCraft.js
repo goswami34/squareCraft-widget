@@ -220,25 +220,30 @@
     const pageId = getPageId(); // Ensure pageId is retrieved
 
     if (!userId || !token || !widgetId || !pageId) {
-        console.warn("⚠️ User ID, token, widget ID, or page ID missing. Cannot reset modifications.");
+        console.warn("⚠️ Missing required parameters: userId, token, widgetId, or pageId.");
         return;
     }
 
     try {
-        // Step 1: Call API to delete all elements
+        const requestData = {
+            userId: userId,
+            token: token,
+            widgetId: widgetId,
+            pageId: pageId
+        };
+
         const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications/elements", {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
-                "userId": userId,
-                "widget-id": widgetId,  // ✅ Ensure this is sent
-                "pageId": pageId         // ✅ Ensure this is sent
             },
+            body: JSON.stringify(requestData), // ✅ Send required data in the request body
         });
 
         if (!response.ok) {
-            console.error("❌ Error resetting modifications:", await response.json());
+            const errorData = await response.json();
+            console.error("❌ Error resetting modifications:", errorData);
             return;
         }
 
@@ -247,7 +252,7 @@
         // Step 2: Remove all injected styles
         document.querySelectorAll("style[id^='style-']").forEach(styleTag => styleTag.remove());
 
-        // Step 3: Clear stored data in localStorage (Only UI-related, not user credentials)
+        // Step 3: Clear stored data in localStorage (only UI-related, not user credentials)
         localStorage.removeItem("squareCraft_auth_token");
         localStorage.removeItem("squareCraft_u_id");
         localStorage.removeItem("squareCraft_w_id");
@@ -261,6 +266,7 @@
         console.error("❌ Error resetting modifications:", error);
     }
 }
+
 
   
  
