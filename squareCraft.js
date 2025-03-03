@@ -179,7 +179,7 @@
   
       try {
           // Step 1: Call API to delete all elements
-          const response = await fetch("http://localhost:8000/api/v1/modifications/elements", {
+          const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications/elements", {
               method: "DELETE",
               headers: {
                   "Content-Type": "application/json",
