@@ -883,7 +883,7 @@ fontfamilies();
     document.querySelectorAll(".elements-font-style").forEach(fontStyle => {
       fontStyle.addEventListener("click", async function () {
         if (!selectedElement) return;
-        let css = { "font-style": this.getAttribute("data-style") };
+        let css = { "text-decoration": this.getAttribute("data-style") };
         applyStylesToElement(selectedElement.id, css);
         await saveModifications(selectedElement.id, css);
         console.log(`:white_check_mark: Applied font style: ${this.getAttribute("data-style")} to ${selectedElement.id}`);
