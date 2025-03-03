@@ -447,13 +447,13 @@
                  <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
                     <div
                        class="squareCraft-flex squareCraft-px-2 squareCraft-items-center squareCraft-justify-between squareCraft-w-full ">
-                      <p class="squareCraft-font-bold squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer elements-font-style" data-style="bold">B</p>
+                      <a href="# class="squareCraft-font-bold squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer elements-font-style" data-style="bold">B</a>
                        <div class="squareCraft-v-line"></div>
-                      <p class="squareCraft-font-italic squareCraft-universal  squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="italic">I</p>
+                      <a href="#  class="squareCraft-font-italic squareCraft-universal  squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="italic">I</a>
                        <div class="squareCraft-v-line"></div>
-                     <p class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="underline">U</p>
+                     <a href="# class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="underline">U</a>
                        <div class="squareCraft-v-line"></div> 
-                       <p class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="dotted">abc</p>
+                       <a href="# class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="dotted">abc</a>
                        <div class="squareCraft-v-line"></div> 
                        <img id="squareCraftTextAlignJustify" data-style="line-through"
                        src="https://fatin-webefo.github.io/squareCraft-Plugin/public/T.png"
@@ -883,7 +883,7 @@ fontfamilies();
     document.querySelectorAll(".elements-font-style").forEach(fontStyle => {
       fontStyle.addEventListener("click", async function () {
         if (!selectedElement) return;
-        let css = { "font-style": this.getAttribute("data-style") };
+        let css = { "text-decoration": this.getAttribute("data-style") };
         applyStylesToElement(selectedElement.id, css);
         await saveModifications(selectedElement.id, css);
         console.log(`:white_check_mark: Applied font style: ${this.getAttribute("data-style")} to ${selectedElement.id}`);
