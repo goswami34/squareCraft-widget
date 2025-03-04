@@ -958,57 +958,6 @@ fontfamilies();
         });
     });
 
-    // document.querySelectorAll(".elements-font-style").forEach((btn) => {
-    //     btn.addEventListener("click", function () {
-    //         if (!selectedElement) {
-    //             console.warn("⚠️ No element selected to apply text decoration.");
-    //             return;
-    //         }
-    
-    //         let styleType = this.dataset.style;
-    //         let css = {};
-    //         let currentDecoration = window.getComputedStyle(selectedElement).textDecorationLine;
-    //         let decorations = currentDecoration.split(" ");
-    
-    //         if (styleType === "bold") {
-    //             let currentWeight = parseInt(window.getComputedStyle(selectedElement).fontWeight, 10);
-    //             css["font-weight"] = currentWeight >= 700 ? "400" : "700";
-    //         } 
-    //         else if (styleType === "italic") {
-    //             let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
-    //             css["font-style"] = currentStyle === "italic" ? "normal" : "italic";
-    //         } 
-    //         else if (styleType === "underline") {
-    //             if (decorations.includes("underline")) {
-    //                 decorations = decorations.filter(dec => dec !== "underline");
-    //             } else {
-    //                 decorations.push("underline");
-    //             }
-    //         } 
-    //         else if (styleType === "dotted") {
-    //             if (decorations.includes("dotted")) {
-    //                 decorations = decorations.filter(dec => dec !== "dotted");
-    //             } else {
-    //                 decorations.push("underline dotted");
-    //             }
-    //         } 
-    //         else if (styleType === "line-through") {
-    //             if (decorations.includes("line-through")) {
-    //                 decorations = decorations.filter(dec => dec !== "line-through");
-    //             } else {
-    //                 decorations.push("line-through");
-    //             }
-    //         }
-    
-    //         css["text-decoration"] = decorations.join(" ");
-    
-    //         applyStylesToElement(selectedElement.id, css);
-    //         saveModifications(selectedElement.id, css);
-    //     });
-    // });
-    
-  
-
 
       document.getElementById("squareCraftFontSize").addEventListener("input", function () {
         if (selectedElement) {
