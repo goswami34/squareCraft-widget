@@ -455,9 +455,7 @@
                        <div class="squareCraft-v-line"></div> 
                        <p  class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="dotted">abc</p>
                        <div class="squareCraft-v-line"></div> 
-                       <img id="squareCraftTextAlignJustify" data-style="line-through"
-                       src="https://fatin-webefo.github.io/squareCraft-plugin/public/T.png"
-                       class="squareCraft-cursor-pointer ele5ments-font-style"  alt="">
+                      
                       
                     </div>
                  </div>
