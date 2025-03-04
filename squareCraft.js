@@ -938,7 +938,7 @@ fontfamilies();
             } 
             else if (styleType === "italic") {
                 let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
-                css["font-style"] = currentStyle === "italic" ? "normal" : "italic";
+                css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
             } 
             else {
                 let currentDecoration = window.getComputedStyle(selectedElement).textDecorationLine;
