@@ -922,95 +922,41 @@ fontfamilies();
     
 
      // Font style (Bold, Italic, Underline, etc.)
-    //  document.querySelectorAll(".elements-font-style").forEach((btn) => {
-    //     btn.addEventListener("click", function () {
-    //         if (!selectedElement) {
-    //             console.warn("⚠️ No element selected to apply text decoration.fsdsd");
-    //             return;
-    //         }
-
-    //         let styleType = this.dataset.style;
-    //         let css = {};
-
-    //         if (styleType === "bold") {
-    //             let currentWeight = parseInt(window.getComputedStyle(selectedElement).fontWeight, 10);
-    //             css["font-weight"] = currentWeight >= 700 ? "900" : "700";
-    //         } 
-    //         else if (styleType === "italic") {
-    //             let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
-    //             css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
-    //         } 
-    //         else {
-    //             let currentDecoration = window.getComputedStyle(selectedElement).textDecorationLine;
-    //             if (styleType === "underline") {
-    //                 css["text-decoration"] = currentDecoration.includes("underline") ? "none" : "underline";
-    //             } 
-    //             else if (styleType === "dotted") {
-    //                 css["text-decoration"] = currentDecoration.includes("dotted") ? "none" : "underline dotted";
-    //             } 
-    //             else if (styleType === "line-through") {
-    //                 css["text-decoration"] = currentDecoration.includes("line-through") ? "none" : "line-through";
-    //             }
-    //         }
-
-    //         applyStylesToElement(selectedElement.id, css);
-    //         saveModifications(selectedElement.id, css);
-    //     });
-    // });
-
-
-    document.querySelectorAll(".elements-font-style").forEach((btn) => {
+     document.querySelectorAll(".elements-font-style").forEach((btn) => {
         btn.addEventListener("click", function () {
             if (!selectedElement) {
-                console.warn("⚠️ No element selected to apply text decoration.");
+                console.warn("⚠️ No element selected to apply text decoration.fsdsd");
                 return;
             }
-    
+
             let styleType = this.dataset.style;
             let css = {};
-            let currentStyle = window.getComputedStyle(selectedElement);
-    
+
             if (styleType === "bold") {
-                let currentWeight = parseInt(currentStyle.fontWeight, 10);
-                css["font-weight"] = currentWeight >= 700 ? "400" : "700"; // Toggle between normal and bold
+                let currentWeight = parseInt(window.getComputedStyle(selectedElement).fontWeight, 10);
+                css["font-weight"] = currentWeight >= 700 ? "900" : "700";
             } 
             else if (styleType === "italic") {
-                let currentItalic = currentStyle.fontStyle;
-                css["font-style"] = currentItalic === "italic" ? "normal" : "italic"; // Toggle italic
+                let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
+                css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
             } 
             else {
-                let currentDecorations = currentStyle.textDecorationLine.split(" ");
-    
+                let currentDecoration = window.getComputedStyle(selectedElement).textDecorationLine;
                 if (styleType === "underline") {
-                    if (currentDecorations.includes("underline")) {
-                        currentDecorations = currentDecorations.filter(dec => dec !== "underline");
-                    } else {
-                        currentDecorations.push("underline");
-                    }
+                    css["text-decoration"] = currentDecoration.includes("underline") ? "none" : "underline";
                 } 
                 else if (styleType === "dotted") {
-                    if (currentDecorations.includes("dotted")) {
-                        currentDecorations = currentDecorations.filter(dec => dec !== "dotted");
-                    } else {
-                        currentDecorations.push("underline dotted");
-                    }
+                    css["text-decoration"] = currentDecoration.includes("dotted") ? "none" : "underline dotted";
                 } 
                 else if (styleType === "line-through") {
-                    if (currentDecorations.includes("line-through")) {
-                        currentDecorations = currentDecorations.filter(dec => dec !== "line-through");
-                    } else {
-                        currentDecorations.push("line-through");
-                    }
+                    css["text-decoration"] = currentDecoration.includes("line-through") ? "none" : "line-through";
                 }
-    
-                css["text-decoration"] = currentDecorations.length ? currentDecorations.join(" ") : "none";
             }
-    
+
             applyStylesToElement(selectedElement.id, css);
             saveModifications(selectedElement.id, css);
         });
     });
-    
 
 
       document.getElementById("squareCraftFontSize").addEventListener("input", function () {
