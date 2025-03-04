@@ -907,7 +907,7 @@ fontfamilies();
             }
             else if (styleType === "italic") {
                 let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
-                css["font-style"] = currentStyle === "italic" ? "normal" : "italic"; // Toggle Italic
+                css["font-style"] = currentStyle === "italic" ? "italic" : "italic"; // Toggle Italic
             }
             else if (styleType === "underline") {
                 let currentDecoration = window.getComputedStyle(selectedElement).textDecorationLine;
