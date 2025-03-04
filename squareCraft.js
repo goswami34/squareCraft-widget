@@ -934,7 +934,7 @@ fontfamilies();
 
             if (styleType === "bold") {
                 let currentWeight = parseInt(window.getComputedStyle(selectedElement).fontWeight, 10);
-                css["font-weight"] = currentWeight >= 700 ? "400" : "700";
+                css["font-weight"] = currentWeight >= 700 ? "900" : "700";
             } 
             else if (styleType === "italic") {
                 let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
