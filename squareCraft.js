@@ -949,7 +949,7 @@ fontfamilies();
                     css["text-decoration"] = currentDecoration.includes("dotted") ? "none" : "underline dotted";
                 } 
                 else if (styleType === "line-through") {
-                    css["text-decoration"] = currentDecoration.includes("line-through") ? "none" : "line-through";
+                    css["text-decoration"] = currentDecoration.includes("line-through") ? "line-through" : "line-through";
                 }
             }
 
