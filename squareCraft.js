@@ -468,7 +468,9 @@
                       <p class=" squareCraft-universal  squareCraft-text-sm squareCraft-text-center squareCraft-w-full squareCraft-mx-auto squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="lowercase">ag</p>
                        <div class="squareCraft-v-line"></div>
                        <p class=" squareCraft-universal  squareCraft-text-sm squareCraft-text-center squareCraft-w-full squareCraft-mx-auto squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="capitalize">Ag</p>
-                       <div class="squareCraft-v-line"></div> 
+                       <div class="squareCraft-v-line"></div>
+                       <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-text-transform squareCraft-cursor-pointer" width="12px"
+                     src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
                     </div>
                  </div>
               </div>
