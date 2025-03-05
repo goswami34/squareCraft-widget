@@ -1161,16 +1161,48 @@ fontfamilies();
         console.log("🛑 Font styles reset for:", selectedElement.id);
     });
     
+    let selectedElement = null;
+    let selectedTag = null; // Track whether an h1-h4 or p1-p4 is selected
 
+    document.body.addEventListener("click", (event) => {
+        let clickedTag = event.target.tagName.toLowerCase();
 
-      document.getElementById("squareCraftFontSize").addEventListener("input", function () {
-        if (selectedElement) {
-            let fontSize = this.value + "px";  
-            let css = { "font-size": fontSize };
-            applyStylesToElement(selectedElement.id, css);
-            saveModifications(selectedElement.id, css);
+        // Allow only h1-h4 and p1-p4 to be selected
+        if (["h1", "h2", "h3", "h4", "p"].includes(clickedTag)) {
+            if (selectedElement) selectedElement.style.outline = "";
+            
+            selectedElement = event.target;
+            selectedTag = clickedTag; // Save selected tag
+            selectedElement.style.outline = "2px dashed #EF7C2F";
+
+            console.log(`✅ Selected Element: ${selectedElement.id} - Tag: ${selectedTag}`);
         }
     });
+
+    // Apply font-size based on selected header or paragraph
+    document.getElementById("squareCraftFontSize").addEventListener("input", function () {
+        if (selectedElement && selectedTag) {
+            let fontSize = this.value + "px";  
+            let css = { "font-size": fontSize };
+            
+            // Apply styles only to the selected tag inside the block
+            applyStylesToElement(selectedElement.id, css);
+
+            // Save modifications for the selected element
+            saveModifications(selectedElement.id, css);
+
+            console.log(`📝 Applied font-size ${fontSize} to ${selectedTag} in ${selectedElement.id}`);
+        }
+    });
+
+    //   document.getElementById("squareCraftFontSize").addEventListener("input", function () {
+    //     if (selectedElement) {
+    //         let fontSize = this.value + "px";  
+    //         let css = { "font-size": fontSize };
+    //         applyStylesToElement(selectedElement.id, css);
+    //         saveModifications(selectedElement.id, css);
+    //     }
+    // });
 
     document.getElementById("squareCraftLineHeight").addEventListener("input", function () {
         if (selectedElement) {
