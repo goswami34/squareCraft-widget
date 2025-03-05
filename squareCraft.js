@@ -900,9 +900,8 @@ async function fontfamilies() {
     fontDropdown.style.justifyContent = "space-between";
     fontDropdown.style.cursor = "pointer";
 
-    let selectedFont = "Select a Font";
-    const selectedFontText = document.createElement("p");
-    selectedFontText.textContent = selectedFont;
+    let selectedFontText = document.createElement("p");
+    selectedFontText.textContent = "Select a Font";
     selectedFontText.style.flexGrow = "1";
     selectedFontText.style.fontSize = "14px";
     selectedFontText.classList.add("squareCraft-universal");
@@ -954,15 +953,17 @@ async function fontfamilies() {
                 return;
             }
 
-            selectedFont = font.family;
+            let selectedFont = font.family;
             selectedFontText.textContent = selectedFont;
             selectedFontText.style.fontFamily = selectedFont;
             fontList.style.display = "none";
 
-            // Apply font-family in real time
+            // Apply font-family immediately
             let css = { "font-family": selectedFont };
             applyStylesToElement(selectedElement.id, css);
-            await saveModifications(selectedElement.id, css);
+
+            // Save modifications immediately without waiting
+            saveModifications(selectedElement.id, css);
 
             console.log("🎨 Applied font:", selectedFont, "to", selectedElement.id);
 
@@ -1005,8 +1006,6 @@ async function fontfamilies() {
 }
 
 fontfamilies();
-
-
 
 
   function attachEventListeners() {
