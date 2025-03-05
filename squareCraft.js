@@ -52,25 +52,25 @@
     let appliedStyles = new Set();
 
 
-    let originalStyles = {}; // Store original styles
+    // let originalStyles = {}; // Store original styles
 
-    function storeOriginalStyles(elementId) {
-        if (!elementId || originalStyles[elementId]) return;
+    // function storeOriginalStyles(elementId) {
+    //     if (!elementId || originalStyles[elementId]) return;
 
-        let element = document.getElementById(elementId);
-        if (!element) return;
+    //     let element = document.getElementById(elementId);
+    //     if (!element) return;
 
-        // Save the original computed styles
-        originalStyles[elementId] = {
-            "font-size": window.getComputedStyle(element).fontSize,
-            "font-weight": window.getComputedStyle(element).fontWeight,
-            "font-style": window.getComputedStyle(element).fontStyle,
-            "text-decoration": window.getComputedStyle(element).textDecoration,
-            "text-transform": window.getComputedStyle(element).textTransform,
-        };
+    //     // Save the original computed styles
+    //     originalStyles[elementId] = {
+    //         "font-size": window.getComputedStyle(element).fontSize,
+    //         "font-weight": window.getComputedStyle(element).fontWeight,
+    //         "font-style": window.getComputedStyle(element).fontStyle,
+    //         "text-decoration": window.getComputedStyle(element).textDecoration,
+    //         "text-transform": window.getComputedStyle(element).textTransform,
+    //     };
 
-        console.log("🔵 Original styles stored for:", elementId, originalStyles[elementId]);
-    }
+    //     console.log("🔵 Original styles stored for:", elementId, originalStyles[elementId]);
+    // }
 
   
     function getPageId() {
@@ -81,60 +81,60 @@
     let pageId = getPageId();
     if (!pageId) console.warn(":warning: No page ID found. Plugin may not work correctly.");
   
-    // function applyStylesToElement(elementId, css) {
-    //   if (!elementId || !css) return;
+    function applyStylesToElement(elementId, css) {
+      if (!elementId || !css) return;
   
-    //   let styleTag = document.getElementById(`style-${elementId}`);
-    //   if (styleTag) {
-    //     styleTag.remove();  // Remove the old styles before adding new ones
-    //   }
+      let styleTag = document.getElementById(`style-${elementId}`);
+      if (styleTag) {
+        styleTag.remove();  // Remove the old styles before adding new ones
+      }
   
-    //   styleTag = document.createElement("style");
-    //   styleTag.id = `style-${elementId}`;
-    //   document.head.appendChild(styleTag);
+      styleTag = document.createElement("style");
+      styleTag.id = `style-${elementId}`;
+      document.head.appendChild(styleTag);
   
-    //   let cssText = `#${elementId}, #${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} p, #${elementId} span { `;
+      let cssText = `#${elementId}, #${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} p, #${elementId} span { `;
 
-    //   Object.keys(css).forEach(prop => {
-    //       cssText += `${prop}: ${css[prop]} !important; `;
-    //   });
-    //   cssText += "}";
+      Object.keys(css).forEach(prop => {
+          cssText += `${prop}: ${css[prop]} !important; `;
+      });
+      cssText += "}";
       
   
-    //   if (css["border-radius"]) {
-    //     cssText += `#${elementId} { overflow: hidden !important; }`;
-    //   }
+      if (css["border-radius"]) {
+        cssText += `#${elementId} { overflow: hidden !important; }`;
+      }
   
-    //   styleTag.innerHTML = cssText;
-    //   appliedStyles.add(elementId);
-    //   console.log(`:white_check_mark: Styles Persisted for ${elementId}`);
-    // }
-
-    function applyStylesToElement(elementId, css) {
-        if (!elementId || !css) return;
-    
-        // Store original styles before applying modifications
-        storeOriginalStyles(elementId);
-    
-        let styleTag = document.getElementById(`style-${elementId}`);
-        if (styleTag) {
-            styleTag.remove();  // Remove previous styles
-        }
-    
-        styleTag = document.createElement("style");
-        styleTag.id = `style-${elementId}`;
-        document.head.appendChild(styleTag);
-    
-        let cssText = `#${elementId} { `;
-    
-        Object.keys(css).forEach(prop => {
-            cssText += `${prop}: ${css[prop]} !important; `;
-        });
-        cssText += "}";
-    
-        styleTag.innerHTML = cssText;
-        console.log(`✅ Styles Applied to ${elementId}:`, css);
+      styleTag.innerHTML = cssText;
+      appliedStyles.add(elementId);
+      console.log(`:white_check_mark: Styles Persisted for ${elementId}`);
     }
+
+    // function applyStylesToElement(elementId, css) {
+    //     if (!elementId || !css) return;
+    
+    //     // Store original styles before applying modifications
+    //     storeOriginalStyles(elementId);
+    
+    //     let styleTag = document.getElementById(`style-${elementId}`);
+    //     if (styleTag) {
+    //         styleTag.remove();  // Remove previous styles
+    //     }
+    
+    //     styleTag = document.createElement("style");
+    //     styleTag.id = `style-${elementId}`;
+    //     document.head.appendChild(styleTag);
+    
+    //     let cssText = `#${elementId} { `;
+    
+    //     Object.keys(css).forEach(prop => {
+    //         cssText += `${prop}: ${css[prop]} !important; `;
+    //     });
+    //     cssText += "}";
+    
+    //     styleTag.innerHTML = cssText;
+    //     console.log(`✅ Styles Applied to ${elementId}:`, css);
+    // }
     
 
     
@@ -1063,35 +1063,34 @@ fontfamilies();
     
         console.log("🛑 Text transform removed for:", selectedElement.id);
     });
-
-
-    document.getElementById("squareCraftReset").addEventListener("click", function () {
-        if (!selectedElement) return;
     
-        let elementId = selectedElement.id;
+    // document.getElementById("squareCraftReset").addEventListener("click", function () {
+    //     if (!selectedElement) return;
+    
+    //     let elementId = selectedElement.id;
         
-        if (!originalStyles[elementId]) {
-            console.warn("⚠️ No original styles found for", elementId);
-            return;
-        }
+    //     if (!originalStyles[elementId]) {
+    //         console.warn("⚠️ No original styles found for", elementId);
+    //         return;
+    //     }
     
-        let css = originalStyles[elementId]; // Restore original styles
+    //     let css = originalStyles[elementId]; // Restore original styles
     
-        // Apply original styles
-        applyStylesToElement(elementId, css);
+    //     // Apply original styles
+    //     applyStylesToElement(elementId, css);
     
-        console.log("🔄 Styles reset to original for:", elementId, css);
-    });
+    //     console.log("🔄 Styles reset to original for:", elementId, css);
+    // });
     
     
 
      // Attach event listener to the reset button
-//     document.getElementById("squareCraftReset").addEventListener("click", async () => {
-//       const confirmReset = confirm("Are you sure you want to reset all modifications?");
-//       if (confirmReset) {
-//           await resetModifications();
-//       }
-//   });
+    document.getElementById("squareCraftReset").addEventListener("click", async () => {
+      const confirmReset = confirm("Are you sure you want to reset all modifications?");
+      if (confirmReset) {
+          await resetModifications();
+      }
+  });
 
   //   document.getElementById("squareCraftFontSizeInput").addEventListener("input", function () {
   //     if (selectedElement) {
