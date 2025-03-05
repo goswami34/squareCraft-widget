@@ -469,8 +469,6 @@
                        <div class="squareCraft-v-line"></div>
                        <p class=" squareCraft-universal  squareCraft-text-sm squareCraft-text-center squareCraft-w-full squareCraft-mx-auto">Ag</p>
                        <div class="squareCraft-v-line"></div> 
-                       <p class=" squareCraft-universal  squareCraft-text-sm squareCraft-text-center squareCraft-w-full squareCraft-mx-auto">AG</p>
-                       <div class="squareCraft-v-line"></div> 
                     </div>
                  </div>
               </div>
