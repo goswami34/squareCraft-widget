@@ -487,7 +487,7 @@
                 </button>
                 
                  <button id="squareCraftReset" style="width: 100%; padding: 10px; background: #9f988e; color: white;">
-                    Reset
+                    cancle
                 </button>
               </div>
             
