@@ -471,7 +471,7 @@
                     <div class="squareCraft-Letter-spacing-container squareCraft-flex squareCraft-justify-between squareCraft-items-center squareCraft-flex squareCraft-items-center squareCraft-border 
                        squareCraft-border-solid squareCraft-border-3d3d3d  squareCraft-rounded-6px 
                        ">
-                       <input type="text" id="squareCraftLineHeight" value="15px" class="squareCraft-Letter-spacing-input squareCraft-font-light squareCraft-text-sm squareCraft-text-color-white 
+                       <input type="text" id="squareCraftLineHeight" value="15" class="squareCraft-Letter-spacing-input squareCraft-font-light squareCraft-text-sm squareCraft-text-color-white 
                           squareCraft-bg-transparent squareCraft-w-full  squareCraft-py-1px squareCraft-font-light">
                        <div class="">
                           <img id="squareCraftLetterSpacingDropdown"
@@ -895,7 +895,7 @@ fontfamilies();
         "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
         "font-aligment-icon": document.document.querySelectorAll(".alignment-icon").value,
         "font-size": document.getElementById("squareCraftFontSize").value + "px",
-        "line-height": document.getElementById("squareCraftLineHeight").value,
+        "line-height": document.getElementById("squareCraftLineHeight").value + "px",
         // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
         // "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
         "text-decoration": textDecorationValue,
