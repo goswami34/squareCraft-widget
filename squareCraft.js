@@ -373,6 +373,8 @@
                  </div>
               </div>
               <div class="squareCraft-h-1px  squareCraft-bg-3f3f3f"></div>
+
+
               <div class="squareCraft-mt-2">
                  <div
                     class="squareCraft-flex squareCraft-poppins squareCraft-px-2  squareCraft-items-center squareCraft-justify-between squareCraft-gap-2">
@@ -381,7 +383,7 @@
                        Normal
                     </div>
                     <div
-                       class="squareCraft-cursor-pointer squareCraft-bg-3f3f3f squareCraft-w-full squareCraft-text-color-white squareCraft-font-light squareCraft-flex squareCraft-text-sm squareCraft-py-1px squareCraft-rounded-6px squareCraft-items-center squareCraft-justify-center">
+                       class="squareCraft-cursor-pointer squareCraft-bg-3f3f3f squareCraft-w-full squareCraft-text-color-white squareCraft-font-light squareCraft-flex squareCraft-text-sm squareCraft-hover squareCraft-py-1px squareCraft-rounded-6px squareCraft-items-center squareCraft-justify-center">
                        Hover
                     </div>
                  </div>
@@ -389,6 +391,8 @@
                     <div class="squareCraft-h-1px  squareCraft-mt-2 squareCraft-bg-3f3f3f"></div>
                  </div>
               </div>
+
+
               <div class=" squareCraft-mt-2 squareCraft-px-2 squareCraft-flex squareCraft-justify-between">
                  <p class="squareCraft-text-sm squareCraft-universal squareCraft-poppins">Text</p>
                  <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/eye.svg" width="12px" />
@@ -746,6 +750,43 @@
           return [];
       }
   }
+
+//   hover code start here
+const hoverButton = document.querySelector(".squareCraft-cursor-pointer.squareCraft-bg-3f3f3f.squareCraft-hover");
+hoverButton.addEventListener("click", function () {
+    if (!selectedElement) {
+        console.warn("⚠️ No element selected to apply hover effect.");
+        return;
+    }
+
+    const elementId = selectedElement.id;
+    if (!elementId) return;
+
+    console.log("🎨 Hover mode activated for:", elementId);
+
+    // Define the hover effect styles
+    const hoverStyles = `
+        #${elementId}:hover {
+            background-color: #ff5733 !important; /* Change background color on hover */
+            transition: background-color 0.3s ease-in-out;
+        }
+    `;
+
+    // Remove old hover styles if any
+    let existingHoverStyle = document.getElementById(`hover-style-${elementId}`);
+    if (existingHoverStyle) existingHoverStyle.remove();
+
+    // Create a new style element for hover effect
+    const styleTag = document.createElement("style");
+    styleTag.id = `hover-style-${elementId}`;
+    styleTag.innerHTML = hoverStyles;
+    document.head.appendChild(styleTag);
+
+    console.log("✨ Hover effect applied to:", elementId);
+});
+
+
+// hover code end here
   
   
   async function fontfamilies() {
