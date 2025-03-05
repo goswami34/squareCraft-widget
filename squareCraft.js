@@ -454,6 +454,9 @@
                      <p class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="underline">U</p>
                        <div class="squareCraft-v-line"></div> 
                        <p  class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="dotted">abc</p>
+                        <div class="squareCraft-v-line"></div> 
+                       <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-font-style squareCraft-cursor-pointer" width="12px"
+                     src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
                     </div>
                  </div>
               </div>
@@ -951,6 +954,28 @@ fontfamilies();
             saveModifications(selectedElement.id, css);
         });
     });
+
+    const fontStyleUndoButton = document.querySelector(".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-font-style.squareCraft-cursor-pointer");
+
+    fontStyleUndoButton.addEventListener("click", async function () {
+        if (!selectedElement) return;
+    
+        // Reset font styles
+        let css = {
+            "font-weight": "400", // Reset to Regular (default)
+            "font-style": "normal", // Reset to normal (default)
+            "text-decoration": "none" // Remove underline, dotted, or line-through
+        };
+    
+        // Apply styles to the selected element
+        applyStylesToElement(selectedElement.id, css);
+    
+        // Save the reset modifications
+        await saveModifications(selectedElement.id, css);
+    
+        console.log("🛑 Font styles reset for:", selectedElement.id);
+    });
+    
 
 
       document.getElementById("squareCraftFontSize").addEventListener("input", function () {
