@@ -895,7 +895,7 @@ fontfamilies();
         "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
         "font-aligment-icon": document.document.querySelectorAll(".alignment-icon").value,
         "font-size": document.getElementById("squareCraftFontSize").value + "px",
-        "line-height": document.getElementById("squareCraftLineHeight").value + "px",
+        "line-height": document.getElementById("squareCraftLineHeight").value,
         // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
         // "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
         "text-decoration": textDecorationValue,
