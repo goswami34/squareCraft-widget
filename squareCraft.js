@@ -471,9 +471,6 @@
                        <div class="squareCraft-v-line"></div> 
                        <p class=" squareCraft-universal  squareCraft-text-sm squareCraft-text-center squareCraft-w-full squareCraft-mx-auto">AG</p>
                        <div class="squareCraft-v-line"></div> 
-                       <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5" width="12px"
-                       src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
-                      
                     </div>
                  </div>
               </div>
