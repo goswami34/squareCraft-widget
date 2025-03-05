@@ -460,14 +460,14 @@
 
 
               <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2">
-                 <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
+                 <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center">
                     <div
                        class="squareCraft-flex squareCraft-poppins  squareCraft-items-center squareCraft-justify-between squareCraft-w-full ">
-                      <p class=" squareCraft-mx-2 squareCraft-w-full squareCraft-text-center squareCraft-universal squareCraft-text-sm ">AG</p>
+                      <p class=" squareCraft-mx-2 squareCraft-w-full squareCraft-text-center squareCraft-universal squareCraft-text-sm squsareCraft-text-transform" data-transform="uppercase">AG</p>
                        <div class="squareCraft-v-line"></div>
-                      <p class=" squareCraft-universal  squareCraft-text-sm squareCraft-text-center squareCraft-w-full squareCraft-mx-auto">ag</p>
+                      <p class=" squareCraft-universal  squareCraft-text-sm squareCraft-text-center squareCraft-w-full squareCraft-mx-auto squsareCraft-text-transform" data-transform="lowercase">ag</p>
                        <div class="squareCraft-v-line"></div>
-                       <p class=" squareCraft-universal  squareCraft-text-sm squareCraft-text-center squareCraft-w-full squareCraft-mx-auto">Ag</p>
+                       <p class=" squareCraft-universal  squareCraft-text-sm squareCraft-text-center squareCraft-w-full squareCraft-mx-auto squsareCraft-text-transform" data-transform="capitalize">Ag</p>
                        <div class="squareCraft-v-line"></div> 
                     </div>
                  </div>
@@ -845,6 +845,7 @@ fontfamilies();
         // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
         // "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
         "text-decoration": textDecorationValue,
+        "text-transform": document.querySelectorAll(".squsareCraft-text-transform").value,
 
       };
 
@@ -957,6 +958,16 @@ fontfamilies();
             saveModifications(selectedElement.id, css);
         }
     });
+
+    document.querySelectorAll(".squsareCraft-text-transform").forEach(textTransform => {
+        textTransform.addEventListener("click", async function () {
+          if (!selectedElement) return;
+          const transform = this.getAttribute("data-transform");
+          let css = { "text-transform": transform };
+          applyStylesToElement(selectedElement.id, css);
+          await saveModifications(selectedElement.id, css);
+        });
+      });
 
      // Attach event listener to the reset button
     document.getElementById("squareCraftReset").addEventListener("click", async () => {
