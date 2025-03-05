@@ -1080,6 +1080,44 @@ fontfamilies();
     
         console.log("🛑 Text transform removed for:", selectedElement.id);
     });
+
+
+    //   hover code start here
+const hoverButton = document.querySelector(".squareCraft-cursor-pointer.squareCraft-bg-3f3f3f.squareCraft-hover");
+hoverButton.addEventListener("click", function () {
+    if (!selectedElement) {
+        console.warn("⚠️ No element selected to apply hover effect.");
+        return;
+    }
+
+    const elementId = selectedElement.id;
+    if (!elementId) return;
+
+    console.log("🎨 Hover mode activated for:", elementId);
+
+    // Define the hover effect styles
+    const hoverStyles = `
+        #${elementId}:hover {
+            background-color: #ff5733 !important; /* Change background color on hover */
+            transition: background-color 0.3s ease-in-out;
+        }
+    `;
+
+    // Remove old hover styles if any
+    let existingHoverStyle = document.getElementById(`hover-style-${elementId}`);
+    if (existingHoverStyle) existingHoverStyle.remove();
+
+    // Create a new style element for hover effect
+    const styleTag = document.createElement("style");
+    styleTag.id = `hover-style-${elementId}`;
+    styleTag.innerHTML = hoverStyles;
+    document.head.appendChild(styleTag);
+
+    console.log("✨ Hover effect applied to:", elementId);
+});
+
+
+// hover code end here
     
     // document.getElementById("squareCraftReset").addEventListener("click", function () {
     //     if (!selectedElement) return;
