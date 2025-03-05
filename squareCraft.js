@@ -848,6 +848,7 @@ fontfamilies();
         // "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
         "text-decoration": textDecorationValue,
         "text-transform": document.querySelectorAll(".squsareCraft-text-transform").value,
+        
 
       };
 
@@ -970,6 +971,25 @@ fontfamilies();
           await saveModifications(selectedElement.id, css);
         });
       });
+
+      const undoButton = document.querySelector(".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer");
+
+
+      undoButton.addEventListener("click", async function () {
+        if (!selectedElement) return;
+    
+        // Remove text-transform property by setting it to 'none'
+        let css = { "text-transform": "none" };
+        
+        // Apply styles to the element
+        applyStylesToElement(selectedElement.id, css);
+        
+        // Remove saved modifications for text-transform
+        await saveModifications(selectedElement.id, css);
+    
+        console.log("🛑 Text transform removed for:", selectedElement.id);
+    });
+    
 
      // Attach event listener to the reset button
     document.getElementById("squareCraftReset").addEventListener("click", async () => {
