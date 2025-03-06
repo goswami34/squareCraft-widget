@@ -135,45 +135,104 @@
     
     
   
-    async function fetchModifications(retries = 3) {
-      if (!pageId) return;
+//     async function fetchModifications(retries = 3) {
+//       if (!pageId) return;
   
-      try {
-          const response = await fetch(
-              `https://webefo-backend.vercel.app/api/v1/get-modifications?userId=${userId}`,
-              {
-                  method: "GET",
-                  headers: {
-                      "Content-Type": "application/json",
-                      "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-                  },
-              }
-          );
+//       try {
+//           const response = await fetch(
+//               `https://webefo-backend.vercel.app/api/v1/get-modifications?userId=${userId}`,
+//               {
+//                   method: "GET",
+//                   headers: {
+//                       "Content-Type": "application/json",
+//                       "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+//                   },
+//               }
+//           );
   
-          const data = await response.json();
+//           const data = await response.json();
   
-          console.log("📥 Get method", data);
-          if (!data.modifications || data.modifications.length === 0) {
-              console.warn("⚠️ No styles found for this page.");
-              return;
-          }
+//           console.log("📥 Get method", data);
+//           if (!data.modifications || data.modifications.length === 0) {
+//               console.warn("⚠️ No styles found for this page.");
+//               return;
+//           }
   
-          data.modifications.forEach(({ pageId: storedPageId, elements }) => {
-              if (storedPageId === pageId) {
-                  elements.forEach(({ elementId, css }) => {
-                      applyStylesToElement(elementId, css);
-                  });
-              }
-          });
+//           data.modifications.forEach(({ pageId: storedPageId, elements }) => {
+//               if (storedPageId === pageId) {
+//                   elements.forEach(({ elementId, css }) => {
+//                       applyStylesToElement(elementId, css);
+//                   });
+//               }
+//           });
   
-      } catch (error) {
-          console.error("❌ Error fetching modifications:", error);
-          if (retries > 0) {
-              console.log(`🔄 Retrying fetch... (${retries} left)`);
-              setTimeout(() => fetchModifications(retries - 1), 2000);
-          }
-      }
-  }
+//       } catch (error) {
+//           console.error("❌ Error fetching modifications:", error);
+//           if (retries > 0) {
+//               console.log(`🔄 Retrying fetch... (${retries} left)`);
+//               setTimeout(() => fetchModifications(retries - 1), 2000);
+//           }
+//       }
+//   }
+
+async function fetchModifications(retries = 3) {
+    if (!pageId) return;
+
+    try {
+        const response = await fetch(
+            `https://webefo-backend.vercel.app/api/v1/get-modifications?userId=${userId}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+                },
+            }
+        );
+
+        const data = await response.json();
+
+        console.log("📥 Retrieved Data from Database:", data);
+
+        if (!data.modifications || data.modifications.length === 0) {
+            console.warn("⚠️ No saved styles found for this page.");
+            return;
+        }
+
+        // Loop through retrieved styles and apply them
+        data.modifications.forEach(({ pageId: storedPageId, elements }) => {
+            if (storedPageId === pageId) {
+                elements.forEach(({ elementId, css }) => {
+                    let element = document.getElementById(elementId);
+
+                    if (element) {
+                        console.log(`🎨 Applying styles to ${elementId}:`, css);
+                        applyStylesToElement(elementId, css); // Apply retrieved styles
+                    } else {
+                        console.warn(`⚠️ Element ${elementId} not found in DOM.`);
+                    }
+                });
+            }
+        });
+
+    } catch (error) {
+        console.error("❌ Error Fetching Modifications:", error);
+        if (retries > 0) {
+            console.log(`🔄 Retrying fetch... (${retries} attempts left)`);
+            setTimeout(() => fetchModifications(retries - 1), 2000);
+        }
+    }
+}
+
+
+  window.addEventListener("load", async () => {
+    createWidget();  // Ensure the widget is created
+    setTimeout(makeWidgetDraggable, 500);
+    setTimeout(attachEventListeners, 1500);
+    
+    await fetchModifications(); // ✅ Fetch and apply modifications
+});
+
   
   
     async function saveModifications(elementId, css) {
@@ -1215,6 +1274,7 @@ fontfamilies();
             let span = document.createElement("span");
             span.style.fontSize = fontSize;
             span.innerHTML = selectedTextRange.toString(); // Wrap the selected text
+            span.classList.add("squareCraft-font-modified");
     
             selectedTextRange.deleteContents(); // Remove original text
             selectedTextRange.insertNode(span); // Insert wrapped text with new font size
