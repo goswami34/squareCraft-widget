@@ -81,34 +81,34 @@
     let pageId = getPageId();
     if (!pageId) console.warn(":warning: No page ID found. Plugin may not work correctly.");
   
-    function applyStylesToElement(elementId, css) {
-      if (!elementId || !css) return;
+    // function applyStylesToElement(elementId, css) {
+    //   if (!elementId || !css) return;
   
-      let styleTag = document.getElementById(`style-${elementId}`);
-      if (styleTag) {
-        styleTag.remove();  // Remove the old styles before adding new ones
-      }
+    //   let styleTag = document.getElementById(`style-${elementId}`);
+    //   if (styleTag) {
+    //     styleTag.remove();  // Remove the old styles before adding new ones
+    //   }
   
-      styleTag = document.createElement("style");
-      styleTag.id = `style-${elementId}`;
-      document.head.appendChild(styleTag);
+    //   styleTag = document.createElement("style");
+    //   styleTag.id = `style-${elementId}`;
+    //   document.head.appendChild(styleTag);
   
-      let cssText = `#${elementId}, #${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} p, #${elementId} span { `;
+    //   let cssText = `#${elementId}, #${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} p, #${elementId} span { `;
 
-      Object.keys(css).forEach(prop => {
-          cssText += `${prop}: ${css[prop]} !important; `;
-      });
-      cssText += "}";
+    //   Object.keys(css).forEach(prop => {
+    //       cssText += `${prop}: ${css[prop]} !important; `;
+    //   });
+    //   cssText += "}";
       
   
-      if (css["border-radius"]) {
-        cssText += `#${elementId} { overflow: hidden !important; }`;
-      }
+    //   if (css["border-radius"]) {
+    //     cssText += `#${elementId} { overflow: hidden !important; }`;
+    //   }
   
-      styleTag.innerHTML = cssText;
-      appliedStyles.add(elementId);
-      console.log(`:white_check_mark: Styles Persisted for ${elementId}`);
-    }
+    //   styleTag.innerHTML = cssText;
+    //   appliedStyles.add(elementId);
+    //   console.log(`:white_check_mark: Styles Persisted for ${elementId}`);
+    // }
 
     // function applyStylesToElement(elementId, css) {
     //     if (!elementId || !css) return;
@@ -137,6 +137,27 @@
     // }
     
 
+    function applyStylesToElement(elementId, css) {
+        if (!elementId || !css) return;
+    
+        let styleTag = document.getElementById(`style-${elementId}`);
+        if (styleTag) {
+            styleTag.remove(); // Remove old styles before adding new ones
+        }
+    
+        styleTag = document.createElement("style");
+        styleTag.id = `style-${elementId}`;
+        document.head.appendChild(styleTag);
+    
+        let cssText = `#${elementId} { `;
+        Object.keys(css).forEach(prop => {
+            cssText += `${prop}: ${css[prop]} !important; `;
+        });
+        cssText += "}";
+    
+        styleTag.innerHTML = cssText;
+        console.log(`✅ Styles Persisted for ${elementId}`);
+    }
     
     
   
@@ -1161,39 +1182,37 @@ fontfamilies();
         console.log("🛑 Font styles reset for:", selectedElement.id);
     });
     
-    let selectedElement = null;
-    let selectedTag = null; // Track whether an h1-h4 or p1-p4 is selected
+    let selectedElement = null; // Track the selected element
 
     document.body.addEventListener("click", (event) => {
-        let clickedTag = event.target.tagName.toLowerCase();
+        let clickedElement = event.target;
+        
+        // Check if the clicked element is h1-h4 or p inside a block
+        if (clickedElement.matches("h1, h2, h3, h4, p")) {
+            if (selectedElement) selectedElement.style.outline = ""; // Remove outline from the previous selection
 
-        // Allow only h1-h4 and p1-p4 to be selected
-        if (["h1", "h2", "h3", "h4", "p"].includes(clickedTag)) {
-            if (selectedElement) selectedElement.style.outline = "";
+            selectedElement = clickedElement;
+            selectedElement.style.outline = "2px dashed #EF7C2F"; // Highlight the selected element
             
-            selectedElement = event.target;
-            selectedTag = clickedTag; // Save selected tag
-            selectedElement.style.outline = "2px dashed #EF7C2F";
-
-            console.log(`✅ Selected Element: ${selectedElement.id} - Tag: ${selectedTag}`);
+            console.log(`✅ Selected Element: ${selectedElement.tagName} inside ${selectedElement.parentElement.id}`);
         }
     });
 
-    // Apply font-size based on selected header or paragraph
+
     document.getElementById("squareCraftFontSize").addEventListener("input", function () {
-        if (selectedElement && selectedTag) {
-            let fontSize = this.value + "px";  
+        if (selectedElement) {
+            let fontSize = this.value + "px";
+            selectedElement.style.fontSize = fontSize;  // Apply the font-size change directly
             let css = { "font-size": fontSize };
-            
-            // Apply styles only to the selected tag inside the block
+    
+            // Apply styles to persist across reloads
             applyStylesToElement(selectedElement.id, css);
-
-            // Save modifications for the selected element
             saveModifications(selectedElement.id, css);
-
-            console.log(`📝 Applied font-size ${fontSize} to ${selectedTag} in ${selectedElement.id}`);
+            
+            console.log(`📝 Applied font-size ${fontSize} to ${selectedElement.tagName}`);
         }
     });
+    
 
     //   document.getElementById("squareCraftFontSize").addEventListener("input", function () {
     //     if (selectedElement) {
