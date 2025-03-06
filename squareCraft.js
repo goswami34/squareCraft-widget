@@ -1182,36 +1182,47 @@ fontfamilies();
         console.log("🛑 Font styles reset for:", selectedElement.id);
     });
     
-    let selectedElement = null; // Track the selected element
+    // let selectedElement = null; // Track the selected element
 
-    document.body.addEventListener("click", (event) => {
-        let clickedElement = event.target;
+    // document.body.addEventListener("click", (event) => {
+    //     let clickedElement = event.target;
         
-        // Check if the clicked element is h1-h4 or p inside a block
-        if (clickedElement.matches("h1, h2, h3, h4, p")) {
-            if (selectedElement) selectedElement.style.outline = ""; // Remove outline from the previous selection
+    //     // Check if the clicked element is h1-h4 or p inside a block
+    //     if (clickedElement.matches("h1, h2, h3, h4, p")) {
+    //         if (selectedElement) selectedElement.style.outline = ""; // Remove outline from the previous selection
 
-            selectedElement = clickedElement;
-            selectedElement.style.outline = "2px dashed #EF7C2F"; // Highlight the selected element
+    //         selectedElement = clickedElement;
+    //         selectedElement.style.outline = "2px dashed #EF7C2F"; // Highlight the selected element
             
-            console.log(`✅ Selected Element: ${selectedElement.tagName} inside ${selectedElement.parentElement.id}`);
+    //         console.log(`✅ Selected Element: ${selectedElement.tagName} inside ${selectedElement.parentElement.id}`);
+    //     }
+    // });
+
+    let selectedTextRange = null; // Store selected range
+
+    document.addEventListener("mouseup", function () {
+        let selection = window.getSelection();
+        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+            selectedTextRange = selection.getRangeAt(0); // Store selection range
+            console.log("✅ Text Selected:", selection.toString());
         }
     });
 
 
-    document.getElementById("squareCraftFontSize").addEventListener("input", function () {
-        if (selectedElement) {
-            let fontSize = this.value + "px";
-            selectedElement.style.fontSize = fontSize;  // Apply the font-size change directly
-            let css = { "font-size": fontSize };
+
+    // document.getElementById("squareCraftFontSize").addEventListener("input", function () {
+    //     if (selectedElement) {
+    //         let fontSize = this.value + "px";
+    //         selectedElement.style.fontSize = fontSize;  // Apply the font-size change directly
+    //         let css = { "font-size": fontSize };
     
-            // Apply styles to persist across reloads
-            applyStylesToElement(selectedElement.id, css);
-            saveModifications(selectedElement.id, css);
+    //         // Apply styles to persist across reloads
+    //         applyStylesToElement(selectedElement.id, css);
+    //         saveModifications(selectedElement.id, css);
             
-            console.log(`📝 Applied font-size ${fontSize} to ${selectedElement.tagName}`);
-        }
-    });
+    //         console.log(`📝 Applied font-size ${fontSize} to ${selectedElement.tagName}`);
+    //     }
+    // });
     
 
     //   document.getElementById("squareCraftFontSize").addEventListener("input", function () {
@@ -1223,6 +1234,21 @@ fontfamilies();
     //     }
     // });
 
+    document.getElementById("squareCraftFontSize").addEventListener("input", function () {
+        if (selectedTextRange) {
+            let fontSize = this.value + "px";
+    
+            let span = document.createElement("span");
+            span.style.fontSize = fontSize;
+            span.innerHTML = selectedTextRange.toString(); // Wrap the selected text
+    
+            selectedTextRange.deleteContents(); // Remove original text
+            selectedTextRange.insertNode(span); // Insert wrapped text with new font size
+    
+            console.log(`📝 Applied font-size ${fontSize} to selected text.`);
+        }
+    });
+    
     document.getElementById("squareCraftLineHeight").addEventListener("input", function () {
         if (selectedElement) {
             let lineHeight = this.value + "px";  
