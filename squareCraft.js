@@ -1237,42 +1237,42 @@ fontfamilies();
 
 
 
-    // document.getElementById("squareCraftFontSize").addEventListener("input", function () {
-    //     if (selectedTextRange) {
-    //         let fontSize = this.value + "px";
-    
-    //         let span = document.createElement("span");
-    //         span.style.fontSize = fontSize;
-    //         span.innerHTML = selectedTextRange.toString(); // Wrap the selected text
-    //         span.classList.add("squareCraft-font-modified");
-    
-    //         selectedTextRange.deleteContents(); // Remove original text
-    //         selectedTextRange.insertNode(span); // Insert wrapped text with new font size
-    
-    //         console.log(`📝 Applied font-size ${fontSize} to selected text.`);
-    //         // Ensure span has a unique ID for saving
-    //         if (!span.id) {
-    //             span.id = `squareCraft-mod-${Date.now()}`; // Assign unique ID
-    //         }
-
-    //         // **Save the modification to database**
-    //         let css = { "font-size": fontSize };
-    //         applyStylesToElement(span.id, css); // Apply styles persistently
-    //         saveModifications(span.id, css); // Save changes
-    //         }
-    // });
     document.getElementById("squareCraftFontSize").addEventListener("input", function () {
-        if (!selectedElement) return;
+        if (selectedTextRange) {
+            let fontSize = this.value + "px";
     
-        let fontSize = this.value + "px";
-        selectedElement.style.fontSize = fontSize;  // Apply font-size directly to element
+            let span = document.createElement("span");
+            selectedElement.span.style.fontSize = fontSize;
+            selectedElement.span.innerHTML = selectedTextRange.toString(); // Wrap the selected text
+            selectedElement.span.classList.add("squareCraft-font-modified");
     
-        let css = { "font-size": fontSize };
-        applyStylesToElement(selectedElement.id, css);
-        saveModifications(selectedElement.id, css);
+            selectedTextRange.deleteContents(); // Remove original text
+            selectedTextRange.insertNode(span); // Insert wrapped text with new font size
     
-        console.log(`📝 Applied font-size ${fontSize} to ${selectedElement.tagName}`);
+            console.log(`📝 Applied font-size ${fontSize} to selected text.`);
+            // Ensure span has a unique ID for saving
+            if (!span.id) {
+                span.id = `squareCraft-mod-${Date.now()}`; // Assign unique ID
+            }
+
+            // **Save the modification to database**
+            let css = { "font-size": fontSize };
+            applyStylesToElement(selectedElement.span.id, css); // Apply styles persistently
+            saveModifications(selectedElement.span.id, css); // Save changes
+            }
     });
+    // document.getElementById("squareCraftFontSize").addEventListener("input", function () {
+    //     if (!selectedElement) return;
+    
+    //     let fontSize = this.value + "px";
+    //     selectedElement.style.fontSize = fontSize;  
+    
+    //     let css = { "font-size": fontSize };
+    //     applyStylesToElement(selectedElement.id, css);
+    //     saveModifications(selectedElement.id, css);
+    
+    //     console.log(`📝 Applied font-size ${fontSize} to ${selectedElement.tagName}`);
+    // });
     
 
     
