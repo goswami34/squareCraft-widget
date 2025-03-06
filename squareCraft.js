@@ -1242,9 +1242,9 @@ fontfamilies();
             let fontSize = this.value + "px";
     
             let span = document.createElement("span");
-            selectedElement.span.style.fontSize = fontSize;
-            selectedElement.span.innerHTML = selectedTextRange.toString(); // Wrap the selected text
-            selectedElement.span.classList.add("squareCraft-font-modified");
+            span.style.fontSize = fontSize;
+            span.innerHTML = selectedTextRange.toString(); // Wrap the selected text
+            span.classList.add("squareCraft-font-modified");
     
             selectedTextRange.deleteContents(); // Remove original text
             selectedTextRange.insertNode(span); // Insert wrapped text with new font size
@@ -1257,8 +1257,8 @@ fontfamilies();
 
             // **Save the modification to database**
             let css = { "font-size": fontSize };
-            applyStylesToElement(selectedElement.span.id, css); // Apply styles persistently
-            saveModifications(selectedElement.span.id, css); // Save changes
+            applyStylesToElement(span.id, css); // Apply styles persistently
+            saveModifications(span.id, css); // Save changes
             }
     });
     // document.getElementById("squareCraftFontSize").addEventListener("input", function () {
