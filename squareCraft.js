@@ -1229,8 +1229,6 @@ fontfamilies();
             let css = { "font-size": fontSize };
             applyStylesToElement(span.id, css); // Apply styles persistently
             saveModifications(span.id, css); // Save changes
-            saveModifications(selectedElement.id, css);
-
             }
     });
 
