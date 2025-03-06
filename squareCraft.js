@@ -1220,7 +1220,17 @@ fontfamilies();
             selectedTextRange.insertNode(span); // Insert wrapped text with new font size
     
             console.log(`📝 Applied font-size ${fontSize} to selected text.`);
-        }
+            // Ensure span has a unique ID for saving
+            if (!span.id) {
+                span.id = `squareCraft-mod-${Date.now()}`; // Assign unique ID
+            }
+
+            // **Save the modification to database**
+            let css = { "font-size": fontSize };
+            applyStylesToElement(span.id, css); // Apply styles persistently
+            saveModifications(span.id, css); // Save changes
+
+            }
     });
 
 
