@@ -697,130 +697,7 @@ async function fetchModifications(retries = 3) {
   }
 
 
-  
-  
-//   async function fontfamilies() {
-//     const response = await fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk");
-//     const data = await response.json();
 
-//     const fontDropdown = document.getElementById("squareCraft-font-family");
-//     const fontWeightDropdown = document.getElementById("squareCraftFontWeight");
-
-//     if (!fontDropdown || !fontWeightDropdown) {
-//         console.error("Dropdown elements not found!");
-//         return;
-//     }
-
-//     fontDropdown.style.position = "relative";
-//     fontDropdown.style.width = "100%";
-//     fontDropdown.style.border = "1px solid #585858";
-//     fontDropdown.style.borderRadius = "6px";
-//     fontDropdown.style.background = "#2c2c2c";
-//     fontDropdown.style.color = "white";
-//     fontDropdown.style.display = "flex";
-//     fontDropdown.style.alignItems = "center";
-//     fontDropdown.style.justifyContent = "space-between";
-//     fontDropdown.style.cursor = "pointer";
-
-//     let selectedFont = "Select a Font";
-//     const selectedFontText = document.createElement("p");
-//     selectedFontText.textContent = selectedFont;
-//     selectedFontText.style.flexGrow = "1";
-//     selectedFontText.style.fontSize = "14px";
-//     selectedFontText.classList.add("squareCraft-universal");
-
-//     const dropdownArrow = document.createElement("img");
-//     dropdownArrow.src = "https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg";
-//     dropdownArrow.style.width = "12px";
-//     dropdownArrow.style.height = "12px";
-//     dropdownArrow.style.transform = "rotate(180deg)";
-
-//     fontDropdown.appendChild(selectedFontText);
-//     fontDropdown.appendChild(dropdownArrow);
-
-//     const fontList = document.createElement("div");
-//     fontList.style.position = "absolute";
-//     fontList.style.top = "100%";
-//     fontList.style.left = "0";
-//     fontList.style.width = "100%";
-//     fontList.style.background = "#2c2c2c";
-//     fontList.style.border = "1px solid #585858";
-//     fontList.style.borderRadius = "6px";
-//     fontList.style.overflowY = "auto";
-//     fontList.style.maxHeight = "200px";
-//     fontList.style.display = "none";
-//     fontList.style.zIndex = "1000";
-
-//     // Populate font-family dropdown
-//     data.items.forEach(font => {
-//         const option = document.createElement("div");
-//         option.textContent = font.family;
-//         option.style.padding = "8px";
-//         option.style.cursor = "pointer";
-//         option.style.fontFamily = font.family;
-//         option.style.transition = "background 0.3s";
-//         option.style.color = "white";
-//         option.style.fontSize = "14px";
-
-//         option.addEventListener("mouseover", () => {
-//             option.style.background = "#444";
-//         });
-
-//         option.addEventListener("mouseout", () => {
-//             option.style.background = "transparent";
-//         });
-
-//         option.addEventListener("click", async () => {
-//             selectedFont = font.family;
-//             selectedFontText.textContent = selectedFont;
-//             selectedFontText.style.fontFamily = selectedFont;
-//             fontList.style.display = "none";
-
-//             if (selectedElement) {
-//                 let css = { "font-family": selectedFont };
-//                 await saveModifications(selectedElement.id, css);
-//                 applyStylesToElement(selectedElement.id, css);
-//             }
-
-//             // Update font-weight dropdown dynamically
-//             updateFontWeightDropdown(font.variants);
-//         });
-
-//         fontList.appendChild(option);
-//     });
-
-//     fontDropdown.appendChild(fontList);
-
-//     fontDropdown.addEventListener("click", (event) => {
-//         event.stopPropagation();
-//         fontList.style.display = fontList.style.display === "block" ? "none" : "block";
-//     });
-
-//     document.addEventListener("click", () => {
-//         fontList.style.display = "none";
-//     });
-
-//     // **Function to Update Font Weight Dropdown**
-//     function updateFontWeightDropdown(variants) {
-//         fontWeightDropdown.innerHTML = ""; // Clear existing options
-
-//         if (!variants || variants.length === 0) {
-//             console.warn("No font weights found for the selected font.");
-//             fontWeightDropdown.innerHTML = `<option value="400" selected>Regular (400)</option>`;
-//             return;
-//         }
-
-//         variants.forEach(variant => {
-//             let weight = variant === "regular" ? "400" : variant; // Convert "regular" to 400
-//             let option = document.createElement("option");
-//             option.value = weight;
-//             option.textContent = `Weight ${weight}`;
-//             fontWeightDropdown.appendChild(option);
-//         });
-//     }
-// }
-
-// fontfamilies();
 
 async function fontfamilies() {
     const response = await fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk");
@@ -1075,7 +952,7 @@ fontfamilies();
     document.addEventListener("mouseup", function () {
         let selection = window.getSelection();
         if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-            selectedTextRange = selection.getRangeAt(0); // Store selection range
+            selectedElement = selection.getRangeAt(0); // Store selection range
             console.log("✅ Text Selected:", selection.toString());
         }
     });
@@ -1083,16 +960,16 @@ fontfamilies();
 
 
     document.getElementById("squareCraftFontSize").addEventListener("input", function () {
-        if (selectedTextRange) {
+        if (selectedElement) {
             let fontSize = this.value + "px";
     
             let span = document.createElement("span");
             span.style.fontSize = fontSize;
-            span.innerHTML = selectedTextRange.toString(); // Wrap the selected text
+            span.innerHTML = selectedElement.toString(); // Wrap the selected text
             span.classList.add("squareCraft-font-modified");
     
-            selectedTextRange.deleteContents(); // Remove original text
-            selectedTextRange.insertNode(span); // Insert wrapped text with new font size
+            selectedElement.deleteContents(); // Remove original text
+            selectedElement.insertNode(span); // Insert wrapped text with new font size
     
             console.log(`📝 Applied font-size ${fontSize} to selected text.`);
             // Ensure span has a unique ID for saving
