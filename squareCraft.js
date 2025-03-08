@@ -63,36 +63,58 @@
     let pageId = getPageId();
     if (!pageId) console.warn(":warning: No page ID found. Plugin may not work correctly.");
   
-    function applyStylesToElement(elementId, css) {
-      if (!elementId || !css) return;
+    // function applyStylesToElement(elementId, css) {
+    //   if (!elementId || !css) return;
   
-      let styleTag = document.getElementById(`style-${elementId}`);
-      if (!styleTag) { // Only create a new style if it doesn’t exist
-        styleTag = document.createElement("style");
-        styleTag.id = `style-${elementId}`;
-        document.head.appendChild(styleTag);
-    }
+    //   let styleTag = document.getElementById(`style-${elementId}`);
+    //   if (!styleTag) { // Only create a new style if it doesn’t exist
+    //     styleTag = document.createElement("style");
+    //     styleTag.id = `style-${elementId}`;
+    //     document.head.appendChild(styleTag);
+    // }
   
-      styleTag = document.createElement("style");
-      styleTag.id = `style-${elementId}`;
-      document.head.appendChild(styleTag);
+    //   styleTag = document.createElement("style");
+    //   styleTag.id = `style-${elementId}`;
+    //   document.head.appendChild(styleTag);
   
-      let cssText = `#${elementId}, #${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} p, #${elementId} span { `;
+    //   let cssText = `#${elementId}, #${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} p, #${elementId} span { `;
 
-      Object.keys(css).forEach(prop => {
-          cssText += `${prop}: ${css[prop]} !important; `;
-      });
-      cssText += "}";
+    //   Object.keys(css).forEach(prop => {
+    //       cssText += `${prop}: ${css[prop]} !important; `;
+    //   });
+    //   cssText += "}";
       
   
-      if (css["border-radius"]) {
-        cssText += `#${elementId} { overflow: hidden !important; }`;
-      }
+    //   if (css["border-radius"]) {
+    //     cssText += `#${elementId} { overflow: hidden !important; }`;
+    //   }
   
-      styleTag.innerHTML = cssText;
-      appliedStyles.add(elementId);
-      console.log(`:white_check_mark: Styles Persisted for ${elementId}`);
+    //   styleTag.innerHTML = cssText;
+    //   appliedStyles.add(elementId);
+    //   console.log(`:white_check_mark: Styles Persisted for ${elementId}`);
+    // }
+
+
+    function applyStylesToElement(elementId, css) {
+        if (!elementId || !css) return;
+    
+        let styleTag = document.getElementById(`style-${elementId}`);
+        if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = `style-${elementId}`;
+            document.head.appendChild(styleTag);
+        }
+    
+        let cssText = `#${elementId} { `;
+        Object.keys(css).forEach(prop => {
+            cssText += `${prop}: ${css[prop]} !important; `;
+        });
+        cssText += "}";
+    
+        styleTag.innerHTML = cssText;
+        console.log(`✅ Styles Persisted for ${elementId}`);
     }
+    
 
  
 
@@ -200,60 +222,25 @@ async function fetchModifications(retries = 3) {
         data.modifications.forEach(({ pageId: storedPageId, elements }) => {
             if (storedPageId === pageId) {
                 elements.forEach(({ elementId, css, elementStructure }) => {
-                    if (elementStructure && elementStructure.type === 'span') {
-                        // Try to find existing span
-                        let existingSpan = document.getElementById(elementId);
-                        
-                        if (!existingSpan) {
-                            // Find text nodes containing our content
-                            const walker = document.createTreeWalker(
-                                document.body,
-                                NodeFilter.SHOW_TEXT,
-                                {
-                                    acceptNode: function(node) {
-                                        return node.textContent.includes(elementStructure.content)
-                                            ? NodeFilter.FILTER_ACCEPT
-                                            : NodeFilter.FILTER_REJECT;
-                                    }
-                                }
-                            );
+                    let element = document.getElementById(elementId);
 
-                            let node;
-                            while (node = walker.nextNode()) {
-                                if (node.textContent.includes(elementStructure.content)) {
-                                    const range = document.createRange();
-                                    const startIndex = node.textContent.indexOf(elementStructure.content);
-                                    
-                                    // Create and insert span
-                                    existingSpan = document.createElement('span');
-                                    existingSpan.id = elementId;
-                                    existingSpan.className = elementStructure.className;
-                                    
-                                    // Set up the range
-                                    range.setStart(node, startIndex);
-                                    range.setEnd(node, startIndex + elementStructure.content.length);
-                                    
-                                    // Wrap the content in our span
-                                    range.surroundContents(existingSpan);
-                                    break;
-                                }
-                            }
+                    if (!element && elementStructure && elementStructure.type === 'span') {
+                        // If element is missing, find it dynamically
+                        element = findTextNodeByContent(document.body, elementStructure.content);
+                        if (element) {
+                            let span = document.createElement('span');
+                            span.id = elementId;
+                            span.className = elementStructure.className;
+                            span.innerHTML = elementStructure.content;
+                            Object.assign(span.style, css);
+                            element.parentNode.replaceChild(span, element);
                         }
+                    }
 
-                        if (existingSpan) {
-                            // Apply stored CSS
-                            Object.entries(css).forEach(([property, value]) => {
-                                existingSpan.style[property] = value;
-                            });
-                            
-                            // Update font size input if it exists
-                            if (css["font-size"]) {
-                                const fontSizeInput = document.getElementById("squareCraftFontSize");
-                                if (fontSizeInput) {
-                                    fontSizeInput.value = parseInt(css["font-size"], 10);
-                                }
-                            }
-                        }
+                    if (element) {
+                        // Apply the stored CSS
+                        applyStylesToElement(element.id, css);
+                        console.log(`✅ Applied saved styles to ${element.id}`);
                     }
                 });
             }
@@ -262,10 +249,21 @@ async function fetchModifications(retries = 3) {
     } catch (error) {
         console.error("❌ Error Fetching Modifications:", error);
         if (retries > 0) {
+            console.log(`🔄 Retrying fetch... (${retries} attempts left)`);
             setTimeout(() => fetchModifications(retries - 1), 2000);
         }
     }
 }
+
+// Listen for changes in edit mode
+const observer = new MutationObserver(() => {
+    console.log("🔄 Edit Mode Detected. Reapplying modifications...");
+    fetchModifications();
+});
+
+observer.observe(document.body, { childList: true, subtree: true });
+
+
 
 
 function findTextNodeByContent(element, searchText) {
@@ -1144,7 +1142,54 @@ document.addEventListener("mouseup", function() {
 });
 
 // Update the font size event listener
-document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+//     if (!lastSelectedRange || !lastSelectedText) {
+//         console.warn("⚠️ No text selected");
+//         return;
+//     }
+
+//     const fontSize = this.value + "px";
+    
+//     try {
+//         // Create span element
+//         const span = document.createElement("span");
+//         span.id = `squareCraft-mod-${Date.now()}`;
+//         span.className = "squareCraft-font-modified";
+        
+//         // Get parent element info
+//         const parentElement = lastSelectedRange.commonAncestorContainer.parentElement;
+//         const parentId = parentElement ? parentElement.id : null;
+
+//         // Create element structure
+//         const elementStructure = {
+//             type: 'span',
+//             className: 'squareCraft-font-modified',
+//             content: lastSelectedText,
+//             parentId: parentId
+//         };
+
+//         // Apply styles
+//         span.style.fontSize = fontSize;
+        
+//         // Replace selected text with span
+//         lastSelectedRange.deleteContents();
+//         lastSelectedRange.insertNode(span);
+//         span.textContent = lastSelectedText;
+
+//         // Save to database
+//         await saveModifications(
+//             span.id,
+//             { "font-size": fontSize },
+//             elementStructure
+//         );
+
+//         console.log("✅ Font size modified and saved:", fontSize);
+//     } catch (error) {
+//         console.error("❌ Error applying font size:", error);
+//     }
+// });
+
+document.getElementById("squareCraftFontSize").addEventListener("input", async function () {
     if (!lastSelectedRange || !lastSelectedText) {
         console.warn("⚠️ No text selected");
         return;
@@ -1153,12 +1198,11 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
     const fontSize = this.value + "px";
     
     try {
-        // Create span element
         const span = document.createElement("span");
         span.id = `squareCraft-mod-${Date.now()}`;
         span.className = "squareCraft-font-modified";
-        
-        // Get parent element info
+        span.style.fontSize = fontSize;
+
         const parentElement = lastSelectedRange.commonAncestorContainer.parentElement;
         const parentId = parentElement ? parentElement.id : null;
 
@@ -1170,10 +1214,6 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
             parentId: parentId
         };
 
-        // Apply styles
-        span.style.fontSize = fontSize;
-        
-        // Replace selected text with span
         lastSelectedRange.deleteContents();
         lastSelectedRange.insertNode(span);
         span.textContent = lastSelectedText;
@@ -1190,6 +1230,7 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
         console.error("❌ Error applying font size:", error);
     }
 });
+
 
 
     document.getElementById("squareCraftLineHeight").addEventListener("input", function () {
