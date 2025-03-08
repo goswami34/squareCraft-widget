@@ -49,6 +49,7 @@
     if (widgetId) localStorage.setItem("squareCraft_w_id", widgetId);
   
     let selectedElement = null;
+    let span = null;
     let appliedStyles = new Set();
 
 
@@ -963,7 +964,7 @@ fontfamilies();
         if (selectedElement) {
             let fontSize = this.value + "px";
     
-            let span = document.createElement("span");
+            span = document.createElement("span");
             span.style.fontSize = fontSize;
             span.innerHTML = selectedElement.toString(); // Wrap the selected text
             span.classList.add("squareCraft-font-modified");
