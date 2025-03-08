@@ -153,162 +153,81 @@
 //     }
 // }
 
-// async function fetchModifications(retries = 3) {
-//     if (!pageId) return;
+async function fetchModifications(retries = 3) {
+    if (!pageId) return;
 
-//     try {
-//         const response = await fetch(
-//             `https://webefo-backend.vercel.app/api/v1/get-modifications?userId=${userId}`,
-//             {
-//                 method: "GET",
-//                 headers: {
-//                     "Content-Type": "application/json",
-//                     "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-//                 },
-//             }
-//         );
+    try {
+        const response = await fetch(
+            `https://webefo-backend.vercel.app/api/v1/get-modifications?userId=${userId}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+                },
+            }
+        );
 
-//         const data = await response.json();
-//         console.log("📥 Retrieved Data from Database:", data);
+        const data = await response.json();
+        console.log("📥 Retrieved Data from Database:", data);
 
-//         if (!data.modifications || data.modifications.length === 0) {
-//             console.warn("⚠️ No saved styles found for this page.");
-//             return;
-//         }
+        if (!data.modifications || data.modifications.length === 0) {
+            console.warn("⚠️ No saved styles found for this page.");
+            return;
+        }
 
-//         // Loop through retrieved styles and apply them
-//         data.modifications.forEach(({ pageId: storedPageId, elements }) => {
-//             if (storedPageId === pageId) {
-//                 elements.forEach(({ elementId, css, elementStructure }) => {
-//                     if (elementStructure && elementStructure.type === 'span') {
-//                         // Handle span elements
-//                         let existingSpan = document.getElementById(elementId);
-//                         if (!existingSpan) {
-//                             // Create new span if it doesn't exist
-//                             existingSpan = document.createElement('span');
-//                             existingSpan.id = elementId;
-//                             existingSpan.className = elementStructure.className;
-//                             existingSpan.innerHTML = elementStructure.content;
+        // Loop through retrieved styles and apply them
+        data.modifications.forEach(({ pageId: storedPageId, elements }) => {
+            if (storedPageId === pageId) {
+                elements.forEach(({ elementId, css, elementStructure }) => {
+                    if (elementStructure && elementStructure.type === 'span') {
+                        // Handle span elements
+                        let existingSpan = document.getElementById(elementId);
+                        if (!existingSpan) {
+                            // Create new span if it doesn't exist
+                            existingSpan = document.createElement('span');
+                            existingSpan.id = elementId;
+                            existingSpan.className = elementStructure.className;
+                            existingSpan.innerHTML = elementStructure.content;
 
-//                             // Find parent element
-//                             if (elementStructure.parentId) {
-//                                 const parentElement = document.getElementById(elementStructure.parentId);
-//                                 if (parentElement) {
-//                                     parentElement.appendChild(existingSpan);
-//                                 }
-//                             }
-//                         }
+                            // Find parent element
+                            if (elementStructure.parentId) {
+                                const parentElement = document.getElementById(elementStructure.parentId);
+                                if (parentElement) {
+                                    parentElement.appendChild(existingSpan);
+                                }
+                            }
+                        }
 
-//                         // Apply the stored CSS
-//                         Object.assign(existingSpan.style, css);
+                        // Apply the stored CSS
+                        Object.assign(existingSpan.style, css);
                         
-//                         // Update font size input if it exists
-//                         if (css["font-size"]) {
-//                             let fontSizeInput = document.getElementById("squareCraftFontSize");
-//                             if (fontSizeInput) {
-//                                 fontSizeInput.value = parseInt(css["font-size"], 10);
-//                             }
-//                         }
-//                     } else {
-//                         // Handle regular element styling
-//                         let element = document.getElementById(elementId);
-//                         if (element) {
-//                             applyStylesToElement(elementId, css);
-//                         }
-//                     }
-//                 });
-//             }
-//         });
+                        // Update font size input if it exists
+                        if (css["font-size"]) {
+                            let fontSizeInput = document.getElementById("squareCraftFontSize");
+                            if (fontSizeInput) {
+                                fontSizeInput.value = parseInt(css["font-size"], 10);
+                            }
+                        }
+                    } else {
+                        // Handle regular element styling
+                        let element = document.getElementById(elementId);
+                        if (element) {
+                            applyStylesToElement(elementId, css);
+                        }
+                    }
+                });
+            }
+        });
 
-//     } catch (error) {
-//         console.error("❌ Error Fetching Modifications:", error);
-//         if (retries > 0) {
-//             console.log(`🔄 Retrying fetch... (${retries} attempts left)`);
-//             setTimeout(() => fetchModifications(retries - 1), 2000);
-//         }
-//     }
-// }
-
-// async function fetchModifications(retries = 3) {
-//     if (!pageId) return;
-
-//     try {
-//         const response = await fetch(
-//             `https://webefo-backend.vercel.app/api/v1/get-modifications?userId=${userId}`,
-//             {
-//                 method: "GET",
-//                 headers: {
-//                     "Content-Type": "application/json",
-//                     "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-//                 },
-//             }
-//         );
-
-//         const data = await response.json();
-//         console.log("📥 Retrieved Data from Database:", data);
-
-//         if (!data.modifications || data.modifications.length === 0) {
-//             console.warn("⚠️ No saved styles found for this page.");
-//             return;
-//         }
-
-//         // Loop through retrieved styles and apply them
-//         data.modifications.forEach(({ pageId: storedPageId, elements }) => {
-//             if (storedPageId === pageId) {
-//                 elements.forEach(({ elementId, css, elementStructure }) => {
-//                     if (elementStructure && elementStructure.type === 'span') {
-//                         // Handle span elements
-//                         let existingSpan = document.getElementById(elementId);
-//                         if (!existingSpan) {
-//                             // Create new span if it doesn't exist
-//                             existingSpan = document.createElement('span');
-//                             existingSpan.id = elementId;
-//                             existingSpan.className = elementStructure.className;
-                            
-//                             // Find the text node containing the content
-//                             const textToReplace = findTextNodeByContent(document.body, elementStructure.content);
-//                             if (textToReplace) {
-//                                 // Replace the text node with our span
-//                                 const range = document.createRange();
-//                                 range.selectNode(textToReplace);
-//                                 range.surroundContents(existingSpan);
-//                                 existingSpan.innerHTML = elementStructure.content;
-//                             } else {
-//                                 console.warn(`⚠️ Could not find text content: ${elementStructure.content}`);
-//                             }
-//                         }
-
-//                         // Apply the stored CSS
-//                         Object.entries(css).forEach(([property, value]) => {
-//                             existingSpan.style[property] = value;
-//                         });
-                        
-//                         // Update font size input if it exists
-//                         if (css["font-size"]) {
-//                             let fontSizeInput = document.getElementById("squareCraftFontSize");
-//                             if (fontSizeInput) {
-//                                 fontSizeInput.value = parseInt(css["font-size"], 10);
-//                             }
-//                         }
-//                     } else {
-//                         // Handle regular element styling
-//                         let element = document.getElementById(elementId);
-//                         if (element) {
-//                             applyStylesToElement(elementId, css);
-//                         }
-//                     }
-//                 });
-//             }
-//         });
-
-//     } catch (error) {
-//         console.error("❌ Error Fetching Modifications:", error);
-//         if (retries > 0) {
-//             console.log(`🔄 Retrying fetch... (${retries} attempts left)`);
-//             setTimeout(() => fetchModifications(retries - 1), 2000);
-//         }
-//     }
-// }
+    } catch (error) {
+        console.error("❌ Error Fetching Modifications:", error);
+        if (retries > 0) {
+            console.log(`🔄 Retrying fetch... (${retries} attempts left)`);
+            setTimeout(() => fetchModifications(retries - 1), 2000);
+        }
+    }
+}
 
 async function fetchModifications(retries = 3) {
     if (!pageId) return;
@@ -338,48 +257,44 @@ async function fetchModifications(retries = 3) {
             if (storedPageId === pageId) {
                 elements.forEach(({ elementId, css, elementStructure }) => {
                     if (elementStructure && elementStructure.type === 'span') {
-                        // Try to find existing span first
+                        // Handle span elements
                         let existingSpan = document.getElementById(elementId);
-                        
                         if (!existingSpan) {
-                            // Find the text content in the document
-                            const textNodes = [];
-                            const walker = document.createTreeWalker(
-                                document.body,
-                                NodeFilter.SHOW_TEXT,
-                                null,
-                                false
-                            );
-
-                            let node;
-                            while (node = walker.nextNode()) {
-                                if (node.textContent.includes(elementStructure.content)) {
-                                    textNodes.push(node);
-                                }
-                            }
-
-                            // Use the first matching text node
-                            if (textNodes.length > 0) {
+                            // Create new span if it doesn't exist
+                            existingSpan = document.createElement('span');
+                            existingSpan.id = elementId;
+                            existingSpan.className = elementStructure.className;
+                            
+                            // Find the text node containing the content
+                            const textToReplace = findTextNodeByContent(document.body, elementStructure.content);
+                            if (textToReplace) {
+                                // Replace the text node with our span
                                 const range = document.createRange();
-                                const textNode = textNodes[0];
-                                const startIndex = textNode.textContent.indexOf(elementStructure.content);
-                                
-                                range.setStart(textNode, startIndex);
-                                range.setEnd(textNode, startIndex + elementStructure.content.length);
-
-                                // Create and insert span
-                                existingSpan = document.createElement('span');
-                                existingSpan.id = elementId;
-                                existingSpan.className = elementStructure.className;
+                                range.selectNode(textToReplace);
                                 range.surroundContents(existingSpan);
+                                existingSpan.innerHTML = elementStructure.content;
+                            } else {
+                                console.warn(`⚠️ Could not find text content: ${elementStructure.content}`);
                             }
                         }
 
-                        if (existingSpan) {
-                            // Apply the stored CSS
-                            Object.entries(css).forEach(([property, value]) => {
-                                existingSpan.style[property] = value;
-                            });
+                        // Apply the stored CSS
+                        Object.entries(css).forEach(([property, value]) => {
+                            existingSpan.style[property] = value;
+                        });
+                        
+                        // Update font size input if it exists
+                        if (css["font-size"]) {
+                            let fontSizeInput = document.getElementById("squareCraftFontSize");
+                            if (fontSizeInput) {
+                                fontSizeInput.value = parseInt(css["font-size"], 10);
+                            }
+                        }
+                    } else {
+                        // Handle regular element styling
+                        let element = document.getElementById(elementId);
+                        if (element) {
+                            applyStylesToElement(elementId, css);
                         }
                     }
                 });
@@ -394,6 +309,91 @@ async function fetchModifications(retries = 3) {
         }
     }
 }
+
+// async function fetchModifications(retries = 3) {
+//     if (!pageId) return;
+
+//     try {
+//         const response = await fetch(
+//             `https://webefo-backend.vercel.app/api/v1/get-modifications?userId=${userId}`,
+//             {
+//                 method: "GET",
+//                 headers: {
+//                     "Content-Type": "application/json",
+//                     "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+//                 },
+//             }
+//         );
+
+//         const data = await response.json();
+//         console.log("📥 Retrieved Data from Database:", data);
+
+//         if (!data.modifications || data.modifications.length === 0) {
+//             console.warn("⚠️ No saved styles found for this page.");
+//             return;
+//         }
+
+//         // Loop through retrieved styles and apply them
+//         data.modifications.forEach(({ pageId: storedPageId, elements }) => {
+//             if (storedPageId === pageId) {
+//                 elements.forEach(({ elementId, css, elementStructure }) => {
+//                     if (elementStructure && elementStructure.type === 'span') {
+//                         // Try to find existing span first
+//                         let existingSpan = document.getElementById(elementId);
+                        
+//                         if (!existingSpan) {
+//                             // Find the text content in the document
+//                             const textNodes = [];
+//                             const walker = document.createTreeWalker(
+//                                 document.body,
+//                                 NodeFilter.SHOW_TEXT,
+//                                 null,
+//                                 false
+//                             );
+
+//                             let node;
+//                             while (node = walker.nextNode()) {
+//                                 if (node.textContent.includes(elementStructure.content)) {
+//                                     textNodes.push(node);
+//                                 }
+//                             }
+
+//                             // Use the first matching text node
+//                             if (textNodes.length > 0) {
+//                                 const range = document.createRange();
+//                                 const textNode = textNodes[0];
+//                                 const startIndex = textNode.textContent.indexOf(elementStructure.content);
+                                
+//                                 range.setStart(textNode, startIndex);
+//                                 range.setEnd(textNode, startIndex + elementStructure.content.length);
+
+//                                 // Create and insert span
+//                                 existingSpan = document.createElement('span');
+//                                 existingSpan.id = elementId;
+//                                 existingSpan.className = elementStructure.className;
+//                                 range.surroundContents(existingSpan);
+//                             }
+//                         }
+
+//                         if (existingSpan) {
+//                             // Apply the stored CSS
+//                             Object.entries(css).forEach(([property, value]) => {
+//                                 existingSpan.style[property] = value;
+//                             });
+//                         }
+//                     }
+//                 });
+//             }
+//         });
+
+//     } catch (error) {
+//         console.error("❌ Error Fetching Modifications:", error);
+//         if (retries > 0) {
+//             console.log(`🔄 Retrying fetch... (${retries} attempts left)`);
+//             setTimeout(() => fetchModifications(retries - 1), 2000);
+//         }
+//     }
+// }
 
 // Helper function to find text nodes by content
 function findTextNodeByContent(element, searchText) {
