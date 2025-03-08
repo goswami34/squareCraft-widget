@@ -96,6 +96,63 @@
 
  
 
+// async function fetchModifications(retries = 3) {
+//     if (!pageId) return;
+
+//     try {
+//         const response = await fetch(
+//             `https://webefo-backend.vercel.app/api/v1/get-modifications?userId=${userId}`,
+//             {
+//                 method: "GET",
+//                 headers: {
+//                     "Content-Type": "application/json",
+//                     "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+//                 },
+//             }
+//         );
+
+//         const data = await response.json();
+
+//         console.log("📥 Retrieved Data from Database:", data);
+
+//         if (!data.modifications || data.modifications.length === 0) {
+//             console.warn("⚠️ No saved styles found for this page.");
+//             return;
+//         }
+
+//         // Loop through retrieved styles and apply them
+//         data.modifications.forEach(({ pageId: storedPageId, elements }) => {
+//             if (storedPageId === pageId) {
+//                 elements.forEach(({ elementId, css }) => {
+//                     let element = document.getElementById(elementId);
+
+//                     if (element) {
+//                         console.log(`🎨 Applying styles to ${elementId}:`, css);
+//                         applyStylesToElement(elementId, css); // Apply retrieved styles
+
+//                         // Check if font-size exists and update the UI
+//                         if (css["font-size"]) {
+//                             let fontSizeInput = document.getElementById("squareCraftFontSize");
+//                             if (fontSizeInput) {
+//                                 fontSizeInput.value = parseInt(css["font-size"], 10); // Update input value
+//                             }
+//                         }
+//                     } else {
+//                         console.warn(`⚠️ Element ${elementId} not found in DOM.`);
+//                     }
+//                 });
+//             }
+//         });
+
+//     } catch (error) {
+//         console.error("❌ Error Fetching Modifications:", error);
+//         if (retries > 0) {
+//             console.log(`🔄 Retrying fetch... (${retries} attempts left)`);
+//             setTimeout(() => fetchModifications(retries - 1), 2000);
+//         }
+//     }
+// }
+
 async function fetchModifications(retries = 3) {
     if (!pageId) return;
 
@@ -112,7 +169,6 @@ async function fetchModifications(retries = 3) {
         );
 
         const data = await response.json();
-
         console.log("📥 Retrieved Data from Database:", data);
 
         if (!data.modifications || data.modifications.length === 0) {
@@ -123,22 +179,42 @@ async function fetchModifications(retries = 3) {
         // Loop through retrieved styles and apply them
         data.modifications.forEach(({ pageId: storedPageId, elements }) => {
             if (storedPageId === pageId) {
-                elements.forEach(({ elementId, css }) => {
-                    let element = document.getElementById(elementId);
+                elements.forEach(({ elementId, css, elementStructure }) => {
+                    if (elementStructure && elementStructure.type === 'span') {
+                        // Handle span elements
+                        let existingSpan = document.getElementById(elementId);
+                        if (!existingSpan) {
+                            // Create new span if it doesn't exist
+                            existingSpan = document.createElement('span');
+                            existingSpan.id = elementId;
+                            existingSpan.className = elementStructure.className;
+                            existingSpan.innerHTML = elementStructure.content;
 
-                    if (element) {
-                        console.log(`🎨 Applying styles to ${elementId}:`, css);
-                        applyStylesToElement(elementId, css); // Apply retrieved styles
+                            // Find parent element
+                            if (elementStructure.parentId) {
+                                const parentElement = document.getElementById(elementStructure.parentId);
+                                if (parentElement) {
+                                    parentElement.appendChild(existingSpan);
+                                }
+                            }
+                        }
 
-                        // Check if font-size exists and update the UI
+                        // Apply the stored CSS
+                        Object.assign(existingSpan.style, css);
+                        
+                        // Update font size input if it exists
                         if (css["font-size"]) {
                             let fontSizeInput = document.getElementById("squareCraftFontSize");
                             if (fontSizeInput) {
-                                fontSizeInput.value = parseInt(css["font-size"], 10); // Update input value
+                                fontSizeInput.value = parseInt(css["font-size"], 10);
                             }
                         }
                     } else {
-                        console.warn(`⚠️ Element ${elementId} not found in DOM.`);
+                        // Handle regular element styling
+                        let element = document.getElementById(elementId);
+                        if (element) {
+                            applyStylesToElement(elementId, css);
+                        }
                     }
                 });
             }
@@ -206,6 +282,8 @@ async function fetchModifications(retries = 3) {
         console.error(":x: Error saving modifications:", error);
       }
     }
+
+  
 
   async function resetModifications() {
     const userId = localStorage.getItem("squareCraft_u_id");
@@ -960,31 +1038,93 @@ fontfamilies();
 
 
 
-    document.getElementById("squareCraftFontSize").addEventListener("input", function () {
+    // document.getElementById("squareCraftFontSize").addEventListener("input", function () {
+    //     if (selectedElement) {
+    //         let fontSize = this.value + "px";
+    
+    //         span = document.createElement("span");
+    //         span.style.fontSize = fontSize;
+    //         span.innerHTML = selectedElement.toString(); // Wrap the selected text
+    //         span.classList.add("squareCraft-font-modified");
+    
+    //         selectedElement.deleteContents(); // Remove original text
+    //         selectedElement.insertNode(span); // Insert wrapped text with new font size
+    
+    //         console.log(`📝 Applied font-size ${fontSize} to selected text.`);
+    //         // Ensure span has a unique ID for saving
+    //         if (!span.id) {
+    //             span.id = `squareCraft-mod-${Date.now()}`; // Assign unique ID
+    //         }
+
+    //         // **Save the modification to database**
+    //         let css = { "font-size": fontSize };
+    //         applyStylesToElement(span.id, css); // Apply styles persistently
+    //         saveModifications(span.id, css); // Save changes
+    //         }
+    // });
+   
+
+    document.getElementById("squareCraftFontSize").addEventListener("input", async function() {  // Add async here
         if (selectedElement) {
             let fontSize = this.value + "px";
     
+            // Create span element
             span = document.createElement("span");
+            span.id = `squareCraft-mod-${Date.now()}`; // Ensure unique ID
             span.style.fontSize = fontSize;
-            span.innerHTML = selectedElement.toString(); // Wrap the selected text
+            span.innerHTML = selectedElement.toString();
             span.classList.add("squareCraft-font-modified");
     
-            selectedElement.deleteContents(); // Remove original text
-            selectedElement.insertNode(span); // Insert wrapped text with new font size
+            // Store the parent element's ID before replacing content
+            const parentId = selectedElement.parentElement ? selectedElement.parentElement.id : null;
     
-            console.log(`📝 Applied font-size ${fontSize} to selected text.`);
-            // Ensure span has a unique ID for saving
-            if (!span.id) {
-                span.id = `squareCraft-mod-${Date.now()}`; // Assign unique ID
+            // Create element structure object
+            const elementStructure = {
+                type: 'span',
+                className: 'squareCraft-font-modified',
+                content: selectedElement.toString(),
+                parentId: parentId
+            };
+    
+            // Apply styles and insert the span
+            selectedElement.deleteContents();
+            selectedElement.insertNode(span);
+    
+            // Save modifications with element structure
+            const modificationData = {
+                userId,
+                token,
+                widgetId,
+                modifications: [{
+                    pageId,
+                    elements: [{
+                        elementId: span.id,
+                        css: { "font-size": fontSize },
+                        elementStructure: elementStructure
+                    }]
+                }]
+            };
+    
+            try {
+                const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+                        "userId": userId,
+                        "pageId": pageId,
+                        "widget-id": widgetId,
+                    },
+                    body: JSON.stringify(modificationData),
+                });
+    
+                const result = await response.json();
+                console.log("✅ Changes Saved Successfully!", result);
+            } catch (error) {
+                console.error("❌ Error saving modifications:", error);
             }
-
-            // **Save the modification to database**
-            let css = { "font-size": fontSize };
-            applyStylesToElement(span.id, css); // Apply styles persistently
-            saveModifications(span.id, css); // Save changes
-            }
+        }
     });
-   
     
 
     
