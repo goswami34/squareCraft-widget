@@ -52,25 +52,6 @@
     let appliedStyles = new Set();
 
 
-    // let originalStyles = {}; // Store original styles
-
-    // function storeOriginalStyles(elementId) {
-    //     if (!elementId || originalStyles[elementId]) return;
-
-    //     let element = document.getElementById(elementId);
-    //     if (!element) return;
-
-    //     // Save the original computed styles
-    //     originalStyles[elementId] = {
-    //         "font-size": window.getComputedStyle(element).fontSize,
-    //         "font-weight": window.getComputedStyle(element).fontWeight,
-    //         "font-style": window.getComputedStyle(element).fontStyle,
-    //         "text-decoration": window.getComputedStyle(element).textDecoration,
-    //         "text-transform": window.getComputedStyle(element).textTransform,
-    //     };
-
-    //     console.log("🔵 Original styles stored for:", elementId, originalStyles[elementId]);
-    // }
 
   
     function getPageId() {
@@ -85,9 +66,11 @@
       if (!elementId || !css) return;
   
       let styleTag = document.getElementById(`style-${elementId}`);
-      if (styleTag) {
-        styleTag.remove();  // Remove the old styles before adding new ones
-      }
+      if (!styleTag) { // Only create a new style if it doesn’t exist
+        styleTag = document.createElement("style");
+        styleTag.id = `style-${elementId}`;
+        document.head.appendChild(styleTag);
+    }
   
       styleTag = document.createElement("style");
       styleTag.id = `style-${elementId}`;
@@ -110,64 +93,7 @@
       console.log(`:white_check_mark: Styles Persisted for ${elementId}`);
     }
 
-    // function applyStylesToElement(elementId, css) {
-    //     if (!elementId || !css) return;
-    
-    //     let element = document.getElementById(elementId);
-    //     if (!element) {
-    //         console.warn(`⚠️ Cannot apply styles. Element ${elementId} not found.`);
-    //         return;
-    //     }
-    
-    //     Object.keys(css).forEach(prop => {
-    //         element.style.setProperty(prop, css[prop], "important");
-    //     });
-    
-    //     console.log(`✅ Styles Applied to ${elementId}:`, css);
-    // }
-    
-
-   
-  
-//     async function fetchModifications(retries = 3) {
-//       if (!pageId) return;
-  
-//       try {
-//           const response = await fetch(
-//               `https://webefo-backend.vercel.app/api/v1/get-modifications?userId=${userId}`,
-//               {
-//                   method: "GET",
-//                   headers: {
-//                       "Content-Type": "application/json",
-//                       "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-//                   },
-//               }
-//           );
-  
-//           const data = await response.json();
-  
-//           console.log("📥 Get method", data);
-//           if (!data.modifications || data.modifications.length === 0) {
-//               console.warn("⚠️ No styles found for this page.");
-//               return;
-//           }
-  
-//           data.modifications.forEach(({ pageId: storedPageId, elements }) => {
-//               if (storedPageId === pageId) {
-//                   elements.forEach(({ elementId, css }) => {
-//                       applyStylesToElement(elementId, css);
-//                   });
-//               }
-//           });
-  
-//       } catch (error) {
-//           console.error("❌ Error fetching modifications:", error);
-//           if (retries > 0) {
-//               console.log(`🔄 Retrying fetch... (${retries} left)`);
-//               setTimeout(() => fetchModifications(retries - 1), 2000);
-//           }
-//       }
-//   }
+ 
 
 async function fetchModifications(retries = 3) {
     if (!pageId) return;
@@ -202,6 +128,14 @@ async function fetchModifications(retries = 3) {
                     if (element) {
                         console.log(`🎨 Applying styles to ${elementId}:`, css);
                         applyStylesToElement(elementId, css); // Apply retrieved styles
+
+                        // Check if font-size exists and update the UI
+                        if (css["font-size"]) {
+                            let fontSizeInput = document.getElementById("squareCraftFontSize");
+                            if (fontSizeInput) {
+                                fontSizeInput.value = parseInt(css["font-size"], 10); // Update input value
+                            }
+                        }
                     } else {
                         console.warn(`⚠️ Element ${elementId} not found in DOM.`);
                     }
@@ -234,6 +168,14 @@ async function fetchModifications(retries = 3) {
         console.warn(":warning: Missing required data to save modifications.");
         return;
       }
+
+        // Ensure font-size is stored if applied
+        if (css["font-size"]) {
+            let fontSizeInput = document.getElementById("squareCraftFontSize");
+            if (fontSizeInput) {
+                fontSizeInput.value = parseInt(css["font-size"], 10); // Sync UI
+            }
+        }
   
       applyStylesToElement(elementId, css);
       console.log(":satellite_antenna: Saving modifications for:", { pageId, elementId, css });
@@ -263,52 +205,6 @@ async function fetchModifications(retries = 3) {
         console.error(":x: Error saving modifications:", error);
       }
     }
-
-
-  //   async function resetModifications() {
-  //     const userId = localStorage.getItem("squareCraft_u_id");
-  //     const token = localStorage.getItem("squareCraft_auth_token");
-  
-  //     if (!userId || !token) {
-  //         console.warn("⚠️ User ID or token missing. Cannot reset modifications.");
-  //         return;
-  //     }
-  
-  //     try {
-  //         // Step 1: Call API to delete all elements
-  //         const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications/elements", {
-  //             method: "DELETE",
-  //             headers: {
-  //                 "Content-Type": "application/json",
-  //                 "Authorization": `Bearer ${token}`,
-  //                 "userId": userId,
-  //             },
-  //         });
-  
-  //         if (!response.ok) {
-  //             console.error("❌ Error resetting modifications:", await response.json());
-  //             return;
-  //         }
-  
-  //         console.log("✅ Modifications reset successfully!");
-  
-  //         // Step 2: Remove all injected styles
-  //         document.querySelectorAll("style[id^='style-']").forEach(styleTag => styleTag.remove());
-  
-  //         // Step 3: Clear stored data in localStorage
-  //         localStorage.removeItem("squareCraft_auth_token");
-  //         localStorage.removeItem("squareCraft_u_id");
-  //         localStorage.removeItem("squareCraft_w_id");
-  
-  //         // Step 4: Reset UI elements to default values
-  //         document.getElementById("squareCraftFontSize").value = "16";
-  //         document.getElementById("squareCraftFontWeight").value = "400";
-  
-  //         console.log("🎯 Reset complete. All styles and elements removed.");
-  //     } catch (error) {
-  //         console.error("❌ Error resetting modifications:", error);
-  //     }
-  // }
 
   async function resetModifications() {
     const userId = localStorage.getItem("squareCraft_u_id");
@@ -778,7 +674,8 @@ async function fetchModifications(retries = 3) {
       createWidgetIcon();
   
   });
-  window.addEventListener("load", () => {
+  window.addEventListener("load", async() => {
+    await fetchModifications();
     createWidget();  // Ensure widget is created first
     setTimeout(makeWidgetDraggable, 500); // Apply draggability after it's added to DOM
     setTimeout(attachEventListeners, 1500);
@@ -1113,44 +1010,6 @@ fontfamilies();
 
   
 
-
-    // document.querySelectorAll(".elements-font-style").forEach((btn) => {
-    //     btn.addEventListener("click", function () {
-    //         if (!selectedElement) {
-    //             console.warn("⚠️ No element selected to apply text decoration.");
-    //             return;
-    //         }
-    
-    //         let styleType = this.dataset.style;
-    //         let css = {};
-    
-    //         if (styleType === "bold") {
-    //             let currentWeight = parseInt(window.getComputedStyle(selectedElement).fontWeight, 10);
-    //             css["font-weight"] = currentWeight >= 700 ? "400" : "700"; // Toggle Bold
-    //         }
-    //         else if (styleType === "italic") {
-    //             let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
-    //             css["font-style"] = currentStyle === "italic" ? "italic" : "italic"; // Toggle Italic
-    //         }
-    //         else if (styleType === "underline") {
-    //             let currentDecoration = window.getComputedStyle(selectedElement).textDecorationLine;
-    //             css["text-decoration"] = currentDecoration === "underline" ? "none" : "underline";
-    //         }
-    //         else if (styleType === "dotted") {
-    //             let currentDecoration = window.getComputedStyle(selectedElement).textDecorationLine;
-    //             css["text-decoration"] = currentDecoration === "underline dotted" ? "none" : "underline dotted";
-    //         }
-    //         else if (styleType === "line-through") {
-    //             let currentDecoration = window.getComputedStyle(selectedElement).textDecorationLine;
-    //             css["text-decoration"] = currentDecoration === "line-through" ? "none" : "line-through";
-    //         }
-    
-    //         applyStylesToElement(selectedElement.id, css);
-    //         saveModifications(selectedElement.id, css);
-    //     });
-    // });
-    
-
      // Font style (Bold, Italic, Underline, etc.)
      document.querySelectorAll(".elements-font-style").forEach((btn) => {
         btn.addEventListener("click", function () {
@@ -1209,21 +1068,7 @@ fontfamilies();
         console.log("🛑 Font styles reset for:", selectedElement.id);
     });
     
-    // let selectedElement = null; // Track the selected element
-
-    // document.body.addEventListener("click", (event) => {
-    //     let clickedElement = event.target;
-        
-    //     // Check if the clicked element is h1-h4 or p inside a block
-    //     if (clickedElement.matches("h1, h2, h3, h4, p")) {
-    //         if (selectedElement) selectedElement.style.outline = ""; // Remove outline from the previous selection
-
-    //         selectedElement = clickedElement;
-    //         selectedElement.style.outline = "2px dashed #EF7C2F"; // Highlight the selected element
-            
-    //         console.log(`✅ Selected Element: ${selectedElement.tagName} inside ${selectedElement.parentElement.id}`);
-    //     }
-    // });
+   
 
     let selectedTextRange = null; // Store selected range
 
@@ -1261,18 +1106,7 @@ fontfamilies();
             saveModifications(span.id, css); // Save changes
             }
     });
-    // document.getElementById("squareCraftFontSize").addEventListener("input", function () {
-    //     if (!selectedElement) return;
-    
-    //     let fontSize = this.value + "px";
-    //     selectedElement.style.fontSize = fontSize;  
-    
-    //     let css = { "font-size": fontSize };
-    //     applyStylesToElement(selectedElement.id, css);
-    //     saveModifications(selectedElement.id, css);
-    
-    //     console.log(`📝 Applied font-size ${fontSize} to ${selectedElement.tagName}`);
-    // });
+   
     
 
     
@@ -1356,26 +1190,6 @@ fontfamilies();
         console.log("✨ Hover effect applied to:", elementId);
     });
 
-
-// hover code end here
-    
-    // document.getElementById("squareCraftReset").addEventListener("click", function () {
-    //     if (!selectedElement) return;
-    
-    //     let elementId = selectedElement.id;
-        
-    //     if (!originalStyles[elementId]) {
-    //         console.warn("⚠️ No original styles found for", elementId);
-    //         return;
-    //     }
-    
-    //     let css = originalStyles[elementId]; // Restore original styles
-    
-    //     // Apply original styles
-    //     applyStylesToElement(elementId, css);
-    
-    //     console.log("🔄 Styles reset to original for:", elementId, css);
-    // });
     
     
 
