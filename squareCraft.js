@@ -478,11 +478,68 @@ Document.prototype.querySelector = (function(querySelector) {
   //     }
   // }
 
-  async function saveModifications(elementId, css, elementStructure = null) {
+//   async function saveModifications(elementId, css, elementStructure = null) {
+//     if (!pageId || !elementId || !css) {
+//         console.warn("⚠️ Missing required data to save modifications.");
+//         return;
+//     }
+
+//     // Create the proper structure for span elements
+//     const modificationData = {
+//         userId,
+//         token,
+//         widgetId,
+//         modifications: [{
+//             pageId,
+//             elements: [{
+//                 elementId,
+//                 css: {
+//                     span: {
+//                         id: elementId,
+//                         ...css
+//                     }
+//                 },
+//                 elementStructure: elementStructure || {
+//                     type: 'span',
+//                     className: 'squareCraft-font-modified',
+//                     content: document.getElementById(elementId)?.textContent || '',
+//                     parentId: document.getElementById(elementId)?.parentElement?.id || null
+//                 }
+//             }]
+//         }]
+//     };
+
+//     try {
+//         const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications", {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+//                 "userId": userId,
+//                 "pageId": pageId,
+//                 "widget-id": widgetId,
+//             },
+//             body: JSON.stringify(modificationData),
+//         });
+
+//         const result = await response.json();
+//         console.log("✅ Changes Saved Successfully!", result);
+//         return result;
+//     } catch (error) {
+//         console.error("❌ Error saving modifications:", error);
+//     }
+// }
+
+async function saveModifications(elementId, css, elementStructure = null) {
     if (!pageId || !elementId || !css) {
         console.warn("⚠️ Missing required data to save modifications.");
         return;
     }
+
+    // Get the parent paragraph content
+    const element = document.getElementById(elementId);
+    const parentParagraph = element?.closest('p') || element?.parentElement;
+    const fullContent = parentParagraph?.innerHTML || '';
 
     // Create the proper structure for span elements
     const modificationData = {
@@ -499,11 +556,13 @@ Document.prototype.querySelector = (function(querySelector) {
                         ...css
                     }
                 },
-                elementStructure: elementStructure || {
+                elementStructure: {
                     type: 'span',
                     className: 'squareCraft-font-modified',
                     content: document.getElementById(elementId)?.textContent || '',
-                    parentId: document.getElementById(elementId)?.parentElement?.id || null
+                    parentId: parentParagraph?.id || null,
+                    fullContent: fullContent,
+                    parentTagName: parentParagraph?.tagName?.toLowerCase() || 'p'
                 }
             }]
         }]
