@@ -984,56 +984,6 @@
       }
     });
 
-    // document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-    //     if (!lastSelectedRange || !lastSelectedText) {
-    //         console.warn("⚠️ No text selected");
-    //         return;
-    //     }
-    
-    //     const fontSize = this.value + "px";
-        
-    //     try {
-    //         // Get the parent paragraph or containing element
-    //         const container = lastSelectedRange.commonAncestorContainer.parentElement;
-            
-    //         // Store the full content before modification
-    //         const fullContent = container.innerHTML;
-            
-    //         // Create span element
-    //         const span = document.createElement("span");
-    //         span.id = `squareCraft-mod-${Date.now()}`;
-    //         span.className = "squareCraft-font-modified";
-    //         span.style.fontSize = fontSize;
-    //         span.textContent = lastSelectedText;
-    
-    //         // Create element structure with context
-    //         const elementStructure = {
-    //             type: 'span',
-    //             className: 'squareCraft-font-modified',
-    //             content: lastSelectedText,
-    //             parentId: container.id,
-    //             fullContent: fullContent,
-    //             startOffset: lastSelectedRange.startOffset,
-    //             endOffset: lastSelectedRange.endOffset
-    //         };
-    
-    //         // Replace selected text with span
-    //         lastSelectedRange.deleteContents();
-    //         lastSelectedRange.insertNode(span);
-    
-    //         // Save to database with proper structure
-    //         await saveModifications(
-    //             span.id,
-    //             { "font-size": fontSize },
-    //             elementStructure
-    //         );
-    
-    //         console.log("✅ Font size modified and saved:", fontSize);
-    //     } catch (error) {
-    //         console.error("❌ Error applying font size:", error);
-    //     }
-    // });
-
     document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
         if (!lastSelectedRange || !lastSelectedText) {
             console.warn("⚠️ No text selected");
@@ -1041,41 +991,41 @@
         }
     
         const fontSize = this.value + "px";
-    
+        
         try {
             // Get the parent paragraph or containing element
             const container = lastSelectedRange.commonAncestorContainer.parentElement;
-    
+            
             // Store the full content before modification
             const fullContent = container.innerHTML;
-    
-            // Create a new span element
+            
+            // Create span element
             const span = document.createElement("span");
             span.id = `squareCraft-mod-${Date.now()}`;
             span.className = "squareCraft-font-modified";
             span.style.fontSize = fontSize;
             span.textContent = lastSelectedText;
     
-            // Get the surrounding text content
-            const beforeText = fullContent.substring(0, lastSelectedRange.startOffset);
-            const afterText = fullContent.substring(lastSelectedRange.endOffset);
+            // Create element structure with context
+            const elementStructure = {
+                type: 'span',
+                className: 'squareCraft-font-modified',
+                content: lastSelectedText,
+                parentId: container.id,
+                fullContent: fullContent,
+                startOffset: lastSelectedRange.startOffset,
+                endOffset: lastSelectedRange.endOffset
+            };
     
-            // Preserve the surrounding text
-            container.innerHTML = beforeText + span.outerHTML + afterText;
+            // Replace selected text with span
+            lastSelectedRange.deleteContents();
+            lastSelectedRange.insertNode(span);
     
-            // Save the modification with the correct structure
+            // Save to database with proper structure
             await saveModifications(
                 span.id,
                 { "font-size": fontSize },
-                {
-                    type: 'span',
-                    className: 'squareCraft-font-modified',
-                    content: lastSelectedText,
-                    parentId: container.id,
-                    fullContent: fullContent,
-                    startOffset: lastSelectedRange.startOffset,
-                    endOffset: lastSelectedRange.endOffset
-                }
+                elementStructure
             );
     
             console.log("✅ Font size modified and saved:", fontSize);
@@ -1083,6 +1033,8 @@
             console.error("❌ Error applying font size:", error);
         }
     });
+
+   
     
 
     document
