@@ -181,24 +181,24 @@
     }
 }
 
-// Add this helper function to support :contains selector
-Document.prototype.querySelector = (function(querySelector) {
-    return function(selector) {
-        if (selector.includes(':contains')) {
-            const [tagName, text] = selector.split(':contains(');
-            const searchText = text.slice(1, -2); // Remove quotes and closing parenthesis
+// // Add this helper function to support :contains selector
+// Document.prototype.querySelector = (function(querySelector) {
+//     return function(selector) {
+//         if (selector.includes(':contains')) {
+//             const [tagName, text] = selector.split(':contains(');
+//             const searchText = text.slice(1, -2); // Remove quotes and closing parenthesis
             
-            const elements = this.getElementsByTagName(tagName || '*');
-            for (let element of elements) {
-                if (element.textContent.includes(searchText)) {
-                    return element;
-                }
-            }
-            return null;
-        }
-        return querySelector.call(this, selector);
-    };
-})(Document.prototype.querySelector);
+//             const elements = this.getElementsByTagName(tagName || '*');
+//             for (let element of elements) {
+//                 if (element.textContent.includes(searchText)) {
+//                     return element;
+//                 }
+//             }
+//             return null;
+//         }
+//         return querySelector.call(this, selector);
+//     };
+// })(Document.prototype.querySelector);
 
 
 // async function fetchModifications(retries = 3) {
