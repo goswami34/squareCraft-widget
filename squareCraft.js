@@ -282,11 +282,11 @@ async function fetchModifications(retries = 3) {
         data.modifications.forEach(({ pageId: storedPageId, elements }) => {
             if (storedPageId === pageId) {
                 elements.forEach(({ elementId, css, elementStructure }) => {
-                    if (elementStructure && elementStructure.type === 'span') {
-                        // Try to find existing span
-                        let existingSpan = document.getElementById(elementId);
+                    // Check if we have span-specific CSS
+                    if (css && css.span) {
+                        let existingSpan = document.getElementById(css.span.id);
                         
-                        if (!existingSpan) {
+                        if (!existingSpan && elementStructure) {
                             // Find text nodes containing our content
                             const walker = document.createTreeWalker(
                                 document.body,
@@ -300,38 +300,36 @@ async function fetchModifications(retries = 3) {
                                 }
                             );
 
-                            let node;
-                            while (node = walker.nextNode()) {
-                                if (node.textContent.includes(elementStructure.content)) {
-                                    // Create span element
-                                    existingSpan = document.createElement('span');
-                                    existingSpan.id = elementId;
-                                    existingSpan.className = elementStructure.className;
-                                    existingSpan.textContent = elementStructure.content;
+                            let textNode;
+                            while (textNode = walker.nextNode()) {
+                                if (textNode.textContent.includes(elementStructure.content)) {
+                                    // Create new span
+                                    const span = document.createElement('span');
+                                    span.id = css.span.id;
+                                    span.className = elementStructure.className || 'squareCraft-font-modified';
+                                    span.textContent = elementStructure.content;
 
-                                    // Apply CSS from span structure
-                                    if (css.span) {
-                                        Object.entries(css.span).forEach(([prop, value]) => {
-                                            if (prop !== 'id') {
-                                                existingSpan.style[prop] = value;
-                                            }
-                                        });
-                                    }
+                                    // Apply stored CSS properties
+                                    Object.entries(css.span).forEach(([prop, value]) => {
+                                        if (prop !== 'id') {
+                                            span.style[prop] = value;
+                                        }
+                                    });
 
-                                    // Replace text node with span
-                                    node.parentNode.replaceChild(existingSpan, node);
+                                    // Replace text node with our span
+                                    textNode.parentNode.replaceChild(span, textNode);
+                                    console.log(`✅ Recreated span with ID ${span.id} and applied styles`);
                                     break;
                                 }
                             }
-                        } else {
-                            // Apply CSS to existing span
-                            if (css.span) {
-                                Object.entries(css.span).forEach(([prop, value]) => {
-                                    if (prop !== 'id') {
-                                        existingSpan.style[prop] = value;
-                                    }
-                                });
-                            }
+                        } else if (existingSpan) {
+                            // Apply styles to existing span
+                            Object.entries(css.span).forEach(([prop, value]) => {
+                                if (prop !== 'id') {
+                                    existingSpan.style[prop] = value;
+                                }
+                            });
+                            console.log(`✅ Applied styles to existing span ${existingSpan.id}`);
                         }
                     }
                 });
@@ -341,6 +339,7 @@ async function fetchModifications(retries = 3) {
     } catch (error) {
         console.error("❌ Error Fetching Modifications:", error);
         if (retries > 0) {
+            console.log(`🔄 Retrying fetch... (${retries} attempts left)`);
             setTimeout(() => fetchModifications(retries - 1), 2000);
         }
     }
