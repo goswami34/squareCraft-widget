@@ -259,36 +259,34 @@
     if (!pageId) return;
 
     try {
-      const response = await fetch(
-        `https://webefo-backend.vercel.app/api/v1/get-modifications?userId=${userId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${
-              token || localStorage.getItem("squareCraft_auth_token")
-            }`,
-          },
+        const response = await fetch(
+            `https://webefo-backend.vercel.app/api/v1/get-modifications?userId=${userId}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+                },
+            }
+        );
+
+        const data = await response.json();
+        console.log("📥 Retrieved Data from Database:", data);
+
+        if (!data.modifications || data.modifications.length === 0) {
+            console.warn("⚠️ No saved styles found for this page.");
+            return;
         }
-      );
-
-      const data = await response.json();
-      console.log("📥 Retrieved Data from Database:", data);
-
-      if (!data.modifications || data.modifications.length === 0) {
-        console.warn("⚠️ No saved styles found for this page.");
-        return;
-      }
 
         // Loop through retrieved styles and apply them
         data.modifications.forEach(({ pageId: storedPageId, elements }) => {
             if (storedPageId === pageId) {
                 elements.forEach(({ elementId, css, elementStructure }) => {
-                    if (elementStructure && elementStructure.type === 'span') {
-                        // Try to find existing span
-                        let existingSpan = document.getElementById(elementId);
+                    // Check if we have span-specific CSS
+                    if (css && css.span) {
+                        let existingSpan = document.getElementById(css.span.id);
                         
-                        if (!existingSpan) {
+                        if (!existingSpan && elementStructure) {
                             // Find text nodes containing our content
                             const walker = document.createTreeWalker(
                                 document.body,
@@ -302,38 +300,36 @@
                                 }
                             );
 
-                            let node;
-                            while (node = walker.nextNode()) {
-                                if (node.textContent.includes(elementStructure.content)) {
-                                    // Create span element
-                                    existingSpan = document.createElement('span');
-                                    existingSpan.id = elementId;
-                                    existingSpan.className = elementStructure.className;
-                                    existingSpan.textContent = elementStructure.content;
+                            let textNode;
+                            while (textNode = walker.nextNode()) {
+                                if (textNode.textContent.includes(elementStructure.content)) {
+                                    // Create new span
+                                    const span = document.createElement('span');
+                                    span.id = css.span.id;
+                                    span.className = elementStructure.className || 'squareCraft-font-modified';
+                                    span.textContent = elementStructure.content;
 
-                                    // Apply CSS from span structure
-                                    if (css.span) {
-                                        Object.entries(css.span).forEach(([prop, value]) => {
-                                            if (prop !== 'id') {
-                                                existingSpan.style[prop] = value;
-                                            }
-                                        });
-                                    }
+                                    // Apply stored CSS properties
+                                    Object.entries(css.span).forEach(([prop, value]) => {
+                                        if (prop !== 'id') {
+                                            span.style[prop] = value;
+                                        }
+                                    });
 
-                                    // Replace text node with span
-                                    node.parentNode.replaceChild(existingSpan, node);
+                                    // Replace text node with our span
+                                    textNode.parentNode.replaceChild(span, textNode);
+                                    console.log(`✅ Recreated span with ID ${span.id} and applied styles`);
                                     break;
                                 }
                             }
-                        } else {
-                            // Apply CSS to existing span
-                            if (css.span) {
-                                Object.entries(css.span).forEach(([prop, value]) => {
-                                    if (prop !== 'id') {
-                                        existingSpan.style[prop] = value;
-                                    }
-                                });
-                            }
+                        } else if (existingSpan) {
+                            // Apply styles to existing span
+                            Object.entries(css.span).forEach(([prop, value]) => {
+                                if (prop !== 'id') {
+                                    existingSpan.style[prop] = value;
+                                }
+                            });
+                            console.log(`✅ Applied styles to existing span ${existingSpan.id}`);
                         }
                     }
                 });
@@ -343,10 +339,11 @@
     } catch (error) {
         console.error("❌ Error Fetching Modifications:", error);
         if (retries > 0) {
+            console.log(`🔄 Retrying fetch... (${retries} attempts left)`);
             setTimeout(() => fetchModifications(retries - 1), 2000);
         }
     }
-  }
+}
 
   // Listen for changes in edit mode
   const observer = new MutationObserver(() => {
@@ -462,65 +459,55 @@
 
   async function saveModifications(elementId, css, elementStructure = null) {
     if (!pageId || !elementId || !css) {
-      console.warn("⚠️ Missing required data to save modifications.");
-      return;
+        console.warn("⚠️ Missing required data to save modifications.");
+        return;
     }
 
     // Create the proper structure for span elements
     const modificationData = {
-      userId,
-      token,
-      widgetId,
-      modifications: [
-        {
-          pageId,
-          elements: [
-            {
-              elementId,
-              css: {
-                span: {
-                  id: elementId,
-                  ...css,
+        userId,
+        token,
+        widgetId,
+        modifications: [{
+            pageId,
+            elements: [{
+                elementId,
+                css: {
+                    span: {
+                        id: elementId,
+                        ...css
+                    }
                 },
-              },
-              elementStructure: elementStructure || {
-                type: "span",
-                className: "squareCraft-font-modified",
-                content: document.getElementById(elementId)?.textContent || "",
-                parentId:
-                  document.getElementById(elementId)?.parentElement?.id || null,
-              },
-            },
-          ],
-        },
-      ],
+                elementStructure: elementStructure || {
+                    type: 'span',
+                    className: 'squareCraft-font-modified',
+                    content: document.getElementById(elementId)?.textContent || '',
+                    parentId: document.getElementById(elementId)?.parentElement?.id || null
+                }
+            }]
+        }]
     };
 
     try {
-      const response = await fetch(
-        "https://webefo-backend.vercel.app/api/v1/modifications",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${
-              token || localStorage.getItem("squareCraft_auth_token")
-            }`,
-            userId: userId,
-            pageId: pageId,
-            "widget-id": widgetId,
-          },
-          body: JSON.stringify(modificationData),
-        }
-      );
+        const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+                "userId": userId,
+                "pageId": pageId,
+                "widget-id": widgetId,
+            },
+            body: JSON.stringify(modificationData),
+        });
 
-      const result = await response.json();
-      console.log("✅ Changes Saved Successfully!", result);
-      return result;
+        const result = await response.json();
+        console.log("✅ Changes Saved Successfully!", result);
+        return result;
     } catch (error) {
-      console.error("❌ Error saving modifications:", error);
+        console.error("❌ Error saving modifications:", error);
     }
-  }
+}
 
   async function resetModifications() {
     const userId = localStorage.getItem("squareCraft_u_id");
@@ -1399,53 +1386,50 @@
     //     }
     // });
 
-    document
-      .getElementById("squareCraftFontSize")
-      .addEventListener("input", async function () {
+    document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
         if (!lastSelectedRange || !lastSelectedText) {
-          console.warn("⚠️ No text selected , please select the text");
-          return;
+            console.warn("⚠️ No text selected");
+            return;
         }
-
+    
         const fontSize = this.value + "px";
-
+        
         try {
-          // Create span element
-          const span = document.createElement("span");
-          span.id = `squareCraft-mod-${Date.now()}`;
-          span.className = "squareCraft-font-modified";
-          span.style.fontSize = fontSize;
-          span.textContent = lastSelectedText;
-
-          // Get parent element info
-          const parentElement =
-            lastSelectedRange.commonAncestorContainer.parentElement;
-          const parentId = parentElement ? parentElement.id : null;
-
-          // Create element structure
-          const elementStructure = {
-            type: "span",
-            className: "squareCraft-font-modified",
-            content: lastSelectedText,
-            parentId: parentId,
-          };
-
-          // Replace selected text with span
-          lastSelectedRange.deleteContents();
-          lastSelectedRange.insertNode(span);
-
-          // Save to database with proper structure
-          await saveModifications(
-            span.id,
-            { "font-size": fontSize },
-            elementStructure
-          );
-
-          console.log("✅ Font size modified and saved:", fontSize);
+            // Create span element
+            const span = document.createElement("span");
+            span.id = `squareCraft-mod-${Date.now()}`;
+            span.className = "squareCraft-font-modified";
+            span.style.fontSize = fontSize;
+            span.textContent = lastSelectedText;
+    
+            // Get parent element info
+            const parentElement = lastSelectedRange.commonAncestorContainer.parentElement;
+            const parentId = parentElement ? parentElement.id : null;
+    
+            // Create element structure
+            const elementStructure = {
+                type: 'span',
+                className: 'squareCraft-font-modified',
+                content: lastSelectedText,
+                parentId: parentId
+            };
+    
+            // Replace selected text with span
+            lastSelectedRange.deleteContents();
+            lastSelectedRange.insertNode(span);
+    
+            // Save to database with proper structure
+            await saveModifications(
+                span.id,
+                { "font-size": fontSize },
+                elementStructure
+            );
+    
+            console.log("✅ Font size modified and saved:", fontSize);
         } catch (error) {
-          console.error("❌ Error applying font size:", error);
+            console.error("❌ Error applying font size:", error);
         }
-      });
+    });
 
     document
       .getElementById("squareCraftLineHeight")
