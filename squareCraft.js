@@ -136,13 +136,35 @@
                                 }
                             );
 
+                            // let textNode;
+                            // while (textNode = walker.nextNode()) {
+                            //     if (textNode.textContent.includes(elementStructure.content)) {
+                            //         // Create new span
+                            //         const span = document.createElement('span');
+                            //         span.id = css.span.id;
+                            //         span.className = elementStructure.className || 'squareCraft-font-modified';
+                            //         span.textContent = elementStructure.content;
+
+                            //         // Apply stored CSS properties
+                            //         Object.entries(css.span).forEach(([prop, value]) => {
+                            //             if (prop !== 'id') {
+                            //                 span.style[prop] = value;
+                            //             }
+                            //         });
+
+                            //         // Replace text node with our span
+                            //         textNode.parentNode.replaceChild(span, textNode);
+                            //         console.log(`✅ Recreated span with ID ${span.id} and applied styles`);
+                            //         break;
+                            //     }
+                            // }
                             let textNode;
                             while (textNode = walker.nextNode()) {
                                 if (textNode.textContent.includes(elementStructure.content)) {
-                                    // Create new span
+                                    // Create span with the stored styles
                                     const span = document.createElement('span');
                                     span.id = css.span.id;
-                                    span.className = elementStructure.className || 'squareCraft-font-modified';
+                                    span.className = elementStructure.className;
                                     span.textContent = elementStructure.content;
 
                                     // Apply stored CSS properties
@@ -152,9 +174,13 @@
                                         }
                                     });
 
-                                    // Replace text node with our span
-                                    textNode.parentNode.replaceChild(span, textNode);
-                                    console.log(`✅ Recreated span with ID ${span.id} and applied styles`);
+                                    // Replace only the specific text while preserving surrounding content
+                                    const range = document.createRange();
+                                    const startIndex = textNode.textContent.indexOf(elementStructure.content);
+                                    range.setStart(textNode, startIndex);
+                                    range.setEnd(textNode, startIndex + elementStructure.content.length);
+                                    range.deleteContents();
+                                    range.insertNode(span);
                                     break;
                                 }
                             }
@@ -263,64 +289,6 @@
         console.error("❌ Error saving modifications:", error);
     }
 }
-
-// async function saveModifications(elementId, css, elementStructure = null) {
-//     if (!pageId || !elementId || !css) {
-//         console.warn("⚠️ Missing required data to save modifications.");
-//         return;
-//     }
-
-//     // Get the parent element and its full content
-//     const element = document.getElementById(elementId);
-//     const parentElement = element?.closest('p') || element?.parentElement;
-    
-//     // Create the proper structure for span elements
-//     const modificationData = {
-//         userId,
-//         token,
-//         widgetId,
-//         modifications: [{
-//             pageId,
-//             elements: [{
-//                 elementId,
-//                 css: {
-//                     span: {
-//                         id: elementId,
-//                         ...css
-//                     }
-//                 },
-//                 elementStructure: elementStructure || {
-//                     type: 'span',
-//                     className: 'squareCraft-font-modified',
-//                     content: element?.textContent || '',
-//                     parentId: parentElement?.id || null,
-//                     fullContent: parentElement?.innerHTML || '',
-//                     parentTagName: parentElement?.tagName?.toLowerCase() || 'p'
-//                 }
-//             }]
-//         }]
-//     };
-
-//     try {
-//         const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//                 "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-//                 "userId": userId,
-//                 "pageId": pageId,
-//                 "widget-id": widgetId,
-//             },
-//             body: JSON.stringify(modificationData),
-//         });
-
-//         const result = await response.json();
-//         console.log("✅ Changes Saved Successfully!", result);
-//         return result;
-//     } catch (error) {
-//         console.error("❌ Error saving modifications:", error);
-//     }
-// }
 
 
   async function resetModifications() {
@@ -496,10 +464,7 @@
 
 
               <div class="squareCraft-mt-2  squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2 ">
-              
                 
-
-                 
               </div>
 
               <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2 ">
