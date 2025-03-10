@@ -211,54 +211,78 @@ async function fetchModifications(retries = 3) {
                 elements.forEach(({ elementId, css, elementStructure }) => {
                     if (css && css.span) {
                         // Find the parent container
-                        const parentElement = elementStructure.parentId ? 
+                        let parentElement = elementStructure?.parentId ? 
                             document.getElementById(elementStructure.parentId) : 
-                            document.body;
+                            document.querySelector(`p:contains("${elementStructure?.content}")`);
 
-                        if (parentElement) {
-                            // If we have the full content, restore it first
-                            if (elementStructure.fullContent) {
-                                parentElement.innerHTML = elementStructure.fullContent;
+                        if (!parentElement) {
+                            // Fallback to body if parent not found
+                            parentElement = document.body;
+                        }
+
+                        // Handle font-size modifications differently
+                        if (css.span["font-size"]) {
+                            // Create a temporary container to handle the content
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = elementStructure?.fullContent || parentElement.innerHTML;
+
+                            // Find and replace the specific text while preserving HTML structure
+                            const textToModify = elementStructure?.content;
+                            if (textToModify) {
+                                const regex = new RegExp(`(${textToModify})`, 'g');
+                                tempDiv.innerHTML = tempDiv.innerHTML.replace(regex, 
+                                    `<span id="${css.span.id}" class="${elementStructure?.className || 'squareCraft-font-modified'}" 
+                                    style="font-size: ${css.span["font-size"]}">${textToModify}</span>`
+                                );
+
+                                // Update the parent element
+                                parentElement.innerHTML = tempDiv.innerHTML;
                             }
+                        } else {
+                            // Handle other modifications (non-font-size)
+                            let existingSpan = document.getElementById(css.span.id);
+                            
+                            if (!existingSpan && elementStructure?.content) {
+                                // Find text nodes containing our content
+                                const walker = document.createTreeWalker(
+                                    parentElement,
+                                    NodeFilter.SHOW_TEXT,
+                                    {
+                                        acceptNode: function(node) {
+                                            return node.textContent.includes(elementStructure.content)
+                                                ? NodeFilter.FILTER_ACCEPT
+                                                : NodeFilter.FILTER_REJECT;
+                                        }
+                                    }
+                                );
 
-                            // Find the text to modify
-                            const walker = document.createTreeWalker(
-                                parentElement,
-                                NodeFilter.SHOW_TEXT,
-                                {
-                                    acceptNode: function(node) {
-                                        return node.textContent.includes(elementStructure.content)
-                                            ? NodeFilter.FILTER_ACCEPT
-                                            : NodeFilter.FILTER_REJECT;
+                                let textNode;
+                                while (textNode = walker.nextNode()) {
+                                    if (textNode.textContent.includes(elementStructure.content)) {
+                                        const span = document.createElement('span');
+                                        span.id = css.span.id;
+                                        span.className = elementStructure.className || 'squareCraft-font-modified';
+                                        span.textContent = elementStructure.content;
+
+                                        // Apply all CSS properties
+                                        Object.entries(css.span).forEach(([prop, value]) => {
+                                            if (prop !== 'id') {
+                                                span.style[prop] = value;
+                                            }
+                                        });
+
+                                        textNode.parentNode.replaceChild(span, textNode);
+                                        console.log(`✅ Applied modification to ${span.id}`);
+                                        break;
                                     }
                                 }
-                            );
-
-                            let textNode;
-                            while (textNode = walker.nextNode()) {
-                                if (textNode.textContent.includes(elementStructure.content)) {
-                                    // Create span with the stored styles
-                                    const span = document.createElement('span');
-                                    span.id = css.span.id;
-                                    span.className = elementStructure.className;
-                                    span.textContent = elementStructure.content;
-
-                                    // Apply stored CSS properties
-                                    Object.entries(css.span).forEach(([prop, value]) => {
-                                        if (prop !== 'id') {
-                                            span.style[prop] = value;
-                                        }
-                                    });
-
-                                    // Replace only the specific text while preserving surrounding content
-                                    const range = document.createRange();
-                                    const startIndex = textNode.textContent.indexOf(elementStructure.content);
-                                    range.setStart(textNode, startIndex);
-                                    range.setEnd(textNode, startIndex + elementStructure.content.length);
-                                    range.deleteContents();
-                                    range.insertNode(span);
-                                    break;
-                                }
+                            } else if (existingSpan) {
+                                // Update existing span styles
+                                Object.entries(css.span).forEach(([prop, value]) => {
+                                    if (prop !== 'id') {
+                                        existingSpan.style[prop] = value;
+                                    }
+                                });
                             }
                         }
                     }
