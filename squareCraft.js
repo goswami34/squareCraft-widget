@@ -311,68 +311,12 @@ Document.prototype.querySelector = (function(querySelector) {
   });
 
  
-//   async function saveModifications(elementId, css, elementStructure = null) {
-//     if (!pageId || !elementId || !css) {
-//         console.warn("⚠️ Missing required data to save modifications.");
-//         return;
-//     }
-
-//     // Create the proper structure for span elements
-//     const modificationData = {
-//         userId,
-//         token,
-//         widgetId,
-//         modifications: [{
-//             pageId,
-//             elements: [{
-//                 elementId,
-//                 css: {
-//                     span: {
-//                         id: elementId,
-//                         ...css
-//                     }
-//                 },
-//                 elementStructure: elementStructure || {
-//                     type: 'span',
-//                     className: 'squareCraft-font-modified',
-//                     content: document.getElementById(elementId)?.textContent || '',
-//                     parentId: document.getElementById(elementId)?.parentElement?.id || null
-//                 }
-//             }]
-//         }]
-//     };
-
-//     try {
-//         const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//                 "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-//                 "userId": userId,
-//                 "pageId": pageId,
-//                 "widget-id": widgetId,
-//             },
-//             body: JSON.stringify(modificationData),
-//         });
-
-//         const result = await response.json();
-//         console.log("✅ Changes Saved Successfully!", result);
-//         return result;
-//     } catch (error) {
-//         console.error("❌ Error saving modifications:", error);
-//     }
-// }
-
-async function saveModifications(elementId, css, elementStructure = null) {
+  async function saveModifications(elementId, css, elementStructure = null) {
     if (!pageId || !elementId || !css) {
         console.warn("⚠️ Missing required data to save modifications.");
         return;
     }
 
-    // Get the parent element and its full content
-    const element = document.getElementById(elementId);
-    const parentElement = element?.closest('p') || element?.parentElement;
-    
     // Create the proper structure for span elements
     const modificationData = {
         userId,
@@ -391,10 +335,8 @@ async function saveModifications(elementId, css, elementStructure = null) {
                 elementStructure: elementStructure || {
                     type: 'span',
                     className: 'squareCraft-font-modified',
-                    content: element?.textContent || '',
-                    parentId: parentElement?.id || null,
-                    fullContent: parentElement?.innerHTML || '',
-                    parentTagName: parentElement?.tagName?.toLowerCase() || 'p'
+                    content: document.getElementById(elementId)?.textContent || '',
+                    parentId: document.getElementById(elementId)?.parentElement?.id || null
                 }
             }]
         }]
@@ -420,6 +362,64 @@ async function saveModifications(elementId, css, elementStructure = null) {
         console.error("❌ Error saving modifications:", error);
     }
 }
+
+// async function saveModifications(elementId, css, elementStructure = null) {
+//     if (!pageId || !elementId || !css) {
+//         console.warn("⚠️ Missing required data to save modifications.");
+//         return;
+//     }
+
+//     // Get the parent element and its full content
+//     const element = document.getElementById(elementId);
+//     const parentElement = element?.closest('p') || element?.parentElement;
+    
+//     // Create the proper structure for span elements
+//     const modificationData = {
+//         userId,
+//         token,
+//         widgetId,
+//         modifications: [{
+//             pageId,
+//             elements: [{
+//                 elementId,
+//                 css: {
+//                     span: {
+//                         id: elementId,
+//                         ...css
+//                     }
+//                 },
+//                 elementStructure: elementStructure || {
+//                     type: 'span',
+//                     className: 'squareCraft-font-modified',
+//                     content: element?.textContent || '',
+//                     parentId: parentElement?.id || null,
+//                     fullContent: parentElement?.innerHTML || '',
+//                     parentTagName: parentElement?.tagName?.toLowerCase() || 'p'
+//                 }
+//             }]
+//         }]
+//     };
+
+//     try {
+//         const response = await fetch("https://webefo-backend.vercel.app/api/v1/modifications", {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+//                 "userId": userId,
+//                 "pageId": pageId,
+//                 "widget-id": widgetId,
+//             },
+//             body: JSON.stringify(modificationData),
+//         });
+
+//         const result = await response.json();
+//         console.log("✅ Changes Saved Successfully!", result);
+//         return result;
+//     } catch (error) {
+//         console.error("❌ Error saving modifications:", error);
+//     }
+// }
 
 
   async function resetModifications() {
@@ -1142,56 +1142,6 @@ async function saveModifications(elementId, css, elementStructure = null) {
       }
     });
 
-    // document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-    //     if (!lastSelectedRange || !lastSelectedText) {
-    //         console.warn("⚠️ No text selected");
-    //         return;
-    //     }
-    
-    //     const fontSize = this.value + "px";
-        
-    //     try {
-    //         // Get the parent paragraph or containing element
-    //         const container = lastSelectedRange.commonAncestorContainer.parentElement;
-            
-    //         // Store the full content before modification
-    //         const fullContent = container.innerHTML;
-            
-    //         // Create span element
-    //         const span = document.createElement("span");
-    //         span.id = `squareCraft-mod-${Date.now()}`;
-    //         span.className = "squareCraft-font-modified";
-    //         span.style.fontSize = fontSize;
-    //         span.textContent = lastSelectedText;
-    
-    //         // Create element structure with context
-    //         const elementStructure = {
-    //             type: 'span',
-    //             className: 'squareCraft-font-modified',
-    //             content: lastSelectedText,
-    //             parentId: container.id,
-    //             fullContent: fullContent,
-    //             startOffset: lastSelectedRange.startOffset,
-    //             endOffset: lastSelectedRange.endOffset
-    //         };
-    
-    //         // Replace selected text with span
-    //         lastSelectedRange.deleteContents();
-    //         lastSelectedRange.insertNode(span);
-    
-    //         // Save to database with proper structure
-    //         await saveModifications(
-    //             span.id,
-    //             { "font-size": fontSize },
-    //             elementStructure
-    //         );
-    
-    //         console.log("✅ Font size modified and saved:", fontSize);
-    //     } catch (error) {
-    //         console.error("❌ Error applying font size:", error);
-    //     }
-    // });
-
     document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
         if (!lastSelectedRange || !lastSelectedText) {
             console.warn("⚠️ No text selected");
@@ -1203,6 +1153,9 @@ async function saveModifications(elementId, css, elementStructure = null) {
         try {
             // Get the parent paragraph or containing element
             const container = lastSelectedRange.commonAncestorContainer.parentElement;
+            
+            // Store the full content before modification
+            const fullContent = container.innerHTML;
             
             // Create span element
             const span = document.createElement("span");
@@ -1217,8 +1170,9 @@ async function saveModifications(elementId, css, elementStructure = null) {
                 className: 'squareCraft-font-modified',
                 content: lastSelectedText,
                 parentId: container.id,
-                fullContent: container.innerHTML,
-                parentTagName: container.tagName.toLowerCase()
+                fullContent: fullContent,
+                startOffset: lastSelectedRange.startOffset,
+                endOffset: lastSelectedRange.endOffset
             };
     
             // Replace selected text with span
@@ -1237,6 +1191,52 @@ async function saveModifications(elementId, css, elementStructure = null) {
             console.error("❌ Error applying font size:", error);
         }
     });
+
+    // document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+    //     if (!lastSelectedRange || !lastSelectedText) {
+    //         console.warn("⚠️ No text selected");
+    //         return;
+    //     }
+    
+    //     const fontSize = this.value + "px";
+        
+    //     try {
+    //         // Get the parent paragraph or containing element
+    //         const container = lastSelectedRange.commonAncestorContainer.parentElement;
+            
+    //         // Create span element
+    //         const span = document.createElement("span");
+    //         span.id = `squareCraft-mod-${Date.now()}`;
+    //         span.className = "squareCraft-font-modified";
+    //         span.style.fontSize = fontSize;
+    //         span.textContent = lastSelectedText;
+    
+    //         // Create element structure with context
+    //         const elementStructure = {
+    //             type: 'span',
+    //             className: 'squareCraft-font-modified',
+    //             content: lastSelectedText,
+    //             parentId: container.id,
+    //             fullContent: container.innerHTML,
+    //             parentTagName: container.tagName.toLowerCase()
+    //         };
+    
+    //         // Replace selected text with span
+    //         lastSelectedRange.deleteContents();
+    //         lastSelectedRange.insertNode(span);
+    
+    //         // Save to database with proper structure
+    //         await saveModifications(
+    //             span.id,
+    //             { "font-size": fontSize },
+    //             elementStructure
+    //         );
+    
+    //         console.log("✅ Font size modified and saved:", fontSize);
+    //     } catch (error) {
+    //         console.error("❌ Error applying font size:", error);
+    //     }
+    // });
     
 
     document
