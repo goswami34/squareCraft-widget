@@ -894,43 +894,68 @@
     // Font style (Bold, Italic, Underline, etc.)
     document.querySelectorAll(".elements-font-style").forEach((btn) => {
       btn.addEventListener("click", function () {
-        if (!selectedElement) {
-          console.warn("⚠️ No element selected to apply text decoration.fsdsd");
-          return;
-        }
-
         let styleType = this.dataset.style;
-        let css = {};
-
+        
         if (styleType === "bold") {
-          let currentWeight = parseInt(
-            window.getComputedStyle(selectedElement).fontWeight,
-            10
-          );
-          css["font-weight"] = currentWeight >= 700 ? "900" : "700";
-        } else if (styleType === "italic") {
-          let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
-          css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
-        } else {
-          let currentDecoration =
-            window.getComputedStyle(selectedElement).textDecorationLine;
-          if (styleType === "underline") {
-            css["text-decoration"] = currentDecoration.includes("underline")
-              ? "none"
-              : "underline";
-          } else if (styleType === "dotted") {
-            css["text-decoration"] = currentDecoration.includes("dotted")
-              ? "none"
-              : "underline dotted";
-          } else if (styleType === "line-through") {
-            css["text-decoration"] = currentDecoration.includes("line-through")
-              ? "none"
-              : "line-through";
+          const selection = window.getSelection();
+          if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+            const range = selection.getRangeAt(0);
+            const selectedText = selection.toString();
+            
+            // Create a strong element
+            const strongElement = document.createElement("strong");
+            strongElement.id = `squareCraft-bold-${Date.now()}`; // Unique ID
+            strongElement.className = "squareCraft-font-modified";
+            strongElement.textContent = selectedText;
+            
+            // Replace selected text with strong element
+            range.deleteContents();
+            range.insertNode(strongElement);
+            
+            // Save the modification
+            const elementStructure = {
+              type: 'strong',
+              className: 'squareCraft-font-modified',
+              content: selectedText,
+              parentId: strongElement.parentElement?.id || null
+            };
+            
+            saveModifications(
+              strongElement.id,
+              { "font-weight": "bold" },
+              elementStructure
+            );
+            
+            // Clear selection
+            selection.removeAllRanges();
+          } else {
+            console.warn("⚠️ No text selected for bold styling");
           }
-        }
+        } else {
+          // Handle other style types (italic, underline, etc.) as before
+          if (!selectedElement) {
+            console.warn("⚠️ No element selected to apply text decoration.");
+            return;
+          }
+          
+          let css = {};
+          if (styleType === "italic") {
+            let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
+            css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
+          } else {
+            let currentDecoration = window.getComputedStyle(selectedElement).textDecorationLine;
+            if (styleType === "underline") {
+              css["text-decoration"] = currentDecoration.includes("underline") ? "none" : "underline";
+            } else if (styleType === "dotted") {
+              css["text-decoration"] = currentDecoration.includes("dotted") ? "none" : "underline dotted";
+            } else if (styleType === "line-through") {
+              css["text-decoration"] = currentDecoration.includes("line-through") ? "none" : "line-through";
+            }
+          }
 
-        applyStylesToElement(selectedElement.id, css);
-        saveModifications(selectedElement.id, css);
+          applyStylesToElement(selectedElement.id, css);
+          saveModifications(selectedElement.id, css);
+        }
       });
     });
 
@@ -1039,12 +1064,15 @@ function clearPendingChanges() {
       lastSelectedRange.deleteContents();
       lastSelectedRange.insertNode(span);
 
-      // Save to database with proper structure
-      await saveModifications(
-          span.id,
-          { "font-size": fontSize },
-          elementStructure
-      );
+        // Save to database with proper structure
+        await saveModifications(
+            span.id,
+            { 
+                "font-size": fontSize,
+                "display": "inline-block" // Ensure inline display
+            },
+            elementStructure
+        );
 
       console.log("✅ Font size modified and saved:", fontSize);
   } catch (error) {
