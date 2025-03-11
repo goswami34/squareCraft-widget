@@ -865,23 +865,21 @@
 
     document.getElementById("squareCraftPublish").addEventListener("click", async () => {
       try {
+          let css = {};
+          let elementStructure = null;
+  
           // Handle font size changes if pending
           if (pendingChanges.fontSize && pendingChanges.selectedText && pendingChanges.container) {
-              // Remove any temporary preview spans
-              document.querySelectorAll('[id^="squareCraft-temp-"]').forEach(span => {
-                  if (span && span.parentNode) {
-                      span.parentNode.removeChild(span);
-                  }
-              });
-  
               // Create permanent span
               const span = document.createElement("span");
               span.id = `squareCraft-mod-${Date.now()}`;
               span.className = "squareCraft-font-modified";
-              span.style.fontSize = pendingChanges.fontSize;
-              span.textContent = pendingChanges.selectedText;
+              
+              // Add font size to CSS object
+              css["font-size"] = pendingChanges.fontSize;
   
-              const elementStructure = {
+              // Create element structure
+              elementStructure = {
                   type: 'span',
                   className: 'squareCraft-font-modified',
                   content: pendingChanges.selectedText,
@@ -889,35 +887,49 @@
                   fullContent: pendingChanges.container.innerHTML
               };
   
-              // Save font size modification
-              await saveModifications(
-                  span.id,
-                  { "font-size": pendingChanges.fontSize },
-                  elementStructure
-              );
+              // Remove any temporary preview spans
+              document.querySelectorAll('[id^="squareCraft-temp-"]').forEach(span => {
+                  if (span && span.parentNode) {
+                      span.parentNode.removeChild(span);
+                  }
+              });
   
               // Insert the permanent span
+              span.textContent = pendingChanges.selectedText;
               const range = pendingChanges.selectedRange.cloneRange();
               range.deleteContents();
               range.insertNode(span);
-  
-              // Clear pending changes after saving
-              clearPendingChanges();
-  
-              console.log("✅ Font size changes saved successfully!");
           }
   
-          // Handle other modifications if needed
+          // Add other modifications to the same CSS object
           if (selectedElement) {
-              let css = {
-                  "font-family": document.getElementById("squareCraft-font-family").querySelector("p").textContent,
-                  "font-weight": document.getElementById("squareCraftFontWeight").value,
-                  "line-height": document.getElementById("squareCraftLineHeight").value + "px",
-                  // Add other properties as needed
-              };
+              const fontFamily = document.getElementById("squareCraft-font-family").querySelector("p").textContent;
+              const fontWeight = document.getElementById("squareCraftFontWeight").value;
+              const lineHeight = document.getElementById("squareCraftLineHeight").value + "px";
   
-              await saveModifications(selectedElement.id, css);
+              if (fontFamily !== "Select a Font") {
+                  css["font-family"] = fontFamily;
+              }
+              if (fontWeight) {
+                  css["font-weight"] = fontWeight;
+              }
+              if (lineHeight) {
+                  css["line-height"] = lineHeight;
+              }
           }
+  
+          // Only save if we have CSS properties to save
+          if (Object.keys(css).length > 0) {
+              const elementId = pendingChanges.fontSize ? 
+                  `squareCraft-mod-${Date.now()}` : 
+                  selectedElement.id;
+  
+              await saveModifications(elementId, css, elementStructure);
+              console.log("✅ All changes saved successfully!", css);
+          }
+  
+          // Clear pending changes after saving
+          clearPendingChanges();
   
       } catch (error) {
           console.error("❌ Error publishing changes:", error);
