@@ -1298,9 +1298,8 @@ function clearPendingChanges() {
    }
  });
 
- // Font size input listener for preview only
-document.getElementById("squareCraftFontSize").addEventListener("input", function() {
-  if (!pendingChanges.selectedRange || !pendingChanges.selectedText) {
+ document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+  if (!lastSelectedRange || !lastSelectedText) {
       console.warn("⚠️ No text selected");
       return;
   }
@@ -1308,35 +1307,49 @@ document.getElementById("squareCraftFontSize").addEventListener("input", functio
   const fontSize = this.value + "px";
   
   try {
-      // Remove any existing temporary previews
-      document.querySelectorAll('[id^="squareCraft-temp-"]').forEach(span => {
-          if (span && span.parentNode) {
-              const textNode = document.createTextNode(span.textContent);
-              span.parentNode.replaceChild(textNode, span);
-          }
-      });
-
-      // Create new temporary preview span
-      const span = document.createElement("span");
-      span.id = `squareCraft-temp-${Date.now()}`;
-      span.className = "squareCraft-font-modified-preview";
-      span.style.fontSize = fontSize;
-      span.textContent = pendingChanges.selectedText;
-
-      // Store the changes for later saving
-      pendingChanges.fontSize = fontSize;
-      pendingChanges.elementId = span.id;
+      // Get the parent paragraph or containing element
+      const container = lastSelectedRange.commonAncestorContainer.parentElement;
       
-      // Insert the preview span
-      const range = pendingChanges.selectedRange.cloneRange();
-      range.deleteContents();
-      range.insertNode(span);
+      // Store the full content before modification
+      const fullContent = container.innerHTML;
+      
+      // Create span element
+      const span = document.createElement("span");
+      span.id = `squareCraft-mod-${Date.now()}`;
+      span.className = "squareCraft-font-modified";
+      span.style.fontSize = fontSize;
+      span.textContent = lastSelectedText;
 
-      console.log("✅ Font size preview applied:", fontSize);
+      // Create element structure with context
+      const elementStructure = {
+          type: 'span',
+          className: 'squareCraft-font-modified',
+          content: lastSelectedText,
+          parentId: container.id,
+          fullContent: fullContent,
+          startOffset: lastSelectedRange.startOffset,
+          endOffset: lastSelectedRange.endOffset
+      };
+
+      // Replace selected text with span
+      lastSelectedRange.deleteContents();
+      lastSelectedRange.insertNode(span);
+
+      // Save to database with proper structure
+      await saveModifications(
+          span.id,
+          { "font-size": fontSize },
+          elementStructure
+      );
+
+      console.log("✅ Font size modified and saved:", fontSize);
   } catch (error) {
-      console.error("❌ Error applying font size preview:", error);
+      console.error("❌ Error applying font size:", error);
   }
 });
+// });
+
+
 
         
 
