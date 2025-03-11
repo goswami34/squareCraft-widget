@@ -118,6 +118,7 @@
         data.modifications.forEach(({ pageId: storedPageId, elements }) => {
             if (storedPageId === pageId) {
                 elements.forEach(({ elementId, css, elementStructure }) => {
+                    // Check if we have span-specific CSS
                     if (css && css.span) {
                         let existingSpan = document.getElementById(css.span.id);
                         
@@ -138,10 +139,10 @@
                             let textNode;
                             while (textNode = walker.nextNode()) {
                                 if (textNode.textContent.includes(elementStructure.content)) {
-                                    // Create the span with the modified text
+                                    // Create new span
                                     const span = document.createElement('span');
                                     span.id = css.span.id;
-                                    span.className = elementStructure.className;
+                                    span.className = elementStructure.className || 'squareCraft-font-modified';
                                     span.textContent = elementStructure.content;
 
                                     // Apply stored CSS properties
@@ -151,18 +152,8 @@
                                         }
                                     });
 
-                                    // Create fragment with before and after text
-                                    const fragment = document.createDocumentFragment();
-                                    if (elementStructure.beforeText) {
-                                        fragment.appendChild(document.createTextNode(elementStructure.beforeText));
-                                    }
-                                    fragment.appendChild(span);
-                                    if (elementStructure.afterText) {
-                                        fragment.appendChild(document.createTextNode(elementStructure.afterText));
-                                    }
-
-                                    // Replace the text node with our fragment
-                                    textNode.parentNode.replaceChild(fragment, textNode);
+                                    // Replace text node with our span
+                                    textNode.parentNode.replaceChild(span, textNode);
                                     console.log(`✅ Recreated span with ID ${span.id} and applied styles`);
                                     break;
                                 }
@@ -1002,105 +993,65 @@ function clearPendingChanges() {
 
 
  // Update the mouseup event listener
- document.addEventListener("mouseup", function() {
+ document.addEventListener("mouseup", function () {
    const selection = window.getSelection();
-   if (selection.rangeCount > 0) {
-     const selectedText = selection.toString().trim();
-     if (selectedText.length > 0) {
-       lastSelectedText = selectedText;
-       lastSelectedRange = selection.getRangeAt(0).cloneRange();
-       console.log("✅ Text Selected:", lastSelectedText);
-       
-       // Show the widget when text is selected
-       const widget = document.getElementById("squarecraft-widget-container");
-       if (widget) {
-           widget.style.display = "block";
-       }
-     }
+   if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+     lastSelectedText = selection.toString();
+     lastSelectedRange = selection.getRangeAt(0);
+     console.log("✅ Text Selected:", lastSelectedText);
    }
  });
 
  document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-    if (!lastSelectedText || !lastSelectedRange) {
-        console.warn("⚠️ No text selected");
-        return;
-    }
+  if (!lastSelectedRange || !lastSelectedText) {
+      console.warn("⚠️ No text selected");
+      return;
+  }
 
-    const fontSize = this.value + "px";
-    
-    try {
-        // Get the parent paragraph or containing element
-        const container = lastSelectedRange.commonAncestorContainer;
-        const parentElement = container.nodeType === 3 ? container.parentElement : container;
-        
-        // Create span element with unique ID
-        const span = document.createElement('span');
-        span.id = `squareCraft-mod-${Date.now()}`;
-        span.className = "squareCraft-font-modified";
-        span.style.fontSize = fontSize;
-        
-        // Get the full text content and positions
-        const fullText = container.textContent;
-        const startOffset = lastSelectedRange.startOffset;
-        const endOffset = lastSelectedRange.endOffset;
-        
-        // Split the text into three parts: before, selected, and after
-        const beforeText = fullText.substring(0, startOffset);
-        const selectedText = fullText.substring(startOffset, endOffset);
-        const afterText = fullText.substring(endOffset);
-        
-        // Create text nodes for before and after content
-        const beforeNode = document.createTextNode(beforeText);
-        const afterNode = document.createTextNode(afterText);
-        
-        // Set the selected text in the span
-        span.textContent = selectedText;
-        
-        // Create a fragment to hold all pieces
-        const fragment = document.createDocumentFragment();
-        if (beforeText) fragment.appendChild(beforeNode);
-        fragment.appendChild(span);
-        if (afterText) fragment.appendChild(afterNode);
-        
-        // Create element structure for persistence
-        const elementStructure = {
-            type: 'span',
-            className: 'squareCraft-font-modified',
-            content: selectedText,
-            parentId: parentElement.id,
-            fullContent: parentElement.innerHTML,
-            startOffset: startOffset,
-            endOffset: endOffset,
-            beforeText: beforeText,
-            afterText: afterText
-        };
+  const fontSize = this.value + "px";
+  
+  try {
+      // Get the parent paragraph or containing element
+      const container = lastSelectedRange.commonAncestorContainer.parentElement;
+      
+      // Store the full content before modification
+      const fullContent = container.innerHTML;
+      
+      // Create span element
+      const span = document.createElement("span");
+      span.id = `squareCraft-mod-${Date.now()}`;
+      span.className = "squareCraft-font-modified";
+      span.style.fontSize = fontSize;
+      span.textContent = lastSelectedText;
 
-        // Replace the content
-        if (container.nodeType === 3) {
-            container.parentNode.replaceChild(fragment, container);
-        } else {
-            container.innerHTML = '';
-            container.appendChild(fragment);
-        }
+      // Create element structure with context
+      const elementStructure = {
+          type: 'span',
+          className: 'squareCraft-font-modified',
+          content: lastSelectedText,
+          parentId: container.id,
+          fullContent: fullContent,
+          startOffset: lastSelectedRange.startOffset,
+          endOffset: lastSelectedRange.endOffset
+      };
 
-        // Save to database with proper structure
-        await saveModifications(
-            span.id,
-            { 
-                "font-size": fontSize,
-                "display": "inline"
-            },
-            elementStructure
-        );
+      // Replace selected text with span
+      lastSelectedRange.deleteContents();
+      lastSelectedRange.insertNode(span);
 
-        // Clear the selection to prevent accidental modifications
-        window.getSelection().removeAllRanges();
-        
-        console.log("✅ Font size modified and saved:", fontSize);
-    } catch (error) {
-        console.error("❌ Error applying font size:", error);
-    }
- });
+      // Save to database with proper structure
+      await saveModifications(
+          span.id,
+          { "font-size": fontSize },
+          elementStructure
+      );
+
+      console.log("✅ Font size modified and saved:", fontSize);
+  } catch (error) {
+      console.error("❌ Error applying font size:", error);
+  }
+});
+// });
 
 
 
