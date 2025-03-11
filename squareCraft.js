@@ -1095,9 +1095,11 @@ function clearPendingChanges() {
   // Remove any temporary preview spans
   document.querySelectorAll('[id^="squareCraft-temp-"]').forEach(span => {
       if (span && span.parentNode) {
-          const text = span.textContent;
-          const textNode = document.createTextNode(text);
-          span.parentNode.replaceChild(textNode, span);
+          // Only remove if it matches our pending changes
+          if (pendingChanges.selectedText && span.textContent === pendingChanges.selectedText) {
+              const textNode = document.createTextNode(span.textContent);
+              span.parentNode.replaceChild(textNode, span);
+          }
       }
   });
 
@@ -1122,6 +1124,46 @@ document.addEventListener("mouseup", function() {
 });
 
 // Single font size input listener
+// document.getElementById("squareCraftFontSize").addEventListener("input", function() {
+//   if (!pendingChanges.selectedRange || !pendingChanges.selectedText) {
+//       console.warn("⚠️ No text selected");
+//       return;
+//   }
+
+//   const fontSize = this.value + "px";
+  
+//   try {
+//       // Remove any existing temporary spans
+//       const existingTemp = document.querySelector('[id^="squareCraft-temp-"]');
+//       if (existingTemp && existingTemp.parentNode) {
+//           existingTemp.parentNode.replaceChild(
+//               document.createTextNode(existingTemp.textContent),
+//               existingTemp
+//           );
+//       }
+      
+//       // Create temporary span element for visual preview
+//       const span = document.createElement("span");
+//       span.id = `squareCraft-temp-${Date.now()}`;
+//       span.className = "squareCraft-font-modified-preview";
+//       span.style.fontSize = fontSize;
+//       span.textContent = pendingChanges.selectedText;
+
+//       // Store the changes for later saving
+//       pendingChanges.fontSize = fontSize;
+      
+//       // Replace selected text with span (visual only)
+//       const range = pendingChanges.selectedRange.cloneRange();
+//       range.deleteContents();
+//       range.insertNode(span);
+
+//       console.log("✅ Font size preview applied:", fontSize);
+//   } catch (error) {
+//       console.error("❌ Error applying font size preview:", error);
+//   }
+// });
+
+// Single font size input listener
 document.getElementById("squareCraftFontSize").addEventListener("input", function() {
   if (!pendingChanges.selectedRange || !pendingChanges.selectedText) {
       console.warn("⚠️ No text selected");
@@ -1131,16 +1173,18 @@ document.getElementById("squareCraftFontSize").addEventListener("input", functio
   const fontSize = this.value + "px";
   
   try {
-      // Remove any existing temporary spans
-      const existingTemp = document.querySelector('[id^="squareCraft-temp-"]');
-      if (existingTemp && existingTemp.parentNode) {
-          existingTemp.parentNode.replaceChild(
-              document.createTextNode(existingTemp.textContent),
-              existingTemp
-          );
-      }
-      
-      // Create temporary span element for visual preview
+      // First, restore the original text if there's any temporary span
+      document.querySelectorAll('[id^="squareCraft-temp-"]').forEach(span => {
+          if (span && span.parentNode) {
+              // Only remove if it contains our selected text
+              if (span.textContent === pendingChanges.selectedText) {
+                  const textNode = document.createTextNode(span.textContent);
+                  span.parentNode.replaceChild(textNode, span);
+              }
+          }
+      });
+
+      // Now create and insert the new temporary span
       const span = document.createElement("span");
       span.id = `squareCraft-temp-${Date.now()}`;
       span.className = "squareCraft-font-modified-preview";
@@ -1150,14 +1194,54 @@ document.getElementById("squareCraftFontSize").addEventListener("input", functio
       // Store the changes for later saving
       pendingChanges.fontSize = fontSize;
       
-      // Replace selected text with span (visual only)
+      // Use the original stored range to insert the new span
       const range = pendingChanges.selectedRange.cloneRange();
-      range.deleteContents();
-      range.insertNode(span);
+      
+      // Only delete and insert if the content matches
+      const currentSelection = window.getSelection();
+      if (currentSelection && currentSelection.toString() === pendingChanges.selectedText) {
+          range.deleteContents();
+          range.insertNode(span);
+      } else {
+          // If selection has changed, find the text and replace it
+          const walker = document.createTreeWalker(
+              document.body,
+              NodeFilter.SHOW_TEXT,
+              {
+                  acceptNode: function(node) {
+                      return node.textContent.includes(pendingChanges.selectedText)
+                          ? NodeFilter.FILTER_ACCEPT
+                          : NodeFilter.FILTER_REJECT;
+                  }
+              }
+          );
+
+          let textNode;
+          while (textNode = walker.nextNode()) {
+              if (textNode.textContent.includes(pendingChanges.selectedText)) {
+                  const newRange = document.createRange();
+                  const startIndex = textNode.textContent.indexOf(pendingChanges.selectedText);
+                  newRange.setStart(textNode, startIndex);
+                  newRange.setEnd(textNode, startIndex + pendingChanges.selectedText.length);
+                  newRange.deleteContents();
+                  newRange.insertNode(span);
+                  break;
+              }
+          }
+      }
 
       console.log("✅ Font size preview applied:", fontSize);
   } catch (error) {
       console.error("❌ Error applying font size preview:", error);
+  }
+});
+
+// Add this cleanup event listener
+document.addEventListener("mousedown", function(e) {
+  // If clicking outside of selected text and not on the font size input
+  if (!e.target.closest('#squareCraftFontSize') && 
+      !e.target.closest('[id^="squareCraft-temp-"]')) {
+      clearPendingChanges();
   }
 });
         
