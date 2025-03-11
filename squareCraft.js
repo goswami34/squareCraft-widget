@@ -1039,19 +1039,24 @@ function clearPendingChanges() {
       lastSelectedRange.deleteContents();
       lastSelectedRange.insertNode(span);
 
-      // Save to database with proper structure
-      await saveModifications(
-          span.id,
-          { "font-size": fontSize },
-          elementStructure
-      );
+        // Save to database with proper structure
+        await saveModifications(
+            span.id,
+            { 
+                "font-size": fontSize,
+                "display": "inline-block" // Ensure inline display
+            },
+            elementStructure
+        );
 
-      console.log("✅ Font size modified and saved:", fontSize);
-  } catch (error) {
-      console.error("❌ Error applying font size:", error);
-  }
-});
-// });
+        // Clear the selection to prevent accidental modifications
+        window.getSelection().removeAllRanges();
+        
+        console.log("✅ Font size modified and saved:", fontSize);
+    } catch (error) {
+        console.error("❌ Error applying font size:", error);
+    }
+ });
 
 
 
