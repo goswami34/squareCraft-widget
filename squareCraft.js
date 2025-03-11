@@ -863,77 +863,100 @@
     //     await saveModifications(selectedElement.id, css);
     //   });
 
-    document.getElementById("squareCraftPublish").addEventListener("click", async () => {
-      try {
-          let css = {};
-          let elementStructure = null;
+  //   document.getElementById("squareCraftPublish").addEventListener("click", async () => {
+  //     try {
+  //         let css = {};
+  //         let elementStructure = null;
   
-          // Handle font size changes if pending
-          if (pendingChanges.fontSize && pendingChanges.selectedText && pendingChanges.container) {
-              // Create permanent span
-              const span = document.createElement("span");
-              span.id = `squareCraft-mod-${Date.now()}`;
-              span.className = "squareCraft-font-modified";
+  //         // Handle font size changes if pending
+  //         if (pendingChanges.fontSize && pendingChanges.selectedText && pendingChanges.container) {
+  //             // Create permanent span
+  //             const span = document.createElement("span");
+  //             span.id = `squareCraft-mod-${Date.now()}`;
+  //             span.className = "squareCraft-font-modified";
               
-              // Add font size to CSS object
-              css["font-size"] = pendingChanges.fontSize;
+  //             // Add font size to CSS object
+  //             css["font-size"] = pendingChanges.fontSize;
   
-              // Create element structure
-              elementStructure = {
-                  type: 'span',
-                  className: 'squareCraft-font-modified',
-                  content: pendingChanges.selectedText,
-                  parentId: pendingChanges.container.id,
-                  fullContent: pendingChanges.container.innerHTML
-              };
+  //             // Create element structure
+  //             elementStructure = {
+  //                 type: 'span',
+  //                 className: 'squareCraft-font-modified',
+  //                 content: pendingChanges.selectedText,
+  //                 parentId: pendingChanges.container.id,
+  //                 fullContent: pendingChanges.container.innerHTML
+  //             };
   
-              // Remove any temporary preview spans
-              document.querySelectorAll('[id^="squareCraft-temp-"]').forEach(span => {
-                  if (span && span.parentNode) {
-                      span.parentNode.removeChild(span);
-                  }
-              });
+  //             // Remove any temporary preview spans
+  //             document.querySelectorAll('[id^="squareCraft-temp-"]').forEach(span => {
+  //                 if (span && span.parentNode) {
+  //                     span.parentNode.removeChild(span);
+  //                 }
+  //             });
   
-              // Insert the permanent span
-              span.textContent = pendingChanges.selectedText;
-              const range = pendingChanges.selectedRange.cloneRange();
-              range.deleteContents();
-              range.insertNode(span);
-          }
+  //             // Insert the permanent span
+  //             span.textContent = pendingChanges.selectedText;
+  //             const range = pendingChanges.selectedRange.cloneRange();
+  //             range.deleteContents();
+  //             range.insertNode(span);
+  //         }
   
-          // Add other modifications to the same CSS object
-          if (selectedElement) {
-              const fontFamily = document.getElementById("squareCraft-font-family").querySelector("p").textContent;
-              const fontWeight = document.getElementById("squareCraftFontWeight").value;
-              const lineHeight = document.getElementById("squareCraftLineHeight").value + "px";
+  //         // Add other modifications to the same CSS object
+  //         if (selectedElement) {
+  //             const fontFamily = document.getElementById("squareCraft-font-family").querySelector("p").textContent;
+  //             const fontWeight = document.getElementById("squareCraftFontWeight").value;
+  //             const lineHeight = document.getElementById("squareCraftLineHeight").value + "px";
   
-              if (fontFamily !== "Select a Font") {
-                  css["font-family"] = fontFamily;
-              }
-              if (fontWeight) {
-                  css["font-weight"] = fontWeight;
-              }
-              if (lineHeight) {
-                  css["line-height"] = lineHeight;
-              }
-          }
+  //             if (fontFamily !== "Select a Font") {
+  //                 css["font-family"] = fontFamily;
+  //             }
+  //             if (fontWeight) {
+  //                 css["font-weight"] = fontWeight;
+  //             }
+  //             if (lineHeight) {
+  //                 css["line-height"] = lineHeight;
+  //             }
+  //         }
   
-          // Only save if we have CSS properties to save
-          if (Object.keys(css).length > 0) {
-              const elementId = pendingChanges.fontSize ? 
-                  `squareCraft-mod-${Date.now()}` : 
-                  selectedElement.id;
+  //         // Only save if we have CSS properties to save
+  //         if (Object.keys(css).length > 0) {
+  //             const elementId = pendingChanges.fontSize ? 
+  //                 `squareCraft-mod-${Date.now()}` : 
+  //                 selectedElement.id;
   
-              await saveModifications(elementId, css, elementStructure);
-              console.log("✅ All changes saved successfully!", css);
-          }
+  //             await saveModifications(elementId, css, elementStructure);
+  //             console.log("✅ All changes saved successfully!", css);
+  //         }
   
-          // Clear pending changes after saving
-          clearPendingChanges();
+  //         // Clear pending changes after saving
+  //         clearPendingChanges();
   
-      } catch (error) {
-          console.error("❌ Error publishing changes:", error);
-      }
+  //     } catch (error) {
+  //         console.error("❌ Error publishing changes:", error);
+  //     }
+  // });
+
+  document.getElementById("squareCraftPublish").addEventListener("click", async () => {
+    if (!selectedElement) {
+      console.warn("⚠️ No element selected.");
+      return;
+    }
+
+    let css = {
+      "font-family": document.getElementById("squareCraft-font-family").querySelector("p").textContent,
+      "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
+      "font-aligment-icon": document.document.querySelectorAll(".alignment-icon").value,
+      "font-size": document.getElementById("squareCraftFontSize").value + "px",
+      "line-height": document.getElementById("squareCraftLineHeight").value + "px",
+      // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
+      // "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
+      "text-decoration": textDecorationValue,
+      "text-transform": document.querySelectorAll(".squsareCraft-text-transform").value,
+      
+
+    };
+
+    await saveModifications(selectedElement.id, css);
   });
 
     // Add this event listener for font-weight dropdown
