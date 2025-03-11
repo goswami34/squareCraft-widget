@@ -118,7 +118,6 @@
         data.modifications.forEach(({ pageId: storedPageId, elements }) => {
             if (storedPageId === pageId) {
                 elements.forEach(({ elementId, css, elementStructure }) => {
-                    // Check if we have span-specific CSS
                     if (css && css.span) {
                         let existingSpan = document.getElementById(css.span.id);
                         
@@ -139,10 +138,10 @@
                             let textNode;
                             while (textNode = walker.nextNode()) {
                                 if (textNode.textContent.includes(elementStructure.content)) {
-                                    // Create new span
+                                    // Create the span with the modified text
                                     const span = document.createElement('span');
                                     span.id = css.span.id;
-                                    span.className = elementStructure.className || 'squareCraft-font-modified';
+                                    span.className = elementStructure.className;
                                     span.textContent = elementStructure.content;
 
                                     // Apply stored CSS properties
@@ -152,8 +151,18 @@
                                         }
                                     });
 
-                                    // Replace text node with our span
-                                    textNode.parentNode.replaceChild(span, textNode);
+                                    // Create fragment with before and after text
+                                    const fragment = document.createDocumentFragment();
+                                    if (elementStructure.beforeText) {
+                                        fragment.appendChild(document.createTextNode(elementStructure.beforeText));
+                                    }
+                                    fragment.appendChild(span);
+                                    if (elementStructure.afterText) {
+                                        fragment.appendChild(document.createTextNode(elementStructure.afterText));
+                                    }
+
+                                    // Replace the text node with our fragment
+                                    textNode.parentNode.replaceChild(fragment, textNode);
                                     console.log(`✅ Recreated span with ID ${span.id} and applied styles`);
                                     break;
                                 }
@@ -1021,36 +1030,65 @@ function clearPendingChanges() {
     
     try {
         // Get the parent paragraph or containing element
-        const container = lastSelectedRange.commonAncestorContainer.parentElement;
+        const container = lastSelectedRange.commonAncestorContainer;
+        const parentElement = container.nodeType === 3 ? container.parentElement : container;
         
         // Create span element with unique ID
         const span = document.createElement('span');
         span.id = `squareCraft-mod-${Date.now()}`;
         span.className = "squareCraft-font-modified";
         span.style.fontSize = fontSize;
-        span.textContent = lastSelectedText;
-
+        
+        // Get the full text content and positions
+        const fullText = container.textContent;
+        const startOffset = lastSelectedRange.startOffset;
+        const endOffset = lastSelectedRange.endOffset;
+        
+        // Split the text into three parts: before, selected, and after
+        const beforeText = fullText.substring(0, startOffset);
+        const selectedText = fullText.substring(startOffset, endOffset);
+        const afterText = fullText.substring(endOffset);
+        
+        // Create text nodes for before and after content
+        const beforeNode = document.createTextNode(beforeText);
+        const afterNode = document.createTextNode(afterText);
+        
+        // Set the selected text in the span
+        span.textContent = selectedText;
+        
+        // Create a fragment to hold all pieces
+        const fragment = document.createDocumentFragment();
+        if (beforeText) fragment.appendChild(beforeNode);
+        fragment.appendChild(span);
+        if (afterText) fragment.appendChild(afterNode);
+        
         // Create element structure for persistence
         const elementStructure = {
             type: 'span',
             className: 'squareCraft-font-modified',
-            content: lastSelectedText,
-            parentId: container.id,
-            fullContent: container.innerHTML,
-            startOffset: lastSelectedRange.startOffset,
-            endOffset: lastSelectedRange.endOffset
+            content: selectedText,
+            parentId: parentElement.id,
+            fullContent: parentElement.innerHTML,
+            startOffset: startOffset,
+            endOffset: endOffset,
+            beforeText: beforeText,
+            afterText: afterText
         };
 
-        // Replace selected text with span
-        lastSelectedRange.deleteContents();
-        lastSelectedRange.insertNode(span);
+        // Replace the content
+        if (container.nodeType === 3) {
+            container.parentNode.replaceChild(fragment, container);
+        } else {
+            container.innerHTML = '';
+            container.appendChild(fragment);
+        }
 
         // Save to database with proper structure
         await saveModifications(
             span.id,
             { 
                 "font-size": fontSize,
-                "display": "inline-block" // Ensure inline display
+                "display": "inline"
             },
             elementStructure
         );
