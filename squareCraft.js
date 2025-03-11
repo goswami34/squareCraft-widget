@@ -936,24 +936,31 @@
   //     }
   // });
 
-  document.getElementById("squareCraftPublish").addEventListener("click", async () => {
+  document
+  .getElementById("squareCraftPublish")
+  .addEventListener("click", async () => {
     if (!selectedElement) {
       console.warn("⚠️ No element selected.");
       return;
     }
 
     let css = {
-      "font-family": document.getElementById("squareCraft-font-family").querySelector("p").textContent,
+      "font-family": document
+        .getElementById("squareCraft-font-family")
+        .querySelector("p").textContent,
       "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
-      "font-aligment-icon": document.document.querySelectorAll(".alignment-icon").value,
-      "font-size": document.getElementById("squareCraftFontSize").value + "px",
-      "line-height": document.getElementById("squareCraftLineHeight").value + "px",
+      "font-aligment-icon":
+        document.document.querySelectorAll(".alignment-icon").value,
+      "font-size":
+        document.getElementById("squareCraftFontSize").value + "px",
+      "line-height":
+        document.getElementById("squareCraftLineHeight").value + "px",
       // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
       // "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
       "text-decoration": textDecorationValue,
-      "text-transform": document.querySelectorAll(".squsareCraft-text-transform").value,
-      
-
+      "text-transform": document.querySelectorAll(
+        ".squsareCraft-text-transform"
+      ).value,
     };
 
     await saveModifications(selectedElement.id, css);
