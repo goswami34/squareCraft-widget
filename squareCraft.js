@@ -1104,14 +1104,14 @@ function clearPendingChanges() {
 
 
  // Update the mouseup event listener
- document.addEventListener("mouseup", function () {
-   const selection = window.getSelection();
-   if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-     lastSelectedText = selection.toString();
-     lastSelectedRange = selection.getRangeAt(0);
-     console.log("✅ Text Selected:", lastSelectedText);
-   }
- });
+//  document.addEventListener("mouseup", function () {
+//    const selection = window.getSelection();
+//    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+//      lastSelectedText = selection.toString();
+//      lastSelectedRange = selection.getRangeAt(0);
+//      console.log("✅ Text Selected:", lastSelectedText);
+//    }
+//  });
 
 //  document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
 //   if (!lastSelectedRange || !lastSelectedText) {
@@ -1166,58 +1166,174 @@ function clearPendingChanges() {
 //   }
 // });
 
-document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-  if (!lastSelectedRange || !lastSelectedText) {
-      console.warn("⚠️ No text selected");
-      return;
-  }
+// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+//   if (!lastSelectedRange || !lastSelectedText) {
+//       console.warn("⚠️ No text selected");
+//       return;
+//   }
 
-  const fontSize = this.value + "px";
+//   const fontSize = this.value + "px";
   
-  try {
-      // Get the common ancestor container
-      let container = lastSelectedRange.commonAncestorContainer;
+//   try {
+//       // Get the common ancestor container
+//       let container = lastSelectedRange.commonAncestorContainer;
       
-      // If the container is a text node, get its parent element
-      if (container.nodeType === Node.TEXT_NODE) {
-          container = container.parentElement;
-      }
+//       // If the container is a text node, get its parent element
+//       if (container.nodeType === Node.TEXT_NODE) {
+//           container = container.parentElement;
+//       }
 
-      // Check if the container or its parent is a strong tag
-      let targetElement = container.tagName === 'STRONG' ? container : 
-                         container.closest('strong');
+//       // Check if the container or its parent is a strong tag
+//       let targetElement = container.tagName === 'STRONG' ? container : 
+//                          container.closest('strong');
 
-      // If no strong tag found but text is selected, use the immediate parent
-      if (!targetElement && container) {
-          targetElement = container;
-      }
+//       // If no strong tag found but text is selected, use the immediate parent
+//       if (!targetElement && container) {
+//           targetElement = container;
+//       }
 
-      if (targetElement) {
-          // Apply font size directly to the existing element
-          targetElement.style.fontSize = fontSize;
+//       if (targetElement) {
+//           // Apply font size directly to the existing element
+//           targetElement.style.fontSize = fontSize;
 
-          // Save the modification using the element's existing ID or create one if needed
-          const elementId = targetElement.id || `text-mod-${Date.now()}`;
-          if (!targetElement.id) {
-              targetElement.id = elementId;
-          }
+//           // Save the modification using the element's existing ID or create one if needed
+//           const elementId = targetElement.id || `text-mod-${Date.now()}`;
+//           if (!targetElement.id) {
+//               targetElement.id = elementId;
+//           }
 
-          // Save to database with the existing structure
-          await saveModifications(
-              elementId,
-              { 
-                  "font-size": fontSize
-              }
-          );
+//           // Save to database with the existing structure
+//           await saveModifications(
+//               elementId,
+//               { 
+//                   "font-size": fontSize
+//               }
+//           );
 
-          console.log("✅ Font size modified and saved:", fontSize);
-      } else {
-          console.warn("⚠️ No suitable element found to modify");
-      }
-  } catch (error) {
-      console.error("❌ Error applying font size:", error);
-  }
+//           console.log("✅ Font size modified and saved:", fontSize);
+//       } else {
+//           console.warn("⚠️ No suitable element found to modify");
+//       }
+//   } catch (error) {
+//       console.error("❌ Error applying font size:", error);
+//   }
+// });
+
+// Track selected elements and their styles
+let styleCache = new Map();
+
+// Update the mouseup event listener to store selection info
+document.addEventListener("mouseup", function() {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+        lastSelectedText = selection.toString();
+        lastSelectedRange = selection.getRangeAt(0);
+        
+        // Get the containing element
+        let container = lastSelectedRange.commonAncestorContainer;
+        if (container.nodeType === Node.TEXT_NODE) {
+            container = container.parentElement;
+        }
+        
+        // Store the current styles
+        if (container) {
+            const computedStyle = window.getComputedStyle(container);
+            styleCache.set(container, {
+                fontSize: computedStyle.fontSize,
+                originalText: lastSelectedText
+            });
+        }
+        
+        console.log("✅ Text Selected:", lastSelectedText);
+    }
 });
+
+// Font size change handler
+document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+    if (!lastSelectedRange || !lastSelectedText) {
+        console.warn("⚠️ No text selected");
+        return;
+    }
+
+    const fontSize = this.value + "px";
+    
+    try {
+        // Get the common ancestor container
+        let container = lastSelectedRange.commonAncestorContainer;
+        
+        // If the container is a text node, get its parent element
+        if (container.nodeType === Node.TEXT_NODE) {
+            container = container.parentElement;
+        }
+
+        // Check if the container or its parent is a strong tag
+        let targetElement = container.tagName === 'STRONG' ? container : 
+                           container.closest('strong');
+
+        // If no strong tag found but text is selected, use the immediate parent
+        if (!targetElement && container) {
+            targetElement = container;
+        }
+
+        if (targetElement) {
+            // Generate a unique ID if none exists
+            if (!targetElement.id) {
+                targetElement.id = `text-mod-${Date.now()}`;
+            }
+
+            // Apply font size directly to the existing element
+            targetElement.style.fontSize = fontSize;
+
+            // Store the applied style in our cache
+            styleCache.set(targetElement, {
+                fontSize: fontSize,
+                originalText: lastSelectedText
+            });
+
+            // Create CSS for persistent styling
+            let css = {
+                "font-size": fontSize
+            };
+
+            // Apply styles using your existing function
+            applyStylesToElement(targetElement.id, css);
+
+            // Save to database
+            await saveModifications(targetElement.id, css);
+
+            console.log("✅ Font size modified and saved:", fontSize);
+        }
+    } catch (error) {
+        console.error("❌ Error applying font size:", error);
+    }
+});
+
+// Add a click event listener to maintain styles
+document.addEventListener("click", function(event) {
+    // Check if we have cached styles for any parent elements
+    let element = event.target;
+    while (element && element !== document.body) {
+        if (styleCache.has(element)) {
+            const cachedStyle = styleCache.get(element);
+            if (cachedStyle.fontSize) {
+                element.style.fontSize = cachedStyle.fontSize;
+            }
+        }
+        element = element.parentElement;
+    }
+});
+
+// Optional: Clean up cache periodically
+function cleanStyleCache() {
+    for (let [element, styles] of styleCache.entries()) {
+        if (!document.contains(element)) {
+            styleCache.delete(element);
+        }
+    }
+}
+
+// Clean cache every minute
+setInterval(cleanStyleCache, 60000);
 
 // Add this at the top of your script with other variables
 let activeTextSelection = {
