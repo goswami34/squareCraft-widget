@@ -1166,58 +1166,58 @@ function clearPendingChanges() {
 //   }
 // });
 
-// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-//   if (!lastSelectedRange || !lastSelectedText) {
-//       console.warn("⚠️ No text selected");
-//       return;
-//   }
+document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+  if (!lastSelectedRange || !lastSelectedText) {
+      console.warn("⚠️ No text selected");
+      return;
+  }
 
-//   const fontSize = this.value + "px";
+  const fontSize = this.value + "px";
   
-//   try {
-//       // Get the common ancestor container
-//       let container = lastSelectedRange.commonAncestorContainer;
+  try {
+      // Get the common ancestor container
+      let container = lastSelectedRange.commonAncestorContainer;
       
-//       // If the container is a text node, get its parent element
-//       if (container.nodeType === Node.TEXT_NODE) {
-//           container = container.parentElement;
-//       }
+      // If the container is a text node, get its parent element
+      if (container.nodeType === Node.TEXT_NODE) {
+          container = container.parentElement;
+      }
 
-//       // Check if the container or its parent is a strong tag
-//       let targetElement = container.tagName === 'STRONG' ? container : 
-//                          container.closest('strong');
+      // Check if the container or its parent is a strong tag
+      let targetElement = container.tagName === 'STRONG' ? container : 
+                         container.closest('strong');
 
-//       // If no strong tag found but text is selected, use the immediate parent
-//       if (!targetElement && container) {
-//           targetElement = container;
-//       }
+      // If no strong tag found but text is selected, use the immediate parent
+      if (!targetElement && container) {
+          targetElement = container;
+      }
 
-//       if (targetElement) {
-//           // Apply font size directly to the existing element
-//           targetElement.style.fontSize = fontSize;
+      if (targetElement) {
+          // Apply font size directly to the existing element
+          targetElement.style.fontSize = fontSize;
 
-//           // Save the modification using the element's existing ID or create one if needed
-//           const elementId = targetElement.id || `text-mod-${Date.now()}`;
-//           if (!targetElement.id) {
-//               targetElement.id = elementId;
-//           }
+          // Save the modification using the element's existing ID or create one if needed
+          const elementId = targetElement.id || `text-mod-${Date.now()}`;
+          if (!targetElement.id) {
+              targetElement.id = elementId;
+          }
 
-//           // Save to database with the existing structure
-//           await saveModifications(
-//               elementId,
-//               { 
-//                   "font-size": fontSize
-//               }
-//           );
+          // Save to database with the existing structure
+          await saveModifications(
+              elementId,
+              { 
+                  "font-size": fontSize
+              }
+          );
 
-//           console.log("✅ Font size modified and saved:", fontSize);
-//       } else {
-//           console.warn("⚠️ No suitable element found to modify");
-//       }
-//   } catch (error) {
-//       console.error("❌ Error applying font size:", error);
-//   }
-// });
+          console.log("✅ Font size modified and saved:", fontSize);
+      } else {
+          console.warn("⚠️ No suitable element found to modify");
+      }
+  } catch (error) {
+      console.error("❌ Error applying font size:", error);
+  }
+});
 
 // Add this at the top of your script with other variables
 let activeTextSelection = {
@@ -1245,33 +1245,33 @@ let activeTextSelection = {
 // });
 
 // Font size change handler
-document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-  if (!activeTextSelection.element || !activeTextSelection.text) {
-      console.warn("⚠️ No text selected");
-      return;
-  }
+// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+//   if (!activeTextSelection.element || !activeTextSelection.text) {
+//       console.warn("⚠️ No text selected");
+//       return;
+//   }
 
-  const fontSize = this.value + "px";
-  const elementId = activeTextSelection.element.id;
+//   const fontSize = this.value + "px";
+//   const elementId = activeTextSelection.element.id;
   
-  try {
-      // Apply the font size using CSS
-      let css = {
-          "font-size": fontSize
-      };
+//   try {
+//       // Apply the font size using CSS
+//       let css = {
+//           "font-size": fontSize
+//       };
 
-      // Apply styles to the element
-      applyStylesToElement(elementId, css);
+//       // Apply styles to the element
+//       applyStylesToElement(elementId, css);
 
-      // Save the modifications
-      await saveModifications(elementId, css);
+//       // Save the modifications
+//       await saveModifications(elementId, css);
 
-      console.log("✅ Font size modified:", fontSize, "for element:", elementId);
+//       console.log("✅ Font size modified:", fontSize, "for element:", elementId);
       
-  } catch (error) {
-      console.error("❌ Error applying font size:", error);
-  }
-});
+//   } catch (error) {
+//       console.error("❌ Error applying font size:", error);
+//   }
+// });
 
 // Optional: Reset font size
 function resetFontSize(elementId) {
