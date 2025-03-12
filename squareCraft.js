@@ -91,152 +91,81 @@
   }
 
 
-//   async function fetchModifications(retries = 3) {
-//     if (!pageId) return;
-
-//     try {
-//         const response = await fetch(
-//             `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}`,
-//             {
-//                 method: "GET",
-//                 headers: {
-//                     "Content-Type": "application/json",
-//                     "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-//                 },
-//             }
-//         );
-
-//         const data = await response.json();
-//         console.log("📥 Retrieved Data from Database:", data);
-
-//         if (!data.modifications || data.modifications.length === 0) {
-//             console.warn("⚠️ No saved styles found for this page.");
-//             return;
-//         }
-
-//         // Loop through retrieved styles and apply them
-//         data.modifications.forEach(({ pageId: storedPageId, elements }) => {
-//             if (storedPageId === pageId) {
-//                 elements.forEach(({ elementId, css, elementStructure }) => {
-//                     // Check if we have span-specific CSS
-//                     if (css && css.span) {
-//                         let existingSpan = document.getElementById(css.span.id);
-                        
-//                         if (!existingSpan && elementStructure) {
-//                             // Find text nodes containing our content
-//                             const walker = document.createTreeWalker(
-//                                 document.body,
-//                                 NodeFilter.SHOW_TEXT,
-//                                 {
-//                                     acceptNode: function(node) {
-//                                         return node.textContent.includes(elementStructure.content)
-//                                             ? NodeFilter.FILTER_ACCEPT
-//                                             : NodeFilter.FILTER_REJECT;
-//                                     }
-//                                 }
-//                             );
-
-//                             let textNode;
-//                             while (textNode = walker.nextNode()) {
-//                                 if (textNode.textContent.includes(elementStructure.content)) {
-//                                     // Create new span
-//                                     const span = document.createElement('span');
-//                                     span.id = css.span.id;
-//                                     span.className = elementStructure.className || 'squareCraft-font-modified';
-//                                     span.textContent = elementStructure.content;
-
-//                                     // Apply stored CSS properties
-//                                     Object.entries(css.span).forEach(([prop, value]) => {
-//                                         if (prop !== 'id') {
-//                                             span.style[prop] = value;
-//                                         }
-//                                     });
-
-//                                     // Replace text node with our span
-//                                     textNode.parentNode.replaceChild(span, textNode);
-//                                     console.log(`✅ Recreated span with ID ${span.id} and applied styles`);
-//                                     break;
-//                                 }
-//                             }
-//                         } else if (existingSpan) {
-//                             // Apply styles to existing span
-//                             Object.entries(css.span).forEach(([prop, value]) => {
-//                                 if (prop !== 'id') {
-//                                     existingSpan.style[prop] = value;
-//                                 }
-//                             });
-//                             console.log(`✅ Applied styles to existing span ${existingSpan.id}`);
-//                         }
-//                     }
-//                 });
-//             }
-//         });
-
-//     } catch (error) {
-//         console.error("❌ Error Fetching Modifications:", error);
-//         if (retries > 0) {
-//             console.log(`🔄 Retrying fetch... (${retries} attempts left)`);
-//             setTimeout(() => fetchModifications(retries - 1), 2000);
-//         }
-//     }
-// }
-
-
-
-  // Listen for changes in edit mode
-  
   async function fetchModifications(retries = 3) {
     if (!pageId) return;
 
-    const token = localStorage.getItem("squareCraft_auth_token");
-    const userId = localStorage.getItem("squareCraft_u_id");
-    const widgetId = localStorage.getItem("squareCraft_w_id");
-
-    if (!token || !userId) {
-        console.warn("Missing authentication data");
-        return;
-    }
-
     try {
         const response = await fetch(
-            `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+            `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}`,
             {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                }
+                    "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+                },
             }
         );
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
         const data = await response.json();
-        console.log("Retrieved modifications:", data);
+        console.log("📥 Retrieved Data from Database:", data);
 
-        if (!data.modifications || !Array.isArray(data.modifications)) {
-            console.warn("No modifications found or invalid format");
+        if (!data.modifications || data.modifications.length === 0) {
+            console.warn("⚠️ No saved styles found for this page.");
             return;
         }
 
-        // Apply modifications for current page
-        data.modifications.forEach(mod => {
-            if (mod.pageId === pageId) {
-                mod.elements.forEach(elem => {
-                    if (elem.css && elem.css.span) {
-                        const { id, ...styles } = elem.css.span;
-                        const element = document.getElementById(elem.elementId);
+        // Loop through retrieved styles and apply them
+        data.modifications.forEach(({ pageId: storedPageId, elements }) => {
+            if (storedPageId === pageId) {
+                elements.forEach(({ elementId, css, elementStructure }) => {
+                    // Check if we have span-specific CSS
+                    if (css && css.span) {
+                        let existingSpan = document.getElementById(css.span.id);
                         
-                        if (element) {
-                            // Apply styles to existing element
-                            Object.entries(styles).forEach(([prop, value]) => {
-                                element.style[prop] = value;
+                        if (!existingSpan && elementStructure) {
+                            // Find text nodes containing our content
+                            const walker = document.createTreeWalker(
+                                document.body,
+                                NodeFilter.SHOW_TEXT,
+                                {
+                                    acceptNode: function(node) {
+                                        return node.textContent.includes(elementStructure.content)
+                                            ? NodeFilter.FILTER_ACCEPT
+                                            : NodeFilter.FILTER_REJECT;
+                                    }
+                                }
+                            );
+
+                            let textNode;
+                            while (textNode = walker.nextNode()) {
+                                if (textNode.textContent.includes(elementStructure.content)) {
+                                    // Create new span
+                                    const span = document.createElement('span');
+                                    span.id = css.span.id;
+                                    span.className = elementStructure.className || 'squareCraft-font-modified';
+                                    span.textContent = elementStructure.content;
+
+                                    // Apply stored CSS properties
+                                    Object.entries(css.span).forEach(([prop, value]) => {
+                                        if (prop !== 'id') {
+                                            span.style[prop] = value;
+                                        }
+                                    });
+
+                                    // Replace text node with our span
+                                    textNode.parentNode.replaceChild(span, textNode);
+                                    console.log(`✅ Recreated span with ID ${span.id} and applied styles`);
+                                    break;
+                                }
+                            }
+                        } else if (existingSpan) {
+                            // Apply styles to existing span
+                            Object.entries(css.span).forEach(([prop, value]) => {
+                                if (prop !== 'id') {
+                                    existingSpan.style[prop] = value;
+                                }
                             });
-                        } else if (elem.elementStructure) {
-                            // Recreate modified element if it doesn't exist
-                            recreateModifiedElement(elem.elementStructure, styles);
+                            console.log(`✅ Applied styles to existing span ${existingSpan.id}`);
                         }
                     }
                 });
@@ -244,56 +173,109 @@
         });
 
     } catch (error) {
-        console.error("Error fetching modifications:", error);
+        console.error("❌ Error Fetching Modifications:", error);
         if (retries > 0) {
-            console.log(`Retrying... (${retries} attempts left)`);
+            console.log(`🔄 Retrying fetch... (${retries} attempts left)`);
             setTimeout(() => fetchModifications(retries - 1), 2000);
         }
     }
 }
 
-function recreateModifiedElement(structure, styles) {
-    // Find the parent element where we need to recreate the modified element
-    const parentElement = structure.parentId ? 
-        document.getElementById(structure.parentId) : 
-        document.body;
+// async function fetchModifications(retries = 3) {
+//   if (!pageId) return;
 
-    if (!parentElement) return;
+//   try {
+//       const response = await fetch(
+//           `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}`,
+//           {
+//               method: "GET",
+//               headers: {
+//                   "Content-Type": "application/json",
+//                   "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+//               },
+//           }
+//       );
 
-    // Create new element (span in this case)
-    const span = document.createElement('span');
-    span.id = structure.id;
-    span.className = structure.className || 'squareCraft-font-modified';
-    span.textContent = structure.content;
+//       const data = await response.json();
+//       console.log("📥 Retrieved Data from Database:", data);
 
-    // Apply stored styles
-    Object.entries(styles).forEach(([prop, value]) => {
-        span.style[prop] = value;
-    });
+//       if (!data.modifications || data.modifications.length === 0) {
+//           console.warn("⚠️ No saved styles found for this page.");
+//           return;
+//       }
 
-    // Insert at the correct position if possible
-    if (structure.content) {
-        const textNodes = [];
-        const walker = document.createTreeWalker(
-            parentElement,
-            NodeFilter.SHOW_TEXT,
-            null,
-            false
-        );
+//       // Loop through retrieved styles and apply them
+//       data.modifications.forEach(({ pageId: storedPageId, elements }) => {
+//           if (storedPageId === pageId) {
+//               elements.forEach(({ elementId, css, elementStructure }) => {
+//                   if (css && css.span) {
+//                       // Find the parent container
+//                       const parentElement = elementStructure.parentId ? 
+//                           document.getElementById(elementStructure.parentId) : 
+//                           document.body;
 
-        let node;
-        while (node = walker.nextNode()) {
-            if (node.textContent.includes(structure.content)) {
-                textNodes.push(node);
-            }
-        }
+//                       if (parentElement) {
+//                           // If we have the full content, restore it first
+//                           if (elementStructure.fullContent) {
+//                               parentElement.innerHTML = elementStructure.fullContent;
+//                           }
 
-        if (textNodes.length > 0) {
-            textNodes[0].parentNode.replaceChild(span, textNodes[0]);
-        }
-    }
-}
-  
+//                           // Find the text to modify
+//                           const walker = document.createTreeWalker(
+//                               parentElement,
+//                               NodeFilter.SHOW_TEXT,
+//                               {
+//                                   acceptNode: function(node) {
+//                                       return node.textContent.includes(elementStructure.content)
+//                                           ? NodeFilter.FILTER_ACCEPT
+//                                           : NodeFilter.FILTER_REJECT;
+//                                   }
+//                               }
+//                           );
+
+//                           let textNode;
+//                           while (textNode = walker.nextNode()) {
+//                               if (textNode.textContent.includes(elementStructure.content)) {
+//                                   // Create span with the stored styles
+//                                   const span = document.createElement('span');
+//                                   span.id = css.span.id;
+//                                   span.className = elementStructure.className;
+//                                   span.textContent = elementStructure.content;
+
+//                                   // Apply stored CSS properties
+//                                   Object.entries(css.span).forEach(([prop, value]) => {
+//                                       if (prop !== 'id') {
+//                                           span.style[prop] = value;
+//                                       }
+//                                   });
+
+//                                   // Replace only the specific text while preserving surrounding content
+//                                   const range = document.createRange();
+//                                   const startIndex = textNode.textContent.indexOf(elementStructure.content);
+//                                   range.setStart(textNode, startIndex);
+//                                   range.setEnd(textNode, startIndex + elementStructure.content.length);
+//                                   range.deleteContents();
+//                                   range.insertNode(span);
+//                                   break;
+//                               }
+//                           }
+//                       }
+//                   }
+//               });
+//           }
+//       });
+
+//   } catch (error) {
+//       console.error("❌ Error Fetching Modifications:", error);
+//       if (retries > 0) {
+//           setTimeout(() => fetchModifications(retries - 1), 2000);
+//       }
+//   }
+// }
+
+
+
+  // Listen for changes in edit mode
   const observer = new MutationObserver(() => {
     console.log("🔄 Edit Mode Detected. Reapplying modifications...");
     fetchModifications();
@@ -943,36 +925,35 @@ function recreateModifiedElement(structure, styles) {
       console.log(`✅ Selected Element: ${selectedElement.id}`);
     });
 
+    document
+      .getElementById("squareCraftPublish")
+      .addEventListener("click", async () => {
+        if (!selectedElement) {
+          console.warn("⚠️ No element selected.");
+          return;
+        }
 
-  document
-  .getElementById("squareCraftPublish")
-  .addEventListener("click", async () => {
-    if (!selectedElement) {
-      console.warn("⚠️ No element selected.");
-      return;
-    }
+        let css = {
+          "font-family": document
+            .getElementById("squareCraft-font-family")
+            .querySelector("p").textContent,
+          "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
+          "font-aligment-icon":
+            document.document.querySelectorAll(".alignment-icon").value,
+          "font-size":
+            document.getElementById("squareCraftFontSize").value + "px",
+          "line-height":
+            document.getElementById("squareCraftLineHeight").value + "px",
+          // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
+          // "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
+          "text-decoration": textDecorationValue,
+          "text-transform": document.querySelectorAll(
+            ".squsareCraft-text-transform"
+          ).value,
+        };
 
-    let css = {
-      "font-family": document
-        .getElementById("squareCraft-font-family")
-        .querySelector("p").textContent,
-      "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
-      "font-aligment-icon":
-        document.document.querySelectorAll(".alignment-icon").value,
-      "font-size":
-        document.getElementById("squareCraftFontSize").value + "px",
-      "line-height":
-        document.getElementById("squareCraftLineHeight").value + "px",
-      // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
-      // "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
-      "text-decoration": textDecorationValue,
-      "text-transform": document.querySelectorAll(
-        ".squsareCraft-text-transform"
-      ).value,
-    };
-
-    await saveModifications(selectedElement.id, css);
-  });
+        await saveModifications(selectedElement.id, css);
+      });
 
     // Add this event listener for font-weight dropdown
     document
@@ -1002,73 +983,6 @@ function recreateModifiedElement(structure, styles) {
     });
 
     // Font style (Bold, Italic, Underline, etc.)
-    // document.querySelectorAll(".elements-font-style").forEach((btn) => {
-    //   btn.addEventListener("click", function () {
-    //     let styleType = this.dataset.style;
-        
-    //     if (styleType === "bold") {
-    //       const selection = window.getSelection();
-    //       if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-    //         const range = selection.getRangeAt(0);
-    //         const selectedText = selection.toString();
-            
-    //         // Create a strong element
-    //         const strongElement = document.createElement("strong");
-    //         strongElement.id = `squareCraft-bold-${Date.now()}`; // Unique ID
-    //         strongElement.className = "squareCraft-font-modified";
-    //         strongElement.textContent = selectedText;
-            
-    //         // Replace selected text with strong element
-    //         range.deleteContents();
-    //         range.insertNode(strongElement);
-            
-    //         // Save the modification
-    //         const elementStructure = {
-    //           type: 'strong',
-    //           className: 'squareCraft-font-modified',
-    //           content: selectedText,
-    //           parentId: strongElement.parentElement?.id || null
-    //         };
-            
-    //         saveModifications(
-    //           strongElement.id,
-    //           { "font-weight": "bold" },
-    //           elementStructure
-    //         );
-            
-    //         // Clear selection
-    //         selection.removeAllRanges();
-    //       } else {
-    //         console.warn("⚠️ No text selected for bold styling");
-    //       }
-    //     } else {
-    //       // Handle other style types (italic, underline, etc.) as before
-    //       if (!selectedElement) {
-    //         console.warn("⚠️ No element selected to apply text decoration.");
-    //         return;
-    //       }
-          
-    //       let css = {};
-    //       if (styleType === "italic") {
-    //         let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
-    //         css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
-    //       } else {
-    //         let currentDecoration = window.getComputedStyle(selectedElement).textDecorationLine;
-    //         if (styleType === "underline") {
-    //           css["text-decoration"] = currentDecoration.includes("underline") ? "none" : "underline";
-    //         } else if (styleType === "dotted") {
-    //           css["text-decoration"] = currentDecoration.includes("dotted") ? "none" : "underline dotted";
-    //         } else if (styleType === "line-through") {
-    //           css["text-decoration"] = currentDecoration.includes("line-through") ? "none" : "line-through";
-    //         }
-    //       }
-
-    //       applyStylesToElement(selectedElement.id, css);
-    //       saveModifications(selectedElement.id, css);
-    //     }
-    //   });
-    // });
-
     document.querySelectorAll(".elements-font-style").forEach((btn) => {
       btn.addEventListener("click", function () {
         if (!selectedElement) {
@@ -1139,103 +1053,66 @@ function recreateModifiedElement(structure, styles) {
     let lastSelectedText = null;
     let lastSelectedRange = null;
 
-   
-let pendingChanges = {
-  fontSize: null,
-  selectedText: null,
-  selectedRange: null,
-  container: null
-};
-
-function clearPendingChanges() {
-  // Remove any temporary preview spans
-  document.querySelectorAll('[id^="squareCraft-temp-"]').forEach(span => {
-      if (span && span.parentNode) {
-          // Only remove if it matches our pending changes
-          if (pendingChanges.selectedText && span.textContent === pendingChanges.selectedText) {
-              const textNode = document.createTextNode(span.textContent);
-              span.parentNode.replaceChild(textNode, span);
-          }
+    // Update the mouseup event listener
+    document.addEventListener("mouseup", function () {
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+        lastSelectedText = selection.toString();
+        lastSelectedRange = selection.getRangeAt(0);
+        console.log("✅ Text Selected:", lastSelectedText);
       }
-  });
+    });
 
-  // Reset pending changes object
-  pendingChanges = {
-      fontSize: null,
-      selectedText: null,
-      selectedRange: null,
-      container: null
-  };
-}
-
-
- // Update the mouseup event listener
- document.addEventListener("mouseup", function () {
-   const selection = window.getSelection();
-   if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-     lastSelectedText = selection.toString();
-     lastSelectedRange = selection.getRangeAt(0);
-     console.log("✅ Text Selected:", lastSelectedText);
-   }
- });
-
- document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-  if (!lastSelectedRange || !lastSelectedText) {
-      console.warn("⚠️ No text selected");
-      return;
-  }
-
-  const fontSize = this.value + "px";
-  
-  try {
-      // Get the parent paragraph or containing element
-      const container = lastSelectedRange.commonAncestorContainer.parentElement;
-      
-      // Store the full content before modification
-      const fullContent = container.innerHTML;
-      
-      // Create span element
-      const span = document.createElement("span");
-      span.id = `squareCraft-mod-${Date.now()}`;
-      span.className = "squareCraft-font-modified";
-      span.style.fontSize = fontSize;
-      span.textContent = lastSelectedText;
-
-      // Create element structure with context
-      const elementStructure = {
-          type: 'span',
-          className: 'squareCraft-font-modified',
-          content: lastSelectedText,
-          parentId: container.id,
-          fullContent: fullContent,
-          startOffset: lastSelectedRange.startOffset,
-          endOffset: lastSelectedRange.endOffset
-      };
-
-      // Replace selected text with span
-      lastSelectedRange.deleteContents();
-      lastSelectedRange.insertNode(span);
-
-        // Save to database with proper structure
-        await saveModifications(
-            span.id,
-            { 
-                "font-size": fontSize,
-                "display": "inline-block" // Ensure inline display
-            },
-            elementStructure
-        );
-
-      console.log("✅ Font size modified and saved:", fontSize);
-  } catch (error) {
-      console.error("❌ Error applying font size:", error);
-  }
-});
-// });
-
-
-
+    document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+        if (!lastSelectedRange || !lastSelectedText) {
+            console.warn("⚠️ No text selected");
+            return;
+        }
+    
+        const fontSize = this.value + "px";
         
+        try {
+            // Get the parent paragraph or containing element
+            const container = lastSelectedRange.commonAncestorContainer.parentElement;
+            
+            // Store the full content before modification
+            const fullContent = container.innerHTML;
+            
+            // Create span element
+            const span = document.createElement("span");
+            span.id = `squareCraft-mod-${Date.now()}`;
+            span.className = "squareCraft-font-modified";
+            span.style.fontSize = fontSize;
+            span.textContent = lastSelectedText;
+    
+            // Create element structure with context
+            const elementStructure = {
+                type: 'span',
+                className: 'squareCraft-font-modified',
+                content: lastSelectedText,
+                parentId: container.id,
+                fullContent: fullContent,
+                startOffset: lastSelectedRange.startOffset,
+                endOffset: lastSelectedRange.endOffset
+            };
+    
+            // Replace selected text with span
+            lastSelectedRange.deleteContents();
+            lastSelectedRange.insertNode(span);
+    
+            // Save to database with proper structure
+            await saveModifications(
+                span.id,
+                { "font-size": fontSize },
+                elementStructure
+            );
+    
+            console.log("✅ Font size modified and saved:", fontSize);
+        } catch (error) {
+            console.error("❌ Error applying font size:", error);
+        }
+    });
+    
 
     document
       .getElementById("squareCraftLineHeight")
@@ -1428,38 +1305,38 @@ function clearPendingChanges() {
       "squareCraftFontSizeOptions"
     );
 
-    // document.body.addEventListener("click", (event) => {
-    //   let block = event.target.closest('[id^="block-"]');
-    //   if (!block) return;
+    document.body.addEventListener("click", (event) => {
+      let block = event.target.closest('[id^="block-"]');
+      if (!block) return;
 
-    //   if (selectedElement) {
-    //     selectedElement.style.fontSize = fontSizes + "px";
-    //   }
+      if (selectedElement) {
+        selectedElement.style.fontSize = fontSizes + "px";
+      }
 
-    //   selectedElement = block;
-    //   selectedElement.style.outline = "2px dashed #EF7C2F";
+      selectedElement = block;
+      selectedElement.style.outline = "2px dashed #EF7C2F";
 
-    //   let computedFontSize = window.getComputedStyle(selectedElement).fontSize;
-    //   fontSizeInput.value = parseInt(computedFontSize, 10);
-    // });
+      let computedFontSize = window.getComputedStyle(selectedElement).fontSize;
+      fontSizeInput.value = parseInt(computedFontSize, 10);
+    });
 
-    // dropdownArrow.addEventListener("click", function (event) {
-    //   event.stopPropagation();
-    //   dropdownOptions.classList.toggle("squareCraft-hidden");
-    // });
+    dropdownArrow.addEventListener("click", function (event) {
+      event.stopPropagation();
+      dropdownOptions.classList.toggle("squareCraft-hidden");
+    });
 
-    // dropdownOptions.addEventListener("click", function (event) {
-    //   if (event.target.classList.contains("squareCraft-dropdown-item")) {
-    //     fontSizeInput.value = event.target.dataset.value;
-    //     dropdownOptions.classList.add("squareCraft-hidden");
+    dropdownOptions.addEventListener("click", function (event) {
+      if (event.target.classList.contains("squareCraft-dropdown-item")) {
+        fontSizeInput.value = event.target.dataset.value;
+        dropdownOptions.classList.add("squareCraft-hidden");
 
-    //     if (selectedElement) {
-    //       let css = { "font-size": `${event.target.dataset.value}px` };
-    //       applyStylesToElement(selectedElement.id, css);
-    //       saveModifications(selectedElement.id, css);
-    //     }
-    //   }
-    // });
+        if (selectedElement) {
+          let css = { "font-size": `${event.target.dataset.value}px` };
+          applyStylesToElement(selectedElement.id, css);
+          saveModifications(selectedElement.id, css);
+        }
+      }
+    });
 
     document.addEventListener("click", function (event) {
       if (
@@ -1470,12 +1347,12 @@ function clearPendingChanges() {
       }
     });
 
-    // fontSizeInput.addEventListener("input", function () {
-    //   if (selectedElement) {
-    //     let css = { "font-size": `${fontSizeInput.value}px` };
-    //     applyStylesToElement(selectedElement.id, css);
-    //     saveModifications(selectedElement.id, css);
-    //   }
-    // });
+    fontSizeInput.addEventListener("input", function () {
+      if (selectedElement) {
+        let css = { "font-size": `${fontSizeInput.value}px` };
+        applyStylesToElement(selectedElement.id, css);
+        saveModifications(selectedElement.id, css);
+      }
+    });
   });
 })();
