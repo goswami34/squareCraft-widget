@@ -1104,14 +1104,14 @@ function clearPendingChanges() {
 
 
  // Update the mouseup event listener
-//  document.addEventListener("mouseup", function () {
-//    const selection = window.getSelection();
-//    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-//      lastSelectedText = selection.toString();
-//      lastSelectedRange = selection.getRangeAt(0);
-//      console.log("✅ Text Selected:", lastSelectedText);
-//    }
-//  });
+ document.addEventListener("mouseup", function () {
+   const selection = window.getSelection();
+   if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+     lastSelectedText = selection.toString();
+     lastSelectedRange = selection.getRangeAt(0);
+     console.log("✅ Text Selected:", lastSelectedText);
+   }
+ });
 
 //  document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
 //   if (!lastSelectedRange || !lastSelectedText) {
@@ -1227,22 +1227,22 @@ let activeTextSelection = {
 };
 
 // Update the mouseup event listener to store selection info
-document.addEventListener("mouseup", function() {
-  const selection = window.getSelection();
-  if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-      activeTextSelection.text = selection.toString();
-      activeTextSelection.range = selection.getRangeAt(0);
+// document.addEventListener("mouseup", function() {
+//   const selection = window.getSelection();
+//   if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+//       activeTextSelection.text = selection.toString();
+//       activeTextSelection.range = selection.getRangeAt(0);
       
-      // Find the closest parent element that already has an ID
-      let element = selection.anchorNode.parentElement;
-      while (element && !element.id && element.tagName !== 'BODY') {
-          element = element.parentElement;
-      }
+//       // Find the closest parent element that already has an ID
+//       let element = selection.anchorNode.parentElement;
+//       while (element && !element.id && element.tagName !== 'BODY') {
+//           element = element.parentElement;
+//       }
       
-      activeTextSelection.element = element;
-      console.log("✅ Text Selected:", activeTextSelection.text);
-  }
-});
+//       activeTextSelection.element = element;
+//       console.log("✅ Text Selected:", activeTextSelection.text);
+//   }
+// });
 
 // Font size change handler
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
