@@ -1070,8 +1070,8 @@ function recreateModifiedElement(structure, styles) {
 
    
     // Add this at the top level of your script with other variables
-    let lastSelectedText = null;
-    let lastSelectedRange = null;
+    // let lastSelectedText = null;
+    // let lastSelectedRange = null;
 
    
 let pendingChanges = {
