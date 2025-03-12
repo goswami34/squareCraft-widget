@@ -1104,14 +1104,14 @@ function clearPendingChanges() {
 
 
  // Update the mouseup event listener
- document.addEventListener("mouseup", function () {
-   const selection = window.getSelection();
-   if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-     lastSelectedText = selection.toString();
-     lastSelectedRange = selection.getRangeAt(0);
-     console.log("✅ Text Selected:", lastSelectedText);
-   }
- });
+//  document.addEventListener("mouseup", function () {
+//    const selection = window.getSelection();
+//    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+//      lastSelectedText = selection.toString();
+//      lastSelectedRange = selection.getRangeAt(0);
+//      console.log("✅ Text Selected:", lastSelectedText);
+//    }
+//  });
 
 //  document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
 //   if (!lastSelectedRange || !lastSelectedText) {
@@ -1166,58 +1166,124 @@ function clearPendingChanges() {
 //   }
 // });
 
+// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+//   if (!lastSelectedRange || !lastSelectedText) {
+//       console.warn("⚠️ No text selected");
+//       return;
+//   }
+
+//   const fontSize = this.value + "px";
+  
+//   try {
+//       // Get the common ancestor container
+//       let container = lastSelectedRange.commonAncestorContainer;
+      
+//       // If the container is a text node, get its parent element
+//       if (container.nodeType === Node.TEXT_NODE) {
+//           container = container.parentElement;
+//       }
+
+//       // Check if the container or its parent is a strong tag
+//       let targetElement = container.tagName === 'STRONG' ? container : 
+//                          container.closest('strong');
+
+//       // If no strong tag found but text is selected, use the immediate parent
+//       if (!targetElement && container) {
+//           targetElement = container;
+//       }
+
+//       if (targetElement) {
+//           // Apply font size directly to the existing element
+//           targetElement.style.fontSize = fontSize;
+
+//           // Save the modification using the element's existing ID or create one if needed
+//           const elementId = targetElement.id || `text-mod-${Date.now()}`;
+//           if (!targetElement.id) {
+//               targetElement.id = elementId;
+//           }
+
+//           // Save to database with the existing structure
+//           await saveModifications(
+//               elementId,
+//               { 
+//                   "font-size": fontSize
+//               }
+//           );
+
+//           console.log("✅ Font size modified and saved:", fontSize);
+//       } else {
+//           console.warn("⚠️ No suitable element found to modify");
+//       }
+//   } catch (error) {
+//       console.error("❌ Error applying font size:", error);
+//   }
+// });
+
+// Add this at the top of your script with other variables
+let activeTextSelection = {
+  range: null,
+  text: null,
+  element: null
+};
+
+// Update the mouseup event listener to store selection info
+document.addEventListener("mouseup", function() {
+  const selection = window.getSelection();
+  if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+      activeTextSelection.text = selection.toString();
+      activeTextSelection.range = selection.getRangeAt(0);
+      
+      // Find the closest parent element that already has an ID
+      let element = selection.anchorNode.parentElement;
+      while (element && !element.id && element.tagName !== 'BODY') {
+          element = element.parentElement;
+      }
+      
+      activeTextSelection.element = element;
+      console.log("✅ Text Selected:", activeTextSelection.text);
+  }
+});
+
+// Font size change handler
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-  if (!lastSelectedRange || !lastSelectedText) {
+  if (!activeTextSelection.element || !activeTextSelection.text) {
       console.warn("⚠️ No text selected");
       return;
   }
 
   const fontSize = this.value + "px";
+  const elementId = activeTextSelection.element.id;
   
   try {
-      // Get the common ancestor container
-      let container = lastSelectedRange.commonAncestorContainer;
+      // Apply the font size using CSS
+      let css = {
+          "font-size": fontSize
+      };
+
+      // Apply styles to the element
+      applyStylesToElement(elementId, css);
+
+      // Save the modifications
+      await saveModifications(elementId, css);
+
+      console.log("✅ Font size modified:", fontSize, "for element:", elementId);
       
-      // If the container is a text node, get its parent element
-      if (container.nodeType === Node.TEXT_NODE) {
-          container = container.parentElement;
-      }
-
-      // Check if the container or its parent is a strong tag
-      let targetElement = container.tagName === 'STRONG' ? container : 
-                         container.closest('strong');
-
-      // If no strong tag found but text is selected, use the immediate parent
-      if (!targetElement && container) {
-          targetElement = container;
-      }
-
-      if (targetElement) {
-          // Apply font size directly to the existing element
-          targetElement.style.fontSize = fontSize;
-
-          // Save the modification using the element's existing ID or create one if needed
-          const elementId = targetElement.id || `text-mod-${Date.now()}`;
-          if (!targetElement.id) {
-              targetElement.id = elementId;
-          }
-
-          // Save to database with the existing structure
-          await saveModifications(
-              elementId,
-              { 
-                  "font-size": fontSize
-              }
-          );
-
-          console.log("✅ Font size modified and saved:", fontSize);
-      } else {
-          console.warn("⚠️ No suitable element found to modify");
-      }
   } catch (error) {
       console.error("❌ Error applying font size:", error);
   }
 });
+
+// Optional: Reset font size
+function resetFontSize(elementId) {
+  if (!elementId) return;
+  
+  const css = {
+      "font-size": "" // This will remove the font-size property
+  };
+  
+  applyStylesToElement(elementId, css);
+  saveModifications(elementId, css);
+}
 
     document
       .getElementById("squareCraftLineHeight")
