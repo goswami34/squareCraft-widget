@@ -1182,52 +1182,38 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
       if (container.nodeType === Node.TEXT_NODE) {
           container = container.parentElement;
       }
-      
-      // Create a new span element
-      const span = document.createElement("span");
-      span.id = `squareCraft-mod-${Date.now()}`;
-      span.className = "squareCraft-font-modified";
-      span.style.fontSize = fontSize;
-      
-      // Handle nested tags (like <strong>)
-      const fragment = lastSelectedRange.cloneContents();
-      if (fragment.textContent !== lastSelectedText) {
-          // If there are nested tags, preserve them
-          const tempDiv = document.createElement('div');
-          tempDiv.appendChild(fragment.cloneNode(true));
-          span.innerHTML = tempDiv.innerHTML;
-      } else {
-          // If it's plain text, just set the content
-          span.textContent = lastSelectedText;
+
+      // Check if the container or its parent is a strong tag
+      let targetElement = container.tagName === 'STRONG' ? container : 
+                         container.closest('strong');
+
+      // If no strong tag found but text is selected, use the immediate parent
+      if (!targetElement && container) {
+          targetElement = container;
       }
 
-      // Create element structure for saving
-      const elementStructure = {
-          type: 'span',
-          className: 'squareCraft-font-modified',
-          content: lastSelectedText,
-          parentId: container.id,
-          fullContent: container.innerHTML,
-          startOffset: lastSelectedRange.startOffset,
-          endOffset: lastSelectedRange.endOffset,
-          hasNestedTags: fragment.textContent !== lastSelectedText
-      };
+      if (targetElement) {
+          // Apply font size directly to the existing element
+          targetElement.style.fontSize = fontSize;
 
-      // Replace the selected content with our new span
-      lastSelectedRange.deleteContents();
-      lastSelectedRange.insertNode(span);
+          // Save the modification using the element's existing ID or create one if needed
+          const elementId = targetElement.id || `text-mod-${Date.now()}`;
+          if (!targetElement.id) {
+              targetElement.id = elementId;
+          }
 
-      // Save to database
-      await saveModifications(
-          span.id,
-          { 
-              "font-size": fontSize,
-              "display": "inline-block"
-          },
-          elementStructure
-      );
+          // Save to database with the existing structure
+          await saveModifications(
+              elementId,
+              { 
+                  "font-size": fontSize
+              }
+          );
 
-      console.log("✅ Font size modified and saved:", fontSize);
+          console.log("✅ Font size modified and saved:", fontSize);
+      } else {
+          console.warn("⚠️ No suitable element found to modify");
+      }
   } catch (error) {
       console.error("❌ Error applying font size:", error);
   }
