@@ -834,24 +834,28 @@ async function saveModifications(elementId, css, elementStructure = null) {
     }
   }
 
-  let lastSelectedStrong = null;
+  let lastSelectedFontfamilyStrong = null;
 
-document.addEventListener("mouseup", function() {
+document.addEventListener("mouseup", function () {
     const selection = window.getSelection();
+    
     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
         let range = selection.getRangeAt(0);
-        let container = range.commonAncestorContainer;
-        
+        let parentElement = range.commonAncestorContainer;
+
         // If the selected text is a text node, get its parent element
-        if (container.nodeType === Node.TEXT_NODE) {
-            container = container.parentElement;
+        if (parentElement.nodeType === Node.TEXT_NODE) {
+            parentElement = parentElement.parentElement;
         }
+
+        // Check if the parent or an ancestor is a <strong> tag
+        const strongElement = parentElement.closest("strong");
         
-        // Check if the selection is within a <strong> tag
-        const strongElement = container.closest('strong');
         if (strongElement) {
-            lastSelectedStrong = strongElement;
-            console.log("✅ Selected text inside <strong>:", strongElement.textContent);
+          lastSelectedFontfamilyStrong = strongElement;
+            console.log("✅ Selected text inside <strong>: ", strongElement.textContent);
+        } else {
+            lastSelectedFontfamilyStrong = null; // Reset if selection is outside <strong>
         }
     }
 });
@@ -1035,9 +1039,13 @@ fontfamilies();
 
     await saveModifications(selectedElement.id, css);
     // await saveModifications(lastSelectedFontfamilyStrong.id, css);
-    if (lastSelectedStrong && lastSelectedStrong.id) {
-      await saveModifications(lastSelectedStrong.id, css);
+    if (lastSelectedFontfamilyStrong && lastSelectedFontfamilyStrong.id) {
+      await saveModifications(lastSelectedFontfamilyStrong.id, css);
   }
+
+    if (lastSelectedTextTransformStrongElement && lastSelectedTextTransformStrongElement.id) {
+      await saveModifications(lastSelectedTextTransformStrongElement.id, css);
+    }
   });
 
     // Add this event listener for font-weight dropdown
@@ -1300,52 +1308,87 @@ setInterval(cleanStyleCache, 60000);
         }
       });
 
+
+
       // text-transform start
 
-    document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
-        textTransform.addEventListener("click", async function() {
-            const transform = this.getAttribute("data-transform");
+      // Track the last selected strong element
+    let lastSelectedTextTransformStrongElement = null;
+
+    // Add event listener to track text selection within strong tags
+    document.addEventListener("mouseup", function() {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+            let range = selection.getRangeAt(0);
+            let container = range.commonAncestorContainer;
             
-            // Check if we have a selected strong element
-            if (lastSelectedStrong) {
-                if (!lastSelectedStrong.id) {
-                    lastSelectedStrong.id = `text-transform-${Date.now()}`;
-                }
-                
-                let css = { "text-transform": transform };
-                applyStylesToElement(lastSelectedStrong.id, css);
-                await saveModifications(lastSelectedStrong.id, css);
-                console.log("✅ Applied text-transform:", transform, "to strong element:", lastSelectedStrong.id);
-            } 
-            // Fall back to selected element if no strong tag is selected
-            else if (selectedElement) {
-                let css = { "text-transform": transform };
-                applyStylesToElement(selectedElement.id, css);
-                await saveModifications(selectedElement.id, css);
-                console.log("✅ Applied text-transform:", transform, "to element:", selectedElement.id);
-            } else {
-                console.warn("⚠️ No element or strong tag selected for text-transform");
+            // If the container is a text node, get its parent
+            if (container.nodeType === Node.TEXT_NODE) {
+                container = container.parentElement;
             }
-        });
-    });
-
-    const undoButton = document.querySelector(
-        ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer"
-    );
-
-    undoButton.addEventListener("click", async function() {
-        if (lastSelectedStrong) {
-            let css = { "text-transform": "none" };
-            applyStylesToElement(lastSelectedStrong.id, css);
-            await saveModifications(lastSelectedStrong.id, css);
-            console.log("🛑 Text transform removed for strong element:", lastSelectedStrong.id);
-        } else if (selectedElement) {
-            let css = { "text-transform": "none" };
-            applyStylesToElement(selectedElement.id, css);
-            await saveModifications(selectedElement.id, css);
-            console.log("🛑 Text transform removed for element:", selectedElement.id);
+            
+            // Check if selection is within a strong tag
+            const strongElement = container.closest('strong');
+            if (strongElement) {
+              lastSelectedTextTransformStrongElement = strongElement;
+                console.log("✅ Selected text inside <strong>:", strongElement.textContent);
+            } else {
+              lastSelectedTextTransformStrongElement = null;
+            }
         }
     });
+
+    // Modify text-transform click handlers
+      document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
+        textTransform.addEventListener("click", async function() {
+            // Check if we have a selected strong element
+            if (!lastSelectedTextTransformStrongElement) {
+                console.warn("⚠️ No bold text selected");
+                return;
+            }
+
+            // Ensure the strong element has an ID
+            if (!lastSelectedTextTransformStrongElement.id) {
+              lastSelectedTextTransformStrongElement.id = `text-transform-${Date.now()}`;
+            }
+
+            const transform = this.getAttribute("data-transform");
+            let css = { "text-transform": transform };
+            
+            // Apply styles to the strong element
+            applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
+            
+            // Save modifications
+            await saveModifications(lastSelectedTextTransformStrongElement.id, css);
+            
+            console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformStrongElement.textContent);
+        });
+      });
+
+    // Reset text-transform
+      const undoButton = document.querySelector(
+        ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer"
+      );
+
+      undoButton.addEventListener("click", async function() {
+        if (!lastSelectedTextTransformStrongElement) {
+            console.warn("⚠️ No bold text selected");
+            return;
+        }
+
+        let css = { "text-transform": "none" };
+        
+        // Apply reset styles
+        applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
+        
+        // Save the reset state
+        await saveModifications(lastSelectedTextTransformStrongElement.id, css);
+        
+        console.log("🔄 Reset text transform for bold text:", lastSelectedTextTransformStrongElement.textContent);
+      });
+
+
+      // text-transform end
 
 
 
