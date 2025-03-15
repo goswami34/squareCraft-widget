@@ -231,56 +231,130 @@ function recreateModifiedElement(structure, styles) {
 
  
  
-  async function saveModifications(elementId, css, elementStructure = null) {
-    if (!pageId || !elementId || !css) {
-        console.warn("⚠️ Missing required data to save modifications.");
-        return;
-    }
+//   async function saveModifications(elementId, css, elementStructure = null) {
+//     if (!pageId || !elementId || !css) {
+//         console.warn("⚠️ Missing required data to save modifications.");
+//         return;
+//     }
 
-    // Create the proper structure for span elements
-    const modificationData = {
-        userId,
-        token,
-        widgetId,
-        modifications: [{
-            pageId,
-            elements: [{
-                elementId,
-                css: {
-                    span: {
-                        id: elementId,
-                        ...css
-                    }
-                },
-                elementStructure: elementStructure || {
-                    type: 'span',
-                    className: 'squareCraft-font-modified',
-                    content: document.getElementById(elementId)?.textContent || '',
-                    parentId: document.getElementById(elementId)?.parentElement?.id || null
-                }
-            }]
-        }]
-    };
+//     // Create the proper structure for span elements
+//     const modificationData = {
+//         userId,
+//         token,
+//         widgetId,
+//         modifications: [{
+//             pageId,
+//             elements: [{
+//                 elementId,
+//                 css: {
+//                     span: {
+//                         id: elementId,
+//                         ...css
+//                     }
+//                 },
+//                 elementStructure: elementStructure || {
+//                     type: 'span',
+//                     className: 'squareCraft-font-modified',
+//                     content: document.getElementById(elementId)?.textContent || '',
+//                     parentId: document.getElementById(elementId)?.parentElement?.id || null
+//                 }
+//             }]
+//         }]
+//     };
 
-    try {
-        const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-                "userId": userId,
-                "pageId": pageId,
-                "widget-id": widgetId,
-            },
-            body: JSON.stringify(modificationData),
-        });
+//     try {
+//         const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+//                 "userId": userId,
+//                 "pageId": pageId,
+//                 "widget-id": widgetId,
+//             },
+//             body: JSON.stringify(modificationData),
+//         });
 
-        const result = await response.json();
-        console.log("✅ Changes Saved Successfully!", result);
-        return result;
-    } catch (error) {
-        console.error("❌ Error saving modifications:", error);
-    }
+//         const result = await response.json();
+//         console.log("✅ Changes Saved Successfully!", result);
+//         return result;
+//     } catch (error) {
+//         console.error("❌ Error saving modifications:", error);
+//     }
+// }
+
+async function saveModifications(elementId, css, elementStructure = null) {
+  if (!elementId || !css) {
+      console.warn("⚠️ Missing required data for saving modifications");
+      return;
+  }
+
+  const userId = localStorage.getItem("squareCraft_u_id");
+  const token = localStorage.getItem("squareCraft_auth_token");
+  const widgetId = localStorage.getItem("squareCraft_w_id");
+  const pageId = getPageId();
+
+  if (!userId || !token || !widgetId || !pageId) {
+      console.error("❌ Missing required authentication data");
+      return;
+  }
+
+  const element = document.getElementById(elementId);
+  if (!element) {
+      console.warn(`⚠️ Element with ID '${elementId}' not found`);
+      return;
+  }
+
+  const modificationData = {
+      userId,
+      token,
+      widgetId,
+      modifications: [{
+          pageId,
+          elements: [{
+              elementId,
+              css: {
+                  span: {
+                      id: elementId,
+                      ...css
+                  }
+              },
+              elementStructure: elementStructure || {
+                  type: 'span',
+                  className: 'squareCraft-font-modified',
+                  content: element.textContent,
+                  parentId: element.parentElement?.id || null
+              }
+          }]
+      }]
+  };
+
+  try {
+      console.log("Sending modification data:", modificationData);
+      
+      const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+              "userId": userId,
+              "pageId": pageId,
+              "widget-id": widgetId,
+          },
+          body: JSON.stringify(modificationData),
+      });
+
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("✅ Modifications saved successfully:", result);
+      return result;
+  } catch (error) {
+      console.error("❌ Error saving modifications:", error);
+      throw error;
+  }
 }
 
 
@@ -789,44 +863,105 @@ async function fontfamilies() {
 
   // Populate font-family dropdown
   data.items.forEach((font) => {
-      const option = document.createElement("div");
-      option.textContent = font.family;
-      option.style.padding = "8px";
-      option.style.cursor = "pointer";
-      option.style.fontFamily = font.family;
-      option.style.transition = "background 0.3s";
-      option.style.color = "white";
-      option.style.fontSize = "14px";
+    const option = document.createElement("div");
+    option.textContent = font.family;
+    option.style.padding = "8px";
+    option.style.cursor = "pointer";
+    option.style.fontFamily = font.family;
+    option.style.transition = "background 0.3s";
+    option.style.color = "white";
+    option.style.fontSize = "14px";
 
-      option.addEventListener("mouseover", () => {
-          option.style.background = "#444";
-      });
+    option.addEventListener("mouseover", () => {
+        option.style.background = "#444";
+    });
 
-      option.addEventListener("mouseout", () => {
-          option.style.background = "transparent";
-      });
+    option.addEventListener("mouseout", () => {
+        option.style.background = "transparent";
+    });
 
-      option.addEventListener("click", async () => {
-          if (!lastSelectedFontfamilyStrong) {
-              console.warn("⚠️ No bold text selected.");
-              return;
-          }
+    option.addEventListener("click", async () => {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) {
+            console.warn("⚠️ No text selected");
+            return;
+        }
 
-          let selectedFont = font.family;
-          selectedFontText.textContent = selectedFont;
-          selectedFontText.style.fontFamily = selectedFont;
-          fontList.style.display = "none";
+        const range = selection.getRangeAt(0);
+        const selectedText = range.toString().trim();
+        
+        if (!selectedText) {
+            console.warn("⚠️ No text selected");
+            return;
+        }
 
-          // Apply font-family to the bold text
-          lastSelectedFontfamilyStrong.style.fontFamily = selectedFont;
+        let container = range.commonAncestorContainer;
+        if (container.nodeType === Node.TEXT_NODE) {
+            container = container.parentElement;
+        }
 
-          console.log(`🎨 Applied font-family: ${selectedFont} to bold text`);
+        // Create or find the span element
+        let targetElement;
+        if (range.startContainer === range.endContainer) {
+            // Create a new span for the selected text
+            const span = document.createElement('span');
+            span.id = `font-mod-${Date.now()}`;
+            span.className = 'squareCraft-font-modified';
+            
+            // Extract the selected text and wrap it in the span
+            const textContent = range.startContainer.textContent;
+            const startOffset = range.startOffset;
+            const endOffset = range.endOffset;
+            
+            range.deleteContents();
+            span.textContent = selectedText;
+            range.insertNode(span);
+            
+            targetElement = span;
+        } else {
+            // Use existing container if it's already a modified element
+            targetElement = container.closest('.squareCraft-font-modified') || container;
+            if (!targetElement.id) {
+                targetElement.id = `font-mod-${Date.now()}`;
+            }
+        }
 
-          // Save the modification
-          let css = { "font-family": selectedFont };
-          applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
-          await saveModifications(lastSelectedFontfamilyStrong.id, css);
-      });
+        // Apply the selected font
+        let selectedFont = font.family;
+        
+        // Load the font
+        const link = document.createElement('link');
+        link.href = `https://fonts.googleapis.com/css?family=${selectedFont.replace(/ /g, '+')}`;
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+
+        // Apply styles
+        targetElement.style.fontFamily = selectedFont;
+
+        // Update dropdown display
+        selectedFontText.textContent = selectedFont;
+        selectedFontText.style.fontFamily = selectedFont;
+        fontList.style.display = "none";
+
+        // Save modifications
+        const css = {
+            "font-family": selectedFont
+        };
+
+        // Apply styles and save to database
+        applyStylesToElement(targetElement.id, css);
+        try {
+            await saveModifications(targetElement.id, css, {
+                type: 'span',
+                className: 'squareCraft-font-modified',
+                content: selectedText,
+                parentId: targetElement.parentElement?.id || null
+            });
+            console.log(`✅ Font family saved successfully: ${selectedFont}`);
+        } catch (error) {
+            console.error("❌ Error saving font family:", error);
+        }
+    });
 
       fontList.appendChild(option);
   });
