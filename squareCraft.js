@@ -820,8 +820,8 @@ async function fontfamilies() {
 
           // Save the modification
           let css = { "font-family": selectedFont };
-          applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
-          await saveModifications(lastSelectedFontfamilyStrong.id, css);
+          applyStylesToElement(selectedElement.id, css);
+          await saveModifications(selectedElement.id, css);
       });
 
       fontList.appendChild(option);
