@@ -820,8 +820,8 @@ async function fontfamilies() {
 
           // Save the modification
           let css = { "font-family": selectedFont };
-          applyStylesToElement(selectedElement.id, css);
-          await saveModifications(selectedElement.id, css);
+          applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
+          await saveModifications(lastSelectedFontfamilyStrong.id, css);
       });
 
       fontList.appendChild(option);
@@ -903,6 +903,7 @@ fontfamilies();
     };
 
     await saveModifications(selectedElement.id, css);
+    await saveModifications(lastSelectedFontfamilyStrong.id, css);
   });
 
     // Add this event listener for font-weight dropdown
