@@ -834,28 +834,24 @@ async function saveModifications(elementId, css, elementStructure = null) {
     }
   }
 
-  let lastSelectedFontfamilyStrong = null;
+  let lastSelectedStrong = null;
 
-document.addEventListener("mouseup", function () {
+document.addEventListener("mouseup", function() {
     const selection = window.getSelection();
-    
     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
         let range = selection.getRangeAt(0);
-        let parentElement = range.commonAncestorContainer;
-
-        // If the selected text is a text node, get its parent element
-        if (parentElement.nodeType === Node.TEXT_NODE) {
-            parentElement = parentElement.parentElement;
-        }
-
-        // Check if the parent or an ancestor is a <strong> tag
-        const strongElement = parentElement.closest("strong");
+        let container = range.commonAncestorContainer;
         
+        // If the selected text is a text node, get its parent element
+        if (container.nodeType === Node.TEXT_NODE) {
+            container = container.parentElement;
+        }
+        
+        // Check if the selection is within a <strong> tag
+        const strongElement = container.closest('strong');
         if (strongElement) {
-          lastSelectedFontfamilyStrong = strongElement;
-            console.log("✅ Selected text inside <strong>: ", strongElement.textContent);
-        } else {
-            lastSelectedFontfamilyStrong = null; // Reset if selection is outside <strong>
+            lastSelectedStrong = strongElement;
+            console.log("✅ Selected text inside <strong>:", strongElement.textContent);
         }
     }
 });
@@ -1039,8 +1035,8 @@ fontfamilies();
 
     await saveModifications(selectedElement.id, css);
     // await saveModifications(lastSelectedFontfamilyStrong.id, css);
-    if (lastSelectedFontfamilyStrong && lastSelectedFontfamilyStrong.id) {
-      await saveModifications(lastSelectedFontfamilyStrong.id, css);
+    if (lastSelectedStrong && lastSelectedStrong.id) {
+      await saveModifications(lastSelectedStrong.id, css);
   }
   });
 
@@ -1304,36 +1300,54 @@ setInterval(cleanStyleCache, 60000);
         }
       });
 
-    document
-      .querySelectorAll(".squsareCraft-text-transform")
-      .forEach((textTransform) => {
-        textTransform.addEventListener("click", async function () {
-          if (!selectedElement) return;
-          const transform = this.getAttribute("data-transform");
-          let css = { "text-transform": transform };
-          applyStylesToElement(selectedElement.id, css);
-          await saveModifications(selectedElement.id, css);
+      // text-transform start
+
+    document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
+        textTransform.addEventListener("click", async function() {
+            const transform = this.getAttribute("data-transform");
+            
+            // Check if we have a selected strong element
+            if (lastSelectedStrong) {
+                if (!lastSelectedStrong.id) {
+                    lastSelectedStrong.id = `text-transform-${Date.now()}`;
+                }
+                
+                let css = { "text-transform": transform };
+                applyStylesToElement(lastSelectedStrong.id, css);
+                await saveModifications(lastSelectedStrong.id, css);
+                console.log("✅ Applied text-transform:", transform, "to strong element:", lastSelectedStrong.id);
+            } 
+            // Fall back to selected element if no strong tag is selected
+            else if (selectedElement) {
+                let css = { "text-transform": transform };
+                applyStylesToElement(selectedElement.id, css);
+                await saveModifications(selectedElement.id, css);
+                console.log("✅ Applied text-transform:", transform, "to element:", selectedElement.id);
+            } else {
+                console.warn("⚠️ No element or strong tag selected for text-transform");
+            }
         });
-      });
+    });
 
     const undoButton = document.querySelector(
-      ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer"
+        ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer"
     );
 
-    undoButton.addEventListener("click", async function () {
-      if (!selectedElement) return;
-
-      // Remove text-transform property by setting it to 'none'
-      let css = { "text-transform": "none" };
-
-      // Apply styles to the element
-      applyStylesToElement(selectedElement.id, css);
-
-      // Remove saved modifications for text-transform
-      await saveModifications(selectedElement.id, css);
-
-      console.log("🛑 Text transform removed for:", selectedElement.id);
+    undoButton.addEventListener("click", async function() {
+        if (lastSelectedStrong) {
+            let css = { "text-transform": "none" };
+            applyStylesToElement(lastSelectedStrong.id, css);
+            await saveModifications(lastSelectedStrong.id, css);
+            console.log("🛑 Text transform removed for strong element:", lastSelectedStrong.id);
+        } else if (selectedElement) {
+            let css = { "text-transform": "none" };
+            applyStylesToElement(selectedElement.id, css);
+            await saveModifications(selectedElement.id, css);
+            console.log("🛑 Text transform removed for element:", selectedElement.id);
+        }
     });
+
+
 
     //   hover code start here
     const hoverButton = document.querySelector(
