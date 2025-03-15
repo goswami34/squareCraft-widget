@@ -864,47 +864,76 @@ async function fontfamilies() {
 
   // Populate font-family dropdown
   data.items.forEach((font) => {
-      const option = document.createElement("div");
-      option.textContent = font.family;
-      option.style.padding = "8px";
-      option.style.cursor = "pointer";
-      option.style.fontFamily = font.family;
-      option.style.transition = "background 0.3s";
-      option.style.color = "white";
-      option.style.fontSize = "14px";
+    const option = document.createElement("div");
+    option.textContent = font.family;
+    option.style.padding = "8px";
+    option.style.cursor = "pointer";
+    option.style.fontFamily = font.family;
+    option.style.transition = "background 0.3s";
+    option.style.color = "white";
+    option.style.fontSize = "14px";
 
-      option.addEventListener("mouseover", () => {
-          option.style.background = "#444";
-      });
+    option.addEventListener("mouseover", () => {
+        option.style.background = "#444";
+    });
 
-      option.addEventListener("mouseout", () => {
-          option.style.background = "transparent";
-      });
+    option.addEventListener("mouseout", () => {
+        option.style.background = "transparent";
+    });
 
-      option.addEventListener("click", async () => {
-          if (!lastSelectedFontfamilyStrong) {
-              console.warn("⚠️ No bold text selected.");
-              return;
-          }
+    option.addEventListener("click", async () => {
+        if (!lastSelectedStrong) {
+            console.warn("⚠️ No bold text selected");
+            return;
+        }
 
-          let selectedFont = font.family;
-          selectedFontText.textContent = selectedFont;
-          selectedFontText.style.fontFamily = selectedFont;
-          fontList.style.display = "none";
+        // Ensure the strong element has an ID
+        if (!lastSelectedStrong.id) {
+            lastSelectedStrong.id = `strong-${Date.now()}`;
+        }
 
-          // Apply font-family to the bold text
-          lastSelectedFontfamilyStrong.style.fontFamily = selectedFont;
+        let selectedFont = font.family;
 
-          console.log(`🎨 Applied font-family: ${selectedFont} to bold text`);
+        // Load the font
+        const link = document.createElement('link');
+        link.href = `https://fonts.googleapis.com/css?family=${selectedFont.replace(/ /g, '+')}`;
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
 
-          // Save the modification
-          let css = { "font-family": selectedFont };
-          applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
-          await saveModifications(lastSelectedFontfamilyStrong.id, css);
-      });
+        // Update dropdown display
+        selectedFontText.textContent = selectedFont;
+        selectedFontText.style.fontFamily = selectedFont;
+        fontList.style.display = "none";
 
-      fontList.appendChild(option);
-  });
+        // Apply font to the strong element
+        lastSelectedStrong.style.fontFamily = selectedFont;
+
+        // Create CSS object
+        const css = {
+            "font-family": selectedFont
+        };
+
+        // Apply styles and save to database
+        try {
+            // First apply the styles locally
+            applyStylesToElement(lastSelectedStrong.id, css);
+
+            // Then save to database
+            await saveModifications(lastSelectedStrong.id, css, {
+                type: 'strong',
+                className: lastSelectedStrong.className || '',
+                content: lastSelectedStrong.textContent,
+                parentId: lastSelectedStrong.parentElement?.id || null
+            });
+
+            console.log(`✅ Font family saved successfully for <strong> element: ${selectedFont}`);
+        } catch (error) {
+            console.error("❌ Error saving font family:", error);
+        }
+    });
+
+    fontList.appendChild(option);
+});
 
   fontDropdown.appendChild(fontList);
 
