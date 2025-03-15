@@ -1011,6 +1011,7 @@ function clearPendingChanges() {
 //font-size start
 let lastSelectedText = null;
 let lastSelectedRange = null;
+
 let styleCache = new Map();
 
 // Update the mouseup event listener to store selection info
@@ -1026,11 +1027,10 @@ document.addEventListener("mouseup", function() {
             container = container.parentElement;
         }
         
-        // Only store styles if the container is or is within a strong tag
-        let strongElement = container.tagName === 'STRONG' ? container : container.closest('strong');
-        if (strongElement) {
-            const computedStyle = window.getComputedStyle(strongElement);
-            styleCache.set(strongElement, {
+        // Store the current styles
+        if (container) {
+            const computedStyle = window.getComputedStyle(container);
+            styleCache.set(container, {
                 fontSize: computedStyle.fontSize,
                 originalText: lastSelectedText
             });
@@ -1062,14 +1062,18 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
         let targetElement = container.tagName === 'STRONG' ? container : 
                            container.closest('strong');
 
-        // Only proceed if we found a strong tag
+        // If no strong tag found but text is selected, use the immediate parent
+        if (!targetElement && container) {
+            targetElement = container;
+        }
+
         if (targetElement) {
             // Generate a unique ID if none exists
             if (!targetElement.id) {
                 targetElement.id = `text-mod-${Date.now()}`;
             }
 
-            // Apply font size directly to the strong element
+            // Apply font size directly to the existing element
             targetElement.style.fontSize = fontSize;
 
             // Store the applied style in our cache
@@ -1090,8 +1094,6 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
             await saveModifications(targetElement.id, css);
 
             console.log("✅ Font size modified and saved:", fontSize);
-        } else {
-            console.warn("⚠️ Selected text is not within a <strong> tag");
         }
     } catch (error) {
         console.error("❌ Error applying font size:", error);
@@ -1100,22 +1102,16 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
 
 // Add a click event listener to maintain styles
 document.addEventListener("click", function(event) {
-    // Find the closest strong element
-    let strongElement = event.target.closest('strong');
-    
-    if (strongElement) {
-        // Get cached styles for this strong element
-        const cachedStyle = styleCache.get(strongElement);
-        if (cachedStyle && cachedStyle.fontSize) {
-            strongElement.style.fontSize = cachedStyle.fontSize;
-            
-            // Ensure the style is persisted
-            if (strongElement.id) {
-                applyStylesToElement(strongElement.id, {
-                    "font-size": cachedStyle.fontSize
-                });
+    // Check if we have cached styles for any parent elements
+    let element = event.target;
+    while (element && element !== document.body) {
+        if (styleCache.has(element)) {
+            const cachedStyle = styleCache.get(element);
+            if (cachedStyle.fontSize) {
+                element.style.fontSize = cachedStyle.fontSize;
             }
         }
+        element = element.parentElement;
     }
 });
 
