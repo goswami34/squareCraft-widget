@@ -1008,17 +1008,18 @@ function clearPendingChanges() {
 
 
 
-// Update the mouseup event listener to store selection info
+// font-size code start
 // Add these variables at the top of your script
 let lastSelectedText = null;
 let lastSelectedRange = null;
 let styleCache = new Map();
+let modifiedStrongElements = new Set();
 
 // Update the mouseup event listener to store selection info
 document.addEventListener("mouseup", function() {
     const selection = window.getSelection();
     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-        lastSelectedText = selection.toString();
+        lastSelectedText = selection.toString().trim();
         lastSelectedRange = selection.getRangeAt(0);
         
         // Get the containing element
@@ -1027,17 +1028,15 @@ document.addEventListener("mouseup", function() {
             container = container.parentElement;
         }
         
-        // Only store styles if the container is or is within a strong tag
+        // Check if selection is within a strong tag
         let strongElement = container.tagName === 'STRONG' ? container : container.closest('strong');
         if (strongElement) {
             const computedStyle = window.getComputedStyle(strongElement);
-            styleCache.set(strongElement, {
+            styleCache.set(strongElement.id || `strong-${Date.now()}`, {
                 fontSize: computedStyle.fontSize,
-                originalText: lastSelectedText
+                element: strongElement
             });
         }
-        
-        console.log("✅ Text Selected:", lastSelectedText);
     }
 });
 
@@ -1053,84 +1052,125 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
     try {
         // Get the common ancestor container
         let container = lastSelectedRange.commonAncestorContainer;
-        
-        // If the container is a text node, get its parent element
         if (container.nodeType === Node.TEXT_NODE) {
             container = container.parentElement;
         }
 
         // Check if the container or its parent is a strong tag
-        let targetElement = container.tagName === 'STRONG' ? container : 
+        let strongElement = container.tagName === 'STRONG' ? container : 
                            container.closest('strong');
 
-        // Only proceed if we found a strong tag
-        if (targetElement) {
-            // Generate a unique ID if none exists
-            if (!targetElement.id) {
-                targetElement.id = `text-mod-${Date.now()}`;
-            }
-
-            // Apply font size directly to the strong element
-            targetElement.style.fontSize = fontSize;
-
-            // Store the applied style in our cache
-            styleCache.set(targetElement, {
-                fontSize: fontSize,
-                originalText: lastSelectedText
-            });
-
-            // Create CSS for persistent styling
-            let css = {
-                "font-size": fontSize
-            };
-
-            // Apply styles using your existing function
-            applyStylesToElement(targetElement.id, css);
-
-            // Save to database
-            await saveModifications(targetElement.id, css);
-
-            console.log("✅ Font size modified and saved:", fontSize);
-        } else {
+        if (!strongElement) {
             console.warn("⚠️ Selected text is not within a <strong> tag");
+            return;
         }
+
+        // Ensure strong element has an ID
+        if (!strongElement.id) {
+            strongElement.id = `strong-${Date.now()}`;
+        }
+
+        // Apply font size to the strong element
+        strongElement.style.fontSize = fontSize;
+
+        // Add to modified elements set
+        modifiedStrongElements.add(strongElement.id);
+
+        // Update style cache
+        styleCache.set(strongElement.id, {
+            fontSize: fontSize,
+            element: strongElement
+        });
+
+        // Create CSS for persistent styling
+        let css = {
+            "font-size": fontSize
+        };
+
+        // Apply styles using your existing function
+        applyStylesToElement(strongElement.id, css);
+
+        // Save to database
+        await saveModifications(strongElement.id, css);
+
+        // Add !important style to ensure it persists
+        const importantStyle = document.createElement('style');
+        importantStyle.id = `style-important-${strongElement.id}`;
+        importantStyle.textContent = `
+            #${strongElement.id} {
+                font-size: ${fontSize} !important;
+            }
+        `;
+        document.head.appendChild(importantStyle);
+
+        console.log("✅ Font size modified and saved:", fontSize);
     } catch (error) {
         console.error("❌ Error applying font size:", error);
     }
 });
 
-// Add a click event listener to maintain styles
+// Add click event listeners to maintain styles
 document.addEventListener("click", function(event) {
-    // Find the closest strong element
-    let strongElement = event.target.closest('strong');
+    // Find the closest block element
+    const block = event.target.closest('[id^="block-"]');
     
-    if (strongElement) {
-        // Get cached styles for this strong element
-        const cachedStyle = styleCache.get(strongElement);
-        if (cachedStyle && cachedStyle.fontSize) {
-            strongElement.style.fontSize = cachedStyle.fontSize;
-            
-            // Ensure the style is persisted
-            if (strongElement.id) {
-                applyStylesToElement(strongElement.id, {
-                    "font-size": cachedStyle.fontSize
-                });
+    if (block) {
+        // Find all modified strong elements within this block
+        block.querySelectorAll('strong').forEach(strongElement => {
+            if (strongElement.id && modifiedStrongElements.has(strongElement.id)) {
+                const cachedStyle = styleCache.get(strongElement.id);
+                if (cachedStyle && cachedStyle.fontSize) {
+                    // Reapply the cached font size
+                    strongElement.style.fontSize = cachedStyle.fontSize;
+                    
+                    // Ensure the style is persisted through the styling system
+                    applyStylesToElement(strongElement.id, {
+                        "font-size": cachedStyle.fontSize
+                    });
+                }
+            }
+        });
+    }
+});
+
+// MutationObserver to watch for changes to strong elements
+const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.type === 'attributes' || mutation.type === 'characterData') {
+            const strongElement = mutation.target.closest('strong');
+            if (strongElement && strongElement.id && modifiedStrongElements.has(strongElement.id)) {
+                const cachedStyle = styleCache.get(strongElement.id);
+                if (cachedStyle && cachedStyle.fontSize) {
+                    strongElement.style.fontSize = cachedStyle.fontSize;
+                }
             }
         }
-    }
+    });
+});
+
+// Start observing the document with the configured parameters
+observer.observe(document.body, {
+    attributes: true,
+    childList: true,
+    characterData: true,
+    subtree: true
 });
 
 // Optional: Clean up cache periodically
 function cleanStyleCache() {
-    for (let [element, styles] of styleCache.entries()) {
-        if (!document.contains(element)) {
-            styleCache.delete(element);
+    for (let [id, data] of styleCache.entries()) {
+        if (!document.getElementById(id)) {
+            styleCache.delete(id);
+            modifiedStrongElements.delete(id);
         }
     }
 }
 
 // Clean cache every minute
 setInterval(cleanStyleCache, 60000);
+
+
+// font-size code end
 
 
     document
