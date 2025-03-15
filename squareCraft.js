@@ -160,46 +160,97 @@
 
 
 
+// function recreateModifiedElement(structure, styles) {
+//     // Find the parent element where we need to recreate the modified element
+//     const parentElement = structure.parentId ? 
+//         document.getElementById(structure.parentId) : 
+//         document.body;
+
+//     if (!parentElement) return;
+
+//     // Create new element (span in this case)
+//     const span = document.createElement('span');
+//     span.id = structure.id;
+//     span.className = structure.className || 'squareCraft-font-modified';
+//     span.textContent = structure.content;
+
+//     // Apply stored styles
+//     Object.entries(styles).forEach(([prop, value]) => {
+//         span.style[prop] = value;
+//     });
+
+//     // Insert at the correct position if possible
+//     if (structure.content) {
+//         const textNodes = [];
+//         const walker = document.createTreeWalker(
+//             parentElement,
+//             NodeFilter.SHOW_TEXT,
+//             null,
+//             false
+//         );
+
+//         let node;
+//         while (node = walker.nextNode()) {
+//             if (node.textContent.includes(structure.content)) {
+//                 textNodes.push(node);
+//             }
+//         }
+
+//         if (textNodes.length > 0) {
+//             textNodes[0].parentNode.replaceChild(span, textNodes[0]);
+//         }
+//     }
+// }
+
 function recreateModifiedElement(structure, styles) {
-    // Find the parent element where we need to recreate the modified element
-    const parentElement = structure.parentId ? 
-        document.getElementById(structure.parentId) : 
-        document.body;
+  const parentElement = structure.parentId ? 
+      document.getElementById(structure.parentId) : 
+      document.body;
 
-    if (!parentElement) return;
+  if (!parentElement) return;
 
-    // Create new element (span in this case)
-    const span = document.createElement('span');
-    span.id = structure.id;
-    span.className = structure.className || 'squareCraft-font-modified';
-    span.textContent = structure.content;
+  // Check if there's already a strong element with this content
+  const existingStrong = Array.from(parentElement.getElementsByTagName('strong'))
+      .find(el => el.textContent.includes(structure.content));
 
-    // Apply stored styles
-    Object.entries(styles).forEach(([prop, value]) => {
-        span.style[prop] = value;
-    });
+  if (existingStrong) {
+      // If strong exists, just apply styles directly to it
+      Object.entries(styles).forEach(([prop, value]) => {
+          existingStrong.style[prop] = value;
+      });
+      return;
+  }
 
-    // Insert at the correct position if possible
-    if (structure.content) {
-        const textNodes = [];
-        const walker = document.createTreeWalker(
-            parentElement,
-            NodeFilter.SHOW_TEXT,
-            null,
-            false
-        );
+  // If no existing strong found, create new element
+  const element = document.createElement(structure.type === 'strong' ? 'strong' : 'span');
+  element.id = structure.id;
+  element.className = structure.className || 'squareCraft-font-modified';
+  element.textContent = structure.content;
 
-        let node;
-        while (node = walker.nextNode()) {
-            if (node.textContent.includes(structure.content)) {
-                textNodes.push(node);
-            }
-        }
+  // Apply styles
+  Object.entries(styles).forEach(([prop, value]) => {
+      element.style[prop] = value;
+  });
 
-        if (textNodes.length > 0) {
-            textNodes[0].parentNode.replaceChild(span, textNodes[0]);
-        }
-    }
+  // Find and replace text node
+  if (structure.content) {
+      const walker = document.createTreeWalker(
+          parentElement,
+          NodeFilter.SHOW_TEXT,
+          {
+              acceptNode: function(node) {
+                  return node.textContent.includes(structure.content) ? 
+                      NodeFilter.FILTER_ACCEPT : 
+                      NodeFilter.FILTER_REJECT;
+              }
+          }
+      );
+
+      const textNode = walker.nextNode();
+      if (textNode) {
+          textNode.parentNode.replaceChild(element, textNode);
+      }
+  }
 }
   
   const observer = new MutationObserver(() => {
@@ -229,83 +280,17 @@ function recreateModifiedElement(structure, styles) {
     await fetchModifications(); // ✅ Fetch and apply modifications
   });
 
- 
- 
-//   async function saveModifications(elementId, css, elementStructure = null) {
-//     if (!pageId || !elementId || !css) {
-//         console.warn("⚠️ Missing required data to save modifications.");
-//         return;
-//     }
 
-//     // Create the proper structure for span elements
-//     const modificationData = {
-//         userId,
-//         token,
-//         widgetId,
-//         modifications: [{
-//             pageId,
-//             elements: [{
-//                 elementId,
-//                 css: {
-//                     span: {
-//                         id: elementId,
-//                         ...css
-//                     }
-//                 },
-//                 elementStructure: elementStructure || {
-//                     type: 'span',
-//                     className: 'squareCraft-font-modified',
-//                     content: document.getElementById(elementId)?.textContent || '',
-//                     parentId: document.getElementById(elementId)?.parentElement?.id || null
-//                 }
-//             }]
-//         }]
-//     };
 
-//     try {
-//         const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//                 "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-//                 "userId": userId,
-//                 "pageId": pageId,
-//                 "widget-id": widgetId,
-//             },
-//             body: JSON.stringify(modificationData),
-//         });
 
-//         const result = await response.json();
-//         console.log("✅ Changes Saved Successfully!", result);
-//         return result;
-//     } catch (error) {
-//         console.error("❌ Error saving modifications:", error);
-//     }
-// }
 
 // async function saveModifications(elementId, css, elementStructure = null) {
-//   if (!elementId || !css) {
-//       console.warn("⚠️ Missing required data for saving modifications");
+//   if (!pageId || !elementId || !css) {
+//       console.warn("⚠️ Missing required data to save modifications.");
 //       return;
 //   }
 
-//   const userId = localStorage.getItem("squareCraft_u_id");
-//   const token = localStorage.getItem("squareCraft_auth_token");
-//   const widgetId = localStorage.getItem("squareCraft_w_id");
-//   const pageId = getPageId();
-
-//   if (!userId || !token || !widgetId || !pageId) {
-//       console.error("❌ Missing required authentication data");
-//       return;
-//   }
-
-//   const element = document.getElementById(elementId);
-//   if (!element) {
-//       console.warn(`⚠️ Element with ID '${elementId}' not found`);
-//       return;
-//   }
-
-//   // Create modification data structure
+//   // Create the proper structure for span elements
 //   const modificationData = {
 //       userId,
 //       token,
@@ -321,23 +306,21 @@ function recreateModifiedElement(structure, styles) {
 //                   }
 //               },
 //               elementStructure: elementStructure || {
-//                   type: 'strong',
-//                   className: element.className || '',
-//                   content: element.textContent,
-//                   parentId: element.parentElement?.id || null
+//                   type: 'span',
+//                   className: 'squareCraft-font-modified',
+//                   content: document.getElementById(elementId)?.textContent || '',
+//                   parentId: document.getElementById(elementId)?.parentElement?.id || null
 //               }
 //           }]
 //       }]
 //   };
 
 //   try {
-//       console.log("Sending modification data:", modificationData);
-      
 //       const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
 //           method: "POST",
 //           headers: {
 //               "Content-Type": "application/json",
-//               "Authorization": `Bearer ${token}`,
+//               "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
 //               "userId": userId,
 //               "pageId": pageId,
 //               "widget-id": widgetId,
@@ -345,16 +328,11 @@ function recreateModifiedElement(structure, styles) {
 //           body: JSON.stringify(modificationData),
 //       });
 
-//       if (!response.ok) {
-//           throw new Error(`HTTP error! status: ${response.status}`);
-//       }
-
 //       const result = await response.json();
-//       console.log("✅ Modifications saved successfully:", result);
+//       console.log("✅ Changes Saved Successfully!", result);
 //       return result;
 //   } catch (error) {
 //       console.error("❌ Error saving modifications:", error);
-//       throw error;
 //   }
 // }
 
@@ -364,7 +342,10 @@ async function saveModifications(elementId, css, elementStructure = null) {
       return;
   }
 
-  // Create the proper structure for span elements
+  const element = document.getElementById(elementId);
+  const isStrong = element?.tagName === 'STRONG';
+
+  // Create the proper structure for elements
   const modificationData = {
       userId,
       token,
@@ -374,16 +355,16 @@ async function saveModifications(elementId, css, elementStructure = null) {
           elements: [{
               elementId,
               css: {
-                  span: {
+                  [isStrong ? 'strong' : 'span']: {
                       id: elementId,
                       ...css
                   }
               },
               elementStructure: elementStructure || {
-                  type: 'span',
+                  type: isStrong ? 'strong' : 'span',
                   className: 'squareCraft-font-modified',
-                  content: document.getElementById(elementId)?.textContent || '',
-                  parentId: document.getElementById(elementId)?.parentElement?.id || null
+                  content: element?.textContent || '',
+                  parentId: element?.parentElement?.id || null
               }
           }]
       }]
@@ -407,6 +388,22 @@ async function saveModifications(elementId, css, elementStructure = null) {
       return result;
   } catch (error) {
       console.error("❌ Error saving modifications:", error);
+  }
+}
+
+function cleanupDuplicateSpans(elementId) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+
+  // Find all nested spans with the same ID
+  const duplicateSpans = element.querySelectorAll(`span[id="${elementId}"]`);
+  if (duplicateSpans.length <= 1) return;
+
+  // Keep only the first span and remove others
+  for (let i = 1; i < duplicateSpans.length; i++) {
+      const span = duplicateSpans[i];
+      const text = span.textContent;
+      span.parentNode.replaceChild(document.createTextNode(text), span);
   }
 }
 
@@ -1339,31 +1336,59 @@ setInterval(cleanStyleCache, 60000);
     });
 
     // Modify text-transform click handlers
+      // document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
+      //   textTransform.addEventListener("click", async function() {
+      //       // Check if we have a selected strong element
+      //       if (!lastSelectedTextTransformStrongElement) {
+      //           console.warn("⚠️ No bold text selected");
+      //           return;
+      //       }
+
+      //       // Ensure the strong element has an ID
+      //       if (!lastSelectedTextTransformStrongElement.id) {
+      //         lastSelectedTextTransformStrongElement.id = `text-transform-${Date.now()}`;
+      //       }
+
+      //       const transform = this.getAttribute("data-transform");
+      //       let css = { "text-transform": transform };
+            
+      //       // Apply styles to the strong element
+      //       applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
+            
+      //       // Save modifications
+      //       await saveModifications(lastSelectedTextTransformStrongElement.id, css);
+            
+      //       console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformStrongElement.textContent);
+      //   });
+      // });
+
       document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
         textTransform.addEventListener("click", async function() {
-            // Check if we have a selected strong element
             if (!lastSelectedTextTransformStrongElement) {
                 console.warn("⚠️ No bold text selected");
                 return;
             }
-
+    
             // Ensure the strong element has an ID
             if (!lastSelectedTextTransformStrongElement.id) {
-              lastSelectedTextTransformStrongElement.id = `text-transform-${Date.now()}`;
+                lastSelectedTextTransformStrongElement.id = `text-transform-${Date.now()}`;
             }
-
+    
             const transform = this.getAttribute("data-transform");
             let css = { "text-transform": transform };
             
             // Apply styles to the strong element
             applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
             
+            // Clean up any duplicate spans
+            cleanupDuplicateSpans(lastSelectedTextTransformStrongElement.id);
+            
             // Save modifications
             await saveModifications(lastSelectedTextTransformStrongElement.id, css);
             
             console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformStrongElement.textContent);
         });
-      });
+    });
 
     // Reset text-transform
       const undoButton = document.querySelector(
