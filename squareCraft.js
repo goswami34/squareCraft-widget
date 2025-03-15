@@ -1009,7 +1009,6 @@ function clearPendingChanges() {
 
 
 //font-size start
-// Add these variables at the top of your script
 let lastSelectedText = null;
 let lastSelectedRange = null;
 let styleCache = new Map();
