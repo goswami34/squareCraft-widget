@@ -91,192 +91,74 @@
   }
 
   
-//   async function fetchModifications(retries = 3) {
-//     if (!pageId) return;
+  async function fetchModifications(retries = 3) {
+    if (!pageId) return;
 
-//     const token = localStorage.getItem("squareCraft_auth_token");
-//     const userId = localStorage.getItem("squareCraft_u_id");
-//     const widgetId = localStorage.getItem("squareCraft_w_id");
+    const token = localStorage.getItem("squareCraft_auth_token");
+    const userId = localStorage.getItem("squareCraft_u_id");
+    const widgetId = localStorage.getItem("squareCraft_w_id");
 
-//     if (!token || !userId) {
-//         console.warn("Missing authentication data");
-//         return;
-//     }
+    if (!token || !userId) {
+        console.warn("Missing authentication data");
+        return;
+    }
 
-//     try {
-//         const response = await fetch(
-//             `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
-//             {
-//                 method: "GET",
-//                 headers: {
-//                     "Content-Type": "application/json",
-//                     "Authorization": `Bearer ${token}`,
-//                 }
-//             }
-//         );
+    try {
+        const response = await fetch(
+            `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                }
+            }
+        );
 
-//         if (!response.ok) {
-//             throw new Error(`HTTP error! status: ${response.status}`);
-//         }
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-//         const data = await response.json();
-//         console.log("Retrieved modifications:", data);
+        const data = await response.json();
+        console.log("Retrieved modifications:", data);
 
-//         if (!data.modifications || !Array.isArray(data.modifications)) {
-//             console.warn("No modifications found or invalid format");
-//             return;
-//         }
+        if (!data.modifications || !Array.isArray(data.modifications)) {
+            console.warn("No modifications found or invalid format");
+            return;
+        }
 
-//         // Apply modifications for current page
-//         data.modifications.forEach(mod => {
-//             if (mod.pageId === pageId) {
-//                 mod.elements.forEach(elem => {
-//                     if (elem.css && elem.css.span) {
-//                         const { id, ...styles } = elem.css.span;
-//                         const element = document.getElementById(elem.elementId);
+        // Apply modifications for current page
+        data.modifications.forEach(mod => {
+            if (mod.pageId === pageId) {
+                mod.elements.forEach(elem => {
+                    if (elem.css && elem.css.span) {
+                        const { id, ...styles } = elem.css.span;
+                        const element = document.getElementById(elem.elementId);
                         
-//                         if (element) {
-//                             // Apply styles to existing element
-//                             Object.entries(styles).forEach(([prop, value]) => {
-//                                 element.style[prop] = value;
-//                             });
-//                         } else if (elem.elementStructure) {
-//                             // Recreate modified element if it doesn't exist
-//                             recreateModifiedElement(elem.elementStructure, styles);
-//                         }
-//                     }
-//                 });
-//             }
-//         });
+                        if (element) {
+                            // Apply styles to existing element
+                            Object.entries(styles).forEach(([prop, value]) => {
+                                element.style[prop] = value;
+                            });
+                        } else if (elem.elementStructure) {
+                            // Recreate modified element if it doesn't exist
+                            recreateModifiedElement(elem.elementStructure, styles);
+                        }
+                    }
+                });
+            }
+        });
 
-//     } catch (error) {
-//         console.error("Error fetching modifications:", error);
-//         if (retries > 0) {
-//             console.log(`Retrying... (${retries} attempts left)`);
-//             setTimeout(() => fetchModifications(retries - 1), 2000);
-//         }
-//     }
-// }
-
-async function fetchModifications(retries = 3) {
-  if (!pageId) return;
-
-  const token = localStorage.getItem("squareCraft_auth_token");
-  const userId = localStorage.getItem("squareCraft_u_id");
-  const widgetId = localStorage.getItem("squareCraft_w_id");
-
-  if (!token || !userId) {
-      console.warn("Missing authentication data");
-      return;
-  }
-
-  try {
-      const response = await fetch(
-          `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
-          {
-              method: "GET",
-              headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": `Bearer ${token}`,
-              }
-          }
-      );
-
-      if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Retrieved modifications:", data);
-
-      if (!data.modifications || !Array.isArray(data.modifications)) {
-          console.warn("No modifications found or invalid format");
-          return;
-      }
-
-      // Apply modifications for current page
-      data.modifications.forEach(mod => {
-          if (mod.pageId === pageId) {
-              mod.elements.forEach(elem => {
-                  const element = document.getElementById(elem.elementId);
-                  if (!element) {
-                      console.warn(`Element not found: ${elem.elementId}`);
-                      return;
-                  }
-
-                  if (elem.css) {
-                      // Handle span styles
-                      if (elem.css.span) {
-                          const { id, ...styles } = elem.css.span;
-                          
-                          // Apply each style, including font-family
-                          Object.entries(styles).forEach(([prop, value]) => {
-                              // Special handling for font-family
-                              if (prop === 'font-family') {
-                                  // Load the font if needed
-                                  const link = document.createElement('link');
-                                  link.href = `https://fonts.googleapis.com/css?family=${value.replace(/ /g, '+')}`;
-                                  link.rel = 'stylesheet';
-                                  document.head.appendChild(link);
-                              }
-                              
-                              // Apply the style
-                              element.style[prop] = value;
-                          });
-
-                          // Update the widget UI to reflect current styles
-                          updateWidgetUI(element, styles);
-                      }
-                  }
-              });
-          }
-      });
-
-  } catch (error) {
-      console.error("Error fetching modifications:", error);
-      if (retries > 0) {
-          console.log(`Retrying... (${retries} attempts left)`);
-          setTimeout(() => fetchModifications(retries - 1), 2000);
-      }
-  }
+    } catch (error) {
+        console.error("Error fetching modifications:", error);
+        if (retries > 0) {
+            console.log(`Retrying... (${retries} attempts left)`);
+            setTimeout(() => fetchModifications(retries - 1), 2000);
+        }
+    }
 }
 
-// Helper function to update the widget UI with current styles
-function updateWidgetUI(element, styles) {
-  // Update font family dropdown
-  if (styles['font-family']) {
-      const fontFamilyElement = document.getElementById('squareCraft-font-family')
-          .querySelector('p');
-      if (fontFamilyElement) {
-          fontFamilyElement.textContent = styles['font-family'];
-          fontFamilyElement.style.fontFamily = styles['font-family'];
-      }
-  }
 
-  // Update font size input
-  if (styles['font-size']) {
-      const fontSizeInput = document.getElementById('squareCraftFontSize');
-      if (fontSizeInput) {
-          fontSizeInput.value = parseInt(styles['font-size']);
-      }
-  }
-
-  // Update font weight dropdown
-  if (styles['font-weight']) {
-      const fontWeightSelect = document.getElementById('squareCraftFontWeight');
-      if (fontWeightSelect) {
-          fontWeightSelect.value = styles['font-weight'];
-      }
-  }
-
-  // Update line height input
-  if (styles['line-height']) {
-      const lineHeightInput = document.getElementById('squareCraftLineHeight');
-      if (lineHeightInput) {
-          lineHeightInput.value = parseInt(styles['line-height']);
-      }
-  }
-}
 
 function recreateModifiedElement(structure, styles) {
     // Find the parent element where we need to recreate the modified element
