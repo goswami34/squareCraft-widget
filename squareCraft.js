@@ -283,29 +283,88 @@ function recreateModifiedElement(structure, styles) {
 //     }
 // }
 
+// async function saveModifications(elementId, css, elementStructure = null) {
+//   if (!elementId || !css) {
+//       console.warn("⚠️ Missing required data for saving modifications");
+//       return;
+//   }
+
+//   const userId = localStorage.getItem("squareCraft_u_id");
+//   const token = localStorage.getItem("squareCraft_auth_token");
+//   const widgetId = localStorage.getItem("squareCraft_w_id");
+//   const pageId = getPageId();
+
+//   if (!userId || !token || !widgetId || !pageId) {
+//       console.error("❌ Missing required authentication data");
+//       return;
+//   }
+
+//   const element = document.getElementById(elementId);
+//   if (!element) {
+//       console.warn(`⚠️ Element with ID '${elementId}' not found`);
+//       return;
+//   }
+
+//   // Create modification data structure
+//   const modificationData = {
+//       userId,
+//       token,
+//       widgetId,
+//       modifications: [{
+//           pageId,
+//           elements: [{
+//               elementId,
+//               css: {
+//                   span: {
+//                       id: elementId,
+//                       ...css
+//                   }
+//               },
+//               elementStructure: elementStructure || {
+//                   type: 'strong',
+//                   className: element.className || '',
+//                   content: element.textContent,
+//                   parentId: element.parentElement?.id || null
+//               }
+//           }]
+//       }]
+//   };
+
+//   try {
+//       console.log("Sending modification data:", modificationData);
+      
+//       const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
+//           method: "POST",
+//           headers: {
+//               "Content-Type": "application/json",
+//               "Authorization": `Bearer ${token}`,
+//               "userId": userId,
+//               "pageId": pageId,
+//               "widget-id": widgetId,
+//           },
+//           body: JSON.stringify(modificationData),
+//       });
+
+//       if (!response.ok) {
+//           throw new Error(`HTTP error! status: ${response.status}`);
+//       }
+
+//       const result = await response.json();
+//       console.log("✅ Modifications saved successfully:", result);
+//       return result;
+//   } catch (error) {
+//       console.error("❌ Error saving modifications:", error);
+//       throw error;
+//   }
+// }
+
 async function saveModifications(elementId, css, elementStructure = null) {
-  if (!elementId || !css) {
-      console.warn("⚠️ Missing required data for saving modifications");
+  if (!pageId || !elementId || !css) {
+      console.warn("⚠️ Missing required data to save modifications.");
       return;
   }
 
-  const userId = localStorage.getItem("squareCraft_u_id");
-  const token = localStorage.getItem("squareCraft_auth_token");
-  const widgetId = localStorage.getItem("squareCraft_w_id");
-  const pageId = getPageId();
-
-  if (!userId || !token || !widgetId || !pageId) {
-      console.error("❌ Missing required authentication data");
-      return;
-  }
-
-  const element = document.getElementById(elementId);
-  if (!element) {
-      console.warn(`⚠️ Element with ID '${elementId}' not found`);
-      return;
-  }
-
-  // Create modification data structure
+  // Create the proper structure for span elements
   const modificationData = {
       userId,
       token,
@@ -321,23 +380,21 @@ async function saveModifications(elementId, css, elementStructure = null) {
                   }
               },
               elementStructure: elementStructure || {
-                  type: 'strong',
-                  className: element.className || '',
-                  content: element.textContent,
-                  parentId: element.parentElement?.id || null
+                  type: 'span',
+                  className: 'squareCraft-font-modified',
+                  content: document.getElementById(elementId)?.textContent || '',
+                  parentId: document.getElementById(elementId)?.parentElement?.id || null
               }
           }]
       }]
   };
 
   try {
-      console.log("Sending modification data:", modificationData);
-      
       const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`,
+              "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
               "userId": userId,
               "pageId": pageId,
               "widget-id": widgetId,
@@ -345,16 +402,11 @@ async function saveModifications(elementId, css, elementStructure = null) {
           body: JSON.stringify(modificationData),
       });
 
-      if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const result = await response.json();
-      console.log("✅ Modifications saved successfully:", result);
+      console.log("✅ Changes Saved Successfully!", result);
       return result;
   } catch (error) {
       console.error("❌ Error saving modifications:", error);
-      throw error;
   }
 }
 
@@ -900,6 +952,7 @@ async function fontfamilies() {
           // Save the modification
           let css = { "font-family": selectedFont };
           applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
+
           if (lastSelectedFontfamilyStrong && lastSelectedFontfamilyStrong.id) {
             await saveModifications(lastSelectedFontfamilyStrong.id, css);
         }
