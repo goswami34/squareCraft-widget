@@ -230,31 +230,14 @@ function recreateModifiedElement(structure, styles) {
   });
 
  
+ 
   async function saveModifications(elementId, css, elementStructure = null) {
-    // Get authentication and page details
-    const userId = localStorage.getItem("squareCraft_u_id");
-    const token = localStorage.getItem("squareCraft_auth_token");
-    const widgetId = localStorage.getItem("squareCraft_w_id");
-    const pageId = getPageId(); // Ensure pageId is retrieved correctly
-
-    if (!userId || !token || !widgetId || !pageId) {
-        console.error("❌ Missing required parameters: userId, token, widgetId, or pageId.");
+    if (!pageId || !elementId || !css) {
+        console.warn("⚠️ Missing required data to save modifications.");
         return;
     }
 
-    // Check if element exists
-    const element = document.getElementById(elementId);
-    if (!element) {
-        console.warn(`⚠️ Element with ID '${elementId}' not found.`);
-        return;
-    }
-
-    // Ensure <strong> elements have an ID before saving
-    if (element.tagName === "STRONG" && !element.id) {
-        element.id = `strong-${Date.now()}`;
-    }
-
-    // Structure the data properly
+    // Create the proper structure for span elements
     const modificationData = {
         userId,
         token,
@@ -262,18 +245,18 @@ function recreateModifiedElement(structure, styles) {
         modifications: [{
             pageId,
             elements: [{
-                elementId: element.id,  // Use the assigned ID
+                elementId,
                 css: {
                     span: {
-                        id: element.id,
+                        id: elementId,
                         ...css
                     }
                 },
                 elementStructure: elementStructure || {
                     type: 'span',
                     className: 'squareCraft-font-modified',
-                    content: element.textContent || '',
-                    parentId: element.parentElement?.id || null
+                    content: document.getElementById(elementId)?.textContent || '',
+                    parentId: document.getElementById(elementId)?.parentElement?.id || null
                 }
             }]
         }]
@@ -284,14 +267,13 @@ function recreateModifiedElement(structure, styles) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
+                "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+                "userId": userId,
+                "pageId": pageId,
+                "widget-id": widgetId,
             },
             body: JSON.stringify(modificationData),
         });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
 
         const result = await response.json();
         console.log("✅ Changes Saved Successfully!", result);
@@ -300,6 +282,7 @@ function recreateModifiedElement(structure, styles) {
         console.error("❌ Error saving modifications:", error);
     }
 }
+
 
 
   async function resetModifications() {
