@@ -730,62 +730,61 @@ document.addEventListener("mouseup", function () {
 });
 
 
-  async function fontfamilies() {
-    const response = await fetch(
+async function fontfamilies() {
+  const response = await fetch(
       "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
-    );
-    const data = await response.json();
+  );
+  const data = await response.json();
 
-    const fontDropdown = document.getElementById("squareCraft-font-family");
-    const fontWeightDropdown = document.getElementById("squareCraftFontWeight");
+  const fontDropdown = document.getElementById("squareCraft-font-family");
+  const fontWeightDropdown = document.getElementById("squareCraftFontWeight");
 
-    if (!fontDropdown || !fontWeightDropdown) {
+  if (!fontDropdown || !fontWeightDropdown) {
       console.error("Dropdown elements not found!");
       return;
-    }
+  }
 
-    fontDropdown.style.position = "relative";
-    fontDropdown.style.width = "100%";
-    fontDropdown.style.border = "1px solid #585858";
-    fontDropdown.style.borderRadius = "6px";
-    fontDropdown.style.background = "#2c2c2c";
-    fontDropdown.style.color = "white";
-    fontDropdown.style.display = "flex";
-    fontDropdown.style.alignItems = "center";
-    fontDropdown.style.justifyContent = "space-between";
-    fontDropdown.style.cursor = "pointer";
+  fontDropdown.style.position = "relative";
+  fontDropdown.style.width = "100%";
+  fontDropdown.style.border = "1px solid #585858";
+  fontDropdown.style.borderRadius = "6px";
+  fontDropdown.style.background = "#2c2c2c";
+  fontDropdown.style.color = "white";
+  fontDropdown.style.display = "flex";
+  fontDropdown.style.alignItems = "center";
+  fontDropdown.style.justifyContent = "space-between";
+  fontDropdown.style.cursor = "pointer";
 
-    let selectedFontText = document.createElement("p");
-    selectedFontText.textContent = "Select a Font";
-    selectedFontText.style.flexGrow = "1";
-    selectedFontText.style.fontSize = "14px";
-    selectedFontText.classList.add("squareCraft-universal");
+  let selectedFontText = document.createElement("p");
+  selectedFontText.textContent = "Select a Font";
+  selectedFontText.style.flexGrow = "1";
+  selectedFontText.style.fontSize = "14px";
+  selectedFontText.classList.add("squareCraft-universal");
 
-    const dropdownArrow = document.createElement("img");
-    dropdownArrow.src =
-      "https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg";
-    dropdownArrow.style.width = "12px";
-    dropdownArrow.style.height = "12px";
-    dropdownArrow.style.transform = "rotate(180deg)";
+  const dropdownArrow = document.createElement("img");
+  dropdownArrow.src = "https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg";
+  dropdownArrow.style.width = "12px";
+  dropdownArrow.style.height = "12px";
+  dropdownArrow.style.transform = "rotate(180deg)";
 
-    fontDropdown.appendChild(selectedFontText);
-    fontDropdown.appendChild(dropdownArrow);
+  fontDropdown.appendChild(selectedFontText);
+  fontDropdown.appendChild(dropdownArrow);
 
-    const fontList = document.createElement("div");
-    fontList.style.position = "absolute";
-    fontList.style.top = "100%";
-    fontList.style.left = "0";
-    fontList.style.width = "100%";
-    fontList.style.background = "#2c2c2c";
-    fontList.style.border = "1px solid #585858";
-    fontList.style.borderRadius = "6px";
-    fontList.style.overflowY = "auto";
-    fontList.style.maxHeight = "200px";
-    fontList.style.display = "none";
-    fontList.style.zIndex = "1000";
+  const fontList = document.createElement("div");
+  fontList.style.position = "absolute";
+  fontList.style.top = "100%";
+  fontList.style.left = "0";
+  fontList.style.width = "100%";
+  fontList.style.background = "#2c2c2c";
+  fontList.style.border = "1px solid #585858";
+  fontList.style.borderRadius = "6px";
+  fontList.style.overflowY = "auto";
+  fontList.style.maxHeight = "200px";
+  fontList.style.display = "none";
+  fontList.style.zIndex = "1000";
 
-    // Populate font-family dropdown
-    data.items.forEach((font) => {
+  // Populate font-family dropdown
+  data.items.forEach((font) => {
       const option = document.createElement("div");
       option.textContent = font.family;
       option.style.padding = "8px";
@@ -796,73 +795,72 @@ document.addEventListener("mouseup", function () {
       option.style.fontSize = "14px";
 
       option.addEventListener("mouseover", () => {
-        option.style.background = "#444";
+          option.style.background = "#444";
       });
 
       option.addEventListener("mouseout", () => {
-        option.style.background = "transparent";
+          option.style.background = "transparent";
       });
 
       option.addEventListener("click", async () => {
-        if (!selectedElement) {
-          console.warn("⚠️ No element selected.");
-          return;
-        }
+          if (!lastSelectedFontfamilyStrong) {
+              console.warn("⚠️ No bold text selected.");
+              return;
+          }
 
-        let selectedFont = font.family;
-        selectedFontText.textContent = selectedFont;
-        selectedFontText.style.fontFamily = selectedFont;
-        fontList.style.display = "none";
+          let selectedFont = font.family;
+          selectedFontText.textContent = selectedFont;
+          selectedFontText.style.fontFamily = selectedFont;
+          fontList.style.display = "none";
 
-        // Apply font-family immediately
-        let css = { "font-family": selectedFont };
-        applyStylesToElement(selectedElement.id, css);
+          // Apply font-family to the bold text
+          lastSelectedFontfamilyStrong.style.fontFamily = selectedFont;
 
-        // Save modifications immediately without waiting
-        saveModifications(selectedElement.id, css);
+          console.log(`🎨 Applied font-family: ${selectedFont} to bold text`);
 
-        console.log("🎨 Applied font:", selectedFont, "to", selectedElement.id);
-
-        // Update font-weight dropdown dynamically
-        updateFontWeightDropdown(font.variants);
+          // Save the modification
+          let css = { "font-family": selectedFont };
+          applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
+          await saveModifications(lastSelectedFontfamilyStrong.id, css);
       });
 
       fontList.appendChild(option);
-    });
+  });
 
-    fontDropdown.appendChild(fontList);
+  fontDropdown.appendChild(fontList);
 
-    fontDropdown.addEventListener("click", (event) => {
+  fontDropdown.addEventListener("click", (event) => {
       event.stopPropagation();
-      fontList.style.display =
-        fontList.style.display === "block" ? "none" : "block";
-    });
+      fontList.style.display = fontList.style.display === "block" ? "none" : "block";
+  });
 
-    document.addEventListener("click", () => {
+  document.addEventListener("click", () => {
       fontList.style.display = "none";
-    });
+  });
 
-    // **Function to Update Font Weight Dropdown**
-    function updateFontWeightDropdown(variants) {
+  // **Function to Update Font Weight Dropdown**
+  function updateFontWeightDropdown(variants) {
       fontWeightDropdown.innerHTML = ""; // Clear existing options
 
       if (!variants || variants.length === 0) {
-        console.warn("No font weights found for the selected font.");
-        fontWeightDropdown.innerHTML = `<option value="400" selected>Regular (400)</option>`;
-        return;
+          console.warn("No font weights found for the selected font.");
+          fontWeightDropdown.innerHTML = `<option value="400" selected>Regular (400)</option>`;
+          return;
       }
 
       variants.forEach((variant) => {
-        let weight = variant === "regular" ? "400" : variant; // Convert "regular" to 400
-        let option = document.createElement("option");
-        option.value = weight;
-        option.textContent = `Weight ${weight}`;
-        fontWeightDropdown.appendChild(option);
+          let weight = variant === "regular" ? "400" : variant; // Convert "regular" to 400
+          let option = document.createElement("option");
+          option.value = weight;
+          option.textContent = `Weight ${weight}`;
+          fontWeightDropdown.appendChild(option);
       });
-    }
   }
+}
 
-  fontfamilies();
+// Call fontfamilies() to initialize the font selection feature
+fontfamilies();
+
 
   function attachEventListeners() {
     document.body.addEventListener("click", (event) => {
