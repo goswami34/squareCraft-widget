@@ -861,9 +861,10 @@ document.addEventListener("mouseup", function () {
 });
 
 
+
 async function fontfamilies() {
   const response = await fetch(
-      "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
+    "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
   );
   const data = await response.json();
 
@@ -871,8 +872,8 @@ async function fontfamilies() {
   const fontWeightDropdown = document.getElementById("squareCraftFontWeight");
 
   if (!fontDropdown || !fontWeightDropdown) {
-      console.error("Dropdown elements not found!");
-      return;
+    console.error("Dropdown elements not found!");
+    return;
   }
 
   fontDropdown.style.position = "relative";
@@ -893,7 +894,8 @@ async function fontfamilies() {
   selectedFontText.classList.add("squareCraft-universal");
 
   const dropdownArrow = document.createElement("img");
-  dropdownArrow.src = "https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg";
+  dropdownArrow.src =
+    "https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg";
   dropdownArrow.style.width = "12px";
   dropdownArrow.style.height = "12px";
   dropdownArrow.style.transform = "rotate(180deg)";
@@ -916,89 +918,82 @@ async function fontfamilies() {
 
   // Populate font-family dropdown
   data.items.forEach((font) => {
-      const option = document.createElement("div");
-      option.textContent = font.family;
-      option.style.padding = "8px";
-      option.style.cursor = "pointer";
-      option.style.fontFamily = font.family;
-      option.style.transition = "background 0.3s";
-      option.style.color = "white";
-      option.style.fontSize = "14px";
+    const option = document.createElement("div");
+    option.textContent = font.family;
+    option.style.padding = "8px";
+    option.style.cursor = "pointer";
+    option.style.fontFamily = font.family;
+    option.style.transition = "background 0.3s";
+    option.style.color = "white";
+    option.style.fontSize = "14px";
 
-      option.addEventListener("mouseover", () => {
-          option.style.background = "#444";
-      });
+    option.addEventListener("mouseover", () => {
+      option.style.background = "#444";
+    });
 
-      option.addEventListener("mouseout", () => {
-          option.style.background = "transparent";
-      });
+    option.addEventListener("mouseout", () => {
+      option.style.background = "transparent";
+    });
 
-      option.addEventListener("click", async () => {
-          if (!lastSelectedFontfamilyStrong) {
-              console.warn("⚠️ No bold text selected.");
-              return;
-          }
+    option.addEventListener("click", async () => {
+      if (!selectedElement) {
+        console.warn("⚠️ No element selected.");
+        return;
+      }
 
-          let selectedFont = font.family;
-          selectedFontText.textContent = selectedFont;
-          selectedFontText.style.fontFamily = selectedFont;
-          fontList.style.display = "none";
+      let selectedFont = font.family;
+      selectedFontText.textContent = selectedFont;
+      selectedFontText.style.fontFamily = selectedFont;
+      fontList.style.display = "none";
 
-          // Apply font-family to the bold text
-          lastSelectedFontfamilyStrong.style.fontFamily = selectedFont;
+      // Apply font-family immediately
+      let css = { "font-family": selectedFont };
+      applyStylesToElement(selectedElement.id, css);
 
-          console.log(`🎨 Applied font-family: ${selectedFont} to bold text`);
+      // Save modifications immediately without waiting
+      saveModifications(selectedElement.id, css);
 
-          // Save the modification
-          let css = { "font-family": selectedFont };
-          applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
+      console.log("🎨 Applied font:", selectedFont, "to", selectedElement.id);
 
-          if (lastSelectedFontfamilyStrong && lastSelectedFontfamilyStrong.id) {
-            await saveModifications(lastSelectedFontfamilyStrong.id, css);
-        }
+      // Update font-weight dropdown dynamically
+      updateFontWeightDropdown(font.variants);
+    });
 
-        console.log("🎨 Applied font:", selectedFont, "to", selectedElement.id);
-
-        // Update font-weight dropdown dynamically
-        // updateFontWeightDropdown(font.variants);
-
-      });
-
-      fontList.appendChild(option);
+    fontList.appendChild(option);
   });
 
   fontDropdown.appendChild(fontList);
 
   fontDropdown.addEventListener("click", (event) => {
-      event.stopPropagation();
-      fontList.style.display = fontList.style.display === "block" ? "none" : "block";
+    event.stopPropagation();
+    fontList.style.display =
+      fontList.style.display === "block" ? "none" : "block";
   });
 
   document.addEventListener("click", () => {
-      fontList.style.display = "none";
+    fontList.style.display = "none";
   });
 
   // **Function to Update Font Weight Dropdown**
   function updateFontWeightDropdown(variants) {
-      fontWeightDropdown.innerHTML = ""; // Clear existing options
+    fontWeightDropdown.innerHTML = ""; // Clear existing options
 
-      if (!variants || variants.length === 0) {
-          console.warn("No font weights found for the selected font.");
-          fontWeightDropdown.innerHTML = `<option value="400" selected>Regular (400)</option>`;
-          return;
-      }
+    if (!variants || variants.length === 0) {
+      console.warn("No font weights found for the selected font.");
+      fontWeightDropdown.innerHTML = `<option value="400" selected>Regular (400)</option>`;
+      return;
+    }
 
-      variants.forEach((variant) => {
-          let weight = variant === "regular" ? "400" : variant; // Convert "regular" to 400
-          let option = document.createElement("option");
-          option.value = weight;
-          option.textContent = `Weight ${weight}`;
-          fontWeightDropdown.appendChild(option);
-      });
+    variants.forEach((variant) => {
+      let weight = variant === "regular" ? "400" : variant; // Convert "regular" to 400
+      let option = document.createElement("option");
+      option.value = weight;
+      option.textContent = `Weight ${weight}`;
+      fontWeightDropdown.appendChild(option);
+    });
   }
 }
 
-// Call fontfamilies() to initialize the font selection feature
 fontfamilies();
 
 
