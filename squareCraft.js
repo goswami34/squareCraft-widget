@@ -903,7 +903,10 @@ fontfamilies();
     };
 
     await saveModifications(selectedElement.id, css);
-    await saveModifications(lastSelectedFontfamilyStrong.id, css);
+    // await saveModifications(lastSelectedFontfamilyStrong.id, css);
+    if (lastSelectedFontfamilyStrong && lastSelectedFontfamilyStrong.id) {
+      await saveModifications(lastSelectedFontfamilyStrong.id, css);
+  }
   });
 
     // Add this event listener for font-weight dropdown
