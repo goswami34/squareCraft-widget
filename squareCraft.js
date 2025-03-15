@@ -703,6 +703,33 @@ function recreateModifiedElement(structure, styles) {
     }
   }
 
+  let lastSelectedFontfamilyStrong = null;
+
+document.addEventListener("mouseup", function () {
+    const selection = window.getSelection();
+    
+    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+        let range = selection.getRangeAt(0);
+        let parentElement = range.commonAncestorContainer;
+
+        // If the selected text is a text node, get its parent element
+        if (parentElement.nodeType === Node.TEXT_NODE) {
+            parentElement = parentElement.parentElement;
+        }
+
+        // Check if the parent or an ancestor is a <strong> tag
+        const strongElement = parentElement.closest("strong");
+        
+        if (strongElement) {
+          lastSelectedFontfamilyStrong = strongElement;
+            console.log("✅ Selected text inside <strong>: ", strongElement.textContent);
+        } else {
+            lastSelectedFontfamilyStrong = null; // Reset if selection is outside <strong>
+        }
+    }
+});
+
+
   async function fontfamilies() {
     const response = await fetch(
       "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
