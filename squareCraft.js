@@ -305,6 +305,7 @@ async function saveModifications(elementId, css, elementStructure = null) {
       return;
   }
 
+  // Create modification data structure
   const modificationData = {
       userId,
       token,
@@ -320,8 +321,8 @@ async function saveModifications(elementId, css, elementStructure = null) {
                   }
               },
               elementStructure: elementStructure || {
-                  type: 'span',
-                  className: 'squareCraft-font-modified',
+                  type: 'strong',
+                  className: element.className || '',
                   content: element.textContent,
                   parentId: element.parentElement?.id || null
               }
@@ -863,105 +864,44 @@ async function fontfamilies() {
 
   // Populate font-family dropdown
   data.items.forEach((font) => {
-    const option = document.createElement("div");
-    option.textContent = font.family;
-    option.style.padding = "8px";
-    option.style.cursor = "pointer";
-    option.style.fontFamily = font.family;
-    option.style.transition = "background 0.3s";
-    option.style.color = "white";
-    option.style.fontSize = "14px";
+      const option = document.createElement("div");
+      option.textContent = font.family;
+      option.style.padding = "8px";
+      option.style.cursor = "pointer";
+      option.style.fontFamily = font.family;
+      option.style.transition = "background 0.3s";
+      option.style.color = "white";
+      option.style.fontSize = "14px";
 
-    option.addEventListener("mouseover", () => {
-        option.style.background = "#444";
-    });
+      option.addEventListener("mouseover", () => {
+          option.style.background = "#444";
+      });
 
-    option.addEventListener("mouseout", () => {
-        option.style.background = "transparent";
-    });
+      option.addEventListener("mouseout", () => {
+          option.style.background = "transparent";
+      });
 
-    option.addEventListener("click", async () => {
-        const selection = window.getSelection();
-        if (!selection.rangeCount) {
-            console.warn("⚠️ No text selected");
-            return;
-        }
+      option.addEventListener("click", async () => {
+          if (!lastSelectedFontfamilyStrong) {
+              console.warn("⚠️ No bold text selected.");
+              return;
+          }
 
-        const range = selection.getRangeAt(0);
-        const selectedText = range.toString().trim();
-        
-        if (!selectedText) {
-            console.warn("⚠️ No text selected");
-            return;
-        }
+          let selectedFont = font.family;
+          selectedFontText.textContent = selectedFont;
+          selectedFontText.style.fontFamily = selectedFont;
+          fontList.style.display = "none";
 
-        let container = range.commonAncestorContainer;
-        if (container.nodeType === Node.TEXT_NODE) {
-            container = container.parentElement;
-        }
+          // Apply font-family to the bold text
+          lastSelectedFontfamilyStrong.style.fontFamily = selectedFont;
 
-        // Create or find the span element
-        let targetElement;
-        if (range.startContainer === range.endContainer) {
-            // Create a new span for the selected text
-            const span = document.createElement('span');
-            span.id = `font-mod-${Date.now()}`;
-            span.className = 'squareCraft-font-modified';
-            
-            // Extract the selected text and wrap it in the span
-            const textContent = range.startContainer.textContent;
-            const startOffset = range.startOffset;
-            const endOffset = range.endOffset;
-            
-            range.deleteContents();
-            span.textContent = selectedText;
-            range.insertNode(span);
-            
-            targetElement = span;
-        } else {
-            // Use existing container if it's already a modified element
-            targetElement = container.closest('.squareCraft-font-modified') || container;
-            if (!targetElement.id) {
-                targetElement.id = `font-mod-${Date.now()}`;
-            }
-        }
+          console.log(`🎨 Applied font-family: ${selectedFont} to bold text`);
 
-        // Apply the selected font
-        let selectedFont = font.family;
-        
-        // Load the font
-        const link = document.createElement('link');
-        link.href = `https://fonts.googleapis.com/css?family=${selectedFont.replace(/ /g, '+')}`;
-        link.rel = 'stylesheet';
-        document.head.appendChild(link);
-
-        // Apply styles
-        targetElement.style.fontFamily = selectedFont;
-
-        // Update dropdown display
-        selectedFontText.textContent = selectedFont;
-        selectedFontText.style.fontFamily = selectedFont;
-        fontList.style.display = "none";
-
-        // Save modifications
-        const css = {
-            "font-family": selectedFont
-        };
-
-        // Apply styles and save to database
-        applyStylesToElement(targetElement.id, css);
-        try {
-            await saveModifications(targetElement.id, css, {
-                type: 'span',
-                className: 'squareCraft-font-modified',
-                content: selectedText,
-                parentId: targetElement.parentElement?.id || null
-            });
-            console.log(`✅ Font family saved successfully: ${selectedFont}`);
-        } catch (error) {
-            console.error("❌ Error saving font family:", error);
-        }
-    });
+          // Save the modification
+          let css = { "font-family": selectedFont };
+          applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
+          await saveModifications(lastSelectedFontfamilyStrong.id, css);
+      });
 
       fontList.appendChild(option);
   });
