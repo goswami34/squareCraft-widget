@@ -956,6 +956,12 @@ async function fontfamilies() {
           if (lastSelectedFontfamilyStrong && lastSelectedFontfamilyStrong.id) {
             await saveModifications(lastSelectedFontfamilyStrong.id, css);
         }
+
+        console.log("🎨 Applied font:", selectedFont, "to", selectedElement.id);
+
+        // Update font-weight dropdown dynamically
+        updateFontWeightDropdown(font.variants);
+        
       });
 
       fontList.appendChild(option);
