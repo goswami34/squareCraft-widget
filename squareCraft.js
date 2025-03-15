@@ -90,100 +90,6 @@
     console.log(`✅ Styles Persisted for ${elementId}`);
   }
 
-
-//   async function fetchModifications(retries = 3) {
-//     if (!pageId) return;
-
-//     try {
-//         const response = await fetch(
-//             `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}`,
-//             {
-//                 method: "GET",
-//                 headers: {
-//                     "Content-Type": "application/json",
-//                     "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-//                 },
-//             }
-//         );
-
-//         const data = await response.json();
-//         console.log("📥 Retrieved Data from Database:", data);
-
-//         if (!data.modifications || data.modifications.length === 0) {
-//             console.warn("⚠️ No saved styles found for this page.");
-//             return;
-//         }
-
-//         // Loop through retrieved styles and apply them
-//         data.modifications.forEach(({ pageId: storedPageId, elements }) => {
-//             if (storedPageId === pageId) {
-//                 elements.forEach(({ elementId, css, elementStructure }) => {
-//                     // Check if we have span-specific CSS
-//                     if (css && css.span) {
-//                         let existingSpan = document.getElementById(css.span.id);
-                        
-//                         if (!existingSpan && elementStructure) {
-//                             // Find text nodes containing our content
-//                             const walker = document.createTreeWalker(
-//                                 document.body,
-//                                 NodeFilter.SHOW_TEXT,
-//                                 {
-//                                     acceptNode: function(node) {
-//                                         return node.textContent.includes(elementStructure.content)
-//                                             ? NodeFilter.FILTER_ACCEPT
-//                                             : NodeFilter.FILTER_REJECT;
-//                                     }
-//                                 }
-//                             );
-
-//                             let textNode;
-//                             while (textNode = walker.nextNode()) {
-//                                 if (textNode.textContent.includes(elementStructure.content)) {
-//                                     // Create new span
-//                                     const span = document.createElement('span');
-//                                     span.id = css.span.id;
-//                                     span.className = elementStructure.className || 'squareCraft-font-modified';
-//                                     span.textContent = elementStructure.content;
-
-//                                     // Apply stored CSS properties
-//                                     Object.entries(css.span).forEach(([prop, value]) => {
-//                                         if (prop !== 'id') {
-//                                             span.style[prop] = value;
-//                                         }
-//                                     });
-
-//                                     // Replace text node with our span
-//                                     textNode.parentNode.replaceChild(span, textNode);
-//                                     console.log(`✅ Recreated span with ID ${span.id} and applied styles`);
-//                                     break;
-//                                 }
-//                             }
-//                         } else if (existingSpan) {
-//                             // Apply styles to existing span
-//                             Object.entries(css.span).forEach(([prop, value]) => {
-//                                 if (prop !== 'id') {
-//                                     existingSpan.style[prop] = value;
-//                                 }
-//                             });
-//                             console.log(`✅ Applied styles to existing span ${existingSpan.id}`);
-//                         }
-//                     }
-//                 });
-//             }
-//         });
-
-//     } catch (error) {
-//         console.error("❌ Error Fetching Modifications:", error);
-//         if (retries > 0) {
-//             console.log(`🔄 Retrying fetch... (${retries} attempts left)`);
-//             setTimeout(() => fetchModifications(retries - 1), 2000);
-//         }
-//     }
-// }
-
-
-
-  // Listen for changes in edit mode
   
   async function fetchModifications(retries = 3) {
     if (!pageId) return;
@@ -1103,123 +1009,7 @@ function clearPendingChanges() {
 }
 
 
- // Update the mouseup event listener
-//  document.addEventListener("mouseup", function () {
-//    const selection = window.getSelection();
-//    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-//      lastSelectedText = selection.toString();
-//      lastSelectedRange = selection.getRangeAt(0);
-//      console.log("✅ Text Selected:", lastSelectedText);
-//    }
-//  });
 
-//  document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-//   if (!lastSelectedRange || !lastSelectedText) {
-//       console.warn("⚠️ No text selected");
-//       return;
-//   }
-
-//   const fontSize = this.value + "px";
-  
-//   try {
-//       // Get the parent paragraph or containing element
-//       const container = lastSelectedRange.commonAncestorContainer.parentElement;
-      
-//       // Store the full content before modification
-//       const fullContent = container.innerHTML;
-      
-//       // Create span element
-//       const span = document.createElement("span");
-//       span.id = `squareCraft-mod-${Date.now()}`;
-//       span.className = "squareCraft-font-modified";
-//       span.style.fontSize = fontSize;
-//       span.textContent = lastSelectedText;
-
-//       // Create element structure with context
-//       const elementStructure = {
-//           type: 'span',
-//           className: 'squareCraft-font-modified',
-//           content: lastSelectedText,
-//           parentId: container.id,
-//           fullContent: fullContent,
-//           startOffset: lastSelectedRange.startOffset,
-//           endOffset: lastSelectedRange.endOffset
-//       };
-
-//       // Replace selected text with span
-//       lastSelectedRange.deleteContents();
-//       lastSelectedRange.insertNode(span);
-
-//         // Save to database with proper structure
-//         await saveModifications(
-//             span.id,
-//             { 
-//                 "font-size": fontSize,
-//                 "display": "inline-block" // Ensure inline display
-//             },
-//             elementStructure
-//         );
-
-//       console.log("✅ Font size modified and saved:", fontSize);
-//   } catch (error) {
-//       console.error("❌ Error applying font size:", error);
-//   }
-// });
-
-// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-//   if (!lastSelectedRange || !lastSelectedText) {
-//       console.warn("⚠️ No text selected");
-//       return;
-//   }
-
-//   const fontSize = this.value + "px";
-  
-//   try {
-//       // Get the common ancestor container
-//       let container = lastSelectedRange.commonAncestorContainer;
-      
-//       // If the container is a text node, get its parent element
-//       if (container.nodeType === Node.TEXT_NODE) {
-//           container = container.parentElement;
-//       }
-
-//       // Check if the container or its parent is a strong tag
-//       let targetElement = container.tagName === 'STRONG' ? container : 
-//                          container.closest('strong');
-
-//       // If no strong tag found but text is selected, use the immediate parent
-//       if (!targetElement && container) {
-//           targetElement = container;
-//       }
-
-//       if (targetElement) {
-//           // Apply font size directly to the existing element
-//           targetElement.style.fontSize = fontSize;
-
-//           // Save the modification using the element's existing ID or create one if needed
-//           const elementId = targetElement.id || `text-mod-${Date.now()}`;
-//           if (!targetElement.id) {
-//               targetElement.id = elementId;
-//           }
-
-//           // Save to database with the existing structure
-//           await saveModifications(
-//               elementId,
-//               { 
-//                   "font-size": fontSize
-//               }
-//           );
-
-//           console.log("✅ Font size modified and saved:", fontSize);
-//       } else {
-//           console.warn("⚠️ No suitable element found to modify");
-//       }
-//   } catch (error) {
-//       console.error("❌ Error applying font size:", error);
-//   }
-// });
-
-// Track selected elements and their styles
 let styleCache = new Map();
 
 // Update the mouseup event listener to store selection info
@@ -1229,26 +1019,61 @@ document.addEventListener("mouseup", function() {
         lastSelectedText = selection.toString();
         lastSelectedRange = selection.getRangeAt(0);
         
-        // Get the containing element
+        // Get the containing element and all its parent blocks
         let container = lastSelectedRange.commonAncestorContainer;
         if (container.nodeType === Node.TEXT_NODE) {
             container = container.parentElement;
         }
         
-        // Store the current styles
-        if (container) {
-            const computedStyle = window.getComputedStyle(container);
-            styleCache.set(container, {
-                fontSize: computedStyle.fontSize,
-                originalText: lastSelectedText
-            });
+        // Store styles for the container and all parent blocks
+        let element = container;
+        while (element && element !== document.body) {
+            if (element.id && element.id.startsWith('block-')) {
+                const computedStyle = window.getComputedStyle(element);
+                styleCache.set(element.id, {
+                    fontSize: computedStyle.fontSize,
+                    originalText: element.textContent
+                });
+            }
+            element = element.parentElement;
         }
         
         console.log("✅ Text Selected:", lastSelectedText);
     }
 });
 
-// Font size change handler
+// Modify the click event listener to maintain styles
+document.addEventListener("click", function(event) {
+    // Find the closest block element
+    const blockElement = event.target.closest('[id^="block-"]');
+    
+    if (blockElement) {
+        // Get cached styles for this block
+        const cachedStyles = styleCache.get(blockElement.id);
+        
+        if (cachedStyles && cachedStyles.fontSize) {
+            // Apply cached font size immediately
+            blockElement.style.fontSize = cachedStyles.fontSize;
+            
+            // Also ensure the style is persisted through the styling system
+            applyStylesToElement(blockElement.id, {
+                "font-size": cachedStyles.fontSize
+            });
+        }
+        
+        // If this is a new selection, update the selectedElement
+        if (selectedElement !== blockElement) {
+            if (selectedElement) {
+                selectedElement.style.outline = "";
+            }
+            selectedElement = blockElement;
+            selectedElement.style.outline = "2px dashed #EF7C2F";
+            console.log(`✅ Selected Element: ${selectedElement.id}`);
+        }
+    }
+});
+
+// Update the font size change handler
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
     if (!lastSelectedRange || !lastSelectedText) {
         console.warn("⚠️ No text selected");
@@ -1266,29 +1091,18 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
             container = container.parentElement;
         }
 
-        // Check if the container or its parent is a strong tag
-        let targetElement = container.tagName === 'STRONG' ? container : 
-                           container.closest('strong');
-
-        // If no strong tag found but text is selected, use the immediate parent
-        if (!targetElement && container) {
-            targetElement = container;
-        }
-
-        if (targetElement) {
-            // Generate a unique ID if none exists
-            if (!targetElement.id) {
-                targetElement.id = `text-mod-${Date.now()}`;
-            }
-
-            // Apply font size directly to the existing element
-            targetElement.style.fontSize = fontSize;
-
-            // Store the applied style in our cache
-            styleCache.set(targetElement, {
+        // Find the closest block element
+        const blockElement = container.closest('[id^="block-"]');
+        
+        if (blockElement) {
+            // Update the style cache immediately
+            styleCache.set(blockElement.id, {
                 fontSize: fontSize,
-                originalText: lastSelectedText
+                originalText: blockElement.textContent
             });
+
+            // Apply font size to the block
+            blockElement.style.fontSize = fontSize;
 
             // Create CSS for persistent styling
             let css = {
@@ -1296,10 +1110,10 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
             };
 
             // Apply styles using your existing function
-            applyStylesToElement(targetElement.id, css);
+            applyStylesToElement(blockElement.id, css);
 
             // Save to database
-            await saveModifications(targetElement.id, css);
+            await saveModifications(blockElement.id, css);
 
             console.log("✅ Font size modified and saved:", fontSize);
         }
@@ -1308,33 +1122,6 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
     }
 });
 
-// Add a click event listener to maintain styles
-document.addEventListener("click", function(event) {
-    // Check if we have cached styles for any parent elements
-    let element = event.target;
-    while (element && element !== document.body) {
-        if (styleCache.has(element)) {
-            const cachedStyle = styleCache.get(element);
-            if (cachedStyle.fontSize) {
-                element.style.fontSize = cachedStyle.fontSize;
-            }
-        }
-        element = element.parentElement;
-    }
-});
-
-// Optional: Clean up cache periodically
-function cleanStyleCache() {
-    for (let [element, styles] of styleCache.entries()) {
-        if (!document.contains(element)) {
-            styleCache.delete(element);
-        }
-    }
-}
-
-// Clean cache every minute
-setInterval(cleanStyleCache, 60000);
-
 // Add this at the top of your script with other variables
 let activeTextSelection = {
   range: null,
@@ -1342,52 +1129,6 @@ let activeTextSelection = {
   element: null
 };
 
-// Update the mouseup event listener to store selection info
-// document.addEventListener("mouseup", function() {
-//   const selection = window.getSelection();
-//   if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-//       activeTextSelection.text = selection.toString();
-//       activeTextSelection.range = selection.getRangeAt(0);
-      
-//       // Find the closest parent element that already has an ID
-//       let element = selection.anchorNode.parentElement;
-//       while (element && !element.id && element.tagName !== 'BODY') {
-//           element = element.parentElement;
-//       }
-      
-//       activeTextSelection.element = element;
-//       console.log("✅ Text Selected:", activeTextSelection.text);
-//   }
-// });
-
-// Font size change handler
-// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-//   if (!activeTextSelection.element || !activeTextSelection.text) {
-//       console.warn("⚠️ No text selected");
-//       return;
-//   }
-
-//   const fontSize = this.value + "px";
-//   const elementId = activeTextSelection.element.id;
-  
-//   try {
-//       // Apply the font size using CSS
-//       let css = {
-//           "font-size": fontSize
-//       };
-
-//       // Apply styles to the element
-//       applyStylesToElement(elementId, css);
-
-//       // Save the modifications
-//       await saveModifications(elementId, css);
-
-//       console.log("✅ Font size modified:", fontSize, "for element:", elementId);
-      
-//   } catch (error) {
-//       console.error("❌ Error applying font size:", error);
-//   }
-// });
 
 // Optional: Reset font size
 function resetFontSize(elementId) {
@@ -1499,14 +1240,6 @@ function resetFontSize(elementId) {
         }
       });
 
-    //   document.getElementById("squareCraftFontSizeInput").addEventListener("input", function () {
-    //     if (selectedElement) {
-    //         let fontSize = this.value + "px";
-    //         let css = { "font-size": fontSize };
-    //         applyStylesToElement(selectedElement.id, css);
-    //         saveModifications(selectedElement.id, css);
-    //     }
-    // });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -1592,39 +1325,6 @@ function resetFontSize(elementId) {
       "squareCraftFontSizeOptions"
     );
 
-    // document.body.addEventListener("click", (event) => {
-    //   let block = event.target.closest('[id^="block-"]');
-    //   if (!block) return;
-
-    //   if (selectedElement) {
-    //     selectedElement.style.fontSize = fontSizes + "px";
-    //   }
-
-    //   selectedElement = block;
-    //   selectedElement.style.outline = "2px dashed #EF7C2F";
-
-    //   let computedFontSize = window.getComputedStyle(selectedElement).fontSize;
-    //   fontSizeInput.value = parseInt(computedFontSize, 10);
-    // });
-
-    // dropdownArrow.addEventListener("click", function (event) {
-    //   event.stopPropagation();
-    //   dropdownOptions.classList.toggle("squareCraft-hidden");
-    // });
-
-    // dropdownOptions.addEventListener("click", function (event) {
-    //   if (event.target.classList.contains("squareCraft-dropdown-item")) {
-    //     fontSizeInput.value = event.target.dataset.value;
-    //     dropdownOptions.classList.add("squareCraft-hidden");
-
-    //     if (selectedElement) {
-    //       let css = { "font-size": `${event.target.dataset.value}px` };
-    //       applyStylesToElement(selectedElement.id, css);
-    //       saveModifications(selectedElement.id, css);
-    //     }
-    //   }
-    // });
-
     document.addEventListener("click", function (event) {
       if (
         !dropdownArrow.contains(event.target) &&
@@ -1634,12 +1334,5 @@ function resetFontSize(elementId) {
       }
     });
 
-    // fontSizeInput.addEventListener("input", function () {
-    //   if (selectedElement) {
-    //     let css = { "font-size": `${fontSizeInput.value}px` };
-    //     applyStylesToElement(selectedElement.id, css);
-    //     saveModifications(selectedElement.id, css);
-    //   }
-    // });
   });
 })();
