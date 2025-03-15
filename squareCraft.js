@@ -236,7 +236,27 @@ function recreateModifiedElement(structure, styles) {
         return;
     }
 
-    // Create the proper structure for span elements
+    const userId = localStorage.getItem("squareCraft_u_id");
+    const token = localStorage.getItem("squareCraft_auth_token");
+    const widgetId = localStorage.getItem("squareCraft_w_id");
+
+    if (!userId || !token || !widgetId) {
+        console.error("❌ User authentication data missing.");
+        return;
+    }
+
+    // Ensure the element has an ID
+    const element = document.getElementById(elementId);
+    if (!element) {
+        console.error(`❌ Element with ID ${elementId} not found.`);
+        return;
+    }
+
+    // Assign ID to <strong> if it doesn't have one
+    if (element.tagName === "STRONG" && !element.id) {
+        element.id = `strong-${Date.now()}`;
+    }
+
     const modificationData = {
         userId,
         token,
@@ -244,18 +264,12 @@ function recreateModifiedElement(structure, styles) {
         modifications: [{
             pageId,
             elements: [{
-                elementId,
+                elementId: element.id,  // Use the assigned ID
                 css: {
                     span: {
-                        id: elementId,
+                        id: element.id,
                         ...css
                     }
-                },
-                elementStructure: elementStructure || {
-                    type: 'span',
-                    className: 'squareCraft-font-modified',
-                    content: document.getElementById(elementId)?.textContent || '',
-                    parentId: document.getElementById(elementId)?.parentElement?.id || null
                 }
             }]
         }]
@@ -266,13 +280,14 @@ function recreateModifiedElement(structure, styles) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-                "userId": userId,
-                "pageId": pageId,
-                "widget-id": widgetId,
+                "Authorization": `Bearer ${token}`,
             },
             body: JSON.stringify(modificationData),
         });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
         const result = await response.json();
         console.log("✅ Changes Saved Successfully!", result);
@@ -281,6 +296,7 @@ function recreateModifiedElement(structure, styles) {
         console.error("❌ Error saving modifications:", error);
     }
 }
+
 
 
   async function resetModifications() {
