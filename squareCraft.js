@@ -1442,16 +1442,83 @@ setInterval(cleanStyleCache, 60000);
 
 // font-size end
 
-    document
-      .getElementById("squareCraftLineHeight")
-      .addEventListener("input", function () {
-        if (selectedElement) {
-          let lineHeight = this.value + "px";
-          let css = { "line-height": lineHeight };
-          applyStylesToElement(selectedElement.id, css);
-          saveModifications(selectedElement.id, css);
-        }
+    // document
+    //   .getElementById("squareCraftLineHeight")
+    //   .addEventListener("input", function () {
+    //     if (selectedElement) {
+    //       let lineHeight = this.value + "px";
+    //       let css = { "line-height": lineHeight };
+    //       applyStylesToElement(selectedElement.id, css);
+    //       saveModifications(selectedElement.id, css);
+    //     }
+    //   });
+    function initializeLineHeight() {
+      const lineHeightInput = document.getElementById("squareCraftLineHeight");
+      const lineHeightDropdown = document.getElementById("squareCraftLineHeightDropdown");
+      const lineHeightOptions = document.getElementById("squareCraftLineHeightOptions");
+  
+      if (!lineHeightInput || !lineHeightDropdown || !lineHeightOptions) {
+          console.warn("⚠️ Line height elements not found");
+          return;
+      }
+  
+      // Toggle dropdown visibility
+      lineHeightDropdown.addEventListener('click', (e) => {
+          e.stopPropagation();
+          lineHeightOptions.classList.toggle('squareCraft-hidden');
       });
+  
+      // Handle option selection from dropdown
+      lineHeightOptions.querySelectorAll('.squareCraft-dropdown-item').forEach(option => {
+          option.addEventListener('click', async (e) => {
+              const value = e.target.dataset.value;
+              lineHeightInput.value = value;
+              lineHeightOptions.classList.add('squareCraft-hidden');
+  
+              if (selectedElement) {
+                  // Apply line height to the selected block
+                  let css = { "line-height": `${value}px` };
+                  applyStylesToElement(selectedElement.id, css);
+                  
+                  // Save modifications
+                  await saveModifications(selectedElement.id, css);
+                  
+                  console.log("🎨 Applied line height:", value, "px to block:", selectedElement.id);
+              } else {
+                  console.warn("⚠️ Please select a block to apply line height");
+              }
+          });
+      });
+  
+      // Handle manual input
+      lineHeightInput.addEventListener("input", async function() {
+          if (!selectedElement) {
+              console.warn("⚠️ Please select a block to apply line height");
+              return;
+          }
+  
+          const value = this.value;
+          if (!value) return;
+  
+          // Apply line height to the selected block
+          let css = { "line-height": `${value}px` };
+          applyStylesToElement(selectedElement.id, css);
+          
+          // Save modifications
+          await saveModifications(selectedElement.id, css);
+          
+          console.log("🎨 Applied line height:", value, "px to block:", selectedElement.id);
+      });
+  
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+          if (!lineHeightInput.contains(e.target) && !lineHeightOptions.contains(e.target)) {
+              lineHeightOptions.classList.add('squareCraft-hidden');
+          }
+      });
+  }
+
+  initializeLineHeight();
 
     
     // letter spacing start
