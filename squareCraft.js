@@ -1442,18 +1442,58 @@ setInterval(cleanStyleCache, 60000);
 
 // font-size end
 
-    document
-      .getElementById("squareCraftLineHeight")
-      .addEventListener("input", function () {
-        if (selectedElement) {
-          let lineHeight = this.value + "px";
-          let css = { "line-height": lineHeight };
-          applyStylesToElement(selectedElement.id, css);
-          saveModifications(selectedElement.id, css);
-        }
-      });
+    // document
+    //   .getElementById("squareCraftLineHeight")
+    //   .addEventListener("input", function () {
+    //     if (selectedElement) {
+    //       let lineHeight = this.value + "px";
+    //       let css = { "line-height": lineHeight };
+    //       applyStylesToElement(selectedElement.id, css);
+    //       saveModifications(selectedElement.id, css);
+    //     }
+    //   });
 
+    // Replace your existing line height event listener with this improved version
+    document.getElementById("squareCraftLineHeight").addEventListener("input", async function() {
+      const lineHeightValue = this.value;
+      if (!lineHeightValue) {
+          console.warn("⚠️ Please enter a valid line height value");
+          return;
+      }
 
+      // Use either the last selected element or the currently selected element
+      const targetElement = lastSelectedLineHeightElement || selectedElement;
+      
+      if (!targetElement) {
+          console.warn("⚠️ No element selected to apply line height");
+          return;
+      }
+
+      // Ensure the element has an ID
+      if (!targetElement.id) {
+          targetElement.id = `line-height-${Date.now()}`;
+      }
+
+      // Apply line height with 'px' unit and !important
+      const lineHeight = `${lineHeightValue}px`;
+      
+      // Create a style element with !important
+      let styleTag = document.getElementById(`style-${targetElement.id}`);
+      if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = `style-${targetElement.id}`;
+          document.head.appendChild(styleTag);
+      }
+
+      // Apply styles with !important
+      styleTag.innerHTML = `#${targetElement.id} { line-height: ${lineHeight} !important; }`;
+
+      // Save modifications with !important
+      let css = { "line-height": `${lineHeight} !important` };
+      await saveModifications(targetElement.id, css);
+
+      console.log("✅ Applied line height:", lineHeight, "to element:", targetElement.id);
+    });
     
     // letter spacing start
     function initializeLetterSpacing() {
