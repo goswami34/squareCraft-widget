@@ -986,8 +986,8 @@ async function fontfamilies() {
       }
 
       let selectedFont = font.family;
-      lastSelectedFontfamilyStrong.textContent = selectedFont;
-      lastSelectedFontfamilyStrong.style.fontFamily = selectedFont;
+      selectedFontText.textContent = selectedFont;
+      selectedFontText.style.fontFamily = selectedFont;
       fontList.style.display = "none";
 
       // Apply font-family immediately
