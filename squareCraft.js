@@ -1454,7 +1454,6 @@ setInterval(cleanStyleCache, 60000);
     //   });
 
     // Replace your existing line height event listener with this improved version
-    // Replace your existing line height event listener with this improved version
     document.getElementById("squareCraftLineHeight").addEventListener("input", async function() {
       const lineHeightValue = this.value;
       if (!lineHeightValue) {
@@ -1495,9 +1494,7 @@ setInterval(cleanStyleCache, 60000);
 
       // Save modifications with !important
       let css = { 
-          "line-height": `${lineHeight} !important`,
-          "& p": { "line-height": `${lineHeight} !important` },
-          "& *": { "line-height": `${lineHeight} !important` }
+          "line-height": `${lineHeight} !important`
       };
       
       await saveModifications(targetElement.id, css);
@@ -1505,36 +1502,44 @@ setInterval(cleanStyleCache, 60000);
       // Force a reflow to ensure styles are applied
       targetElement.offsetHeight;
 
+      // Apply styles to all paragraphs within the element
+      const paragraphs = targetElement.getElementsByTagName('p');
+      for (let p of paragraphs) {
+          p.style.lineHeight = lineHeight;
+      }
+
       console.log("✅ Applied line height:", lineHeight, "to element and its children:", targetElement.id);
     });
 
-
-    function applyStylesToElement(elementId, css) {
-      if (!elementId || !css) return;
-  
-      let styleTag = document.getElementById(`style-${elementId}`);
-      if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = `style-${elementId}`;
-          document.head.appendChild(styleTag);
-      }
-  
-      let cssText = `#${elementId} { `;
-      Object.keys(css).forEach((prop) => {
-          if (typeof css[prop] === 'object') {
-              // Handle nested styles (like & p or & *)
-              Object.keys(css[prop]).forEach((nestedProp) => {
-                  cssText += `${nestedProp}: ${css[prop][nestedProp]} !important; `;
-              });
-          } else {
-              cssText += `${prop}: ${css[prop]} !important; `;
+    // Add this function to handle line height on page load
+    function applyLineHeightOnLoad() {
+      // Get all elements with line-height styles
+      const styleTags = document.querySelectorAll('style[id^="style-"]');
+      styleTags.forEach(styleTag => {
+          const elementId = styleTag.id.replace('style-', '');
+          const element = document.getElementById(elementId);
+          if (element) {
+              const computedStyle = window.getComputedStyle(element);
+              const lineHeight = computedStyle.lineHeight;
+              
+              // Apply line height to all paragraphs within the element
+              const paragraphs = element.getElementsByTagName('p');
+              for (let p of paragraphs) {
+                  p.style.lineHeight = lineHeight;
+              }
           }
       });
-      cssText += "}";
-  
-      styleTag.innerHTML = cssText;
-      console.log(`✅ Styles Persisted for ${elementId}`);
-  }
+    }
+
+    // Add this to your existing window load event listener
+    window.addEventListener("load", async () => {
+      createWidget();
+      setTimeout(makeWidgetDraggable, 500);
+      setTimeout(attachEventListeners, 1500);
+      await fetchModifications();
+      // Add this line to apply line heights after modifications are fetched
+      setTimeout(applyLineHeightOnLoad, 2000);
+    });
     
     // letter spacing start
     function initializeLetterSpacing() {
