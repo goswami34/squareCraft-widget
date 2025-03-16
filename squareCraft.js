@@ -93,128 +93,6 @@
 
 
 // 1. First, modify the fetchModifications function to properly handle strong elements
-// async function fetchModifications(retries = 3) {
-//   if (!pageId) return;
-
-//   const token = localStorage.getItem("squareCraft_auth_token");
-//   const userId = localStorage.getItem("squareCraft_u_id");
-//   const widgetId = localStorage.getItem("squareCraft_w_id");
-
-//   if (!token || !userId) {
-//       console.warn("Missing authentication data");
-//       return;
-//   }
-
-//   try {
-//       const response = await fetch(
-//           `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
-//           {
-//               method: "GET",
-//               headers: {
-//                   "Content-Type": "application/json",
-//                   "Authorization": `Bearer ${token}`,
-//               }
-//           }
-//       );
-
-//       if (!response.ok) {
-//           throw new Error(`HTTP error! status: ${response.status}`);
-//       }
-
-//       const data = await response.json();
-//       console.log("Retrieved modifications:", data);
-
-//       if (!data.modifications || !Array.isArray(data.modifications)) {
-//           console.warn("No modifications found or invalid format");
-//           return;
-//       }
-
-//       // Apply modifications for current page
-//       data.modifications.forEach(mod => {
-//           if (mod.pageId === pageId) {
-//               mod.elements.forEach(elem => {
-//                   // Handle both span and strong elements
-//                   const cssData = elem.css?.span || elem.css?.strong;
-//                   if (cssData) {
-//                       const { id, ...styles } = cssData;
-//                       const element = document.getElementById(elem.elementId);
-                      
-//                       if (element) {
-//                           // Apply styles to existing element
-//                           Object.entries(styles).forEach(([prop, value]) => {
-//                               element.style[prop] = value;
-//                           });
-//                       } else if (elem.elementStructure) {
-//                           // Recreate modified element if it doesn't exist
-//                           recreateModifiedElement(elem.elementStructure, styles);
-//                       }
-//                   }
-//               });
-//           }
-//       });
-
-//   } catch (error) {
-//       console.error("Error fetching modifications:", error);
-//       if (retries > 0) {
-//           console.log(`Retrying... (${retries} attempts left)`);
-//           setTimeout(() => fetchModifications(retries - 1), 2000);
-//       }
-//   }
-// }
-
-// // 2. Modify recreateModifiedElement to better handle text-transform
-// function recreateModifiedElement(structure, styles) {
-//   const parentElement = structure.parentId ? 
-//       document.getElementById(structure.parentId) : 
-//       document.body;
-
-//   if (!parentElement) return;
-
-//   // First try to find existing element by ID
-//   let element = document.getElementById(structure.id);
-  
-//   if (!element) {
-//       // If no element exists, create new one
-//       element = document.createElement(structure.type || 'span');
-//       element.id = structure.id;
-//       element.className = structure.className || 'squareCraft-font-modified';
-//       element.textContent = structure.content;
-
-//       // Find where to insert the element
-//       if (structure.content) {
-//           const textNodes = [];
-//           const walker = document.createTreeWalker(
-//               parentElement,
-//               NodeFilter.SHOW_TEXT,
-//               {
-//                   acceptNode: function(node) {
-//                       return node.textContent.includes(structure.content) ?
-//                           NodeFilter.FILTER_ACCEPT :
-//                           NodeFilter.FILTER_REJECT;
-//                   }
-//               },
-//               false
-//           );
-
-//           let node;
-//           while (node = walker.nextNode()) {
-//               textNodes.push(node);
-//           }
-
-//           if (textNodes.length > 0) {
-//               textNodes[0].parentNode.replaceChild(element, textNodes[0]);
-//           }
-//       }
-//   }
-
-//   // Apply styles to the element
-//   if (element) {
-//       Object.entries(styles).forEach(([prop, value]) => {
-//           element.style[prop] = value;
-//       });
-//   }
-// }
-
 async function fetchModifications(retries = 3) {
   if (!pageId) return;
 
@@ -262,37 +140,10 @@ async function fetchModifications(retries = 3) {
                       const element = document.getElementById(elem.elementId);
                       
                       if (element) {
-                          // Create or get style tag
-                          let styleTag = document.getElementById(`style-${elem.elementId}`);
-                          if (!styleTag) {
-                              styleTag = document.createElement("style");
-                              styleTag.id = `style-${elem.elementId}`;
-                              document.head.appendChild(styleTag);
-                          }
-
-                          // Build CSS text with !important
-                          let cssText = `#${elem.elementId} { `;
+                          // Apply styles to existing element
                           Object.entries(styles).forEach(([prop, value]) => {
-                              if (prop === 'line-height') {
-                                  // Apply line-height to element and all its children
-                                  cssText += `
-                                      line-height: ${value} !important;
-                                      & p { line-height: ${value} !important; }
-                                      & * { line-height: ${value} !important; }
-                                  `;
-                              } else {
-                                  cssText += `${prop}: ${value} !important; `;
-                              }
+                              element.style[prop] = value;
                           });
-                          cssText += "}";
-
-                          // Apply the styles
-                          styleTag.innerHTML = cssText;
-
-                          // Force a reflow to ensure styles are applied
-                          element.offsetHeight;
-
-                          console.log(`✅ Applied styles to ${elem.elementId}:`, styles);
                       } else if (elem.elementStructure) {
                           // Recreate modified element if it doesn't exist
                           recreateModifiedElement(elem.elementStructure, styles);
@@ -311,7 +162,7 @@ async function fetchModifications(retries = 3) {
   }
 }
 
-
+// 2. Modify recreateModifiedElement to better handle text-transform
 function recreateModifiedElement(structure, styles) {
   const parentElement = structure.parentId ? 
       document.getElementById(structure.parentId) : 
@@ -358,35 +209,9 @@ function recreateModifiedElement(structure, styles) {
 
   // Apply styles to the element
   if (element) {
-      // Create or get style tag
-      let styleTag = document.getElementById(`style-${structure.id}`);
-      if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = `style-${structure.id}`;
-          document.head.appendChild(styleTag);
-      }
-
-      // Build CSS text with !important
-      let cssText = `#${structure.id} { `;
       Object.entries(styles).forEach(([prop, value]) => {
-          if (prop === 'line-height') {
-              // Apply line-height to element and all its children
-              cssText += `
-                  line-height: ${value} !important;
-                  & p { line-height: ${value} !important; }
-                  & * { line-height: ${value} !important; }
-              `;
-          } else {
-              cssText += `${prop}: ${value} !important; `;
-          }
+          element.style[prop] = value;
       });
-      cssText += "}";
-
-      // Apply the styles
-      styleTag.innerHTML = cssText;
-
-      // Force a reflow to ensure styles are applied
-      element.offsetHeight;
   }
 }
 
