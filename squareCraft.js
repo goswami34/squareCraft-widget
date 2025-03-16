@@ -1008,24 +1008,24 @@ fontfamilies();
 
     await saveModifications(selectedElement.id, css);
     // await saveModifications(lastSelectedFontfamilyStrong.id, css);
-    if (lastSelectedFontfamilyStrong && lastSelectedFontfamilyStrong.id) {
-      // await saveModifications(lastSelectedFontfamilyStrong.id, css);
-      await saveModifications(lastSelectedFontfamilyStrong.id, {
-        "font-family": css["font-family"]
-    });
-  }
+      if (lastSelectedFontfamilyStrong && lastSelectedFontfamilyStrong.id) {
+        // await saveModifications(lastSelectedFontfamilyStrong.id, css);
+        await saveModifications(lastSelectedFontfamilyStrong.id, {
+          "font-family": css["font-family"]
+      });
+    }
 
-  if (lastSelectedFontWeightStrong && lastSelectedFontWeightStrong.id) {
-    await saveModifications(lastSelectedFontWeightStrong.id, {
-        "font-weight": css["font-weight"]
-    });
-}
+      if (lastSelectedFontWeightStrong && lastSelectedFontWeightStrong.id) {
+        await saveModifications(lastSelectedFontWeightStrong.id, {
+            "font-weight": css["font-weight"]
+        });
+    }
 
-if (lastSelectedLineHeightStrong && lastSelectedLineHeightStrong.id) {
-  await saveModifications(lastSelectedLineHeightStrong.id, {
-      "line-height": css["font-height"]
-  });
-}
+    if (lastSelectedLineHeightStrong && lastSelectedLineHeightStrong.id) {
+      await saveModifications(lastSelectedLineHeightStrong.id, {
+          "line-height": css["font-height"]
+      });
+    }
 
     if (lastSelectedTextTransformStrongElement && lastSelectedTextTransformStrongElement.id) {
       await saveModifications(lastSelectedTextTransformStrongElement.id, css);
