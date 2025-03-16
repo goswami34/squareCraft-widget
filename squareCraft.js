@@ -93,6 +93,128 @@
 
 
 // 1. First, modify the fetchModifications function to properly handle strong elements
+// async function fetchModifications(retries = 3) {
+//   if (!pageId) return;
+
+//   const token = localStorage.getItem("squareCraft_auth_token");
+//   const userId = localStorage.getItem("squareCraft_u_id");
+//   const widgetId = localStorage.getItem("squareCraft_w_id");
+
+//   if (!token || !userId) {
+//       console.warn("Missing authentication data");
+//       return;
+//   }
+
+//   try {
+//       const response = await fetch(
+//           `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+//           {
+//               method: "GET",
+//               headers: {
+//                   "Content-Type": "application/json",
+//                   "Authorization": `Bearer ${token}`,
+//               }
+//           }
+//       );
+
+//       if (!response.ok) {
+//           throw new Error(`HTTP error! status: ${response.status}`);
+//       }
+
+//       const data = await response.json();
+//       console.log("Retrieved modifications:", data);
+
+//       if (!data.modifications || !Array.isArray(data.modifications)) {
+//           console.warn("No modifications found or invalid format");
+//           return;
+//       }
+
+//       // Apply modifications for current page
+//       data.modifications.forEach(mod => {
+//           if (mod.pageId === pageId) {
+//               mod.elements.forEach(elem => {
+//                   // Handle both span and strong elements
+//                   const cssData = elem.css?.span || elem.css?.strong;
+//                   if (cssData) {
+//                       const { id, ...styles } = cssData;
+//                       const element = document.getElementById(elem.elementId);
+                      
+//                       if (element) {
+//                           // Apply styles to existing element
+//                           Object.entries(styles).forEach(([prop, value]) => {
+//                               element.style[prop] = value;
+//                           });
+//                       } else if (elem.elementStructure) {
+//                           // Recreate modified element if it doesn't exist
+//                           recreateModifiedElement(elem.elementStructure, styles);
+//                       }
+//                   }
+//               });
+//           }
+//       });
+
+//   } catch (error) {
+//       console.error("Error fetching modifications:", error);
+//       if (retries > 0) {
+//           console.log(`Retrying... (${retries} attempts left)`);
+//           setTimeout(() => fetchModifications(retries - 1), 2000);
+//       }
+//   }
+// }
+
+// // 2. Modify recreateModifiedElement to better handle text-transform
+// function recreateModifiedElement(structure, styles) {
+//   const parentElement = structure.parentId ? 
+//       document.getElementById(structure.parentId) : 
+//       document.body;
+
+//   if (!parentElement) return;
+
+//   // First try to find existing element by ID
+//   let element = document.getElementById(structure.id);
+  
+//   if (!element) {
+//       // If no element exists, create new one
+//       element = document.createElement(structure.type || 'span');
+//       element.id = structure.id;
+//       element.className = structure.className || 'squareCraft-font-modified';
+//       element.textContent = structure.content;
+
+//       // Find where to insert the element
+//       if (structure.content) {
+//           const textNodes = [];
+//           const walker = document.createTreeWalker(
+//               parentElement,
+//               NodeFilter.SHOW_TEXT,
+//               {
+//                   acceptNode: function(node) {
+//                       return node.textContent.includes(structure.content) ?
+//                           NodeFilter.FILTER_ACCEPT :
+//                           NodeFilter.FILTER_REJECT;
+//                   }
+//               },
+//               false
+//           );
+
+//           let node;
+//           while (node = walker.nextNode()) {
+//               textNodes.push(node);
+//           }
+
+//           if (textNodes.length > 0) {
+//               textNodes[0].parentNode.replaceChild(element, textNodes[0]);
+//           }
+//       }
+//   }
+
+//   // Apply styles to the element
+//   if (element) {
+//       Object.entries(styles).forEach(([prop, value]) => {
+//           element.style[prop] = value;
+//       });
+//   }
+// }
+
 async function fetchModifications(retries = 3) {
   if (!pageId) return;
 
@@ -140,7 +262,7 @@ async function fetchModifications(retries = 3) {
                       const element = document.getElementById(elem.elementId);
                       
                       if (element) {
-                          // Apply styles to existing element
+                          // If element exists, apply styles directly
                           Object.entries(styles).forEach(([prop, value]) => {
                               element.style[prop] = value;
                           });
@@ -162,7 +284,6 @@ async function fetchModifications(retries = 3) {
   }
 }
 
-// 2. Modify recreateModifiedElement to better handle text-transform
 function recreateModifiedElement(structure, styles) {
   const parentElement = structure.parentId ? 
       document.getElementById(structure.parentId) : 
@@ -202,7 +323,18 @@ function recreateModifiedElement(structure, styles) {
           }
 
           if (textNodes.length > 0) {
-              textNodes[0].parentNode.replaceChild(element, textNodes[0]);
+              // Check if the text node is already inside a strong tag
+              const existingStrong = textNodes[0].parentElement.closest('strong');
+              if (existingStrong && structure.type === 'strong') {
+                  // If we're trying to create a strong tag and the text is already in a strong tag,
+                  // just apply the styles to the existing strong tag
+                  element = existingStrong;
+                  if (!element.id) {
+                      element.id = structure.id;
+                  }
+              } else {
+                  textNodes[0].parentNode.replaceChild(element, textNodes[0]);
+              }
           }
       }
   }
@@ -1351,7 +1483,6 @@ setInterval(cleanStyleCache, 60000);
 
     let lastSelectedLineHeightStrong = null;
 
-    // Add this to your existing mouseup event listener to track bold text selection
     document.addEventListener("mouseup", function() {
         const selection = window.getSelection();
         if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
@@ -1374,61 +1505,6 @@ setInterval(cleanStyleCache, 60000);
         }
     });
 
-    // Replace your existing line height event listener with this improved version
-    // document.getElementById("squareCraftLineHeight").addEventListener("input", async function() {
-    //   const lineHeightValue = this.value;
-    //   if (!lineHeightValue) {
-    //       console.warn("⚠️ Please enter a valid line height value");
-    //       return;
-    //   }
-
-    //   // Use either the last selected element or the currently selected element
-    //   const targetElement = selectedElement;
-      
-    //   if (!targetElement) {
-    //       console.warn("⚠️ No element selected to apply line height");
-    //       return;
-    //   }
-
-    //   // Ensure the element has an ID
-    //   if (!targetElement.id) {
-    //       targetElement.id = `line-height-${Date.now()}`;
-    //   }
-
-    //   // Apply line height with 'px' unit and !important
-    //   const lineHeight = `${lineHeightValue}px`;
-      
-    //   // Create a style element with !important
-    //   let styleTag = document.getElementById(`style-${targetElement.id}`);
-    //   if (!styleTag) {
-    //       styleTag = document.createElement("style");
-    //       styleTag.id = `style-${targetElement.id}`;
-    //       document.head.appendChild(styleTag);
-    //   }
-
-    //   // Apply styles with !important to both the target element and its paragraphs
-    //   styleTag.innerHTML = `
-    //       #${targetElement.id} { line-height: ${lineHeight} !important; }
-    //   `;
-
-    //   // Save modifications with !important
-    //   let css = { 
-    //       "line-height": `${lineHeight} !important`
-    //   };
-      
-    //   await saveModifications(targetElement.id, css);
-
-    //   // Force a reflow to ensure styles are applied
-    //   targetElement.offsetHeight;
-
-    //   // Apply styles to all paragraphs within the element
-    //   const paragraphs = targetElement.getElementsByTagName('p');
-    //   for (let p of paragraphs) {
-    //       p.style.lineHeight = lineHeight;
-    //   }
-
-    //   console.log("✅ Applied line height:", lineHeight, "to element and its children:", targetElement.id);
-    // });
 
     document.getElementById("squareCraftLineHeight").addEventListener("input", async function() {
       const lineHeightValue = this.value;
@@ -1591,7 +1667,7 @@ setInterval(cleanStyleCache, 60000);
 
 
 
-      // text-transform start
+    // text-transform start
 
     let lastSelectedTextTransformStrongElement = null;
 
@@ -1667,11 +1743,7 @@ setInterval(cleanStyleCache, 60000);
         console.log("🔄 Reset text transform for bold text:", lastSelectedTextTransformStrongElement.textContent);
       });
 
-
-      // text-transform end
-
-
-
+    // text-transform end
     //   hover code start here
     const hoverButton = document.querySelector(
       ".squareCraft-cursor-pointer.squareCraft-bg-3f3f3f.squareCraft-hover"
