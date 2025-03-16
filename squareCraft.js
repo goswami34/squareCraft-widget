@@ -1464,8 +1464,6 @@ setInterval(cleanStyleCache, 60000);
       // Apply styles with !important to both the target element and its paragraphs
       styleTag.innerHTML = `
           #${targetElement.id} { line-height: ${lineHeight} !important; }
-          #${targetElement.id} p { line-height: ${lineHeight} !important; }
-          #${targetElement.id} * { line-height: ${lineHeight} !important; }
       `;
   
       // Save modifications with !important
