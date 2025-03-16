@@ -1342,27 +1342,108 @@ setInterval(cleanStyleCache, 60000);
     //     }
     //   });
 
+
+    let lastSelectedLineHeightStrong = null;
+
+    // Add this to your existing mouseup event listener to track bold text selection
+    document.addEventListener("mouseup", function() {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+            let range = selection.getRangeAt(0);
+            let container = range.commonAncestorContainer;
+            
+            // If the container is a text node, get its parent
+            if (container.nodeType === Node.TEXT_NODE) {
+                container = container.parentElement;
+            }
+            
+            // Check if selection is within a strong tag
+            const strongElement = container.closest('strong');
+            if (strongElement) {
+                lastSelectedLineHeightStrong = strongElement;
+                console.log("✅ Selected text inside <strong> for line height:", strongElement.textContent);
+            } else {
+                lastSelectedLineHeightStrong = null;
+            }
+        }
+    });
+
     // Replace your existing line height event listener with this improved version
+    // document.getElementById("squareCraftLineHeight").addEventListener("input", async function() {
+    //   const lineHeightValue = this.value;
+    //   if (!lineHeightValue) {
+    //       console.warn("⚠️ Please enter a valid line height value");
+    //       return;
+    //   }
+
+    //   // Use either the last selected element or the currently selected element
+    //   const targetElement = selectedElement;
+      
+    //   if (!targetElement) {
+    //       console.warn("⚠️ No element selected to apply line height");
+    //       return;
+    //   }
+
+    //   // Ensure the element has an ID
+    //   if (!targetElement.id) {
+    //       targetElement.id = `line-height-${Date.now()}`;
+    //   }
+
+    //   // Apply line height with 'px' unit and !important
+    //   const lineHeight = `${lineHeightValue}px`;
+      
+    //   // Create a style element with !important
+    //   let styleTag = document.getElementById(`style-${targetElement.id}`);
+    //   if (!styleTag) {
+    //       styleTag = document.createElement("style");
+    //       styleTag.id = `style-${targetElement.id}`;
+    //       document.head.appendChild(styleTag);
+    //   }
+
+    //   // Apply styles with !important to both the target element and its paragraphs
+    //   styleTag.innerHTML = `
+    //       #${targetElement.id} { line-height: ${lineHeight} !important; }
+    //   `;
+
+    //   // Save modifications with !important
+    //   let css = { 
+    //       "line-height": `${lineHeight} !important`
+    //   };
+      
+    //   await saveModifications(targetElement.id, css);
+
+    //   // Force a reflow to ensure styles are applied
+    //   targetElement.offsetHeight;
+
+    //   // Apply styles to all paragraphs within the element
+    //   const paragraphs = targetElement.getElementsByTagName('p');
+    //   for (let p of paragraphs) {
+    //       p.style.lineHeight = lineHeight;
+    //   }
+
+    //   console.log("✅ Applied line height:", lineHeight, "to element and its children:", targetElement.id);
+    // });
+
     document.getElementById("squareCraftLineHeight").addEventListener("input", async function() {
       const lineHeightValue = this.value;
       if (!lineHeightValue) {
           console.warn("⚠️ Please enter a valid line height value");
           return;
       }
-
-      // Use either the last selected element or the currently selected element
-      const targetElement = selectedElement;
+  
+      // Use either the last selected bold text or the currently selected element
+      const targetElement = lastSelectedLineHeightStrong || selectedElement;
       
       if (!targetElement) {
           console.warn("⚠️ No element selected to apply line height");
           return;
       }
-
+  
       // Ensure the element has an ID
       if (!targetElement.id) {
           targetElement.id = `line-height-${Date.now()}`;
       }
-
+  
       // Apply line height with 'px' unit and !important
       const lineHeight = `${lineHeightValue}px`;
       
@@ -1373,30 +1454,32 @@ setInterval(cleanStyleCache, 60000);
           styleTag.id = `style-${targetElement.id}`;
           document.head.appendChild(styleTag);
       }
-
+  
       // Apply styles with !important to both the target element and its paragraphs
       styleTag.innerHTML = `
           #${targetElement.id} { line-height: ${lineHeight} !important; }
+          #${targetElement.id} p { line-height: ${lineHeight} !important; }
+          #${targetElement.id} * { line-height: ${lineHeight} !important; }
       `;
-
+  
       // Save modifications with !important
       let css = { 
           "line-height": `${lineHeight} !important`
       };
       
       await saveModifications(targetElement.id, css);
-
+  
       // Force a reflow to ensure styles are applied
       targetElement.offsetHeight;
-
+  
       // Apply styles to all paragraphs within the element
       const paragraphs = targetElement.getElementsByTagName('p');
       for (let p of paragraphs) {
           p.style.lineHeight = lineHeight;
       }
-
-      console.log("✅ Applied line height:", lineHeight, "to element and its children:", targetElement.id);
-    });
+  
+      console.log("✅ Applied line height:", lineHeight, "to element:", targetElement.id);
+  });
 
     // Add this function to handle line height on page load
     function applyLineHeightOnLoad() {
