@@ -1021,6 +1021,12 @@ fontfamilies();
     });
 }
 
+if (lastSelectedLineHeightStrong && lastSelectedLineHeightStrong.id) {
+  await saveModifications(lastSelectedLineHeightStrong.id, {
+      "line-height": css["font-height"]
+  });
+}
+
     if (lastSelectedTextTransformStrongElement && lastSelectedTextTransformStrongElement.id) {
       await saveModifications(lastSelectedTextTransformStrongElement.id, css);
     }
