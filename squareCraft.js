@@ -995,7 +995,7 @@ async function fontfamilies() {
       applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
 
       // Save modifications immediately without waiting
-      saveModifications(lastSelectedFontfamilyStrong.id, css);
+      await saveModifications(lastSelectedFontfamilyStrong.id, css);
 
       console.log("🎨 Applied font:", selectedFont, "to", selectedElement.id);
 
@@ -1084,7 +1084,10 @@ fontfamilies();
     await saveModifications(selectedElement.id, css);
     // await saveModifications(lastSelectedFontfamilyStrong.id, css);
     if (lastSelectedFontfamilyStrong && lastSelectedFontfamilyStrong.id) {
-      await saveModifications(lastSelectedFontfamilyStrong.id, css);
+      // await saveModifications(lastSelectedFontfamilyStrong.id, css);
+      await saveModifications(lastSelectedFontfamilyStrong.id, {
+        "font-family": css["font-family"]
+    });
   }
 
     if (lastSelectedTextTransformStrongElement && lastSelectedTextTransformStrongElement.id) {
