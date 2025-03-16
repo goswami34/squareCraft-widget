@@ -1454,6 +1454,7 @@ setInterval(cleanStyleCache, 60000);
     //   });
 
     // Replace your existing line height event listener with this improved version
+    // Replace your existing line height event listener with this improved version
     document.getElementById("squareCraftLineHeight").addEventListener("input", async function() {
       const lineHeightValue = this.value;
       if (!lineHeightValue) {
@@ -1485,15 +1486,55 @@ setInterval(cleanStyleCache, 60000);
           document.head.appendChild(styleTag);
       }
 
-      // Apply styles with !important
-      styleTag.innerHTML = `#${targetElement.id} { line-height: ${lineHeight} !important; }`;
+      // Apply styles with !important to both the target element and its paragraphs
+      styleTag.innerHTML = `
+          #${targetElement.id} { line-height: ${lineHeight} !important; }
+          #${targetElement.id} p { line-height: ${lineHeight} !important; }
+          #${targetElement.id} * { line-height: ${lineHeight} !important; }
+      `;
 
       // Save modifications with !important
-      let css = { "line-height": `${lineHeight} !important` };
+      let css = { 
+          "line-height": `${lineHeight} !important`,
+          "& p": { "line-height": `${lineHeight} !important` },
+          "& *": { "line-height": `${lineHeight} !important` }
+      };
+      
       await saveModifications(targetElement.id, css);
 
-      console.log("✅ Applied line height:", lineHeight, "to element:", targetElement.id);
+      // Force a reflow to ensure styles are applied
+      targetElement.offsetHeight;
+
+      console.log("✅ Applied line height:", lineHeight, "to element and its children:", targetElement.id);
     });
+
+
+    function applyStylesToElement(elementId, css) {
+      if (!elementId || !css) return;
+  
+      let styleTag = document.getElementById(`style-${elementId}`);
+      if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = `style-${elementId}`;
+          document.head.appendChild(styleTag);
+      }
+  
+      let cssText = `#${elementId} { `;
+      Object.keys(css).forEach((prop) => {
+          if (typeof css[prop] === 'object') {
+              // Handle nested styles (like & p or & *)
+              Object.keys(css[prop]).forEach((nestedProp) => {
+                  cssText += `${nestedProp}: ${css[prop][nestedProp]} !important; `;
+              });
+          } else {
+              cssText += `${prop}: ${css[prop]} !important; `;
+          }
+      });
+      cssText += "}";
+  
+      styleTag.innerHTML = cssText;
+      console.log(`✅ Styles Persisted for ${elementId}`);
+  }
     
     // letter spacing start
     function initializeLetterSpacing() {
