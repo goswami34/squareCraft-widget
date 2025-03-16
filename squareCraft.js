@@ -979,29 +979,61 @@ async function fontfamilies() {
       option.style.background = "transparent";
     });
 
-    option.addEventListener("click", async () => {
-      if (!selectedElement) {
-        console.warn("⚠️ No element selected.");
-        return;
-      }
+    // option.addEventListener("click", async () => {
+    //   if (!selectedElement) {
+    //     console.warn("⚠️ No element selected.");
+    //     return;
+    //   }
 
+    //   let selectedFont = font.family;
+    //   selectedFontText.textContent = selectedFont;
+    //   selectedFontText.style.fontFamily = selectedFont;
+    //   fontList.style.display = "none";
+
+    //   // Apply font-family immediately
+    //   let css = { "font-family": selectedFont };
+    //   applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
+
+    //   // Save modifications immediately without waiting
+    //   await saveModifications(lastSelectedFontfamilyStrong.id, css);
+
+    //   console.log("🎨 Applied font:", selectedFont, "to", selectedElement.id);
+
+    //   // Update font-weight dropdown dynamically
+    //   updateFontWeightDropdown(font.variants);
+    // });
+
+    option.addEventListener("click", async () => {
+      if (!lastSelectedFontfamilyStrong) {
+          console.warn("⚠️ Please select bold text to apply font-family");
+          return;
+      }
+  
       let selectedFont = font.family;
       selectedFontText.textContent = selectedFont;
       selectedFontText.style.fontFamily = selectedFont;
       fontList.style.display = "none";
-
-      // Apply font-family immediately
+  
+      // Ensure the strong element has an ID
+      if (!lastSelectedFontfamilyStrong.id) {
+          lastSelectedFontfamilyStrong.id = `font-family-${Date.now()}`;
+      }
+  
+      // Store the original text before applying styles
+      const originalText = lastSelectedFontfamilyStrong.textContent;
+  
+      // Apply font-family to the strong element
       let css = { "font-family": selectedFont };
       applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
-
-      // Save modifications immediately without waiting
+  
+      // Save modifications using your existing function
       await saveModifications(lastSelectedFontfamilyStrong.id, css);
-
-      console.log("🎨 Applied font:", selectedFont, "to", selectedElement.id);
-
+  
+      console.log("🎨 Applied font:", selectedFont, "to bold text:", originalText);
+  
       // Update font-weight dropdown dynamically
       updateFontWeightDropdown(font.variants);
-    });
+  });
 
     fontList.appendChild(option);
   });
