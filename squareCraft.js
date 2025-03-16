@@ -1462,7 +1462,7 @@ setInterval(cleanStyleCache, 60000);
       }
 
       // Use either the last selected element or the currently selected element
-      const targetElement = lastSelectedLineHeightElement || selectedElement;
+      const targetElement = selectedElement;
       
       if (!targetElement) {
           console.warn("⚠️ No element selected to apply line height");
