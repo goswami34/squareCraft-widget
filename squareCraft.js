@@ -658,6 +658,7 @@ function cleanupDuplicateSpans(elementId) {
                  <div class="squareCraft-flex squareCraft-text-color-white squareCraft-justify-between squareCraft-col-span-3 
                     squareCraft-rounded-6px squareCraft-border squareCraft-border-solid squareCraft-border-585858 
                     squareCraft-items-center squareCraft-w-full ">
+
                     <div class="squareCraft-Letter-spacing-container squareCraft-flex squareCraft-justify-between squareCraft-items-center squareCraft-flex squareCraft-items-center squareCraft-border 
                        squareCraft-border-solid squareCraft-border-3d3d3d  squareCraft-rounded-6px 
                        ">
@@ -669,6 +670,8 @@ function cleanupDuplicateSpans(elementId) {
                              class=" squareCraft-px-1 squareCraft-ml-1 squareCraft-mx-auto squareCraft-cursor-pointer" >
                        </div>
                     </div>
+
+
                     <div id="squareCraftLetterSpacingOptions" class="squareCraft-hidden squareCraft-h-44 squareCraft-font-sm squareCraft-bg-3f3f3f squareCraft-w-20
                        squareCraft-rounded-6px squareCraft-border squareCraft-border-585858 squareCraft-absolute 
                        squareCraft-mt-1">
@@ -1108,6 +1111,7 @@ fontfamilies();
       // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
       // "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
       "text-decoration": textDecorationValue,
+      "letter-spacing": document.querySelector('.squareCraft-Letter-spacing-input').value + "px",
       "text-transform": document.querySelectorAll(
         ".squsareCraft-text-transform"
       ).value,
@@ -1449,14 +1453,87 @@ setInterval(cleanStyleCache, 60000);
         }
       });
 
+    
+    // letter spacing start
+    function initializeLetterSpacing() {
+      const letterSpacingContainer = document.querySelector('.squareCraft-Letter-spacing-container');
+      const letterSpacingDropdown = document.getElementById('squareCraftLetterSpacingDropdown');
+      const letterSpacingOptions = document.getElementById('squareCraftLetterSpacingOptions');
+      const letterSpacingInput = document.querySelector('.squareCraft-Letter-spacing-input');
+  
+      if (!letterSpacingContainer || !letterSpacingDropdown || !letterSpacingOptions || !letterSpacingInput) {
+          console.warn("⚠️ Letter spacing elements not found");
+          return;
+      }
+  
+      // Toggle dropdown visibility
+      letterSpacingDropdown.addEventListener('click', (e) => {
+          e.stopPropagation();
+          letterSpacingOptions.classList.toggle('squareCraft-hidden');
+      });
+  
+      // Handle option selection
+      letterSpacingOptions.querySelectorAll('.squareCraft-dropdown-item').forEach(option => {
+          option.addEventListener('click', async (e) => {
+              const value = e.target.dataset.value;
+              letterSpacingInput.value = value;
+              letterSpacingOptions.classList.add('squareCraft-hidden');
+  
+              if (selectedElement) {
+                  // Apply letter spacing to the selected block
+                  let css = { "letter-spacing": `${value}px` };
+                  applyStylesToElement(selectedElement.id, css);
+                  
+                  // Save modifications
+                  await saveModifications(selectedElement.id, css);
+                  
+                  console.log("🎨 Applied letter spacing:", value, "px to block:", selectedElement.id);
+              } else {
+                  console.warn("⚠️ Please select a block to apply letter spacing");
+              }
+          });
+      });
+  
+      // Handle manual input
+      letterSpacingInput.addEventListener('input', async function() {
+          if (!selectedElement) {
+              console.warn("⚠️ Please select a block to apply letter spacing");
+              return;
+          }
+  
+          const value = this.value;
+          if (!value) return;
+  
+          // Apply letter spacing to the selected block
+          let css = { "letter-spacing": `${value}px` };
+          applyStylesToElement(selectedElement.id, css);
+          
+          // Save modifications
+          await saveModifications(selectedElement.id, css);
+          
+          console.log("🎨 Applied letter spacing:", value, "px to block:", selectedElement.id);
+      });
+  
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+          if (!letterSpacingContainer.contains(e.target)) {
+              letterSpacingOptions.classList.add('squareCraft-hidden');
+          }
+      });
+  }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      initializeLetterSpacing();
+    });
+
+    // letter spacing end
+
 
 
       // text-transform start
 
-      // Track the last selected strong element
     let lastSelectedTextTransformStrongElement = null;
 
-    // Add event listener to track text selection within strong tags
     document.addEventListener("mouseup", function() {
         const selection = window.getSelection();
         if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
@@ -1478,33 +1555,6 @@ setInterval(cleanStyleCache, 60000);
             }
         }
     });
-
-    // Modify text-transform click handlers
-      // document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
-      //   textTransform.addEventListener("click", async function() {
-      //       // Check if we have a selected strong element
-      //       if (!lastSelectedTextTransformStrongElement) {
-      //           console.warn("⚠️ No bold text selected");
-      //           return;
-      //       }
-
-      //       // Ensure the strong element has an ID
-      //       if (!lastSelectedTextTransformStrongElement.id) {
-      //         lastSelectedTextTransformStrongElement.id = `text-transform-${Date.now()}`;
-      //       }
-
-      //       const transform = this.getAttribute("data-transform");
-      //       let css = { "text-transform": transform };
-            
-      //       // Apply styles to the strong element
-      //       applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
-            
-      //       // Save modifications
-      //       await saveModifications(lastSelectedTextTransformStrongElement.id, css);
-            
-      //       console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformStrongElement.textContent);
-      //   });
-      // });
 
       document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
         textTransform.addEventListener("click", async function() {
