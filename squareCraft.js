@@ -202,56 +202,6 @@
 //     }
 // }
 
-// function recreateModifiedElement(structure, styles) {
-//   const parentElement = structure.parentId ? 
-//       document.getElementById(structure.parentId) : 
-//       document.body;
-
-//   if (!parentElement) return;
-
-//   // Check if there's already a strong element with this content
-//   const existingStrong = Array.from(parentElement.getElementsByTagName('strong'))
-//       .find(el => el.textContent.includes(structure.content));
-
-//   if (existingStrong) {
-//       // If strong exists, just apply styles directly to it
-//       Object.entries(styles).forEach(([prop, value]) => {
-//           existingStrong.style[prop] = value;
-//       });
-//       return;
-//   }
-
-//   // If no existing strong found, create new element
-//   const element = document.createElement(structure.type === 'strong' ? 'strong' : 'span');
-//   element.id = structure.id;
-//   element.className = structure.className || 'squareCraft-font-modified';
-//   element.textContent = structure.content;
-
-//   // Apply styles
-//   Object.entries(styles).forEach(([prop, value]) => {
-//       element.style[prop] = value;
-//   });
-
-//   // Find and replace text node
-//   if (structure.content) {
-//       const walker = document.createTreeWalker(
-//           parentElement,
-//           NodeFilter.SHOW_TEXT,
-//           {
-//               acceptNode: function(node) {
-//                   return node.textContent.includes(structure.content) ? 
-//                       NodeFilter.FILTER_ACCEPT : 
-//                       NodeFilter.FILTER_REJECT;
-//               }
-//           }
-//       );
-
-//       const textNode = walker.nextNode();
-//       if (textNode) {
-//           textNode.parentNode.replaceChild(element, textNode);
-//       }
-//   }
-// }
 
 // 1. First, modify the fetchModifications function to properly handle strong elements
 async function fetchModifications(retries = 3) {
@@ -489,117 +439,6 @@ function validateAndCleanModifications(elementId) {
     await fetchModifications(); // ✅ Fetch and apply modifications
   });
 
-
-
-
-
-// async function saveModifications(elementId, css, elementStructure = null) {
-//   if (!pageId || !elementId || !css) {
-//       console.warn("⚠️ Missing required data to save modifications.");
-//       return;
-//   }
-
-//   // Create the proper structure for span elements
-//   const modificationData = {
-//       userId,
-//       token,
-//       widgetId,
-//       modifications: [{
-//           pageId,
-//           elements: [{
-//               elementId,
-//               css: {
-//                   span: {
-//                       id: elementId,
-//                       ...css
-//                   }
-//               },
-//               elementStructure: elementStructure || {
-//                   type: 'span',
-//                   className: 'squareCraft-font-modified',
-//                   content: document.getElementById(elementId)?.textContent || '',
-//                   parentId: document.getElementById(elementId)?.parentElement?.id || null
-//               }
-//           }]
-//       }]
-//   };
-
-//   try {
-//       const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
-//           method: "POST",
-//           headers: {
-//               "Content-Type": "application/json",
-//               "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-//               "userId": userId,
-//               "pageId": pageId,
-//               "widget-id": widgetId,
-//           },
-//           body: JSON.stringify(modificationData),
-//       });
-
-//       const result = await response.json();
-//       console.log("✅ Changes Saved Successfully!", result);
-//       return result;
-//   } catch (error) {
-//       console.error("❌ Error saving modifications:", error);
-//   }
-// }
-
-// async function saveModifications(elementId, css, elementStructure = null) {
-//   if (!pageId || !elementId || !css) {
-//       console.warn("⚠️ Missing required data to save modifications.");
-//       return;
-//   }
-
-//   const element = document.getElementById(elementId);
-//   const isStrong = element?.tagName === 'STRONG';
-
-//   // Create the proper structure for elements
-//   const modificationData = {
-//       userId,
-//       token,
-//       widgetId,
-//       modifications: [{
-//           pageId,
-//           elements: [{
-//               elementId,
-//               css: {
-//                   [isStrong ? 'strong' : 'span']: {
-//                       id: elementId,
-//                       ...css
-//                   }
-//               },
-//               elementStructure: elementStructure || {
-//                   type: isStrong ? 'strong' : 'span',
-//                   className: 'squareCraft-font-modified',
-//                   content: element?.textContent || '',
-//                   parentId: element?.parentElement?.id || null
-//               }
-//           }]
-//       }]
-//   };
-
-//   try {
-//       const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
-//           method: "POST",
-//           headers: {
-//               "Content-Type": "application/json",
-//               "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-//               "userId": userId,
-//               "pageId": pageId,
-//               "widget-id": widgetId,
-//           },
-//           body: JSON.stringify(modificationData),
-//       });
-
-//       const result = await response.json();
-//       console.log("✅ Changes Saved Successfully!", result);
-//       return result;
-//   } catch (error) {
-//       console.error("❌ Error saving modifications:", error);
-//   }
-// }
-
 function cleanupDuplicateSpans(elementId) {
   const element = document.getElementById(elementId);
   if (!element) return;
@@ -615,7 +454,6 @@ function cleanupDuplicateSpans(elementId) {
       span.parentNode.replaceChild(document.createTextNode(text), span);
   }
 }
-
 
 
   async function resetModifications() {
@@ -1148,16 +986,16 @@ async function fontfamilies() {
       }
 
       let selectedFont = font.family;
-      selectedFontText.textContent = selectedFont;
-      selectedFontText.style.fontFamily = selectedFont;
+      lastSelectedFontfamilyStrong.textContent = selectedFont;
+      lastSelectedFontfamilyStrong.style.fontFamily = selectedFont;
       fontList.style.display = "none";
 
       // Apply font-family immediately
       let css = { "font-family": selectedFont };
-      applyStylesToElement(selectedElement.id, css);
+      applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
 
       // Save modifications immediately without waiting
-      saveModifications(selectedElement.id, css);
+      saveModifications(lastSelectedFontfamilyStrong.id, css);
 
       console.log("🎨 Applied font:", selectedFont, "to", selectedElement.id);
 
