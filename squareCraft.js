@@ -1684,8 +1684,8 @@ setInterval(cleanStyleCache, 60000);
         }
 
         // Ensure it selects a <strong> tag
-        const strongElement = container.closest("em");
-        console.log("strongElement", strongElement);
+        const textTransformElement = container.closest("em");
+        console.log("strongElement", textTransformElement);
         if (strongElement) {
             lastSelectedTextTransformItalicElement = strongElement;
             console.log("✅ Selected bold text:", strongElement.textContent);
