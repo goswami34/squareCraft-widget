@@ -895,3 +895,9 @@ font-size: 12px !important;
   color: white;
   opacity: 1; /* Ensure full visibility */
 }
+
+
+.squsareCraft-text-transform.active {
+  background-color: #EF7C2F;
+  color: white;
+}
