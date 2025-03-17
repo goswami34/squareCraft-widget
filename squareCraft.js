@@ -1136,9 +1136,14 @@ fontfamilies();
       });
     }
 
-    if (lastSelectedTextTransformStrongElement && lastSelectedTextTransformStrongElement.id) {
-      await saveModifications(lastSelectedTextTransformStrongElement.id, {
-        "text-transform": css["text-transform"]
+    // if (lastSelectedTextTransformItalicElement && lastSelectedTextTransformItalicElement.id) {
+    //   await saveModifications(lastSelectedTextTransformItalicElement.id, {
+    //     "text-transform": css["text-transform"]
+    //   });
+    // }
+    if (lastSelectedItalicForTransform && lastSelectedItalicForTransform.id) {
+      await saveModifications(lastSelectedItalicForTransform.id, {
+          "text-transform": document.querySelector(".squsareCraft-text-transform.active")?.getAttribute("data-transform") || "none"
       });
     }
   });
@@ -1658,7 +1663,7 @@ setInterval(cleanStyleCache, 60000);
 
     // text-transform start
 
-    let lastSelectedTextTransformStrongElement = null;
+    let lastSelectedTextTransformItalicElement = null;
 
     document.addEventListener("mouseup", function() {
         const selection = window.getSelection();
@@ -1674,39 +1679,39 @@ setInterval(cleanStyleCache, 60000);
             // Check if selection is within a strong tag
             const strongElement = container.closest('em');
             if (strongElement) {
-              lastSelectedTextTransformStrongElement = strongElement;
+              lastSelectedTextTransformItalicElement = strongElement;
                 console.log("✅ Selected text inside <em>:", strongElement.textContent);
             } else {
-              lastSelectedTextTransformStrongElement = null;
+              lastSelectedTextTransformItalicElement = null;
             }
         }
     });
 
       document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
         textTransform.addEventListener("click", async function() {
-            if (!lastSelectedTextTransformStrongElement) {
+            if (!lastSelectedTextTransformItalicElement) {
                 console.warn("⚠️ No bold text selected");
                 return;
             }
     
             // Ensure the strong element has an ID
-            if (!lastSelectedTextTransformStrongElement.id) {
-                lastSelectedTextTransformStrongElement.id = `text-transform-${Date.now()}`;
+            if (!lastSelectedTextTransformItalicElement.id) {
+                lastSelectedTextTransformItalicElement.id = `text-transform-${Date.now()}`;
             }
     
             const transform = this.getAttribute("data-transform");
             let css = { "text-transform": transform };
             
             // Apply styles to the strong element
-            applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
+            applyStylesToElement(lastSelectedTextTransformItalicElement.id, css);
             
             // Clean up any duplicate spans
-            cleanupDuplicateSpans(lastSelectedTextTransformStrongElement.id);
+            cleanupDuplicateSpans(lastSelectedTextTransformItalicElement.id);
             
             // Save modifications
-            await saveModifications(lastSelectedTextTransformStrongElement.id, css);
+            await saveModifications(lastSelectedTextTransformItalicElement.id, css);
             
-            console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformStrongElement.textContent);
+            console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformItalicElement.textContent);
         });
     });
 
@@ -1716,7 +1721,7 @@ setInterval(cleanStyleCache, 60000);
       );
 
       undoButton.addEventListener("click", async function() {
-        if (!lastSelectedTextTransformStrongElement) {
+        if (!lastSelectedTextTransformItalicElement) {
             console.warn("⚠️ No bold text selected");
             return;
         }
@@ -1724,12 +1729,12 @@ setInterval(cleanStyleCache, 60000);
         let css = { "text-transform": "none" };
         
         // Apply reset styles
-        applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
+        applyStylesToElement(lastSelectedTextTransformItalicElement.id, css);
         
         // Save the reset state
-        await saveModifications(lastSelectedTextTransformStrongElement.id, css);
+        await saveModifications(lastSelectedTextTransformItalicElement.id, css);
         
-        console.log("🔄 Reset text transform for bold text:", lastSelectedTextTransformStrongElement.textContent);
+        console.log("🔄 Reset text transform for bold text:", lastSelectedTextTransformItalicElement.textContent);
       });
 
     // text-transform end
