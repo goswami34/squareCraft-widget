@@ -902,7 +902,7 @@ function cleanupDuplicateSpans(elementId) {
     }
   }
 
-  let lastSelectedFontfamilyItalic = null;
+  let lastSelectedFontfamilyStrong = null;
 
 document.addEventListener("mouseup", function () {
     const selection = window.getSelection();
@@ -917,13 +917,13 @@ document.addEventListener("mouseup", function () {
         }
 
         // Check if the parent or an ancestor is a <strong> tag
-        const emElement = parentElement.closest("em");
+        const strongElement = parentElement.closest("strong");
         
-        if (emElement) {
-          lastSelectedFontfamilyItalic = emElement;
-            console.log("✅ Selected text inside <strong>: ", emElement.textContent);
+        if (strongElement) {
+          lastSelectedFontfamilyStrong = strongElement;
+            console.log("✅ Selected text inside <strong>: ", strongElement.textContent);
         } else {
-          lastSelectedFontfamilyItalic = null; // Reset if selection is outside <strong>
+            lastSelectedFontfamilyStrong = null; // Reset if selection is outside <strong>
         }
     }
 });
@@ -1028,7 +1028,7 @@ async function fontfamilies() {
     // });
 
     option.addEventListener("click", async () => {
-      if (!lastSelectedFontfamilyItalic) {
+      if (!lastSelectedFontfamilyStrong) {
           console.warn("⚠️ Please select bold text to apply font-family");
           return;
       }
@@ -1039,19 +1039,19 @@ async function fontfamilies() {
       fontList.style.display = "none";
   
       // Ensure the strong element has an ID
-      if (!lastSelectedFontfamilyItalic.id) {
-        lastSelectedFontfamilyItalic.id = `font-family-${Date.now()}`;
+      if (!lastSelectedFontfamilyStrong.id) {
+          lastSelectedFontfamilyStrong.id = `font-family-${Date.now()}`;
       }
   
       // Store the original text before applying styles
-      const originalText = lastSelectedFontfamilyItalic.textContent;
+      const originalText = lastSelectedFontfamilyStrong.textContent;
   
       // Apply font-family to the strong element
       let css = { "font-family": selectedFont };
-      applyStylesToElement(lastSelectedFontfamilyItalic.id, css);
+      applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
   
       // Save modifications using your existing function
-      await saveModifications(lastSelectedFontfamilyItalic.id, css);
+      await saveModifications(lastSelectedFontfamilyStrong.id, css);
   
       console.log("🎨 Applied font:", selectedFont, "to bold text:", originalText);
   
@@ -1140,9 +1140,9 @@ fontfamilies();
 
     await saveModifications(selectedElement.id, css);
     // await saveModifications(lastSelectedFontfamilyStrong.id, css);
-      if (lastSelectedFontfamilyItalic && lastSelectedFontfamilyItalic.id) {
+      if (lastSelectedFontfamilyStrong && lastSelectedFontfamilyStrong.id) {
         // await saveModifications(lastSelectedFontfamilyStrong.id, css);
-        await saveModifications(lastSelectedFontfamilyItalic.id, {
+        await saveModifications(lastSelectedFontfamilyStrong.id, {
           "font-family": css["font-family"]
       });
     }
@@ -1476,6 +1476,36 @@ setInterval(cleanStyleCache, 60000);
 // font-size end
 
 
+
+////font-size unbold
+function handleUnbold(element) {
+  if (!element) return;
+  
+  const elementId = element.id;
+  
+  // Check if this element had font-size modifications
+  if (fontSizeModifiedElements.has(elementId)) {
+      // Remove the font-size style
+      const styleTag = document.getElementById(`style-${elementId}`);
+      if (styleTag) {
+          styleTag.remove();
+      }
+      
+      // Remove from our tracking set
+      fontSizeModifiedElements.delete(elementId);
+      
+      // Remove from style cache
+      styleCache.delete(element);
+      
+      // Reset the element's style
+      element.style.fontSize = '';
+      
+      // Save the removal of modifications
+      saveModifications(elementId, { "font-size": "" });
+      
+      console.log("🔄 Removed font-size modification from:", elementId);
+  }
+}
 
     // document
     //   .getElementById("squareCraftLineHeight")
