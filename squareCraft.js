@@ -1380,6 +1380,9 @@ document.addEventListener("mouseup", function() {
     }
 });
 
+let fontSizeModifiedElements = new Set();
+
+
 // Font size change handler
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
     if (!lastSelectedRange || !lastSelectedText) {
@@ -1412,6 +1415,9 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
             if (!targetElement.id) {
                 targetElement.id = `text-mod-${Date.now()}`;
             }
+
+            // Store this element as having font-size modification
+            fontSizeModifiedElements.add(targetElement.id);
 
             // Apply font size directly to the existing element
             targetElement.style.fontSize = fontSize;
@@ -1468,6 +1474,38 @@ function cleanStyleCache() {
 setInterval(cleanStyleCache, 60000);
 
 // font-size end
+
+
+
+////font-size unbold
+function handleUnbold(element) {
+  if (!element) return;
+  
+  const elementId = element.id;
+  
+  // Check if this element had font-size modifications
+  if (fontSizeModifiedElements.has(elementId)) {
+      // Remove the font-size style
+      const styleTag = document.getElementById(`style-${elementId}`);
+      if (styleTag) {
+          styleTag.remove();
+      }
+      
+      // Remove from our tracking set
+      fontSizeModifiedElements.delete(elementId);
+      
+      // Remove from style cache
+      styleCache.delete(element);
+      
+      // Reset the element's style
+      element.style.fontSize = '';
+      
+      // Save the removal of modifications
+      saveModifications(elementId, { "font-size": "" });
+      
+      console.log("🔄 Removed font-size modification from:", elementId);
+  }
+}
 
     // document
     //   .getElementById("squareCraftLineHeight")
