@@ -1141,13 +1141,17 @@ fontfamilies();
     //     "text-transform": css["text-transform"]
     //   });
     // }
-    if (lastSelectedItalicForTransform && lastSelectedItalicForTransform.id) {
-      const activeTransformButton = document.querySelector(".squsareCraft-text-transform.active");
-      const transform = activeTransformButton ? activeTransformButton.getAttribute("data-transform") : "none";
+  //   if (lastSelectedItalicForTransform && lastSelectedItalicForTransform.id) {
+  //     const activeTransformButton = document.querySelector(".squsareCraft-text-transform.active");
+  //     const transform = activeTransformButton ? activeTransformButton.getAttribute("data-transform") : "none";
       
-      await saveModifications(lastSelectedItalicForTransform.id, {
-          "text-transform": transform
-      });
+  //     await saveModifications(lastSelectedItalicForTransform.id, {
+  //         "text-transform": transform
+  //     });
+  // }
+
+  if (lastSelectedTextTransformStrongElement && lastSelectedTextTransformStrongElement.id) {
+    await saveModifications(lastSelectedTextTransformStrongElement.id, css);
   }
   });
 
@@ -1666,39 +1670,39 @@ setInterval(cleanStyleCache, 60000);
 
     // text-transform start
 
-    let lastSelectedItalicForTransform = null;
+    // let lastSelectedItalicForTransform = null;
 
-    // Update mouseup event listener to track italic text selection
-    document.addEventListener("mouseup", function() {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-            let range = selection.getRangeAt(0);
-            let container = range.commonAncestorContainer;
+    // // Update mouseup event listener to track italic text selection
+    // document.addEventListener("mouseup", function() {
+    //     const selection = window.getSelection();
+    //     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+    //         let range = selection.getRangeAt(0);
+    //         let container = range.commonAncestorContainer;
             
-            // If the container is a text node, get its parent element
-            if (container.nodeType === Node.TEXT_NODE) {
-                container = container.parentElement;
-            }
+    //         // If the container is a text node, get its parent element
+    //         if (container.nodeType === Node.TEXT_NODE) {
+    //             container = container.parentElement;
+    //         }
             
-            // Check if selection is within an em tag
-            const emElement = container.closest('em');
-            if (emElement) {
-                lastSelectedItalicForTransform = emElement;
-                console.log("✅ Selected italic text for transform:", emElement.textContent);
+    //         // Check if selection is within an em tag
+    //         const emElement = container.closest('em');
+    //         if (emElement) {
+    //             lastSelectedItalicForTransform = emElement;
+    //             console.log("✅ Selected italic text for transform:", emElement.textContent);
                 
-                // Update active button state based on current transform
-                const currentTransform = window.getComputedStyle(emElement).textTransform;
-                document.querySelectorAll(".squsareCraft-text-transform").forEach(btn => {
-                    btn.classList.remove("active");
-                    if (btn.getAttribute("data-transform") === currentTransform) {
-                        btn.classList.add("active");
-                    }
-                });
-            } else {
-                lastSelectedItalicForTransform = null;
-            }
-        }
-    });
+    //             // Update active button state based on current transform
+    //             const currentTransform = window.getComputedStyle(emElement).textTransform;
+    //             document.querySelectorAll(".squsareCraft-text-transform").forEach(btn => {
+    //                 btn.classList.remove("active");
+    //                 if (btn.getAttribute("data-transform") === currentTransform) {
+    //                     btn.classList.add("active");
+    //                 }
+    //             });
+    //         } else {
+    //             lastSelectedItalicForTransform = null;
+    //         }
+    //     }
+    // });
 
     //   document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
     //     textTransform.addEventListener("click", async function() {
@@ -1730,39 +1734,92 @@ setInterval(cleanStyleCache, 60000);
 
     // Reset text-transform
       
-    document.querySelectorAll(".squsareCraft-text-transform").forEach((button) => {
-      button.addEventListener("click", async function() {
-          if (!lastSelectedItalicForTransform) {
-              console.warn("⚠️ Please select italic text to apply text transform");
-              return;
-          }
+  //   document.querySelectorAll(".squsareCraft-text-transform").forEach((button) => {
+  //     button.addEventListener("click", async function() {
+  //         if (!lastSelectedItalicForTransform) {
+  //             console.warn("⚠️ Please select italic text to apply text transform");
+  //             return;
+  //         }
   
-          // Remove active class from all transform buttons
-          document.querySelectorAll(".squsareCraft-text-transform").forEach(btn => {
-              btn.classList.remove("active");
-          });
+  //         // Remove active class from all transform buttons
+  //         document.querySelectorAll(".squsareCraft-text-transform").forEach(btn => {
+  //             btn.classList.remove("active");
+  //         });
   
-          // Add active class to clicked button
-          this.classList.add("active");
+  //         // Add active class to clicked button
+  //         this.classList.add("active");
   
-          // Ensure the em element has an ID
-          if (!lastSelectedItalicForTransform.id) {
-              lastSelectedItalicForTransform.id = `text-transform-${Date.now()}`;
-          }
+  //         // Ensure the em element has an ID
+  //         if (!lastSelectedItalicForTransform.id) {
+  //             lastSelectedItalicForTransform.id = `text-transform-${Date.now()}`;
+  //         }
   
-          const transform = this.getAttribute("data-transform");
-          let css = { "text-transform": transform };
+  //         const transform = this.getAttribute("data-transform");
+  //         let css = { "text-transform": transform };
           
-          // Apply styles both through style tag and directly
-          applyStylesToElement(lastSelectedItalicForTransform.id, css);
-          lastSelectedItalicForTransform.style.textTransform = transform;
+  //         // Apply styles both through style tag and directly
+  //         applyStylesToElement(lastSelectedItalicForTransform.id, css);
+  //         lastSelectedItalicForTransform.style.textTransform = transform;
           
-          // Save modifications
-          await saveModifications(lastSelectedItalicForTransform.id, css);
+  //         // Save modifications
+  //         await saveModifications(lastSelectedItalicForTransform.id, css);
           
-          console.log(`✅ Applied ${transform} to italic text:`, lastSelectedItalicForTransform.textContent);
-      });
-  });
+  //         console.log(`✅ Applied ${transform} to italic text:`, lastSelectedItalicForTransform.textContent);
+  //     });
+  // });
+
+
+  let lastSelectedTextTransformStrongElement = null;
+
+    document.addEventListener("mouseup", function() {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+            let range = selection.getRangeAt(0);
+            let container = range.commonAncestorContainer;
+            
+            // If the container is a text node, get its parent
+            if (container.nodeType === Node.TEXT_NODE) {
+                container = container.parentElement;
+            }
+            
+            // Check if selection is within a strong tag
+            const strongElement = container.closest('em');
+            if (strongElement) {
+              lastSelectedTextTransformStrongElement = strongElement;
+                console.log("✅ Selected text inside <strong>:", strongElement.textContent);
+            } else {
+              lastSelectedTextTransformStrongElement = null;
+            }
+        }
+    });
+
+      document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
+        textTransform.addEventListener("click", async function() {
+            if (!lastSelectedTextTransformStrongElement) {
+                console.warn("⚠️ No bold text selected");
+                return;
+            }
+    
+            // Ensure the strong element has an ID
+            if (!lastSelectedTextTransformStrongElement.id) {
+                lastSelectedTextTransformStrongElement.id = `text-transform-${Date.now()}`;
+            }
+    
+            const transform = this.getAttribute("data-transform");
+            let css = { "text-transform": transform };
+            
+            // Apply styles to the strong element
+            applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
+            
+            // Clean up any duplicate spans
+            cleanupDuplicateSpans(lastSelectedTextTransformStrongElement.id);
+            
+            // Save modifications
+            await saveModifications(lastSelectedTextTransformStrongElement.id, css);
+            
+            console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformStrongElement.textContent);
+        });
+    });
   
     
     const undoButton = document.querySelector(
