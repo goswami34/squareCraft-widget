@@ -1740,6 +1740,7 @@ setInterval(cleanStyleCache, 60000);
       }
   
       const transform = target.getAttribute("data-transform");
+      console.log("text transform", transform);
       if (!transform) {
           console.warn("⚠️ No data-transform attribute found.");
           return;
