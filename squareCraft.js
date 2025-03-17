@@ -1137,7 +1137,9 @@ fontfamilies();
     }
 
     if (lastSelectedTextTransformStrongElement && lastSelectedTextTransformStrongElement.id) {
-      await saveModifications(lastSelectedTextTransformStrongElement.id, css);
+      await saveModifications(lastSelectedTextTransformStrongElement.id, {
+        "text-transform": css["text-transform"]
+      });
     }
   });
 
