@@ -1672,27 +1672,29 @@ setInterval(cleanStyleCache, 60000);
 
   let lastSelectedTextTransformStrongElement = null;
 
-    document.addEventListener("mouseup", function() {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-            let range = selection.getRangeAt(0);
-            let container = range.commonAncestorContainer;
-            
-            // If the container is a text node, get its parent
-            if (container.nodeType === Node.TEXT_NODE) {
-                container = container.parentElement;
-            }
-            
-            // Check if selection is within a strong tag
-            const strongElement = container.closest('em');
-            if (strongElement) {
-              lastSelectedTextTransformStrongElement = strongElement;
-                console.log("✅ Selected text inside <strong>:", strongElement.textContent);
-            } else {
-              lastSelectedTextTransformStrongElement = null;
-            }
+  document.addEventListener("mouseup", function () {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+        let range = selection.getRangeAt(0);
+        let container = range.commonAncestorContainer;
+
+        // If the container is a text node, get its parent
+        if (container.nodeType === Node.TEXT_NODE) {
+            container = container.parentElement;
         }
-    });
+
+        // Ensure it selects a <strong> tag
+        const strongElement = container.closest("em");
+        console.log("strongElement", strongElement);
+        if (strongElement) {
+            lastSelectedTextTransformStrongElement = strongElement;
+            console.log("✅ Selected bold text:", strongElement.textContent);
+        } else {
+            lastSelectedTextTransformStrongElement = null;
+        }
+    }
+});
+
 
     //   document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
     //     textTransform.addEventListener("click", async function() {
