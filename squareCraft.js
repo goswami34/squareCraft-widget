@@ -1189,7 +1189,7 @@ fontfamilies();
           }
   
           // Check if the parent or an ancestor is a <strong> tag
-          const strongElement = parentElement.closest("strong");
+          const strongElement = parentElement.closest("em");
           
           if (strongElement) {
               lastSelectedFontWeightStrong = strongElement;
