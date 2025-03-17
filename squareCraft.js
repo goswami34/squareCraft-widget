@@ -1150,8 +1150,8 @@ fontfamilies();
   //     });
   // }
 
-  if (lastSelectedTextTransformStrongElement && lastSelectedTextTransformStrongElement.id) {
-    await saveModifications(lastSelectedTextTransformStrongElement.id, css);
+  if (lastSelectedTextTransformItalicElement && lastSelectedTextTransformItalicElement.id) {
+    await saveModifications(lastSelectedTextTransformItalicElement.id, css);
   }
   });
 
@@ -1670,7 +1670,7 @@ setInterval(cleanStyleCache, 60000);
 
     // text-transform start
 
-  let lastSelectedTextTransformStrongElement = null;
+  let lastSelectedTextTransformItalicElement = null;
 
   document.addEventListener("mouseup", function () {
     const selection = window.getSelection();
@@ -1687,10 +1687,10 @@ setInterval(cleanStyleCache, 60000);
         const strongElement = container.closest("em");
         console.log("strongElement", strongElement);
         if (strongElement) {
-            lastSelectedTextTransformStrongElement = strongElement;
+            lastSelectedTextTransformItalicElement = strongElement;
             console.log("✅ Selected bold text:", strongElement.textContent);
         } else {
-            lastSelectedTextTransformStrongElement = null;
+            lastSelectedTextTransformItalicElement = null;
         }
     }
 });
@@ -1698,14 +1698,14 @@ setInterval(cleanStyleCache, 60000);
 
     //   document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
     //     textTransform.addEventListener("click", async function() {
-    //         if (!lastSelectedTextTransformStrongElement) {
+    //         if (!lastSelectedTextTransformItalicElement) {
     //             console.warn("⚠️ No bold text selected");
     //             return;
     //         }
     
     //         // Ensure the strong element has an ID
-    //         if (!lastSelectedTextTransformStrongElement.id) {
-    //             lastSelectedTextTransformStrongElement.id = `text-transform-${Date.now()}`;
+    //         if (!lastSelectedTextTransformItalicElement.id) {
+    //             lastSelectedTextTransformItalicElement.id = `text-transform-${Date.now()}`;
     //         }
     
     //         const transform = this.getAttribute("data-transform");
@@ -1713,15 +1713,15 @@ setInterval(cleanStyleCache, 60000);
     //         console.log("text transform css", css);
             
     //         // Apply styles to the strong element
-    //         applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
+    //         applyStylesToElement(lastSelectedTextTransformItalicElement.id, css);
             
     //         // Clean up any duplicate spans
-    //         cleanupDuplicateSpans(lastSelectedTextTransformStrongElement.id);
+    //         cleanupDuplicateSpans(lastSelectedTextTransformItalicElement.id);
             
     //         // Save modifications
-    //         await saveModifications(lastSelectedTextTransformStrongElement.id, css);
+    //         await saveModifications(lastSelectedTextTransformItalicElement.id, css);
             
-    //         console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformStrongElement.textContent);
+    //         console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformItalicElement.textContent);
     //     });
     // });
   
@@ -1732,13 +1732,13 @@ setInterval(cleanStyleCache, 60000);
   
       console.log("✅ Text transform button clicked");
   
-      if (!lastSelectedTextTransformStrongElement) {
+      if (!lastSelectedTextTransformItalicElement) {
           console.warn("⚠️ No bold text selected");
           return;
       }
   
-      if (!lastSelectedTextTransformStrongElement.id) {
-          lastSelectedTextTransformStrongElement.id = `text-transform-${Date.now()}`;
+      if (!lastSelectedTextTransformItalicElement.id) {
+          lastSelectedTextTransformItalicElement.id = `text-transform-${Date.now()}`;
       }
   
       const transform = target.getAttribute("data-transform");
@@ -1752,15 +1752,15 @@ setInterval(cleanStyleCache, 60000);
       console.log("🎨 Applying text-transform:", css);
   
       // Apply styles to the strong element
-      applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
+      applyStylesToElement(lastSelectedTextTransformItalicElement.id, css);
   
       // Clean up any duplicate spans
-      cleanupDuplicateSpans(lastSelectedTextTransformStrongElement.id);
+      cleanupDuplicateSpans(lastSelectedTextTransformItalicElement.id);
   
       // Save modifications
-      await saveModifications(lastSelectedTextTransformStrongElement.id, css);
+      await saveModifications(lastSelectedTextTransformItalicElement.id, css);
   
-      console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformStrongElement.textContent);
+      console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformItalicElement.textContent);
   });
 
   
