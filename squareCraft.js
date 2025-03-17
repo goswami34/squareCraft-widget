@@ -676,34 +676,7 @@ function cleanupDuplicateSpans(elementId) {
                  </div>
 
 
-                 <div class="squareCraft-flex squareCraft-text-color-white squareCraft-justify-between squareCraft-col-span-3 
-                    squareCraft-rounded-6px squareCraft-border squareCraft-border-solid squareCraft-border-585858 
-                    squareCraft-items-center squareCraft-w-full ">
-
-                    <div class="squareCraft-Letter-spacing-container squareCraft-flex squareCraft-justify-between squareCraft-items-center squareCraft-flex squareCraft-items-center squareCraft-border 
-                       squareCraft-border-solid squareCraft-border-3d3d3d  squareCraft-rounded-6px 
-                       ">
-                       <input type="text" id="squareCraftLineHeight" value="15" class="squareCraft-Letter-spacing-input squareCraft-font-light squareCraft-text-sm squareCraft-text-color-white 
-                          squareCraft-bg-transparent squareCraft-w-full  squareCraft-py-1px squareCraft-font-light">
-                       <div class="">
-                          <img id="squareCraftLetterSpacingDropdown"
-                             src="https://fatin-webefo.github.io/squareCraft-plugin/public/line-spacing.svg"
-                             class=" squareCraft-px-1 squareCraft-ml-1 squareCraft-mx-auto squareCraft-cursor-pointer" >
-                       </div>
-                    </div>
-
-
-                    <div id="squareCraftLetterSpacingOptions" class="squareCraft-hidden squareCraft-h-44 squareCraft-font-sm squareCraft-bg-3f3f3f squareCraft-w-20
-                       squareCraft-rounded-6px squareCraft-border squareCraft-border-585858 squareCraft-absolute 
-                       squareCraft-mt-1">
-                       ${LetterSpacing?.map(
-                         (gap) => `
-                       <div class="squareCraft-dropdown-item squareCraft-py-1px squareCraft-text-center  squareCraft-text-sm"
-                          data-value="${gap}">${gap}</div>
-                       `
-                       ).join("")}
-                    </div>   
-                 </div>
+                
               </div>
 
 
