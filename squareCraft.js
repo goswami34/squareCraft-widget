@@ -674,9 +674,6 @@ function cleanupDuplicateSpans(elementId) {
                           class="squareCraft-cursor-pointer alignment-icon    squareCraft-mx-auto "  alt="">
                     </div>
                  </div>
-
-
-                
               </div>
 
 
@@ -1676,7 +1673,7 @@ setInterval(cleanStyleCache, 60000);
             const strongElement = container.closest('em');
             if (strongElement) {
               lastSelectedTextTransformStrongElement = strongElement;
-                console.log("✅ Selected text inside <strong>:", strongElement.textContent);
+                console.log("✅ Selected text inside <em>:", strongElement.textContent);
             } else {
               lastSelectedTextTransformStrongElement = null;
             }
