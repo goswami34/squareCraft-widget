@@ -1390,31 +1390,6 @@ document.addEventListener("mouseup", function() {
 let fontSizeModifiedElements = new Set();
 
 
-// let lastSelectedItalicElementForFontSize = null;
-
-// 2. Update the mouseup event listener to track italic text selection
-// document.addEventListener("mouseup", function() {
-//     const selection = window.getSelection();
-//     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-//         let range = selection.getRangeAt(0);
-//         let container = range.commonAncestorContainer;
-        
-//         // If the container is a text node, get its parent element
-//         if (container.nodeType === Node.TEXT_NODE) {
-//             container = container.parentElement;
-//         }
-
-//         // Check if the container or its parent is an em tag
-//         const emElement = container.closest('em');
-//         if (emElement) {
-//           lastSelectedItalicElementForFontSize = emElement;
-//             console.log("✅ Selected italic text for font-size:", emElement.textContent);
-//         } else {
-//           lastSelectedItalicElementForFontSize = null;
-//         }
-//     }
-// });
-
 
 // Font size change handler
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
@@ -1478,69 +1453,6 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
         console.error("❌ Error applying font size:", error);
     }
 });
-
-// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-//   // First check for italic text selection
-//   if (!lastSelectedItalicElementForFontSize && !lastSelectedRange) {
-//       console.warn("⚠️ No text selected");
-//       return;
-//   }
-
-//   const fontSize = this.value + "px";
-  
-//   try {
-//       let targetElement;
-      
-//       if (lastSelectedItalicElementForFontSize) {
-//           // If we have selected italic text, use that
-//           targetElement = lastSelectedItalicElementForFontSize;
-//       } else {
-//           // Otherwise fall back to the existing behavior
-//           let container = lastSelectedRange.commonAncestorContainer;
-//           if (container.nodeType === Node.TEXT_NODE) {
-//               container = container.parentElement;
-//           }
-//           targetElement = container.tagName === 'EM' ? container : 
-//                         container.closest('em') || container;
-//       }
-
-//       if (targetElement) {
-//           // Ensure the element has an ID
-//           if (!targetElement.id) {
-//               targetElement.id = `font-size-${Date.now()}`;
-//           }
-
-//           // Store this element as having font-size modification
-//           fontSizeModifiedElements.add(targetElement.id);
-
-//           // Apply font size directly to the element
-//           targetElement.style.fontSize = fontSize;
-
-//           // Store the applied style in cache
-//           styleCache.set(targetElement, {
-//               fontSize: fontSize,
-//               originalText: targetElement.textContent
-//           });
-
-//           // Create CSS for persistent styling
-//           let css = {
-//               "font-size": fontSize
-//           };
-
-//           // Apply styles using your existing function
-//           applyStylesToElement(targetElement.id, css);
-
-//           // Save to database
-//           await saveModifications(targetElement.id, css);
-
-//           console.log("✅ Font size modified and saved:", fontSize, "for", 
-//             lastSelectedItalicElementForFontSize ? "italic text" : "selected text");
-//       }
-//   } catch (error) {
-//       console.error("❌ Error applying font size:", error);
-//   }
-// });
-
 
 
 // Add a click event listener to maintain styles
@@ -1788,7 +1700,7 @@ setInterval(cleanStyleCache, 60000);
             }
             
             // Check if selection is within a strong tag
-            const strongElement = container.closest('strong');
+            const strongElement = container.closest('em');
             if (strongElement) {
               lastSelectedTextTransformStrongElement = strongElement;
                 console.log("✅ Selected text inside <strong>:", strongElement.textContent);
