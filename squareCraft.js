@@ -699,13 +699,15 @@ function cleanupDuplicateSpans(elementId) {
               <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2">
                  <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center">
                     <div class="squareCraft-flex squareCraft-poppins squareCraft-items-center squareCraft-justify-between squareCraft-w-full">
-                        <p class="squsareCraft-text-transform squareCraft-cursor-pointer"  data-transform="uppercase">AG</p>
-                        <div class="squareCraft-v-line"></div>
-                        <p class="squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="lowercase">ag</p>
-                        <div class="squareCraft-v-line"></div>
-                        <p class="squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="capitalize">Ag</p>
-                        <div class="squareCraft-v-line"></div>
-                        <img class="squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-text-transform squareCraft-cursor-pointer" width="12px" src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
+                        <div class="squareCraft-flex squareCraft-poppins squareCraft-items-center squareCraft-justify-between squareCraft-w-full">
+                            <p class="squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="uppercase">AG</p>
+                            <div class="squareCraft-v-line"></div>
+                            <p class="squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="lowercase">ag</p>
+                            <div class="squareCraft-v-line"></div>
+                            <p class="squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="capitalize">Ag</p>
+                            <div class="squareCraft-v-line"></div>
+                            <img class="squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-text-transform squareCraft-cursor-pointer" width="12px" src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
+                        </div>
                     </div>
                  </div>
               </div>
@@ -1666,27 +1668,28 @@ setInterval(cleanStyleCache, 60000);
 
     let lastSelectedItalicForTransform = null;
 
-    document.addEventListener("mouseup", function() {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-            let range = selection.getRangeAt(0);
-            let container = range.commonAncestorContainer;
-            
-            // If the container is a text node, get its parent
-            if (container.nodeType === Node.TEXT_NODE) {
-                container = container.parentElement;
-            }
-            
-            // Check if selection is within a strong tag
-            const emElement = container.closest('em');
-            if (strongElement) {
+  // 2. Update the mouseup event listener to track italic text selection
+  document.addEventListener("mouseup", function() {
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+          let range = selection.getRangeAt(0);
+          let container = range.commonAncestorContainer;
+          
+          // If the container is a text node, get its parent element
+          if (container.nodeType === Node.TEXT_NODE) {
+              container = container.parentElement;
+          }
+          
+          // Check if selection is within an em tag
+          const emElement = container.closest('em');
+          if (emElement) {
               lastSelectedItalicForTransform = emElement;
-                console.log("✅ Selected text inside <em>:", emElement.textContent);
-            } else {
+              console.log("✅ Selected italic text for transform:", emElement.textContent);
+          } else {
               lastSelectedItalicForTransform = null;
-            }
-        }
-    });
+          }
+      }
+  });
 
     //   document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
     //     textTransform.addEventListener("click", async function() {
@@ -1752,6 +1755,7 @@ setInterval(cleanStyleCache, 60000);
           console.log(`✅ Applied ${transform} to italic text:`, lastSelectedItalicForTransform.textContent);
       });
   });
+  
     
     const undoButton = document.querySelector(
         ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer"
