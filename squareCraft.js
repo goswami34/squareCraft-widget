@@ -1668,28 +1668,37 @@ setInterval(cleanStyleCache, 60000);
 
     let lastSelectedItalicForTransform = null;
 
-  // 2. Update the mouseup event listener to track italic text selection
-  document.addEventListener("mouseup", function() {
-      const selection = window.getSelection();
-      if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-          let range = selection.getRangeAt(0);
-          let container = range.commonAncestorContainer;
-          
-          // If the container is a text node, get its parent element
-          if (container.nodeType === Node.TEXT_NODE) {
-              container = container.parentElement;
-          }
-          
-          // Check if selection is within an em tag
-          const emElement = container.closest('em');
-          if (emElement) {
-              lastSelectedItalicForTransform = emElement;
-              console.log("✅ Selected italic text for transform:", emElement.textContent);
-          } else {
-              lastSelectedItalicForTransform = null;
-          }
-      }
-  });
+    // Update mouseup event listener to track italic text selection
+    document.addEventListener("mouseup", function() {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+            let range = selection.getRangeAt(0);
+            let container = range.commonAncestorContainer;
+            
+            // If the container is a text node, get its parent element
+            if (container.nodeType === Node.TEXT_NODE) {
+                container = container.parentElement;
+            }
+            
+            // Check if selection is within an em tag
+            const emElement = container.closest('em');
+            if (emElement) {
+                lastSelectedItalicForTransform = emElement;
+                console.log("✅ Selected italic text for transform:", emElement.textContent);
+                
+                // Update active button state based on current transform
+                const currentTransform = window.getComputedStyle(emElement).textTransform;
+                document.querySelectorAll(".squsareCraft-text-transform").forEach(btn => {
+                    btn.classList.remove("active");
+                    if (btn.getAttribute("data-transform") === currentTransform) {
+                        btn.classList.add("active");
+                    }
+                });
+            } else {
+                lastSelectedItalicForTransform = null;
+            }
+        }
+    });
 
     //   document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
     //     textTransform.addEventListener("click", async function() {
@@ -1721,8 +1730,8 @@ setInterval(cleanStyleCache, 60000);
 
     // Reset text-transform
       
-    document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
-      textTransform.addEventListener("click", async function() {
+    document.querySelectorAll(".squsareCraft-text-transform").forEach((button) => {
+      button.addEventListener("click", async function() {
           if (!lastSelectedItalicForTransform) {
               console.warn("⚠️ Please select italic text to apply text transform");
               return;
@@ -1732,6 +1741,7 @@ setInterval(cleanStyleCache, 60000);
           document.querySelectorAll(".squsareCraft-text-transform").forEach(btn => {
               btn.classList.remove("active");
           });
+  
           // Add active class to clicked button
           this.classList.add("active");
   
@@ -1743,10 +1753,8 @@ setInterval(cleanStyleCache, 60000);
           const transform = this.getAttribute("data-transform");
           let css = { "text-transform": transform };
           
-          // Apply styles to the em element
+          // Apply styles both through style tag and directly
           applyStylesToElement(lastSelectedItalicForTransform.id, css);
-          
-          // Apply the style directly to the element as well
           lastSelectedItalicForTransform.style.textTransform = transform;
           
           // Save modifications

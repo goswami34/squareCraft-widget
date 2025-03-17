@@ -897,9 +897,14 @@ font-size: 12px !important;
 }
 
 
+.squsareCraft-text-transform {
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
 .squsareCraft-text-transform.active {
   background-color: #EF7C2F;
   color: white;
-  padding: 4px 8px;
   border-radius: 4px;
 }
