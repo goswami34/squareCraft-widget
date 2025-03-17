@@ -1807,6 +1807,7 @@ setInterval(cleanStyleCache, 60000);
     
             const transform = this.getAttribute("data-transform");
             let css = { "text-transform": transform };
+            console.log("text transform css", css);
             
             // Apply styles to the strong element
             applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
