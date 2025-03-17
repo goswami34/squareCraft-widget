@@ -1783,7 +1783,7 @@ setInterval(cleanStyleCache, 60000);
             }
             
             // Check if selection is within a strong tag
-            const strongElement = container.closest('em');
+            const strongElement = container.closest('bold');
             if (strongElement) {
               lastSelectedTextTransformStrongElement = strongElement;
                 console.log("✅ Selected text inside <strong>:", strongElement.textContent);
