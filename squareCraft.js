@@ -1684,12 +1684,11 @@ setInterval(cleanStyleCache, 60000);
             container = container.parentElement;
         }
 
-        // Ensure it selects a <strong> tag
-        const textTransformElement = container.closest("em");
-        console.log("strongElement", textTransformElement);
+        // Look for closest italic element
+        let textTransformElement = container.closest("em, i"); // Now supports both <em> and <i>
         if (textTransformElement) {
             lastSelectedTextTransformItalicElement = textTransformElement;
-            console.log("✅ Selected bold text:", textTransformElement.textContent);
+            console.log("✅ Selected italic text:", textTransformElement.textContent);
         } else {
             lastSelectedTextTransformItalicElement = null;
         }
@@ -1697,86 +1696,53 @@ setInterval(cleanStyleCache, 60000);
 });
 
 
-    //   document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
-    //     textTransform.addEventListener("click", async function() {
-    //         if (!lastSelectedTextTransformItalicElement) {
-    //             console.warn("⚠️ No bold text selected");
-    //             return;
-    //         }
-    
-    //         // Ensure the strong element has an ID
-    //         if (!lastSelectedTextTransformItalicElement.id) {
-    //             lastSelectedTextTransformItalicElement.id = `text-transform-${Date.now()}`;
-    //         }
-    
-    //         const transform = this.getAttribute("data-transform");
-    //         let css = { "text-transform": transform };
-    //         console.log("text transform css", css);
-            
-    //         // Apply styles to the strong element
-    //         applyStylesToElement(lastSelectedTextTransformItalicElement.id, css);
-            
-    //         // Clean up any duplicate spans
-    //         cleanupDuplicateSpans(lastSelectedTextTransformItalicElement.id);
-            
-    //         // Save modifications
-    //         await saveModifications(lastSelectedTextTransformItalicElement.id, css);
-            
-    //         console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformItalicElement.textContent);
-    //     });
-    // });
+   
   
     let activeTransform = null;
 
-document.addEventListener("click", async function (event) {
-    let target = event.target.closest(".squsareCraft-text-transform");
-
-    if (!target) return;
-
-    if (!lastSelectedTextTransformItalicElement) {
-        console.warn("⚠️ No italic text selected");
-        return;
-    }
-
-    // Remove active class from all transform buttons
-    document.querySelectorAll(".squsareCraft-text-transform").forEach(btn => {
-        btn.classList.remove("active");
-    });
-
-    // If clicking the undo button (dot icon)
-    if (target.classList.contains("squareCraft-rotate-180")) {
-        activeTransform = "none";
-        target.classList.add("active");
-    } else {
-        // Get the transform value from data-transform attribute
-        const transform = target.getAttribute("data-transform");
-        if (!transform) {
-            console.warn("⚠️ No data-transform attribute found.");
-            return;
-        }
-        activeTransform = transform;
-        target.classList.add("active");
-    }
-
-    // Ensure the italic element has an ID
-    if (!lastSelectedTextTransformItalicElement.id) {
-        lastSelectedTextTransformItalicElement.id = `text-transform-${Date.now()}`;
-    }
-
-    let css = { "text-transform": activeTransform };
-    console.log("🎨 Applying text-transform:", css);
-
-    // Apply styles to the italic element
-    applyStylesToElement(lastSelectedTextTransformItalicElement.id, css);
-
-    // Clean up any duplicate spans
-    cleanupDuplicateSpans(lastSelectedTextTransformItalicElement.id);
-
-    // Save modifications
-    await saveModifications(lastSelectedTextTransformItalicElement.id, css);
-
-    console.log(`✅ Applied ${activeTransform} to italic text:`, lastSelectedTextTransformItalicElement.textContent);
-});
+    document.addEventListener("click", async function (event) {
+      let target = event.target.closest(".squsareCraft-text-transform");
+  
+      if (!target) return;
+  
+      if (!lastSelectedTextTransformItalicElement) {
+          console.warn("⚠️ No italic text selected");
+          return;
+      }
+  
+      // Remove active class from all transform buttons
+      document.querySelectorAll(".squsareCraft-text-transform").forEach(btn => {
+          btn.classList.remove("active");
+      });
+  
+      // If clicking the undo button (dot icon)
+      let transform = "none";
+      if (!target.classList.contains("squareCraft-rotate-180")) {
+          transform = target.getAttribute("data-transform");
+          if (!transform) {
+              console.warn("⚠️ No data-transform attribute found.");
+              return;
+          }
+          target.classList.add("active");
+      }
+  
+      // Ensure the italic element has an ID
+      if (!lastSelectedTextTransformItalicElement.id) {
+          lastSelectedTextTransformItalicElement.id = `text-transform-${Date.now()}`;
+      }
+  
+      let css = { "text-transform": transform };
+      console.log("🎨 Applying text-transform:", css);
+  
+      // Apply styles to the italic element
+      applyStylesToElement(lastSelectedTextTransformItalicElement.id, css);
+  
+      // Save modifications
+      await saveModifications(lastSelectedTextTransformItalicElement.id, css);
+  
+      console.log(`✅ Applied ${transform} to italic text:`, lastSelectedTextTransformItalicElement.textContent);
+  });
+  
 
   
     const undoButton = document.querySelector(
