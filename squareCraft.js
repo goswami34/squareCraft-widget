@@ -229,7 +229,7 @@ async function fetchModifications(retries = 3) {
 
   try {
       const response = await fetch(
-          `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+          `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
           {
               method: "GET",
               headers: {
@@ -383,7 +383,7 @@ async function saveModifications(elementId, css, elementStructure = null) {
   };
 
   try {
-      const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
+      const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
