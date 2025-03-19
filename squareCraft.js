@@ -880,41 +880,6 @@ function cleanupDuplicateSpans(elementId) {
                 
               </div>
 
-
-              <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2">
-                 <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
-                    <div
-                       class="squareCraft-flex squareCraft-px-2 squareCraft-items-center squareCraft-justify-between squareCraft-w-full ">
-                      <p class="squareCraft-font-bold squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer elements-font-style" data-style="bold">B</p>
-                       <div class="squareCraft-v-line"></div>
-                      <p  class="squareCraft-font-italic squareCraft-universal  squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="italic">I</p>
-                       <div class="squareCraft-v-line"></div>
-                     <p class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="underline">U</p>
-                       <div class="squareCraft-v-line"></div> 
-                       <p  class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="dotted">abc</p>
-                        <div class="squareCraft-v-line"></div> 
-                       <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-font-style squareCraft-cursor-pointer" width="12px"
-                     src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
-                    </div>
-                 </div>
-              </div>
-
-
-              <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2">
-                 <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center">
-                    <div class="squareCraft-flex squareCraft-poppins squareCraft-items-center squareCraft-justify-between squareCraft-w-full">
-                        <div class="squareCraft-flex squareCraft-poppins squareCraft-items-center squareCraft-justify-between squareCraft-w-full">
-                            <p class="squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="uppercase">AG</p>
-                            <div class="squareCraft-v-line"></div>
-                            <p class="squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="lowercase">ag</p>
-                            <div class="squareCraft-v-line"></div>
-                            <p class="squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="capitalize">Ag</p>
-                            <div class="squareCraft-v-line"></div>
-                            <img class="squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-text-transform squareCraft-cursor-pointer" width="12px" src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
-                        </div>
-                    </div>
-                 </div>
-              </div>
              
   
            
