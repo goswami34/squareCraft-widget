@@ -861,7 +861,6 @@ function cleanupDuplicateSpans(elementId) {
                       <div
                         class="squareCraft-flex squareCraft-px-2 squareCraft-items-center squareCraft-justify-between squareCraft-w-full ">
                       
-                      
                         <p class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="underline">U</p>
                         <div class="squareCraft-v-line"></div> 
                        
