@@ -1023,28 +1023,56 @@ function cleanupDuplicateSpans(elementId) {
 
   let lastSelectedFontfamilyItalic = null;
 
-document.addEventListener("mouseup", function () {
-    const selection = window.getSelection();
+// document.addEventListener("mouseup", function () {
+//     const selection = window.getSelection();
     
-    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-        let range = selection.getRangeAt(0);
-        let parentElement = range.commonAncestorContainer;
+//     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+//         let range = selection.getRangeAt(0);
+//         let parentElement = range.commonAncestorContainer;
 
-        // If the selected text is a text node, get its parent element
-        if (parentElement.nodeType === Node.TEXT_NODE) {
-            parentElement = parentElement.parentElement;
-        }
+//         // If the selected text is a text node, get its parent element
+//         if (parentElement.nodeType === Node.TEXT_NODE) {
+//             parentElement = parentElement.parentElement;
+//         }
 
-        // Check if the parent or an ancestor is a <strong> tag
-        const emElement = parentElement.closest("em");
+//         // Check if the parent or an ancestor is a <strong> tag
+//         const emElement = parentElement.closest("em");
         
-        if (emElement) {
+//         if (emElement) {
+//           lastSelectedFontfamilyItalic = emElement;
+//             console.log("✅ Selected text inside <strong>: ", emElement.textContent);
+//         } else {
+//           lastSelectedFontfamilyItalic = null; // Reset if selection is outside <strong>
+//         }
+//     }
+// });
+
+document.addEventListener("mouseup", function () {
+  const selection = window.getSelection();
+  
+  if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+      let range = selection.getRangeAt(0);
+      let parentElement = range.commonAncestorContainer;
+
+      // If the selected text is a text node, get its parent element
+      if (parentElement.nodeType === Node.TEXT_NODE) {
+          parentElement = parentElement.parentElement;
+      }
+
+      // Check if the parent or an ancestor is an em tag
+      const emElement = parentElement.closest("em");
+      
+      if (emElement) {
+          // Generate a unique ID for this selection
+          if (!emElement.id) {
+              emElement.id = `em-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          }
           lastSelectedFontfamilyItalic = emElement;
-            console.log("✅ Selected text inside <strong>: ", emElement.textContent);
-        } else {
-          lastSelectedFontfamilyItalic = null; // Reset if selection is outside <strong>
-        }
-    }
+          console.log("✅ Selected text inside <em>: ", emElement.textContent);
+      } else {
+          lastSelectedFontfamilyItalic = null;
+      }
+  }
 });
 
 
