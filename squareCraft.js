@@ -887,9 +887,6 @@ function cleanupDuplicateSpans(elementId) {
                 
               </div>
 
-              <label>Background Color:</label>
-              <input type="color" id="squareCraftBgColor" value="#ffffff" style="width: 100%;">
-
              <label>Text Color:</label>
             <input type="color" id="squareCraftTextColor" value="#ffffff" style="width: 100%;">
   
