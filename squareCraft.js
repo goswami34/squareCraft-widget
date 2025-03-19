@@ -1128,15 +1128,15 @@ document.addEventListener("mouseup", function () {
       }
 
       // Check if the parent or an ancestor is an em tag
-      const emElement = parentElement.closest("em");
+      const emElement = parentElement.closest("a");
       
       if (emElement) {
           // Generate a unique ID for this selection
           if (!emElement.id) {
-              emElement.id = `em-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+              emElement.id = `a-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
           }
           lastSelectedFontfamilyItalic = emElement;
-          console.log("✅ Selected text inside <em>: ", emElement.textContent);
+          console.log("✅ Selected text inside <a>: ", emElement.textContent);
       } else {
           lastSelectedFontfamilyItalic = null;
       }
@@ -1641,8 +1641,8 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
         }
 
         // Check if the container or its parent is a strong tag
-        let targetElement = container.tagName === 'EM' ? container : 
-                           container.closest('em');
+        let targetElement = container.tagName === 'A' ? container : 
+                           container.closest('a');
 
         // If no strong tag found but text is selected, use the immediate parent
         if (!targetElement && container) {
