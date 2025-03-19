@@ -889,7 +889,49 @@ function cleanupDuplicateSpans(elementId) {
 
              <label>Text Color:</label>
             <input type="color" id="squareCraftTextColor" value="#ffffff" style="width: 100%;">
-  
+
+              <div class="squareCraft-mt-2 squareCraft-px-2">
+                <div class="squareCraft-flex squareCraft-items-center squareCraft-justify-between">
+                  <label class="squareCraft-text-sm squareCraft-universal squareCraft-poppins">Background Color</label>
+                  <div class="squareCraft-flex squareCraft-items-center squareCraft-gap-2">
+                    <input 
+                      type="color" 
+                      id="squareCraftTextColor" 
+                      value="#ffffff" 
+                      class="squareCraft-color-input"
+                      style="
+                        width: 40px;
+                        height: 40px;
+                        padding: 0;
+                        border: 2px solid #585858;
+                        border-radius: 6px;
+                        background: #2c2c2c;
+                        cursor: pointer;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                      "
+                    >
+                    <input 
+                      type="text" 
+                      id="squareCraftColorHex" 
+                      class="squareCraft-color-hex"
+                      style="
+                        width: 80px;
+                        padding: 8px;
+                        background: #2c2c2c;
+                        border: 1px solid #585858;
+                        border-radius: 6px;
+                        color: white;
+                        font-size: 14px;
+                        font-family: 'Poppins', sans-serif;
+                      "
+                      placeholder="#FFFFFF"
+                    >
+                  </div>
+                </div>
+              </div>
+                
            
               <div class="squareCraft-mt-2"> </div>
            </div>
@@ -1687,86 +1729,33 @@ setInterval(cleanStyleCache, 60000);
     //     }
     //   });
 
+    // text color start
+    // Add this to your existing JavaScript
+      document.addEventListener('DOMContentLoaded', function() {
+        const colorInput = document.getElementById('squareCraftTextColor');
+        const hexInput = document.getElementById('squareCraftColorHex');
 
-    let lastSelectedLineHeightStrong = null;
+        if (!colorInput || !hexInput) return;
 
-    document.addEventListener("mouseup", function() {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-            let range = selection.getRangeAt(0);
-            let container = range.commonAncestorContainer;
-            
-            // If the container is a text node, get its parent
-            if (container.nodeType === Node.TEXT_NODE) {
-                container = container.parentElement;
-            }
-            
-            // Check if selection is within a strong tag
-            const strongElement = container.closest('strong');
-            if (strongElement) {
-                lastSelectedLineHeightStrong = strongElement;
-                console.log("✅ Selected text inside <strong> for line height:", strongElement.textContent);
-            } else {
-                lastSelectedLineHeightStrong = null;
-            }
-        }
-    });
+        // Update hex input when color changes
+        colorInput.addEventListener('input', function() {
+          hexInput.value = this.value.toUpperCase();
+        });
 
+        // Update color input when hex value changes
+        hexInput.addEventListener('input', function() {
+          const hex = this.value.replace('#', '');
+          if (/^[0-9A-F]{6}$/i.test(hex)) {
+            colorInput.value = '#' + hex;
+          }
+        });
 
-    document.getElementById("squareCraftLineHeight").addEventListener("input", async function() {
-      const lineHeightValue = this.value;
-      if (!lineHeightValue) {
-          console.warn("⚠️ Please enter a valid line height value");
-          return;
-      }
-  
-      // Use either the last selected bold text or the currently selected element
-      const targetElement = lastSelectedLineHeightStrong || selectedElement;
-      
-      if (!targetElement) {
-          console.warn("⚠️ No element selected to apply line height");
-          return;
-      }
-  
-      // Ensure the element has an ID
-      if (!targetElement.id) {
-          targetElement.id = `line-height-${Date.now()}`;
-      }
-  
-      // Apply line height with 'px' unit and !important
-      const lineHeight = `${lineHeightValue}px`;
-      
-      // Create a style element with !important
-      let styleTag = document.getElementById(`style-${targetElement.id}`);
-      if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = `style-${targetElement.id}`;
-          document.head.appendChild(styleTag);
-      }
-  
-      // Apply styles with !important to both the target element and its paragraphs
-      styleTag.innerHTML = `
-          #${targetElement.id} { line-height: ${lineHeight} !important; }
-      `;
-  
-      // Save modifications with !important
-      let css = { 
-          "line-height": `${lineHeight} !important`
-      };
-      
-      await saveModifications(targetElement.id, css);
-  
-      // Force a reflow to ensure styles are applied
-      targetElement.offsetHeight;
-  
-      // Apply styles to all paragraphs within the element
-      const paragraphs = targetElement.getElementsByTagName('p');
-      for (let p of paragraphs) {
-          p.style.lineHeight = lineHeight;
-      }
-  
-      console.log("✅ Applied line height:", lineHeight, "to element:", targetElement.id);
-  });
+        // Initialize hex input with color input value
+        hexInput.value = colorInput.value.toUpperCase();
+      });
+
+    // text color end
+
 
     // Add this function to handle line height on page load
     function applyLineHeightOnLoad() {
