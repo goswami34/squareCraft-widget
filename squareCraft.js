@@ -1351,6 +1351,7 @@ fontfamilies();
       // "text-transform": document.querySelectorAll(
       //   ".squsareCraft-text-transform"
       // ).value,
+      "color": document.getElementById("squareCraftTextColor").value,
       "text-transform": activeTransform || "none"
     };
 
