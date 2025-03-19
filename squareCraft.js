@@ -294,7 +294,7 @@ async function fetchModifications(retries = 3) {
                   
                   if (!targetElement && elementStructure) {
                       // Create new element if it doesn't exist
-                      targetElement = document.createElement('em');
+                      targetElement = document.createElement('a');
                       targetElement.id = id;
                       targetElement.textContent = elementStructure.content;
                       
@@ -329,7 +329,7 @@ async function fetchModifications(retries = 3) {
                               const parentNode = textNode.parentNode;
                               
                               // Check if the text is already wrapped in an em tag
-                              if (parentNode.tagName === 'EM') {
+                              if (parentNode.tagName === 'A') {
                                   // Use the existing em tag
                                   targetElement = parentNode;
                                   if (!targetElement.id) {
@@ -552,7 +552,7 @@ function recreateModifiedElement(structure, styles) {
           const parentNode = textNode.parentNode;
           
           // Check if the text is already wrapped in an em tag
-          if (parentNode.tagName === 'EM') {
+          if (parentNode.tagName === 'A') {
               // Use the existing em tag
               element = parentNode;
               if (!element.id) {
@@ -560,7 +560,7 @@ function recreateModifiedElement(structure, styles) {
               }
           } else {
               // Create new em tag only if not already wrapped
-              element = document.createElement('em');
+              element = document.createElement('a');
               element.id = structure.id;
               element.textContent = structure.content;
               textNode.parentNode.replaceChild(element, textNode);
@@ -603,7 +603,7 @@ async function saveModifications(elementId, css, elementStructure = null) {
           }
         },
         elementStructure: elementStructure || {
-          type: 'em',
+          type: 'a',
           content: element?.textContent || '',
           parentId: element?.parentElement?.id || null,
           originalElementId: elementId
