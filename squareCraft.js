@@ -887,12 +887,10 @@ function cleanupDuplicateSpans(elementId) {
                 
               </div>
 
-             <label>Text Color:</label>
-            <input type="color" id="squareCraftTextColor" value="#ffffff" style="width: 100%;">
 
               <div class="squareCraft-mt-2 squareCraft-px-2">
                 <div class="squareCraft-flex squareCraft-items-center squareCraft-justify-between">
-                  <label class="squareCraft-text-sm squareCraft-universal squareCraft-poppins">Background Color</label>
+                  <label class="squareCraft-text-sm squareCraft-universal squareCraft-poppins">Text Color</label>
                   <div class="squareCraft-flex squareCraft-items-center squareCraft-gap-2">
                     <input 
                       type="color" 
