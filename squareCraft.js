@@ -92,7 +92,6 @@
 
 
 
-// 1. First, modify the fetchModifications function to properly handle strong elements
 // async function fetchModifications(retries = 3) {
 //   if (!pageId) return;
 
@@ -107,7 +106,7 @@
 
 //   try {
 //       const response = await fetch(
-//           `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+//           `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
 //           {
 //               method: "GET",
 //               headers: {
@@ -130,28 +129,50 @@
 //       }
 
 //       // Apply modifications for current page
-//       data.modifications.forEach(mod => {
-//           if (mod.pageId === pageId) {
-//               mod.elements.forEach(elem => {
-//                   // Handle both span and strong elements
-//                   const cssData = elem.css?.span || elem.css?.strong;
-//                   if (cssData) {
-//                       const { id, ...styles } = cssData;
-//                       const element = document.getElementById(elem.elementId);
+//       // data.modifications.forEach(mod => {
+//       //     if (mod.pageId === pageId) {
+//       //         mod.elements.forEach(elem => {
+//       //             // Handle both span and strong elements
+//       //             const cssData = elem.css?.span || elem.css?.strong;
+//       //             if (cssData) {
+//       //                 const { id, ...styles } = cssData;
+//       //                 const element = document.getElementById(elem.elementId);
                       
-//                       if (element) {
-//                           // Apply styles to existing element
-//                           Object.entries(styles).forEach(([prop, value]) => {
-//                               element.style[prop] = value;
-//                           });
-//                       } else if (elem.elementStructure) {
-//                           // Recreate modified element if it doesn't exist
-//                           recreateModifiedElement(elem.elementStructure, styles);
-//                       }
-//                   }
-//               });
-//           }
-//       });
+//       //                 if (element) {
+//       //                     // If element exists, apply styles directly
+//       //                     Object.entries(styles).forEach(([prop, value]) => {
+//       //                         element.style[prop] = value;
+//       //                     });
+//       //                 } else if (elem.elementStructure) {
+//       //                     // Recreate modified element if it doesn't exist
+//       //                     recreateModifiedElement(elem.elementStructure, styles);
+//       //                 }
+//       //             }
+//       //         });
+//       //     }
+//       // });
+//       data.modifications.forEach(mod => {
+//         if (mod.pageId === pageId) {
+//             mod.elements.forEach(elem => {
+//                 // Handle em elements
+//                 const cssData = elem.css?.em;  // Change this from span/strong to em
+//                 if (cssData) {
+//                     const { id, ...styles } = cssData;
+//                     const element = document.getElementById(elem.elementId);
+                    
+//                     if (element) {
+//                         // If element exists, apply styles directly
+//                         Object.entries(styles).forEach(([prop, value]) => {
+//                             element.style[prop] = value;
+//                         });
+//                     } else if (elem.elementStructure) {
+//                         // Recreate modified element if it doesn't exist
+//                         recreateModifiedElement(elem.elementStructure, styles);
+//                     }
+//                 }
+//             });
+//         }
+//     });
 
 //   } catch (error) {
 //       console.error("Error fetching modifications:", error);
@@ -162,58 +183,6 @@
 //   }
 // }
 
-// // 2. Modify recreateModifiedElement to better handle text-transform
-// function recreateModifiedElement(structure, styles) {
-//   const parentElement = structure.parentId ? 
-//       document.getElementById(structure.parentId) : 
-//       document.body;
-
-//   if (!parentElement) return;
-
-//   // First try to find existing element by ID
-//   let element = document.getElementById(structure.id);
-  
-//   if (!element) {
-//       // If no element exists, create new one
-//       element = document.createElement(structure.type || 'span');
-//       element.id = structure.id;
-//       element.className = structure.className || 'squareCraft-font-modified';
-//       element.textContent = structure.content;
-
-//       // Find where to insert the element
-//       if (structure.content) {
-//           const textNodes = [];
-//           const walker = document.createTreeWalker(
-//               parentElement,
-//               NodeFilter.SHOW_TEXT,
-//               {
-//                   acceptNode: function(node) {
-//                       return node.textContent.includes(structure.content) ?
-//                           NodeFilter.FILTER_ACCEPT :
-//                           NodeFilter.FILTER_REJECT;
-//                   }
-//               },
-//               false
-//           );
-
-//           let node;
-//           while (node = walker.nextNode()) {
-//               textNodes.push(node);
-//           }
-
-//           if (textNodes.length > 0) {
-//               textNodes[0].parentNode.replaceChild(element, textNodes[0]);
-//           }
-//       }
-//   }
-
-//   // Apply styles to the element
-//   if (element) {
-//       Object.entries(styles).forEach(([prop, value]) => {
-//           element.style[prop] = value;
-//       });
-//   }
-// }
 
 async function fetchModifications(retries = 3) {
   if (!pageId) return;
@@ -252,50 +221,55 @@ async function fetchModifications(retries = 3) {
       }
 
       // Apply modifications for current page
-      // data.modifications.forEach(mod => {
-      //     if (mod.pageId === pageId) {
-      //         mod.elements.forEach(elem => {
-      //             // Handle both span and strong elements
-      //             const cssData = elem.css?.span || elem.css?.strong;
-      //             if (cssData) {
-      //                 const { id, ...styles } = cssData;
-      //                 const element = document.getElementById(elem.elementId);
-                      
-      //                 if (element) {
-      //                     // If element exists, apply styles directly
-      //                     Object.entries(styles).forEach(([prop, value]) => {
-      //                         element.style[prop] = value;
-      //                     });
-      //                 } else if (elem.elementStructure) {
-      //                     // Recreate modified element if it doesn't exist
-      //                     recreateModifiedElement(elem.elementStructure, styles);
-      //                 }
-      //             }
-      //         });
-      //     }
-      // });
       data.modifications.forEach(mod => {
-        if (mod.pageId === pageId) {
-            mod.elements.forEach(elem => {
-                // Handle em elements
-                const cssData = elem.css?.em;  // Change this from span/strong to em
-                if (cssData) {
-                    const { id, ...styles } = cssData;
-                    const element = document.getElementById(elem.elementId);
-                    
-                    if (element) {
-                        // If element exists, apply styles directly
-                        Object.entries(styles).forEach(([prop, value]) => {
-                            element.style[prop] = value;
-                        });
-                    } else if (elem.elementStructure) {
-                        // Recreate modified element if it doesn't exist
-                        recreateModifiedElement(elem.elementStructure, styles);
-                    }
-                }
-            });
-        }
-    });
+          if (mod.pageId === pageId) {
+              mod.elements.forEach(elem => {
+                  const cssData = elem.css?.em;
+                  if (cssData) {
+                      const { id, ...styles } = cssData;
+                      const originalElementId = elem.elementStructure?.originalElementId;
+                      
+                      // Find the original element
+                      const originalElement = document.getElementById(originalElementId);
+                      if (originalElement) {
+                          // Create a new em element for this modification
+                          const emElement = document.createElement('em');
+                          emElement.id = id;
+                          emElement.textContent = elem.elementStructure.content;
+                          
+                          // Apply styles to the new em element
+                          Object.entries(styles).forEach(([prop, value]) => {
+                              emElement.style[prop] = value;
+                          });
+                          
+                          // Replace the text in the original element with the new em element
+                          const textNodes = [];
+                          const walker = document.createTreeWalker(
+                              originalElement,
+                              NodeFilter.SHOW_TEXT,
+                              {
+                                  acceptNode: function(node) {
+                                      return node.textContent.includes(elem.elementStructure.content) ?
+                                          NodeFilter.FILTER_ACCEPT :
+                                          NodeFilter.FILTER_REJECT;
+                                  }
+                              },
+                              false
+                          );
+                          
+                          let node;
+                          while (node = walker.nextNode()) {
+                              textNodes.push(node);
+                          }
+                          
+                          if (textNodes.length > 0) {
+                              textNodes[0].parentNode.replaceChild(emElement, textNodes[0]);
+                          }
+                      }
+                  }
+              });
+          }
+      });
 
   } catch (error) {
       console.error("Error fetching modifications:", error);
@@ -435,6 +409,93 @@ function recreateModifiedElement(structure, styles) {
 }
 
 
+// async function saveModifications(elementId, css, elementStructure = null) {
+//   if (!pageId || !elementId || !css) {
+//       console.warn("⚠️ Missing required data to save modifications.");
+//       return;
+//   }
+
+//   const element = document.getElementById(elementId);
+//   const isStrong = element?.tagName.toLowerCase() === 'strong';
+
+//   // const modificationData = {
+//   //     userId,
+//   //     token,
+//   //     widgetId,
+//   //     modifications: [{
+//   //         pageId,
+//   //         elements: [{
+//   //             elementId,
+//   //             css: {
+//   //                 [isStrong ? 'strong' : 'span']: {
+//   //                     id: elementId,
+//   //                     ...css
+//   //                 }
+//   //             },
+//   //             elementStructure: elementStructure || {
+//   //                 type: isStrong ? 'strong' : 'span',
+//   //                 className: 'squareCraft-font-modified',
+//   //                 content: element?.textContent || '',
+//   //                 parentId: element?.parentElement?.id || null
+//   //             }
+//   //         }]
+//   //     }]
+//   // };
+  
+//   const modificationData = {
+//     userId,
+//     token,
+//     widgetId,
+//     modifications: [{
+//         pageId,
+//         elements: [{
+//             elementId,
+//             css: {
+//                 em: {  // Change this from 'span' to 'em'
+//                     id: elementId,
+//                     ...css
+//                 }
+//             },
+//             elementStructure: elementStructure || {
+//                 type: 'em',  // Change this from 'span' to 'em'
+//                 content: element?.textContent || '',
+//                 parentId: element?.parentElement?.id || null
+//             }
+//         }]
+//     }]
+// };
+
+//   try {
+//       const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+//           method: "POST",
+//           headers: {
+//               "Content-Type": "application/json",
+//               "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+//               "userId": userId,
+//               "pageId": pageId,
+//               "widget-id": widgetId,
+//           },
+//           body: JSON.stringify(modificationData),
+//       });
+
+//       if (!response.ok) {
+//           throw new Error(`HTTP error! status: ${response.status}`);
+//       }
+
+//       const result = await response.json();
+//       console.log("✅ Changes Saved Successfully!", result);
+
+//       // Immediately fetch modifications to update the UI
+//       await fetchModifications();
+      
+//       return result;
+//   } catch (error) {
+//       console.error("❌ Error saving modifications:", error);
+//   }
+// }
+
+// 4. Add a function to validate and clean up modifications
+
 async function saveModifications(elementId, css, elementStructure = null) {
   if (!pageId || !elementId || !css) {
       console.warn("⚠️ Missing required data to save modifications.");
@@ -442,31 +503,9 @@ async function saveModifications(elementId, css, elementStructure = null) {
   }
 
   const element = document.getElementById(elementId);
-  const isStrong = element?.tagName.toLowerCase() === 'strong';
-
-  // const modificationData = {
-  //     userId,
-  //     token,
-  //     widgetId,
-  //     modifications: [{
-  //         pageId,
-  //         elements: [{
-  //             elementId,
-  //             css: {
-  //                 [isStrong ? 'strong' : 'span']: {
-  //                     id: elementId,
-  //                     ...css
-  //                 }
-  //             },
-  //             elementStructure: elementStructure || {
-  //                 type: isStrong ? 'strong' : 'span',
-  //                 className: 'squareCraft-font-modified',
-  //                 content: element?.textContent || '',
-  //                 parentId: element?.parentElement?.id || null
-  //             }
-  //         }]
-  //     }]
-  // };
+  
+  // Generate a unique ID for this specific modification
+  const uniqueId = `${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   
   const modificationData = {
     userId,
@@ -475,21 +514,22 @@ async function saveModifications(elementId, css, elementStructure = null) {
     modifications: [{
         pageId,
         elements: [{
-            elementId,
+            elementId: uniqueId, // Use the unique ID
             css: {
-                em: {  // Change this from 'span' to 'em'
-                    id: elementId,
+                em: {
+                    id: uniqueId,
                     ...css
                 }
             },
             elementStructure: elementStructure || {
-                type: 'em',  // Change this from 'span' to 'em'
+                type: 'em',
                 content: element?.textContent || '',
-                parentId: element?.parentElement?.id || null
+                parentId: element?.parentElement?.id || null,
+                originalElementId: elementId // Store the original element ID
             }
         }]
     }]
-};
+  };
 
   try {
       const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
@@ -520,7 +560,6 @@ async function saveModifications(elementId, css, elementStructure = null) {
   }
 }
 
-// 4. Add a function to validate and clean up modifications
 function validateAndCleanModifications(elementId) {
   const element = document.getElementById(elementId);
   if (!element) return;
