@@ -1356,15 +1356,7 @@ fontfamilies();
     };
 
     await saveModifications(selectedElement.id, css);
-    // await saveModifications(lastSelectedFontfamilyStrong.id, css);
-      if (lastSelectedFontfamilyItalic && lastSelectedFontfamilyItalic.id) {
-        // await saveModifications(lastSelectedFontfamilyStrong.id, css);
-        await saveModifications(lastSelectedFontfamilyItalic.id, {
-          "font-family": css["font-family"]
-      });
-    }
-
-
+     
     if (lastSelectedItalicElementForFontSize && lastSelectedItalicElementForFontSize.id) {
       await saveModifications(lastSelectedItalicElement.id, {
           "font-size": document.getElementById("squareCraftFontSize").value + "px"
@@ -1377,29 +1369,14 @@ fontfamilies();
         });
     }
 
-    if (lastSelectedLineHeightStrong && lastSelectedLineHeightStrong.id) {
-      await saveModifications(lastSelectedLineHeightStrong.id, {
-          "line-height": css["font-height"]
+    if (lastSelectedLink && lastSelectedLink.id) {
+      await saveModifications(lastSelectedLink.id, {
+          "color": css["color"]
       });
-    }
-
-    // if (lastSelectedTextTransformItalicElement && lastSelectedTextTransformItalicElement.id) {
-    //   await saveModifications(lastSelectedTextTransformItalicElement.id, {
-    //     "text-transform": css["text-transform"]
-    //   });
-    // }
-  //   if (lastSelectedItalicForTransform && lastSelectedItalicForTransform.id) {
-  //     const activeTransformButton = document.querySelector(".squsareCraft-text-transform.active");
-  //     const transform = activeTransformButton ? activeTransformButton.getAttribute("data-transform") : "none";
-      
-  //     await saveModifications(lastSelectedItalicForTransform.id, {
-  //         "text-transform": transform
-  //     });
-  // }
-
-  if (lastSelectedTextTransformItalicElement && lastSelectedTextTransformItalicElement.id) {
-    await saveModifications(lastSelectedTextTransformItalicElement.id, css);
   }
+
+
+  
   });
 
 
