@@ -1476,7 +1476,7 @@ fontfamilies();
         let styleType = this.dataset.style;
         let css = {};
 
-        if (styleType === "none") {
+        if (styleType === "underline") {
             // Get current text decoration
             const currentDecoration = window.getComputedStyle(lastSelectedUnderlineElement).textDecorationLine;
             
