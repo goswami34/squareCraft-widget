@@ -1692,6 +1692,7 @@ setInterval(cleanStyleCache, 60000);
     //   });
 
     // text color start
+    // Add this variable to track the last selected link
     let lastSelectedLink = null;
 
     // Modify the mouseup event listener to track link selection
