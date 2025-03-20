@@ -1434,130 +1434,54 @@ fontfamilies();
 
   
   // element font style code start here . here we have underline and undo
-    // document.querySelectorAll(".elements-font-style").forEach((btn) => {
-    //   btn.addEventListener("click", function () {
-    //     if (!selectedElement) {
-    //       console.warn("⚠️ No element selected to apply text decoration.fsdsd");
-    //       return;
-    //     }
-
-    //     let styleType = this.dataset.style;
-    //     let css = {};
-
-    //     // if (styleType === "bold") {
-    //     //   let currentWeight = parseInt(
-    //     //     window.getComputedStyle(selectedElement).fontWeight,
-    //     //     10
-    //     //   );
-    //     //   css["font-weight"] = currentWeight >= 700 ? "900" : "700";
-    //     // } else if (styleType === "italic") {
-    //     //   let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
-    //     //   css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
-    //     // } else {
-    //     //   let currentDecoration =
-    //     //     window.getComputedStyle(selectedElement).textDecorationLine;
-    //     //   if (styleType === "underline") {
-    //     //     css["text-decoration"] = currentDecoration.includes("underline")
-    //     //       ? "none"
-    //     //       : "underline";
-    //     //   } else if (styleType === "dotted") {
-    //     //     css["text-decoration"] = currentDecoration.includes("dotted")
-    //     //       ? "none"
-    //     //       : "underline dotted";
-    //     //   } else if (styleType === "line-through") {
-    //     //     css["text-decoration"] = currentDecoration.includes("line-through")
-    //     //       ? "none"
-    //     //       : "line-through";
-    //     //   }
-    //     // }
-    //     let currentDecoration =
-    //         window.getComputedStyle(selectedElement).textDecorationLine;
-    //     if(styleType === "underline"){
-    //       css["text-decoration"] = currentDecoration.includes("underline")
-    //           ? "none"
-    //           : "underline";
-    //     }
-
-    //     applyStylesToElement(selectedElement.id, css);
-    //     saveModifications(selectedElement.id, css);
-    //   });
-    // });
-
-    let lastSelectedUnderlineElement = null;
-
-    // Add this event listener for text selection
-    document.addEventListener("mouseup", function() {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-            let range = selection.getRangeAt(0);
-            let container = range.commonAncestorContainer;
-            
-            // If the container is a text node, get its parent element
-            if (container.nodeType === Node.TEXT_NODE) {
-                container = container.parentElement;
-            }
-            
-            // Check if the selection is within any tag
-            const selectedElement = container.closest('a, em, strong, span, p, div');
-            if (selectedElement) {
-                lastSelectedUnderlineElement = selectedElement;
-                console.log("✅ Element selected for underline:", selectedElement.textContent);
-            } else {
-                lastSelectedUnderlineElement = null;
-            }
-        }
-    });
-
-    // Replace your existing elements-font-style event listener with this
     document.querySelectorAll(".elements-font-style").forEach((btn) => {
-        btn.addEventListener("click", async function() {
-            if (!lastSelectedUnderlineElement) {
-                console.warn("⚠️ Please select text to apply underline");
-                return;
-            }
-
-            let styleType = this.dataset.style;
-            let css = {};
-
-            if (styleType === "underline") {
-                // Get current text decoration
-                const currentDecoration = window.getComputedStyle(lastSelectedUnderlineElement).textDecorationLine;
-                
-                // Toggle underline
-                css["text-decoration"] = currentDecoration.includes("underline") ? "none" : "underline";
-                
-                // Ensure the element has an ID
-                if (!lastSelectedUnderlineElement.id) {
-                    lastSelectedUnderlineElement.id = `underline-${Date.now()}`;
-                }
-
-                // Apply styles
-                applyStylesToElement(lastSelectedUnderlineElement.id, css);
-                
-                // Save modifications
-                await saveModifications(lastSelectedUnderlineElement.id, css);
-                
-                console.log("🎨 Applied underline to:", lastSelectedUnderlineElement.textContent);
-            }
-        });
-    });
-
-    // Add this function to handle cleanup of duplicate elements
-    function cleanupDuplicateUnderlines(elementId) {
-        const element = document.getElementById(elementId);
-        if (!element) return;
-
-        // Find all nested elements with the same ID
-        const duplicateElements = element.querySelectorAll(`[id="${elementId}"]`);
-        if (duplicateElements.length <= 1) return;
-
-        // Keep only the first element and remove others
-        for (let i = 1; i < duplicateElements.length; i++) {
-            const duplicate = duplicateElements[i];
-            const text = duplicate.textContent;
-            duplicate.parentNode.replaceChild(document.createTextNode(text), duplicate);
+      btn.addEventListener("click", function () {
+        if (!selectedElement) {
+          console.warn("⚠️ No element selected to apply text decoration.fsdsd");
+          return;
         }
-    }
+
+        let styleType = this.dataset.style;
+        let css = {};
+
+        // if (styleType === "bold") {
+        //   let currentWeight = parseInt(
+        //     window.getComputedStyle(selectedElement).fontWeight,
+        //     10
+        //   );
+        //   css["font-weight"] = currentWeight >= 700 ? "900" : "700";
+        // } else if (styleType === "italic") {
+        //   let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
+        //   css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
+        // } else {
+        //   let currentDecoration =
+        //     window.getComputedStyle(selectedElement).textDecorationLine;
+        //   if (styleType === "underline") {
+        //     css["text-decoration"] = currentDecoration.includes("underline")
+        //       ? "none"
+        //       : "underline";
+        //   } else if (styleType === "dotted") {
+        //     css["text-decoration"] = currentDecoration.includes("dotted")
+        //       ? "none"
+        //       : "underline dotted";
+        //   } else if (styleType === "line-through") {
+        //     css["text-decoration"] = currentDecoration.includes("line-through")
+        //       ? "none"
+        //       : "line-through";
+        //   }
+        // }
+        let currentDecoration =
+            window.getComputedStyle(selectedElement).textDecorationLine;
+        if(styleType === "underline"){
+          css["text-decoration"] = currentDecoration.includes("underline")
+              ? "none"
+              : "underline";
+        }
+
+        applyStylesToElement(selectedElement.id, css);
+        saveModifications(selectedElement.id, css);
+      });
+    });
 
     const fontStyleUndoButton = document.querySelector(
       ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-font-style.squareCraft-cursor-pointer"
