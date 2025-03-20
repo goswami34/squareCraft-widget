@@ -1481,7 +1481,7 @@ fontfamilies();
             const currentDecoration = window.getComputedStyle(lastSelectedUnderlineElement).textDecorationLine;
             
             // Toggle underline
-            css["text-decoration"] = currentDecoration.includes("none") ? "none" : "none";
+            css["text-decoration"] = currentDecoration.includes("none") ? "underline" : "none";
             
             // Ensure the element has an ID
             if (!lastSelectedUnderlineElement.id) {
