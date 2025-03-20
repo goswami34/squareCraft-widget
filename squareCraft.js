@@ -1435,6 +1435,8 @@ fontfamilies();
 
   // font weight code end here
 
+  
+
     // Add this event listener for font-weight dropdown
     // document
     //   .getElementById("squareCraftFontWeight")
@@ -1771,112 +1773,6 @@ setInterval(cleanStyleCache, 60000);
   });
 
     // text color end
-
-
-    // Add this function to handle line height on page load
-    function applyLineHeightOnLoad() {
-      // Get all elements with line-height styles
-      const styleTags = document.querySelectorAll('style[id^="style-"]');
-      styleTags.forEach(styleTag => {
-          const elementId = styleTag.id.replace('style-', '');
-          const element = document.getElementById(elementId);
-          if (element) {
-              const computedStyle = window.getComputedStyle(element);
-              const lineHeight = computedStyle.lineHeight;
-              
-              // Apply line height to all paragraphs within the element
-              const paragraphs = element.getElementsByTagName('p');
-              for (let p of paragraphs) {
-                  p.style.lineHeight = lineHeight;
-              }
-          }
-      });
-    }
-
-    // Add this to your existing window load event listener
-    window.addEventListener("load", async () => {
-      createWidget();
-      setTimeout(makeWidgetDraggable, 500);
-      setTimeout(attachEventListeners, 1500);
-      await fetchModifications();
-      // Add this line to apply line heights after modifications are fetched
-      setTimeout(applyLineHeightOnLoad, 2000);
-    });
-    
-    // letter spacing start
-    function initializeLetterSpacing() {
-      const letterSpacingContainer = document.querySelector('.squareCraft-Letter-spacing-container');
-      const letterSpacingDropdown = document.getElementById('squareCraftLetterSpacingDropdown');
-      const letterSpacingOptions = document.getElementById('squareCraftLetterSpacingOptions');
-      const letterSpacingInput = document.querySelector('.squareCraft-Letter-spacing-input');
-  
-      if (!letterSpacingContainer || !letterSpacingDropdown || !letterSpacingOptions || !letterSpacingInput) {
-          console.warn("⚠️ Letter spacing elements not found");
-          return;
-      }
-  
-      // Toggle dropdown visibility
-      letterSpacingDropdown.addEventListener('click', (e) => {
-          e.stopPropagation();
-          letterSpacingOptions.classList.toggle('squareCraft-hidden');
-      });
-  
-      // Handle option selection
-      letterSpacingOptions.querySelectorAll('.squareCraft-dropdown-item').forEach(option => {
-          option.addEventListener('click', async (e) => {
-              const value = e.target.dataset.value;
-              letterSpacingInput.value = value;
-              letterSpacingOptions.classList.add('squareCraft-hidden');
-  
-              if (selectedElement) {
-                  // Apply letter spacing to the selected block
-                  let css = { "letter-spacing": `${value}px` };
-                  applyStylesToElement(selectedElement.id, css);
-                  
-                  // Save modifications
-                  await saveModifications(selectedElement.id, css);
-                  
-                  console.log("🎨 Applied letter spacing:", value, "px to block:", selectedElement.id);
-              } else {
-                  console.warn("⚠️ Please select a block to apply letter spacing");
-              }
-          });
-      });
-  
-      // Handle manual input
-      letterSpacingInput.addEventListener('input', async function() {
-          if (!selectedElement) {
-              console.warn("⚠️ Please select a block to apply letter spacing");
-              return;
-          }
-  
-          const value = this.value;
-          if (!value) return;
-  
-          // Apply letter spacing to the selected block
-          let css = { "letter-spacing": `${value}px` };
-          applyStylesToElement(selectedElement.id, css);
-          
-          // Save modifications
-          await saveModifications(selectedElement.id, css);
-          
-          console.log("🎨 Applied letter spacing:", value, "px to block:", selectedElement.id);
-      });
-  
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-          if (!letterSpacingContainer.contains(e.target)) {
-              letterSpacingOptions.classList.add('squareCraft-hidden');
-          }
-      });
-  }
-
-    document.addEventListener("DOMContentLoaded", function() {
-      initializeLetterSpacing();
-    });
-
-    // letter spacing end
-
 
 
     // text-transform start
