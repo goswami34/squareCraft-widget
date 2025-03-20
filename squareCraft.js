@@ -1397,11 +1397,11 @@ fontfamilies();
           }
   
           // Check if the parent or an ancestor is a <strong> tag
-          const strongElement = parentElement.closest("em");
+          const strongElement = parentElement.closest("a");
           
           if (strongElement) {
               lastSelectedFontWeightStrong = strongElement;
-              console.log("✅ Selected text inside <strong> for font-weight: ", strongElement.textContent);
+              console.log("✅ Selected text inside <ancor> for font-weight: ", strongElement.textContent);
           } else {
               lastSelectedFontWeightStrong = null;
           }
@@ -1435,7 +1435,7 @@ fontfamilies();
 
   // font weight code end here
 
-  
+
 
     // Add this event listener for font-weight dropdown
     // document
