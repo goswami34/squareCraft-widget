@@ -1460,31 +1460,37 @@ fontfamilies();
         let styleType = this.dataset.style;
         let css = {};
 
-        if (styleType === "bold") {
-          let currentWeight = parseInt(
-            window.getComputedStyle(selectedElement).fontWeight,
-            10
-          );
-          css["font-weight"] = currentWeight >= 700 ? "900" : "700";
-        } else if (styleType === "italic") {
-          let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
-          css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
-        } else {
-          let currentDecoration =
-            window.getComputedStyle(selectedElement).textDecorationLine;
-          if (styleType === "underline") {
-            css["text-decoration"] = currentDecoration.includes("underline")
+        // if (styleType === "bold") {
+        //   let currentWeight = parseInt(
+        //     window.getComputedStyle(selectedElement).fontWeight,
+        //     10
+        //   );
+        //   css["font-weight"] = currentWeight >= 700 ? "900" : "700";
+        // } else if (styleType === "italic") {
+        //   let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
+        //   css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
+        // } else {
+        //   let currentDecoration =
+        //     window.getComputedStyle(selectedElement).textDecorationLine;
+        //   if (styleType === "underline") {
+        //     css["text-decoration"] = currentDecoration.includes("underline")
+        //       ? "none"
+        //       : "underline";
+        //   } else if (styleType === "dotted") {
+        //     css["text-decoration"] = currentDecoration.includes("dotted")
+        //       ? "none"
+        //       : "underline dotted";
+        //   } else if (styleType === "line-through") {
+        //     css["text-decoration"] = currentDecoration.includes("line-through")
+        //       ? "none"
+        //       : "line-through";
+        //   }
+        // }
+
+        if(styleType === "underline"){
+          css["text-decoration"] = currentDecoration.includes("underline")
               ? "none"
               : "underline";
-          } else if (styleType === "dotted") {
-            css["text-decoration"] = currentDecoration.includes("dotted")
-              ? "none"
-              : "underline dotted";
-          } else if (styleType === "line-through") {
-            css["text-decoration"] = currentDecoration.includes("line-through")
-              ? "none"
-              : "line-through";
-          }
         }
 
         applyStylesToElement(selectedElement.id, css);
