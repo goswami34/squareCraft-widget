@@ -1486,7 +1486,8 @@ fontfamilies();
         //       : "line-through";
         //   }
         // }
-
+        let currentDecoration =
+            window.getComputedStyle(selectedElement).textDecorationLine;
         if(styleType === "underline"){
           css["text-decoration"] = currentDecoration.includes("underline")
               ? "none"
