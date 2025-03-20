@@ -1476,12 +1476,12 @@ fontfamilies();
         let styleType = this.dataset.style;
         let css = {};
 
-        if (styleType === "underline") {
+        if (styleType === "none") {
             // Get current text decoration
             const currentDecoration = window.getComputedStyle(lastSelectedUnderlineElement).textDecorationLine;
             
             // Toggle underline
-            css["text-decoration"] = currentDecoration.includes("underline") ? "none" : "underline";
+            css["text-decoration"] = currentDecoration.includes("none") ? "none" : "none";
             
             // Ensure the element has an ID
             if (!lastSelectedUnderlineElement.id) {
