@@ -1471,20 +1471,6 @@ fontfamilies();
     //       saveModifications(selectedElement.id, css);
     //     }
     //   });
-
-    document.querySelectorAll(".alignment-icon").forEach((icon) => {
-      icon.addEventListener("click", async function () {
-        if (!selectedElement) return;
-        const alignment = this.getAttribute("data-align");
-        let css = { "text-align": alignment };
-        applyStylesToElement(selectedElement.id, css);
-        await saveModifications(selectedElement.id, css);
-        console.log(
-          `:white_check_mark: Applied text alignment: ${alignment} to ${selectedElement.id}`
-        );
-      });
-    });
-
   
 
     document.querySelectorAll(".elements-font-style").forEach((btn) => {
@@ -1729,29 +1715,82 @@ setInterval(cleanStyleCache, 60000);
     //   });
 
     // text color start
-    // Add this to your existing JavaScript
-      document.addEventListener('DOMContentLoaded', function() {
+    let lastSelectedLink = null;
+
+    // Modify the mouseup event listener to track link selection
+    document.addEventListener("mouseup", function() {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+            let range = selection.getRangeAt(0);
+            let container = range.commonAncestorContainer;
+            
+            // If the container is a text node, get its parent element
+            if (container.nodeType === Node.TEXT_NODE) {
+                container = container.parentElement;
+            }
+            
+            // Check if the selection is within an <a> tag
+            const linkElement = container.closest('a');
+            if (linkElement) {
+                lastSelectedLink = linkElement;
+                console.log("✅ Link selected:", linkElement.textContent);
+            } else {
+                lastSelectedLink = null;
+            }
+        }
+    });
+
+    // Modify the color input event listeners
+    document.addEventListener('DOMContentLoaded', function() {
         const colorInput = document.getElementById('squareCraftTextColor');
         const hexInput = document.getElementById('squareCraftColorHex');
 
         if (!colorInput || !hexInput) return;
 
         // Update hex input when color changes
-        colorInput.addEventListener('input', function() {
-          hexInput.value = this.value.toUpperCase();
+        colorInput.addEventListener('input', async function() {
+            const color = this.value.toUpperCase();
+            hexInput.value = color;
+
+            // Apply color to selected link if exists
+            if (lastSelectedLink) {
+                if (!lastSelectedLink.id) {
+                    lastSelectedLink.id = `link-color-${Date.now()}`;
+                }
+
+                let css = { "color": color };
+                applyStylesToElement(lastSelectedLink.id, css);
+                await saveModifications(lastSelectedLink.id, css);
+                
+                console.log("🎨 Applied color to link:", color);
+            }
         });
 
         // Update color input when hex value changes
-        hexInput.addEventListener('input', function() {
-          const hex = this.value.replace('#', '');
-          if (/^[0-9A-F]{6}$/i.test(hex)) {
-            colorInput.value = '#' + hex;
-          }
+        hexInput.addEventListener('input', async function() {
+            const hex = this.value.replace('#', '');
+            if (/^[0-9A-F]{6}$/i.test(hex)) {
+                const color = '#' + hex;
+                colorInput.value = color;
+
+                // Apply color to selected link if exists
+                if (lastSelectedLink) {
+                    if (!lastSelectedLink.id) {
+                        lastSelectedLink.id = `link-color-${Date.now()}`;
+                    }
+
+                    let css = { "color": color };
+                    applyStylesToElement(lastSelectedLink.id, css);
+                    await saveModifications(lastSelectedLink.id, css);
+                    
+                    console.log("🎨 Applied color to link:", color);
+                }
+            }
         });
 
         // Initialize hex input with color input value
         hexInput.value = colorInput.value.toUpperCase();
-      });
+    });
 
     // text color end
 
