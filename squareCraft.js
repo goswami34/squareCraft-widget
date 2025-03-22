@@ -1476,104 +1476,64 @@ fontfamilies();
         let styleType = this.dataset.style;
         let css = {};
 
-        if (styleType === "underline") {
-            // Get current text decoration
-            const currentDecoration = window.getComputedStyle(lastSelectedUnderlineElement).textDecorationLine;
+        // if (styleType === "underline") {
+        //     // Get current text decoration
+        //     const currentDecoration = window.getComputedStyle(lastSelectedUnderlineElement).textDecorationLine;
             
-            // Toggle underline
-            css["text-decoration"] = currentDecoration.includes("none") ? "underline" : "none";
+        //     // Toggle underline
+        //     css["text-decoration"] = currentDecoration.includes("none") ? "underline" : "none";
             
-            // Ensure the element has an ID
-            if (!lastSelectedUnderlineElement.id) {
-                lastSelectedUnderlineElement.id = `underline-${Date.now()}`;
-            }
+        //     // Ensure the element has an ID
+        //     if (!lastSelectedUnderlineElement.id) {
+        //         lastSelectedUnderlineElement.id = `underline-${Date.now()}`;
+        //     }
 
-            // Apply styles
-            applyStylesToElement(lastSelectedUnderlineElement.id, css);
+        //     // Apply styles
+        //     applyStylesToElement(lastSelectedUnderlineElement.id, css);
             
-            // Save modifications
-            await saveModifications(lastSelectedUnderlineElement.id, css);
+        //     // Save modifications
+        //     await saveModifications(lastSelectedUnderlineElement.id, css);
             
-            console.log("🎨 Applied underline to:", lastSelectedUnderlineElement.textContent);
-        }
+        //     console.log("🎨 Applied underline to:", lastSelectedUnderlineElement.textContent);
+        // }
+
+        if (styleType === "underline") {
+          // Set text-decoration to none
+          let css = { "text-decoration": "none" };
+          
+          // Apply styles
+          applyStylesToElement(lastSelectedUnderlineElement.id, css);
+          
+          // Save modifications
+          await saveModifications(lastSelectedUnderlineElement.id, css);
+          
+          console.log("🎨 Removed underline from anchor text:", lastSelectedUnderlineElement.textContent);
+      }
     });
 });
 
 
 
-    // document.querySelectorAll(".elements-font-style").forEach((btn) => {
-    //   btn.addEventListener("click", function () {
-    //     if (!selectedElement) {
-    //       console.warn("⚠️ No element selected to apply text decoration.fsdsd");
-    //       return;
-    //     }
 
-    //     let styleType = this.dataset.style;
-    //     let css = {};
+  // Event listener for the undo button
+  document.querySelector(".underline-element-font-style").addEventListener("click", async function() {
+    if (!lastSelectedUnderlineElement) {
+        console.warn("⚠️ Please select text within an anchor tag to restore underline");
+        return;
+    }
 
-    //     // if (styleType === "bold") {
-    //     //   let currentWeight = parseInt(
-    //     //     window.getComputedStyle(selectedElement).fontWeight,
-    //     //     10
-    //     //   );
-    //     //   css["font-weight"] = currentWeight >= 700 ? "900" : "700";
-    //     // } else if (styleType === "italic") {
-    //     //   let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
-    //     //   css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
-    //     // } else {
-    //     //   let currentDecoration =
-    //     //     window.getComputedStyle(selectedElement).textDecorationLine;
-    //     //   if (styleType === "underline") {
-    //     //     css["text-decoration"] = currentDecoration.includes("underline")
-    //     //       ? "none"
-    //     //       : "underline";
-    //     //   } else if (styleType === "dotted") {
-    //     //     css["text-decoration"] = currentDecoration.includes("dotted")
-    //     //       ? "none"
-    //     //       : "underline dotted";
-    //     //   } else if (styleType === "line-through") {
-    //     //     css["text-decoration"] = currentDecoration.includes("line-through")
-    //     //       ? "none"
-    //     //       : "line-through";
-    //     //   }
-    //     // }
-    //     let currentDecoration =
-    //         window.getComputedStyle(selectedElement).textDecorationLine;
-    //     if(styleType === "underline"){
-    //       css["text-decoration"] = currentDecoration.includes("underline")
-    //           ? "none"
-    //           : "underline";
-    //     }
-
-    //     applyStylesToElement(selectedElement.id, css);
-    //     saveModifications(selectedElement.id, css);
-    //   });
-    // });
-
-    const fontStyleUndoButton = document.querySelector(
-      ".squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-font-style squareCraft-cursor-pointer underline-element-font-style"
-    );
-
-    fontStyleUndoButton.addEventListener("click", async function () {
-      if (!selectedElement) return;
-
-      // Reset font styles
-      let css = {
-        // "font-weight": "400", // Reset to Regular (default)
-        // "font-style": "normal", // Reset to normal (default)
-        "text-decoration": "none", // Remove underline, dotted, or line-through
-      };
-
-      // Apply styles to the selected element
-      applyStylesToElement(selectedElement.id, css);
-
-      // Save the reset modifications
-      await saveModifications(selectedElement.id, css);
-
-      console.log("🛑 Font styles reset for:", selectedElement.id);
-    });
-
-    //element font style code end here
+    // Set text-decoration back to underline
+    let css = { "text-decoration": "underline" };
+    
+    // Apply styles
+    applyStylesToElement(lastSelectedUnderlineElement.id, css);
+    
+    // Save modifications
+    await saveModifications(lastSelectedUnderlineElement.id, css);
+    
+    console.log("🔄 Restored underline to anchor text:", lastSelectedUnderlineElement.textContent);
+  });
+    
    
 
 
