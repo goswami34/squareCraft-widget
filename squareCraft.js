@@ -861,6 +861,9 @@ function cleanupDuplicateSpans(elementId) {
 
                   <div>
                     <input type="number" id="squareCraftFontSize" pleaceholder="font-size" value="20" min="10" max="50" style="width: 80px; background-color: gray; color: white; border-radius: 4px; padding: 4px 10px 4px 4px;">
+
+                    <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-font-style squareCraft-cursor-pointer underline-element-font-style" width="12px"
+                      src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
                   </div>
                  
 
