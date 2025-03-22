@@ -886,7 +886,7 @@ function cleanupDuplicateSpans(elementId) {
                   </select>
                 </div>
 
-                <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-font-style squareCraft-cursor-pointer underline-element-font-style" width="12px" src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
+                <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-font-style squareCraft-cursor-pointer underline-element-font-weight" width="12px" src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
                </div>
 
 
@@ -1443,6 +1443,28 @@ fontfamilies();
 
     console.log("🎨 Applied font-weight:", selectedWeight, "to bold text:", lastSelectedFontWeightStrong.textContent);
   });
+
+  document.querySelector(".underline-element-font-weight").addEventListener("click", async function() {
+    if (!lastSelectedFontWeightStrong) {
+        console.warn("⚠️ Please select text within an anchor tag to restore underline");
+        return;
+    }
+
+    // Set text-decoration back to underline
+    let css = { "font-weight": "normal" };
+    
+    // Apply styles
+    applyStylesToElement(lastSelectedFontWeightStrong.id, css);
+    
+    // Save modifications
+    await saveModifications(lastSelectedFontWeightStrong.id, css);
+    
+    console.log("🔄 Restored underline to anchor text:", lastSelectedFontWeightStrong.textContent);
+  });
+
+
+
+  // font weight end here
 
 
   
