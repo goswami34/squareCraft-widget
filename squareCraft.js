@@ -1700,190 +1700,89 @@ function clearPendingChanges() {
 
     // text color start
     // Add this variable to track the last selected link
+    // Track the last selected link element
     let lastSelectedLink = null;
 
-    // Modify the mouseup event listener to track link selection
+    // Event listener for text selection
     document.addEventListener("mouseup", function() {
-      const selection = window.getSelection();
-      if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-          let range = selection.getRangeAt(0);
-          let container = range.commonAncestorContainer;
-          
-          // If the container is a text node, get its parent element
-          if (container.nodeType === Node.TEXT_NODE) {
-              container = container.parentElement;
-          }
-          
-          // Check if the selection is within an <a> tag
-          const linkElement = container.closest('a');
-          if (linkElement) {
-              lastSelectedLink = linkElement;
-              console.log("✅ Link selected:", linkElement.textContent);
-          } else {
-              lastSelectedLink = null;
-          }
-      }
-  });
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+            let range = selection.getRangeAt(0);
+            let container = range.commonAncestorContainer;
+            
+            // If the container is a text node, get its parent element
+            if (container.nodeType === Node.TEXT_NODE) {
+                container = container.parentElement;
+            }
+            
+            // Check if the selection is within an <a> tag
+            const linkElement = container.closest('a');
+            if (linkElement) {
+                // Generate unique ID if none exists
+                if (!linkElement.id) {
+                    linkElement.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                }
+                lastSelectedLink = linkElement;
+                console.log("✅ Link selected for color change:", linkElement.textContent);
+            } else {
+                lastSelectedLink = null;
+            }
+        }
+    });
 
-    // Modify the color input event listeners
-    document.addEventListener('DOMContentLoaded', function() {
-      const colorInput = document.getElementById('squareCraftTextColor');
-      const hexInput = document.getElementById('squareCraftColorHex');
-  
-      if (!colorInput || !hexInput) return;
-  
-      // Update hex input when color changes
-      colorInput.addEventListener('input', async function() {
-          const color = this.value.toUpperCase();
-          hexInput.value = color;
-  
-          // Apply color to selected link if exists
-          if (lastSelectedLink) {
-              if (!lastSelectedLink.id) {
-                  lastSelectedLink.id = `link-color-${Date.now()}`;
-              }
-  
-              let css = { "color": color };
-              applyStylesToElement(lastSelectedLink.id, css);
-              await saveModifications(lastSelectedLink.id, css);
-              
-              console.log("🎨 Applied color to link:", color);
-          }
-      });
-  
-      // Update color input when hex value changes
-      hexInput.addEventListener('input', async function() {
-          const hex = this.value.replace('#', '');
-          if (/^[0-9A-F]{6}$/i.test(hex)) {
-              const color = '#' + hex;
-              colorInput.value = color;
-  
-              // Apply color to selected link if exists
-              if (lastSelectedLink) {
-                  if (!lastSelectedLink.id) {
-                      lastSelectedLink.id = `link-color-${Date.now()}`;
-                  }
-  
-                  let css = { "color": color };
-                  applyStylesToElement(lastSelectedLink.id, css);
-                  await saveModifications(lastSelectedLink.id, css);
-                  
-                  console.log("🎨 Applied color to link:", color);
-              }
-          }
-      });
-  
-      // Initialize hex input with color input value
-      hexInput.value = colorInput.value.toUpperCase();
-  });
+    // Color picker event handler
+    document.getElementById('squareCraftTextColor').addEventListener('input', async function() {
+        if (!lastSelectedLink) {
+            console.warn("⚠️ Please select text within a link to apply color");
+            return;
+        }
+
+        const color = this.value;
+        
+        // Apply color to the link
+        let css = { "color": color };
+        applyStylesToElement(lastSelectedLink.id, css);
+        
+        // Update hex input
+        document.getElementById('squareCraftColorHex').value = color.toUpperCase();
+        
+        // Save modifications
+        await saveModifications(lastSelectedLink.id, css);
+        
+        console.log("🎨 Applied color to link:", color);
+    });
+
+    // Hex input event handler
+    document.getElementById('squareCraftColorHex').addEventListener('input', async function() {
+        if (!lastSelectedLink) {
+            console.warn("⚠️ Please select text within a link to apply color");
+            return;
+        }
+
+        let hex = this.value.replace('#', '');
+        
+        // Validate hex color
+        if (/^[0-9A-F]{6}$/i.test(hex)) {
+            const color = '#' + hex;
+            
+            // Update color picker
+            document.getElementById('squareCraftTextColor').value = color;
+            
+            // Apply color to the link
+            let css = { "color": color };
+            applyStylesToElement(lastSelectedLink.id, css);
+            
+            // Save modifications
+            await saveModifications(lastSelectedLink.id, css);
+            
+            console.log("🎨 Applied color to link:", color);
+        }
+    });
 
     // text color end
 
 
-    // text-transform start
-
-  let lastSelectedTextTransformItalicElement = null;
-
-  document.addEventListener("mouseup", function () {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-        let range = selection.getRangeAt(0);
-        let container = range.commonAncestorContainer;
-
-        // If the container is a text node, get its parent
-        if (container.nodeType === Node.TEXT_NODE) {
-            container = container.parentElement;
-        }
-
-        // Look for closest italic element
-        let textTransformElement = container.closest("em, i"); // Now supports both <em> and <i>
-        if (textTransformElement) {
-            lastSelectedTextTransformItalicElement = textTransformElement;
-            console.log("✅ Selected italic text:", textTransformElement.textContent);
-        } else {
-            lastSelectedTextTransformItalicElement = null;
-        }
-    }
-});
-
-
-   
-  
-    let activeTransform = null;
-
-document.addEventListener("click", async function (event) {
-    let target = event.target.closest(".squsareCraft-text-transform");
-
-    if (!target) return;
-
-    if (!lastSelectedTextTransformItalicElement) {
-        console.warn("⚠️ No italic text selected");
-        return;
-    }
-
-    // Remove active class from all transform buttons
-    document.querySelectorAll(".squsareCraft-text-transform").forEach(btn => {
-        btn.classList.remove("active");
-    });
-
-    // If clicking the undo button (dot icon)
-    if (target.classList.contains("squareCraft-rotate-180")) {
-        activeTransform = "none";
-        target.classList.add("active");
-    } else {
-        // Get the transform value from data-transform attribute
-        const transform = target.getAttribute("data-transform");
-        if (!transform) {
-            console.warn("⚠️ No data-transform attribute found.");
-            return;
-        }
-        activeTransform = transform;
-        target.classList.add("active");
-    }
-
-    // Ensure the italic element has an ID
-    if (!lastSelectedTextTransformItalicElement.id) {
-        lastSelectedTextTransformItalicElement.id = `text-transform-${Date.now()}`;
-    }
-
-    let css = { "text-transform": activeTransform };
-    console.log("🎨 Applying text-transform:", css);
-
-    // Apply styles to the italic element
-    applyStylesToElement(lastSelectedTextTransformItalicElement.id, css);
-
-    // Clean up any duplicate spans
-    cleanupDuplicateSpans(lastSelectedTextTransformItalicElement.id);
-
-    // Save modifications
-    await saveModifications(lastSelectedTextTransformItalicElement.id, css);
-
-    console.log(`✅ Applied ${activeTransform} to italic text:`, lastSelectedTextTransformItalicElement.textContent);
-});
-
-  
-    const undoButton = document.querySelector(
-        ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer"
-      );
-
-      undoButton.addEventListener("click", async function() {
-        if (!lastSelectedTextTransformItalicElement) {
-            console.warn("⚠️ No bold text selected");
-            return;
-        }
-
-        let css = { "text-transform": "none" };
-        
-        // Apply reset styles
-        applyStylesToElement(lastSelectedTextTransformItalicElement.id, css);
-        
-        // Save the reset state
-        await saveModifications(lastSelectedTextTransformItalicElement.id, css);
-        
-        console.log("🔄 Reset text transform for bold text:", lastSelectedTextTransformItalicElement.textContent);
-      });
-
-    // text-transform end
+ 
     //   hover code start here
     const hoverButton = document.querySelector(
       ".squareCraft-cursor-pointer.squareCraft-bg-3f3f3f.squareCraft-hover"
