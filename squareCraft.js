@@ -870,7 +870,7 @@ function cleanupDuplicateSpans(elementId) {
               </div>
               
 
-               <div style="margin:20px 10px;" class="squareCraft-flex squareCraft-items-center squareCraft-justify-between">
+               <div style="margin:20px 10px;" class="squareCraft-flex squareCraft-items-center">
                 <div>
                   <label style="font-size: 12px;">Font Weight:</label>
                   <select id="squareCraftFontWeight" style="width: 100%; padding: 6px; background: #2c2c2c; color: white; border: 1px solid #585858; border-radius: 6px; margin:4px;">
