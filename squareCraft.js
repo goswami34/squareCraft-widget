@@ -140,8 +140,7 @@ async function fetchModifications(retries = 3) {
           if (cssData) {
             const { id, ...styles } = cssData;
             const elementStructure = elem.elementStructure;
-            storeStyles(id, styles);
-            applyStylesToElement(id, styles);
+            
             
             // Find or create the element
             let targetElement = document.getElementById(elementStructure?.originalElementId || id);
