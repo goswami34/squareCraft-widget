@@ -140,6 +140,8 @@ async function fetchModifications(retries = 3) {
           if (cssData) {
             const { id, ...styles } = cssData;
             const elementStructure = elem.elementStructure;
+            storeStyles(id, styles);
+            applyStylesToElement(id, styles);
             
             // Find or create the element
             let targetElement = document.getElementById(elementStructure?.originalElementId || id);
@@ -1216,6 +1218,81 @@ fontfamilies();
     
   //   console.log("🔄 Restored underline to anchor text:", lastSelectedFontWeightStrong.textContent);
   // });
+
+  document.body.addEventListener("click", (event) => {
+    let block = event.target.closest('[id^="block-"]');
+    if (!block) {
+        // Clicking outside - preserve existing styles
+        if (selectedElement) {
+            selectedElement.style.outline = "";
+        }
+        return;
+    }
+
+    // Store previous styles before changing selection
+    if (selectedElement && selectedElement !== block) {
+        // Preserve existing styles before switching
+        const existingStyles = window.getComputedStyle(selectedElement);
+        const stylesToKeep = {};
+        ['font-size', 'font-weight', 'text-decoration', 'color'].forEach(prop => {
+            if (existingStyles[prop]) {
+                stylesToKeep[prop] = existingStyles[prop];
+            }
+        });
+        applyStylesToElement(selectedElement.id, stylesToKeep);
+    }
+
+    // Update selection
+    if (selectedElement) selectedElement.style.outline = "";
+    selectedElement = block;
+    selectedElement.style.outline = "2px dashed #EF7C2F";
+
+    // Reapply stored styles to any modified elements within the block
+    const modifiedElements = block.querySelectorAll('[id^="a-"]');
+    modifiedElements.forEach(element => {
+        const storedStyles = getStoredStyles(element.id);
+        if (storedStyles) {
+            applyStylesToElement(element.id, storedStyles);
+        }
+    });
+});
+
+
+// Style storage system
+const styleStorage = new Map();
+
+function storeStyles(elementId, styles) {
+    styleStorage.set(elementId, styles);
+}
+
+function getStoredStyles(elementId) {
+    return styleStorage.get(elementId);
+}
+
+// Modify the applyStylesToElement function
+function applyStylesToElement(elementId, css) {
+    if (!elementId || !css) return;
+    
+    // Store styles for future reference
+    storeStyles(elementId, css);
+    
+    let styleTag = document.getElementById(`style-${elementId}`);
+    if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = `style-${elementId}`;
+        document.head.appendChild(styleTag);
+    }
+
+    let cssText = `#${elementId} { `;
+    Object.entries(css).forEach(([prop, value]) => {
+        if (value) {
+            cssText += `${prop}: ${value} !important; `;
+        }
+    });
+    cssText += "}";
+
+    styleTag.innerHTML = cssText;
+}
 
 
   // Font weight handler
