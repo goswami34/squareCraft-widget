@@ -597,7 +597,7 @@ async function saveModifications(elementId, css, elementStructure = null) {
       elements: [{
         elementId: uniqueId,
         css: {
-          em: {
+          a: {
             id: uniqueId,
             ...css
           }
