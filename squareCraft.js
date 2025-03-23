@@ -92,184 +92,6 @@
 
 
 
-// async function fetchModifications(retries = 3) {
-//   if (!pageId) return;
-
-//   const token = localStorage.getItem("squareCraft_auth_token");
-//   const userId = localStorage.getItem("squareCraft_u_id");
-//   const widgetId = localStorage.getItem("squareCraft_w_id");
-
-//   if (!token || !userId) {
-//     console.warn("Missing authentication data");
-//     return;
-//   }
-
-//   try {
-//     const response = await fetch(
-//       `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
-//       {
-//         method: "GET",
-//         headers: {
-//           "Content-Type": "application/json",
-//           "Authorization": `Bearer ${token}`,
-//         }
-//       }
-//     );
-
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! status: ${response.status}`);
-//     }
-
-//     const data = await response.json();
-//     console.log("Retrieved modifications:", data);
-
-//     if (!data.modifications || !Array.isArray(data.modifications)) {
-//       console.warn("No modifications found or invalid format");
-//       return;
-//     }
-
-//     // Apply modifications for current page
-//     // data.modifications.forEach(mod => {
-//     //   if (mod.pageId === pageId) {
-//     //     mod.elements.forEach(elem => {
-//     //       const cssData = elem.css?.em;
-//     //       if (cssData) {
-//     //         const { id, ...styles } = cssData;
-//     //         const elementStructure = elem.elementStructure;
-            
-//     //         // Find or create the element
-//     //         let targetElement = document.getElementById(id);
-            
-//     //         if (!targetElement && elementStructure) {
-//     //           // Create new element if it doesn't exist
-//     //           targetElement = document.createElement('em');
-//     //           targetElement.id = id;
-//     //           targetElement.textContent = elementStructure.content;
-              
-//     //           // Find the parent element
-//     //           const parentElement = elementStructure.parentId ? 
-//     //             document.getElementById(elementStructure.parentId) : 
-//     //             document.body;
-              
-//     //           if (parentElement) {
-//     //             // Find the text node to replace
-//     //             const textNodes = [];
-//     //             const walker = document.createTreeWalker(
-//     //               parentElement,
-//     //               NodeFilter.SHOW_TEXT,
-//     //               {
-//     //                 acceptNode: function(node) {
-//     //                   return node.textContent.includes(elementStructure.content) ?
-//     //                     NodeFilter.FILTER_ACCEPT :
-//     //                     NodeFilter.FILTER_REJECT;
-//     //                 }
-//     //               },
-//     //               false
-//     //             );
-                
-//     //             let node;
-//     //             while (node = walker.nextNode()) {
-//     //               textNodes.push(node);
-//     //             }
-                
-//     //             if (textNodes.length > 0) {
-//     //               textNodes[0].parentNode.replaceChild(targetElement, textNodes[0]);
-//     //             }
-//     //           }
-//     //         }
-            
-//     //         // Apply styles to the element
-//     //         if (targetElement) {
-//     //           Object.entries(styles).forEach(([prop, value]) => {
-//     //             targetElement.style[prop] = value;
-//     //           });
-//     //         }
-//     //       }
-//     //     });
-//     //   }
-//     // });
-
-//     data.modifications.forEach(mod => {
-//       if (mod.pageId === pageId) {
-//           mod.elements.forEach(elem => {
-//               const cssData = elem.css?.em;
-//               if (cssData) {
-//                   const { id, ...styles } = cssData;
-//                   const elementStructure = elem.elementStructure;
-                  
-//                   // Find or create the element
-//                   let targetElement = document.getElementById(id);
-                  
-//                   if (!targetElement && elementStructure) {
-//                       // Create new element if it doesn't exist
-//                       targetElement = document.createElement('a');
-//                       targetElement.id = id;
-//                       targetElement.textContent = elementStructure.content;
-                      
-//                       // Find the parent element
-//                       const parentElement = elementStructure.parentId ? 
-//                           document.getElementById(elementStructure.parentId) : 
-//                           document.body;
-                      
-//                       if (parentElement) {
-//                           // Find the text node to replace
-//                           const textNodes = [];
-//                           const walker = document.createTreeWalker(
-//                               parentElement,
-//                               NodeFilter.SHOW_TEXT,
-//                               {
-//                                   acceptNode: function(node) {
-//                                       return node.textContent.includes(elementStructure.content) ?
-//                                           NodeFilter.FILTER_ACCEPT :
-//                                           NodeFilter.FILTER_REJECT;
-//                                   }
-//                               },
-//                               false
-//                           );
-                          
-//                           let node;
-//                           while (node = walker.nextNode()) {
-//                               textNodes.push(node);
-//                           }
-                          
-//                           if (textNodes.length > 0) {
-//                               const textNode = textNodes[0];
-//                               const parentNode = textNode.parentNode;
-                              
-//                               // Check if the text is already wrapped in an em tag
-//                               if (parentNode.tagName === 'A') {
-//                                   // Use the existing em tag
-//                                   targetElement = parentNode;
-//                                   if (!targetElement.id) {
-//                                       targetElement.id = id;
-//                                   }
-//                               } else {
-//                                   textNode.parentNode.replaceChild(targetElement, textNode);
-//                               }
-//                           }
-//                       }
-//                   }
-                  
-//                   // Apply styles to the element
-//                   if (targetElement) {
-//                       Object.entries(styles).forEach(([prop, value]) => {
-//                           targetElement.style[prop] = value;
-//                       });
-//                   }
-//               }
-//           });
-//       }
-//     });
-
-//   } catch (error) {
-//     console.error("Error fetching modifications:", error);
-//     if (retries > 0) {
-//       console.log(`Retrying... (${retries} attempts left)`);
-//       setTimeout(() => fetchModifications(retries - 1), 2000);
-//     }
-//   }
-// }
-
 async function fetchModifications(retries = 3) {
   if (!pageId) {
     console.warn("⚠️ No page ID found");
@@ -1329,71 +1151,166 @@ fontfamilies();
   // font weight code start here
   let lastSelectedFontWeightStrong = null;
 
-  document.addEventListener("mouseup", function () {
-      const selection = window.getSelection();
+  // document.addEventListener("mouseup", function () {
+  //     const selection = window.getSelection();
       
-      if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-          let range = selection.getRangeAt(0);
-          let parentElement = range.commonAncestorContainer;
+  //     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+  //         let range = selection.getRangeAt(0);
+  //         let parentElement = range.commonAncestorContainer;
   
-          // If the selected text is a text node, get its parent element
-          if (parentElement.nodeType === Node.TEXT_NODE) {
-              parentElement = parentElement.parentElement;
-          }
+  //         // If the selected text is a text node, get its parent element
+  //         if (parentElement.nodeType === Node.TEXT_NODE) {
+  //             parentElement = parentElement.parentElement;
+  //         }
   
-          // Check if the parent or an ancestor is a <strong> tag
-          const strongElement = parentElement.closest("a");
+  //         // Check if the parent or an ancestor is a <strong> tag
+  //         const strongElement = parentElement.closest("a");
           
-          if (strongElement) {
-              lastSelectedFontWeightStrong = strongElement;
-              console.log("✅ Selected text inside <ancor> for font-weight: ", strongElement.textContent);
-          } else {
-              lastSelectedFontWeightStrong = null;
-          }
+  //         if (strongElement) {
+  //             lastSelectedFontWeightStrong = strongElement;
+  //             console.log("✅ Selected text inside <ancor> for font-weight: ", strongElement.textContent);
+  //         } else {
+  //             lastSelectedFontWeightStrong = null;
+  //         }
+  //     }
+  // });
+
+
+  // document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
+  //   if (!lastSelectedFontWeightStrong) {
+  //       console.warn("⚠️ Please select bold text to apply font-weight");
+  //       return;
+  //   }
+
+  //   // Ensure the strong element has an ID
+  //   if (!lastSelectedFontWeightStrong.id) {
+  //       lastSelectedFontWeightStrong.id = `font-weight-${Date.now()}`;
+  //   }
+
+  //   const selectedWeight = this.value;
+  //   let css = { "font-weight": selectedWeight };
+
+  //   // Apply styles to the strong element
+  //   applyStylesToElement(lastSelectedFontWeightStrong.id, css);
+
+  //   // Save modifications
+  //   await saveModifications(lastSelectedFontWeightStrong.id, css);
+
+  //   console.log("🎨 Applied font-weight:", selectedWeight, "to bold text:", lastSelectedFontWeightStrong.textContent);
+  // });
+
+  // document.querySelector(".underline-element-font-weight").addEventListener("click", async function() {
+  //   if (!lastSelectedFontWeightStrong) {
+  //       console.warn("⚠️ Please select text within an anchor tag to restore underline");
+  //       return;
+  //   }
+
+  //   // Set text-decoration back to underline
+  //   let css = { "font-weight": "normal" };
+    
+  //   // Apply styles
+  //   applyStylesToElement(lastSelectedFontWeightStrong.id, css);
+    
+  //   // Save modifications
+  //   await saveModifications(lastSelectedFontWeightStrong.id, css);
+    
+  //   console.log("🔄 Restored underline to anchor text:", lastSelectedFontWeightStrong.textContent);
+  // });
+
+
+  // Font weight handler
+document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
+  if (!lastSelectedFontWeightStrong) {
+      console.warn("⚠️ Please select text within an anchor tag to apply font weight");
+      return;
+  }
+
+  const selectedWeight = this.value;
+  const element = lastSelectedFontWeightStrong;
+
+  try {
+      // Apply font-weight directly to the anchor tag
+      let css = { "font-weight": selectedWeight };
+      
+      // Ensure the element has an ID
+      if (!element.id) {
+          element.id = `font-weight-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       }
-  });
 
+      // Apply styles and save modifications
+      applyStylesToElement(element.id, css);
+      await saveModifications(element.id, css);
 
-  document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
-    if (!lastSelectedFontWeightStrong) {
-        console.warn("⚠️ Please select bold text to apply font-weight");
-        return;
-    }
+      console.log("✅ Font weight applied:", selectedWeight);
+  } catch (error) {
+      console.error("❌ Error applying font weight:", error);
+  }
+});
 
-    // Ensure the strong element has an ID
-    if (!lastSelectedFontWeightStrong.id) {
-        lastSelectedFontWeightStrong.id = `font-weight-${Date.now()}`;
-    }
+// Selection tracking for font weight
+document.addEventListener("mouseup", function() {
+  const selection = window.getSelection();
+  
+  if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+      let range = selection.getRangeAt(0);
+      let container = range.commonAncestorContainer;
+      
+      // If the container is a text node, get its parent element
+      if (container.nodeType === Node.TEXT_NODE) {
+          container = container.parentElement;
+      }
+      
+      // Find the closest anchor tag
+      const anchorElement = container.closest('a');
+      
+      if (anchorElement) {
+          // Generate unique ID if none exists
+          if (!anchorElement.id) {
+              anchorElement.id = `a-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          }
+          lastSelectedFontWeightStrong = anchorElement;
+          console.log("✅ Selected anchor for font weight:", anchorElement.textContent);
+      } else {
+          lastSelectedFontWeightStrong = null;
+      }
+  }
+});
 
-    const selectedWeight = this.value;
-    let css = { "font-weight": selectedWeight };
+// Undo font weight
+document.querySelector(".underline-element-font-weight").addEventListener("click", async function() {
+  if (!lastSelectedFontWeightStrong) {
+      console.warn("⚠️ Please select text to undo font weight");
+      return;
+  }
 
-    // Apply styles to the strong element
-    applyStylesToElement(lastSelectedFontWeightStrong.id, css);
+  try {
+      // Remove font-weight from inline styles
+      lastSelectedFontWeightStrong.style.removeProperty('font-weight');
 
-    // Save modifications
-    await saveModifications(lastSelectedFontWeightStrong.id, css);
+      // Get all current styles except font-weight
+      const currentStyles = {};
+      const computedStyle = window.getComputedStyle(lastSelectedFontWeightStrong);
+      Object.keys(computedStyle).forEach(key => {
+          if (key !== 'fontWeight' && computedStyle[key] !== '') {
+              currentStyles[key] = computedStyle[key];
+          }
+      });
 
-    console.log("🎨 Applied font-weight:", selectedWeight, "to bold text:", lastSelectedFontWeightStrong.textContent);
-  });
+      // Apply remaining styles without font-weight
+      applyStylesToElement(lastSelectedFontWeightStrong.id, currentStyles, ['font-weight']);
 
-  document.querySelector(".underline-element-font-weight").addEventListener("click", async function() {
-    if (!lastSelectedFontWeightStrong) {
-        console.warn("⚠️ Please select text within an anchor tag to restore underline");
-        return;
-    }
+      // Reset font weight select to default
+      document.getElementById("squareCraftFontWeight").value = "400";
 
-    // Set text-decoration back to underline
-    let css = { "font-weight": "normal" };
-    
-    // Apply styles
-    applyStylesToElement(lastSelectedFontWeightStrong.id, css);
-    
-    // Save modifications
-    await saveModifications(lastSelectedFontWeightStrong.id, css);
-    
-    console.log("🔄 Restored underline to anchor text:", lastSelectedFontWeightStrong.textContent);
-  });
+      // Save the modification without font-weight
+      await saveModifications(lastSelectedFontWeightStrong.id, currentStyles);
+      
+      console.log("🔄 Font weight removed successfully");
+
+  } catch (error) {
+      console.error("❌ Error removing font weight:", error);
+  }
+});
 
 
 
@@ -1401,7 +1318,6 @@ fontfamilies();
 
 
   
-  // element font style code start here . here we have underline and undo
   let lastSelectedUnderlineElement = null;
 
   // Add this event listener for text selection
