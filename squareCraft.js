@@ -862,7 +862,7 @@ function cleanupDuplicateSpans(elementId) {
                   <div class="squareCraft-flex squareCraft-items-center squareCraft-justify-between">
                     <input type="number" id="squareCraftFontSize" pleaceholder="font-size" value="20" min="10" max="50" style="width: 80px; background-color: gray; color: white; border-radius: 4px; padding: 4px 10px 4px 4px;">
 
-                    <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-font-style squareCraft-cursor-pointer underline-element-font-style" width="12px"
+                    <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-font-style squareCraft-cursor-pointer underline-element-font-size" width="12px"
                       src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
                   </div>
                  
@@ -1723,6 +1723,39 @@ function clearPendingChanges() {
 
   // Clean cache every minute
   setInterval(cleanStyleCache, 60000);
+
+
+  document.querySelector(".underline-element-font-size").addEventListener("click", async function() {
+    if (!lastSelectedItalicElementForFontSize) {
+        console.warn("⚠️ Please select text to undo font size");
+        return;
+    }
+
+    const elementId = lastSelectedItalicElementForFontSize.id;
+    const history = fontSizeHistory.get(elementId);
+
+    if (history) {
+        // Restore the original font size
+        let css = { "font-size": history.originalSize };
+        
+        // Apply the original size
+        applyStylesToElement(elementId, css);
+        
+        // Update the font size input to reflect the original size
+        const originalSizeNumber = parseInt(history.originalSize);
+        document.getElementById("squareCraftFontSize").value = originalSizeNumber;
+        
+        // Save modifications
+        await saveModifications(elementId, css);
+        
+        // Remove the history entry since we've restored to original
+        fontSizeHistory.delete(elementId);
+        
+        console.log("🔄 Restored original font size:", history.originalSize);
+    } else {
+        console.warn("⚠️ No font size history found for this element");
+    }
+});
 
   // font-size end
 
