@@ -1759,21 +1759,207 @@ function clearPendingChanges() {
 
 
   // Track selected elements and style history
-  let lastSelectedText = null;
-  let lastSelectedRange = null;
+//   let lastSelectedText = null;
+//   let lastSelectedRange = null;
+//   let lastSelectedItalicElementForFontSize = null;
+//   let styleCache = new Map();
+//   let fontSizeModifiedElements = new Set();
+
+//   // Selection tracking event listener
+//   document.addEventListener("mouseup", function() {
+//       const selection = window.getSelection();
+//       if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+//           lastSelectedText = selection.toString();
+//           lastSelectedRange = selection.getRangeAt(0);
+          
+//           // Get the containing element
+//           let container = lastSelectedRange.commonAncestorContainer;
+//           if (container.nodeType === Node.TEXT_NODE) {
+//               container = container.parentElement;
+//           }
+          
+//           // Check if the selection is within an <a> tag
+//           const element = container.closest('a');
+//           if (element) {
+//               lastSelectedItalicElementForFontSize = element;
+              
+//               // Store the original font size if not already stored
+//               if (!styleCache.has(element)) {
+//                   const computedStyle = window.getComputedStyle(element);
+//                   styleCache.set(element, {
+//                       fontSize: computedStyle.fontSize,
+//                       originalSize: computedStyle.fontSize, // Store original size
+//                       originalText: element.textContent
+//                   });
+//               }
+              
+//               console.log("✅ Element selected for font size modification:", element.textContent);
+//           } else {
+//               lastSelectedItalicElementForFontSize = null;
+//           }
+          
+//           // Store the current styles for any container
+//           if (container) {
+//               const computedStyle = window.getComputedStyle(container);
+//               if (!styleCache.has(container)) {
+//                   styleCache.set(container, {
+//                       fontSize: computedStyle.fontSize,
+//                       originalSize: computedStyle.fontSize,
+//                       originalText: lastSelectedText
+//                   });
+//               }
+//           }
+          
+//           console.log("✅ Text Selected:", lastSelectedText);
+//       }
+//   });
+
+//   // Font size change handler
+//   document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+//       if (!lastSelectedRange || !lastSelectedText) {
+//           console.warn("⚠️ No text selected");
+//           return;
+//       }
+
+//       const fontSize = this.value + "px";
+      
+//       try {
+//           // Get the common ancestor container
+//           let container = lastSelectedRange.commonAncestorContainer;
+          
+//           // If the container is a text node, get its parent element
+//           if (container.nodeType === Node.TEXT_NODE) {
+//               container = container.parentElement;
+//           }
+
+//           // Check if the container or its parent is an anchor tag
+//           let targetElement = container.tagName === 'A' ? container : 
+//                             container.closest('a');
+
+//           // If no anchor tag found but text is selected, use the immediate parent
+//           if (!targetElement && container) {
+//               targetElement = container;
+//           }
+
+//           if (targetElement) {
+//               // Generate a unique ID if none exists
+//               if (!targetElement.id) {
+//                   targetElement.id = `text-mod-${Date.now()}`;
+//               }
+
+//               // Store this element as having font-size modification
+//               fontSizeModifiedElements.add(targetElement.id);
+
+//               // Get or create cache entry
+//               let cacheEntry = styleCache.get(targetElement) || {
+//                   originalSize: window.getComputedStyle(targetElement).fontSize,
+//                   originalText: targetElement.textContent
+//               };
+
+//               // Update cache with new size while preserving original
+//               styleCache.set(targetElement, {
+//                   ...cacheEntry,
+//                   fontSize: fontSize
+//               });
+
+//               // Apply font size directly to the element
+//               targetElement.style.fontSize = fontSize;
+
+//               // Create CSS for persistent styling
+//               let css = {
+//                   "font-size": fontSize
+//               };
+
+//               // Apply styles and save to database
+//               applyStylesToElement(targetElement.id, css);
+//               await saveModifications(targetElement.id, css);
+
+//               console.log("✅ Font size modified and saved:", fontSize);
+//           }
+//       } catch (error) {
+//           console.error("❌ Error applying font size:", error);
+//       }
+//   });
+
+//   // Style maintenance click handler
+//   document.addEventListener("click", function(event) {
+//       let element = event.target;
+//       while (element && element !== document.body) {
+//           if (styleCache.has(element)) {
+//               const cachedStyle = styleCache.get(element);
+//               if (cachedStyle.fontSize) {
+//                   element.style.fontSize = cachedStyle.fontSize;
+//               }
+//           }
+//           element = element.parentElement;
+//       }
+//   });
+
+//   // Undo button handler
+//   document.querySelector(".underline-element-font-size").addEventListener("click", async function() {
+//     if (!lastSelectedItalicElementForFontSize) {
+//         console.warn("⚠️ Please select text to undo font size");
+//         return;
+//     }
+
+//     const element = lastSelectedItalicElementForFontSize;
+    
+//     try {
+//         if (!element.id || !styleCache.has(element.id)) {
+//             console.warn("⚠️ No stored font size found for this element");
+//             return;
+//         }
+
+//         const cachedStyle = styleCache.get(element.id);
+        
+//         if (cachedStyle && cachedStyle.originalSize) {
+//             // Restore the original font size
+//             let css = { "font-size": cachedStyle.originalSize };
+            
+//             // Apply the original size
+//             element.style.fontSize = cachedStyle.originalSize;
+//             applyStylesToElement(element.id, css);
+            
+//             // Update the font size input to reflect the original size
+//             const originalSizeNumber = parseInt(cachedStyle.originalSize);
+//             document.getElementById("squareCraftFontSize").value = originalSizeNumber;
+            
+//             // Save modifications
+//             await saveModifications(element.id, css);
+            
+//             // Remove from style cache since we're back to original
+//             styleCache.delete(element.id);
+            
+//             console.log("🔄 Restored original font size:", cachedStyle.originalSize);
+//         }
+//     } catch (error) {
+//         console.error("❌ Error restoring font size:", error);
+//     }
+// });
+
+//   // Cache cleanup function
+//   function cleanStyleCache() {
+//       for (let [element, styles] of styleCache.entries()) {
+//           if (!document.contains(element)) {
+//               styleCache.delete(element);
+//           }
+//       }
+//   }
+
+//   // Run cache cleanup every minute
+//   setInterval(cleanStyleCache, 60000);
+
+
+// Track selected elements
   let lastSelectedItalicElementForFontSize = null;
-  let styleCache = new Map();
-  let fontSizeModifiedElements = new Set();
 
   // Selection tracking event listener
   document.addEventListener("mouseup", function() {
       const selection = window.getSelection();
       if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-          lastSelectedText = selection.toString();
-          lastSelectedRange = selection.getRangeAt(0);
+          let container = selection.getRangeAt(0).commonAncestorContainer;
           
-          // Get the containing element
-          let container = lastSelectedRange.commonAncestorContainer;
+          // If the container is a text node, get its parent element
           if (container.nodeType === Node.TEXT_NODE) {
               container = container.parentElement;
           }
@@ -1781,173 +1967,145 @@ function clearPendingChanges() {
           // Check if the selection is within an <a> tag
           const element = container.closest('a');
           if (element) {
-              lastSelectedItalicElementForFontSize = element;
-              
-              // Store the original font size if not already stored
-              if (!styleCache.has(element)) {
-                  const computedStyle = window.getComputedStyle(element);
-                  styleCache.set(element, {
-                      fontSize: computedStyle.fontSize,
-                      originalSize: computedStyle.fontSize, // Store original size
-                      originalText: element.textContent
-                  });
+              // Generate unique ID if none exists
+              if (!element.id) {
+                  element.id = `font-size-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
               }
-              
+              lastSelectedItalicElementForFontSize = element;
               console.log("✅ Element selected for font size modification:", element.textContent);
           } else {
               lastSelectedItalicElementForFontSize = null;
           }
-          
-          // Store the current styles for any container
-          if (container) {
-              const computedStyle = window.getComputedStyle(container);
-              if (!styleCache.has(container)) {
-                  styleCache.set(container, {
-                      fontSize: computedStyle.fontSize,
-                      originalSize: computedStyle.fontSize,
-                      originalText: lastSelectedText
-                  });
-              }
-          }
-          
-          console.log("✅ Text Selected:", lastSelectedText);
       }
   });
 
   // Font size change handler
   document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-      if (!lastSelectedRange || !lastSelectedText) {
-          console.warn("⚠️ No text selected");
+      if (!lastSelectedItalicElementForFontSize) {
+          console.warn("⚠️ Please select text to modify font size");
           return;
       }
 
       const fontSize = this.value + "px";
+      const element = lastSelectedItalicElementForFontSize;
       
       try {
-          // Get the common ancestor container
-          let container = lastSelectedRange.commonAncestorContainer;
-          
-          // If the container is a text node, get its parent element
-          if (container.nodeType === Node.TEXT_NODE) {
-              container = container.parentElement;
-          }
+          // Apply font size directly to the element
+          element.style.fontSize = fontSize;
 
-          // Check if the container or its parent is an anchor tag
-          let targetElement = container.tagName === 'A' ? container : 
-                            container.closest('a');
+          // Create CSS for persistent styling
+          let css = {
+              "font-size": fontSize
+          };
 
-          // If no anchor tag found but text is selected, use the immediate parent
-          if (!targetElement && container) {
-              targetElement = container;
-          }
+          // Apply styles and save to database
+          applyStylesToElement(element.id, css);
+          await saveModifications(element.id, css);
 
-          if (targetElement) {
-              // Generate a unique ID if none exists
-              if (!targetElement.id) {
-                  targetElement.id = `text-mod-${Date.now()}`;
-              }
-
-              // Store this element as having font-size modification
-              fontSizeModifiedElements.add(targetElement.id);
-
-              // Get or create cache entry
-              let cacheEntry = styleCache.get(targetElement) || {
-                  originalSize: window.getComputedStyle(targetElement).fontSize,
-                  originalText: targetElement.textContent
-              };
-
-              // Update cache with new size while preserving original
-              styleCache.set(targetElement, {
-                  ...cacheEntry,
-                  fontSize: fontSize
-              });
-
-              // Apply font size directly to the element
-              targetElement.style.fontSize = fontSize;
-
-              // Create CSS for persistent styling
-              let css = {
-                  "font-size": fontSize
-              };
-
-              // Apply styles and save to database
-              applyStylesToElement(targetElement.id, css);
-              await saveModifications(targetElement.id, css);
-
-              console.log("✅ Font size modified and saved:", fontSize);
-          }
+          console.log("✅ Font size modified and saved:", fontSize);
       } catch (error) {
           console.error("❌ Error applying font size:", error);
       }
   });
 
-  // Style maintenance click handler
-  document.addEventListener("click", function(event) {
-      let element = event.target;
-      while (element && element !== document.body) {
-          if (styleCache.has(element)) {
-              const cachedStyle = styleCache.get(element);
-              if (cachedStyle.fontSize) {
-                  element.style.fontSize = cachedStyle.fontSize;
-              }
-          }
-          element = element.parentElement;
+  // Modified applyStylesToElement function to handle property removal
+  function applyStylesToElement(elementId, css, propertiesToRemove = []) {
+      if (!elementId) return;
+
+      let styleTag = document.getElementById(`style-${elementId}`);
+      if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = `style-${elementId}`;
+          document.head.appendChild(styleTag);
       }
-  });
+
+      // Get existing styles
+      let existingStyles = {};
+      const element = document.getElementById(elementId);
+      if (element) {
+          const computedStyle = window.getComputedStyle(element);
+          Object.keys(css).forEach(prop => {
+              existingStyles[prop] = computedStyle[prop];
+          });
+      }
+
+      // Create CSS text
+      let cssText = `#${elementId} { `;
+      
+      // Add new styles
+      Object.keys(css).forEach((prop) => {
+          if (!propertiesToRemove.includes(prop)) {
+              cssText += `${prop}: ${css[prop]} !important; `;
+          }
+      });
+      
+      cssText += "}";
+      styleTag.innerHTML = cssText;
+
+      // If no styles remain, remove the style tag
+      if (Object.keys(css).length === 0 || cssText === `#${elementId} { }`) {
+          styleTag.remove();
+      }
+
+      console.log(`✅ Styles ${propertiesToRemove.length > 0 ? 'removed' : 'persisted'} for ${elementId}`);
+  }
 
   // Undo button handler
   document.querySelector(".underline-element-font-size").addEventListener("click", async function() {
-    if (!lastSelectedItalicElementForFontSize) {
-        console.warn("⚠️ Please select text to undo font size");
-        return;
-    }
+      if (!lastSelectedItalicElementForFontSize) {
+          console.warn("⚠️ Please select text to undo font size");
+          return;
+      }
 
-    const element = lastSelectedItalicElementForFontSize;
-    
-    try {
-        if (!element.id || !styleCache.has(element.id)) {
-            console.warn("⚠️ No stored font size found for this element");
-            return;
-        }
+      const element = lastSelectedItalicElementForFontSize;
+      
+      try {
+          // Remove font-size from inline styles
+          element.style.removeProperty('font-size');
 
-        const cachedStyle = styleCache.get(element.id);
-        
-        if (cachedStyle && cachedStyle.originalSize) {
-            // Restore the original font size
-            let css = { "font-size": cachedStyle.originalSize };
-            
-            // Apply the original size
-            element.style.fontSize = cachedStyle.originalSize;
-            applyStylesToElement(element.id, css);
-            
-            // Update the font size input to reflect the original size
-            const originalSizeNumber = parseInt(cachedStyle.originalSize);
-            document.getElementById("squareCraftFontSize").value = originalSizeNumber;
-            
-            // Save modifications
-            await saveModifications(element.id, css);
-            
-            // Remove from style cache since we're back to original
-            styleCache.delete(element.id);
-            
-            console.log("🔄 Restored original font size:", cachedStyle.originalSize);
-        }
-    } catch (error) {
-        console.error("❌ Error restoring font size:", error);
-    }
-});
+          // Get all current styles except font-size
+          const currentStyles = {};
+          const computedStyle = window.getComputedStyle(element);
+          Object.keys(computedStyle).forEach(key => {
+              if (key !== 'fontSize' && computedStyle[key] !== '') {
+                  currentStyles[key] = computedStyle[key];
+              }
+          });
 
-  // Cache cleanup function
-  function cleanStyleCache() {
-      for (let [element, styles] of styleCache.entries()) {
-          if (!document.contains(element)) {
-              styleCache.delete(element);
+          // Apply remaining styles without font-size
+          applyStylesToElement(element.id, currentStyles, ['font-size']);
+
+          // Reset font size input to default
+          document.getElementById("squareCraftFontSize").value = "16"; // or your default size
+
+          // Save the modification without font-size
+          await saveModifications(element.id, currentStyles);
+          
+          console.log("🔄 Font size removed successfully");
+
+          // Remove style tag if no styles remain
+          const styleTag = document.getElementById(`style-${element.id}`);
+          if (styleTag && styleTag.innerHTML.trim() === `#${element.id} { }`) {
+              styleTag.remove();
+          }
+
+      } catch (error) {
+          console.error("❌ Error removing font size:", error);
+      }
+  });
+
+  // Helper function to clean up styles
+  function cleanupStyles(elementId) {
+      const styleTag = document.getElementById(`style-${elementId}`);
+      if (styleTag) {
+          const element = document.getElementById(elementId);
+          if (!element || styleTag.innerHTML.trim() === `#${elementId} { }`) {
+              styleTag.remove();
+              return true;
           }
       }
+      return false;
   }
-
-  // Run cache cleanup every minute
-  setInterval(cleanStyleCache, 60000);
 
   // font-size end
 
