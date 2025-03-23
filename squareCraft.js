@@ -1896,42 +1896,46 @@ function clearPendingChanges() {
   });
 
   // Undo button handler
-  document.querySelector(".underline-element-font-style").addEventListener("click", async function() {
-      if (!lastSelectedItalicElementForFontSize) {
-          console.warn("⚠️ Please select text to undo font size");
-          return;
-      }
+  document.querySelector(".underline-element-font-size").addEventListener("click", async function() {
+    if (!lastSelectedItalicElementForFontSize) {
+        console.warn("⚠️ Please select text to undo font size");
+        return;
+    }
 
-      const element = lastSelectedItalicElementForFontSize;
-      const cachedStyle = styleCache.get(element);
+    const element = lastSelectedItalicElementForFontSize;
+    
+    try {
+        if (!element.id || !styleCache.has(element.id)) {
+            console.warn("⚠️ No stored font size found for this element");
+            return;
+        }
 
-      if (cachedStyle && cachedStyle.originalSize) {
-          // Restore the original font size
-          let css = { "font-size": cachedStyle.originalSize };
-          
-          // Apply the original size
-          element.style.fontSize = cachedStyle.originalSize;
-          applyStylesToElement(element.id, css);
-          
-          // Update the font size input to reflect the original size
-          const originalSizeNumber = parseInt(cachedStyle.originalSize);
-          document.getElementById("squareCraftFontSize").value = originalSizeNumber;
-          
-          // Save modifications
-          await saveModifications(element.id, css);
-          
-          // Update cache with the restored size
-          styleCache.set(element, {
-              fontSize: cachedStyle.originalSize,
-              originalSize: cachedStyle.originalSize,
-              originalText: cachedStyle.originalText
-          });
-          
-          console.log("🔄 Restored original font size:", cachedStyle.originalSize);
-      } else {
-          console.warn("⚠️ No original font size found for this element");
-      }
-  });
+        const cachedStyle = styleCache.get(element.id);
+        
+        if (cachedStyle && cachedStyle.originalSize) {
+            // Restore the original font size
+            let css = { "font-size": cachedStyle.originalSize };
+            
+            // Apply the original size
+            element.style.fontSize = cachedStyle.originalSize;
+            applyStylesToElement(element.id, css);
+            
+            // Update the font size input to reflect the original size
+            const originalSizeNumber = parseInt(cachedStyle.originalSize);
+            document.getElementById("squareCraftFontSize").value = originalSizeNumber;
+            
+            // Save modifications
+            await saveModifications(element.id, css);
+            
+            // Remove from style cache since we're back to original
+            styleCache.delete(element.id);
+            
+            console.log("🔄 Restored original font size:", cachedStyle.originalSize);
+        }
+    } catch (error) {
+        console.error("❌ Error restoring font size:", error);
+    }
+});
 
   // Cache cleanup function
   function cleanStyleCache() {
