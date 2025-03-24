@@ -1137,173 +1137,6 @@ document.addEventListener("mouseup", function () {
 
 
 
-async function fontfamilies() {
-  const response = await fetch(
-    "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
-  );
-  const data = await response.json();
-
-  const fontDropdown = document.getElementById("squareCraft-font-family");
-  const fontWeightDropdown = document.getElementById("squareCraftFontWeight");
-
-  if (!fontDropdown || !fontWeightDropdown) {
-    console.error("Dropdown elements not found!");
-    return;
-  }
-
-  fontDropdown.style.position = "relative";
-  fontDropdown.style.width = "100%";
-  fontDropdown.style.border = "1px solid #585858";
-  fontDropdown.style.borderRadius = "6px";
-  fontDropdown.style.background = "#2c2c2c";
-  fontDropdown.style.color = "white";
-  fontDropdown.style.display = "flex";
-  fontDropdown.style.alignItems = "center";
-  fontDropdown.style.justifyContent = "space-between";
-  fontDropdown.style.cursor = "pointer";
-
-  let selectedFontText = document.createElement("p");
-  selectedFontText.textContent = "Select a Font";
-  selectedFontText.style.flexGrow = "1";
-  selectedFontText.style.fontSize = "14px";
-  selectedFontText.classList.add("squareCraft-universal");
-
-  const dropdownArrow = document.createElement("img");
-  dropdownArrow.src =
-    "https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg";
-  dropdownArrow.style.width = "12px";
-  dropdownArrow.style.height = "12px";
-  dropdownArrow.style.transform = "rotate(180deg)";
-
-  fontDropdown.appendChild(selectedFontText);
-  fontDropdown.appendChild(dropdownArrow);
-
-  const fontList = document.createElement("div");
-  fontList.style.position = "absolute";
-  fontList.style.top = "100%";
-  fontList.style.left = "0";
-  fontList.style.width = "100%";
-  fontList.style.background = "#2c2c2c";
-  fontList.style.border = "1px solid #585858";
-  fontList.style.borderRadius = "6px";
-  fontList.style.overflowY = "auto";
-  fontList.style.maxHeight = "200px";
-  fontList.style.display = "none";
-  fontList.style.zIndex = "1000";
-
-  // Populate font-family dropdown
-  data.items.forEach((font) => {
-    const option = document.createElement("div");
-    option.textContent = font.family;
-    option.style.padding = "8px";
-    option.style.cursor = "pointer";
-    option.style.fontFamily = font.family;
-    option.style.transition = "background 0.3s";
-    option.style.color = "white";
-    option.style.fontSize = "14px";
-
-    option.addEventListener("mouseover", () => {
-      option.style.background = "#444";
-    });
-
-    option.addEventListener("mouseout", () => {
-      option.style.background = "transparent";
-    });
-
-    // option.addEventListener("click", async () => {
-    //   if (!selectedElement) {
-    //     console.warn("⚠️ No element selected.");
-    //     return;
-    //   }
-
-    //   let selectedFont = font.family;
-    //   selectedFontText.textContent = selectedFont;
-    //   selectedFontText.style.fontFamily = selectedFont;
-    //   fontList.style.display = "none";
-
-    //   // Apply font-family immediately
-    //   let css = { "font-family": selectedFont };
-    //   applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
-
-    //   // Save modifications immediately without waiting
-    //   await saveModifications(lastSelectedFontfamilyStrong.id, css);
-
-    //   console.log("🎨 Applied font:", selectedFont, "to", selectedElement.id);
-
-    //   // Update font-weight dropdown dynamically
-    //   updateFontWeightDropdown(font.variants);
-    // });
-
-    option.addEventListener("click", async () => {
-      if (!lastSelectedFontfamilyItalic) {
-          console.warn("⚠️ Please select bold text to apply font-family");
-          return;
-      }
-  
-      let selectedFont = font.family;
-      selectedFontText.textContent = selectedFont;
-      selectedFontText.style.fontFamily = selectedFont;
-      fontList.style.display = "none";
-  
-      // Ensure the strong element has an ID
-      if (!lastSelectedFontfamilyItalic.id) {
-        lastSelectedFontfamilyItalic.id = `font-family-${Date.now()}`;
-      }
-  
-      // Store the original text before applying styles
-      const originalText = lastSelectedFontfamilyItalic.textContent;
-  
-      // Apply font-family to the strong element
-      let css = { "font-family": selectedFont };
-      applyStylesToElement(lastSelectedFontfamilyItalic.id, css);
-  
-      // Save modifications using your existing function
-      await saveModifications(lastSelectedFontfamilyItalic.id, css);
-  
-      console.log("🎨 Applied font:", selectedFont, "to bold text:", originalText);
-  
-      // Update font-weight dropdown dynamically
-      updateFontWeightDropdown(font.variants);
-  });
-
-    fontList.appendChild(option);
-  });
-
-  fontDropdown.appendChild(fontList);
-
-  fontDropdown.addEventListener("click", (event) => {
-    event.stopPropagation();
-    fontList.style.display =
-      fontList.style.display === "block" ? "none" : "block";
-  });
-
-  document.addEventListener("click", () => {
-    fontList.style.display = "none";
-  });
-
-  // **Function to Update Font Weight Dropdown**
-  function updateFontWeightDropdown(variants) {
-    fontWeightDropdown.innerHTML = ""; // Clear existing options
-
-    if (!variants || variants.length === 0) {
-      console.warn("No font weights found for the selected font.");
-      fontWeightDropdown.innerHTML = `<option value="400" selected>Regular (400)</option>`;
-      return;
-    }
-
-    variants.forEach((variant) => {
-      let weight = variant === "regular" ? "400" : variant; // Convert "regular" to 400
-      let option = document.createElement("option");
-      option.value = weight;
-      option.textContent = `Weight ${weight}`;
-      fontWeightDropdown.appendChild(option);
-    });
-  }
-}
-
-fontfamilies();
-
-
   function attachEventListeners() {
     document.body.addEventListener("click", (event) => {
       let block = event.target.closest('[id^="block-"]');
@@ -1326,9 +1159,7 @@ fontfamilies();
     }
 
     let css = {
-      "font-family": document
-        .getElementById("squareCraft-font-family")
-        .querySelector("p").textContent,
+      
       "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
       // "font-aligment-icon":
       //   document.document.querySelectorAll(".alignment-icon").value,
@@ -1564,69 +1395,8 @@ async function applyStylesToAllAnchors(paragraphElement, css) {
 //   });
 // });
 
-// Font size handler with continuous update support
-// Enhanced font size handler
-// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-//   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
-//       console.warn("⚠️ Please select text within a link first");
-//       return;
-//   }
-
-//   // Get the new font size value
-//   const newSize = parseInt(this.value);
-  
-//   // Validate the font size
-//   if (isNaN(newSize) || newSize < 8 || newSize > 70) {
-//       console.warn("⚠️ Invalid font size value");
-//       return;
-//   }
-
-//   // Get all anchor tags in the selected paragraph
-//   const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
-  
-//   // Apply the new font size to all anchors
-//   for (const anchor of allAnchors) {
-//       // Ensure anchor has an ID
-//       if (!anchor.id) {
-//           anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-//       }
-
-//       // Apply the font size directly to the element
-//       anchor.style.fontSize = `${newSize}px`;
-
-//       // Create or update the style tag
-//       let styleTag = document.getElementById(`style-${anchor.id}`);
-//       if (!styleTag) {
-//           styleTag = document.createElement('style');
-//           styleTag.id = `style-${anchor.id}`;
-//           document.head.appendChild(styleTag);
-//       }
-
-//       // Get existing styles
-//       const existingStyles = StyleManager.getExistingStyles(anchor.id);
-//       const updatedStyles = {
-//           ...existingStyles,
-//           'font-size': `${newSize}px`
-//       };
-
-//       // Apply updated styles
-//       let cssText = `#${anchor.id} { `;
-//       Object.entries(updatedStyles).forEach(([prop, value]) => {
-//           if (value) {
-//               cssText += `${prop}: ${value} !important; `;
-//           }
-//       });
-//       cssText += "}";
-//       styleTag.innerHTML = cssText;
-
-//       // Save the modification
-//       await saveModifications(anchor.id, updatedStyles);
-//   }
-
-//   console.log(`✅ Font size ${newSize}px applied to all links in paragraph`);
-// });
-
-// Add this code to handle font size increase/decrease
+//Font size handler with continuous update support
+//Enhanced font size handler
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
       console.warn("⚠️ Please select text within a link first");
@@ -1642,75 +1412,52 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
       return;
   }
 
-  // Apply the font size to all anchors in the paragraph
-  await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
-      "font-size": `${newSize}px`
-  });
-
-  console.log(`✅ Font size updated to ${newSize}px`);
-});
-
-// Font size increase/decrease handlers
-const fontSizeControls = {
-  increase: async function() {
-      if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
-          console.warn("⚠️ Please select text within a link first");
-          return;
+  // Get all anchor tags in the selected paragraph
+  const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
+  
+  // Apply the new font size to all anchors
+  for (const anchor of allAnchors) {
+      // Ensure anchor has an ID
+      if (!anchor.id) {
+          anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       }
 
-      const fontSizeInput = document.getElementById("squareCraftFontSize");
-      let currentSize = parseInt(fontSizeInput.value) || 16;
-      const newSize = currentSize + 1;
+      // Apply the font size directly to the element
+      anchor.style.fontSize = `${newSize}px`;
 
-      if (newSize > 70) {
-          console.warn("⚠️ Maximum font size reached (70px)");
-          return;
+      // Create or update the style tag
+      let styleTag = document.getElementById(`style-${anchor.id}`);
+      if (!styleTag) {
+          styleTag = document.createElement('style');
+          styleTag.id = `style-${anchor.id}`;
+          document.head.appendChild(styleTag);
       }
 
-      // Update input value
-      fontSizeInput.value = newSize;
+      // Get existing styles
+      const existingStyles = StyleManager.getExistingStyles(anchor.id);
+      const updatedStyles = {
+          ...existingStyles,
+          'font-size': `${newSize}px`
+      };
 
-      // Apply new font size
-      await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
-          "font-size": `${newSize}px`
+      // Apply updated styles
+      let cssText = `#${anchor.id} { `;
+      Object.entries(updatedStyles).forEach(([prop, value]) => {
+          if (value) {
+              cssText += `${prop}: ${value} !important; `;
+          }
       });
+      cssText += "}";
+      styleTag.innerHTML = cssText;
 
-      console.log(`✅ Font size increased to ${newSize}px`);
-  },
-
-  decrease: async function() {
-      if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
-          console.warn("⚠️ Please select text within a link first");
-          return;
-      }
-
-      const fontSizeInput = document.getElementById("squareCraftFontSize");
-      let currentSize = parseInt(fontSizeInput.value) || 16;
-      const newSize = currentSize - 1;
-
-      if (newSize < 8) {
-          console.warn("⚠️ Minimum font size reached (8px)");
-          return;
-      }
-
-      // Update input value
-      fontSizeInput.value = newSize;
-
-      // Apply new font size
-      await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
-          "font-size": `${newSize}px`
-      });
-
-      console.log(`✅ Font size decreased to ${newSize}px`);
+      // Save the modification
+      await saveModifications(anchor.id, updatedStyles);
   }
-};
 
-// Add event listeners for the font size controls
-document.querySelector('.underline-element-font-size').addEventListener('click', fontSizeControls.increase);
-document.querySelector('.underline-element-font-size').addEventListener('contextmenu', function(e) {
-  e.preventDefault();
-  fontSizeControls.decrease();
+  console.log(`✅ Font size ${newSize}px applied to all links in paragraph`);
 });
+
+
 
 // Font weight handler
 document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
