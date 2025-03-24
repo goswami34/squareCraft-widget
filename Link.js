@@ -1152,7 +1152,71 @@ fontfamilies();
   // font weight code start here
   let lastSelectedFontWeightStrong = null;
 
+  // document.addEventListener("mouseup", function () {
+  //     const selection = window.getSelection();
+      
+  //     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+  //         let range = selection.getRangeAt(0);
+  //         let parentElement = range.commonAncestorContainer;
   
+  //         // If the selected text is a text node, get its parent element
+  //         if (parentElement.nodeType === Node.TEXT_NODE) {
+  //             parentElement = parentElement.parentElement;
+  //         }
+  
+  //         // Check if the parent or an ancestor is a <strong> tag
+  //         const strongElement = parentElement.closest("a");
+          
+  //         if (strongElement) {
+  //             lastSelectedFontWeightStrong = strongElement;
+  //             console.log("✅ Selected text inside <ancor> for font-weight: ", strongElement.textContent);
+  //         } else {
+  //             lastSelectedFontWeightStrong = null;
+  //         }
+  //     }
+  // });
+
+
+  // document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
+  //   if (!lastSelectedFontWeightStrong) {
+  //       console.warn("⚠️ Please select bold text to apply font-weight");
+  //       return;
+  //   }
+
+  //   // Ensure the strong element has an ID
+  //   if (!lastSelectedFontWeightStrong.id) {
+  //       lastSelectedFontWeightStrong.id = `font-weight-${Date.now()}`;
+  //   }
+
+  //   const selectedWeight = this.value;
+  //   let css = { "font-weight": selectedWeight };
+
+  //   // Apply styles to the strong element
+  //   applyStylesToElement(lastSelectedFontWeightStrong.id, css);
+
+  //   // Save modifications
+  //   await saveModifications(lastSelectedFontWeightStrong.id, css);
+
+  //   console.log("🎨 Applied font-weight:", selectedWeight, "to bold text:", lastSelectedFontWeightStrong.textContent);
+  // });
+
+  // document.querySelector(".underline-element-font-weight").addEventListener("click", async function() {
+  //   if (!lastSelectedFontWeightStrong) {
+  //       console.warn("⚠️ Please select text within an anchor tag to restore underline");
+  //       return;
+  //   }
+
+  //   // Set text-decoration back to underline
+  //   let css = { "font-weight": "normal" };
+    
+  //   // Apply styles
+  //   applyStylesToElement(lastSelectedFontWeightStrong.id, css);
+    
+  //   // Save modifications
+  //   await saveModifications(lastSelectedFontWeightStrong.id, css);
+    
+  //   console.log("🔄 Restored underline to anchor text:", lastSelectedFontWeightStrong.textContent);
+  // });
 
   document.body.addEventListener("click", (event) => {
     let block = event.target.closest('[id^="block-"]');
@@ -1230,188 +1294,638 @@ function applyStylesToElement(elementId, css) {
 }
 
 
-
-// Track selected elements and parent paragraph
-let selectedParagraph = null;
-let lastSelectedLink = null;
-
-// Modified selection tracking
-document.addEventListener("mouseup", function() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-        let range = selection.getRangeAt(0);
-        let container = range.commonAncestorContainer;
-        
-        // If the container is a text node, get its parent element
-        if (container.nodeType === Node.TEXT_NODE) {
-            container = container.parentElement;
-        }
-        
-        // Find the closest anchor tag and its parent paragraph
-        const linkElement = container.closest('a');
-        if (linkElement) {
-            const paragraphElement = linkElement.closest('p');
-            if (paragraphElement) {
-                selectedParagraph = paragraphElement;
-                lastSelectedLink = linkElement;
-                
-                // Ensure all anchor tags within the paragraph have IDs
-                const allAnchors = paragraphElement.querySelectorAll('a');
-                allAnchors.forEach(anchor => {
-                    if (!anchor.id) {
-                        anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                    }
-                });
-                
-                console.log("✅ Link and paragraph selected:", {
-                    linkText: linkElement.textContent,
-                    paragraphId: paragraphElement.id
-                });
-            }
-        } else {
-            selectedParagraph = null;
-            lastSelectedLink = null;
-        }
-    }
-});
-
-
-// Modified function to apply styles to all anchors in a paragraph
-async function applyStylesToAllAnchors(paragraphElement, css) {
-  if (!paragraphElement) return;
-  
-  const allAnchors = paragraphElement.querySelectorAll('a');
-  const modifications = [];
-  
-  for (const anchor of allAnchors) {
-      // Ensure anchor has an ID
-      if (!anchor.id) {
-          anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      }
-      
-      // Apply styles to this anchor
-      applyStylesToElement(anchor.id, css);
-      
-      // Prepare modification for saving
-      modifications.push({
-          elementId: anchor.id,
-          css: css
-      });
-  }
-  
-  // Save all modifications
-  for (const mod of modifications) {
-      await saveModifications(mod.elementId, mod.css);
-  }
-  
-  console.log(`✅ Styles applied to ${modifications.length} anchors in paragraph`);
-}
-
-// Font size handler
-document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-  if (!selectedParagraph || !lastSelectedLink) {
-      console.warn("⚠️ Please select text within a link to apply font size");
-      return;
-  }
-
-  const fontSize = this.value + "px";
-  let css = { "font-size": fontSize };
-  
-  await applyStylesToAllAnchors(selectedParagraph, css);
-});
-
-// Font weight handler
+  // Font weight handler
 document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
-  if (!selectedParagraph || !lastSelectedLink) {
-      console.warn("⚠️ Please select text within a link to apply font weight");
+  if (!lastSelectedFontWeightStrong) {
+      console.warn("⚠️ Please select text within an anchor tag to apply font weight");
       return;
   }
 
   const selectedWeight = this.value;
-  let css = { "font-weight": selectedWeight };
-  
-  await applyStylesToAllAnchors(selectedParagraph, css);
-});
+  const element = lastSelectedFontWeightStrong;
 
-// Color change handler
-document.getElementById('squareCraftTextColor').addEventListener('input', async function() {
-  if (!selectedParagraph || !lastSelectedLink) {
-      console.warn("⚠️ Please select text within a link to apply color");
-      return;
-  }
-
-  const color = this.value;
-  let css = { "color": color };
-  
-  // Update hex input
-  document.getElementById('squareCraftColorHex').value = color.toUpperCase();
-  
-  await applyStylesToAllAnchors(selectedParagraph, css);
-});
-
-// Text decoration handler
-document.querySelectorAll(".elements-font-style").forEach((btn) => {
-  btn.addEventListener("click", async function() {
-      if (!selectedParagraph || !lastSelectedLink) {
-          console.warn("⚠️ Please select text to apply text decoration");
-          return;
-      }
-
-      let styleType = this.dataset.style;
-      if (styleType === "underline") {
-          let css = { "text-decoration": "none" };
-          await applyStylesToAllAnchors(selectedParagraph, css);
-      }
-  });
-});
-
-// Restore underline handler
-document.querySelector(".underline-element-font-style").addEventListener("click", async function() {
-  if (!selectedParagraph || !lastSelectedLink) {
-      console.warn("⚠️ Please select text within a link to restore underline");
-      return;
-  }
-
-  let css = { "text-decoration": "underline" };
-  await applyStylesToAllAnchors(selectedParagraph, css);
-});
-
-// Reset styles for all anchors in a paragraph
-async function resetStylesForParagraph(paragraphElement, propertyToReset) {
-  if (!paragraphElement) return;
-  
-  const allAnchors = paragraphElement.querySelectorAll('a');
-  const modifications = [];
-  
-  for (const anchor of allAnchors) {
-      // Remove the specified style property
-      anchor.style.removeProperty(propertyToReset);
+  try {
+      // Apply font-weight directly to the anchor tag
+      let css = { "font-weight": selectedWeight };
       
-      // Get remaining styles
+      // Ensure the element has an ID
+      if (!element.id) {
+          element.id = `font-weight-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      // Apply styles and save modifications
+      applyStylesToElement(element.id, css);
+      await saveModifications(element.id, css);
+
+      console.log("✅ Font weight applied:", selectedWeight);
+  } catch (error) {
+      console.error("❌ Error applying font weight:", error);
+  }
+});
+
+// Selection tracking for font weight
+document.addEventListener("mouseup", function() {
+  const selection = window.getSelection();
+  
+  if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+      let range = selection.getRangeAt(0);
+      let container = range.commonAncestorContainer;
+      
+      // If the container is a text node, get its parent element
+      if (container.nodeType === Node.TEXT_NODE) {
+          container = container.parentElement;
+      }
+      
+      // Find the closest anchor tag
+      const anchorElement = container.closest('a');
+      
+      if (anchorElement) {
+          // Generate unique ID if none exists
+          if (!anchorElement.id) {
+              anchorElement.id = `a-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          }
+          lastSelectedFontWeightStrong = anchorElement;
+          console.log("✅ Selected anchor for font weight:", anchorElement.textContent);
+      } else {
+          lastSelectedFontWeightStrong = null;
+      }
+  }
+});
+
+// Undo font weight
+document.querySelector(".underline-element-font-weight").addEventListener("click", async function() {
+  if (!lastSelectedFontWeightStrong) {
+      console.warn("⚠️ Please select text to undo font weight");
+      return;
+  }
+
+  try {
+      // Remove font-weight from inline styles
+      lastSelectedFontWeightStrong.style.removeProperty('font-weight');
+
+      // Get all current styles except font-weight
       const currentStyles = {};
-      const computedStyle = window.getComputedStyle(anchor);
+      const computedStyle = window.getComputedStyle(lastSelectedFontWeightStrong);
       Object.keys(computedStyle).forEach(key => {
-          if (key !== propertyToReset && computedStyle[key] !== '') {
+          if (key !== 'fontWeight' && computedStyle[key] !== '') {
               currentStyles[key] = computedStyle[key];
           }
       });
+
+      // Apply remaining styles without font-weight
+      applyStylesToElement(lastSelectedFontWeightStrong.id, currentStyles, ['font-weight']);
+
+      // Reset font weight select to default
+      document.getElementById("squareCraftFontWeight").value = "400";
+
+      // Save the modification without font-weight
+      await saveModifications(lastSelectedFontWeightStrong.id, currentStyles);
       
-      // Apply remaining styles and save
-      applyStylesToElement(anchor.id, currentStyles, [propertyToReset]);
-      modifications.push({
-          elementId: anchor.id,
-          css: currentStyles
-      });
+      console.log("🔄 Font weight removed successfully");
+
+  } catch (error) {
+      console.error("❌ Error removing font weight:", error);
   }
+});
+
+
+
+  // font weight end here
+
+
   
-  // Save all modifications
-  for (const mod of modifications) {
-      await saveModifications(mod.elementId, mod.css);
-  }
-  
-  console.log(`✅ Style ${propertyToReset} reset for ${modifications.length} anchors`);
+  let lastSelectedUnderlineElement = null;
+
+  // Add this event listener for text selection
+  document.addEventListener("mouseup", function() {
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+          let range = selection.getRangeAt(0);
+          let container = range.commonAncestorContainer;
+          
+          // If the container is a text node, get its parent element
+          if (container.nodeType === Node.TEXT_NODE) {
+              container = container.parentElement;
+          }
+          
+          // Check if the selection is within any tag
+          const selectedElement = container.closest('a');
+          if (selectedElement) {
+              lastSelectedUnderlineElement = selectedElement;
+              console.log("✅ Element selected for underline:", selectedElement.textContent);
+          } else {
+              lastSelectedUnderlineElement = null;
+          }
+      }
+  });
+
+
+  document.querySelectorAll(".elements-font-style").forEach((btn) => {
+    btn.addEventListener("click", async function() {
+        if (!lastSelectedUnderlineElement) {
+            console.warn("⚠️ Please select text to apply underline");
+            return;
+        }
+
+        let styleType = this.dataset.style;
+        let css = {};
+
+        // if (styleType === "underline") {
+        //     // Get current text decoration
+        //     const currentDecoration = window.getComputedStyle(lastSelectedUnderlineElement).textDecorationLine;
+            
+        //     // Toggle underline
+        //     css["text-decoration"] = currentDecoration.includes("none") ? "underline" : "none";
+            
+        //     // Ensure the element has an ID
+        //     if (!lastSelectedUnderlineElement.id) {
+        //         lastSelectedUnderlineElement.id = `underline-${Date.now()}`;
+        //     }
+
+        //     // Apply styles
+        //     applyStylesToElement(lastSelectedUnderlineElement.id, css);
+            
+        //     // Save modifications
+        //     await saveModifications(lastSelectedUnderlineElement.id, css);
+            
+        //     console.log("🎨 Applied underline to:", lastSelectedUnderlineElement.textContent);
+        // }
+
+        if (styleType === "underline") {
+          // Set text-decoration to none
+          let css = { "text-decoration": "none" };
+          
+          // Apply styles
+          applyStylesToElement(lastSelectedUnderlineElement.id, css);
+          
+          // Save modifications
+          await saveModifications(lastSelectedUnderlineElement.id, css);
+          
+          console.log("🎨 Removed underline from anchor text:", lastSelectedUnderlineElement.textContent);
+      }
+    });
+});
+
+
+
+
+  // Event listener for the undo button
+  document.querySelector(".underline-element-font-style").addEventListener("click", async function() {
+    if (!lastSelectedUnderlineElement) {
+        console.warn("⚠️ Please select text within an anchor tag to restore underline");
+        return;
+    }
+
+    // Set text-decoration back to underline
+    let css = { "text-decoration": "underline" };
+    
+    // Apply styles
+    applyStylesToElement(lastSelectedUnderlineElement.id, css);
+    
+    // Save modifications
+    await saveModifications(lastSelectedUnderlineElement.id, css);
+    
+    console.log("🔄 Restored underline to anchor text:", lastSelectedUnderlineElement.textContent);
+  });
+    
+   
+
+
+   
+let pendingChanges = {
+  fontSize: null,
+  selectedText: null,
+  selectedRange: null,
+  container: null
+};
+
+function clearPendingChanges() {
+  // Remove any temporary preview spans
+  document.querySelectorAll('[id^="squareCraft-temp-"]').forEach(span => {
+      if (span && span.parentNode) {
+          // Only remove if it matches our pending changes
+          if (pendingChanges.selectedText && span.textContent === pendingChanges.selectedText) {
+              const textNode = document.createTextNode(span.textContent);
+              span.parentNode.replaceChild(textNode, span);
+          }
+      }
+  });
+
+  // Reset pending changes object
+  pendingChanges = {
+      fontSize: null,
+      selectedText: null,
+      selectedRange: null,
+      container: null
+  };
 }
 
+
+
+  //font-size start
+//   let lastSelectedText = null;
+//   let lastSelectedRange = null;
+
+//   let styleCache = new Map();
+
+//   // Update the mouseup event listener to store selection info
+//   document.addEventListener("mouseup", function() {
+//       const selection = window.getSelection();
+//       if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+//           lastSelectedText = selection.toString();
+//           lastSelectedRange = selection.getRangeAt(0);
+          
+//           // Get the containing element
+//           let container = lastSelectedRange.commonAncestorContainer;
+//           if (container.nodeType === Node.TEXT_NODE) {
+//               container = container.parentElement;
+//           }
+          
+//           // Store the current styles
+//           if (container) {
+//               const computedStyle = window.getComputedStyle(container);
+//               styleCache.set(container, {
+//                   fontSize: computedStyle.fontSize,
+//                   originalText: lastSelectedText
+//               });
+//           }
+          
+//           console.log("✅ Text Selected:", lastSelectedText);
+//       }
+//   });
+
+//   let fontSizeModifiedElements = new Set();
+
+
+
+//   // Font size change handler
+//   document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+//       if (!lastSelectedRange || !lastSelectedText) {
+//           console.warn("⚠️ No text selected");
+//           return;
+//       }
+
+//       const fontSize = this.value + "px";
+      
+//       try {
+//           // Get the common ancestor container
+//           let container = lastSelectedRange.commonAncestorContainer;
+          
+//           // If the container is a text node, get its parent element
+//           if (container.nodeType === Node.TEXT_NODE) {
+//               container = container.parentElement;
+//           }
+
+//           // Check if the container or its parent is a strong tag
+//           let targetElement = container.tagName === 'A' ? container : 
+//                             container.closest('a');
+
+//           // If no strong tag found but text is selected, use the immediate parent
+//           if (!targetElement && container) {
+//               targetElement = container;
+//           }
+
+//           if (targetElement) {
+//               // Generate a unique ID if none exists
+//               if (!targetElement.id) {
+//                   targetElement.id = `text-mod-${Date.now()}`;
+//               }
+
+//               // Store this element as having font-size modification
+//               fontSizeModifiedElements.add(targetElement.id);
+
+//               // Apply font size directly to the existing element
+//               targetElement.style.fontSize = fontSize;
+
+//               // Store the applied style in our cache
+//               styleCache.set(targetElement, {
+//                   fontSize: fontSize,
+//                   originalText: lastSelectedText
+//               });
+
+//               // Create CSS for persistent styling
+//               let css = {
+//                   "font-size": fontSize
+//               };
+
+//               // Apply styles using your existing function
+//               applyStylesToElement(targetElement.id, css);
+
+//               // Save to database
+//               await saveModifications(targetElement.id, css);
+
+//               console.log("✅ Font size modified and saved:", fontSize);
+//           }
+//       } catch (error) {
+//           console.error("❌ Error applying font size:", error);
+//       }
+//   });
+
+
+//   // Add a click event listener to maintain styles
+//   document.addEventListener("click", function(event) {
+//       // Check if we have cached styles for any parent elements
+//       let element = event.target;
+//       while (element && element !== document.body) {
+//           if (styleCache.has(element)) {
+//               const cachedStyle = styleCache.get(element);
+//               if (cachedStyle.fontSize) {
+//                   element.style.fontSize = cachedStyle.fontSize;
+//               }
+//           }
+//           element = element.parentElement;
+//       }
+//   });
+
+//   // Optional: Clean up cache periodically
+//   function cleanStyleCache() {
+//       for (let [element, styles] of styleCache.entries()) {
+//           if (!document.contains(element)) {
+//               styleCache.delete(element);
+//           }
+//       }
+//   }
+
+//   // Clean cache every minute
+//   setInterval(cleanStyleCache, 60000);
+
+
+//   document.querySelector(".underline-element-font-size").addEventListener("click", async function() {
+//     if (!lastSelectedItalicElementForFontSize) {
+//         console.warn("⚠️ Please select text to undo font size");
+//         return;
+//     }
+
+//     const elementId = lastSelectedItalicElementForFontSize.id;
+//     const history = fontSizeHistory.get(elementId);
+
+//     if (history) {
+//         // Restore the original font size
+//         let css = { "font-size": history.originalSize };
+        
+//         // Apply the original size
+//         applyStylesToElement(elementId, css);
+        
+//         // Update the font size input to reflect the original size
+//         const originalSizeNumber = parseInt(history.originalSize);
+//         document.getElementById("squareCraftFontSize").value = originalSizeNumber;
+        
+//         // Save modifications
+//         await saveModifications(elementId, css);
+        
+//         // Remove the history entry since we've restored to original
+//         fontSizeHistory.delete(elementId);
+        
+//         console.log("🔄 Restored original font size:", history.originalSize);
+//     } else {
+//         console.warn("⚠️ No font size history found for this element");
+//     }
+// });
+
+
+
+// Track selected elements
+  let lastSelectedItalicElementForFontSize = null;
+
+  // Selection tracking event listener
+  document.addEventListener("mouseup", function() {
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+          let container = selection.getRangeAt(0).commonAncestorContainer;
+          
+          // If the container is a text node, get its parent element
+          if (container.nodeType === Node.TEXT_NODE) {
+              container = container.parentElement;
+          }
+          
+          // Check if the selection is within an <a> tag
+          const element = container.closest('a');
+          if (element) {
+              // Generate unique ID if none exists
+              if (!element.id) {
+                  element.id = `font-size-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+              }
+              lastSelectedItalicElementForFontSize = element;
+              console.log("✅ Element selected for font size modification:", element.textContent);
+          } else {
+              lastSelectedItalicElementForFontSize = null;
+          }
+      }
+  });
+
+  // Font size change handler
+  document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+      if (!lastSelectedItalicElementForFontSize) {
+          console.warn("⚠️ Please select text to modify font size");
+          return;
+      }
+
+      const fontSize = this.value + "px";
+      const element = lastSelectedItalicElementForFontSize;
+      
+      try {
+          // Apply font size directly to the element
+          element.style.fontSize = fontSize;
+
+          // Create CSS for persistent styling
+          let css = {
+              "font-size": fontSize
+          };
+
+          // Apply styles and save to database
+          applyStylesToElement(element.id, css);
+          await saveModifications(element.id, css);
+
+          console.log("✅ Font size modified and saved:", fontSize);
+      } catch (error) {
+          console.error("❌ Error applying font size:", error);
+      }
+  });
+
+  // Modified applyStylesToElement function to handle property removal
+  function applyStylesToElement(elementId, css, propertiesToRemove = []) {
+      if (!elementId) return;
+
+      let styleTag = document.getElementById(`style-${elementId}`);
+      if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = `style-${elementId}`;
+          document.head.appendChild(styleTag);
+      }
+
+      // Get existing styles
+      let existingStyles = {};
+      const element = document.getElementById(elementId);
+      if (element) {
+          const computedStyle = window.getComputedStyle(element);
+          Object.keys(css).forEach(prop => {
+              existingStyles[prop] = computedStyle[prop];
+          });
+      }
+
+      // Create CSS text
+      let cssText = `#${elementId} { `;
+      
+      // Add new styles
+      Object.keys(css).forEach((prop) => {
+          if (!propertiesToRemove.includes(prop)) {
+              cssText += `${prop}: ${css[prop]} !important; `;
+          }
+      });
+      
+      cssText += "}";
+      styleTag.innerHTML = cssText;
+
+      // If no styles remain, remove the style tag
+      if (Object.keys(css).length === 0 || cssText === `#${elementId} { }`) {
+          styleTag.remove();
+      }
+
+      console.log(`✅ Styles ${propertiesToRemove.length > 0 ? 'removed' : 'persisted'} for ${elementId}`);
+  }
+
+  // Undo button handler
+  document.querySelector(".underline-element-font-size").addEventListener("click", async function() {
+      if (!lastSelectedItalicElementForFontSize) {
+          console.warn("⚠️ Please select text to undo font size");
+          return;
+      }
+
+      const element = lastSelectedItalicElementForFontSize;
+      
+      try {
+          // Remove font-size from inline styles
+          element.style.removeProperty('font-size');
+
+          // Get all current styles except font-size
+          const currentStyles = {};
+          const computedStyle = window.getComputedStyle(element);
+          Object.keys(computedStyle).forEach(key => {
+              if (key !== 'fontSize' && computedStyle[key] !== '') {
+                  currentStyles[key] = computedStyle[key];
+              }
+          });
+
+          // Apply remaining styles without font-size
+          applyStylesToElement(element.id, currentStyles, ['font-size']);
+
+          // Reset font size input to default
+          document.getElementById("squareCraftFontSize").value = "16"; // or your default size
+
+          // Save the modification without font-size
+          await saveModifications(element.id, currentStyles);
+          
+          console.log("🔄 Font size removed successfully");
+
+          // Remove style tag if no styles remain
+          const styleTag = document.getElementById(`style-${element.id}`);
+          if (styleTag && styleTag.innerHTML.trim() === `#${element.id} { }`) {
+              styleTag.remove();
+          }
+
+      } catch (error) {
+          console.error("❌ Error removing font size:", error);
+      }
+  });
+
+  // Helper function to clean up styles
+  function cleanupStyles(elementId) {
+      const styleTag = document.getElementById(`style-${elementId}`);
+      if (styleTag) {
+          const element = document.getElementById(elementId);
+          if (!element || styleTag.innerHTML.trim() === `#${elementId} { }`) {
+              styleTag.remove();
+              return true;
+          }
+      }
+      return false;
+  }
+
+  // font-size end
+
+
+    // text color start
+    // Add this variable to track the last selected link
+    // Track the last selected link element
+    let lastSelectedLink = null;
+
+    // Event listener for text selection
+    document.addEventListener("mouseup", function() {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+            let range = selection.getRangeAt(0);
+            let container = range.commonAncestorContainer;
+            
+            // If the container is a text node, get its parent element
+            if (container.nodeType === Node.TEXT_NODE) {
+                container = container.parentElement;
+            }
+            
+            // Check if the selection is within an <a> tag
+            const linkElement = container.closest('a');
+            if (linkElement) {
+                // Generate unique ID if none exists
+                if (!linkElement.id) {
+                    linkElement.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                }
+                lastSelectedLink = linkElement;
+                console.log("✅ Link selected for color change:", linkElement.textContent);
+            } else {
+                lastSelectedLink = null;
+            }
+        }
+    });
+
+    // Color picker event handler
+    document.getElementById('squareCraftTextColor').addEventListener('input', async function() {
+        if (!lastSelectedLink) {
+            console.warn("⚠️ Please select text within a link to apply color");
+            return;
+        }
+
+        const color = this.value;
+        
+        // Apply color to the link
+        let css = { "color": color };
+        applyStylesToElement(lastSelectedLink.id, css);
+        
+        // Update hex input
+        document.getElementById('squareCraftColorHex').value = color.toUpperCase();
+        
+        // Save modifications
+        await saveModifications(lastSelectedLink.id, css);
+        
+        console.log("🎨 Applied color to link:", color);
+    });
+
+    // Hex input event handler
+    document.getElementById('squareCraftColorHex').addEventListener('input', async function() {
+        if (!lastSelectedLink) {
+            console.warn("⚠️ Please select text within a link to apply color");
+            return;
+        }
+
+        let hex = this.value.replace('#', '');
+        
+        // Validate hex color
+        if (/^[0-9A-F]{6}$/i.test(hex)) {
+            const color = '#' + hex;
+            
+            // Update color picker
+            document.getElementById('squareCraftTextColor').value = color;
+            
+            // Apply color to the link
+            let css = { "color": color };
+            applyStylesToElement(lastSelectedLink.id, css);
+            
+            // Save modifications
+            await saveModifications(lastSelectedLink.id, css);
+            
+            console.log("🎨 Applied color to link:", color);
+        }
+    });
+
+    // text color end
 
 
  
