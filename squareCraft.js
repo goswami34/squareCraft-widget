@@ -878,6 +878,94 @@ function cleanupDuplicateSpans(elementId) {
 //     }
 // });
 
+
+// Selection Manager
+const SelectionManager = {
+  selectedParagraph: null,
+  selectedLink: null,
+
+  updateSelection(element) {
+      const linkElement = element.closest('a');
+      if (!linkElement) return;
+
+      const paragraphElement = linkElement.closest('p');
+      if (!paragraphElement) return;
+
+      this.selectedParagraph = paragraphElement;
+      this.selectedLink = linkElement;
+
+      // Ensure all anchor tags in the paragraph have IDs
+      const allAnchors = paragraphElement.querySelectorAll('a');
+      allAnchors.forEach(anchor => {
+          if (!anchor.id) {
+              anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          }
+      });
+
+      console.log("✅ Selected:", {
+          link: linkElement.textContent,
+          paragraph: paragraphElement.textContent
+      });
+  },
+
+  clear() {
+      this.selectedParagraph = null;
+      this.selectedLink = null;
+  }
+};
+
+
+// Style Manager
+const StyleManager = {
+  async applyStylesToParagraphAnchors(paragraphElement, styles) {
+      if (!paragraphElement) return;
+
+      const allAnchors = paragraphElement.querySelectorAll('a');
+      if (!allAnchors.length) return;
+
+      const modifications = [];
+
+      for (const anchor of allAnchors) {
+          // Ensure anchor has ID
+          if (!anchor.id) {
+              anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          }
+
+          // Apply styles
+          let styleTag = document.getElementById(`style-${anchor.id}`);
+          if (!styleTag) {
+              styleTag = document.createElement('style');
+              styleTag.id = `style-${anchor.id}`;
+              document.head.appendChild(styleTag);
+          }
+
+          let cssText = `#${anchor.id} { `;
+          Object.entries(styles).forEach(([prop, value]) => {
+              if (value) {
+                  cssText += `${prop}: ${value} !important; `;
+              }
+          });
+          cssText += "}";
+          styleTag.innerHTML = cssText;
+
+          // Prepare modification for saving
+          modifications.push({
+              elementId: anchor.id,
+              css: styles
+          });
+      }
+
+      // Save all modifications
+      for (const mod of modifications) {
+          await saveModifications(mod.elementId, mod.css);
+      }
+
+      console.log(`✅ Styles applied to ${modifications.length} anchors in paragraph`);
+  }
+};
+
+
+
 document.addEventListener("mouseup", function () {
   const selection = window.getSelection();
   
@@ -1236,43 +1324,58 @@ let selectedParagraph = null;
 let lastSelectedLink = null;
 
 // Modified selection tracking
+// document.addEventListener("mouseup", function() {
+//     const selection = window.getSelection();
+//     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+//         let range = selection.getRangeAt(0);
+//         let container = range.commonAncestorContainer;
+        
+//         // If the container is a text node, get its parent element
+//         if (container.nodeType === Node.TEXT_NODE) {
+//             container = container.parentElement;
+//         }
+        
+//         // Find the closest anchor tag and its parent paragraph
+//         const linkElement = container.closest('a');
+//         if (linkElement) {
+//             const paragraphElement = linkElement.closest('p');
+//             if (paragraphElement) {
+//                 selectedParagraph = paragraphElement;
+//                 lastSelectedLink = linkElement;
+                
+//                 // Ensure all anchor tags within the paragraph have IDs
+//                 const allAnchors = paragraphElement.querySelectorAll('a');
+//                 allAnchors.forEach(anchor => {
+//                     if (!anchor.id) {
+//                         anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+//                     }
+//                 });
+                
+//                 console.log("✅ Link and paragraph selected:", {
+//                     linkText: linkElement.textContent,
+//                     paragraphId: paragraphElement.id
+//                 });
+//             }
+//         } else {
+//             selectedParagraph = null;
+//             lastSelectedLink = null;
+//         }
+//     }
+// });
+
 document.addEventListener("mouseup", function() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-        let range = selection.getRangeAt(0);
-        let container = range.commonAncestorContainer;
-        
-        // If the container is a text node, get its parent element
-        if (container.nodeType === Node.TEXT_NODE) {
-            container = container.parentElement;
-        }
-        
-        // Find the closest anchor tag and its parent paragraph
-        const linkElement = container.closest('a');
-        if (linkElement) {
-            const paragraphElement = linkElement.closest('p');
-            if (paragraphElement) {
-                selectedParagraph = paragraphElement;
-                lastSelectedLink = linkElement;
-                
-                // Ensure all anchor tags within the paragraph have IDs
-                const allAnchors = paragraphElement.querySelectorAll('a');
-                allAnchors.forEach(anchor => {
-                    if (!anchor.id) {
-                        anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                    }
-                });
-                
-                console.log("✅ Link and paragraph selected:", {
-                    linkText: linkElement.textContent,
-                    paragraphId: paragraphElement.id
-                });
-            }
-        } else {
-            selectedParagraph = null;
-            lastSelectedLink = null;
-        }
-    }
+  const selection = window.getSelection();
+  if (!selection.rangeCount || selection.toString().trim().length === 0) {
+      SelectionManager.clear();
+      return;
+  }
+
+  let container = selection.getRangeAt(0).commonAncestorContainer;
+  if (container.nodeType === Node.TEXT_NODE) {
+      container = container.parentElement;
+  }
+
+  SelectionManager.updateSelection(container);
 });
 
 
@@ -1309,72 +1412,85 @@ async function applyStylesToAllAnchors(paragraphElement, css) {
 
 // Font size handler
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-  if (!selectedParagraph || !lastSelectedLink) {
-      console.warn("⚠️ Please select text within a link to apply font size");
+  if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+      console.warn("⚠️ Please select a link first");
       return;
   }
 
   const fontSize = this.value + "px";
-  let css = { "font-size": fontSize };
-  
-  await applyStylesToAllAnchors(selectedParagraph, css);
+  await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
+      "font-size": fontSize
+  });
 });
 
 // Font weight handler
 document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
-  if (!selectedParagraph || !lastSelectedLink) {
-      console.warn("⚠️ Please select text within a link to apply font weight");
+  if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+      console.warn("⚠️ Please select a link first");
       return;
   }
 
-  const selectedWeight = this.value;
-  let css = { "font-weight": selectedWeight };
-  
-  await applyStylesToAllAnchors(selectedParagraph, css);
+  const weight = this.value;
+  await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
+      "font-weight": weight
+  });
 });
 
-// Color change handler
-document.getElementById('squareCraftTextColor').addEventListener('input', async function() {
-  if (!selectedParagraph || !lastSelectedLink) {
-      console.warn("⚠️ Please select text within a link to apply color");
+// Text color handler
+document.getElementById("squareCraftTextColor").addEventListener("input", async function() {
+  if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+      console.warn("⚠️ Please select a link first");
       return;
   }
 
   const color = this.value;
-  let css = { "color": color };
+  document.getElementById("squareCraftColorHex").value = color.toUpperCase();
   
-  // Update hex input
-  document.getElementById('squareCraftColorHex').value = color.toUpperCase();
-  
-  await applyStylesToAllAnchors(selectedParagraph, css);
+  await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
+      "color": color
+  });
 });
 
 // Text decoration handler
-document.querySelectorAll(".elements-font-style").forEach((btn) => {
+document.querySelectorAll(".elements-font-style").forEach(btn => {
   btn.addEventListener("click", async function() {
-      if (!selectedParagraph || !lastSelectedLink) {
-          console.warn("⚠️ Please select text to apply text decoration");
+      if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+          console.warn("⚠️ Please select a link first");
           return;
       }
 
-      let styleType = this.dataset.style;
+      const styleType = this.dataset.style;
       if (styleType === "underline") {
-          let css = { "text-decoration": "none" };
-          await applyStylesToAllAnchors(selectedParagraph, css);
+          await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
+              "text-decoration": "none"
+          });
       }
   });
 });
 
 // Restore underline handler
 document.querySelector(".underline-element-font-style").addEventListener("click", async function() {
-  if (!selectedParagraph || !lastSelectedLink) {
-      console.warn("⚠️ Please select text within a link to restore underline");
+  if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+      console.warn("⚠️ Please select a link first");
       return;
   }
 
-  let css = { "text-decoration": "underline" };
-  await applyStylesToAllAnchors(selectedParagraph, css);
+  await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
+      "text-decoration": "underline"
+  });
 });
+
+function cleanupStyles(paragraphElement) {
+  if (!paragraphElement) return;
+
+  const allAnchors = paragraphElement.querySelectorAll('a');
+  allAnchors.forEach(anchor => {
+      const styleTag = document.getElementById(`style-${anchor.id}`);
+      if (styleTag) {
+          styleTag.remove();
+      }
+  });
+}
 
 // Reset styles for all anchors in a paragraph
 async function resetStylesForParagraph(paragraphElement, propertyToReset) {
