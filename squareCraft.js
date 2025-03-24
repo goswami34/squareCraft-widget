@@ -616,7 +616,7 @@ function cleanupDuplicateSpans(elementId) {
                   </div>
 
                   <div class="squareCraft-flex squareCraft-items-center squareCraft-justify-between">
-                    <input type="number" id="squareCraftFontSize" pleaceholder="font-size" value="20" min="10" max="50" style="width: 80px; background-color: gray; color: white; border-radius: 4px; padding: 4px 10px 4px 4px;">
+                    <input type="number" id="squareCraftFontSize" pleaceholder="font-size" value="20" min="8" max="70" style="width: 80px; background-color: gray; color: white; border-radius: 4px; padding: 4px 10px 4px 4px;">
 
                     <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-font-style squareCraft-cursor-pointer underline-element-font-size" width="12px"
                       src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
@@ -916,6 +916,55 @@ const SelectionManager = {
 
 
 // Style Manager
+// const StyleManager = {
+//   async applyStylesToParagraphAnchors(paragraphElement, styles) {
+//       if (!paragraphElement) return;
+
+//       const allAnchors = paragraphElement.querySelectorAll('a');
+//       if (!allAnchors.length) return;
+
+//       const modifications = [];
+
+//       for (const anchor of allAnchors) {
+//           // Ensure anchor has ID
+//           if (!anchor.id) {
+//               anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+//           }
+
+//           // Apply styles
+//           let styleTag = document.getElementById(`style-${anchor.id}`);
+//           if (!styleTag) {
+//               styleTag = document.createElement('style');
+//               styleTag.id = `style-${anchor.id}`;
+//               document.head.appendChild(styleTag);
+//           }
+
+//           let cssText = `#${anchor.id} { `;
+//           Object.entries(styles).forEach(([prop, value]) => {
+//               if (value) {
+//                   cssText += `${prop}: ${value} !important; `;
+//               }
+//           });
+//           cssText += "}";
+//           styleTag.innerHTML = cssText;
+
+//           // Prepare modification for saving
+//           modifications.push({
+//               elementId: anchor.id,
+//               css: styles
+//           });
+//       }
+
+//       // Save all modifications
+//       for (const mod of modifications) {
+//           await saveModifications(mod.elementId, mod.css);
+//       }
+
+//       console.log(`✅ Styles applied to ${modifications.length} anchors in paragraph`);
+//   }
+// };
+
+// Enhanced Style Manager
 const StyleManager = {
   async applyStylesToParagraphAnchors(paragraphElement, styles) {
       if (!paragraphElement) return;
@@ -931,6 +980,15 @@ const StyleManager = {
               anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
           }
 
+          // Get existing styles
+          const existingStyles = this.getExistingStyles(anchor.id);
+
+          // Merge new styles with existing styles
+          const mergedStyles = {
+              ...existingStyles,
+              ...styles
+          };
+
           // Apply styles
           let styleTag = document.getElementById(`style-${anchor.id}`);
           if (!styleTag) {
@@ -940,7 +998,7 @@ const StyleManager = {
           }
 
           let cssText = `#${anchor.id} { `;
-          Object.entries(styles).forEach(([prop, value]) => {
+          Object.entries(mergedStyles).forEach(([prop, value]) => {
               if (value) {
                   cssText += `${prop}: ${value} !important; `;
               }
@@ -948,10 +1006,17 @@ const StyleManager = {
           cssText += "}";
           styleTag.innerHTML = cssText;
 
+          // Also apply styles directly to the element
+          Object.entries(styles).forEach(([prop, value]) => {
+              if (value) {
+                  anchor.style[prop] = value;
+              }
+          });
+
           // Prepare modification for saving
           modifications.push({
               elementId: anchor.id,
-              css: styles
+              css: mergedStyles
           });
       }
 
@@ -961,6 +1026,62 @@ const StyleManager = {
       }
 
       console.log(`✅ Styles applied to ${modifications.length} anchors in paragraph`);
+  },
+
+  getExistingStyles(elementId) {
+      const element = document.getElementById(elementId);
+      if (!element) return {};
+
+      const computedStyle = window.getComputedStyle(element);
+      const relevantStyles = {};
+
+      // List of style properties we want to track
+      const trackProperties = [
+          'font-size',
+          'font-weight',
+          'color',
+          'text-decoration',
+          'font-family'
+      ];
+
+      trackProperties.forEach(prop => {
+          const value = computedStyle.getPropertyValue(prop);
+          if (value) {
+              relevantStyles[prop] = value;
+          }
+      });
+
+      return relevantStyles;
+  }
+};
+
+// Style Tracking System
+const StyleTracker = {
+  _styles: new Map(),
+
+  setStyle(elementId, property, value) {
+      if (!this._styles.has(elementId)) {
+          this._styles.set(elementId, new Map());
+      }
+      this._styles.get(elementId).set(property, value);
+  },
+
+  getStyle(elementId, property) {
+      if (!this._styles.has(elementId)) return null;
+      return this._styles.get(elementId).get(property);
+  },
+
+  getAllStyles(elementId) {
+      if (!this._styles.has(elementId)) return {};
+      const styles = {};
+      this._styles.get(elementId).forEach((value, prop) => {
+          styles[prop] = value;
+      });
+      return styles;
+  },
+
+  clearStyles(elementId) {
+      this._styles.delete(elementId);
   }
 };
 
@@ -1411,16 +1532,46 @@ async function applyStylesToAllAnchors(paragraphElement, css) {
 }
 
 // Font size handler
+// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+//   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+//       console.warn("⚠️ Please select a link first");
+//       return;
+//   }
+
+//   const fontSize = this.value + "px";
+//   await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
+//       "font-size": fontSize
+//   });
+// });
+
+// Font size handler with continuous update support
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
       console.warn("⚠️ Please select a link first");
       return;
   }
 
-  const fontSize = this.value + "px";
+  // Get the new font size value
+  const newSize = parseInt(this.value);
+  
+  // Validate the font size
+  if (isNaN(newSize) || newSize < 8 || newSize > 72) {
+      console.warn("⚠️ Invalid font size value");
+      return;
+  }
+
+  // Create the font size style with px unit
+  const fontSize = `${newSize}px`;
+
+  // Apply the style to all anchors in the paragraph
   await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
       "font-size": fontSize
   });
+
+  // Update the input value to reflect the change
+  this.value = newSize;
+
+  console.log(`✅ Font size updated to ${fontSize}`);
 });
 
 // Font weight handler
