@@ -915,54 +915,6 @@ const SelectionManager = {
 };
 
 
-// Style Manager
-// const StyleManager = {
-//   async applyStylesToParagraphAnchors(paragraphElement, styles) {
-//       if (!paragraphElement) return;
-
-//       const allAnchors = paragraphElement.querySelectorAll('a');
-//       if (!allAnchors.length) return;
-
-//       const modifications = [];
-
-//       for (const anchor of allAnchors) {
-//           // Ensure anchor has ID
-//           if (!anchor.id) {
-//               anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-//           }
-
-//           // Apply styles
-//           let styleTag = document.getElementById(`style-${anchor.id}`);
-//           if (!styleTag) {
-//               styleTag = document.createElement('style');
-//               styleTag.id = `style-${anchor.id}`;
-//               document.head.appendChild(styleTag);
-//           }
-
-//           let cssText = `#${anchor.id} { `;
-//           Object.entries(styles).forEach(([prop, value]) => {
-//               if (value) {
-//                   cssText += `${prop}: ${value} !important; `;
-//               }
-//           });
-//           cssText += "}";
-//           styleTag.innerHTML = cssText;
-
-//           // Prepare modification for saving
-//           modifications.push({
-//               elementId: anchor.id,
-//               css: styles
-//           });
-//       }
-
-//       // Save all modifications
-//       for (const mod of modifications) {
-//           await saveModifications(mod.elementId, mod.css);
-//       }
-
-//       console.log(`✅ Styles applied to ${modifications.length} anchors in paragraph`);
-//   }
-// };
 
 // Enhanced Style Manager
 const StyleManager = {
