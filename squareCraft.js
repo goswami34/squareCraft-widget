@@ -333,89 +333,312 @@ function recreateModifiedElement(structure, styles) {
 }
 
 
+// async function saveModifications(elementId, css, elementStructure = null) {
+//   if (!pageId || !elementId || !css) {
+//     console.warn("⚠️ Missing required data to save modifications.");
+//     return;
+//   }
+
+//   const element = document.getElementById(elementId);
+  
+//   // Generate a unique ID for this specific modification
+//   const uniqueId = `${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  
+//   const modificationData = {
+//     userId,
+//     token,
+//     widgetId,
+//     modifications: [{
+//       pageId,
+//       elements: [{
+//         elementId: uniqueId,
+//         css: {
+//           a: {
+//             id: uniqueId,
+//             ...css
+//           }
+//         },
+//         elementStructure: elementStructure || {
+//           type: 'a',
+//           content: element?.textContent || '',
+//           parentId: element?.parentElement?.id || null,
+//           originalElementId: elementId
+//         }
+//       }]
+//     }]
+//   };
+
+//   try {
+//     const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+//         "userId": userId,
+//         "pageId": pageId,
+//         "widget-id": widgetId,
+//       },
+//       body: JSON.stringify(modificationData),
+//     });
+
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! status: ${response.status}`);
+//     }
+
+//     const result = await response.json();
+//     console.log("✅ Changes Saved Successfully!", result);
+    
+//     return result;
+//   } catch (error) {
+//     console.error("❌ Error saving modifications:", error);
+//   }
+// }
+
+// function validateAndCleanModifications(elementId) {
+//   const element = document.getElementById(elementId);
+//   if (!element) return;
+
+//   // Remove any duplicate style tags
+//   const styleTags = document.querySelectorAll(`style[id^="style-${elementId}"]`);
+//   if (styleTags.length > 1) {
+//       for (let i = 1; i < styleTags.length; i++) {
+//           styleTags[i].remove();
+//       }
+//   }
+
+//   // Ensure styles are properly applied
+//   const styleTag = document.getElementById(`style-${elementId}`);
+//   if (styleTag && element.style.textTransform) {
+//       const css = {
+//           "text-transform": element.style.textTransform
+//       };
+//       applyStylesToElement(elementId, css);
+//   }
+// }
+  
+
+// Enhanced saveModifications function
 async function saveModifications(elementId, css, elementStructure = null) {
   if (!pageId || !elementId || !css) {
-    console.warn("⚠️ Missing required data to save modifications.");
-    return;
+      console.warn("⚠️ Missing required data to save modifications.");
+      return;
   }
 
   const element = document.getElementById(elementId);
-  
-  // Generate a unique ID for this specific modification
+  if (!element) {
+      console.warn("⚠️ Element not found:", elementId);
+      return;
+  }
+
+  // Get current authentication data
+  const token = localStorage.getItem("squareCraft_auth_token");
+  const userId = localStorage.getItem("squareCraft_u_id");
+  const widgetId = localStorage.getItem("squareCraft_w_id");
+
+  if (!token || !userId || !widgetId) {
+      console.warn("⚠️ Missing authentication data");
+      return;
+  }
+
+  // Generate a unique ID for this modification
   const uniqueId = `${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  
+
+  // Prepare the modification data
   const modificationData = {
-    userId,
-    token,
-    widgetId,
-    modifications: [{
-      pageId,
-      elements: [{
-        elementId: uniqueId,
-        css: {
-          a: {
-            id: uniqueId,
-            ...css
-          }
-        },
-        elementStructure: elementStructure || {
-          type: 'a',
-          content: element?.textContent || '',
-          parentId: element?.parentElement?.id || null,
-          originalElementId: elementId
-        }
+      userId: userId,
+      widgetId: widgetId,
+      modifications: [{
+          pageId: pageId,
+          elements: [{
+              elementId: uniqueId,
+              css: {
+                  a: {
+                      id: uniqueId,
+                      ...css
+                  }
+              },
+              elementStructure: elementStructure || {
+                  type: 'a',
+                  content: element.textContent || '',
+                  parentId: element.parentElement?.id || null,
+                  originalElementId: elementId
+              }
+          }]
       }]
-    }]
   };
 
   try {
-    const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-        "userId": userId,
-        "pageId": pageId,
-        "widget-id": widgetId,
-      },
-      body: JSON.stringify(modificationData),
-    });
+      // First, fetch existing modifications
+      const existingResponse = await fetch(
+          `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+          {
+              method: "GET",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`,
+              }
+          }
+      );
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+      if (!existingResponse.ok) {
+          throw new Error(`Failed to fetch existing modifications: ${existingResponse.status}`);
+      }
 
-    const result = await response.json();
-    console.log("✅ Changes Saved Successfully!", result);
-    
-    return result;
+      const existingData = await existingResponse.json();
+      
+      // Merge new modifications with existing ones
+      const existingModifications = existingData.modifications || [];
+      const pageModifications = existingModifications.find(mod => mod.pageId === pageId);
+      
+      if (pageModifications) {
+          // Update existing page modifications
+          pageModifications.elements.push(modificationData.modifications[0].elements[0]);
+      } else {
+          // Add new page modifications
+          existingModifications.push(modificationData.modifications[0]);
+      }
+
+      // Prepare the final data to send
+      const finalData = {
+          userId: userId,
+          widgetId: widgetId,
+          modifications: existingModifications
+      };
+
+      // Save the updated modifications
+      const saveResponse = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+              "userId": userId,
+              "pageId": pageId,
+              "widget-id": widgetId,
+          },
+          body: JSON.stringify(finalData),
+      });
+
+      if (!saveResponse.ok) {
+          throw new Error(`Failed to save modifications: ${saveResponse.status}`);
+      }
+
+      const result = await saveResponse.json();
+      console.log("✅ Changes Saved Successfully!", result);
+
+      // Update local storage with the latest modifications
+      localStorage.setItem(`modifications_${pageId}`, JSON.stringify(existingModifications));
+
+      return result;
   } catch (error) {
-    console.error("❌ Error saving modifications:", error);
+      console.error("❌ Error saving modifications:", error);
+      // Implement retry logic if needed
+      throw error;
   }
 }
 
-function validateAndCleanModifications(elementId) {
-  const element = document.getElementById(elementId);
-  if (!element) return;
+// Helper function to validate modification data
+function validateModificationData(data) {
+  const requiredFields = ['userId', 'widgetId', 'modifications'];
+  const requiredModificationFields = ['pageId', 'elements'];
+  const requiredElementFields = ['elementId', 'css', 'elementStructure'];
 
-  // Remove any duplicate style tags
-  const styleTags = document.querySelectorAll(`style[id^="style-${elementId}"]`);
-  if (styleTags.length > 1) {
-      for (let i = 1; i < styleTags.length; i++) {
-          styleTags[i].remove();
+  // Check required top-level fields
+  for (const field of requiredFields) {
+      if (!data[field]) {
+          console.warn(`⚠️ Missing required field: ${field}`);
+          return false;
       }
   }
 
-  // Ensure styles are properly applied
-  const styleTag = document.getElementById(`style-${elementId}`);
-  if (styleTag && element.style.textTransform) {
-      const css = {
-          "text-transform": element.style.textTransform
-      };
-      applyStylesToElement(elementId, css);
+  // Check modifications array
+  if (!Array.isArray(data.modifications)) {
+      console.warn("⚠️ Modifications must be an array");
+      return false;
+  }
+
+  // Check each modification
+  for (const mod of data.modifications) {
+      for (const field of requiredModificationFields) {
+          if (!mod[field]) {
+              console.warn(`⚠️ Missing required modification field: ${field}`);
+              return false;
+          }
+      }
+
+      // Check elements array
+      if (!Array.isArray(mod.elements)) {
+          console.warn("⚠️ Elements must be an array");
+          return false;
+      }
+
+      // Check each element
+      for (const element of mod.elements) {
+          for (const field of requiredElementFields) {
+              if (!element[field]) {
+                  console.warn(`⚠️ Missing required element field: ${field}`);
+                  return false;
+              }
+          }
+      }
+  }
+
+  return true;
+}
+
+// Helper function to clean up old modifications
+async function cleanupOldModifications() {
+  const token = localStorage.getItem("squareCraft_auth_token");
+  const userId = localStorage.getItem("squareCraft_u_id");
+  const widgetId = localStorage.getItem("squareCraft_w_id");
+
+  if (!token || !userId || !widgetId) return;
+
+  try {
+      const response = await fetch(
+          `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+          {
+              method: "GET",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`,
+              }
+          }
+      );
+
+      if (!response.ok) return;
+
+      const data = await response.json();
+      if (!data.modifications) return;
+
+      // Remove modifications older than 30 days
+      const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+      data.modifications = data.modifications.filter(mod => {
+          const elementIds = mod.elements.map(elem => elem.elementId);
+          return elementIds.some(id => {
+              const timestamp = parseInt(id.split('-')[1]);
+              return timestamp > thirtyDaysAgo;
+          });
+      });
+
+      // Save cleaned up modifications
+      await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+              "userId": userId,
+              "widget-id": widgetId,
+          },
+          body: JSON.stringify(data),
+      });
+  } catch (error) {
+      console.error("❌ Error cleaning up old modifications:", error);
   }
 }
-  
+
+
+
+
   const observer = new MutationObserver(() => {
     console.log("🔄 Edit Mode Detected. Reapplying modifications...");
     fetchModifications();
