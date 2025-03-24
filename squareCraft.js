@@ -983,7 +983,7 @@ const StyleManager = {
         // Get existing styles
         const existingStyles = this.getExistingStyles(anchor.id);
 
-        // Merge new styles with existing styles
+        // Merge new styles with existing styles, ensuring font-size is properly updated
         const mergedStyles = {
             ...existingStyles,
             ...styles
@@ -992,6 +992,7 @@ const StyleManager = {
         // Apply styles directly to the element
         Object.entries(styles).forEach(([prop, value]) => {
             if (value) {
+                // Convert property name from kebab-case to camelCase for style application
                 const camelProp = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
                 anchor.style[camelProp] = value;
             }
@@ -1027,6 +1028,32 @@ const StyleManager = {
     }
 
     console.log(`✅ Styles applied to ${modifications.length} anchors in paragraph`);
+},
+
+getExistingStyles(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return {};
+
+    const computedStyle = window.getComputedStyle(element);
+    const relevantStyles = {};
+
+    // List of style properties we want to track
+    const trackProperties = [
+        'font-size',
+        'font-weight',
+        'color',
+        'text-decoration',
+        'font-family'
+    ];
+
+    trackProperties.forEach(prop => {
+        const value = computedStyle.getPropertyValue(prop);
+        if (value && value !== 'initial' && value !== 'inherit') {
+            relevantStyles[prop] = value;
+        }
+    });
+
+    return relevantStyles;
 }
 };
 
