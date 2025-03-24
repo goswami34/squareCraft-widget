@@ -1627,141 +1627,89 @@ async function applyStylesToAllAnchors(paragraphElement, css) {
 // });
 
 // Add this code to handle font size increase/decrease
-document.querySelector('.underline-element-font-size').addEventListener('click', async function() {
+document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
       console.warn("⚠️ Please select text within a link first");
       return;
   }
 
-  // Get the current font size input element
-  const fontSizeInput = document.getElementById("squareCraftFontSize");
-  let currentSize = parseInt(fontSizeInput.value) || 16; // Default to 16 if no value
+  // Get the new font size value
+  const newSize = parseInt(this.value);
   
-  // Increase font size by 1
-  const newSize = currentSize + 1;
-  
-  // Validate the new size is within bounds (8-70)
-  if (newSize > 70) {
-      console.warn("⚠️ Maximum font size reached (70px)");
+  // Validate the font size
+  if (isNaN(newSize) || newSize < 8 || newSize > 70) {
+      console.warn("⚠️ Invalid font size value");
       return;
   }
 
-  // Update the input value
-  fontSizeInput.value = newSize;
+  // Apply the font size to all anchors in the paragraph
+  await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
+      "font-size": `${newSize}px`
+  });
 
-  // Get all anchor tags in the selected paragraph
-  const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
-  
-  // Apply the new font size to all anchors
-  for (const anchor of allAnchors) {
-      // Ensure anchor has an ID
-      if (!anchor.id) {
-          anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      }
-
-      // Apply the font size directly to the element
-      anchor.style.fontSize = `${newSize}px`;
-
-      // Create or update the style tag
-      let styleTag = document.getElementById(`style-${anchor.id}`);
-      if (!styleTag) {
-          styleTag = document.createElement('style');
-          styleTag.id = `style-${anchor.id}`;
-          document.head.appendChild(styleTag);
-      }
-
-      // Get existing styles
-      const existingStyles = StyleManager.getExistingStyles(anchor.id);
-      const updatedStyles = {
-          ...existingStyles,
-          'font-size': `${newSize}px`
-      };
-
-      // Apply updated styles
-      let cssText = `#${anchor.id} { `;
-      Object.entries(updatedStyles).forEach(([prop, value]) => {
-          if (value) {
-              cssText += `${prop}: ${value} !important; `;
-          }
-      });
-      cssText += "}";
-      styleTag.innerHTML = cssText;
-
-      // Save the modification
-      await saveModifications(anchor.id, updatedStyles);
-  }
-
-  console.log(`✅ Font size increased to ${newSize}px for all links in paragraph`);
+  console.log(`✅ Font size updated to ${newSize}px`);
 });
 
-// Add this code to handle font size decrease
-document.querySelector('.underline-element-font-size').addEventListener('contextmenu', async function(e) {
-  e.preventDefault(); // Prevent the context menu from showing
-  
-  if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
-      console.warn("⚠️ Please select text within a link first");
-      return;
-  }
-
-  // Get the current font size input element
-  const fontSizeInput = document.getElementById("squareCraftFontSize");
-  let currentSize = parseInt(fontSizeInput.value) || 16; // Default to 16 if no value
-  
-  // Decrease font size by 1
-  const newSize = currentSize - 1;
-  
-  // Validate the new size is within bounds (8-70)
-  if (newSize < 8) {
-      console.warn("⚠️ Minimum font size reached (8px)");
-      return;
-  }
-
-  // Update the input value
-  fontSizeInput.value = newSize;
-
-  // Get all anchor tags in the selected paragraph
-  const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
-  
-  // Apply the new font size to all anchors
-  for (const anchor of allAnchors) {
-      // Ensure anchor has an ID
-      if (!anchor.id) {
-          anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+// Font size increase/decrease handlers
+const fontSizeControls = {
+  increase: async function() {
+      if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+          console.warn("⚠️ Please select text within a link first");
+          return;
       }
 
-      // Apply the font size directly to the element
-      anchor.style.fontSize = `${newSize}px`;
+      const fontSizeInput = document.getElementById("squareCraftFontSize");
+      let currentSize = parseInt(fontSizeInput.value) || 16;
+      const newSize = currentSize + 1;
 
-      // Create or update the style tag
-      let styleTag = document.getElementById(`style-${anchor.id}`);
-      if (!styleTag) {
-          styleTag = document.createElement('style');
-          styleTag.id = `style-${anchor.id}`;
-          document.head.appendChild(styleTag);
+      if (newSize > 70) {
+          console.warn("⚠️ Maximum font size reached (70px)");
+          return;
       }
 
-      // Get existing styles
-      const existingStyles = StyleManager.getExistingStyles(anchor.id);
-      const updatedStyles = {
-          ...existingStyles,
-          'font-size': `${newSize}px`
-      };
+      // Update input value
+      fontSizeInput.value = newSize;
 
-      // Apply updated styles
-      let cssText = `#${anchor.id} { `;
-      Object.entries(updatedStyles).forEach(([prop, value]) => {
-          if (value) {
-              cssText += `${prop}: ${value} !important; `;
-          }
+      // Apply new font size
+      await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
+          "font-size": `${newSize}px`
       });
-      cssText += "}";
-      styleTag.innerHTML = cssText;
 
-      // Save the modification
-      await saveModifications(anchor.id, updatedStyles);
+      console.log(`✅ Font size increased to ${newSize}px`);
+  },
+
+  decrease: async function() {
+      if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+          console.warn("⚠️ Please select text within a link first");
+          return;
+      }
+
+      const fontSizeInput = document.getElementById("squareCraftFontSize");
+      let currentSize = parseInt(fontSizeInput.value) || 16;
+      const newSize = currentSize - 1;
+
+      if (newSize < 8) {
+          console.warn("⚠️ Minimum font size reached (8px)");
+          return;
+      }
+
+      // Update input value
+      fontSizeInput.value = newSize;
+
+      // Apply new font size
+      await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
+          "font-size": `${newSize}px`
+      });
+
+      console.log(`✅ Font size decreased to ${newSize}px`);
   }
+};
 
-  console.log(`✅ Font size decreased to ${newSize}px for all links in paragraph`);
+// Add event listeners for the font size controls
+document.querySelector('.underline-element-font-size').addEventListener('click', fontSizeControls.increase);
+document.querySelector('.underline-element-font-size').addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+  fontSizeControls.decrease();
 });
 
 // Font weight handler
