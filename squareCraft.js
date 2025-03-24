@@ -967,93 +967,113 @@ const SelectionManager = {
 // Enhanced Style Manager
 const StyleManager = {
   async applyStylesToParagraphAnchors(paragraphElement, styles) {
-      if (!paragraphElement) return;
+    if (!paragraphElement) return;
 
-      const allAnchors = paragraphElement.querySelectorAll('a');
-      if (!allAnchors.length) return;
+    const allAnchors = paragraphElement.querySelectorAll('a');
+    if (!allAnchors.length) return;
 
-      const modifications = [];
+    const modifications = [];
 
-      for (const anchor of allAnchors) {
-          // Ensure anchor has ID
-          if (!anchor.id) {
-              anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-          }
+    for (const anchor of allAnchors) {
+        // Ensure anchor has ID
+        if (!anchor.id) {
+            anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        }
 
-          // Get existing styles
-          const existingStyles = this.getExistingStyles(anchor.id);
+        // Get existing styles
+        const existingStyles = this.getExistingStyles(anchor.id);
 
-          // Merge new styles with existing styles
-          const mergedStyles = {
-              ...existingStyles,
-              ...styles
-          };
+        // Merge new styles with existing styles, ensuring font-size is properly updated
+        const mergedStyles = {
+            ...existingStyles,
+            ...styles
+        };
 
-          // Apply styles
-          let styleTag = document.getElementById(`style-${anchor.id}`);
-          if (!styleTag) {
-              styleTag = document.createElement('style');
-              styleTag.id = `style-${anchor.id}`;
-              document.head.appendChild(styleTag);
-          }
+        // Apply styles directly to the element
+        Object.entries(styles).forEach(([prop, value]) => {
+            if (value) {
+                // Convert property name from kebab-case to camelCase for style application
+                const camelProp = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+                anchor.style[camelProp] = value;
+            }
+        });
 
-          let cssText = `#${anchor.id} { `;
-          Object.entries(mergedStyles).forEach(([prop, value]) => {
-              if (value) {
-                  cssText += `${prop}: ${value} !important; `;
-              }
-          });
-          cssText += "}";
-          styleTag.innerHTML = cssText;
+        // Create or update style tag
+        let styleTag = document.getElementById(`style-${anchor.id}`);
+        if (!styleTag) {
+            styleTag = document.createElement('style');
+            styleTag.id = `style-${anchor.id}`;
+            document.head.appendChild(styleTag);
+        }
 
-          // Also apply styles directly to the element
-          Object.entries(styles).forEach(([prop, value]) => {
-              if (value) {
-                  anchor.style[prop] = value;
-              }
-          });
+        let cssText = `#${anchor.id} { `;
+        Object.entries(mergedStyles).forEach(([prop, value]) => {
+            if (value) {
+                cssText += `${prop}: ${value} !important; `;
+            }
+        });
+        cssText += "}";
+        styleTag.innerHTML = cssText;
 
-          // Prepare modification for saving
-          modifications.push({
-              elementId: anchor.id,
-              css: mergedStyles
-          });
-      }
+        // Prepare modification for saving
+        modifications.push({
+            elementId: anchor.id,
+            css: mergedStyles
+        });
+    }
 
-      // Save all modifications
-      for (const mod of modifications) {
-          await saveModifications(mod.elementId, mod.css);
-      }
+    // Save all modifications
+    for (const mod of modifications) {
+        await saveModifications(mod.elementId, mod.css);
+    }
 
-      console.log(`✅ Styles applied to ${modifications.length} anchors in paragraph`);
-  },
+    console.log(`✅ Styles applied to ${modifications.length} anchors in paragraph`);
+},
 
-  getExistingStyles(elementId) {
-      const element = document.getElementById(elementId);
-      if (!element) return {};
+getExistingStyles(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return {};
 
-      const computedStyle = window.getComputedStyle(element);
-      const relevantStyles = {};
+    const computedStyle = window.getComputedStyle(element);
+    const relevantStyles = {};
 
-      // List of style properties we want to track
-      const trackProperties = [
-          'font-size',
-          'font-weight',
-          'color',
-          'text-decoration',
-          'font-family'
-      ];
+    // List of style properties we want to track
+    const trackProperties = [
+        'font-size',
+        'font-weight',
+        'color',
+        'text-decoration',
+        'font-family'
+    ];
 
-      trackProperties.forEach(prop => {
-          const value = computedStyle.getPropertyValue(prop);
-          if (value) {
-              relevantStyles[prop] = value;
-          }
-      });
+    trackProperties.forEach(prop => {
+        const value = computedStyle.getPropertyValue(prop);
+        if (value && value !== 'initial' && value !== 'inherit') {
+            relevantStyles[prop] = value;
+        }
+    });
 
-      return relevantStyles;
-  }
+    return relevantStyles;
+}
 };
+
+
+function validateStyles(elementId, styles) {
+  const element = document.getElementById(elementId);
+  if (!element) return false;
+
+  const computedStyle = window.getComputedStyle(element);
+  let isValid = true;
+
+  Object.entries(styles).forEach(([prop, value]) => {
+      const camelProp = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+      if (computedStyle[camelProp] !== value) {
+          isValid = false;
+      }
+  });
+
+  return isValid;
+}
 
 // Style Tracking System
 const StyleTracker = {
@@ -1545,9 +1565,10 @@ async function applyStylesToAllAnchors(paragraphElement, css) {
 // });
 
 // Font size handler with continuous update support
+// Enhanced font size handler
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
-      console.warn("⚠️ Please select a link first");
+      console.warn("⚠️ Please select text within a link first");
       return;
   }
 
@@ -1555,23 +1576,54 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
   const newSize = parseInt(this.value);
   
   // Validate the font size
-  if (isNaN(newSize) || newSize < 8 || newSize > 72) {
+  if (isNaN(newSize) || newSize < 8 || newSize > 70) {
       console.warn("⚠️ Invalid font size value");
       return;
   }
 
-  // Create the font size style with px unit
-  const fontSize = `${newSize}px`;
+  // Get all anchor tags in the selected paragraph
+  const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
+  
+  // Apply the new font size to all anchors
+  for (const anchor of allAnchors) {
+      // Ensure anchor has an ID
+      if (!anchor.id) {
+          anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
 
-  // Apply the style to all anchors in the paragraph
-  await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
-      "font-size": fontSize
-  });
+      // Apply the font size directly to the element
+      anchor.style.fontSize = `${newSize}px`;
 
-  // Update the input value to reflect the change
-  this.value = newSize;
+      // Create or update the style tag
+      let styleTag = document.getElementById(`style-${anchor.id}`);
+      if (!styleTag) {
+          styleTag = document.createElement('style');
+          styleTag.id = `style-${anchor.id}`;
+          document.head.appendChild(styleTag);
+      }
 
-  console.log(`✅ Font size updated to ${fontSize}`);
+      // Get existing styles
+      const existingStyles = StyleManager.getExistingStyles(anchor.id);
+      const updatedStyles = {
+          ...existingStyles,
+          'font-size': `${newSize}px`
+      };
+
+      // Apply updated styles
+      let cssText = `#${anchor.id} { `;
+      Object.entries(updatedStyles).forEach(([prop, value]) => {
+          if (value) {
+              cssText += `${prop}: ${value} !important; `;
+          }
+      });
+      cssText += "}";
+      styleTag.innerHTML = cssText;
+
+      // Save the modification
+      await saveModifications(anchor.id, updatedStyles);
+  }
+
+  console.log(`✅ Font size ${newSize}px applied to all links in paragraph`);
 });
 
 // Font weight handler
