@@ -1140,6 +1140,99 @@ const SelectionManager = {
 
 
 // Enhanced Style Manager
+// const StyleManager = {
+//   async applyStylesToParagraphAnchors(paragraphElement, styles) {
+//     if (!paragraphElement) return;
+
+//     const allAnchors = paragraphElement.querySelectorAll('a');
+//     if (!allAnchors.length) return;
+
+//     const modifications = [];
+
+//     for (const anchor of allAnchors) {
+//         // Ensure anchor has ID
+//         if (!anchor.id) {
+//             anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+//         }
+
+//         // Get existing styles
+//         const existingStyles = this.getExistingStyles(anchor.id);
+
+//         // Merge new styles with existing styles, ensuring font-size is properly updated
+//         const mergedStyles = {
+//             ...existingStyles,
+//             ...styles
+//         };
+
+//         // Apply styles directly to the element
+//         Object.entries(styles).forEach(([prop, value]) => {
+//             if (value) {
+//                 // Convert property name from kebab-case to camelCase for style application
+//                 const camelProp = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+//                 anchor.style[camelProp] = value;
+//             }
+//         });
+
+//         // Create or update style tag
+//         let styleTag = document.getElementById(`style-${anchor.id}`);
+//         if (!styleTag) {
+//             styleTag = document.createElement('style');
+//             styleTag.id = `style-${anchor.id}`;
+//             document.head.appendChild(styleTag);
+//         }
+
+//         let cssText = `#${anchor.id} { `;
+//         Object.entries(mergedStyles).forEach(([prop, value]) => {
+//             if (value) {
+//                 cssText += `${prop}: ${value} !important; `;
+//             }
+//         });
+//         cssText += "}";
+//         styleTag.innerHTML = cssText;
+
+//         // Prepare modification for saving
+//         modifications.push({
+//             elementId: anchor.id,
+//             css: mergedStyles
+//         });
+//     }
+
+//     // Save all modifications
+//     for (const mod of modifications) {
+//         await saveModifications(mod.elementId, mod.css);
+//     }
+
+//     console.log(`✅ Styles applied to ${modifications.length} anchors in paragraph`);
+// },
+
+// getExistingStyles(elementId) {
+//     const element = document.getElementById(elementId);
+//     if (!element) return {};
+
+//     const computedStyle = window.getComputedStyle(element);
+//     const relevantStyles = {};
+
+//     // List of style properties we want to track
+//     const trackProperties = [
+//         'font-size',
+//         'font-weight',
+//         'color',
+//         'text-decoration',
+//         'font-family'
+//     ];
+
+//     trackProperties.forEach(prop => {
+//         const value = computedStyle.getPropertyValue(prop);
+//         if (value && value !== 'initial' && value !== 'inherit') {
+//             relevantStyles[prop] = value;
+//         }
+//     });
+
+//     return relevantStyles;
+// }
+// };
+
+// Enhanced Style Manager with proper database persistence
 const StyleManager = {
   async applyStylesToParagraphAnchors(paragraphElement, styles) {
     if (!paragraphElement) return;
@@ -1147,89 +1240,163 @@ const StyleManager = {
     const allAnchors = paragraphElement.querySelectorAll('a');
     if (!allAnchors.length) return;
 
-    const modifications = [];
+    // Get current authentication data
+    const token = localStorage.getItem("squareCraft_auth_token");
+    const userId = localStorage.getItem("squareCraft_u_id");
+    const widgetId = localStorage.getItem("squareCraft_w_id");
+    const pageId = getPageId();
 
+    if (!token || !userId || !widgetId || !pageId) {
+      console.warn("⚠️ Missing required authentication data");
+      return;
+    }
+
+    // Prepare modification data structure
+    const modificationData = {
+      userId: userId,
+      widgetId: widgetId,
+      modifications: [{
+        pageId: pageId,
+        elements: []
+      }]
+    };
+
+    // Apply styles to each anchor and collect modifications
     for (const anchor of allAnchors) {
-        // Ensure anchor has ID
-        if (!anchor.id) {
-            anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      // Ensure anchor has ID
+      if (!anchor.id) {
+        anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      // Get existing styles
+      const existingStyles = this.getExistingStyles(anchor.id);
+      
+      // Merge new styles with existing ones
+      const mergedStyles = {
+        ...existingStyles,
+        ...styles
+      };
+
+      // Apply styles to element
+      Object.entries(mergedStyles).forEach(([prop, value]) => {
+        if (value) {
+          const camelProp = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+          anchor.style[camelProp] = value;
         }
+      });
 
-        // Get existing styles
-        const existingStyles = this.getExistingStyles(anchor.id);
+      // Create or update style tag
+      this.updateStyleTag(anchor.id, mergedStyles);
 
-        // Merge new styles with existing styles, ensuring font-size is properly updated
-        const mergedStyles = {
-            ...existingStyles,
-            ...styles
-        };
-
-        // Apply styles directly to the element
-        Object.entries(styles).forEach(([prop, value]) => {
-            if (value) {
-                // Convert property name from kebab-case to camelCase for style application
-                const camelProp = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
-                anchor.style[camelProp] = value;
-            }
-        });
-
-        // Create or update style tag
-        let styleTag = document.getElementById(`style-${anchor.id}`);
-        if (!styleTag) {
-            styleTag = document.createElement('style');
-            styleTag.id = `style-${anchor.id}`;
-            document.head.appendChild(styleTag);
+      // Add to modifications array
+      modificationData.modifications[0].elements.push({
+        elementId: anchor.id,
+        css: {
+          a: {
+            id: anchor.id,
+            ...mergedStyles
+          }
+        },
+        elementStructure: {
+          type: 'a',
+          content: anchor.textContent || '',
+          parentId: anchor.parentElement?.id || null,
+          originalElementId: anchor.id
         }
-
-        let cssText = `#${anchor.id} { `;
-        Object.entries(mergedStyles).forEach(([prop, value]) => {
-            if (value) {
-                cssText += `${prop}: ${value} !important; `;
-            }
-        });
-        cssText += "}";
-        styleTag.innerHTML = cssText;
-
-        // Prepare modification for saving
-        modifications.push({
-            elementId: anchor.id,
-            css: mergedStyles
-        });
+      });
     }
 
-    // Save all modifications
-    for (const mod of modifications) {
-        await saveModifications(mod.elementId, mod.css);
+    // Save to database
+    try {
+      const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "userId": userId,
+          "pageId": pageId,
+          "widget-id": widgetId,
+        },
+        body: JSON.stringify(modificationData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to save modifications: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("✅ Modifications saved successfully:", result);
+      
+      // Update local storage for persistence
+      const storageKey = `modifications_${pageId}`;
+      localStorage.setItem(storageKey, JSON.stringify(modificationData.modifications));
+
+    } catch (error) {
+      console.error("❌ Error saving modifications:", error);
+      // Implement retry logic
+      this.retrySaveModifications(modificationData, 3);
     }
+  },
 
-    console.log(`✅ Styles applied to ${modifications.length} anchors in paragraph`);
-},
+  async retrySaveModifications(data, retries) {
+    if (retries <= 0) return;
 
-getExistingStyles(elementId) {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+      await this.applyStylesToParagraphAnchors(data.modifications[0].elements[0].elementStructure.parentId, 
+        data.modifications[0].elements[0].css.a);
+    } catch (error) {
+      console.error(`Retry failed (${retries} left):`, error);
+      await this.retrySaveModifications(data, retries - 1);
+    }
+  },
+
+  getExistingStyles(elementId) {
     const element = document.getElementById(elementId);
     if (!element) return {};
 
     const computedStyle = window.getComputedStyle(element);
     const relevantStyles = {};
 
-    // List of style properties we want to track
+    // List of style properties to track
     const trackProperties = [
-        'font-size',
-        'font-weight',
-        'color',
-        'text-decoration',
-        'font-family'
+      'font-size',
+      'font-weight',
+      'color',
+      'text-decoration',
+      'font-family',
+      'text-transform',
+      'letter-spacing'
     ];
 
     trackProperties.forEach(prop => {
-        const value = computedStyle.getPropertyValue(prop);
-        if (value && value !== 'initial' && value !== 'inherit') {
-            relevantStyles[prop] = value;
-        }
+      const value = computedStyle.getPropertyValue(prop);
+      if (value && value !== 'initial' && value !== 'inherit') {
+        relevantStyles[prop] = value;
+      }
     });
 
     return relevantStyles;
-}
+  },
+
+  updateStyleTag(elementId, styles) {
+    let styleTag = document.getElementById(`style-${elementId}`);
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = `style-${elementId}`;
+      document.head.appendChild(styleTag);
+    }
+
+    let cssText = `#${elementId} { `;
+    Object.entries(styles).forEach(([prop, value]) => {
+      if (value) {
+        cssText += `${prop}: ${value} !important; `;
+      }
+    });
+    cssText += "}";
+
+    styleTag.innerHTML = cssText;
+  }
 };
 
 
