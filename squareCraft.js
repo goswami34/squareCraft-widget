@@ -1710,6 +1710,79 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
   });
 });
 
+
+document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+  if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+    console.warn("⚠️ Please select text within a link first");
+    return;
+  }
+
+  const newSize = parseInt(this.value);
+  if (isNaN(newSize) || newSize < 8 || newSize > 70) {
+    console.warn("⚠️ Invalid font size value");
+    return;
+  }
+
+  try {
+    const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
+    
+    for (const anchor of allAnchors) {
+      if (!anchor.id) {
+        anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      // Get existing styles
+      const existingStyles = {};
+      const computedStyle = window.getComputedStyle(anchor);
+      ['font-size', 'font-weight', 'color', 'text-decoration'].forEach(prop => {
+        if (computedStyle[prop]) {
+          existingStyles[prop] = computedStyle[prop];
+        }
+      });
+      
+      // Update styles with new font size
+      const updatedStyles = {
+        ...existingStyles,
+        'font-size': `${newSize}px`
+      };
+
+      // Apply styles to element
+      Object.entries(updatedStyles).forEach(([prop, value]) => {
+        if (value) {
+          const camelProp = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+          anchor.style[camelProp] = value;
+        }
+      });
+
+      // Update style tag
+      let styleTag = document.getElementById(`style-${anchor.id}`);
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = `style-${anchor.id}`;
+        document.head.appendChild(styleTag);
+      }
+
+      let cssText = `#${anchor.id} { `;
+      Object.entries(updatedStyles).forEach(([prop, value]) => {
+        if (value) {
+          cssText += `${prop}: ${value} !important; `;
+        }
+      });
+      cssText += "}";
+      styleTag.innerHTML = cssText;
+      
+      // Add to pending changes
+      StyleCollector.addChange(SelectionManager.selectedParagraph.id, anchor.id, updatedStyles);
+    }
+
+    console.log(`✅ Font size ${newSize}px applied to all links in paragraph`);
+  } catch (error) {
+    console.error("❌ Error applying font size:", error);
+  }
+});
+
+
+
 //Font size handler with continuous update support
 //Enhanced font size handler
 // document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
