@@ -1722,14 +1722,24 @@ document.addEventListener("mouseup", function () {
     publishButton.textContent = "Publishing...";
   
     try {
-      // Validate authentication data
+      // Get authentication data with better validation
       const token = localStorage.getItem("squareCraft_auth_token");
       const userId = localStorage.getItem("squareCraft_u_id");
       const widgetId = localStorage.getItem("squareCraft_w_id");
       const pageId = getPageId();
   
-      if (!token || !userId || !widgetId || !pageId) {
-        throw new Error("Missing authentication data. Please log in again.");
+      // Enhanced validation with specific error messages
+      if (!token) {
+        throw new Error("Authentication token is missing. Please log in again.");
+      }
+      if (!userId) {
+        throw new Error("User ID is missing. Please log in again.");
+      }
+      if (!widgetId) {
+        throw new Error("Widget ID is missing. Please log in again.");
+      }
+      if (!pageId) {
+        throw new Error("Page ID is missing. Please refresh the page.");
       }
   
       // Get pending changes
@@ -1738,17 +1748,14 @@ document.addEventListener("mouseup", function () {
         throw new Error("No changes to publish");
       }
   
-      // Prepare the modification data with proper structure
+      // Prepare the modification data
       const modificationData = {
         userId: userId,
         widgetId: widgetId,
-        modifications: []
-      };
-  
-      // Create a single page modification
-      const pageModification = {
-        pageId: pageId,
-        elements: []
+        modifications: [{
+          pageId: pageId,
+          elements: []
+        }]
       };
   
       // Convert pending changes to the required format
@@ -1757,7 +1764,6 @@ document.addEventListener("mouseup", function () {
           const element = document.getElementById(anchorId);
           if (!element) continue;
   
-          // Create element modification with proper structure
           const elementModification = {
             elementId: anchorId,
             css: {
@@ -1774,14 +1780,11 @@ document.addEventListener("mouseup", function () {
             }
           };
   
-          pageModification.elements.push(elementModification);
+          modificationData.modifications[0].elements.push(elementModification);
         }
       }
   
-      // Add the page modification to the modifications array
-      modificationData.modifications.push(pageModification);
-  
-      // Double-check the data structure
+      // Validate the data structure
       if (!modificationData.modifications[0]?.elements?.length) {
         throw new Error("No valid modifications to save");
       }
@@ -1792,22 +1795,33 @@ document.addEventListener("mouseup", function () {
   
       while (retries > 0 && !success) {
         try {
-          console.log("Sending modification data:", JSON.stringify(modificationData, null, 2));
+          console.log("Attempting to publish changes...");
+          console.log("Auth Token:", token);
+          console.log("User ID:", userId);
+          console.log("Widget ID:", widgetId);
+          console.log("Page ID:", pageId);
   
           const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`,
-              "userId": userId,
-              "pageId": pageId,
-              "widget-id": widgetId,
+              "X-User-Id": userId,
+              "X-Widget-Id": widgetId,
+              "X-Page-Id": pageId,
+              "Access-Control-Allow-Origin": "*"
             },
+            credentials: 'include',
             body: JSON.stringify(modificationData)
           });
   
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
+            if (response.status === 401) {
+              // Handle authentication error specifically
+              localStorage.removeItem("squareCraft_auth_token"); // Clear invalid token
+              throw new Error("Authentication failed. Please log in again.");
+            }
             throw new Error(`Server error: ${response.status} - ${errorData.message || response.statusText}`);
           }
   
@@ -1827,8 +1841,15 @@ document.addEventListener("mouseup", function () {
         } catch (error) {
           console.error(`Attempt ${4 - retries} failed:`, error);
           retries--;
+          
+          if (error.message.includes("Authentication failed")) {
+            // Break the retry loop for auth errors
+            throw error;
+          }
+          
           if (retries > 0) {
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+            console.log(`Retrying in 2 seconds... (${retries} attempts left)`);
+            await new Promise(resolve => setTimeout(resolve, 2000));
           } else {
             throw error;
           }
@@ -1836,7 +1857,15 @@ document.addEventListener("mouseup", function () {
       }
     } catch (error) {
       console.error("❌ Error publishing changes:", error);
-      alert(`Failed to publish changes: ${error.message}. Please try again.`);
+      
+      // Show specific error message based on error type
+      if (error.message.includes("Authentication failed")) {
+        alert("Your session has expired. Please log in again.");
+        // Redirect to login or trigger re-authentication
+        window.location.reload(); // Or your login redirect logic
+      } else {
+        alert(`Failed to publish changes: ${error.message}. Please try again.`);
+      }
     } finally {
       publishButton.disabled = false;
       publishButton.textContent = "Publish Changes";
