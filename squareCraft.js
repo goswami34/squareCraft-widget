@@ -538,48 +538,62 @@ function recreateModifiedElement(structure, styles) {
 
 // Helper function to validate modification data
 function validateModificationData(data) {
-  const requiredFields = ['userId', 'widgetId', 'modifications'];
-  const requiredModificationFields = ['pageId', 'elements'];
-  const requiredElementFields = ['elementId', 'css', 'elementStructure'];
+  // Check if data exists and is an object
+  if (!data || typeof data !== 'object') {
+    console.warn("❌ Data is missing or not an object");
+    return false;
+  }
 
   // Check required top-level fields
+  const requiredFields = ['userId', 'widgetId', 'modifications'];
   for (const field of requiredFields) {
-      if (!data[field]) {
-          console.warn(`⚠️ Missing required field: ${field}`);
-          return false;
-      }
+    if (!data[field]) {
+      console.warn(`❌ Missing required field: ${field}`);
+      return false;
+    }
   }
 
   // Check modifications array
-  if (!Array.isArray(data.modifications)) {
-      console.warn("⚠️ Modifications must be an array");
-      return false;
+  if (!Array.isArray(data.modifications) || data.modifications.length === 0) {
+    console.warn("❌ Modifications must be a non-empty array");
+    return false;
   }
 
   // Check each modification
   for (const mod of data.modifications) {
-      for (const field of requiredModificationFields) {
-          if (!mod[field]) {
-              console.warn(`⚠️ Missing required modification field: ${field}`);
-              return false;
-          }
+    // Check required modification fields
+    if (!mod.pageId || !Array.isArray(mod.elements)) {
+      console.warn("❌ Invalid modification structure");
+      return false;
+    }
+
+    // Check elements array
+    if (mod.elements.length === 0) {
+      console.warn("❌ Elements array is empty");
+      return false;
+    }
+
+    // Check each element
+    for (const element of mod.elements) {
+      // Check required element fields
+      if (!element.elementId || !element.css || !element.elementStructure) {
+        console.warn("❌ Invalid element structure");
+        return false;
       }
 
-      // Check elements array
-      if (!Array.isArray(mod.elements)) {
-          console.warn("⚠️ Elements must be an array");
-          return false;
+      // Check CSS structure
+      if (!element.css.a || !element.css.a.id) {
+        console.warn("❌ Invalid CSS structure");
+        return false;
       }
 
-      // Check each element
-      for (const element of mod.elements) {
-          for (const field of requiredElementFields) {
-              if (!element[field]) {
-                  console.warn(`⚠️ Missing required element field: ${field}`);
-                  return false;
-              }
-          }
+      // Check element structure
+      const structure = element.elementStructure;
+      if (!structure.type || !structure.content || !structure.parentId || !structure.originalElementId) {
+        console.warn("❌ Invalid element structure");
+        return false;
       }
+    }
   }
 
   return true;
@@ -1724,26 +1738,27 @@ document.addEventListener("mouseup", function () {
         throw new Error("No changes to publish");
       }
   
-      // Prepare the modification data
+      // Prepare the modification data with proper structure
       const modificationData = {
         userId: userId,
         widgetId: widgetId,
-        modifications: [{
-          pageId: pageId,
-          elements: []
-        }]
+        modifications: []
+      };
+  
+      // Create a single page modification
+      const pageModification = {
+        pageId: pageId,
+        elements: []
       };
   
       // Convert pending changes to the required format
       for (const [paragraphId, anchorChanges] of pendingChanges) {
-        const paragraphElement = document.getElementById(paragraphId);
-        if (!paragraphElement) continue;
-  
         for (const [anchorId, styles] of anchorChanges) {
           const element = document.getElementById(anchorId);
           if (!element) continue;
   
-          modificationData.modifications[0].elements.push({
+          // Create element modification with proper structure
+          const elementModification = {
             elementId: anchorId,
             css: {
               a: {
@@ -1757,13 +1772,18 @@ document.addEventListener("mouseup", function () {
               parentId: paragraphId,
               originalElementId: anchorId
             }
-          });
+          };
+  
+          pageModification.elements.push(elementModification);
         }
       }
   
-      // Validate the data before sending
-      if (!StyleManager.validateModificationData(modificationData)) {
-        throw new Error("Invalid modification data structure");
+      // Add the page modification to the modifications array
+      modificationData.modifications.push(pageModification);
+  
+      // Double-check the data structure
+      if (!modificationData.modifications[0]?.elements?.length) {
+        throw new Error("No valid modifications to save");
       }
   
       // Send to server with retry mechanism
@@ -1772,6 +1792,8 @@ document.addEventListener("mouseup", function () {
   
       while (retries > 0 && !success) {
         try {
+          console.log("Sending modification data:", JSON.stringify(modificationData, null, 2));
+  
           const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
             method: "POST",
             headers: {
