@@ -1728,6 +1728,14 @@ document.addEventListener("mouseup", function () {
       const widgetId = localStorage.getItem("squareCraft_w_id");
       const pageId = getPageId();
   
+      // Log current auth data for debugging
+      console.log("Current Auth Data:", {
+        token: token ? "exists" : "missing",
+        userId: userId,
+        widgetId: widgetId,
+        pageId: pageId
+      });
+  
       // Enhanced validation with specific error messages
       if (!token) {
         throw new Error("Authentication token is missing. Please log in again.");
@@ -1748,8 +1756,9 @@ document.addEventListener("mouseup", function () {
         throw new Error("No changes to publish");
       }
   
-      // Prepare the modification data
+      // Prepare the modification data with required structure
       const modificationData = {
+        token: token, // Add token to the request body
         userId: userId,
         widgetId: widgetId,
         modifications: [{
@@ -1784,10 +1793,13 @@ document.addEventListener("mouseup", function () {
         }
       }
   
-      // Validate the data structure
+      // Additional validation before sending
       if (!modificationData.modifications[0]?.elements?.length) {
         throw new Error("No valid modifications to save");
       }
+  
+      // Log the final data being sent
+      console.log("Sending modification data:", JSON.stringify(modificationData, null, 2));
   
       // Send to server with retry mechanism
       let retries = 3;
@@ -1795,12 +1807,6 @@ document.addEventListener("mouseup", function () {
   
       while (retries > 0 && !success) {
         try {
-          console.log("Attempting to publish changes...");
-          console.log("Auth Token:", token);
-          console.log("User ID:", userId);
-          console.log("Widget ID:", widgetId);
-          console.log("Page ID:", pageId);
-  
           const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
             method: "POST",
             headers: {
@@ -1808,19 +1814,19 @@ document.addEventListener("mouseup", function () {
               "Authorization": `Bearer ${token}`,
               "X-User-Id": userId,
               "X-Widget-Id": widgetId,
-              "X-Page-Id": pageId,
-              "Access-Control-Allow-Origin": "*"
+              "X-Page-Id": pageId
             },
-            credentials: 'include',
             body: JSON.stringify(modificationData)
           });
   
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             if (response.status === 401) {
-              // Handle authentication error specifically
-              localStorage.removeItem("squareCraft_auth_token"); // Clear invalid token
+              localStorage.removeItem("squareCraft_auth_token");
               throw new Error("Authentication failed. Please log in again.");
+            }
+            if (response.status === 400) {
+              throw new Error(`Bad request: ${errorData.message || 'Invalid data structure'}`);
             }
             throw new Error(`Server error: ${response.status} - ${errorData.message || response.statusText}`);
           }
@@ -1842,9 +1848,8 @@ document.addEventListener("mouseup", function () {
           console.error(`Attempt ${4 - retries} failed:`, error);
           retries--;
           
-          if (error.message.includes("Authentication failed")) {
-            // Break the retry loop for auth errors
-            throw error;
+          if (error.message.includes("Authentication failed") || error.message.includes("Bad request")) {
+            throw error; // Don't retry for auth or bad request errors
           }
           
           if (retries > 0) {
@@ -1858,11 +1863,9 @@ document.addEventListener("mouseup", function () {
     } catch (error) {
       console.error("❌ Error publishing changes:", error);
       
-      // Show specific error message based on error type
       if (error.message.includes("Authentication failed")) {
         alert("Your session has expired. Please log in again.");
-        // Redirect to login or trigger re-authentication
-        window.location.reload(); // Or your login redirect logic
+        window.location.reload();
       } else {
         alert(`Failed to publish changes: ${error.message}. Please try again.`);
       }
