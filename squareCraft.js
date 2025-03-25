@@ -1233,6 +1233,29 @@ const SelectionManager = {
 // };
 
 // Enhanced Style Manager with proper database persistence
+const StyleCollector = {
+  _pendingChanges: new Map(), // Store changes by paragraph ID
+
+  addChange(paragraphId, anchorId, styles) {
+    if (!this._pendingChanges.has(paragraphId)) {
+      this._pendingChanges.set(paragraphId, new Map());
+    }
+    const paragraphChanges = this._pendingChanges.get(paragraphId);
+    paragraphChanges.set(anchorId, {
+      ...paragraphChanges.get(anchorId),
+      ...styles
+    });
+  },
+
+  clearChanges() {
+    this._pendingChanges.clear();
+  },
+
+  getPendingChanges() {
+    return this._pendingChanges;
+  }
+};
+
 const StyleManager = {
   async applyStylesToParagraphAnchors(paragraphElement, styles) {
     if (!paragraphElement) return;
@@ -1492,62 +1515,144 @@ document.addEventListener("mouseup", function () {
     });
 
 
-  document
-  .getElementById("squareCraftPublish")
-  .addEventListener("click", async () => {
-    if (!selectedElement) {
-      console.warn("⚠️ No element selected.");
-      return;
-    }
+  // document
+  // .getElementById("squareCraftPublish")
+  // .addEventListener("click", async () => {
+  //   if (!selectedElement) {
+  //     console.warn("⚠️ No element selected.");
+  //     return;
+  //   }
 
-    let css = {
+  //   let css = {
       
-      "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
-      // "font-aligment-icon":
-      //   document.document.querySelectorAll(".alignment-icon").value,
-      "font-size":
-        document.getElementById("squareCraftFontSize").value + "px",
-      "line-height":
-        document.getElementById("squareCraftLineHeight").value + "px",
-      // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
-      // "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
-      "text-decoration": textDecorationValue,
-      "letter-spacing": document.querySelector('.squareCraft-Letter-spacing-input').value + "px",
-      // "text-transform": document.querySelectorAll(
-      //   ".squsareCraft-text-transform"
-      // ).value,
-      "color": document.getElementById("squareCraftTextColor").value,
-      "text-transform": activeTransform || "none"
-    };
+  //     "font-weight": document.getElementById("squareCraftFontWeight").value, // Use selected font weight
+  //     // "font-aligment-icon":
+  //     //   document.document.querySelectorAll(".alignment-icon").value,
+  //     "font-size":
+  //       document.getElementById("squareCraftFontSize").value + "px",
+  //     "line-height":
+  //       document.getElementById("squareCraftLineHeight").value + "px",
+  //     // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
+  //     // "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
+  //     "text-decoration": textDecorationValue,
+  //     "letter-spacing": document.querySelector('.squareCraft-Letter-spacing-input').value + "px",
+  //     // "text-transform": document.querySelectorAll(
+  //     //   ".squsareCraft-text-transform"
+  //     // ).value,
+  //     "color": document.getElementById("squareCraftTextColor").value,
+  //     "text-transform": activeTransform || "none"
+  //   };
 
-    await saveModifications(selectedElement.id, css);
+  //   await saveModifications(selectedElement.id, css);
      
-    if (lastSelectedItalicElementForFontSize && lastSelectedItalicElementForFontSize.id) {
-      await saveModifications(lastSelectedItalicElement.id, {
-          "font-size": document.getElementById("squareCraftFontSize").value + "px"
-      });
-  }
+  //   if (lastSelectedItalicElementForFontSize && lastSelectedItalicElementForFontSize.id) {
+  //     await saveModifications(lastSelectedItalicElement.id, {
+  //         "font-size": document.getElementById("squareCraftFontSize").value + "px"
+  //     });
+  // }
 
-      if (lastSelectedFontWeightStrong && lastSelectedFontWeightStrong.id) {
-        await saveModifications(lastSelectedFontWeightStrong.id, {
-            "font-weight": css["font-weight"]
-        });
-    }
+  //     if (lastSelectedFontWeightStrong && lastSelectedFontWeightStrong.id) {
+  //       await saveModifications(lastSelectedFontWeightStrong.id, {
+  //           "font-weight": css["font-weight"]
+  //       });
+  //   }
 
-    if (lastSelectedUnderlineElement && lastSelectedUnderlineElement.id) {
-      await saveModifications(lastSelectedUnderlineElement.id, {
-          "text-decoration": css["text-decoration"]
-      });
-  }
+  //   if (lastSelectedUnderlineElement && lastSelectedUnderlineElement.id) {
+  //     await saveModifications(lastSelectedUnderlineElement.id, {
+  //         "text-decoration": css["text-decoration"]
+  //     });
+  // }
 
-    if (lastSelectedLink && lastSelectedLink.id) {
-      await saveModifications(lastSelectedLink.id, {
-          "color": css["color"]
-      });
-  }
+  //   if (lastSelectedLink && lastSelectedLink.id) {
+  //     await saveModifications(lastSelectedLink.id, {
+  //         "color": css["color"]
+  //     });
+  // }
 
 
   
+  // });
+
+  document.getElementById("squareCraftPublish").addEventListener("click", async () => {
+    try {
+      const token = localStorage.getItem("squareCraft_auth_token");
+      const userId = localStorage.getItem("squareCraft_u_id");
+      const widgetId = localStorage.getItem("squareCraft_w_id");
+      const pageId = getPageId();
+  
+      if (!token || !userId || !widgetId || !pageId) {
+        console.warn("⚠️ Missing required authentication data");
+        return;
+      }
+  
+      // Prepare the modification data from collected changes
+      const modificationData = {
+        userId: userId,
+        widgetId: widgetId,
+        modifications: [{
+          pageId: pageId,
+          elements: []
+        }]
+      };
+  
+      // Get all pending changes
+      const pendingChanges = StyleCollector.getPendingChanges();
+      
+      // Convert pending changes to the required format
+      for (const [paragraphId, anchorChanges] of pendingChanges) {
+        for (const [anchorId, styles] of anchorChanges) {
+          const element = document.getElementById(anchorId);
+          if (!element) continue;
+  
+          modificationData.modifications[0].elements.push({
+            elementId: anchorId,
+            css: {
+              a: {
+                id: anchorId,
+                ...styles
+              }
+            },
+            elementStructure: {
+              type: 'a',
+              content: element.textContent || '',
+              parentId: paragraphId,
+              originalElementId: anchorId
+            }
+          });
+        }
+      }
+  
+      // Save to database
+      const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "userId": userId,
+          "pageId": pageId,
+          "widget-id": widgetId,
+        },
+        body: JSON.stringify(modificationData)
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to save modifications: ${response.status}`);
+      }
+  
+      const result = await response.json();
+      console.log("✅ All changes published successfully:", result);
+      
+      // Clear pending changes after successful save
+      StyleCollector.clearChanges();
+  
+      // Update local storage
+      const storageKey = `modifications_${pageId}`;
+      localStorage.setItem(storageKey, JSON.stringify(modificationData.modifications));
+  
+    } catch (error) {
+      console.error("❌ Error publishing changes:", error);
+      alert("Failed to publish changes. Please try again.");
+    }
   });
 
 
@@ -1739,64 +1844,81 @@ async function applyStylesToAllAnchors(paragraphElement, css) {
 
 //Font size handler with continuous update support
 //Enhanced font size handler
+// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+//   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+//       console.warn("⚠️ Please select text within a link first");
+//       return;
+//   }
+
+//   // Get the new font size value
+//   const newSize = parseInt(this.value);
+  
+//   // Validate the font size
+//   if (isNaN(newSize) || newSize < 8 || newSize > 70) {
+//       console.warn("⚠️ Invalid font size value");
+//       return;
+//   }
+
+//   // Get all anchor tags in the selected paragraph
+//   const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
+  
+//   // Apply the new font size to all anchors
+//   for (const anchor of allAnchors) {
+//       // Ensure anchor has an ID
+//       if (!anchor.id) {
+//           anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+//       }
+
+//       // Apply the font size directly to the element
+//       anchor.style.fontSize = `${newSize}px`;
+
+//       // Create or update the style tag
+//       let styleTag = document.getElementById(`style-${anchor.id}`);
+//       if (!styleTag) {
+//           styleTag = document.createElement('style');
+//           styleTag.id = `style-${anchor.id}`;
+//           document.head.appendChild(styleTag);
+//       }
+
+//       // Get existing styles
+//       const existingStyles = StyleManager.getExistingStyles(anchor.id);
+//       const updatedStyles = {
+//           ...existingStyles,
+//           'font-size': `${newSize}px`
+//       };
+
+//       // Apply updated styles
+//       let cssText = `#${anchor.id} { `;
+//       Object.entries(updatedStyles).forEach(([prop, value]) => {
+//           if (value) {
+//               cssText += `${prop}: ${value} !important; `;
+//           }
+//       });
+//       cssText += "}";
+//       styleTag.innerHTML = cssText;
+
+//       // Save the modification
+//       await saveModifications(anchor.id, updatedStyles);
+//   }
+
+//   console.log(`✅ Font size ${newSize}px applied to all links in paragraph`);
+// });
+
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
-      console.warn("⚠️ Please select text within a link first");
-      return;
+    console.warn("⚠️ Please select text within a link first");
+    return;
   }
 
-  // Get the new font size value
   const newSize = parseInt(this.value);
-  
-  // Validate the font size
   if (isNaN(newSize) || newSize < 8 || newSize > 70) {
-      console.warn("⚠️ Invalid font size value");
-      return;
+    console.warn("⚠️ Invalid font size value");
+    return;
   }
 
-  // Get all anchor tags in the selected paragraph
-  const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
-  
-  // Apply the new font size to all anchors
-  for (const anchor of allAnchors) {
-      // Ensure anchor has an ID
-      if (!anchor.id) {
-          anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      }
-
-      // Apply the font size directly to the element
-      anchor.style.fontSize = `${newSize}px`;
-
-      // Create or update the style tag
-      let styleTag = document.getElementById(`style-${anchor.id}`);
-      if (!styleTag) {
-          styleTag = document.createElement('style');
-          styleTag.id = `style-${anchor.id}`;
-          document.head.appendChild(styleTag);
-      }
-
-      // Get existing styles
-      const existingStyles = StyleManager.getExistingStyles(anchor.id);
-      const updatedStyles = {
-          ...existingStyles,
-          'font-size': `${newSize}px`
-      };
-
-      // Apply updated styles
-      let cssText = `#${anchor.id} { `;
-      Object.entries(updatedStyles).forEach(([prop, value]) => {
-          if (value) {
-              cssText += `${prop}: ${value} !important; `;
-          }
-      });
-      cssText += "}";
-      styleTag.innerHTML = cssText;
-
-      // Save the modification
-      await saveModifications(anchor.id, updatedStyles);
-  }
-
-  console.log(`✅ Font size ${newSize}px applied to all links in paragraph`);
+  await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
+    "font-size": `${newSize}px`
+  });
 });
 
 
