@@ -1383,46 +1383,63 @@ const StyleManager = {
   },
 
   async saveModificationsToDatabase(paragraphElement, anchors) {
+    // Enhanced validation
+    if (!paragraphElement || !anchors || anchors.length === 0) {
+      throw new Error("Invalid paragraph or anchors data");
+    }
+
     const token = localStorage.getItem("squareCraft_auth_token");
     const userId = localStorage.getItem("squareCraft_u_id");
     const widgetId = localStorage.getItem("squareCraft_w_id");
     const pageId = getPageId();
 
-    if (!token || !userId || !widgetId || !pageId) {
-      throw new Error("Missing required authentication data");
-    }
-
-    const modificationData = {
-      userId: userId,
-      widgetId: widgetId,
-      modifications: [{
-        pageId: pageId,
-        elements: []
-      }]
-    };
-
-    // Prepare modifications for each anchor
-    for (const anchor of anchors) {
-      const styles = this.getExistingStyles(anchor.id);
-      
-      modificationData.modifications[0].elements.push({
-        elementId: anchor.id,
-        css: {
-          a: {
-            id: anchor.id,
-            ...styles
-          }
-        },
-        elementStructure: {
-          type: 'a',
-          content: anchor.textContent || '',
-          parentId: paragraphElement.id,
-          originalElementId: anchor.id
-        }
-      });
-    }
+    // Detailed validation with specific error messages
+    if (!token) throw new Error("Authentication token is missing");
+    if (!userId) throw new Error("User ID is missing");
+    if (!widgetId) throw new Error("Widget ID is missing");
+    if (!pageId) throw new Error("Page ID is missing");
 
     try {
+      const modificationData = {
+        userId: userId,
+        widgetId: widgetId,
+        modifications: [{
+          pageId: pageId,
+          elements: []
+        }]
+      };
+
+      // Prepare modifications with better error handling
+      for (const anchor of anchors) {
+        if (!anchor || !anchor.id) {
+          console.warn("Skipping invalid anchor element");
+          continue;
+        }
+
+        const styles = this.getExistingStyles(anchor.id);
+        
+        modificationData.modifications[0].elements.push({
+          elementId: anchor.id,
+          css: {
+            a: {
+              id: anchor.id,
+              ...styles
+            }
+          },
+          elementStructure: {
+            type: 'a',
+            content: anchor.textContent || '',
+            parentId: paragraphElement.id,
+            originalElementId: anchor.id
+          }
+        });
+      }
+
+      // Validate the data before sending
+      if (!this.validateModificationData(modificationData)) {
+        throw new Error("Invalid modification data structure");
+      }
+
       const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
         method: "POST",
         headers: {
@@ -1436,21 +1453,35 @@ const StyleManager = {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to save modifications: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Server error: ${response.status} - ${errorData.message || response.statusText}`);
       }
 
       const result = await response.json();
       console.log("✅ Modifications saved successfully:", result);
 
-      // Update local storage
+      // Update local storage with successful modifications
       const storageKey = `modifications_${pageId}`;
       localStorage.setItem(storageKey, JSON.stringify(modificationData.modifications));
 
       return result;
     } catch (error) {
       console.error("❌ Error saving modifications:", error);
-      throw error;
+      throw error; // Re-throw to handle in the calling function
     }
+  },
+
+  validateModificationData(data) {
+    if (!data || typeof data !== 'object') return false;
+    if (!Array.isArray(data.modifications)) return false;
+    if (!data.modifications[0]?.elements?.length) return false;
+    
+    const requiredFields = ['userId', 'widgetId', 'modifications'];
+    for (const field of requiredFields) {
+      if (!data[field]) return false;
+    }
+
+    return true;
   },
 
   async retrySaveModifications(data, retries = 3) {
@@ -1672,18 +1703,28 @@ document.addEventListener("mouseup", function () {
   // });
 
   document.getElementById("squareCraftPublish").addEventListener("click", async () => {
+    const publishButton = document.getElementById("squareCraftPublish");
+    publishButton.disabled = true;
+    publishButton.textContent = "Publishing...";
+  
     try {
+      // Validate authentication data
       const token = localStorage.getItem("squareCraft_auth_token");
       const userId = localStorage.getItem("squareCraft_u_id");
       const widgetId = localStorage.getItem("squareCraft_w_id");
       const pageId = getPageId();
   
       if (!token || !userId || !widgetId || !pageId) {
-        console.warn("⚠️ Missing required authentication data");
-        return;
+        throw new Error("Missing authentication data. Please log in again.");
       }
   
-      // Prepare the modification data from collected changes
+      // Get pending changes
+      const pendingChanges = StyleCollector.getPendingChanges();
+      if (pendingChanges.size === 0) {
+        throw new Error("No changes to publish");
+      }
+  
+      // Prepare the modification data
       const modificationData = {
         userId: userId,
         widgetId: widgetId,
@@ -1693,11 +1734,11 @@ document.addEventListener("mouseup", function () {
         }]
       };
   
-      // Get all pending changes
-      const pendingChanges = StyleCollector.getPendingChanges();
-      
       // Convert pending changes to the required format
       for (const [paragraphId, anchorChanges] of pendingChanges) {
+        const paragraphElement = document.getElementById(paragraphId);
+        if (!paragraphElement) continue;
+  
         for (const [anchorId, styles] of anchorChanges) {
           const element = document.getElementById(anchorId);
           if (!element) continue;
@@ -1720,36 +1761,63 @@ document.addEventListener("mouseup", function () {
         }
       }
   
-      // Save to database
-      const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-          "userId": userId,
-          "pageId": pageId,
-          "widget-id": widgetId,
-        },
-        body: JSON.stringify(modificationData)
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Failed to save modifications: ${response.status}`);
+      // Validate the data before sending
+      if (!StyleManager.validateModificationData(modificationData)) {
+        throw new Error("Invalid modification data structure");
       }
   
-      const result = await response.json();
-      console.log("✅ All changes published successfully:", result);
-      
-      // Clear pending changes after successful save
-      StyleCollector.clearChanges();
+      // Send to server with retry mechanism
+      let retries = 3;
+      let success = false;
   
-      // Update local storage
-      const storageKey = `modifications_${pageId}`;
-      localStorage.setItem(storageKey, JSON.stringify(modificationData.modifications));
+      while (retries > 0 && !success) {
+        try {
+          const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+              "userId": userId,
+              "pageId": pageId,
+              "widget-id": widgetId,
+            },
+            body: JSON.stringify(modificationData)
+          });
   
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(`Server error: ${response.status} - ${errorData.message || response.statusText}`);
+          }
+  
+          const result = await response.json();
+          console.log("✅ Changes published successfully:", result);
+          success = true;
+  
+          // Update local storage
+          const storageKey = `modifications_${pageId}`;
+          localStorage.setItem(storageKey, JSON.stringify(modificationData.modifications));
+  
+          // Clear pending changes
+          StyleCollector.clearChanges();
+  
+          // Show success message
+          alert("Changes published successfully!");
+        } catch (error) {
+          console.error(`Attempt ${4 - retries} failed:`, error);
+          retries--;
+          if (retries > 0) {
+            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+          } else {
+            throw error;
+          }
+        }
+      }
     } catch (error) {
       console.error("❌ Error publishing changes:", error);
-      alert("Failed to publish changes. Please try again.");
+      alert(`Failed to publish changes: ${error.message}. Please try again.`);
+    } finally {
+      publishButton.disabled = false;
+      publishButton.textContent = "Publish Changes";
     }
   });
 
