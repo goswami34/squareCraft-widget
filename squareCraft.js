@@ -418,123 +418,123 @@ function recreateModifiedElement(structure, styles) {
   
 
 // Enhanced saveModifications function
-async function saveModifications(elementId, css, elementStructure = null) {
-  if (!pageId || !elementId || !css) {
-      console.warn("⚠️ Missing required data to save modifications.");
-      return;
-  }
+// async function saveModifications(elementId, css, elementStructure = null) {
+//   if (!pageId || !elementId || !css) {
+//       console.warn("⚠️ Missing required data to save modifications.");
+//       return;
+//   }
 
-  const element = document.getElementById(elementId);
-  if (!element) {
-      console.warn("⚠️ Element not found:", elementId);
-      return;
-  }
+//   const element = document.getElementById(elementId);
+//   if (!element) {
+//       console.warn("⚠️ Element not found:", elementId);
+//       return;
+//   }
 
-  // Get current authentication data
-  const token = localStorage.getItem("squareCraft_auth_token");
-  const userId = localStorage.getItem("squareCraft_u_id");
-  const widgetId = localStorage.getItem("squareCraft_w_id");
+//   // Get current authentication data
+//   const token = localStorage.getItem("squareCraft_auth_token");
+//   const userId = localStorage.getItem("squareCraft_u_id");
+//   const widgetId = localStorage.getItem("squareCraft_w_id");
 
-  if (!token || !userId || !widgetId) {
-      console.warn("⚠️ Missing authentication data");
-      return;
-  }
+//   if (!token || !userId || !widgetId) {
+//       console.warn("⚠️ Missing authentication data");
+//       return;
+//   }
 
-  // Generate a unique ID for this modification
-  const uniqueId = `${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+//   // Generate a unique ID for this modification
+//   const uniqueId = `${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-  // Prepare the modification data
-  const modificationData = {
-      userId: userId,
-      widgetId: widgetId,
-      modifications: [{
-          pageId: pageId,
-          elements: [{
-              elementId: uniqueId,
-              css: {
-                  a: {
-                      id: uniqueId,
-                      ...css
-                  }
-              },
-              elementStructure: elementStructure || {
-                  type: 'a',
-                  content: element.textContent || '',
-                  parentId: element.parentElement?.id || null,
-                  originalElementId: elementId
-              }
-          }]
-      }]
-  };
+//   // Prepare the modification data
+//   const modificationData = {
+//       userId: userId,
+//       widgetId: widgetId,
+//       modifications: [{
+//           pageId: pageId,
+//           elements: [{
+//               elementId: uniqueId,
+//               css: {
+//                   a: {
+//                       id: uniqueId,
+//                       ...css
+//                   }
+//               },
+//               elementStructure: elementStructure || {
+//                   type: 'a',
+//                   content: element.textContent || '',
+//                   parentId: element.parentElement?.id || null,
+//                   originalElementId: elementId
+//               }
+//           }]
+//       }]
+//   };
 
-  try {
-      // First, fetch existing modifications
-      const existingResponse = await fetch(
-          `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
-          {
-              method: "GET",
-              headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": `Bearer ${token}`,
-              }
-          }
-      );
+//   try {
+//       // First, fetch existing modifications
+//       const existingResponse = await fetch(
+//           `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+//           {
+//               method: "GET",
+//               headers: {
+//                   "Content-Type": "application/json",
+//                   "Authorization": `Bearer ${token}`,
+//               }
+//           }
+//       );
 
-      if (!existingResponse.ok) {
-          throw new Error(`Failed to fetch existing modifications: ${existingResponse.status}`);
-      }
+//       if (!existingResponse.ok) {
+//           throw new Error(`Failed to fetch existing modifications: ${existingResponse.status}`);
+//       }
 
-      const existingData = await existingResponse.json();
+//       const existingData = await existingResponse.json();
       
-      // Merge new modifications with existing ones
-      const existingModifications = existingData.modifications || [];
-      const pageModifications = existingModifications.find(mod => mod.pageId === pageId);
+//       // Merge new modifications with existing ones
+//       const existingModifications = existingData.modifications || [];
+//       const pageModifications = existingModifications.find(mod => mod.pageId === pageId);
       
-      if (pageModifications) {
-          // Update existing page modifications
-          pageModifications.elements.push(modificationData.modifications[0].elements[0]);
-      } else {
-          // Add new page modifications
-          existingModifications.push(modificationData.modifications[0]);
-      }
+//       if (pageModifications) {
+//           // Update existing page modifications
+//           pageModifications.elements.push(modificationData.modifications[0].elements[0]);
+//       } else {
+//           // Add new page modifications
+//           existingModifications.push(modificationData.modifications[0]);
+//       }
 
-      // Prepare the final data to send
-      const finalData = {
-          userId: userId,
-          widgetId: widgetId,
-          modifications: existingModifications
-      };
+//       // Prepare the final data to send
+//       const finalData = {
+//           userId: userId,
+//           widgetId: widgetId,
+//           modifications: existingModifications
+//       };
 
-      // Save the updated modifications
-      const saveResponse = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`,
-              "userId": userId,
-              "pageId": pageId,
-              "widget-id": widgetId,
-          },
-          body: JSON.stringify(finalData),
-      });
+//       // Save the updated modifications
+//       const saveResponse = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+//           method: "POST",
+//           headers: {
+//               "Content-Type": "application/json",
+//               "Authorization": `Bearer ${token}`,
+//               "userId": userId,
+//               "pageId": pageId,
+//               "widget-id": widgetId,
+//           },
+//           body: JSON.stringify(finalData),
+//       });
 
-      if (!saveResponse.ok) {
-          throw new Error(`Failed to save modifications: ${saveResponse.status}`);
-      }
+//       if (!saveResponse.ok) {
+//           throw new Error(`Failed to save modifications: ${saveResponse.status}`);
+//       }
 
-      const result = await saveResponse.json();
-      console.log("✅ Changes Saved Successfully!", result);
+//       const result = await saveResponse.json();
+//       console.log("✅ Changes Saved Successfully!", result);
 
-      // Update local storage with the latest modifications
-      localStorage.setItem(`modifications_${pageId}`, JSON.stringify(existingModifications));
+//       // Update local storage with the latest modifications
+//       localStorage.setItem(`modifications_${pageId}`, JSON.stringify(existingModifications));
 
-      return result;
-  } catch (error) {
-      console.error("❌ Error saving modifications:", error);
-      // Implement retry logic if needed
-      throw error;
-  }
-}
+//       return result;
+//   } catch (error) {
+//       console.error("❌ Error saving modifications:", error);
+//       // Implement retry logic if needed
+//       throw error;
+//   }
+// }
 
 // Helper function to validate modification data
 function validateModificationData(data) {
@@ -1257,34 +1257,33 @@ const StyleCollector = {
 };
 
 const StyleManager = {
-  async applyStylesToParagraphAnchors(paragraphElement, styles) {
-    if (!paragraphElement) return;
-
-    const allAnchors = paragraphElement.querySelectorAll('a');
-    if (!allAnchors.length) return;
-
-    // Get current authentication data
-    const token = localStorage.getItem("squareCraft_auth_token");
-    const userId = localStorage.getItem("squareCraft_u_id");
-    const widgetId = localStorage.getItem("squareCraft_w_id");
-    const pageId = getPageId();
-
-    if (!token || !userId || !widgetId || !pageId) {
-      console.warn("⚠️ Missing required authentication data");
+  async applyStylesToParagraphAnchors(paragraphElement, styles, shouldSave = false) {
+    if (!paragraphElement) {
+      console.warn("⚠️ No paragraph element provided");
       return;
     }
 
-    // Prepare modification data structure
-    const modificationData = {
-      userId: userId,
-      widgetId: widgetId,
-      modifications: [{
-        pageId: pageId,
-        elements: []
-      }]
-    };
+    const allAnchors = paragraphElement.querySelectorAll('a');
+    if (!allAnchors.length) {
+      console.warn("⚠️ No anchor elements found in paragraph");
+      return;
+    }
 
-    // Apply styles to each anchor and collect modifications
+    // Get authentication data if we're going to save
+    let token, userId, widgetId, pageId;
+    if (shouldSave) {
+      token = localStorage.getItem("squareCraft_auth_token");
+      userId = localStorage.getItem("squareCraft_u_id");
+      widgetId = localStorage.getItem("squareCraft_w_id");
+      pageId = getPageId();
+
+      if (!token || !userId || !widgetId || !pageId) {
+        console.warn("⚠️ Missing authentication data for saving");
+        return;
+      }
+    }
+
+    // Apply styles to each anchor
     for (const anchor of allAnchors) {
       // Ensure anchor has ID
       if (!anchor.id) {
@@ -1301,76 +1300,20 @@ const StyleManager = {
       };
 
       // Apply styles to element
-      Object.entries(mergedStyles).forEach(([prop, value]) => {
-        if (value) {
-          const camelProp = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
-          anchor.style[camelProp] = value;
-        }
-      });
+      this.applyStylesToElement(anchor, mergedStyles);
 
-      // Create or update style tag
+      // Update style tag
       this.updateStyleTag(anchor.id, mergedStyles);
 
-      // Add to modifications array
-      modificationData.modifications[0].elements.push({
-        elementId: anchor.id,
-        css: {
-          a: {
-            id: anchor.id,
-            ...mergedStyles
-          }
-        },
-        elementStructure: {
-          type: 'a',
-          content: anchor.textContent || '',
-          parentId: anchor.parentElement?.id || null,
-          originalElementId: anchor.id
-        }
-      });
-    }
-
-    // Save to database
-    try {
-      const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-          "userId": userId,
-          "pageId": pageId,
-          "widget-id": widgetId,
-        },
-        body: JSON.stringify(modificationData)
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to save modifications: ${response.status}`);
+      // If not saving to database, collect the changes
+      if (!shouldSave) {
+        StyleCollector.addChange(paragraphElement.id, anchor.id, mergedStyles);
       }
-
-      const result = await response.json();
-      console.log("✅ Modifications saved successfully:", result);
-      
-      // Update local storage for persistence
-      const storageKey = `modifications_${pageId}`;
-      localStorage.setItem(storageKey, JSON.stringify(modificationData.modifications));
-
-    } catch (error) {
-      console.error("❌ Error saving modifications:", error);
-      // Implement retry logic
-      this.retrySaveModifications(modificationData, 3);
     }
-  },
 
-  async retrySaveModifications(data, retries) {
-    if (retries <= 0) return;
-
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
-      await this.applyStylesToParagraphAnchors(data.modifications[0].elements[0].elementStructure.parentId, 
-        data.modifications[0].elements[0].css.a);
-    } catch (error) {
-      console.error(`Retry failed (${retries} left):`, error);
-      await this.retrySaveModifications(data, retries - 1);
+    // If shouldSave is true, save to database
+    if (shouldSave) {
+      await this.saveModificationsToDatabase(paragraphElement, allAnchors);
     }
   },
 
@@ -1389,7 +1332,13 @@ const StyleManager = {
       'text-decoration',
       'font-family',
       'text-transform',
-      'letter-spacing'
+      'letter-spacing',
+      'line-height',
+      'text-align',
+      'background-color',
+      'border',
+      'padding',
+      'margin'
     ];
 
     trackProperties.forEach(prop => {
@@ -1400,6 +1349,18 @@ const StyleManager = {
     });
 
     return relevantStyles;
+  },
+
+  applyStylesToElement(element, styles) {
+    if (!element) return;
+
+    Object.entries(styles).forEach(([prop, value]) => {
+      if (value) {
+        // Convert kebab-case to camelCase for style properties
+        const camelProp = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+        element.style[camelProp] = value;
+      }
+    });
   },
 
   updateStyleTag(elementId, styles) {
@@ -1419,6 +1380,143 @@ const StyleManager = {
     cssText += "}";
 
     styleTag.innerHTML = cssText;
+  },
+
+  async saveModificationsToDatabase(paragraphElement, anchors) {
+    const token = localStorage.getItem("squareCraft_auth_token");
+    const userId = localStorage.getItem("squareCraft_u_id");
+    const widgetId = localStorage.getItem("squareCraft_w_id");
+    const pageId = getPageId();
+
+    if (!token || !userId || !widgetId || !pageId) {
+      throw new Error("Missing required authentication data");
+    }
+
+    const modificationData = {
+      userId: userId,
+      widgetId: widgetId,
+      modifications: [{
+        pageId: pageId,
+        elements: []
+      }]
+    };
+
+    // Prepare modifications for each anchor
+    for (const anchor of anchors) {
+      const styles = this.getExistingStyles(anchor.id);
+      
+      modificationData.modifications[0].elements.push({
+        elementId: anchor.id,
+        css: {
+          a: {
+            id: anchor.id,
+            ...styles
+          }
+        },
+        elementStructure: {
+          type: 'a',
+          content: anchor.textContent || '',
+          parentId: paragraphElement.id,
+          originalElementId: anchor.id
+        }
+      });
+    }
+
+    try {
+      const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "userId": userId,
+          "pageId": pageId,
+          "widget-id": widgetId,
+        },
+        body: JSON.stringify(modificationData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to save modifications: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("✅ Modifications saved successfully:", result);
+
+      // Update local storage
+      const storageKey = `modifications_${pageId}`;
+      localStorage.setItem(storageKey, JSON.stringify(modificationData.modifications));
+
+      return result;
+    } catch (error) {
+      console.error("❌ Error saving modifications:", error);
+      throw error;
+    }
+  },
+
+  async retrySaveModifications(data, retries = 3) {
+    if (retries <= 0) throw new Error("Max retries exceeded");
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+      return await this.saveModificationsToDatabase(
+        document.getElementById(data.modifications[0].elements[0].elementStructure.parentId),
+        [document.getElementById(data.modifications[0].elements[0].elementStructure.originalElementId)]
+      );
+    } catch (error) {
+      console.error(`Retry failed (${retries} left):`, error);
+      return this.retrySaveModifications(data, retries - 1);
+    }
+  },
+
+  validateStyles(elementId, styles) {
+    const element = document.getElementById(elementId);
+    if (!element) return false;
+
+    const computedStyle = window.getComputedStyle(element);
+    let isValid = true;
+
+    Object.entries(styles).forEach(([prop, value]) => {
+      const camelProp = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+      if (computedStyle[camelProp] !== value) {
+        isValid = false;
+      }
+    });
+
+    return isValid;
+  },
+
+  cleanupStyles(paragraphElement) {
+    if (!paragraphElement) return;
+
+    const allAnchors = paragraphElement.querySelectorAll('a');
+    allAnchors.forEach(anchor => {
+      const styleTag = document.getElementById(`style-${anchor.id}`);
+      if (styleTag) {
+        styleTag.remove();
+      }
+    });
+  },
+
+  async resetStylesForParagraph(paragraphElement, propertyToReset) {
+    if (!paragraphElement) return;
+    
+    const allAnchors = paragraphElement.querySelectorAll('a');
+    
+    for (const anchor of allAnchors) {
+      // Remove the specified style property
+      anchor.style.removeProperty(propertyToReset);
+      
+      // Get remaining styles
+      const currentStyles = this.getExistingStyles(anchor.id);
+      delete currentStyles[propertyToReset];
+      
+      // Apply remaining styles
+      this.applyStylesToElement(anchor, currentStyles);
+      this.updateStyleTag(anchor.id, currentStyles);
+      
+      // Add to pending changes
+      StyleCollector.addChange(paragraphElement.id, anchor.id, currentStyles);
+    }
   }
 };
 
