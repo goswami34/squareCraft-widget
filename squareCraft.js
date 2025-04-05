@@ -1485,7 +1485,7 @@ document.addEventListener("mouseup", function () {
           StyleCollector.clearChanges();
   
           // Show success message
-          alert("Changes published successfully!");
+          // alert("Changes published successfully!");
         } catch (error) {
           console.error(`Attempt ${4 - retries} failed:`, error);
           retries--;
