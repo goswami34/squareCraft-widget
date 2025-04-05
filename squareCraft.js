@@ -2103,6 +2103,7 @@ async function applyStylesToAllAnchors(paragraphElement, css) {
 // });
 
 
+// Store the last selection globally
 let lastSelection = null;
 
 // Modify the mouseup event listener to store the selection
@@ -2120,7 +2121,7 @@ document.addEventListener("mouseup", function() {
   }
 });
 
-// Modify the font size input event listener
+// Font size input handler
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
     console.warn("⚠️ Please select a link first");
@@ -2191,6 +2192,30 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
     console.log(`✅ Font size ${newSize}px applied to all links in paragraph`);
   } catch (error) {
     console.error("❌ Error applying font size:", error);
+  }
+});
+
+// Add keydown event listener for arrow keys
+document.getElementById("squareCraftFontSize").addEventListener("keydown", async function(e) {
+  if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+    // Prevent default behavior to avoid double increment/decrement
+    e.preventDefault();
+    
+    // Get current value and calculate new value
+    const currentValue = parseInt(this.value);
+    const newValue = e.key === "ArrowUp" ? currentValue + 1 : currentValue - 1;
+    
+    // Ensure value stays within bounds
+    if (newValue >= 8 && newValue <= 70) {
+      this.value = newValue;
+      
+      // Trigger the input event to apply the new size
+      const event = new Event('input', {
+        bubbles: true,
+        cancelable: true,
+      });
+      this.dispatchEvent(event);
+    }
   }
 });
 
