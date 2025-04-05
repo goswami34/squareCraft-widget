@@ -2128,18 +2128,105 @@ document.getElementById("squareCraftFontWeight").addEventListener("change", asyn
 });
 
 // Text color handler
+// document.getElementById("squareCraftTextColor").addEventListener("input", async function() {
+//   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+//       console.warn("⚠️ Please select a link first");
+//       return;
+//   }
+
+//   const color = this.value;
+//   document.getElementById("squareCraftColorHex").value = color.toUpperCase();
+  
+//   await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
+//       "color": color
+//   });
+// });
+
+// Text color handler with external styles and selection preservation
 document.getElementById("squareCraftTextColor").addEventListener("input", async function() {
   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
-      console.warn("⚠️ Please select a link first");
-      return;
+    console.warn("⚠️ Please select a link first");
+    return;
   }
 
   const color = this.value;
   document.getElementById("squareCraftColorHex").value = color.toUpperCase();
   
-  await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
-      "color": color
-  });
+  try {
+    // Get all anchor tags in the selected paragraph
+    const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
+    
+    // Apply the new text color to all anchors
+    for (const anchor of allAnchors) {
+      // Ensure anchor has an ID
+      if (!anchor.id) {
+        anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      // Get existing styles
+      const existingStyles = {};
+      const computedStyle = window.getComputedStyle(anchor);
+      ['color'].forEach(prop => {
+        if (computedStyle[prop]) {
+          existingStyles[prop] = computedStyle[prop];
+        }
+      });
+      
+      // Update styles with new text color
+      const updatedStyles = {
+        ...existingStyles,
+        'color': color
+      };
+
+      // Create or update the style tag
+      let styleTag = document.getElementById(`style-${anchor.id}`);
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = `style-${anchor.id}`;
+        document.head.appendChild(styleTag);
+      }
+
+      // Apply styles through external CSS
+      let cssText = `#${anchor.id} { `;
+      Object.entries(updatedStyles).forEach(([prop, value]) => {
+        if (value) {
+          cssText += `${prop}: ${value} !important; `;
+        }
+      });
+      cssText += "}";
+      styleTag.innerHTML = cssText;
+      
+      // Add to pending changes
+      StyleCollector.addChange(SelectionManager.selectedParagraph.id, anchor.id, updatedStyles);
+    }
+
+    // Restore the selection after applying styles
+    if (lastSelection) {
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(lastSelection.cloneRange());
+    }
+
+    console.log(`✅ Text color ${color} applied to all links in paragraph`);
+  } catch (error) {
+    console.error("❌ Error applying text color:", error);
+  }
+});
+
+// Add click event listener to clear selection when clicking outside
+document.addEventListener('click', function(event) {
+  const widgetContainer = document.getElementById('squarecraft-widget-container');
+  const colorInput = document.getElementById('squareCraftTextColor');
+  const colorHexInput = document.getElementById('squareCraftColorHex');
+  
+  // Check if click is outside the widget and not on the color inputs
+  if (!widgetContainer.contains(event.target) && 
+      event.target !== colorInput && 
+      event.target !== colorHexInput) {
+    lastSelection = null;
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+  }
 });
 
 // Text decoration handler
@@ -2194,7 +2281,7 @@ document.querySelectorAll(".elements-font-style").forEach(btn => {
         // Get existing styles
         const existingStyles = {};
         const computedStyle = window.getComputedStyle(anchor);
-        ['font-size', 'font-weight', 'color', 'text-decoration'].forEach(prop => {
+        ['text-decoration'].forEach(prop => {
           if (computedStyle[prop]) {
             existingStyles[prop] = computedStyle[prop];
           }
@@ -2251,7 +2338,7 @@ document.querySelector(".underline-element-font-style").addEventListener("click"
     // Get existing styles
     const existingStyles = {};
     const computedStyle = window.getComputedStyle(anchor);
-    ['font-size', 'font-weight', 'color', 'text-decoration'].forEach(prop => {
+    ['text-decoration'].forEach(prop => {
       if (computedStyle[prop]) {
         existingStyles[prop] = computedStyle[prop];
       }
