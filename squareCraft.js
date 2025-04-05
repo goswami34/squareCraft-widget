@@ -2059,11 +2059,6 @@ document.addEventListener('click', function(event) {
 });
 
 
-
-
-
-
-
 // Font weight handler with external styles
 document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
@@ -2127,20 +2122,71 @@ document.getElementById("squareCraftFontWeight").addEventListener("change", asyn
   }
 });
 
-// Text color handler
-// document.getElementById("squareCraftTextColor").addEventListener("input", async function() {
-//   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
-//       console.warn("⚠️ Please select a link first");
-//       return;
-//   }
+// font weight reset code start here
+// Add this to your existing code
+document.querySelector(".underline-element-font-weight").addEventListener("click", async function() {
+  if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+    console.warn("⚠️ Please select a link first");
+    return;
+  }
 
-//   const color = this.value;
-//   document.getElementById("squareCraftColorHex").value = color.toUpperCase();
-  
-//   await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
-//       "color": color
-//   });
-// });
+  try {
+    // Get all anchor tags in the selected paragraph
+    const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
+    
+    // Apply the reset font weight to all anchors
+    for (const anchor of allAnchors) {
+      // Ensure anchor has an ID
+      if (!anchor.id) {
+        anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      // Get existing styles
+      const existingStyles = {};
+      const computedStyle = window.getComputedStyle(anchor);
+      ['font-size', 'color', 'text-decoration'].forEach(prop => {
+        if (computedStyle[prop]) {
+          existingStyles[prop] = computedStyle[prop];
+        }
+      });
+      
+      // Remove font-weight from styles
+      const updatedStyles = {
+        ...existingStyles,
+        'font-weight': '400' // Reset to default weight
+      };
+
+      // Create or update the style tag
+      let styleTag = document.getElementById(`style-${anchor.id}`);
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = `style-${anchor.id}`;
+        document.head.appendChild(styleTag);
+      }
+
+      // Apply styles through external CSS
+      let cssText = `#${anchor.id} { `;
+      Object.entries(updatedStyles).forEach(([prop, value]) => {
+        if (value) {
+          cssText += `${prop}: ${value} !important; `;
+        }
+      });
+      cssText += "}";
+      styleTag.innerHTML = cssText;
+      
+      // Add to pending changes
+      StyleCollector.addChange(SelectionManager.selectedParagraph.id, anchor.id, updatedStyles);
+    }
+
+    // Reset the font weight dropdown to default value
+    document.getElementById("squareCraftFontWeight").value = "400";
+
+    console.log("✅ Font weight reset to default (400) for all links in paragraph");
+  } catch (error) {
+    console.error("❌ Error resetting font weight:", error);
+  }
+});
+
 
 // Text color handler with external styles and selection preservation
 document.getElementById("squareCraftTextColor").addEventListener("input", async function() {
@@ -2372,9 +2418,6 @@ document.querySelector(".underline-element-font-style").addEventListener("click"
     StyleCollector.addChange(SelectionManager.selectedParagraph.id, anchor.id, updatedStyles);
   }
 });
-
-
-
 
 
 
