@@ -2038,7 +2038,7 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
       // Get existing styles
       const existingStyles = {};
       const computedStyle = window.getComputedStyle(anchor);
-      ['font-size', 'font-weight', 'color', 'text-decoration'].forEach(prop => {
+      ['font-size'].forEach(prop => {
         if (computedStyle[prop]) {
           existingStyles[prop] = computedStyle[prop];
         }
