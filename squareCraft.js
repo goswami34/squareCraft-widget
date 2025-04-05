@@ -1834,49 +1834,6 @@ function applyStylesToElement(elementId, css) {
 
 
 
-// Track selected elements and parent paragraph
-let selectedParagraph = null;
-let lastSelectedLink = null;
-
-// Modified selection tracking
-// document.addEventListener("mouseup", function() {
-//     const selection = window.getSelection();
-//     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-//         let range = selection.getRangeAt(0);
-//         let container = range.commonAncestorContainer;
-        
-//         // If the container is a text node, get its parent element
-//         if (container.nodeType === Node.TEXT_NODE) {
-//             container = container.parentElement;
-//         }
-        
-//         // Find the closest anchor tag and its parent paragraph
-//         const linkElement = container.closest('a');
-//         if (linkElement) {
-//             const paragraphElement = linkElement.closest('p');
-//             if (paragraphElement) {
-//                 selectedParagraph = paragraphElement;
-//                 lastSelectedLink = linkElement;
-                
-//                 // Ensure all anchor tags within the paragraph have IDs
-//                 const allAnchors = paragraphElement.querySelectorAll('a');
-//                 allAnchors.forEach(anchor => {
-//                     if (!anchor.id) {
-//                         anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-//                     }
-//                 });
-                
-//                 console.log("✅ Link and paragraph selected:", {
-//                     linkText: linkElement.textContent,
-//                     paragraphId: paragraphElement.id
-//                 });
-//             }
-//         } else {
-//             selectedParagraph = null;
-//             lastSelectedLink = null;
-//         }
-//     }
-// });
 
 document.addEventListener("mouseup", function() {
   const selection = window.getSelection();
@@ -1893,37 +1850,6 @@ document.addEventListener("mouseup", function() {
   SelectionManager.updateSelection(container);
 });
 
-
-// Modified function to apply styles to all anchors in a paragraph
-async function applyStylesToAllAnchors(paragraphElement, css) {
-  if (!paragraphElement) return;
-  
-  const allAnchors = paragraphElement.querySelectorAll('a');
-  const modifications = [];
-  
-  for (const anchor of allAnchors) {
-      // Ensure anchor has an ID
-      if (!anchor.id) {
-          anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      }
-      
-      // Apply styles to this anchor
-      applyStylesToElement(anchor.id, css);
-      
-      // Prepare modification for saving
-      modifications.push({
-          elementId: anchor.id,
-          css: css
-      });
-  }
-  
-  // Save all modifications
-  for (const mod of modifications) {
-      await saveModifications(mod.elementId, mod.css);
-  }
-  
-  console.log(`✅ Styles applied to ${modifications.length} anchors in paragraph`);
-}
 
 // font size code start here
 
@@ -2079,7 +2005,7 @@ document.getElementById("squareCraftFontWeight").addEventListener("change", asyn
       // Get existing styles
       const existingStyles = {};
       const computedStyle = window.getComputedStyle(anchor);
-      ['font-size', 'font-weight', 'color', 'text-decoration'].forEach(prop => {
+      ['font-weight'].forEach(prop => {
         if (computedStyle[prop]) {
           existingStyles[prop] = computedStyle[prop];
         }
@@ -2120,7 +2046,6 @@ document.getElementById("squareCraftFontWeight").addEventListener("change", asyn
 });
 
 // font weight reset code start here
-// Add this to your existing code
 document.querySelector(".underline-element-font-weight").addEventListener("click", async function() {
   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
     console.warn("⚠️ Please select a link first");
@@ -2141,7 +2066,7 @@ document.querySelector(".underline-element-font-weight").addEventListener("click
       // Get existing styles
       const existingStyles = {};
       const computedStyle = window.getComputedStyle(anchor);
-      ['font-size', 'color', 'text-decoration'].forEach(prop => {
+      ['font-weight'].forEach(prop => {
         if (computedStyle[prop]) {
           existingStyles[prop] = computedStyle[prop];
         }
@@ -2271,35 +2196,6 @@ document.addEventListener('click', function(event) {
     selection.removeAllRanges();
   }
 });
-
-// Text decoration handler
-// document.querySelectorAll(".elements-font-style").forEach(btn => {
-//   btn.addEventListener("click", async function() {
-//       if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
-//           console.warn("⚠️ Please select a link first");
-//           return;
-//       }
-
-//       const styleType = this.dataset.style;
-//       if (styleType === "underline") {
-//           await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
-//               "text-decoration": "none"
-//           });
-//       }
-//   });
-// });
-
-// // Restore underline handler
-// document.querySelector(".underline-element-font-style").addEventListener("click", async function() {
-//   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
-//       console.warn("⚠️ Please select a link first");
-//       return;
-//   }
-
-//   await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
-//       "text-decoration": "underline"
-//   });
-// });
 
 // Text decoration handler with external styles
 document.querySelectorAll(".elements-font-style").forEach(btn => {
