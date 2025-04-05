@@ -35,7 +35,7 @@
   link.rel = "stylesheet";
   link.type = "text/css";
   link.href =
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
+    "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
   document.head.appendChild(link);
 
   const fontSizes = [
