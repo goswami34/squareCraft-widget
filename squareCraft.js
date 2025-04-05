@@ -1930,24 +1930,139 @@ async function applyStylesToAllAnchors(paragraphElement, css) {
 
 // font size code start here
 
-let lastSelection = null;
+// let lastSelection = null;
 
-// Modify the mouseup event listener to store the selection
-document.addEventListener("mouseup", function() {
-  const selection = window.getSelection();
-  if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-    lastSelection = selection.getRangeAt(0);
+// // Modify the mouseup event listener to store the selection
+// document.addEventListener("mouseup", function() {
+//   const selection = window.getSelection();
+//   if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+//     lastSelection = selection.getRangeAt(0);
     
-    let container = selection.getRangeAt(0).commonAncestorContainer;
-    if (container.nodeType === Node.TEXT_NODE) {
-      container = container.parentElement;
-    }
+//     let container = selection.getRangeAt(0).commonAncestorContainer;
+//     if (container.nodeType === Node.TEXT_NODE) {
+//       container = container.parentElement;
+//     }
 
-    SelectionManager.updateSelection(container);
-  }
-});
+//     SelectionManager.updateSelection(container);
+//   }
+// });
 
-// Font size input handler
+// // Font size input handler
+// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+//   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+//     console.warn("⚠️ Please select a link first");
+//     return;
+//   }
+
+//   const newSize = parseInt(this.value);
+//   if (isNaN(newSize) || newSize < 8 || newSize > 70) {
+//     console.warn("⚠️ Invalid font size value");
+//     return;
+//   }
+
+//   try {
+//     // Get all anchor tags in the selected paragraph
+//     const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
+    
+//     // Apply the new font size to all anchors
+//     for (const anchor of allAnchors) {
+//       // Ensure anchor has an ID
+//       if (!anchor.id) {
+//         anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+//       }
+
+//       // Get existing styles
+//       const existingStyles = {};
+//       const computedStyle = window.getComputedStyle(anchor);
+//       ['font-size'].forEach(prop => {
+//         if (computedStyle[prop]) {
+//           existingStyles[prop] = computedStyle[prop];
+//         }
+//       });
+      
+//       // Update styles with new font size
+//       const updatedStyles = {
+//         ...existingStyles,
+//         'font-size': `${newSize}px`
+//       };
+
+//       // Create or update the style tag
+//       let styleTag = document.getElementById(`style-${anchor.id}`);
+//       if (!styleTag) {
+//         styleTag = document.createElement('style');
+//         styleTag.id = `style-${anchor.id}`;
+//         document.head.appendChild(styleTag);
+//       }
+
+//       // Apply styles through external CSS
+//       let cssText = `#${anchor.id} { `;
+//       Object.entries(updatedStyles).forEach(([prop, value]) => {
+//         if (value) {
+//           cssText += `${prop}: ${value} !important; `;
+//         }
+//       });
+//       cssText += "}";
+//       styleTag.innerHTML = cssText;
+      
+//       // Add to pending changes
+//       StyleCollector.addChange(SelectionManager.selectedParagraph.id, anchor.id, updatedStyles);
+//     }
+
+//     // Restore the selection after applying styles
+//     if (lastSelection) {
+//       const selection = window.getSelection();
+//       selection.removeAllRanges();
+//       selection.addRange(lastSelection.cloneRange());
+//     }
+
+//     console.log(`✅ Font size ${newSize}px applied to all links in paragraph`);
+//   } catch (error) {
+//     console.error("❌ Error applying font size:", error);
+//   }
+// });
+
+// // Add keydown event listener for arrow keys
+// document.getElementById("squareCraftFontSize").addEventListener("keydown", async function(e) {
+//   if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+//     // Prevent default behavior to avoid double increment/decrement
+//     e.preventDefault();
+    
+//     // Get current value and calculate new value
+//     const currentValue = parseInt(this.value);
+//     const newValue = e.key === "ArrowUp" ? currentValue + 1 : currentValue - 1;
+    
+//     // Ensure value stays within bounds
+//     if (newValue >= 8 && newValue <= 70) {
+//       this.value = newValue;
+      
+//       // Trigger the input event to apply the new size
+//       const event = new Event('input', {
+//         bubbles: true,
+//         cancelable: true,
+//       });
+//       this.dispatchEvent(event);
+//     }
+//   }
+// });
+
+// // Add click event listener to clear selection when clicking outside
+// document.addEventListener('click', function(event) {
+//   const widgetContainer = document.getElementById('squarecraft-widget-container');
+//   const fontSizeInput = document.getElementById('squareCraftFontSize');
+  
+//   // Check if click is outside the widget and not on the font size input
+//   if (!widgetContainer.contains(event.target) && event.target !== fontSizeInput) {
+//     lastSelection = null;
+//     const selection = window.getSelection();
+//     selection.removeAllRanges();
+//   }
+// });
+
+
+// Add this code to track previous font sizes
+const previousFontSizes = new Map();
+
+// Modify the font size input handler to store previous sizes
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
     console.warn("⚠️ Please select a link first");
@@ -1970,6 +2085,10 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
       if (!anchor.id) {
         anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       }
+
+      // Store the previous font size before changing
+      const currentSize = window.getComputedStyle(anchor).fontSize;
+      previousFontSizes.set(anchor.id, currentSize);
 
       // Get existing styles
       const existingStyles = {};
@@ -2021,40 +2140,77 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
   }
 });
 
-// Add keydown event listener for arrow keys
-document.getElementById("squareCraftFontSize").addEventListener("keydown", async function(e) {
-  if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-    // Prevent default behavior to avoid double increment/decrement
-    e.preventDefault();
-    
-    // Get current value and calculate new value
-    const currentValue = parseInt(this.value);
-    const newValue = e.key === "ArrowUp" ? currentValue + 1 : currentValue - 1;
-    
-    // Ensure value stays within bounds
-    if (newValue >= 8 && newValue <= 70) {
-      this.value = newValue;
-      
-      // Trigger the input event to apply the new size
-      const event = new Event('input', {
-        bubbles: true,
-        cancelable: true,
-      });
-      this.dispatchEvent(event);
-    }
+// Add the reset functionality for font size
+document.querySelector(".underline-element-font-size").addEventListener("click", async function() {
+  if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+    console.warn("⚠️ Please select a link first");
+    return;
   }
-});
 
-// Add click event listener to clear selection when clicking outside
-document.addEventListener('click', function(event) {
-  const widgetContainer = document.getElementById('squarecraft-widget-container');
-  const fontSizeInput = document.getElementById('squareCraftFontSize');
-  
-  // Check if click is outside the widget and not on the font size input
-  if (!widgetContainer.contains(event.target) && event.target !== fontSizeInput) {
-    lastSelection = null;
-    const selection = window.getSelection();
-    selection.removeAllRanges();
+  try {
+    // Get all anchor tags in the selected paragraph
+    const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
+    
+    // Apply the previous font size to all anchors
+    for (const anchor of allAnchors) {
+      // Ensure anchor has an ID
+      if (!anchor.id) {
+        anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      // Get the previous font size
+      const previousSize = previousFontSizes.get(anchor.id);
+      if (!previousSize) {
+        console.warn("⚠️ No previous font size found for this element");
+        continue;
+      }
+
+      // Get existing styles
+      const existingStyles = {};
+      const computedStyle = window.getComputedStyle(anchor);
+      ['font-size'].forEach(prop => {
+        if (computedStyle[prop]) {
+          existingStyles[prop] = computedStyle[prop];
+        }
+      });
+      
+      // Update styles with previous font size
+      const updatedStyles = {
+        ...existingStyles,
+        'font-size': previousSize
+      };
+
+      // Create or update the style tag
+      let styleTag = document.getElementById(`style-${anchor.id}`);
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = `style-${anchor.id}`;
+        document.head.appendChild(styleTag);
+      }
+
+      // Apply styles through external CSS
+      let cssText = `#${anchor.id} { `;
+      Object.entries(updatedStyles).forEach(([prop, value]) => {
+        if (value) {
+          cssText += `${prop}: ${value} !important; `;
+        }
+      });
+      cssText += "}";
+      styleTag.innerHTML = cssText;
+      
+      // Add to pending changes
+      StyleCollector.addChange(SelectionManager.selectedParagraph.id, anchor.id, updatedStyles);
+
+      // Update the font size input to match the previous size
+      const numericSize = parseInt(previousSize);
+      if (!isNaN(numericSize)) {
+        document.getElementById("squareCraftFontSize").value = numericSize;
+      }
+    }
+
+    console.log("✅ Font size reset to previous value for all links in paragraph");
+  } catch (error) {
+    console.error("❌ Error resetting font size:", error);
   }
 });
 
