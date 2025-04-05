@@ -1865,16 +1865,79 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
 
 
 // Font weight handler
+// document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
+//   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
+//       console.warn("⚠️ Please select a link first");
+//       return;
+//   }
+
+//   const weight = this.value;
+//   await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
+//       "font-weight": weight
+//   });
+// });
+
+// Font weight handler with external styles
 document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
-      console.warn("⚠️ Please select a link first");
-      return;
+    console.warn("⚠️ Please select a link first");
+    return;
   }
 
   const weight = this.value;
-  await StyleManager.applyStylesToParagraphAnchors(SelectionManager.selectedParagraph, {
-      "font-weight": weight
-  });
+  
+  try {
+    // Get all anchor tags in the selected paragraph
+    const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
+    
+    // Apply the new font weight to all anchors
+    for (const anchor of allAnchors) {
+      // Ensure anchor has an ID
+      if (!anchor.id) {
+        anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      // Get existing styles
+      const existingStyles = {};
+      const computedStyle = window.getComputedStyle(anchor);
+      ['font-size', 'font-weight', 'color', 'text-decoration'].forEach(prop => {
+        if (computedStyle[prop]) {
+          existingStyles[prop] = computedStyle[prop];
+        }
+      });
+      
+      // Update styles with new font weight
+      const updatedStyles = {
+        ...existingStyles,
+        'font-weight': weight
+      };
+
+      // Create or update the style tag
+      let styleTag = document.getElementById(`style-${anchor.id}`);
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = `style-${anchor.id}`;
+        document.head.appendChild(styleTag);
+      }
+
+      // Apply styles through external CSS
+      let cssText = `#${anchor.id} { `;
+      Object.entries(updatedStyles).forEach(([prop, value]) => {
+        if (value) {
+          cssText += `${prop}: ${value} !important; `;
+        }
+      });
+      cssText += "}";
+      styleTag.innerHTML = cssText;
+      
+      // Add to pending changes
+      StyleCollector.addChange(SelectionManager.selectedParagraph.id, anchor.id, updatedStyles);
+    }
+
+    console.log(`✅ Font weight ${weight} applied to all links in paragraph`);
+  } catch (error) {
+    console.error("❌ Error applying font weight:", error);
+  }
 });
 
 // Text color handler
