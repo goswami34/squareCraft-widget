@@ -92,6 +92,142 @@
 
 
 
+// async function fetchModifications(retries = 3) {
+//   if (!pageId) {
+//     console.warn("⚠️ No page ID found");
+//     return;
+//   }
+
+//   const token = localStorage.getItem("squareCraft_auth_token");
+//   const userId = localStorage.getItem("squareCraft_u_id");
+//   const widgetId = localStorage.getItem("squareCraft_w_id");
+
+//   if (!token || !userId || !widgetId) {
+//     console.warn("⚠️ Missing authentication data");
+//     return;
+//   }
+
+//   try {
+//     const response = await fetch(
+//       `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+//       {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+//           "Authorization": `Bearer ${token}`,
+//         }
+//       }
+//     );
+
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! status: ${response.status}`);
+//     }
+
+//     const data = await response.json();
+//     console.log("Retrieved modifications:", data);
+
+//     if (!data.modifications || !Array.isArray(data.modifications)) {
+//       console.warn("⚠️ No modifications found or invalid format");
+//       return;
+//     }
+
+//     // Apply modifications for current page
+//     data.modifications.forEach(mod => {
+//       if (mod.pageId === pageId) {
+//         mod.elements.forEach(elem => {
+//           // Check for anchor tag modifications
+//           const cssData = elem.css?.a;
+//           if (cssData) {
+//             const { id, ...styles } = cssData;
+//             const elementStructure = elem.elementStructure;
+            
+            
+//             // Find or create the element
+//             let targetElement = document.getElementById(elementStructure?.originalElementId || id);
+            
+//             if (!targetElement && elementStructure) {
+//               // Create new anchor element if it doesn't exist
+//               targetElement = document.createElement('a');
+//               targetElement.id = elementStructure.originalElementId || id;
+//               targetElement.textContent = elementStructure.content;
+              
+//               // Find the parent element
+//               const parentElement = elementStructure.parentId ? 
+//                 document.getElementById(elementStructure.parentId) : 
+//                 document.body;
+              
+//               if (parentElement) {
+//                 // Find the text node to replace
+//                 const walker = document.createTreeWalker(
+//                   parentElement,
+//                   NodeFilter.SHOW_TEXT,
+//                   {
+//                     acceptNode: function(node) {
+//                       return node.textContent.includes(elementStructure.content) ?
+//                         NodeFilter.FILTER_ACCEPT :
+//                         NodeFilter.FILTER_REJECT;
+//                     }
+//                   }
+//                 );
+                
+//                 let textNode;
+//                 const textNodes = [];
+//                 while (textNode = walker.nextNode()) {
+//                   textNodes.push(textNode);
+//                 }
+                
+//                 if (textNodes.length > 0) {
+//                   const node = textNodes[0];
+//                   const parent = node.parentNode;
+                  
+//                   // Check if already wrapped in anchor
+//                   if (parent.tagName === 'A') {
+//                     targetElement = parent;
+//                     if (!targetElement.id) {
+//                       targetElement.id = elementStructure.originalElementId || id;
+//                     }
+//                   } else {
+//                     node.parentNode.replaceChild(targetElement, node);
+//                   }
+//                 }
+//               }
+//             }
+            
+//             // Apply styles to the element
+//             if (targetElement) {
+//               // First remove any existing style tag
+//               const existingStyle = document.getElementById(`style-${targetElement.id}`);
+//               if (existingStyle) {
+//                 existingStyle.remove();
+//               }
+
+//               // Apply new styles
+//               Object.entries(styles).forEach(([prop, value]) => {
+//                 if (value) {
+//                   targetElement.style[prop] = value;
+//                 }
+//               });
+
+//               // Create persistent styles
+//               applyStylesToElement(targetElement.id, styles);
+              
+//               console.log(`✅ Styles applied to element ${targetElement.id}:`, styles);
+//             }
+//           }
+//         });
+//       }
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Error fetching modifications:", error);
+//     if (retries > 0) {
+//       console.log(`🔄 Retrying... (${retries} attempts left)`);
+//       setTimeout(() => fetchModifications(retries - 1), 2000);
+//     }
+//   }
+// }
+
+// Modified fetchModifications function to handle styles properly
 async function fetchModifications(retries = 3) {
   if (!pageId) {
     console.warn("⚠️ No page ID found");
@@ -135,12 +271,10 @@ async function fetchModifications(retries = 3) {
     data.modifications.forEach(mod => {
       if (mod.pageId === pageId) {
         mod.elements.forEach(elem => {
-          // Check for anchor tag modifications
           const cssData = elem.css?.a;
           if (cssData) {
             const { id, ...styles } = cssData;
             const elementStructure = elem.elementStructure;
-            
             
             // Find or create the element
             let targetElement = document.getElementById(elementStructure?.originalElementId || id);
@@ -201,17 +335,26 @@ async function fetchModifications(retries = 3) {
                 existingStyle.remove();
               }
 
-              // Apply new styles
+              // Remove any inline styles
+              targetElement.removeAttribute('style');
+
+              // Create new style tag for external CSS
+              const styleTag = document.createElement('style');
+              styleTag.id = `style-${targetElement.id}`;
+              
+              // Build CSS with !important to ensure it overrides any other styles
+              let cssText = `#${targetElement.id} { `;
               Object.entries(styles).forEach(([prop, value]) => {
                 if (value) {
-                  targetElement.style[prop] = value;
+                  cssText += `${prop}: ${value} !important; `;
                 }
               });
-
-              // Create persistent styles
-              applyStylesToElement(targetElement.id, styles);
+              cssText += "}";
               
-              console.log(`✅ Styles applied to element ${targetElement.id}:`, styles);
+              styleTag.innerHTML = cssText;
+              document.head.appendChild(styleTag);
+              
+              console.log(`✅ External styles applied to element ${targetElement.id}:`, styles);
             }
           }
         });
