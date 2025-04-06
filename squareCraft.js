@@ -100,89 +100,175 @@
 //   const widgetId = localStorage.getItem("squareCraft_w_id");
 
 //   if (!token || !userId) {
-//       console.warn("Missing authentication data");
-//       return;
+//     console.warn("Missing authentication data");
+//     return;
 //   }
 
 //   try {
-//       const response = await fetch(
-//           `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
-//           {
-//               method: "GET",
-//               headers: {
-//                   "Content-Type": "application/json",
-//                   "Authorization": `Bearer ${token}`,
-//               }
-//           }
-//       );
-
-//       if (!response.ok) {
-//           throw new Error(`HTTP error! status: ${response.status}`);
-//       }
-
-//       const data = await response.json();
-//       console.log("Retrieved modifications:", data);
-
-//       if (!data.modifications || !Array.isArray(data.modifications)) {
-//           console.warn("No modifications found or invalid format");
-//           return;
-//       }
-
-//       // Apply modifications for current page
-//       // data.modifications.forEach(mod => {
-//       //     if (mod.pageId === pageId) {
-//       //         mod.elements.forEach(elem => {
-//       //             // Handle both span and strong elements
-//       //             const cssData = elem.css?.span || elem.css?.strong;
-//       //             if (cssData) {
-//       //                 const { id, ...styles } = cssData;
-//       //                 const element = document.getElementById(elem.elementId);
-                      
-//       //                 if (element) {
-//       //                     // If element exists, apply styles directly
-//       //                     Object.entries(styles).forEach(([prop, value]) => {
-//       //                         element.style[prop] = value;
-//       //                     });
-//       //                 } else if (elem.elementStructure) {
-//       //                     // Recreate modified element if it doesn't exist
-//       //                     recreateModifiedElement(elem.elementStructure, styles);
-//       //                 }
-//       //             }
-//       //         });
-//       //     }
-//       // });
-//       data.modifications.forEach(mod => {
-//         if (mod.pageId === pageId) {
-//             mod.elements.forEach(elem => {
-//                 // Handle em elements
-//                 const cssData = elem.css?.em;  // Change this from span/strong to em
-//                 if (cssData) {
-//                     const { id, ...styles } = cssData;
-//                     const element = document.getElementById(elem.elementId);
-                    
-//                     if (element) {
-//                         // If element exists, apply styles directly
-//                         Object.entries(styles).forEach(([prop, value]) => {
-//                             element.style[prop] = value;
-//                         });
-//                     } else if (elem.elementStructure) {
-//                         // Recreate modified element if it doesn't exist
-//                         recreateModifiedElement(elem.elementStructure, styles);
-//                     }
-//                 }
-//             });
+//     const response = await fetch(
+//       `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+//       {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+//           "Authorization": `Bearer ${token}`,
 //         }
+//       }
+//     );
+
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! status: ${response.status}`);
+//     }
+
+//     const data = await response.json();
+//     console.log("Retrieved modifications:", data);
+
+//     if (!data.modifications || !Array.isArray(data.modifications)) {
+//       console.warn("No modifications found or invalid format");
+//       return;
+//     }
+
+//     // Apply modifications for current page
+//     // data.modifications.forEach(mod => {
+//     //   if (mod.pageId === pageId) {
+//     //     mod.elements.forEach(elem => {
+//     //       const cssData = elem.css?.em;
+//     //       if (cssData) {
+//     //         const { id, ...styles } = cssData;
+//     //         const elementStructure = elem.elementStructure;
+            
+//     //         // Find or create the element
+//     //         let targetElement = document.getElementById(id);
+            
+//     //         if (!targetElement && elementStructure) {
+//     //           // Create new element if it doesn't exist
+//     //           targetElement = document.createElement('em');
+//     //           targetElement.id = id;
+//     //           targetElement.textContent = elementStructure.content;
+              
+//     //           // Find the parent element
+//     //           const parentElement = elementStructure.parentId ? 
+//     //             document.getElementById(elementStructure.parentId) : 
+//     //             document.body;
+              
+//     //           if (parentElement) {
+//     //             // Find the text node to replace
+//     //             const textNodes = [];
+//     //             const walker = document.createTreeWalker(
+//     //               parentElement,
+//     //               NodeFilter.SHOW_TEXT,
+//     //               {
+//     //                 acceptNode: function(node) {
+//     //                   return node.textContent.includes(elementStructure.content) ?
+//     //                     NodeFilter.FILTER_ACCEPT :
+//     //                     NodeFilter.FILTER_REJECT;
+//     //                 }
+//     //               },
+//     //               false
+//     //             );
+                
+//     //             let node;
+//     //             while (node = walker.nextNode()) {
+//     //               textNodes.push(node);
+//     //             }
+                
+//     //             if (textNodes.length > 0) {
+//     //               textNodes[0].parentNode.replaceChild(targetElement, textNodes[0]);
+//     //             }
+//     //           }
+//     //         }
+            
+//     //         // Apply styles to the element
+//     //         if (targetElement) {
+//     //           Object.entries(styles).forEach(([prop, value]) => {
+//     //             targetElement.style[prop] = value;
+//     //           });
+//     //         }
+//     //       }
+//     //     });
+//     //   }
+//     // });
+
+//     data.modifications.forEach(mod => {
+//       if (mod.pageId === pageId) {
+//           mod.elements.forEach(elem => {
+//               const cssData = elem.css?.em;
+//               if (cssData) {
+//                   const { id, ...styles } = cssData;
+//                   const elementStructure = elem.elementStructure;
+                  
+//                   // Find or create the element
+//                   let targetElement = document.getElementById(id);
+                  
+//                   if (!targetElement && elementStructure) {
+//                       // Create new element if it doesn't exist
+//                       targetElement = document.createElement('em');
+//                       targetElement.id = id;
+//                       targetElement.textContent = elementStructure.content;
+                      
+//                       // Find the parent element
+//                       const parentElement = elementStructure.parentId ? 
+//                           document.getElementById(elementStructure.parentId) : 
+//                           document.body;
+                      
+//                       if (parentElement) {
+//                           // Find the text node to replace
+//                           const textNodes = [];
+//                           const walker = document.createTreeWalker(
+//                               parentElement,
+//                               NodeFilter.SHOW_TEXT,
+//                               {
+//                                   acceptNode: function(node) {
+//                                       return node.textContent.includes(elementStructure.content) ?
+//                                           NodeFilter.FILTER_ACCEPT :
+//                                           NodeFilter.FILTER_REJECT;
+//                                   }
+//                               },
+//                               false
+//                           );
+                          
+//                           let node;
+//                           while (node = walker.nextNode()) {
+//                               textNodes.push(node);
+//                           }
+                          
+//                           if (textNodes.length > 0) {
+//                               const textNode = textNodes[0];
+//                               const parentNode = textNode.parentNode;
+                              
+//                               // Check if the text is already wrapped in an em tag
+//                               if (parentNode.tagName === 'EM') {
+//                                   // Use the existing em tag
+//                                   targetElement = parentNode;
+//                                   if (!targetElement.id) {
+//                                       targetElement.id = id;
+//                                   }
+//                               } else {
+//                                   textNode.parentNode.replaceChild(targetElement, textNode);
+//                               }
+//                           }
+//                       }
+//                   }
+                  
+//                   // Apply styles to the element
+//                   if (targetElement) {
+//                       Object.entries(styles).forEach(([prop, value]) => {
+//                           targetElement.style[prop] = value;
+//                       });
+//                   }
+//               }
+//           });
+//       }
 //     });
 
 //   } catch (error) {
-//       console.error("Error fetching modifications:", error);
-//       if (retries > 0) {
-//           console.log(`Retrying... (${retries} attempts left)`);
-//           setTimeout(() => fetchModifications(retries - 1), 2000);
-//       }
+//     console.error("Error fetching modifications:", error);
+//     if (retries > 0) {
+//       console.log(`Retrying... (${retries} attempts left)`);
+//       setTimeout(() => fetchModifications(retries - 1), 2000);
+//     }
 //   }
 // }
-
 
 async function fetchModifications(retries = 3) {
   if (!pageId) return;
@@ -221,135 +307,86 @@ async function fetchModifications(retries = 3) {
     }
 
     // Apply modifications for current page
-    // data.modifications.forEach(mod => {
-    //   if (mod.pageId === pageId) {
-    //     mod.elements.forEach(elem => {
-    //       const cssData = elem.css?.em;
-    //       if (cssData) {
-    //         const { id, ...styles } = cssData;
-    //         const elementStructure = elem.elementStructure;
-            
-    //         // Find or create the element
-    //         let targetElement = document.getElementById(id);
-            
-    //         if (!targetElement && elementStructure) {
-    //           // Create new element if it doesn't exist
-    //           targetElement = document.createElement('em');
-    //           targetElement.id = id;
-    //           targetElement.textContent = elementStructure.content;
-              
-    //           // Find the parent element
-    //           const parentElement = elementStructure.parentId ? 
-    //             document.getElementById(elementStructure.parentId) : 
-    //             document.body;
-              
-    //           if (parentElement) {
-    //             // Find the text node to replace
-    //             const textNodes = [];
-    //             const walker = document.createTreeWalker(
-    //               parentElement,
-    //               NodeFilter.SHOW_TEXT,
-    //               {
-    //                 acceptNode: function(node) {
-    //                   return node.textContent.includes(elementStructure.content) ?
-    //                     NodeFilter.FILTER_ACCEPT :
-    //                     NodeFilter.FILTER_REJECT;
-    //                 }
-    //               },
-    //               false
-    //             );
-                
-    //             let node;
-    //             while (node = walker.nextNode()) {
-    //               textNodes.push(node);
-    //             }
-                
-    //             if (textNodes.length > 0) {
-    //               textNodes[0].parentNode.replaceChild(targetElement, textNodes[0]);
-    //             }
-    //           }
-    //         }
-            
-    //         // Apply styles to the element
-    //         if (targetElement) {
-    //           Object.entries(styles).forEach(([prop, value]) => {
-    //             targetElement.style[prop] = value;
-    //           });
-    //         }
-    //       }
-    //     });
-    //   }
-    // });
-
     data.modifications.forEach(mod => {
       if (mod.pageId === pageId) {
-          mod.elements.forEach(elem => {
-              const cssData = elem.css?.em;
-              if (cssData) {
-                  const { id, ...styles } = cssData;
-                  const elementStructure = elem.elementStructure;
+        mod.elements.forEach(elem => {
+          const cssData = elem.css?.em;
+          if (cssData) {
+            const { id, ...styles } = cssData;
+            const elementStructure = elem.elementStructure;
+            
+            // Find or create the element
+            let targetElement = document.getElementById(id);
+            
+            if (!targetElement && elementStructure) {
+              // Create new element if it doesn't exist
+              targetElement = document.createElement('em');
+              targetElement.id = id;
+              targetElement.textContent = elementStructure.content;
+              
+              // Find the parent element
+              const parentElement = elementStructure.parentId ? 
+                document.getElementById(elementStructure.parentId) : 
+                document.body;
+              
+              if (parentElement) {
+                // Find the text node to replace
+                const textNodes = [];
+                const walker = document.createTreeWalker(
+                  parentElement,
+                  NodeFilter.SHOW_TEXT,
+                  {
+                    acceptNode: function(node) {
+                      return node.textContent.includes(elementStructure.content) ?
+                        NodeFilter.FILTER_ACCEPT :
+                        NodeFilter.FILTER_REJECT;
+                    }
+                  },
+                  false
+                );
+                
+                let node;
+                while (node = walker.nextNode()) {
+                  textNodes.push(node);
+                }
+                
+                if (textNodes.length > 0) {
+                  const textNode = textNodes[0];
+                  const parentNode = textNode.parentNode;
                   
-                  // Find or create the element
-                  let targetElement = document.getElementById(id);
-                  
-                  if (!targetElement && elementStructure) {
-                      // Create new element if it doesn't exist
-                      targetElement = document.createElement('em');
+                  // Check if the text is already wrapped in an em tag
+                  if (parentNode.tagName === 'EM') {
+                    // Use the existing em tag
+                    targetElement = parentNode;
+                    if (!targetElement.id) {
                       targetElement.id = id;
-                      targetElement.textContent = elementStructure.content;
-                      
-                      // Find the parent element
-                      const parentElement = elementStructure.parentId ? 
-                          document.getElementById(elementStructure.parentId) : 
-                          document.body;
-                      
-                      if (parentElement) {
-                          // Find the text node to replace
-                          const textNodes = [];
-                          const walker = document.createTreeWalker(
-                              parentElement,
-                              NodeFilter.SHOW_TEXT,
-                              {
-                                  acceptNode: function(node) {
-                                      return node.textContent.includes(elementStructure.content) ?
-                                          NodeFilter.FILTER_ACCEPT :
-                                          NodeFilter.FILTER_REJECT;
-                                  }
-                              },
-                              false
-                          );
-                          
-                          let node;
-                          while (node = walker.nextNode()) {
-                              textNodes.push(node);
-                          }
-                          
-                          if (textNodes.length > 0) {
-                              const textNode = textNodes[0];
-                              const parentNode = textNode.parentNode;
-                              
-                              // Check if the text is already wrapped in an em tag
-                              if (parentNode.tagName === 'EM') {
-                                  // Use the existing em tag
-                                  targetElement = parentNode;
-                                  if (!targetElement.id) {
-                                      targetElement.id = id;
-                                  }
-                              } else {
-                                  textNode.parentNode.replaceChild(targetElement, textNode);
-                              }
-                          }
-                      }
+                    }
+                  } else {
+                    textNode.parentNode.replaceChild(targetElement, textNode);
                   }
-                  
-                  // Apply styles to the element
-                  if (targetElement) {
-                      Object.entries(styles).forEach(([prop, value]) => {
-                          targetElement.style[prop] = value;
-                      });
-                  }
+                }
               }
-          });
+            }
+            
+            // Apply styles through external CSS
+            const styleId = `style-${id}`;
+            let styleTag = document.getElementById(styleId);
+            if (!styleTag) {
+              styleTag = document.createElement('style');
+              styleTag.id = styleId;
+              document.head.appendChild(styleTag);
+            }
+
+            // Convert CSS object to string
+            let cssString = `#${id} { `;
+            Object.entries(styles).forEach(([prop, value]) => {
+              cssString += `${prop}: ${value} !important; `;
+            });
+            cssString += '}';
+
+            styleTag.innerHTML = cssString;
+          }
+        });
       }
     });
 
@@ -363,157 +400,6 @@ async function fetchModifications(retries = 3) {
 }
 
 
-
-
-// function recreateModifiedElement(structure, styles) {
-//   const parentElement = structure.parentId ? 
-//       document.getElementById(structure.parentId) : 
-//       document.body;
-
-//   if (!parentElement) return;
-
-//   // First try to find existing element by ID
-//   let element = document.getElementById(structure.id);
-  
-//   if (!element) {
-//       // If no element exists, create new one
-//       element = document.createElement(structure.type || 'em');  // Change default from 'span' to 'em'
-//       element.id = structure.id;
-//       element.textContent = structure.content;
-
-//       // Find where to insert the element
-//       if (structure.content) {
-//           const textNodes = [];
-//           const walker = document.createTreeWalker(
-//               parentElement,
-//               NodeFilter.SHOW_TEXT,
-//               {
-//                   acceptNode: function(node) {
-//                       return node.textContent.includes(structure.content) ?
-//                           NodeFilter.FILTER_ACCEPT :
-//                           NodeFilter.FILTER_REJECT;
-//                   }
-//               },
-//               false
-//           );
-
-//           let node;
-//           while (node = walker.nextNode()) {
-//               textNodes.push(node);
-//           }
-
-//           if (textNodes.length > 0) {
-//               // Check if the text node is already inside an em tag
-//               const existingEm = textNodes[0].parentElement.closest('em');
-//               if (existingEm && structure.type === 'em') {
-//                   // If we're trying to create an em tag and the text is already in an em tag,
-//                   // just apply the styles to the existing em tag
-//                   element = existingEm;
-//                   if (!element.id) {
-//                       element.id = structure.id;
-//                   }
-//               } else {
-//                   textNodes[0].parentNode.replaceChild(element, textNodes[0]);
-//               }
-//           }
-//       }
-//   }
-
-//   // Apply styles to the element
-//   if (element) {
-//       Object.entries(styles).forEach(([prop, value]) => {
-//           element.style[prop] = value;
-//       });
-//   }
-// }
-
-
-// async function saveModifications(elementId, css, elementStructure = null) {
-//   if (!pageId || !elementId || !css) {
-//       console.warn("⚠️ Missing required data to save modifications.");
-//       return;
-//   }
-
-//   const element = document.getElementById(elementId);
-//   const isStrong = element?.tagName.toLowerCase() === 'strong';
-
-//   // const modificationData = {
-//   //     userId,
-//   //     token,
-//   //     widgetId,
-//   //     modifications: [{
-//   //         pageId,
-//   //         elements: [{
-//   //             elementId,
-//   //             css: {
-//   //                 [isStrong ? 'strong' : 'span']: {
-//   //                     id: elementId,
-//   //                     ...css
-//   //                 }
-//   //             },
-//   //             elementStructure: elementStructure || {
-//   //                 type: isStrong ? 'strong' : 'span',
-//   //                 className: 'squareCraft-font-modified',
-//   //                 content: element?.textContent || '',
-//   //                 parentId: element?.parentElement?.id || null
-//   //             }
-//   //         }]
-//   //     }]
-//   // };
-  
-//   const modificationData = {
-//     userId,
-//     token,
-//     widgetId,
-//     modifications: [{
-//         pageId,
-//         elements: [{
-//             elementId,
-//             css: {
-//                 em: {  // Change this from 'span' to 'em'
-//                     id: elementId,
-//                     ...css
-//                 }
-//             },
-//             elementStructure: elementStructure || {
-//                 type: 'em',  // Change this from 'span' to 'em'
-//                 content: element?.textContent || '',
-//                 parentId: element?.parentElement?.id || null
-//             }
-//         }]
-//     }]
-// };
-
-//   try {
-//       const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
-//           method: "POST",
-//           headers: {
-//               "Content-Type": "application/json",
-//               "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-//               "userId": userId,
-//               "pageId": pageId,
-//               "widget-id": widgetId,
-//           },
-//           body: JSON.stringify(modificationData),
-//       });
-
-//       if (!response.ok) {
-//           throw new Error(`HTTP error! status: ${response.status}`);
-//       }
-
-//       const result = await response.json();
-//       console.log("✅ Changes Saved Successfully!", result);
-
-//       // Immediately fetch modifications to update the UI
-//       await fetchModifications();
-      
-//       return result;
-//   } catch (error) {
-//       console.error("❌ Error saving modifications:", error);
-//   }
-// }
-
-// 4. Add a function to validate and clean up modifications
 
 
 function recreateModifiedElement(structure, styles) {
@@ -577,6 +463,67 @@ function recreateModifiedElement(structure, styles) {
 }
 
 
+// async function saveModifications(elementId, css, elementStructure = null) {
+//   if (!pageId || !elementId || !css) {
+//     console.warn("⚠️ Missing required data to save modifications.");
+//     return;
+//   }
+
+//   const element = document.getElementById(elementId);
+  
+//   // Generate a unique ID for this specific modification
+//   const uniqueId = `${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  
+//   const modificationData = {
+//     userId,
+//     token,
+//     widgetId,
+//     modifications: [{
+//       pageId,
+//       elements: [{
+//         elementId: uniqueId,
+//         css: {
+//           em: {
+//             id: uniqueId,
+//             ...css
+//           }
+//         },
+//         elementStructure: elementStructure || {
+//           type: 'em',
+//           content: element?.textContent || '',
+//           parentId: element?.parentElement?.id || null,
+//           originalElementId: elementId
+//         }
+//       }]
+//     }]
+//   };
+
+//   try {
+//     const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+//         "userId": userId,
+//         "pageId": pageId,
+//         "widget-id": widgetId,
+//       },
+//       body: JSON.stringify(modificationData),
+//     });
+
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! status: ${response.status}`);
+//     }
+
+//     const result = await response.json();
+//     console.log("✅ Changes Saved Successfully!", result);
+    
+//     return result;
+//   } catch (error) {
+//     console.error("❌ Error saving modifications:", error);
+//   }
+// }
+
 async function saveModifications(elementId, css, elementStructure = null) {
   if (!pageId || !elementId || !css) {
     console.warn("⚠️ Missing required data to save modifications.");
@@ -631,6 +578,24 @@ async function saveModifications(elementId, css, elementStructure = null) {
 
     const result = await response.json();
     console.log("✅ Changes Saved Successfully!", result);
+    
+    // Create or update external style sheet
+    const styleId = `style-${uniqueId}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+
+    // Convert CSS object to string
+    let cssString = `#${uniqueId} { `;
+    Object.entries(css).forEach(([prop, value]) => {
+      cssString += `${prop}: ${value} !important; `;
+    });
+    cssString += '}';
+
+    styleTag.innerHTML = cssString;
     
     return result;
   } catch (error) {
