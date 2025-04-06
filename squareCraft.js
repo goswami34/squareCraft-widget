@@ -1413,119 +1413,115 @@ fontfamilies();
 
 
   // font weight code start here
+  // let lastSelectedFontWeightStrong = null;
+
+  // // 2. Update the mouseup event listener to track bold text selection for font-weight
+  // document.addEventListener("mouseup", function () {
+  //     const selection = window.getSelection();
+      
+  //     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+  //         let range = selection.getRangeAt(0);
+  //         let parentElement = range.commonAncestorContainer;
+  
+  //         // If the selected text is a text node, get its parent element
+  //         if (parentElement.nodeType === Node.TEXT_NODE) {
+  //             parentElement = parentElement.parentElement;
+  //         }
+  
+  //         // Check if the parent or an ancestor is a <strong> tag
+  //         const strongElement = parentElement.closest("em");
+          
+  //         if (strongElement) {
+  //             lastSelectedFontWeightStrong = strongElement;
+  //             console.log("✅ Selected text inside <strong> for font-weight: ", strongElement.textContent);
+  //         } else {
+  //             lastSelectedFontWeightStrong = null;
+  //         }
+  //     }
+  // });
+
+
+  // document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
+  //   if (!lastSelectedFontWeightStrong) {
+  //       console.warn("⚠️ Please select bold text to apply font-weight");
+  //       return;
+  //   }
+
+  //   // Ensure the strong element has an ID
+  //   if (!lastSelectedFontWeightStrong.id) {
+  //       lastSelectedFontWeightStrong.id = `font-weight-${Date.now()}`;
+  //   }
+
+  //   const selectedWeight = this.value;
+  //   let css = { "font-weight": selectedWeight };
+
+  //   // Apply styles to the strong element
+  //   applyStylesToElement(lastSelectedFontWeightStrong.id, css);
+
+  //   // Save modifications
+  //   await saveModifications(lastSelectedFontWeightStrong.id, css);
+
+  //   console.log("🎨 Applied font-weight:", selectedWeight, "to bold text:", lastSelectedFontWeightStrong.textContent);
+  // });
+
   let lastSelectedFontWeightStrong = null;
 
-  // 2. Update the mouseup event listener to track bold text selection for font-weight
+  // Track bold text selection for font-weight
   document.addEventListener("mouseup", function () {
       const selection = window.getSelection();
       
       if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
           let range = selection.getRangeAt(0);
           let parentElement = range.commonAncestorContainer;
-  
+
           // If the selected text is a text node, get its parent element
           if (parentElement.nodeType === Node.TEXT_NODE) {
               parentElement = parentElement.parentElement;
           }
-  
-          // Check if the parent or an ancestor is a <strong> tag
-          const strongElement = parentElement.closest("em");
+
+          // Check if the parent or an ancestor is an em tag
+          const emElement = parentElement.closest("em");
           
-          if (strongElement) {
-              lastSelectedFontWeightStrong = strongElement;
-              console.log("✅ Selected text inside <strong> for font-weight: ", strongElement.textContent);
+          if (emElement) {
+              lastSelectedFontWeightStrong = emElement;
+              console.log("✅ Selected text inside <em> for font-weight: ", emElement.textContent);
           } else {
               lastSelectedFontWeightStrong = null;
           }
       }
   });
 
-
+  // Font weight change handler
   document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
-    if (!lastSelectedFontWeightStrong) {
-        console.warn("⚠️ Please select bold text to apply font-weight");
-        return;
-    }
+      if (!lastSelectedFontWeightStrong) {
+          console.warn("⚠️ Please select italic text to apply font-weight");
+          return;
+      }
 
-    // Ensure the strong element has an ID
-    if (!lastSelectedFontWeightStrong.id) {
-        lastSelectedFontWeightStrong.id = `font-weight-${Date.now()}`;
-    }
+      // Ensure the em element has an ID
+      if (!lastSelectedFontWeightStrong.id) {
+          lastSelectedFontWeightStrong.id = `font-weight-${Date.now()}`;
+      }
 
-    const selectedWeight = this.value;
-    let css = { "font-weight": selectedWeight };
+      const selectedWeight = this.value;
+      
+      // Create or get the style element for this specific modification
+      let styleTag = document.getElementById(`style-${lastSelectedFontWeightStrong.id}`);
+      if (!styleTag) {
+          styleTag = document.createElement('style');
+          styleTag.id = `style-${lastSelectedFontWeightStrong.id}`;
+          document.head.appendChild(styleTag);
+      }
 
-    // Apply styles to the strong element
-    applyStylesToElement(lastSelectedFontWeightStrong.id, css);
+      // Apply styles through external CSS
+      styleTag.innerHTML = `#${lastSelectedFontWeightStrong.id} { font-weight: ${selectedWeight} !important; }`;
 
-    // Save modifications
-    await saveModifications(lastSelectedFontWeightStrong.id, css);
+      // Save modifications
+      await saveModifications(lastSelectedFontWeightStrong.id, { "font-weight": selectedWeight });
 
-    console.log("🎨 Applied font-weight:", selectedWeight, "to bold text:", lastSelectedFontWeightStrong.textContent);
+      console.log("🎨 Applied font-weight:", selectedWeight, "to italic text:", lastSelectedFontWeightStrong.textContent);
   });
 
-
-  // document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
-  //   if (!SelectionManager.selectedParagraph || !SelectionManager.selectedLink) {
-  //     console.warn("⚠️ Please select a link first");
-  //     return;
-  //   }
-  
-  //   const weight = this.value;
-    
-  //   try {
-  //     // Get all anchor tags in the selected paragraph
-  //     const allAnchors = SelectionManager.selectedParagraph.querySelectorAll('a');
-      
-  //     // Apply the new font weight to all anchors
-  //     for (const anchor of allAnchors) {
-  //       // Ensure anchor has an ID
-  //       if (!anchor.id) {
-  //         anchor.id = `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  //       }
-  
-  //       // Get existing styles
-  //       const existingStyles = {};
-  //       const computedStyle = window.getComputedStyle(anchor);
-  //       ['font-weight'].forEach(prop => {
-  //         if (computedStyle[prop]) {
-  //           existingStyles[prop] = computedStyle[prop];
-  //         }
-  //       });
-        
-  //       // Update styles with new font weight
-  //       const updatedStyles = {
-  //         ...existingStyles,
-  //         'font-weight': weight
-  //       };
-  
-  //       // Create or update the style tag
-  //       let styleTag = document.getElementById(`style-${anchor.id}`);
-  //       if (!styleTag) {
-  //         styleTag = document.createElement('style');
-  //         styleTag.id = `style-${anchor.id}`;
-  //         document.head.appendChild(styleTag);
-  //       }
-  
-  //       // Apply styles through external CSS
-  //       let cssText = `#${anchor.id} { `;
-  //       Object.entries(updatedStyles).forEach(([prop, value]) => {
-  //         if (value) {
-  //           cssText += `${prop}: ${value} !important; `;
-  //         }
-  //       });
-  //       cssText += "}";
-  //       styleTag.innerHTML = cssText;
-        
-  //       // Add to pending changes
-  //       StyleCollector.addChange(SelectionManager.selectedParagraph.id, anchor.id, updatedStyles);
-  //     }
-  
-  //     console.log(`✅ Font weight ${weight} applied to all links in paragraph`);
-  //   } catch (error) {
-  //     console.error("❌ Error applying font weight:", error);
-  //   }
-  // });
 
 
   // font weight code end here
