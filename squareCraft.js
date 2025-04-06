@@ -845,30 +845,7 @@ function cleanupDuplicateSpans(elementId) {
                 
               </div>
 
-              <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2 ">
-                 <div class="squareCraft-flex squareCraft-col-span-5 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
-                    <div
-                       class="squareCraft-flex squareCraft-items-center squareCraft-justify-between squareCraft-w-full ">
-                       <img id="squareCraftTextAlignLeft" data-align="left"
-                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (1).svg"
-                          class="squareCraft-cursor-pointer alignment-icon   squareCraft-mx-auto"  alt="">
-                       <div class="squareCraft-v-line"></div>
-                       <img id="squareCraftTextAlignRight" data-align="right"
-                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (3).svg"
-                          class="squareCraft-cursor-pointer alignment-icon    squareCraft-mx-auto"  alt="">
-                       <div class="squareCraft-v-line"></div>
-                       <img id="squareCraftTextAlignCenter" data-align="center"
-                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (2).svg"
-                          class="squareCraft-cursor-pointer alignment-icon    squareCraft-mx-auto"  alt="">
-                       <div class="squareCraft-v-line"></div>
-                       <img id="squareCraftTextAlignJustify" data-align="justify"
-                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (4).svg"
-                          class="squareCraft-cursor-pointer alignment-icon    squareCraft-mx-auto "  alt="">
-                    </div>
-                 </div>
-              </div>
-
-
+              
               <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2">
                  <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
                     <div
