@@ -2274,10 +2274,11 @@ document.addEventListener('click', function(event) {
     }
 });
 
-
-
-
     // text-transform end
+
+
+
+    
     //   hover code start here
     const hoverButton = document.querySelector(
       ".squareCraft-cursor-pointer.squareCraft-bg-3f3f3f.squareCraft-hover"
