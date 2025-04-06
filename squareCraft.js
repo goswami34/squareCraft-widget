@@ -1217,9 +1217,41 @@ async function fontfamilies() {
     //   updateFontWeightDropdown(font.variants);
     // });
 
+    // option.addEventListener("click", async () => {
+    //   if (!lastSelectedFontfamilyItalic) {
+    //       console.warn("⚠️ Please select bold text to apply font-family");
+    //       return;
+    //   }
+  
+    //   let selectedFont = font.family;
+    //   selectedFontText.textContent = selectedFont;
+    //   selectedFontText.style.fontFamily = selectedFont;
+    //   fontList.style.display = "none";
+  
+    //   // Ensure the strong element has an ID
+    //   if (!lastSelectedFontfamilyItalic.id) {
+    //     lastSelectedFontfamilyItalic.id = `font-family-${Date.now()}`;
+    //   }
+  
+    //   // Store the original text before applying styles
+    //   const originalText = lastSelectedFontfamilyItalic.textContent;
+  
+    //   // Apply font-family to the strong element
+    //   let css = { "font-family": selectedFont };
+    //   applyStylesToElement(lastSelectedFontfamilyItalic.id, css);
+  
+    //   // Save modifications using your existing function
+    //   await saveModifications(lastSelectedFontfamilyItalic.id, css);
+  
+    //   console.log("🎨 Applied font:", selectedFont, "to bold text:", originalText);
+  
+    //   // Update font-weight dropdown dynamically
+    //   updateFontWeightDropdown(font.variants);
+
+
     option.addEventListener("click", async () => {
       if (!lastSelectedFontfamilyItalic) {
-          console.warn("⚠️ Please select bold text to apply font-family");
+          console.warn("⚠️ Please select italic text to apply font-family");
           return;
       }
   
@@ -1228,25 +1260,30 @@ async function fontfamilies() {
       selectedFontText.style.fontFamily = selectedFont;
       fontList.style.display = "none";
   
-      // Ensure the strong element has an ID
+      // Ensure the em element has an ID
       if (!lastSelectedFontfamilyItalic.id) {
-        lastSelectedFontfamilyItalic.id = `font-family-${Date.now()}`;
+          lastSelectedFontfamilyItalic.id = `font-family-${Date.now()}`;
       }
   
-      // Store the original text before applying styles
-      const originalText = lastSelectedFontfamilyItalic.textContent;
+      // Create or get the style element for this specific modification
+      let styleTag = document.getElementById(`style-${lastSelectedFontfamilyItalic.id}`);
+      if (!styleTag) {
+          styleTag = document.createElement('style');
+          styleTag.id = `style-${lastSelectedFontfamilyItalic.id}`;
+          document.head.appendChild(styleTag);
+      }
   
-      // Apply font-family to the strong element
-      let css = { "font-family": selectedFont };
-      applyStylesToElement(lastSelectedFontfamilyItalic.id, css);
+      // Apply font-family through external CSS
+      styleTag.innerHTML = `#${lastSelectedFontfamilyItalic.id} { font-family: ${selectedFont} !important; }`;
   
-      // Save modifications using your existing function
-      await saveModifications(lastSelectedFontfamilyItalic.id, css);
+      // Save modifications
+      await saveModifications(lastSelectedFontfamilyItalic.id, { "font-family": selectedFont });
   
-      console.log("🎨 Applied font:", selectedFont, "to bold text:", originalText);
+      console.log("🎨 Applied font:", selectedFont, "to italic text:", lastSelectedFontfamilyItalic.textContent);
   
       // Update font-weight dropdown dynamically
       updateFontWeightDropdown(font.variants);
+
   });
 
     fontList.appendChild(option);
