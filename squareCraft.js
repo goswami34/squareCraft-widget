@@ -865,13 +865,13 @@ function cleanupDuplicateSpans(elementId) {
                  <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center">
                     <div class="squareCraft-flex squareCraft-poppins squareCraft-items-center squareCraft-justify-between squareCraft-w-full">
                         <div class="squareCraft-flex squareCraft-poppins squareCraft-items-center squareCraft-justify-between squareCraft-w-full">
-                            <p class="squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="uppercase">AG</p>
+                            <p class="squareCraft-text-transform squareCraft-cursor-pointer" data-transform="uppercase">AG</p>
                             <div class="squareCraft-v-line"></div>
-                            <p class="squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="lowercase">ag</p>
+                            <p class="squareCraft-text-transform squareCraft-cursor-pointer" data-transform="lowercase">ag</p>
                             <div class="squareCraft-v-line"></div>
-                            <p class="squsareCraft-text-transform squareCraft-cursor-pointer" data-transform="capitalize">Ag</p>
+                            <p class="squareCraft-text-transform squareCraft-cursor-pointer" data-transform="capitalize">Ag</p>
                             <div class="squareCraft-v-line"></div>
-                            <img class="squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-text-transform squareCraft-cursor-pointer" width="12px" src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
+                            <img class="squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squareCraft-text-transform squareCraft-cursor-pointer" width="12px" src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
                         </div>
                     </div>
                  </div>
@@ -2052,7 +2052,7 @@ document.body.addEventListener("click", (event) => {
 });
 
 document.addEventListener("click", async function (event) {
-    const target = event.target.closest(".squsareCraft-text-transform");
+    const target = event.target.closest(".squareCraft-text-transform");
     if (!target) return;
 
     const transform = target.getAttribute("data-transform") || "none";
@@ -2103,7 +2103,7 @@ document.addEventListener("click", async function (event) {
 });
 
 // Handle undo button specifically
-const undoButton = document.querySelector(".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer");
+const undoButton = document.querySelector(".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squareCraft-text-transform.squareCraft-cursor-pointer");
 if (undoButton) {
     undoButton.addEventListener("click", async function() {
         if (!selectedBlock) {
@@ -2158,7 +2158,7 @@ if (undoButton) {
 // Add click event listener to clear selection when clicking outside
 document.addEventListener('click', function(event) {
     const widgetContainer = document.getElementById('squarecraft-widget-container');
-    const textTransformButtons = document.querySelectorAll('.squsareCraft-text-transform');
+    const textTransformButtons = document.querySelectorAll('.squareCraft-text-transform');
     
     let isTextTransformButton = false;
     textTransformButtons.forEach(button => {
