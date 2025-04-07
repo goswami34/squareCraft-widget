@@ -2024,7 +2024,7 @@ document.addEventListener("mouseup", function() {
         const blockElement = container.closest('[id^="block-"]');
         if (blockElement) {
             selectedBlock = blockElement;
-            console.log("✅ Selected block:", selectedBlock.id);
+            console.log("✅ Selected block 1234567:", selectedBlock.id);
         }
     }
 });
