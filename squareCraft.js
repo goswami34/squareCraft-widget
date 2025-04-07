@@ -2016,7 +2016,6 @@ document.addEventListener('click', function(event) {
 
 
 
-    // text-transform start
 
 //   let lastSelectedTextTransformItalicElement = null;
 
