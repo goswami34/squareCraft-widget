@@ -1130,8 +1130,8 @@ fontfamilies();
       "line-height":
         document.getElementById("squareCraftLineHeight").value + "px",
       // "font-sizeText": document.getElementById("squareCraftFontSizeInput").value + "px",
-      // "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
-      "text-decoration": textDecorationValue,
+       "text-decoration": document.document.querySelectorAll(".elements-font-style").value,
+      // "text-decoration": textDecorationValue,
       "letter-spacing": document.querySelector('.squareCraft-Letter-spacing-input').value + "px",
       "text-transform": document.querySelectorAll(
         ".squsareCraft-text-transform"
