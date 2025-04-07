@@ -2009,47 +2009,26 @@ let selectedBlock = null;
 let activeTransform = null;
 
 // Track block selection
-// document.addEventListener("mouseup", function() {
-//     const selection = window.getSelection();
-//     if (selection.rangeCount > 0) {
-//         let range = selection.getRangeAt(0);
-//         let container = range.commonAncestorContainer;
+document.addEventListener("mouseup", function() {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+        let range = selection.getRangeAt(0);
+        let container = range.commonAncestorContainer;
         
-//         // If the container is a text node, get its parent
-//         if (container.nodeType === Node.TEXT_NODE) {
-//             container = container.parentElement;
-//         }
+        // If the container is a text node, get its parent
+        if (container.nodeType === Node.TEXT_NODE) {
+            container = container.parentElement;
+        }
         
-//         // Find the closest block element with an ID
-//         const blockElement = container.closest('[id^="block-"]');
-//         if (blockElement) {
-//             selectedBlock = blockElement;
-//             console.log("✅ Selected block 1234567:", selectedBlock.id);
-//         }
-//     }
-// });
-
-document.body.addEventListener("click", (event) => {
-  let block = event.target.closest('[id^="block-"]');
-  if (!block) return;
-
-  // if (selectedElement) selectedElement.style.outline = "";
-  // selectedElement = block;
-  // selectedElement.style.outline = "2px dashed #EF7C2F";
-  document.querySelectorAll('[id^="block-"]').forEach(el => {
-    el.classList.remove("selected-block");
-    el.style.outline = ""; // Clear any outline styling
-  });
-  
-  // Add 'selected-block' class to the clicked one
-  block.classList.add("selected-block");
-  block.style.outline = "2px dashed #EF7C2F";
-  selectedElement = block;
-  
-  console.log(`✅ Selected Element 111111: ${selectedElement.id}`);
-
-  // console.log(`✅ Selected Element: ${selectedElement.id}`);
+        // Find the closest block element with an ID
+        const blockElement = container.closest('[id^="block-"]');
+        if (blockElement) {
+            selectedBlock = blockElement;
+            console.log("✅ Selected block 1234567:", selectedBlock.id);
+        }
+    }
 });
+
 
 document.addEventListener("click", async function (event) {
   const target = event.target.closest(".squareCraft-text-transform");
