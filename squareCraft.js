@@ -215,6 +215,75 @@
 //   }
 // }
 
+// async function fetchModifications(retries = 3) {
+//   if (!pageId) return;
+
+//   const token = localStorage.getItem("squareCraft_auth_token");
+//   const userId = localStorage.getItem("squareCraft_u_id");
+//   const widgetId = localStorage.getItem("squareCraft_w_id");
+
+//   if (!token || !userId) {
+//       console.warn("Missing authentication data");
+//       return;
+//   }
+
+//   try {
+//       const response = await fetch(
+//           `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+//           {
+//               method: "GET",
+//               headers: {
+//                   "Content-Type": "application/json",
+//                   "Authorization": `Bearer ${token}`,
+//               }
+//           }
+//       );
+
+//       if (!response.ok) {
+//           throw new Error(`HTTP error! status: ${response.status}`);
+//       }
+
+//       const data = await response.json();
+//       console.log("Retrieved modifications:", data);
+
+//       if (!data.modifications || !Array.isArray(data.modifications)) {
+//           console.warn("No modifications found or invalid format");
+//           return;
+//       }
+
+//       // Apply modifications for current page
+//       data.modifications.forEach(mod => {
+//           if (mod.pageId === pageId) {
+//               mod.elements.forEach(elem => {
+//                   // Handle both span and strong elements
+//                   const cssData = elem.css?.span || elem.css?.strong;
+//                   if (cssData) {
+//                       const { id, ...styles } = cssData;
+//                       const element = document.getElementById(elem.elementId);
+                      
+//                       if (element) {
+//                           // If element exists, apply styles directly
+//                           Object.entries(styles).forEach(([prop, value]) => {
+//                               element.style[prop] = value;
+//                           });
+//                       } else if (elem.elementStructure) {
+//                           // Recreate modified element if it doesn't exist
+//                           recreateModifiedElement(elem.elementStructure, styles);
+//                       }
+//                   }
+//               });
+//           }
+//       });
+
+//   } catch (error) {
+//       console.error("Error fetching modifications:", error);
+//       if (retries > 0) {
+//           console.log(`Retrying... (${retries} attempts left)`);
+//           setTimeout(() => fetchModifications(retries - 1), 2000);
+//       }
+//   }
+// }
+
 async function fetchModifications(retries = 3) {
   if (!pageId) return;
 
@@ -223,64 +292,124 @@ async function fetchModifications(retries = 3) {
   const widgetId = localStorage.getItem("squareCraft_w_id");
 
   if (!token || !userId) {
-      console.warn("Missing authentication data");
-      return;
+    console.warn("Missing authentication data");
+    return;
   }
 
   try {
-      const response = await fetch(
-          `https://webefo-backend.onrender.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
-          {
-              method: "GET",
-              headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": `Bearer ${token}`,
-              }
-          }
-      );
-
-      if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+    const response = await fetch(
+      `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        }
       }
+    );
 
-      const data = await response.json();
-      console.log("Retrieved modifications:", data);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-      if (!data.modifications || !Array.isArray(data.modifications)) {
-          console.warn("No modifications found or invalid format");
-          return;
-      }
+    const data = await response.json();
+    console.log("Retrieved modifications:", data);
 
-      // Apply modifications for current page
-      data.modifications.forEach(mod => {
-          if (mod.pageId === pageId) {
-              mod.elements.forEach(elem => {
-                  // Handle both span and strong elements
-                  const cssData = elem.css?.span || elem.css?.strong;
-                  if (cssData) {
-                      const { id, ...styles } = cssData;
-                      const element = document.getElementById(elem.elementId);
-                      
-                      if (element) {
-                          // If element exists, apply styles directly
-                          Object.entries(styles).forEach(([prop, value]) => {
-                              element.style[prop] = value;
-                          });
-                      } else if (elem.elementStructure) {
-                          // Recreate modified element if it doesn't exist
-                          recreateModifiedElement(elem.elementStructure, styles);
-                      }
+    if (!data.modifications || !Array.isArray(data.modifications)) {
+      console.warn("No modifications found or invalid format");
+      return;
+    }
+
+    // Apply modifications for current page
+    data.modifications.forEach(mod => {
+      if (mod.pageId === pageId) {
+        mod.elements.forEach(elem => {
+          const cssData = elem.css?.em;
+          if (cssData) {
+            const { id, ...styles } = cssData;
+            const elementStructure = elem.elementStructure;
+            
+            // Find or create the element
+            let targetElement = document.getElementById(id);
+            
+            if (!targetElement && elementStructure) {
+              // Create new element if it doesn't exist
+              targetElement = document.createElement('em');
+              targetElement.id = id;
+              targetElement.textContent = elementStructure.content;
+              
+              // Find the parent element
+              const parentElement = elementStructure.parentId ? 
+                document.getElementById(elementStructure.parentId) : 
+                document.body;
+              
+              if (parentElement) {
+                // Find the text node to replace
+                const textNodes = [];
+                const walker = document.createTreeWalker(
+                  parentElement,
+                  NodeFilter.SHOW_TEXT,
+                  {
+                    acceptNode: function(node) {
+                      return node.textContent.includes(elementStructure.content) ?
+                        NodeFilter.FILTER_ACCEPT :
+                        NodeFilter.FILTER_REJECT;
+                    }
+                  },
+                  false
+                );
+                
+                let node;
+                while (node = walker.nextNode()) {
+                  textNodes.push(node);
+                }
+                
+                if (textNodes.length > 0) {
+                  const textNode = textNodes[0];
+                  const parentNode = textNode.parentNode;
+                  
+                  // Check if the text is already wrapped in an em tag
+                  if (parentNode.tagName === 'strong') {
+                    // Use the existing em tag
+                    targetElement = parentNode;
+                    if (!targetElement.id) {
+                      targetElement.id = id;
+                    }
+                  } else {
+                    textNode.parentNode.replaceChild(targetElement, textNode);
                   }
-              });
+                }
+              }
+            }
+            
+            // Apply styles through external CSS
+            const styleId = `style-${id}`;
+            let styleTag = document.getElementById(styleId);
+            if (!styleTag) {
+              styleTag = document.createElement('style');
+              styleTag.id = styleId;
+              document.head.appendChild(styleTag);
+            }
+
+            // Convert CSS object to string
+            let cssString = `#${id} { `;
+            Object.entries(styles).forEach(([prop, value]) => {
+              cssString += `${prop}: ${value} !important; `;
+            });
+            cssString += '}';
+
+            styleTag.innerHTML = cssString;
           }
-      });
+        });
+      }
+    });
 
   } catch (error) {
-      console.error("Error fetching modifications:", error);
-      if (retries > 0) {
-          console.log(`Retrying... (${retries} attempts left)`);
-          setTimeout(() => fetchModifications(retries - 1), 2000);
-      }
+    console.error("Error fetching modifications:", error);
+    if (retries > 0) {
+      console.log(`Retrying... (${retries} attempts left)`);
+      setTimeout(() => fetchModifications(retries - 1), 2000);
+    }
   }
 }
 
@@ -347,66 +476,145 @@ function recreateModifiedElement(structure, styles) {
   }
 }
 
-// 3. Update saveModifications to include proper structure for text-transform
+// async function saveModifications(elementId, css, elementStructure = null) {
+//   if (!pageId || !elementId || !css) {
+//       console.warn("⚠️ Missing required data to save modifications.");
+//       return;
+//   }
+
+//   const element = document.getElementById(elementId);
+//   const isStrong = element?.tagName.toLowerCase() === 'strong';
+
+//   const modificationData = {
+//       userId,
+//       token,
+//       widgetId,
+//       modifications: [{
+//           pageId,
+//           elements: [{
+//               elementId,
+//               css: {
+//                   [isStrong ? 'strong' : 'span']: {
+//                       id: elementId,
+//                       ...css
+//                   }
+//               },
+//               elementStructure: elementStructure || {
+//                   type: isStrong ? 'strong' : 'span',
+//                   className: 'squareCraft-font-modified',
+//                   content: element?.textContent || '',
+//                   parentId: element?.parentElement?.id || null
+//               }
+//           }]
+//       }]
+//   };
+
+//   try {
+//       const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
+//           method: "POST",
+//           headers: {
+//               "Content-Type": "application/json",
+//               "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+//               "userId": userId,
+//               "pageId": pageId,
+//               "widget-id": widgetId,
+//           },
+//           body: JSON.stringify(modificationData),
+//       });
+
+//       if (!response.ok) {
+//           throw new Error(`HTTP error! status: ${response.status}`);
+//       }
+
+//       const result = await response.json();
+//       console.log("✅ Changes Saved Successfully!", result);
+
+//       // Immediately fetch modifications to update the UI
+//       await fetchModifications();
+      
+//       return result;
+//   } catch (error) {
+//       console.error("❌ Error saving modifications:", error);
+//   }
+// }
+
+
 async function saveModifications(elementId, css, elementStructure = null) {
   if (!pageId || !elementId || !css) {
-      console.warn("⚠️ Missing required data to save modifications.");
-      return;
+    console.warn("⚠️ Missing required data to save modifications.");
+    return;
   }
 
   const element = document.getElementById(elementId);
-  const isStrong = element?.tagName.toLowerCase() === 'strong';
-
+  
+  // Generate a unique ID for this specific modification
+  const uniqueId = `${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  
   const modificationData = {
-      userId,
-      token,
-      widgetId,
-      modifications: [{
-          pageId,
-          elements: [{
-              elementId,
-              css: {
-                  [isStrong ? 'strong' : 'span']: {
-                      id: elementId,
-                      ...css
-                  }
-              },
-              elementStructure: elementStructure || {
-                  type: isStrong ? 'strong' : 'span',
-                  className: 'squareCraft-font-modified',
-                  content: element?.textContent || '',
-                  parentId: element?.parentElement?.id || null
-              }
-          }]
+    userId,
+    token,
+    widgetId,
+    modifications: [{
+      pageId,
+      elements: [{
+        elementId: uniqueId,
+        css: {
+          strong: {
+            id: uniqueId,
+            ...css
+          }
+        },
+        elementStructure: elementStructure || {
+          type: 'strong',
+          content: element?.textContent || '',
+          parentId: element?.parentElement?.id || null,
+          originalElementId: elementId
+        }
       }]
+    }]
   };
 
   try {
-      const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-              "userId": userId,
-              "pageId": pageId,
-              "widget-id": widgetId,
-          },
-          body: JSON.stringify(modificationData),
-      });
+    const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+        "userId": userId,
+        "pageId": pageId,
+        "widget-id": widgetId,
+      },
+      body: JSON.stringify(modificationData),
+    });
 
-      if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-      }
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-      const result = await response.json();
-      console.log("✅ Changes Saved Successfully!", result);
+    const result = await response.json();
+    console.log("✅ Changes Saved Successfully!", result);
+    
+    // Create or update external style sheet
+    const styleId = `style-${uniqueId}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
 
-      // Immediately fetch modifications to update the UI
-      await fetchModifications();
-      
-      return result;
+    // Convert CSS object to string
+    let cssString = `#${uniqueId} { `;
+    Object.entries(css).forEach(([prop, value]) => {
+      cssString += `${prop}: ${value} !important; `;
+    });
+    cssString += '}';
+
+    styleTag.innerHTML = cssString;
+    
+    return result;
   } catch (error) {
-      console.error("❌ Error saving modifications:", error);
+    console.error("❌ Error saving modifications:", error);
   }
 }
 
