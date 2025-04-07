@@ -538,18 +538,39 @@ function recreateModifiedElement(structure, styles) {
 //   }
 // }
 
-
 async function saveModifications(elementId, css, elementStructure = null) {
   if (!pageId || !elementId || !css) {
     console.warn("⚠️ Missing required data to save modifications.");
     return;
   }
 
+  // Validate required data
+  const userId = localStorage.getItem("squareCraft_u_id");
+  const token = localStorage.getItem("squareCraft_auth_token");
+  const widgetId = localStorage.getItem("squareCraft_w_id");
+
+  if (!userId || !token || !widgetId) {
+    console.warn("⚠️ Missing authentication data");
+    return;
+  }
+
   const element = document.getElementById(elementId);
-  
+  if (!element) {
+    console.warn("⚠️ Element not found");
+    return;
+  }
+
   // Generate a unique ID for this specific modification
   const uniqueId = `${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   
+  // Clean and validate CSS properties
+  const cleanedCss = {};
+  Object.entries(css).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      cleanedCss[key] = value;
+    }
+  });
+
   const modificationData = {
     userId,
     token,
@@ -561,13 +582,13 @@ async function saveModifications(elementId, css, elementStructure = null) {
         css: {
           strong: {
             id: uniqueId,
-            ...css
+            ...cleanedCss
           }
         },
         elementStructure: elementStructure || {
           type: 'strong',
-          content: element?.textContent || '',
-          parentId: element?.parentElement?.id || null,
+          content: element.textContent || '',
+          parentId: element.parentElement?.id || null,
           originalElementId: elementId
         }
       }]
@@ -579,7 +600,7 @@ async function saveModifications(elementId, css, elementStructure = null) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
+        "Authorization": `Bearer ${token}`,
         "userId": userId,
         "pageId": pageId,
         "widget-id": widgetId,
@@ -588,7 +609,8 @@ async function saveModifications(elementId, css, elementStructure = null) {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unknown error'}`);
     }
 
     const result = await response.json();
@@ -603,9 +625,9 @@ async function saveModifications(elementId, css, elementStructure = null) {
       document.head.appendChild(styleTag);
     }
 
-    // Convert CSS object to string
+    // Convert CSS object to string with !important
     let cssString = `#${uniqueId} { `;
-    Object.entries(css).forEach(([prop, value]) => {
+    Object.entries(cleanedCss).forEach(([prop, value]) => {
       cssString += `${prop}: ${value} !important; `;
     });
     cssString += '}';
@@ -615,6 +637,8 @@ async function saveModifications(elementId, css, elementStructure = null) {
     return result;
   } catch (error) {
     console.error("❌ Error saving modifications:", error);
+    // You might want to show a user-friendly error message here
+    throw error; // Re-throw the error for the caller to handle
   }
 }
 
