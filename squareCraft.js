@@ -2139,7 +2139,7 @@ document.addEventListener("mouseup", function() {
         }
         
         // Check if selection is within an italic tag
-        const italicElement = container.closest('em, i');
+        const italicElement = container.closest('em');
         if (italicElement) {
             lastSelectedTextTransformItalicElement = italicElement;
             lastTextTransformSelection = range.cloneRange();
