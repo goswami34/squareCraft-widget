@@ -1302,9 +1302,20 @@ fontfamilies();
       let block = event.target.closest('[id^="block-"]');
       if (!block) return;
 
-      if (selectedElement) selectedElement.style.outline = "";
+      // if (selectedElement) selectedElement.style.outline = "";
+      // selectedElement = block;
+      // selectedElement.style.outline = "2px dashed #EF7C2F";
+      document.querySelectorAll('[id^="block-"]').forEach(el => {
+        el.classList.remove("selected-block");
+        el.style.outline = ""; // Clear any outline styling
+      });
+      
+      // Add 'selected-block' class to the clicked one
+      block.classList.add("selected-block");
+      block.style.outline = "2px dashed #EF7C2F";
       selectedElement = block;
-      selectedElement.style.outline = "2px dashed #EF7C2F";
+      
+      console.log(`✅ Selected Element: ${selectedElement.id}`);
 
       console.log(`✅ Selected Element: ${selectedElement.id}`);
     });
