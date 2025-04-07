@@ -2052,55 +2052,57 @@ document.body.addEventListener("click", (event) => {
 });
 
 document.addEventListener("click", async function (event) {
-    const target = event.target.closest(".squareCraft-text-transform");
-    if (!target) return;
+  const target = event.target.closest(".squareCraft-text-transform");
+  if (!target) return;
 
-    const transform = target.getAttribute("data-transform") || "none";
-    const selectedBlock = document.querySelector('[id^="block-"].selected-block');
+  const transform = target.getAttribute("data-transform") || "none";
+  const selectedBlock = document.querySelector('[id^="block-"].selected-block');
 
-    if (!selectedBlock) {
-        console.warn("⚠️ No block selected to apply text-transform.");
-        return;
-    }
+  if (!selectedBlock) {
+      console.warn("⚠️ No block selected to apply text-transform.");
+      return;
+  }
 
-    // Find all <em> inside the selected block
-    const italicElements = selectedBlock.querySelectorAll("em");
-    if (italicElements.length === 0) {
-        console.warn("⚠️ No italic text inside selected block.");
-        return;
-    }
+  // Find all <em> inside the selected block
+  const italicElements = selectedBlock.querySelectorAll("em");
+  if (italicElements.length === 0) {
+      console.warn("⚠️ No italic text inside selected block.");
+      return;
+  }
 
-    // Loop through all <em> tags and assign unique IDs if missing
-    italicElements.forEach((em) => {
-        if (!em.id) {
-            em.id = `italic-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
-        }
-    });
+  // Loop through all <em> tags and assign unique IDs if missing
+  italicElements.forEach((em) => {
+      if (!em.id) {
+          em.id = `italic-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+      }
+  });
 
-    // Create a single <style> tag applying the same rule to all italic elements by ID
-    const styleId = `text-transform-style-${selectedBlock.id}`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = styleId;
-        document.head.appendChild(styleTag);
-    }
+  // Create a single <style> tag applying the same rule to all italic elements by ID
+  const styleId = `text-transform-style-${selectedBlock.id}`;
+  let styleTag = document.getElementById(styleId);
+  if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+  }
 
-    const cssRules = Array.from(italicElements)
-        .map((em) => `#${em.id} { text-transform: ${transform} !important; }`)
-        .join("\n");
+  // Apply the transform to all italic elements
+  const cssRules = Array.from(italicElements)
+      .map((em) => `#${em.id} { text-transform: ${transform} !important; }`)
+      .join("\n");
 
-    styleTag.innerHTML = cssRules;
+  styleTag.innerHTML = cssRules;
 
-    // Save each em tag transformation
-    for (let em of italicElements) {
-        await saveModifications(em.id, {
-            "text-transform": transform,
-        });
-    }
+  // Save each em tag transformation
+  for (let em of italicElements) {
+      await saveModifications(em.id, {
+          "text-transform": transform,
+      });
+  }
 
-    console.log(`✅ Applied text-transform "${transform}" to all italic text inside ${selectedBlock.id}`);
+  console.log(`✅ Applied text-transform "${transform}" to all italic text inside ${selectedBlock.id}`);
 });
+
 
 // Handle undo button specifically
 const undoButton = document.querySelector(".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squareCraft-text-transform.squareCraft-cursor-pointer");
