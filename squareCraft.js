@@ -2046,7 +2046,7 @@ document.body.addEventListener("click", (event) => {
   block.style.outline = "2px dashed #EF7C2F";
   selectedElement = block;
   
-  console.log(`✅ Selected Element: ${selectedElement.id}`);
+  console.log(`✅ Selected Element 111111: ${selectedElement.id}`);
 
   // console.log(`✅ Selected Element: ${selectedElement.id}`);
 });
