@@ -324,7 +324,7 @@ async function fetchModifications(retries = 3) {
     data.modifications.forEach(mod => {
       if (mod.pageId === pageId) {
         mod.elements.forEach(elem => {
-          const cssData = elem.css?.em;
+          const cssData = elem.css?.strong;
           if (cssData) {
             const { id, ...styles } = cssData;
             const elementStructure = elem.elementStructure;
@@ -334,7 +334,7 @@ async function fetchModifications(retries = 3) {
             
             if (!targetElement && elementStructure) {
               // Create new element if it doesn't exist
-              targetElement = document.createElement('em');
+              targetElement = document.createElement('strong');
               targetElement.id = id;
               targetElement.textContent = elementStructure.content;
               
