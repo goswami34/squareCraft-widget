@@ -1317,7 +1317,7 @@ fontfamilies();
       
       console.log(`✅ Selected Element: ${selectedElement.id}`);
 
-      console.log(`✅ Selected Element: ${selectedElement.id}`);
+      // console.log(`✅ Selected Element: ${selectedElement.id}`);
     });
 
 
@@ -1588,132 +1588,6 @@ function clearPendingChanges() {
 
 
 
-//font-size start
-// let lastSelectedText = null;
-// let lastSelectedRange = null;
-
-// let styleCache = new Map();
-
-// // Update the mouseup event listener to store selection info
-// document.addEventListener("mouseup", function() {
-//     const selection = window.getSelection();
-//     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-//         lastSelectedText = selection.toString();
-//         lastSelectedRange = selection.getRangeAt(0);
-        
-//         // Get the containing element
-//         let container = lastSelectedRange.commonAncestorContainer;
-//         if (container.nodeType === Node.TEXT_NODE) {
-//             container = container.parentElement;
-//         }
-        
-//         // Store the current styles
-//         if (container) {
-//             const computedStyle = window.getComputedStyle(container);
-//             styleCache.set(container, {
-//                 fontSize: computedStyle.fontSize,
-//                 originalText: lastSelectedText
-//             });
-//         }
-        
-//         console.log("✅ Text Selected:", lastSelectedText);
-//     }
-// });
-
-// let fontSizeModifiedElements = new Set();
-
-
-// // Font size change handler
-// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-//     if (!lastSelectedRange || !lastSelectedText) {
-//         console.warn("⚠️ No text selected");
-//         return;
-//     }
-
-//     const fontSize = this.value + "px";
-    
-//     try {
-//         // Get the common ancestor container
-//         let container = lastSelectedRange.commonAncestorContainer;
-        
-//         // If the container is a text node, get its parent element
-//         if (container.nodeType === Node.TEXT_NODE) {
-//             container = container.parentElement;
-//         }
-
-//         // Check if the container or its parent is a strong tag
-//         let targetElement = container.tagName === 'EM' ? container : 
-//                            container.closest('em');
-
-//         // If no strong tag found but text is selected, use the immediate parent
-//         if (!targetElement && container) {
-//             targetElement = container;
-//         }
-
-//         if (targetElement) {
-//             // Generate a unique ID if none exists
-//             if (!targetElement.id) {
-//                 targetElement.id = `text-mod-${Date.now()}`;
-//             }
-
-//             // Store this element as having font-size modification
-//             fontSizeModifiedElements.add(targetElement.id);
-
-//             // Apply font size directly to the existing element
-//             targetElement.style.fontSize = fontSize;
-
-//             // Store the applied style in our cache
-//             styleCache.set(targetElement, {
-//                 fontSize: fontSize,
-//                 originalText: lastSelectedText
-//             });
-
-//             // Create CSS for persistent styling
-//             let css = {
-//                 "font-size": fontSize
-//             };
-
-//             // Apply styles using your existing function
-//             applyStylesToElement(targetElement.id, css);
-
-//             // Save to database
-//             await saveModifications(targetElement.id, css);
-
-//             console.log("✅ Font size modified and saved:", fontSize);
-//         }
-//     } catch (error) {
-//         console.error("❌ Error applying font size:", error);
-//     }
-// });
-
-
-// // Add a click event listener to maintain styles
-// document.addEventListener("click", function(event) {
-//     // Check if we have cached styles for any parent elements
-//     let element = event.target;
-//     while (element && element !== document.body) {
-//         if (styleCache.has(element)) {
-//             const cachedStyle = styleCache.get(element);
-//             if (cachedStyle.fontSize) {
-//                 element.style.fontSize = cachedStyle.fontSize;
-//             }
-//         }
-//         element = element.parentElement;
-//     }
-// });
-
-// // Optional: Clean up cache periodically
-// function cleanStyleCache() {
-//     for (let [element, styles] of styleCache.entries()) {
-//         if (!document.contains(element)) {
-//             styleCache.delete(element);
-//         }
-//     }
-// }
-
-// // Clean cache every minute
-// setInterval(cleanStyleCache, 60000);
-
 // Font size implementation
 let lastSelectedItalicElementForFontSize = null;
 let lastFontSizeSelection = null;
@@ -1731,7 +1605,7 @@ document.addEventListener("mouseup", function() {
         }
         
         // Check if selection is within an italic tag
-        const italicElement = container.closest('em, i');
+        const italicElement = container.closest('em');
         if (italicElement) {
             lastSelectedItalicElementForFontSize = italicElement;
             lastFontSizeSelection = range.cloneRange();
@@ -2155,58 +2029,56 @@ document.addEventListener("mouseup", function() {
     }
 });
 
-
 document.addEventListener("click", async function (event) {
-  const target = event.target.closest(".squsareCraft-text-transform");
-  if (!target) return;
+    const target = event.target.closest(".squsareCraft-text-transform");
+    if (!target) return;
 
-  const transform = target.getAttribute("data-transform") || "none";
-  const selectedBlock = document.querySelector('[id^="block-"].selected-block');
+    const transform = target.getAttribute("data-transform") || "none";
+    const selectedBlock = document.querySelector('[id^="block-"].selected-block');
 
-  if (!selectedBlock) {
-    console.warn("⚠️ No block selected to apply text-transform.");
-    return;
-  }
-
-  // Find all <em> inside the selected block
-  const italicElements = selectedBlock.querySelectorAll("em");
-  if (italicElements.length === 0) {
-    console.warn("⚠️ No italic text inside selected block.");
-    return;
-  }
-
-  // Loop through all <em> tags and assign unique IDs if missing
-  italicElements.forEach((em) => {
-    if (!em.id) {
-      em.id = `italic-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+    if (!selectedBlock) {
+        console.warn("⚠️ No block selected to apply text-transform.");
+        return;
     }
-  });
 
-  // Create a single <style> tag applying the same rule to all italic elements by ID
-  const styleId = `text-transform-style-${selectedBlock.id}`;
-  let styleTag = document.getElementById(styleId);
-  if (!styleTag) {
-    styleTag = document.createElement("style");
-    styleTag.id = styleId;
-    document.head.appendChild(styleTag);
-  }
+    // Find all <em> inside the selected block
+    const italicElements = selectedBlock.querySelectorAll("em");
+    if (italicElements.length === 0) {
+        console.warn("⚠️ No italic text inside selected block.");
+        return;
+    }
 
-  const cssRules = Array.from(italicElements)
-    .map((em) => `#${em.id} { text-transform: ${transform} !important; }`)
-    .join("\n");
-
-  styleTag.innerHTML = cssRules;
-
-  // Save each em tag transformation
-  for (let em of italicElements) {
-    await saveModifications(em.id, {
-      "text-transform": transform,
+    // Loop through all <em> tags and assign unique IDs if missing
+    italicElements.forEach((em) => {
+        if (!em.id) {
+            em.id = `italic-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+        }
     });
-  }
 
-  console.log(`✅ Applied text-transform "${transform}" to all italic text inside ${selectedBlock.id}`);
+    // Create a single <style> tag applying the same rule to all italic elements by ID
+    const styleId = `text-transform-style-${selectedBlock.id}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = styleId;
+        document.head.appendChild(styleTag);
+    }
+
+    const cssRules = Array.from(italicElements)
+        .map((em) => `#${em.id} { text-transform: ${transform} !important; }`)
+        .join("\n");
+
+    styleTag.innerHTML = cssRules;
+
+    // Save each em tag transformation
+    for (let em of italicElements) {
+        await saveModifications(em.id, {
+            "text-transform": transform,
+        });
+    }
+
+    console.log(`✅ Applied text-transform "${transform}" to all italic text inside ${selectedBlock.id}`);
 });
-
 
 // Handle undo button specifically
 const undoButton = document.querySelector(".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer");
