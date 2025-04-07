@@ -2176,7 +2176,7 @@ document.addEventListener("click", async function(event) {
 
     try {
         // Find all italic elements within the selected block
-        const italicElements = selectedBlock.querySelectorAll('em, i');
+        const italicElements = selectedBlock.querySelectorAll('em');
         
         if (italicElements.length === 0) {
             console.warn("⚠️ No italic text found in the selected block");
