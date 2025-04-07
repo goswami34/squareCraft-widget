@@ -2120,16 +2120,14 @@ document.addEventListener('click', function(event) {
 //       });
 
 
-  // Text transform implementation
 // Text transform implementation
-let lastSelectedTextTransformItalicElement = null;
-let lastTextTransformSelection = null;
+let selectedBlock = null;
 let activeTransform = null;
 
-// Track italic text selection for text-transform
+// Track block selection
 document.addEventListener("mouseup", function() {
     const selection = window.getSelection();
-    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+    if (selection.rangeCount > 0) {
         let range = selection.getRangeAt(0);
         let container = range.commonAncestorContainer;
         
@@ -2138,15 +2136,11 @@ document.addEventListener("mouseup", function() {
             container = container.parentElement;
         }
         
-        // Check if selection is within an italic tag
-        const italicElement = container.closest('em');
-        if (italicElement) {
-            lastSelectedTextTransformItalicElement = italicElement;
-            lastTextTransformSelection = range.cloneRange();
-            console.log("✅ Selected italic text for text-transform:", italicElement.textContent);
-        } else {
-            lastSelectedTextTransformItalicElement = null;
-            lastTextTransformSelection = null;
+        // Find the closest block element with an ID
+        const blockElement = container.closest('[id^="block-"]');
+        if (blockElement) {
+            selectedBlock = blockElement;
+            console.log("✅ Selected block:", selectedBlock.id);
         }
     }
 });
@@ -2156,8 +2150,8 @@ document.addEventListener("click", async function(event) {
     const target = event.target.closest(".squsareCraft-text-transform");
     if (!target) return;
 
-    if (!lastSelectedTextTransformItalicElement) {
-        console.warn("⚠️ No italic text selected");
+    if (!selectedBlock) {
+        console.warn("⚠️ No block selected");
         return;
     }
 
@@ -2182,35 +2176,44 @@ document.addEventListener("click", async function(event) {
     }
 
     try {
-        // Ensure the italic element has an ID
-        if (!lastSelectedTextTransformItalicElement.id) {
-            lastSelectedTextTransformItalicElement.id = `text-transform-${Date.now()}`;
+        // Find all italic elements within the selected block
+        const italicElements = selectedBlock.querySelectorAll('em, i');
+        
+        if (italicElements.length === 0) {
+            console.warn("⚠️ No italic text found in the selected block");
+            return;
         }
 
-        // Create or get the style element for this specific modification
-        let styleTag = document.getElementById(`style-${lastSelectedTextTransformItalicElement.id}`);
+        // Create a unique ID for this block's text-transform modification
+        const modificationId = `text-transform-${selectedBlock.id}-${Date.now()}`;
+
+        // Create or get the style element for this modification
+        let styleTag = document.getElementById(`style-${modificationId}`);
         if (!styleTag) {
             styleTag = document.createElement('style');
-            styleTag.id = `style-${lastSelectedTextTransformItalicElement.id}`;
+            styleTag.id = `style-${modificationId}`;
             document.head.appendChild(styleTag);
         }
 
+        // Generate CSS selector for all italic elements in this block
+        const selector = `#${selectedBlock.id} em, #${selectedBlock.id} i`;
+        
         // Apply text-transform through external CSS
-        styleTag.innerHTML = `#${lastSelectedTextTransformItalicElement.id} { text-transform: ${activeTransform} !important; }`;
+        styleTag.innerHTML = `${selector} { text-transform: ${activeTransform} !important; }`;
 
-        // Save modifications
-        await saveModifications(lastSelectedTextTransformItalicElement.id, { 
-            "text-transform": activeTransform 
-        });
+        // Save modifications for each italic element
+        for (const italicElement of italicElements) {
+            // Ensure each italic element has a unique ID
+            if (!italicElement.id) {
+                italicElement.id = `italic-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            }
 
-        // Restore the selection after applying styles
-        if (lastTextTransformSelection) {
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(lastTextTransformSelection.cloneRange());
+            await saveModifications(italicElement.id, { 
+                "text-transform": activeTransform 
+            });
         }
 
-        console.log("✅ Applied text-transform:", activeTransform, "to italic text:", lastSelectedTextTransformItalicElement.textContent);
+        console.log(`✅ Applied text-transform: ${activeTransform} to ${italicElements.length} italic elements in block ${selectedBlock.id}`);
     } catch (error) {
         console.error("❌ Error applying text-transform:", error);
     }
@@ -2220,34 +2223,49 @@ document.addEventListener("click", async function(event) {
 const undoButton = document.querySelector(".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer");
 if (undoButton) {
     undoButton.addEventListener("click", async function() {
-        if (!lastSelectedTextTransformItalicElement) {
-            console.warn("⚠️ No italic text selected");
+        if (!selectedBlock) {
+            console.warn("⚠️ No block selected");
             return;
         }
 
         try {
-            // Ensure the italic element has an ID
-            if (!lastSelectedTextTransformItalicElement.id) {
-                lastSelectedTextTransformItalicElement.id = `text-transform-${Date.now()}`;
+            // Find all italic elements within the selected block
+            const italicElements = selectedBlock.querySelectorAll('em, i');
+            
+            if (italicElements.length === 0) {
+                console.warn("⚠️ No italic text found in the selected block");
+                return;
             }
 
-            // Create or get the style element for this specific modification
-            let styleTag = document.getElementById(`style-${lastSelectedTextTransformItalicElement.id}`);
+            // Create a unique ID for this block's text-transform modification
+            const modificationId = `text-transform-${selectedBlock.id}-${Date.now()}`;
+
+            // Create or get the style element for this modification
+            let styleTag = document.getElementById(`style-${modificationId}`);
             if (!styleTag) {
                 styleTag = document.createElement('style');
-                styleTag.id = `style-${lastSelectedTextTransformItalicElement.id}`;
+                styleTag.id = `style-${modificationId}`;
                 document.head.appendChild(styleTag);
             }
 
+            // Generate CSS selector for all italic elements in this block
+            const selector = `#${selectedBlock.id} em, #${selectedBlock.id} i`;
+            
             // Apply reset through external CSS
-            styleTag.innerHTML = `#${lastSelectedTextTransformItalicElement.id} { text-transform: none !important; }`;
+            styleTag.innerHTML = `${selector} { text-transform: none !important; }`;
 
-            // Save modifications
-            await saveModifications(lastSelectedTextTransformItalicElement.id, { 
-                "text-transform": "none" 
-            });
+            // Save modifications for each italic element
+            for (const italicElement of italicElements) {
+                if (!italicElement.id) {
+                    italicElement.id = `italic-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                }
 
-            console.log("🔄 Reset text-transform for italic text:", lastSelectedTextTransformItalicElement.textContent);
+                await saveModifications(italicElement.id, { 
+                    "text-transform": "none" 
+                });
+            }
+
+            console.log(`🔄 Reset text-transform for ${italicElements.length} italic elements in block ${selectedBlock.id}`);
         } catch (error) {
             console.error("❌ Error resetting text-transform:", error);
         }
@@ -2267,14 +2285,13 @@ document.addEventListener('click', function(event) {
     });
     
     if (!widgetContainer.contains(event.target) && !isTextTransformButton) {
-        lastSelectedTextTransformItalicElement = null;
-        lastTextTransformSelection = null;
+        selectedBlock = null;
         const selection = window.getSelection();
         selection.removeAllRanges();
     }
 });
 
-    // text-transform end
+// text-transform end
 
 
 
