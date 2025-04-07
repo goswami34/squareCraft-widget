@@ -476,67 +476,113 @@ function recreateModifiedElement(structure, styles) {
   }
 }
 
+
+
 // async function saveModifications(elementId, css, elementStructure = null) {
 //   if (!pageId || !elementId || !css) {
-//       console.warn("⚠️ Missing required data to save modifications.");
-//       return;
+//     console.warn("⚠️ Missing required data to save modifications.");
+//     return;
+//   }
+
+//   // Validate required data
+//   const userId = localStorage.getItem("squareCraft_u_id");
+//   const token = localStorage.getItem("squareCraft_auth_token");
+//   const widgetId = localStorage.getItem("squareCraft_w_id");
+
+//   if (!userId || !token || !widgetId) {
+//     console.warn("⚠️ Missing authentication data");
+//     return;
 //   }
 
 //   const element = document.getElementById(elementId);
-//   const isStrong = element?.tagName.toLowerCase() === 'strong';
+//   if (!element) {
+//     console.warn("⚠️ Element not found");
+//     return;
+//   }
+
+//   // Generate a unique ID for this specific modification
+//   const uniqueId = `${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  
+//   // Clean and validate CSS properties
+//   const cleanedCss = {};
+//   Object.entries(css).forEach(([key, value]) => {
+//     if (value !== undefined && value !== null && value !== '') {
+//       cleanedCss[key] = value;
+//     }
+//   });
 
 //   const modificationData = {
-//       userId,
-//       token,
-//       widgetId,
-//       modifications: [{
-//           pageId,
-//           elements: [{
-//               elementId,
-//               css: {
-//                   [isStrong ? 'strong' : 'span']: {
-//                       id: elementId,
-//                       ...css
-//                   }
-//               },
-//               elementStructure: elementStructure || {
-//                   type: isStrong ? 'strong' : 'span',
-//                   className: 'squareCraft-font-modified',
-//                   content: element?.textContent || '',
-//                   parentId: element?.parentElement?.id || null
-//               }
-//           }]
+//     userId,
+//     token,
+//     widgetId,
+//     modifications: [{
+//       pageId,
+//       elements: [{
+//         elementId: uniqueId,
+//         css: {
+//           strong: {
+//             id: uniqueId,
+//             ...cleanedCss
+//           }
+//         },
+//         elementStructure: elementStructure || {
+//           type: 'strong',
+//           content: element.textContent || '',
+//           parentId: element.parentElement?.id || null,
+//           originalElementId: elementId
+//         }
 //       }]
+//     }]
 //   };
 
 //   try {
-//       const response = await fetch("https://webefo-backend.onrender.com/api/v1/modifications", {
-//           method: "POST",
-//           headers: {
-//               "Content-Type": "application/json",
-//               "Authorization": `Bearer ${token || localStorage.getItem("squareCraft_auth_token")}`,
-//               "userId": userId,
-//               "pageId": pageId,
-//               "widget-id": widgetId,
-//           },
-//           body: JSON.stringify(modificationData),
-//       });
+//     const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "Authorization": `Bearer ${token}`,
+//         "userId": userId,
+//         "pageId": pageId,
+//         "widget-id": widgetId,
+//       },
+//       body: JSON.stringify(modificationData),
+//     });
 
-//       if (!response.ok) {
-//           throw new Error(`HTTP error! status: ${response.status}`);
-//       }
+//     if (!response.ok) {
+//       const errorData = await response.json().catch(() => ({}));
+//       throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unknown error'}`);
+//     }
 
-//       const result = await response.json();
-//       console.log("✅ Changes Saved Successfully!", result);
+//     const result = await response.json();
+//     console.log("✅ Changes Saved Successfully!", result);
+    
+//     // Create or update external style sheet
+//     const styleId = `style-${uniqueId}`;
+//     let styleTag = document.getElementById(styleId);
+//     if (!styleTag) {
+//       styleTag = document.createElement('style');
+//       styleTag.id = styleId;
+//       document.head.appendChild(styleTag);
+//     }
 
-//       // Immediately fetch modifications to update the UI
-//       await fetchModifications();
-      
-//       return result;
+//     // Convert CSS object to string with !important
+//     let cssString = `#${uniqueId} { `;
+//     Object.entries(cleanedCss).forEach(([prop, value]) => {
+//       cssString += `${prop}: ${value} !important; `;
+//     });
+//     cssString += '}';
+
+//     styleTag.innerHTML = cssString;
+    
+//     return result;
 //   } catch (error) {
-//       console.error("❌ Error saving modifications:", error);
+//     console.error("❌ Error saving modifications:", error);
+//     // You might want to show a user-friendly error message here
+//     throw error; // Re-throw the error for the caller to handle
 //   }
 // }
+
+
 
 async function saveModifications(elementId, css, elementStructure = null) {
   if (!pageId || !elementId || !css) {
@@ -571,6 +617,19 @@ async function saveModifications(elementId, css, elementStructure = null) {
     }
   });
 
+  // Get the original text content
+  const originalText = element.textContent || element.innerText;
+
+  // Create a new strong element with the unique ID
+  const newStrong = document.createElement('strong');
+  newStrong.id = uniqueId;
+  newStrong.textContent = originalText;
+
+  // Replace the existing element with the new one
+  if (element.parentNode) {
+    element.parentNode.replaceChild(newStrong, element);
+  }
+
   const modificationData = {
     userId,
     token,
@@ -585,9 +644,9 @@ async function saveModifications(elementId, css, elementStructure = null) {
             ...cleanedCss
           }
         },
-        elementStructure: elementStructure || {
+        elementStructure: {
           type: 'strong',
-          content: element.textContent || '',
+          content: originalText,
           parentId: element.parentElement?.id || null,
           originalElementId: elementId
         }
@@ -637,12 +696,10 @@ async function saveModifications(elementId, css, elementStructure = null) {
     return result;
   } catch (error) {
     console.error("❌ Error saving modifications:", error);
-    // You might want to show a user-friendly error message here
-    throw error; // Re-throw the error for the caller to handle
+    throw error;
   }
 }
 
-// 4. Add a function to validate and clean up modifications
 function validateAndCleanModifications(elementId) {
   const element = document.getElementById(elementId);
   if (!element) return;
