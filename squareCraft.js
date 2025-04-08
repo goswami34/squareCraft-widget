@@ -579,13 +579,8 @@ function cleanupDuplicateSpans(elementId) {
                  <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
                     <div
                        class="squareCraft-flex squareCraft-px-2 squareCraft-items-center squareCraft-justify-between squareCraft-w-full ">
-                      <p class="squareCraft-font-bold squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer elements-font-style" data-style="bold">B</p>
-                       <div class="squareCraft-v-line"></div>
-                      <p  class="squareCraft-font-italic squareCraft-universal  squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="italic">I</p>
-                       <div class="squareCraft-v-line"></div>
-                     <p class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="underline">U</p>
-                       <div class="squareCraft-v-line"></div> 
-                       <p  class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="dotted">abc</p>
+                        <p class="squareCraft-font-underline squareCraft-universal squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-center squareCraft-mx-auto elements-font-style" data-style="underline">U</p>
+                       
                         <div class="squareCraft-v-line"></div> 
                        <img class=" squareCraft-rounded-6px squareCraft-rotate-180 squareCraft-px-1_5 squsareCraft-font-style squareCraft-cursor-pointer" width="12px"
                      src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
@@ -1391,47 +1386,6 @@ function clearPendingChanges() {
 // font-size end
 
 
-
-////font-size unbold
-function handleUnbold(element) {
-  if (!element) return;
-  
-  const elementId = element.id;
-  
-  // Check if this element had font-size modifications
-  if (fontSizeModifiedElements.has(elementId)) {
-      // Remove the font-size style
-      const styleTag = document.getElementById(`style-${elementId}`);
-      if (styleTag) {
-          styleTag.remove();
-      }
-      
-      // Remove from our tracking set
-      fontSizeModifiedElements.delete(elementId);
-      
-      // Remove from style cache
-      styleCache.delete(element);
-      
-      // Reset the element's style
-      element.style.fontSize = '';
-      
-      // Save the removal of modifications
-      saveModifications(elementId, { "font-size": "" });
-      
-      console.log("🔄 Removed font-size modification from:", elementId);
-  }
-}
-
-    // document
-    //   .getElementById("squareCraftLineHeight")
-    //   .addEventListener("input", function () {
-    //     if (selectedElement) {
-    //       let lineHeight = this.value + "px";
-    //       let css = { "line-height": lineHeight };
-    //       applyStylesToElement(selectedElement.id, css);
-    //       saveModifications(selectedElement.id, css);
-    //     }
-    //   });
 
 
     let lastSelectedLineHeightStrong = null;
