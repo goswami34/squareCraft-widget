@@ -1248,69 +1248,148 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
 
   
 
+    // document.querySelectorAll(".elements-font-style").forEach((btn) => {
+    //   btn.addEventListener("click", function () {
+    //     if (!selectedElement) {
+    //       console.warn("⚠️ No element selected to apply text decoration.fsdsd");
+    //       return;
+    //     }
+
+    //     let styleType = this.dataset.style;
+    //     let css = {};
+
+    //     if (styleType === "bold") {
+    //       let currentWeight = parseInt(
+    //         window.getComputedStyle(selectedElement).fontWeight,
+    //         10
+    //       );
+    //       css["font-weight"] = currentWeight >= 700 ? "900" : "700";
+    //     } else if (styleType === "italic") {
+    //       let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
+    //       css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
+    //     } else {
+    //       let currentDecoration =
+    //         window.getComputedStyle(selectedElement).textDecorationLine;
+    //       if (styleType === "underline") {
+    //         css["text-decoration"] = currentDecoration.includes("underline")
+    //           ? "none"
+    //           : "underline";
+    //       } else if (styleType === "dotted") {
+    //         css["text-decoration"] = currentDecoration.includes("dotted")
+    //           ? "none"
+    //           : "underline dotted";
+    //       } else if (styleType === "line-through") {
+    //         css["text-decoration"] = currentDecoration.includes("line-through")
+    //           ? "none"
+    //           : "line-through";
+    //       }
+    //     }
+
+    //     applyStylesToElement(selectedElement.id, css);
+    //     saveModifications(selectedElement.id, css);
+    //   });
+    // });
+
+    // const fontStyleUndoButton = document.querySelector(
+    //   ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-font-style.squareCraft-cursor-pointer"
+    // );
+
+    // fontStyleUndoButton.addEventListener("click", async function () {
+    //   if (!selectedElement) return;
+
+    //   // Reset font styles
+    //   let css = {
+    //     "font-weight": "400", // Reset to Regular (default)
+    //     "font-style": "normal", // Reset to normal (default)
+    //     "text-decoration": "none", // Remove underline, dotted, or line-through
+    //   };
+
+    //   // Apply styles to the selected element
+    //   applyStylesToElement(selectedElement.id, css);
+
+    //   // Save the reset modifications
+    //   await saveModifications(selectedElement.id, css);
+
+    //   console.log("🛑 Font styles reset for:", selectedElement.id);
+    // });
+
+    // Modify the text decoration handler
     document.querySelectorAll(".elements-font-style").forEach((btn) => {
-      btn.addEventListener("click", function () {
+      btn.addEventListener("click", async function() {
         if (!selectedElement) {
-          console.warn("⚠️ No element selected to apply text decoration.fsdsd");
+          console.warn("⚠️ No block selected");
           return;
         }
 
-        let styleType = this.dataset.style;
-        let css = {};
-
-        if (styleType === "bold") {
-          let currentWeight = parseInt(
-            window.getComputedStyle(selectedElement).fontWeight,
-            10
-          );
-          css["font-weight"] = currentWeight >= 700 ? "900" : "700";
-        } else if (styleType === "italic") {
-          let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
-          css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
-        } else {
-          let currentDecoration =
-            window.getComputedStyle(selectedElement).textDecorationLine;
-          if (styleType === "underline") {
-            css["text-decoration"] = currentDecoration.includes("underline")
-              ? "none"
-              : "underline";
-          } else if (styleType === "dotted") {
-            css["text-decoration"] = currentDecoration.includes("dotted")
-              ? "none"
-              : "underline dotted";
-          } else if (styleType === "line-through") {
-            css["text-decoration"] = currentDecoration.includes("line-through")
-              ? "none"
-              : "line-through";
-          }
+        const blockId = selectedElement.id;
+        const styleType = this.dataset.style;
+        
+        // Create a style tag for this block's strong tags
+        let styleTag = document.getElementById(`style-${blockId}-strong-textdecoration`);
+        if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = `style-${blockId}-strong-textdecoration`;
+          document.head.appendChild(styleTag);
         }
 
-        applyStylesToElement(selectedElement.id, css);
-        saveModifications(selectedElement.id, css);
+        // Apply text-decoration to all strong tags within this block using CSS selector
+        let decorationValue = "none";
+        if (styleType === "underline") {
+          decorationValue = "underline";
+        } else if (styleType === "dotted") {
+          decorationValue = "underline dotted";
+        } else if (styleType === "line-through") {
+          decorationValue = "line-through";
+        }
+
+        styleTag.innerHTML = `
+          #${blockId} strong {
+            text-decoration: ${decorationValue} !important;
+          }
+        `;
+
+        // Save modifications using the block ID
+        const css = {
+          "text-decoration": decorationValue
+        };
+
+        await saveModifications(blockId, css);
+
+        console.log(`✅ Applied text-decoration: ${decorationValue} to all bold words in block: ${blockId}`);
       });
     });
 
-    const fontStyleUndoButton = document.querySelector(
+    // Add reset functionality for text decoration
+    const textDecorationResetButton = document.querySelector(
       ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-font-style.squareCraft-cursor-pointer"
     );
 
-    fontStyleUndoButton.addEventListener("click", async function () {
-      if (!selectedElement) return;
+    textDecorationResetButton.addEventListener("click", async function() {
+      if (!selectedElement) {
+        console.warn("⚠️ No block selected");
+        return;
+      }
 
-      // Reset font styles
-      let css = {
-        "font-weight": "400", // Reset to Regular (default)
-        "font-style": "normal", // Reset to normal (default)
-        "text-decoration": "none", // Remove underline, dotted, or line-through
+      const blockId = selectedElement.id;
+      
+      // Remove the style tag or set text-decoration to none
+      let styleTag = document.getElementById(`style-${blockId}-strong-textdecoration`);
+      if (styleTag) {
+        styleTag.innerHTML = `
+          #${blockId} strong {
+            text-decoration: none !important;
+          }
+        `;
+      }
+
+      // Save the reset state
+      const css = {
+        "text-decoration": "none"
       };
 
-      // Apply styles to the selected element
-      applyStylesToElement(selectedElement.id, css);
+      await saveModifications(blockId, css);
 
-      // Save the reset modifications
-      await saveModifications(selectedElement.id, css);
-
-      console.log("🛑 Font styles reset for:", selectedElement.id);
+      console.log(`🔄 Reset text decoration for all bold words in block: ${blockId}`);
     });
 
    
