@@ -1191,41 +1191,7 @@ document.body.addEventListener("click", (event) => {
   console.log(`✅ Selected Block: ${block.id} with ${strongElements.length} bold words`);
 });
 
-// Modify the font-weight change handler to apply to all strong elements in the selected block
-// document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
-//   if (!selectedElement) {
-//       console.warn("⚠️ No block selected");
-//       return;
-//   }
 
-//   // Get all strong elements within the selected block
-//   const strongElements = selectedElement.querySelectorAll('strong');
-//   if (strongElements.length === 0) {
-//       console.warn("⚠️ No bold text found in the selected block");
-//       return;
-//   }
-
-//   const selectedWeight = this.value;
-//   const css = { "font-weight": selectedWeight };
-
-//   // Apply to all strong elements in the block
-//   for (const strongElement of strongElements) {
-//       // Ensure each strong element has an ID
-//       if (!strongElement.id) {
-//           strongElement.id = `font-weight-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-//       }
-
-//       // Apply styles to each strong element
-//       applyStylesToElement(strongElement.id, css);
-
-//       // Save modifications for each strong element
-//       await saveModifications(strongElement.id, css);
-//   }
-
-//   console.log(`✅ Applied font-weight: ${selectedWeight} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
-// });
-
-// 2. Modify the font-weight change handler
 document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
   if (!selectedElement) {
       console.warn("⚠️ No block selected");
@@ -1260,7 +1226,6 @@ document.getElementById("squareCraftFontWeight").addEventListener("change", asyn
   console.log(`✅ Applied font-weight: ${selectedWeight} to all bold words in block: ${blockId}`);
 });
 
-// 3. Add a function to apply saved styles on page load
 async function applySavedStyles() {
   const savedStyles = await fetchModifications();
   if (!savedStyles) return;
@@ -1285,6 +1250,10 @@ async function applySavedStyles() {
       }
   });
 }
+
+window.addEventListener("load", async () => {
+  await applySavedStyles();
+});
 
 // font family code start here
 // document.getElementById("squareCraft-font-family").addEventListener("change", async function() {
