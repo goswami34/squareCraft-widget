@@ -1477,39 +1477,39 @@ function clearPendingChanges() {
 // // Clean cache every minute
 // setInterval(cleanStyleCache, 60000);
 
-document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-  if (!selectedElement) {
-      console.warn("⚠️ No block selected");
-      return;
-  }
+  document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+    if (!selectedElement) {
+        console.warn("⚠️ No block selected");
+        return;
+    }
 
-  const fontSize = this.value + "px";
-  const blockId = selectedElement.id;
+    const fontSize = this.value + "px";
+    const blockId = selectedElement.id;
 
-  // Create a style tag for this block's strong tags
-  let styleTag = document.getElementById(`style-${blockId}-strong-fontsize`);
-  if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = `style-${blockId}-strong-fontsize`;
-      document.head.appendChild(styleTag);
-  }
+    // Create a style tag for this block's strong tags
+    let styleTag = document.getElementById(`style-${blockId}-strong-fontsize`);
+    if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = `style-${blockId}-strong-fontsize`;
+        document.head.appendChild(styleTag);
+    }
 
-  // Apply font-size to all strong tags within this block using CSS selector
-  styleTag.innerHTML = `
-      #${blockId} strong {
-          font-size: ${fontSize} !important;
-      }
-  `;
+    // Apply font-size to all strong tags within this block using CSS selector
+    styleTag.innerHTML = `
+        #${blockId} strong {
+            font-size: ${fontSize} !important;
+        }
+    `;
 
-  // Save modifications using the block ID
-  const css = {
-      "font-size": fontSize
-  };
+    // Save modifications using the block ID
+    const css = {
+        "font-size": fontSize
+    };
 
-  await saveModifications(blockId, css);
+    await saveModifications(blockId, css);
 
-  console.log(`✅ Applied font-size: ${fontSize} to all bold words in block: ${blockId}`);
-});
+    console.log(`✅ Applied font-size: ${fontSize} to all bold words in block: ${blockId}`);
+  });
 
 // font-size end
 
