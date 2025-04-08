@@ -92,6 +92,135 @@
 
 
 
+// async function fetchModifications(retries = 3) {
+//   if (!pageId) return;
+
+//   const token = localStorage.getItem("squareCraft_auth_token");
+//   const userId = localStorage.getItem("squareCraft_u_id");
+//   const widgetId = localStorage.getItem("squareCraft_w_id");
+
+//   if (!token || !userId) {
+//     console.warn("Missing authentication data");
+//     return;
+//   }
+
+//   try {
+//     const response = await fetch(
+//       `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+//       {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+//           "Authorization": `Bearer ${token}`,
+//         }
+//       }
+//     );
+
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! status: ${response.status}`);
+//     }
+
+//     const data = await response.json();
+//     console.log("Retrieved modifications:", data);
+
+//     if (!data.modifications || !Array.isArray(data.modifications)) {
+//       console.warn("No modifications found or invalid format");
+//       return;
+//     }
+
+//     // Apply modifications for current page
+//     data.modifications.forEach(mod => {
+//       if (mod.pageId === pageId) {
+//         mod.elements.forEach(elem => {
+//           const cssData = elem.css?.strong;
+//           if (cssData) {
+//             const { id, ...styles } = cssData;
+//             const elementStructure = elem.elementStructure;
+            
+//             // Find or create the element
+//             let targetElement = document.getElementById(id);
+            
+//             if (!targetElement && elementStructure) {
+//               // Create new element if it doesn't exist
+//               targetElement = document.createElement('strong');
+//               targetElement.id = id;
+//               targetElement.textContent = elementStructure.content;
+              
+//               // Find the parent element
+//               const parentElement = elementStructure.parentId ? 
+//                 document.getElementById(elementStructure.parentId) : 
+//                 document.body;
+              
+//               if (parentElement) {
+//                 // Find the text node to replace
+//                 const textNodes = [];
+//                 const walker = document.createTreeWalker(
+//                   parentElement,
+//                   NodeFilter.SHOW_TEXT,
+//                   {
+//                     acceptNode: function(node) {
+//                       return node.textContent.includes(elementStructure.content) ?
+//                         NodeFilter.FILTER_ACCEPT :
+//                         NodeFilter.FILTER_REJECT;
+//                     }
+//                   },
+//                   false
+//                 );
+                
+//                 let node;
+//                 while (node = walker.nextNode()) {
+//                   textNodes.push(node);
+//                 }
+                
+//                 if (textNodes.length > 0) {
+//                   const textNode = textNodes[0];
+//                   const parentNode = textNode.parentNode;
+                  
+//                   // Check if the text is already wrapped in an em tag
+//                   if (parentNode.tagName === 'strong') {
+//                     // Use the existing em tag
+//                     targetElement = parentNode;
+//                     if (!targetElement.id) {
+//                       targetElement.id = id;
+//                     }
+//                   } else {
+//                     textNode.parentNode.replaceChild(targetElement, textNode);
+//                   }
+//                 }
+//               }
+//             }
+            
+//             // Apply styles through external CSS
+//             const styleId = `style-${id}`;
+//             let styleTag = document.getElementById(styleId);
+//             if (!styleTag) {
+//               styleTag = document.createElement('style');
+//               styleTag.id = styleId;
+//               document.head.appendChild(styleTag);
+//             }
+
+//             // Convert CSS object to string
+//             let cssString = `#${id} { `;
+//             Object.entries(styles).forEach(([prop, value]) => {
+//               cssString += `${prop}: ${value} !important; `;
+//             });
+//             cssString += '}';
+
+//             styleTag.innerHTML = cssString;
+//           }
+//         });
+//       }
+//     });
+
+//   } catch (error) {
+//     console.error("Error fetching modifications:", error);
+//     if (retries > 0) {
+//       console.log(`Retrying... (${retries} attempts left)`);
+//       setTimeout(() => fetchModifications(retries - 1), 2000);
+//     }
+//   }
+// }
+
 async function fetchModifications(retries = 3) {
   if (!pageId) return;
 
@@ -100,124 +229,76 @@ async function fetchModifications(retries = 3) {
   const widgetId = localStorage.getItem("squareCraft_w_id");
 
   if (!token || !userId) {
-    console.warn("Missing authentication data");
-    return;
+      console.warn("Missing authentication data");
+      return;
   }
 
   try {
-    const response = await fetch(
-      `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("Retrieved modifications:", data);
-
-    if (!data.modifications || !Array.isArray(data.modifications)) {
-      console.warn("No modifications found or invalid format");
-      return;
-    }
-
-    // Apply modifications for current page
-    data.modifications.forEach(mod => {
-      if (mod.pageId === pageId) {
-        mod.elements.forEach(elem => {
-          const cssData = elem.css?.strong;
-          if (cssData) {
-            const { id, ...styles } = cssData;
-            const elementStructure = elem.elementStructure;
-            
-            // Find or create the element
-            let targetElement = document.getElementById(id);
-            
-            if (!targetElement && elementStructure) {
-              // Create new element if it doesn't exist
-              targetElement = document.createElement('strong');
-              targetElement.id = id;
-              targetElement.textContent = elementStructure.content;
-              
-              // Find the parent element
-              const parentElement = elementStructure.parentId ? 
-                document.getElementById(elementStructure.parentId) : 
-                document.body;
-              
-              if (parentElement) {
-                // Find the text node to replace
-                const textNodes = [];
-                const walker = document.createTreeWalker(
-                  parentElement,
-                  NodeFilter.SHOW_TEXT,
-                  {
-                    acceptNode: function(node) {
-                      return node.textContent.includes(elementStructure.content) ?
-                        NodeFilter.FILTER_ACCEPT :
-                        NodeFilter.FILTER_REJECT;
-                    }
-                  },
-                  false
-                );
-                
-                let node;
-                while (node = walker.nextNode()) {
-                  textNodes.push(node);
-                }
-                
-                if (textNodes.length > 0) {
-                  const textNode = textNodes[0];
-                  const parentNode = textNode.parentNode;
-                  
-                  // Check if the text is already wrapped in an em tag
-                  if (parentNode.tagName === 'strong') {
-                    // Use the existing em tag
-                    targetElement = parentNode;
-                    if (!targetElement.id) {
-                      targetElement.id = id;
-                    }
-                  } else {
-                    textNode.parentNode.replaceChild(targetElement, textNode);
-                  }
-                }
+      const response = await fetch(
+          `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+          {
+              method: "GET",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`,
               }
-            }
-            
-            // Apply styles through external CSS
-            const styleId = `style-${id}`;
-            let styleTag = document.getElementById(styleId);
-            if (!styleTag) {
-              styleTag = document.createElement('style');
-              styleTag.id = styleId;
-              document.head.appendChild(styleTag);
-            }
-
-            // Convert CSS object to string
-            let cssString = `#${id} { `;
-            Object.entries(styles).forEach(([prop, value]) => {
-              cssString += `${prop}: ${value} !important; `;
-            });
-            cssString += '}';
-
-            styleTag.innerHTML = cssString;
           }
-        });
+      );
+
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
       }
-    });
+
+      const data = await response.json();
+      console.log("Retrieved modifications:", data);
+
+      if (!data.modifications || !Array.isArray(data.modifications)) {
+          console.warn("No modifications found or invalid format");
+          return;
+      }
+
+      // Apply modifications for current page
+      data.modifications.forEach(mod => {
+          if (mod.pageId === pageId) {
+              mod.elements.forEach(elem => {
+                  const cssData = elem.css?.strong;
+                  if (cssData) {
+                      const { id, ...styles } = cssData;
+                      const elementStructure = elem.elementStructure;
+                      
+                      // Find the block element
+                      let targetElement = document.getElementById(id);
+                      
+                      if (targetElement) {
+                          // Create or update style tag for this block's strong tags
+                          let styleTag = document.getElementById(`style-${id}-strong`);
+                          if (!styleTag) {
+                              styleTag = document.createElement('style');
+                              styleTag.id = `style-${id}-strong`;
+                              document.head.appendChild(styleTag);
+                          }
+
+                          // Apply styles to all strong tags within the block
+                          let cssString = `#${id} strong { `;
+                          Object.entries(styles).forEach(([prop, value]) => {
+                              cssString += `${prop}: ${value} !important; `;
+                          });
+                          cssString += '}';
+
+                          styleTag.innerHTML = cssString;
+                          console.log(`✅ Applied styles to block ${id}:`, styles);
+                      }
+                  }
+              });
+          }
+      });
 
   } catch (error) {
-    console.error("Error fetching modifications:", error);
-    if (retries > 0) {
-      console.log(`Retrying... (${retries} attempts left)`);
-      setTimeout(() => fetchModifications(retries - 1), 2000);
-    }
+      console.error("Error fetching modifications:", error);
+      if (retries > 0) {
+          console.log(`Retrying... (${retries} attempts left)`);
+          setTimeout(() => fetchModifications(retries - 1), 2000);
+      }
   }
 }
 
@@ -285,111 +366,174 @@ function recreateModifiedElement(structure, styles) {
 }
 
 
-async function saveModifications(elementId, css, elementStructure = null) {
-  if (!pageId || !elementId || !css) {
-    console.warn("⚠️ Missing required data to save modifications.");
-    return;
+// async function saveModifications(elementId, css, elementStructure = null) {
+//   if (!pageId || !elementId || !css) {
+//     console.warn("⚠️ Missing required data to save modifications.");
+//     return;
+//   }
+
+//   // Validate required data
+//   const userId = localStorage.getItem("squareCraft_u_id");
+//   const token = localStorage.getItem("squareCraft_auth_token");
+//   const widgetId = localStorage.getItem("squareCraft_w_id");
+
+//   if (!userId || !token || !widgetId) {
+//     console.warn("⚠️ Missing authentication data");
+//     return;
+//   }
+
+//   const element = document.getElementById(elementId);
+//   if (!element) {
+//     console.warn("⚠️ Element not found");
+//     return;
+//   }
+
+//   // Generate a unique ID for this specific modification
+//   const uniqueId = `${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  
+//   // Clean and validate CSS properties
+//   const cleanedCss = {};
+//   Object.entries(css).forEach(([key, value]) => {
+//     if (value !== undefined && value !== null && value !== '') {
+//       cleanedCss[key] = value;
+//     }
+//   });
+
+//   const modificationData = {
+//     userId,
+//     token,
+//     widgetId,
+//     modifications: [{
+//       pageId,
+//       elements: [{
+//         elementId: uniqueId,
+//         css: {
+//           strong: {
+//             id: uniqueId,
+//             ...cleanedCss
+//           }
+//         },
+//         elementStructure: elementStructure || {
+//           type: 'strong',
+//           content: element.textContent || '',
+//           parentId: element.parentElement?.id || null,
+//           originalElementId: elementId
+//         }
+//       }]
+//     }]
+//   };
+
+//   try {
+//     const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "Authorization": `Bearer ${token}`,
+//         "userId": userId,
+//         "pageId": pageId,
+//         "widget-id": widgetId,
+//       },
+//       body: JSON.stringify(modificationData),
+//     });
+
+//     if (!response.ok) {
+//       const errorData = await response.json().catch(() => ({}));
+//       throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unknown error'}`);
+//     }
+
+//     const result = await response.json();
+//     console.log("✅ Changes Saved Successfully!", result);
+    
+//     // Create or update external style sheet
+//     const styleId = `style-${uniqueId}`;
+//     let styleTag = document.getElementById(styleId);
+//     if (!styleTag) {
+//       styleTag = document.createElement('style');
+//       styleTag.id = styleId;
+//       document.head.appendChild(styleTag);
+//     }
+
+//     // Convert CSS object to string with !important
+//     let cssString = `#${uniqueId} { `;
+//     Object.entries(cleanedCss).forEach(([prop, value]) => {
+//       cssString += `${prop}: ${value} !important; `;
+//     });
+//     cssString += '}';
+
+//     styleTag.innerHTML = cssString;
+    
+//     return result;
+//   } catch (error) {
+//     console.error("❌ Error saving modifications:", error);
+//     // You might want to show a user-friendly error message here
+//     throw error; // Re-throw the error for the caller to handle
+//   }
+// }
+
+// 4. Add a function to validate and clean up modifications
+
+async function saveModifications(blockId, css) {
+  if (!pageId || !blockId || !css) {
+      console.warn("⚠️ Missing required data to save modifications.");
+      return;
   }
 
-  // Validate required data
   const userId = localStorage.getItem("squareCraft_u_id");
   const token = localStorage.getItem("squareCraft_auth_token");
   const widgetId = localStorage.getItem("squareCraft_w_id");
 
   if (!userId || !token || !widgetId) {
-    console.warn("⚠️ Missing authentication data");
-    return;
+      console.warn("⚠️ Missing authentication data");
+      return;
   }
-
-  const element = document.getElementById(elementId);
-  if (!element) {
-    console.warn("⚠️ Element not found");
-    return;
-  }
-
-  // Generate a unique ID for this specific modification
-  const uniqueId = `${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  
-  // Clean and validate CSS properties
-  const cleanedCss = {};
-  Object.entries(css).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
-      cleanedCss[key] = value;
-    }
-  });
 
   const modificationData = {
-    userId,
-    token,
-    widgetId,
-    modifications: [{
-      pageId,
-      elements: [{
-        elementId: uniqueId,
-        css: {
-          strong: {
-            id: uniqueId,
-            ...cleanedCss
-          }
-        },
-        elementStructure: elementStructure || {
-          type: 'strong',
-          content: element.textContent || '',
-          parentId: element.parentElement?.id || null,
-          originalElementId: elementId
-        }
+      userId,
+      token,
+      widgetId,
+      modifications: [{
+          pageId,
+          elements: [{
+              elementId: blockId,
+              css: {
+                  strong: {
+                      id: blockId,
+                      ...css
+                  }
+              },
+              elementStructure: {
+                  type: 'strong',
+                  content: document.getElementById(blockId)?.textContent || '',
+                  parentId: document.getElementById(blockId)?.parentElement?.id || null
+              }
+          }]
       }]
-    }]
   };
 
   try {
-    const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-        "userId": userId,
-        "pageId": pageId,
-        "widget-id": widgetId,
-      },
-      body: JSON.stringify(modificationData),
-    });
+      const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify(modificationData),
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unknown error'}`);
-    }
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-    const result = await response.json();
-    console.log("✅ Changes Saved Successfully!", result);
-    
-    // Create or update external style sheet
-    const styleId = `style-${uniqueId}`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-      styleTag = document.createElement('style');
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
-    }
-
-    // Convert CSS object to string with !important
-    let cssString = `#${uniqueId} { `;
-    Object.entries(cleanedCss).forEach(([prop, value]) => {
-      cssString += `${prop}: ${value} !important; `;
-    });
-    cssString += '}';
-
-    styleTag.innerHTML = cssString;
-    
-    return result;
+      const result = await response.json();
+      console.log("✅ Changes Saved Successfully!", result);
+      
+      return result;
   } catch (error) {
-    console.error("❌ Error saving modifications:", error);
-    // You might want to show a user-friendly error message here
-    throw error; // Re-throw the error for the caller to handle
+      console.error("❌ Error saving modifications:", error);
+      throw error;
   }
 }
 
-// 4. Add a function to validate and clean up modifications
 function validateAndCleanModifications(elementId) {
   const element = document.getElementById(elementId);
   if (!element) return;
