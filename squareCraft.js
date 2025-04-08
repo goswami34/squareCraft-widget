@@ -553,11 +553,7 @@ function cleanupDuplicateSpans(elementId) {
                        ">
                        <input type="text" id="squareCraftLineHeight" value="15" class="squareCraft-Letter-spacing-input squareCraft-font-light squareCraft-text-sm squareCraft-text-color-white 
                           squareCraft-bg-transparent squareCraft-w-full  squareCraft-py-1px squareCraft-font-light">
-                       <div class="">
-                          <img id="squareCraftLetterSpacingDropdown"
-                             src="https://fatin-webefo.github.io/squareCraft-plugin/public/line-spacing.svg"
-                             class=" squareCraft-px-1 squareCraft-ml-1 squareCraft-mx-auto squareCraft-cursor-pointer" >
-                       </div>
+                       
                     </div>
 
                  </div>
