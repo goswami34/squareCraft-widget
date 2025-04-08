@@ -92,135 +92,6 @@
 
 
 
-// async function fetchModifications(retries = 3) {
-//   if (!pageId) return;
-
-//   const token = localStorage.getItem("squareCraft_auth_token");
-//   const userId = localStorage.getItem("squareCraft_u_id");
-//   const widgetId = localStorage.getItem("squareCraft_w_id");
-
-//   if (!token || !userId) {
-//     console.warn("Missing authentication data");
-//     return;
-//   }
-
-//   try {
-//     const response = await fetch(
-//       `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
-//       {
-//         method: "GET",
-//         headers: {
-//           "Content-Type": "application/json",
-//           "Authorization": `Bearer ${token}`,
-//         }
-//       }
-//     );
-
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! status: ${response.status}`);
-//     }
-
-//     const data = await response.json();
-//     console.log("Retrieved modifications:", data);
-
-//     if (!data.modifications || !Array.isArray(data.modifications)) {
-//       console.warn("No modifications found or invalid format");
-//       return;
-//     }
-
-//     // Apply modifications for current page
-//     data.modifications.forEach(mod => {
-//       if (mod.pageId === pageId) {
-//         mod.elements.forEach(elem => {
-//           const cssData = elem.css?.strong;
-//           if (cssData) {
-//             const { id, ...styles } = cssData;
-//             const elementStructure = elem.elementStructure;
-            
-//             // Find or create the element
-//             let targetElement = document.getElementById(id);
-            
-//             if (!targetElement && elementStructure) {
-//               // Create new element if it doesn't exist
-//               targetElement = document.createElement('strong');
-//               targetElement.id = id;
-//               targetElement.textContent = elementStructure.content;
-              
-//               // Find the parent element
-//               const parentElement = elementStructure.parentId ? 
-//                 document.getElementById(elementStructure.parentId) : 
-//                 document.body;
-              
-//               if (parentElement) {
-//                 // Find the text node to replace
-//                 const textNodes = [];
-//                 const walker = document.createTreeWalker(
-//                   parentElement,
-//                   NodeFilter.SHOW_TEXT,
-//                   {
-//                     acceptNode: function(node) {
-//                       return node.textContent.includes(elementStructure.content) ?
-//                         NodeFilter.FILTER_ACCEPT :
-//                         NodeFilter.FILTER_REJECT;
-//                     }
-//                   },
-//                   false
-//                 );
-                
-//                 let node;
-//                 while (node = walker.nextNode()) {
-//                   textNodes.push(node);
-//                 }
-                
-//                 if (textNodes.length > 0) {
-//                   const textNode = textNodes[0];
-//                   const parentNode = textNode.parentNode;
-                  
-//                   // Check if the text is already wrapped in an em tag
-//                   if (parentNode.tagName === 'strong') {
-//                     // Use the existing em tag
-//                     targetElement = parentNode;
-//                     if (!targetElement.id) {
-//                       targetElement.id = id;
-//                     }
-//                   } else {
-//                     textNode.parentNode.replaceChild(targetElement, textNode);
-//                   }
-//                 }
-//               }
-//             }
-            
-//             // Apply styles through external CSS
-//             const styleId = `style-${id}`;
-//             let styleTag = document.getElementById(styleId);
-//             if (!styleTag) {
-//               styleTag = document.createElement('style');
-//               styleTag.id = styleId;
-//               document.head.appendChild(styleTag);
-//             }
-
-//             // Convert CSS object to string
-//             let cssString = `#${id} { `;
-//             Object.entries(styles).forEach(([prop, value]) => {
-//               cssString += `${prop}: ${value} !important; `;
-//             });
-//             cssString += '}';
-
-//             styleTag.innerHTML = cssString;
-//           }
-//         });
-//       }
-//     });
-
-//   } catch (error) {
-//     console.error("Error fetching modifications:", error);
-//     if (retries > 0) {
-//       console.log(`Retrying... (${retries} attempts left)`);
-//       setTimeout(() => fetchModifications(retries - 1), 2000);
-//     }
-//   }
-// }
-
 async function fetchModifications(retries = 3) {
   if (!pageId) return;
 
@@ -366,111 +237,6 @@ function recreateModifiedElement(structure, styles) {
 }
 
 
-// async function saveModifications(elementId, css, elementStructure = null) {
-//   if (!pageId || !elementId || !css) {
-//     console.warn("⚠️ Missing required data to save modifications.");
-//     return;
-//   }
-
-//   // Validate required data
-//   const userId = localStorage.getItem("squareCraft_u_id");
-//   const token = localStorage.getItem("squareCraft_auth_token");
-//   const widgetId = localStorage.getItem("squareCraft_w_id");
-
-//   if (!userId || !token || !widgetId) {
-//     console.warn("⚠️ Missing authentication data");
-//     return;
-//   }
-
-//   const element = document.getElementById(elementId);
-//   if (!element) {
-//     console.warn("⚠️ Element not found");
-//     return;
-//   }
-
-//   // Generate a unique ID for this specific modification
-//   const uniqueId = `${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  
-//   // Clean and validate CSS properties
-//   const cleanedCss = {};
-//   Object.entries(css).forEach(([key, value]) => {
-//     if (value !== undefined && value !== null && value !== '') {
-//       cleanedCss[key] = value;
-//     }
-//   });
-
-//   const modificationData = {
-//     userId,
-//     token,
-//     widgetId,
-//     modifications: [{
-//       pageId,
-//       elements: [{
-//         elementId: uniqueId,
-//         css: {
-//           strong: {
-//             id: uniqueId,
-//             ...cleanedCss
-//           }
-//         },
-//         elementStructure: elementStructure || {
-//           type: 'strong',
-//           content: element.textContent || '',
-//           parentId: element.parentElement?.id || null,
-//           originalElementId: elementId
-//         }
-//       }]
-//     }]
-//   };
-
-//   try {
-//     const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         "Authorization": `Bearer ${token}`,
-//         "userId": userId,
-//         "pageId": pageId,
-//         "widget-id": widgetId,
-//       },
-//       body: JSON.stringify(modificationData),
-//     });
-
-//     if (!response.ok) {
-//       const errorData = await response.json().catch(() => ({}));
-//       throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unknown error'}`);
-//     }
-
-//     const result = await response.json();
-//     console.log("✅ Changes Saved Successfully!", result);
-    
-//     // Create or update external style sheet
-//     const styleId = `style-${uniqueId}`;
-//     let styleTag = document.getElementById(styleId);
-//     if (!styleTag) {
-//       styleTag = document.createElement('style');
-//       styleTag.id = styleId;
-//       document.head.appendChild(styleTag);
-//     }
-
-//     // Convert CSS object to string with !important
-//     let cssString = `#${uniqueId} { `;
-//     Object.entries(cleanedCss).forEach(([prop, value]) => {
-//       cssString += `${prop}: ${value} !important; `;
-//     });
-//     cssString += '}';
-
-//     styleTag.innerHTML = cssString;
-    
-//     return result;
-//   } catch (error) {
-//     console.error("❌ Error saving modifications:", error);
-//     // You might want to show a user-friendly error message here
-//     throw error; // Re-throw the error for the caller to handle
-//   }
-// }
-
-// 4. Add a function to validate and clean up modifications
 
 async function saveModifications(blockId, css) {
   if (!pageId || !blockId || !css) {
@@ -1587,129 +1353,163 @@ function clearPendingChanges() {
 
 
 //font-size start
-let lastSelectedText = null;
-let lastSelectedRange = null;
+// let lastSelectedText = null;
+// let lastSelectedRange = null;
 
-let styleCache = new Map();
+// let styleCache = new Map();
 
-// Update the mouseup event listener to store selection info
-document.addEventListener("mouseup", function() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-        lastSelectedText = selection.toString();
-        lastSelectedRange = selection.getRangeAt(0);
+// // Update the mouseup event listener to store selection info
+// document.addEventListener("mouseup", function() {
+//     const selection = window.getSelection();
+//     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+//         lastSelectedText = selection.toString();
+//         lastSelectedRange = selection.getRangeAt(0);
         
-        // Get the containing element
-        let container = lastSelectedRange.commonAncestorContainer;
-        if (container.nodeType === Node.TEXT_NODE) {
-            container = container.parentElement;
-        }
+//         // Get the containing element
+//         let container = lastSelectedRange.commonAncestorContainer;
+//         if (container.nodeType === Node.TEXT_NODE) {
+//             container = container.parentElement;
+//         }
         
-        // Store the current styles
-        if (container) {
-            const computedStyle = window.getComputedStyle(container);
-            styleCache.set(container, {
-                fontSize: computedStyle.fontSize,
-                originalText: lastSelectedText
-            });
-        }
+//         // Store the current styles
+//         if (container) {
+//             const computedStyle = window.getComputedStyle(container);
+//             styleCache.set(container, {
+//                 fontSize: computedStyle.fontSize,
+//                 originalText: lastSelectedText
+//             });
+//         }
         
-        console.log("✅ Text Selected:", lastSelectedText);
-    }
-});
+//         console.log("✅ Text Selected:", lastSelectedText);
+//     }
+// });
 
-let fontSizeModifiedElements = new Set();
+// let fontSizeModifiedElements = new Set();
 
 
-// Font size change handler
-document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
-    if (!lastSelectedRange || !lastSelectedText) {
-        console.warn("⚠️ No text selected");
-        return;
-    }
+// // Font size change handler
+// document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+//     if (!lastSelectedRange || !lastSelectedText) {
+//         console.warn("⚠️ No text selected");
+//         return;
+//     }
 
-    const fontSize = this.value + "px";
+//     const fontSize = this.value + "px";
     
-    try {
-        // Get the common ancestor container
-        let container = lastSelectedRange.commonAncestorContainer;
+//     try {
+//         // Get the common ancestor container
+//         let container = lastSelectedRange.commonAncestorContainer;
         
-        // If the container is a text node, get its parent element
-        if (container.nodeType === Node.TEXT_NODE) {
-            container = container.parentElement;
-        }
+//         // If the container is a text node, get its parent element
+//         if (container.nodeType === Node.TEXT_NODE) {
+//             container = container.parentElement;
+//         }
 
-        // Check if the container or its parent is a strong tag
-        let targetElement = container.tagName === 'STRONG' ? container : 
-                           container.closest('strong');
+//         // Check if the container or its parent is a strong tag
+//         let targetElement = container.tagName === 'STRONG' ? container : 
+//                            container.closest('strong');
 
-        // If no strong tag found but text is selected, use the immediate parent
-        if (!targetElement && container) {
-            targetElement = container;
-        }
+//         // If no strong tag found but text is selected, use the immediate parent
+//         if (!targetElement && container) {
+//             targetElement = container;
+//         }
 
-        if (targetElement) {
-            // Generate a unique ID if none exists
-            if (!targetElement.id) {
-                targetElement.id = `text-mod-${Date.now()}`;
-            }
+//         if (targetElement) {
+//             // Generate a unique ID if none exists
+//             if (!targetElement.id) {
+//                 targetElement.id = `text-mod-${Date.now()}`;
+//             }
 
-            // Store this element as having font-size modification
-            fontSizeModifiedElements.add(targetElement.id);
+//             // Store this element as having font-size modification
+//             fontSizeModifiedElements.add(targetElement.id);
 
-            // Apply font size directly to the existing element
-            targetElement.style.fontSize = fontSize;
+//             // Apply font size directly to the existing element
+//             targetElement.style.fontSize = fontSize;
 
-            // Store the applied style in our cache
-            styleCache.set(targetElement, {
-                fontSize: fontSize,
-                originalText: lastSelectedText
-            });
+//             // Store the applied style in our cache
+//             styleCache.set(targetElement, {
+//                 fontSize: fontSize,
+//                 originalText: lastSelectedText
+//             });
 
-            // Create CSS for persistent styling
-            let css = {
-                "font-size": fontSize
-            };
+//             // Create CSS for persistent styling
+//             let css = {
+//                 "font-size": fontSize
+//             };
 
-            // Apply styles using your existing function
-            applyStylesToElement(targetElement.id, css);
+//             // Apply styles using your existing function
+//             applyStylesToElement(targetElement.id, css);
 
-            // Save to database
-            await saveModifications(targetElement.id, css);
+//             // Save to database
+//             await saveModifications(targetElement.id, css);
 
-            console.log("✅ Font size modified and saved:", fontSize);
-        }
-    } catch (error) {
-        console.error("❌ Error applying font size:", error);
-    }
+//             console.log("✅ Font size modified and saved:", fontSize);
+//         }
+//     } catch (error) {
+//         console.error("❌ Error applying font size:", error);
+//     }
+// });
+
+// // Add a click event listener to maintain styles
+// document.addEventListener("click", function(event) {
+//     // Check if we have cached styles for any parent elements
+//     let element = event.target;
+//     while (element && element !== document.body) {
+//         if (styleCache.has(element)) {
+//             const cachedStyle = styleCache.get(element);
+//             if (cachedStyle.fontSize) {
+//                 element.style.fontSize = cachedStyle.fontSize;
+//             }
+//         }
+//         element = element.parentElement;
+//     }
+// });
+
+// // Optional: Clean up cache periodically
+// function cleanStyleCache() {
+//     for (let [element, styles] of styleCache.entries()) {
+//         if (!document.contains(element)) {
+//             styleCache.delete(element);
+//         }
+//     }
+// }
+
+// // Clean cache every minute
+// setInterval(cleanStyleCache, 60000);
+
+document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+  if (!selectedElement) {
+      console.warn("⚠️ No block selected");
+      return;
+  }
+
+  const fontSize = this.value + "px";
+  const blockId = selectedElement.id;
+
+  // Create a style tag for this block's strong tags
+  let styleTag = document.getElementById(`style-${blockId}-strong-fontsize`);
+  if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = `style-${blockId}-strong-fontsize`;
+      document.head.appendChild(styleTag);
+  }
+
+  // Apply font-size to all strong tags within this block using CSS selector
+  styleTag.innerHTML = `
+      #${blockId} strong {
+          font-size: ${fontSize} !important;
+      }
+  `;
+
+  // Save modifications using the block ID
+  const css = {
+      "font-size": fontSize
+  };
+
+  await saveModifications(blockId, css);
+
+  console.log(`✅ Applied font-size: ${fontSize} to all bold words in block: ${blockId}`);
 });
-
-// Add a click event listener to maintain styles
-document.addEventListener("click", function(event) {
-    // Check if we have cached styles for any parent elements
-    let element = event.target;
-    while (element && element !== document.body) {
-        if (styleCache.has(element)) {
-            const cachedStyle = styleCache.get(element);
-            if (cachedStyle.fontSize) {
-                element.style.fontSize = cachedStyle.fontSize;
-            }
-        }
-        element = element.parentElement;
-    }
-});
-
-// Optional: Clean up cache periodically
-function cleanStyleCache() {
-    for (let [element, styles] of styleCache.entries()) {
-        if (!document.contains(element)) {
-            styleCache.delete(element);
-        }
-    }
-}
-
-// Clean cache every minute
-setInterval(cleanStyleCache, 60000);
 
 // font-size end
 
