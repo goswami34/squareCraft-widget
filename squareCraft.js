@@ -1771,57 +1771,96 @@ function handleUnbold(element) {
 
     // text-transform start
 
-    let lastSelectedTextTransformStrongElement = null;
+    // let lastSelectedTextTransformStrongElement = null;
 
-    document.addEventListener("mouseup", function() {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-            let range = selection.getRangeAt(0);
-            let container = range.commonAncestorContainer;
+    // document.addEventListener("mouseup", function() {
+    //     const selection = window.getSelection();
+    //     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+    //         let range = selection.getRangeAt(0);
+    //         let container = range.commonAncestorContainer;
             
-            // If the container is a text node, get its parent
-            if (container.nodeType === Node.TEXT_NODE) {
-                container = container.parentElement;
-            }
+    //         // If the container is a text node, get its parent
+    //         if (container.nodeType === Node.TEXT_NODE) {
+    //             container = container.parentElement;
+    //         }
             
-            // Check if selection is within a strong tag
-            const strongElement = container.closest('strong');
-            if (strongElement) {
-              lastSelectedTextTransformStrongElement = strongElement;
-                console.log("✅ Selected text inside <strong>:", strongElement.textContent);
-            } else {
-              lastSelectedTextTransformStrongElement = null;
-            }
-        }
-    });
+    //         // Check if selection is within a strong tag
+    //         const strongElement = container.closest('strong');
+    //         if (strongElement) {
+    //           lastSelectedTextTransformStrongElement = strongElement;
+    //             console.log("✅ Selected text inside <strong>:", strongElement.textContent);
+    //         } else {
+    //           lastSelectedTextTransformStrongElement = null;
+    //         }
+    //     }
+    // });
 
-      document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
-        textTransform.addEventListener("click", async function() {
-            if (!lastSelectedTextTransformStrongElement) {
-                console.warn("⚠️ No bold text selected");
-                return;
-            }
+    //   document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
+    //     textTransform.addEventListener("click", async function() {
+    //         if (!lastSelectedTextTransformStrongElement) {
+    //             console.warn("⚠️ No bold text selected");
+    //             return;
+    //         }
     
-            // Ensure the strong element has an ID
-            if (!lastSelectedTextTransformStrongElement.id) {
-                lastSelectedTextTransformStrongElement.id = `text-transform-${Date.now()}`;
-            }
+    //         // Ensure the strong element has an ID
+    //         if (!lastSelectedTextTransformStrongElement.id) {
+    //             lastSelectedTextTransformStrongElement.id = `text-transform-${Date.now()}`;
+    //         }
     
-            const transform = this.getAttribute("data-transform");
-            let css = { "text-transform": transform };
+    //         const transform = this.getAttribute("data-transform");
+    //         let css = { "text-transform": transform };
             
-            // Apply styles to the strong element
-            applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
+    //         // Apply styles to the strong element
+    //         applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
             
-            // Clean up any duplicate spans
-            cleanupDuplicateSpans(lastSelectedTextTransformStrongElement.id);
+    //         // Clean up any duplicate spans
+    //         cleanupDuplicateSpans(lastSelectedTextTransformStrongElement.id);
             
-            // Save modifications
-            await saveModifications(lastSelectedTextTransformStrongElement.id, css);
+    //         // Save modifications
+    //         await saveModifications(lastSelectedTextTransformStrongElement.id, css);
             
-            console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformStrongElement.textContent);
-        });
-    });
+    //         console.log(`✅ Applied ${transform} to bold text:`, lastSelectedTextTransformStrongElement.textContent);
+    //     });
+    // });
+
+    document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
+      textTransform.addEventListener("click", async function() {
+          if (!selectedElement) {
+              console.warn("⚠️ No block selected");
+              return;
+          }
+  
+          // Get all strong elements within the selected block
+          const strongElements = selectedElement.querySelectorAll('strong');
+          if (strongElements.length === 0) {
+              console.warn("⚠️ No bold text found in the selected block");
+              return;
+          }
+  
+          const transform = this.getAttribute("data-transform");
+          const css = { "text-transform": transform };
+  
+          // Apply to all strong elements in the block
+          for (const strongElement of strongElements) {
+              // Ensure each strong element has an ID
+              if (!strongElement.id) {
+                  strongElement.id = `text-transform-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+              }
+  
+              // Apply styles to each strong element
+              applyStylesToElement(strongElement.id, css);
+  
+              // Clean up any duplicate spans
+              cleanupDuplicateSpans(strongElement.id);
+  
+              // Save modifications for each strong element
+              await saveModifications(strongElement.id, css);
+          }
+  
+          console.log(`✅ Applied ${transform} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
+      });
+  });
+  
 
     // Reset text-transform
       const undoButton = document.querySelector(
