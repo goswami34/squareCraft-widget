@@ -1145,56 +1145,162 @@ fontfamilies();
 
 
   // font weight code start here
-  let lastSelectedFontWeightStrong = null;
 
-  // 2. Update the mouseup event listener to track bold text selection for font-weight
-  document.addEventListener("mouseup", function () {
-      const selection = window.getSelection();
+
+  // let lastSelectedFontWeightStrong = null;
+
+  // // 2. Update the mouseup event listener to track bold text selection for font-weight
+  // document.addEventListener("mouseup", function () {
+  //     const selection = window.getSelection();
       
-      if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-          let range = selection.getRangeAt(0);
-          let parentElement = range.commonAncestorContainer;
+  //     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+  //         let range = selection.getRangeAt(0);
+  //         let parentElement = range.commonAncestorContainer;
   
-          // If the selected text is a text node, get its parent element
-          if (parentElement.nodeType === Node.TEXT_NODE) {
-              parentElement = parentElement.parentElement;
-          }
+  //         // If the selected text is a text node, get its parent element
+  //         if (parentElement.nodeType === Node.TEXT_NODE) {
+  //             parentElement = parentElement.parentElement;
+  //         }
   
-          // Check if the parent or an ancestor is a <strong> tag
-          const strongElement = parentElement.closest("strong");
+  //         // Check if the parent or an ancestor is a <strong> tag
+  //         const strongElement = parentElement.closest("strong");
           
-          if (strongElement) {
-              lastSelectedFontWeightStrong = strongElement;
-              console.log("✅ Selected text inside <strong> for font-weight: ", strongElement.textContent);
-          } else {
-              lastSelectedFontWeightStrong = null;
-          }
+  //         if (strongElement) {
+  //             lastSelectedFontWeightStrong = strongElement;
+  //             console.log("✅ Selected text inside <strong> for font-weight: ", strongElement.textContent);
+  //         } else {
+  //             lastSelectedFontWeightStrong = null;
+  //         }
+  //     }
+  // });
+
+
+  // document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
+  //   if (!lastSelectedFontWeightStrong) {
+  //       console.warn("⚠️ Please select bold text to apply font-weight");
+  //       return;
+  //   }
+
+  //   // Ensure the strong element has an ID
+  //   if (!lastSelectedFontWeightStrong.id) {
+  //       lastSelectedFontWeightStrong.id = `font-weight-${Date.now()}`;
+  //   }
+
+  //   const selectedWeight = this.value;
+  //   let css = { "font-weight": selectedWeight };
+
+  //   // Apply styles to the strong element
+  //   applyStylesToElement(lastSelectedFontWeightStrong.id, css);
+
+  //   // Save modifications
+  //   await saveModifications(lastSelectedFontWeightStrong.id, css);
+
+  //   console.log("🎨 Applied font-weight:", selectedWeight, "to bold text:", lastSelectedFontWeightStrong.textContent);
+  // });
+
+  // First, let's modify the block click handler to track all strong elements within the clicked block
+document.body.addEventListener("click", (event) => {
+  let block = event.target.closest('[id^="block-"]');
+  if (!block) return;
+
+  if (selectedElement) selectedElement.style.outline = "";
+  selectedElement = block;
+  selectedElement.style.outline = "2px dashed #EF7C2F";
+
+  // Find all strong elements within the clicked block
+  const strongElements = block.querySelectorAll('strong');
+  console.log(`✅ Selected Block: ${block.id} with ${strongElements.length} bold words`);
+});
+
+// Modify the font-weight change handler to apply to all strong elements in the selected block
+document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
+  if (!selectedElement) {
+      console.warn("⚠️ No block selected");
+      return;
+  }
+
+  // Get all strong elements within the selected block
+  const strongElements = selectedElement.querySelectorAll('strong');
+  if (strongElements.length === 0) {
+      console.warn("⚠️ No bold text found in the selected block");
+      return;
+  }
+
+  const selectedWeight = this.value;
+  const css = { "font-weight": selectedWeight };
+
+  // Apply to all strong elements in the block
+  for (const strongElement of strongElements) {
+      // Ensure each strong element has an ID
+      if (!strongElement.id) {
+          strongElement.id = `font-weight-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       }
-  });
 
+      // Apply styles to each strong element
+      applyStylesToElement(strongElement.id, css);
 
-  document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
-    if (!lastSelectedFontWeightStrong) {
-        console.warn("⚠️ Please select bold text to apply font-weight");
-        return;
-    }
+      // Save modifications for each strong element
+      await saveModifications(strongElement.id, css);
+  }
 
-    // Ensure the strong element has an ID
-    if (!lastSelectedFontWeightStrong.id) {
-        lastSelectedFontWeightStrong.id = `font-weight-${Date.now()}`;
-    }
+  console.log(`✅ Applied font-weight: ${selectedWeight} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
+});
 
-    const selectedWeight = this.value;
-    let css = { "font-weight": selectedWeight };
+// Similarly, modify the font-family change handler
+document.getElementById("squareCraft-font-family").addEventListener("change", async function() {
+  if (!selectedElement) {
+      console.warn("⚠️ No block selected");
+      return;
+  }
 
-    // Apply styles to the strong element
-    applyStylesToElement(lastSelectedFontWeightStrong.id, css);
+  const strongElements = selectedElement.querySelectorAll('strong');
+  if (strongElements.length === 0) {
+      console.warn("⚠️ No bold text found in the selected block");
+      return;
+  }
 
-    // Save modifications
-    await saveModifications(lastSelectedFontWeightStrong.id, css);
+  const selectedFont = this.value;
+  const css = { "font-family": selectedFont };
 
-    console.log("🎨 Applied font-weight:", selectedWeight, "to bold text:", lastSelectedFontWeightStrong.textContent);
-  });
+  for (const strongElement of strongElements) {
+      if (!strongElement.id) {
+          strongElement.id = `font-family-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      applyStylesToElement(strongElement.id, css);
+      await saveModifications(strongElement.id, css);
+  }
+
+  console.log(`✅ Applied font-family: ${selectedFont} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
+});
+
+// Modify the font-size change handler
+document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
+  if (!selectedElement) {
+      console.warn("⚠️ No block selected");
+      return;
+  }
+
+  const strongElements = selectedElement.querySelectorAll('strong');
+  if (strongElements.length === 0) {
+      console.warn("⚠️ No bold text found in the selected block");
+      return;
+  }
+
+  const fontSize = this.value + "px";
+  const css = { "font-size": fontSize };
+
+  for (const strongElement of strongElements) {
+      if (!strongElement.id) {
+          strongElement.id = `font-size-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      applyStylesToElement(strongElement.id, css);
+      await saveModifications(strongElement.id, css);
+  }
+
+  console.log(`✅ Applied font-size: ${fontSize} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
+});
 
 
   // font weight code end here
