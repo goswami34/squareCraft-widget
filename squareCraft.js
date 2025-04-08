@@ -1628,103 +1628,156 @@ function clearPendingChanges() {
     //     });
     // });
 
+    // document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
+    //   textTransform.addEventListener("click", async function() {
+    //       if (!selectedElement) {
+    //           console.warn("⚠️ No block selected");
+    //           return;
+    //       }
+  
+    //       // Get all strong elements within the selected block
+    //       const strongElements = selectedElement.querySelectorAll('strong');
+    //       if (strongElements.length === 0) {
+    //           console.warn("⚠️ No bold text found in the selected block");
+    //           return;
+    //       }
+  
+    //       const transform = this.getAttribute("data-transform");
+    //       const css = { "text-transform": transform };
+  
+    //       // Apply to all strong elements in the block
+    //       for (const strongElement of strongElements) {
+    //           // Ensure each strong element has an ID
+    //           if (!strongElement.id) {
+    //               strongElement.id = `text-transform-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    //           }
+  
+    //           // Apply styles to each strong element
+    //           applyStylesToElement(strongElement.id, css);
+  
+    //           // Clean up any duplicate spans
+    //           cleanupDuplicateSpans(strongElement.id);
+  
+    //           // Save modifications for each strong element
+    //           await saveModifications(strongElement.id, css);
+    //       }
+  
+    //       console.log(`✅ Applied ${transform} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
+    //   });
+    // });
+
+    // // Modify the text-transform reset button handler
+    // const undoButton = document.querySelector(
+    //   ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer"
+    // );
+
+    // undoButton.addEventListener("click", async function() {
+    // if (!selectedElement) {
+    //     console.warn("⚠️ No block selected");
+    //     return;
+    // }
+
+    // // Get all strong elements within the selected block
+    // const strongElements = selectedElement.querySelectorAll('strong');
+    //   if (strongElements.length === 0) {
+    //       console.warn("⚠️ No bold text found in the selected block");
+    //       return;
+    //   }
+
+    //   const css = { "text-transform": "none" };
+
+    //   // Apply reset to all strong elements in the block
+    //   for (const strongElement of strongElements) {
+    //       // Ensure each strong element has an ID
+    //       if (!strongElement.id) {
+    //           strongElement.id = `text-transform-reset-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    //       }
+
+    //       // Apply reset styles to each strong element
+    //       applyStylesToElement(strongElement.id, css);
+
+    //       // Save the reset state for each strong element
+    //       await saveModifications(strongElement.id, css);
+    //   }
+
+    //   console.log(`🔄 Reset text transform for ${strongElements.length} bold words in block: ${selectedElement.id}`);
+    // });
+
+    // Modify the text-transform handler
     document.querySelectorAll(".squsareCraft-text-transform").forEach((textTransform) => {
       textTransform.addEventListener("click", async function() {
           if (!selectedElement) {
               console.warn("⚠️ No block selected");
               return;
           }
-  
-          // Get all strong elements within the selected block
-          const strongElements = selectedElement.querySelectorAll('strong');
-          if (strongElements.length === 0) {
-              console.warn("⚠️ No bold text found in the selected block");
-              return;
-          }
-  
+
           const transform = this.getAttribute("data-transform");
-          const css = { "text-transform": transform };
-  
-          // Apply to all strong elements in the block
-          for (const strongElement of strongElements) {
-              // Ensure each strong element has an ID
-              if (!strongElement.id) {
-                  strongElement.id = `text-transform-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-              }
-  
-              // Apply styles to each strong element
-              applyStylesToElement(strongElement.id, css);
-  
-              // Clean up any duplicate spans
-              cleanupDuplicateSpans(strongElement.id);
-  
-              // Save modifications for each strong element
-              await saveModifications(strongElement.id, css);
+          const blockId = selectedElement.id;
+
+          // Create a style tag for this block's strong tags
+          let styleTag = document.getElementById(`style-${blockId}-strong-texttransform`);
+          if (!styleTag) {
+              styleTag = document.createElement("style");
+              styleTag.id = `style-${blockId}-strong-texttransform`;
+              document.head.appendChild(styleTag);
           }
-  
-          console.log(`✅ Applied ${transform} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
+
+          // Apply text-transform to all strong tags within this block using CSS selector
+          styleTag.innerHTML = `
+              #${blockId} strong {
+                  text-transform: ${transform} !important;
+              }
+          `;
+
+          // Save modifications using the block ID
+          const css = {
+              "text-transform": transform
+          };
+
+          await saveModifications(blockId, css);
+
+          console.log(`✅ Applied text-transform: ${transform} to all bold words in block: ${blockId}`);
       });
     });
 
     // Modify the text-transform reset button handler
-const undoButton = document.querySelector(
-  ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer"
-);
+    const undoButton = document.querySelector(
+      ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer"
+    );
 
-undoButton.addEventListener("click", async function() {
-  if (!selectedElement) {
-      console.warn("⚠️ No block selected");
-      return;
-  }
+    undoButton.addEventListener("click", async function() {
+      if (!selectedElement) {
+          console.warn("⚠️ No block selected");
+          return;
+      }
 
-  // Get all strong elements within the selected block
-  const strongElements = selectedElement.querySelectorAll('strong');
-    if (strongElements.length === 0) {
-        console.warn("⚠️ No bold text found in the selected block");
-        return;
-    }
+      const blockId = selectedElement.id;
+      
+      // Remove the style tag or set text-transform to none
+      let styleTag = document.getElementById(`style-${blockId}-strong-texttransform`);
+      if (styleTag) {
+          styleTag.innerHTML = `
+              #${blockId} strong {
+                  text-transform: none !important;
+              }
+          `;
+      }
 
-    const css = { "text-transform": "none" };
+      // Save the reset state
+      const css = {
+          "text-transform": "none"
+      };
 
-    // Apply reset to all strong elements in the block
-    for (const strongElement of strongElements) {
-        // Ensure each strong element has an ID
-        if (!strongElement.id) {
-            strongElement.id = `text-transform-reset-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        }
+      await saveModifications(blockId, css);
 
-        // Apply reset styles to each strong element
-        applyStylesToElement(strongElement.id, css);
-
-        // Save the reset state for each strong element
-        await saveModifications(strongElement.id, css);
-    }
-
-    console.log(`🔄 Reset text transform for ${strongElements.length} bold words in block: ${selectedElement.id}`);
-  });
+      console.log(`🔄 Reset text transform for all bold words in block: ${blockId}`);
+    });
   
 
     // Reset text-transform
       // const undoButton = document.querySelector(
       //   ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer"
       // );
-
-      // undoButton.addEventListener("click", async function() {
-      //   if (!lastSelectedTextTransformStrongElement) {
-      //       console.warn("⚠️ No bold text selected");
-      //       return;
-      //   }
-
-      //   let css = { "text-transform": "none" };
-        
-      //   // Apply reset styles
-      //   applyStylesToElement(lastSelectedTextTransformStrongElement.id, css);
-        
-      //   // Save the reset state
-      //   await saveModifications(lastSelectedTextTransformStrongElement.id, css);
-        
-      //   console.log("🔄 Reset text transform for bold text:", lastSelectedTextTransformStrongElement.textContent);
-      // });
 
     // text-transform end
     //   hover code start here
