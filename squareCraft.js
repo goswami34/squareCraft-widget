@@ -1053,59 +1053,6 @@ fontfamilies();
 
   // font weight code start here
 
-
-  // let lastSelectedFontWeightStrong = null;
-
-  // // 2. Update the mouseup event listener to track bold text selection for font-weight
-  // document.addEventListener("mouseup", function () {
-  //     const selection = window.getSelection();
-      
-  //     if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
-  //         let range = selection.getRangeAt(0);
-  //         let parentElement = range.commonAncestorContainer;
-  
-  //         // If the selected text is a text node, get its parent element
-  //         if (parentElement.nodeType === Node.TEXT_NODE) {
-  //             parentElement = parentElement.parentElement;
-  //         }
-  
-  //         // Check if the parent or an ancestor is a <strong> tag
-  //         const strongElement = parentElement.closest("strong");
-          
-  //         if (strongElement) {
-  //             lastSelectedFontWeightStrong = strongElement;
-  //             console.log("✅ Selected text inside <strong> for font-weight: ", strongElement.textContent);
-  //         } else {
-  //             lastSelectedFontWeightStrong = null;
-  //         }
-  //     }
-  // });
-
-
-  // document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
-  //   if (!lastSelectedFontWeightStrong) {
-  //       console.warn("⚠️ Please select bold text to apply font-weight");
-  //       return;
-  //   }
-
-  //   // Ensure the strong element has an ID
-  //   if (!lastSelectedFontWeightStrong.id) {
-  //       lastSelectedFontWeightStrong.id = `font-weight-${Date.now()}`;
-  //   }
-
-  //   const selectedWeight = this.value;
-  //   let css = { "font-weight": selectedWeight };
-
-  //   // Apply styles to the strong element
-  //   applyStylesToElement(lastSelectedFontWeightStrong.id, css);
-
-  //   // Save modifications
-  //   await saveModifications(lastSelectedFontWeightStrong.id, css);
-
-  //   console.log("🎨 Applied font-weight:", selectedWeight, "to bold text:", lastSelectedFontWeightStrong.textContent);
-  // });
-
-  // First, let's modify the block click handler to track all strong elements within the clicked block
 document.body.addEventListener("click", (event) => {
   let block = event.target.closest('[id^="block-"]');
   if (!block) return;
