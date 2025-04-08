@@ -1192,38 +1192,99 @@ document.body.addEventListener("click", (event) => {
 });
 
 // Modify the font-weight change handler to apply to all strong elements in the selected block
+// document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
+//   if (!selectedElement) {
+//       console.warn("⚠️ No block selected");
+//       return;
+//   }
+
+//   // Get all strong elements within the selected block
+//   const strongElements = selectedElement.querySelectorAll('strong');
+//   if (strongElements.length === 0) {
+//       console.warn("⚠️ No bold text found in the selected block");
+//       return;
+//   }
+
+//   const selectedWeight = this.value;
+//   const css = { "font-weight": selectedWeight };
+
+//   // Apply to all strong elements in the block
+//   for (const strongElement of strongElements) {
+//       // Ensure each strong element has an ID
+//       if (!strongElement.id) {
+//           strongElement.id = `font-weight-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+//       }
+
+//       // Apply styles to each strong element
+//       applyStylesToElement(strongElement.id, css);
+
+//       // Save modifications for each strong element
+//       await saveModifications(strongElement.id, css);
+//   }
+
+//   console.log(`✅ Applied font-weight: ${selectedWeight} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
+// });
+
+// 2. Modify the font-weight change handler
 document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
   if (!selectedElement) {
       console.warn("⚠️ No block selected");
       return;
   }
 
-  // Get all strong elements within the selected block
-  const strongElements = selectedElement.querySelectorAll('strong');
-  if (strongElements.length === 0) {
-      console.warn("⚠️ No bold text found in the selected block");
-      return;
-  }
-
   const selectedWeight = this.value;
-  const css = { "font-weight": selectedWeight };
+  const blockId = selectedElement.id;
 
-  // Apply to all strong elements in the block
-  for (const strongElement of strongElements) {
-      // Ensure each strong element has an ID
-      if (!strongElement.id) {
-          strongElement.id = `font-weight-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      }
-
-      // Apply styles to each strong element
-      applyStylesToElement(strongElement.id, css);
-
-      // Save modifications for each strong element
-      await saveModifications(strongElement.id, css);
+  // Create a style tag for this block's strong tags
+  let styleTag = document.getElementById(`style-${blockId}-strong`);
+  if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = `style-${blockId}-strong`;
+      document.head.appendChild(styleTag);
   }
 
-  console.log(`✅ Applied font-weight: ${selectedWeight} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
+  // Apply font-weight to all strong tags within this block using CSS selector
+  styleTag.innerHTML = `
+      #${blockId} strong {
+          font-weight: ${selectedWeight} !important;
+      }
+  `;
+
+  // Save modifications using the block ID
+  const css = {
+      "font-weight": selectedWeight
+  };
+
+  await saveModifications(blockId, css);
+
+  console.log(`✅ Applied font-weight: ${selectedWeight} to all bold words in block: ${blockId}`);
 });
+
+// 3. Add a function to apply saved styles on page load
+async function applySavedStyles() {
+  const savedStyles = await fetchModifications();
+  if (!savedStyles) return;
+
+  savedStyles.forEach(style => {
+      const blockId = style.elementId;
+      const weight = style.css["font-weight"];
+      
+      if (weight) {
+          let styleTag = document.getElementById(`style-${blockId}-strong`);
+          if (!styleTag) {
+              styleTag = document.createElement("style");
+              styleTag.id = `style-${blockId}-strong`;
+              document.head.appendChild(styleTag);
+          }
+          
+          styleTag.innerHTML = `
+              #${blockId} strong {
+                  font-weight: ${weight} !important;
+              }
+          `;
+      }
+  });
+}
 
 // font family code start here
 // document.getElementById("squareCraft-font-family").addEventListener("change", async function() {
