@@ -1246,72 +1246,7 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
       });
     });
 
-  
 
-    // document.querySelectorAll(".elements-font-style").forEach((btn) => {
-    //   btn.addEventListener("click", function () {
-    //     if (!selectedElement) {
-    //       console.warn("⚠️ No element selected to apply text decoration.fsdsd");
-    //       return;
-    //     }
-
-    //     let styleType = this.dataset.style;
-    //     let css = {};
-
-    //     if (styleType === "bold") {
-    //       let currentWeight = parseInt(
-    //         window.getComputedStyle(selectedElement).fontWeight,
-    //         10
-    //       );
-    //       css["font-weight"] = currentWeight >= 700 ? "900" : "700";
-    //     } else if (styleType === "italic") {
-    //       let currentStyle = window.getComputedStyle(selectedElement).fontStyle;
-    //       css["font-style"] = currentStyle === "italic" ? "italic" : "italic";
-    //     } else {
-    //       let currentDecoration =
-    //         window.getComputedStyle(selectedElement).textDecorationLine;
-    //       if (styleType === "underline") {
-    //         css["text-decoration"] = currentDecoration.includes("underline")
-    //           ? "none"
-    //           : "underline";
-    //       } else if (styleType === "dotted") {
-    //         css["text-decoration"] = currentDecoration.includes("dotted")
-    //           ? "none"
-    //           : "underline dotted";
-    //       } else if (styleType === "line-through") {
-    //         css["text-decoration"] = currentDecoration.includes("line-through")
-    //           ? "none"
-    //           : "line-through";
-    //       }
-    //     }
-
-    //     applyStylesToElement(selectedElement.id, css);
-    //     saveModifications(selectedElement.id, css);
-    //   });
-    // });
-
-    // const fontStyleUndoButton = document.querySelector(
-    //   ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-font-style.squareCraft-cursor-pointer"
-    // );
-
-    // fontStyleUndoButton.addEventListener("click", async function () {
-    //   if (!selectedElement) return;
-
-    //   // Reset font styles
-    //   let css = {
-    //     "font-weight": "400", // Reset to Regular (default)
-    //     "font-style": "normal", // Reset to normal (default)
-    //     "text-decoration": "none", // Remove underline, dotted, or line-through
-    //   };
-
-    //   // Apply styles to the selected element
-    //   applyStylesToElement(selectedElement.id, css);
-
-    //   // Save the reset modifications
-    //   await saveModifications(selectedElement.id, css);
-
-    //   console.log("🛑 Font styles reset for:", selectedElement.id);
-    // });
 
     // Modify the text decoration handler
     document.querySelectorAll(".elements-font-style").forEach((btn) => {
@@ -1578,76 +1513,175 @@ function clearPendingChanges() {
     });
     
     // letter spacing start
+    //   function initializeLetterSpacing() {
+    //     const letterSpacingContainer = document.querySelector('.squareCraft-Letter-spacing-container');
+    //     const letterSpacingDropdown = document.getElementById('squareCraftLetterSpacingDropdown');
+    //     const letterSpacingOptions = document.getElementById('squareCraftLetterSpacingOptions');
+    //     const letterSpacingInput = document.querySelector('.squareCraft-Letter-spacing-input');
+    
+    //     if (!letterSpacingContainer || !letterSpacingDropdown || !letterSpacingOptions || !letterSpacingInput) {
+    //         console.warn("⚠️ Letter spacing elements not found");
+    //         return;
+    //     }
+    
+    //     // Toggle dropdown visibility
+    //     letterSpacingDropdown.addEventListener('click', (e) => {
+    //         e.stopPropagation();
+    //         letterSpacingOptions.classList.toggle('squareCraft-hidden');
+    //     });
+    
+    //     // Handle option selection
+    //     letterSpacingOptions.querySelectorAll('.squareCraft-dropdown-item').forEach(option => {
+    //         option.addEventListener('click', async (e) => {
+    //             const value = e.target.dataset.value;
+    //             letterSpacingInput.value = value;
+    //             letterSpacingOptions.classList.add('squareCraft-hidden');
+    
+    //             if (selectedElement) {
+    //                 // Apply letter spacing to the selected block
+    //                 let css = { "letter-spacing": `${value}px` };
+    //                 applyStylesToElement(selectedElement.id, css);
+                    
+    //                 // Save modifications
+    //                 await saveModifications(selectedElement.id, css);
+                    
+    //                 console.log("🎨 Applied letter spacing:", value, "px to block:", selectedElement.id);
+    //             } else {
+    //                 console.warn("⚠️ Please select a block to apply letter spacing");
+    //             }
+    //         });
+    //     });
+    
+    //     // Handle manual input
+    //     letterSpacingInput.addEventListener('input', async function() {
+    //         if (!selectedElement) {
+    //             console.warn("⚠️ Please select a block to apply letter spacing");
+    //             return;
+    //         }
+    
+    //         const value = this.value;
+    //         if (!value) return;
+    
+    //         // Apply letter spacing to the selected block
+    //         let css = { "letter-spacing": `${value}px` };
+    //         applyStylesToElement(selectedElement.id, css);
+            
+    //         // Save modifications
+    //         await saveModifications(selectedElement.id, css);
+            
+    //         console.log("🎨 Applied letter spacing:", value, "px to block:", selectedElement.id);
+    //     });
+    
+    //     // Close dropdown when clicking outside
+    //     document.addEventListener('click', (e) => {
+    //         if (!letterSpacingContainer.contains(e.target)) {
+    //             letterSpacingOptions.classList.add('squareCraft-hidden');
+    //         }
+    //     });
+    // }
+
+    //   document.addEventListener("DOMContentLoaded", function() {
+    //     initializeLetterSpacing();
+    //   });
+
     function initializeLetterSpacing() {
       const letterSpacingContainer = document.querySelector('.squareCraft-Letter-spacing-container');
       const letterSpacingDropdown = document.getElementById('squareCraftLetterSpacingDropdown');
       const letterSpacingOptions = document.getElementById('squareCraftLetterSpacingOptions');
       const letterSpacingInput = document.querySelector('.squareCraft-Letter-spacing-input');
-  
+    
       if (!letterSpacingContainer || !letterSpacingDropdown || !letterSpacingOptions || !letterSpacingInput) {
-          console.warn("⚠️ Letter spacing elements not found");
-          return;
+        console.warn("⚠️ Letter spacing elements not found");
+        return;
       }
-  
+    
       // Toggle dropdown visibility
       letterSpacingDropdown.addEventListener('click', (e) => {
-          e.stopPropagation();
-          letterSpacingOptions.classList.toggle('squareCraft-hidden');
+        e.stopPropagation();
+        letterSpacingOptions.classList.toggle('squareCraft-hidden');
       });
-  
+    
       // Handle option selection
       letterSpacingOptions.querySelectorAll('.squareCraft-dropdown-item').forEach(option => {
-          option.addEventListener('click', async (e) => {
-              const value = e.target.dataset.value;
-              letterSpacingInput.value = value;
-              letterSpacingOptions.classList.add('squareCraft-hidden');
-  
-              if (selectedElement) {
-                  // Apply letter spacing to the selected block
-                  let css = { "letter-spacing": `${value}px` };
-                  applyStylesToElement(selectedElement.id, css);
-                  
-                  // Save modifications
-                  await saveModifications(selectedElement.id, css);
-                  
-                  console.log("🎨 Applied letter spacing:", value, "px to block:", selectedElement.id);
-              } else {
-                  console.warn("⚠️ Please select a block to apply letter spacing");
+        option.addEventListener('click', async (e) => {
+          const value = e.target.dataset.value;
+          letterSpacingInput.value = value;
+          letterSpacingOptions.classList.add('squareCraft-hidden');
+    
+          if (selectedElement) {
+            const blockId = selectedElement.id;
+            
+            // Create a style tag for this block's strong tags
+            let styleTag = document.getElementById(`style-${blockId}-strong-letterspacing`);
+            if (!styleTag) {
+              styleTag = document.createElement("style");
+              styleTag.id = `style-${blockId}-strong-letterspacing`;
+              document.head.appendChild(styleTag);
+            }
+    
+            // Apply letter spacing to all strong tags within this block using CSS selector
+            styleTag.innerHTML = `
+              #${blockId} strong {
+                letter-spacing: ${value}px !important;
               }
-          });
+            `;
+    
+            // Save modifications using the block ID
+            const css = {
+              "letter-spacing": `${value}px`
+            };
+    
+            await saveModifications(blockId, css);
+    
+            console.log(`✅ Applied letter spacing: ${value}px to all bold words in block: ${blockId}`);
+          }
+        });
       });
-  
+    
       // Handle manual input
       letterSpacingInput.addEventListener('input', async function() {
-          if (!selectedElement) {
-              console.warn("⚠️ Please select a block to apply letter spacing");
-              return;
+        if (!selectedElement) {
+          console.warn("⚠️ Please select a block to apply letter spacing");
+          return;
+        }
+    
+        const value = this.value;
+        if (!value) return;
+    
+        const blockId = selectedElement.id;
+        
+        // Create a style tag for this block's strong tags
+        let styleTag = document.getElementById(`style-${blockId}-strong-letterspacing`);
+        if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = `style-${blockId}-strong-letterspacing`;
+          document.head.appendChild(styleTag);
+        }
+    
+        // Apply letter spacing to all strong tags within this block using CSS selector
+        styleTag.innerHTML = `
+          #${blockId} strong {
+            letter-spacing: ${value}px !important;
           }
-  
-          const value = this.value;
-          if (!value) return;
-  
-          // Apply letter spacing to the selected block
-          let css = { "letter-spacing": `${value}px` };
-          applyStylesToElement(selectedElement.id, css);
-          
-          // Save modifications
-          await saveModifications(selectedElement.id, css);
-          
-          console.log("🎨 Applied letter spacing:", value, "px to block:", selectedElement.id);
+        `;
+    
+        // Save modifications using the block ID
+        const css = {
+          "letter-spacing": `${value}px`
+        };
+    
+        await saveModifications(blockId, css);
+    
+        console.log(`✅ Applied letter spacing: ${value}px to all bold words in block: ${blockId}`);
       });
-  
+    
       // Close dropdown when clicking outside
       document.addEventListener('click', (e) => {
-          if (!letterSpacingContainer.contains(e.target)) {
-              letterSpacingOptions.classList.add('squareCraft-hidden');
-          }
+        if (!letterSpacingContainer.contains(e.target)) {
+          letterSpacingOptions.classList.add('squareCraft-hidden');
+        }
       });
-  }
-
-    document.addEventListener("DOMContentLoaded", function() {
-      initializeLetterSpacing();
-    });
+    }
 
     // letter spacing end
 
