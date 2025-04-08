@@ -574,6 +574,44 @@ function cleanupDuplicateSpans(elementId) {
                  </div>
               </div>
 
+              <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2">
+                <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center">
+                  <div class="squareCraft-flex squareCraft-px-2 squareCraft-items-center squareCraft-justify-between squareCraft-w-full">
+                    <input 
+                      type="number" 
+                      id="squareCraftLetterSpacing" 
+                      value="0" 
+                      min="0" 
+                      max="25" 
+                      class="squareCraft-font-light squareCraft-text-sm squareCraft-text-color-white squareCraft-bg-transparent squareCraft-w-full squareCraft-py-1px"
+                      style="width: 50px; padding: 4px;"
+                    >
+                    <div class="squareCraft-v-line"></div>
+                    <div class="squareCraft-dropdown-container" style="position: relative;">
+                      <img 
+                        id="squareCraftLetterSpacingDropdown"
+                        src="https://fatin-webefo.github.io/squareCraft-plugin/public/line-spacing.svg"
+                        class="squareCraft-cursor-pointer"
+                        style="padding: 4px;"
+                      >
+                      <div 
+                        id="squareCraftLetterSpacingOptions" 
+                        class="squareCraft-hidden squareCraft-absolute squareCraft-bg-3f3f3f squareCraft-border squareCraft-border-585858 squareCraft-rounded-6px"
+                        style="top: 100%; right: 0; width: 80px; max-height: 200px; overflow-y: auto; z-index: 1000;"
+                      >
+                        ${[2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 22, 24].map(value => `
+                          <div 
+                            class="squareCraft-dropdown-item squareCraft-py-1px squareCraft-text-center squareCraft-text-sm squareCraft-cursor-pointer squareCraft-text-color-white" 
+                            data-value="${value}"
+                            style="padding: 8px; hover:background-color: #4a4a4a;"
+                          >${value}px</div>
+                        `).join('')}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
 
               <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2">
                  <div class="squareCraft-flex squareCraft-col-span-6 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
