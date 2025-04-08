@@ -633,28 +633,7 @@ function cleanupDuplicateSpans(elementId) {
               </div>
 
               <div class="squareCraft-mt-2 squareCraft-grid squareCraft-px-2 squareCraft-w-full squareCraft-grid-cols-12 squareCraft-gap-2 ">
-                 <div class="squareCraft-flex squareCraft-col-span-5 squareCraft-justify-between squareCraft-border squareCraft-border-solid squareCraft-border-585858 squareCraft-rounded-6px squareCraft-items-center ">
-                    <div
-                       class="squareCraft-flex squareCraft-items-center squareCraft-justify-between squareCraft-w-full ">
-                       <img id="squareCraftTextAlignLeft" data-align="left"
-                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (1).svg"
-                          class="squareCraft-cursor-pointer alignment-icon   squareCraft-mx-auto"  alt="">
-                       <div class="squareCraft-v-line"></div>
-                       <img id="squareCraftTextAlignRight" data-align="right"
-                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (3).svg"
-                          class="squareCraft-cursor-pointer alignment-icon    squareCraft-mx-auto"  alt="">
-                       <div class="squareCraft-v-line"></div>
-                       <img id="squareCraftTextAlignCenter" data-align="center"
-                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (2).svg"
-                          class="squareCraft-cursor-pointer alignment-icon    squareCraft-mx-auto"  alt="">
-                       <div class="squareCraft-v-line"></div>
-                       <img id="squareCraftTextAlignJustify" data-align="justify"
-                          src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (4).svg"
-                          class="squareCraft-cursor-pointer alignment-icon    squareCraft-mx-auto "  alt="">
-                    </div>
-                 </div>
-
-
+                 
                  <div class="squareCraft-flex squareCraft-text-color-white squareCraft-justify-between squareCraft-col-span-3 
                     squareCraft-rounded-6px squareCraft-border squareCraft-border-solid squareCraft-border-585858 
                     squareCraft-items-center squareCraft-w-full ">
@@ -1246,33 +1225,33 @@ document.getElementById("squareCraftFontWeight").addEventListener("change", asyn
   console.log(`✅ Applied font-weight: ${selectedWeight} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
 });
 
-// Similarly, modify the font-family change handler
-document.getElementById("squareCraft-font-family").addEventListener("change", async function() {
-  if (!selectedElement) {
-      console.warn("⚠️ No block selected");
-      return;
-  }
+// font family code start here
+// document.getElementById("squareCraft-font-family").addEventListener("change", async function() {
+//   if (!selectedElement) {
+//       console.warn("⚠️ No block selected");
+//       return;
+//   }
 
-  const strongElements = selectedElement.querySelectorAll('strong');
-  if (strongElements.length === 0) {
-      console.warn("⚠️ No bold text found in the selected block");
-      return;
-  }
+//   const strongElements = selectedElement.querySelectorAll('strong');
+//   if (strongElements.length === 0) {
+//       console.warn("⚠️ No bold text found in the selected block");
+//       return;
+//   }
 
-  const selectedFont = this.value;
-  const css = { "font-family": selectedFont };
+//   const selectedFont = this.value;
+//   const css = { "font-family": selectedFont };
 
-  for (const strongElement of strongElements) {
-      if (!strongElement.id) {
-          strongElement.id = `font-family-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      }
+//   for (const strongElement of strongElements) {
+//       if (!strongElement.id) {
+//           strongElement.id = `font-family-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+//       }
 
-      applyStylesToElement(strongElement.id, css);
-      await saveModifications(strongElement.id, css);
-  }
+//       applyStylesToElement(strongElement.id, css);
+//       await saveModifications(strongElement.id, css);
+//   }
 
-  console.log(`✅ Applied font-family: ${selectedFont} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
-});
+//   console.log(`✅ Applied font-family: ${selectedFont} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
+// });
 
 // Modify the font-size change handler
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
