@@ -816,171 +816,291 @@ document.addEventListener("mouseup", function () {
 
 
 
-async function fontfamilies() {
-  const response = await fetch(
-    "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
-  );
-  const data = await response.json();
+// async function fontfamilies() {
+//   const response = await fetch(
+//     "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
+//   );
+//   const data = await response.json();
 
-  const fontDropdown = document.getElementById("squareCraft-font-family");
-  const fontWeightDropdown = document.getElementById("squareCraftFontWeight");
+//   const fontDropdown = document.getElementById("squareCraft-font-family");
+//   const fontWeightDropdown = document.getElementById("squareCraftFontWeight");
 
-  if (!fontDropdown || !fontWeightDropdown) {
-    console.error("Dropdown elements not found!");
-    return;
-  }
+//   if (!fontDropdown || !fontWeightDropdown) {
+//     console.error("Dropdown elements not found!");
+//     return;
+//   }
 
-  fontDropdown.style.position = "relative";
-  fontDropdown.style.width = "100%";
-  fontDropdown.style.border = "1px solid #585858";
-  fontDropdown.style.borderRadius = "6px";
-  fontDropdown.style.background = "#2c2c2c";
-  fontDropdown.style.color = "white";
-  fontDropdown.style.display = "flex";
-  fontDropdown.style.alignItems = "center";
-  fontDropdown.style.justifyContent = "space-between";
-  fontDropdown.style.cursor = "pointer";
+//   fontDropdown.style.position = "relative";
+//   fontDropdown.style.width = "100%";
+//   fontDropdown.style.border = "1px solid #585858";
+//   fontDropdown.style.borderRadius = "6px";
+//   fontDropdown.style.background = "#2c2c2c";
+//   fontDropdown.style.color = "white";
+//   fontDropdown.style.display = "flex";
+//   fontDropdown.style.alignItems = "center";
+//   fontDropdown.style.justifyContent = "space-between";
+//   fontDropdown.style.cursor = "pointer";
 
-  let selectedFontText = document.createElement("p");
-  selectedFontText.textContent = "Select a Font";
-  selectedFontText.style.flexGrow = "1";
-  selectedFontText.style.fontSize = "14px";
-  selectedFontText.classList.add("squareCraft-universal");
+//   let selectedFontText = document.createElement("p");
+//   selectedFontText.textContent = "Select a Font";
+//   selectedFontText.style.flexGrow = "1";
+//   selectedFontText.style.fontSize = "14px";
+//   selectedFontText.classList.add("squareCraft-universal");
 
-  const dropdownArrow = document.createElement("img");
-  dropdownArrow.src =
-    "https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg";
-  dropdownArrow.style.width = "12px";
-  dropdownArrow.style.height = "12px";
-  dropdownArrow.style.transform = "rotate(180deg)";
+//   const dropdownArrow = document.createElement("img");
+//   dropdownArrow.src =
+//     "https://fatin-webefo.github.io/squareCraft-Plugin/public/arrow.svg";
+//   dropdownArrow.style.width = "12px";
+//   dropdownArrow.style.height = "12px";
+//   dropdownArrow.style.transform = "rotate(180deg)";
 
-  fontDropdown.appendChild(selectedFontText);
-  fontDropdown.appendChild(dropdownArrow);
+//   fontDropdown.appendChild(selectedFontText);
+//   fontDropdown.appendChild(dropdownArrow);
 
-  const fontList = document.createElement("div");
-  fontList.style.position = "absolute";
-  fontList.style.top = "100%";
-  fontList.style.left = "0";
-  fontList.style.width = "100%";
-  fontList.style.background = "#2c2c2c";
-  fontList.style.border = "1px solid #585858";
-  fontList.style.borderRadius = "6px";
-  fontList.style.overflowY = "auto";
-  fontList.style.maxHeight = "200px";
-  fontList.style.display = "none";
-  fontList.style.zIndex = "1000";
+//   const fontList = document.createElement("div");
+//   fontList.style.position = "absolute";
+//   fontList.style.top = "100%";
+//   fontList.style.left = "0";
+//   fontList.style.width = "100%";
+//   fontList.style.background = "#2c2c2c";
+//   fontList.style.border = "1px solid #585858";
+//   fontList.style.borderRadius = "6px";
+//   fontList.style.overflowY = "auto";
+//   fontList.style.maxHeight = "200px";
+//   fontList.style.display = "none";
+//   fontList.style.zIndex = "1000";
 
-  // Populate font-family dropdown
-  data.items.forEach((font) => {
-    const option = document.createElement("div");
-    option.textContent = font.family;
-    option.style.padding = "8px";
-    option.style.cursor = "pointer";
-    option.style.fontFamily = font.family;
-    option.style.transition = "background 0.3s";
-    option.style.color = "white";
-    option.style.fontSize = "14px";
+//   // Populate font-family dropdown
+//   data.items.forEach((font) => {
+//     const option = document.createElement("div");
+//     option.textContent = font.family;
+//     option.style.padding = "8px";
+//     option.style.cursor = "pointer";
+//     option.style.fontFamily = font.family;
+//     option.style.transition = "background 0.3s";
+//     option.style.color = "white";
+//     option.style.fontSize = "14px";
 
-    option.addEventListener("mouseover", () => {
-      option.style.background = "#444";
-    });
+//     option.addEventListener("mouseover", () => {
+//       option.style.background = "#444";
+//     });
 
-    option.addEventListener("mouseout", () => {
-      option.style.background = "transparent";
-    });
+//     option.addEventListener("mouseout", () => {
+//       option.style.background = "transparent";
+//     });
 
-    // option.addEventListener("click", async () => {
-    //   if (!selectedElement) {
-    //     console.warn("⚠️ No element selected.");
-    //     return;
-    //   }
+//     // option.addEventListener("click", async () => {
+//     //   if (!selectedElement) {
+//     //     console.warn("⚠️ No element selected.");
+//     //     return;
+//     //   }
 
-    //   let selectedFont = font.family;
-    //   selectedFontText.textContent = selectedFont;
-    //   selectedFontText.style.fontFamily = selectedFont;
-    //   fontList.style.display = "none";
+//     //   let selectedFont = font.family;
+//     //   selectedFontText.textContent = selectedFont;
+//     //   selectedFontText.style.fontFamily = selectedFont;
+//     //   fontList.style.display = "none";
 
-    //   // Apply font-family immediately
-    //   let css = { "font-family": selectedFont };
-    //   applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
+//     //   // Apply font-family immediately
+//     //   let css = { "font-family": selectedFont };
+//     //   applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
 
-    //   // Save modifications immediately without waiting
-    //   await saveModifications(lastSelectedFontfamilyStrong.id, css);
+//     //   // Save modifications immediately without waiting
+//     //   await saveModifications(lastSelectedFontfamilyStrong.id, css);
 
-    //   console.log("🎨 Applied font:", selectedFont, "to", selectedElement.id);
+//     //   console.log("🎨 Applied font:", selectedFont, "to", selectedElement.id);
 
-    //   // Update font-weight dropdown dynamically
-    //   updateFontWeightDropdown(font.variants);
-    // });
+//     //   // Update font-weight dropdown dynamically
+//     //   updateFontWeightDropdown(font.variants);
+//     // });
 
-    option.addEventListener("click", async () => {
-      if (!lastSelectedFontfamilyStrong) {
-          console.warn("⚠️ Please select bold text to apply font-family");
-          return;
-      }
+//     option.addEventListener("click", async () => {
+//       if (!lastSelectedFontfamilyStrong) {
+//           console.warn("⚠️ Please select bold text to apply font-family");
+//           return;
+//       }
   
-      let selectedFont = font.family;
-      selectedFontText.textContent = selectedFont;
-      selectedFontText.style.fontFamily = selectedFont;
-      fontList.style.display = "none";
+//       let selectedFont = font.family;
+//       selectedFontText.textContent = selectedFont;
+//       selectedFontText.style.fontFamily = selectedFont;
+//       fontList.style.display = "none";
   
-      // Ensure the strong element has an ID
-      if (!lastSelectedFontfamilyStrong.id) {
-          lastSelectedFontfamilyStrong.id = `font-family-${Date.now()}`;
-      }
+//       // Ensure the strong element has an ID
+//       if (!lastSelectedFontfamilyStrong.id) {
+//           lastSelectedFontfamilyStrong.id = `font-family-${Date.now()}`;
+//       }
   
-      // Store the original text before applying styles
-      const originalText = lastSelectedFontfamilyStrong.textContent;
+//       // Store the original text before applying styles
+//       const originalText = lastSelectedFontfamilyStrong.textContent;
   
-      // Apply font-family to the strong element
-      let css = { "font-family": selectedFont };
-      applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
+//       // Apply font-family to the strong element
+//       let css = { "font-family": selectedFont };
+//       applyStylesToElement(lastSelectedFontfamilyStrong.id, css);
   
-      // Save modifications using your existing function
-      await saveModifications(lastSelectedFontfamilyStrong.id, css);
+//       // Save modifications using your existing function
+//       await saveModifications(lastSelectedFontfamilyStrong.id, css);
   
-      console.log("🎨 Applied font:", selectedFont, "to bold text:", originalText);
+//       console.log("🎨 Applied font:", selectedFont, "to bold text:", originalText);
   
-      // Update font-weight dropdown dynamically
-      updateFontWeightDropdown(font.variants);
-  });
+//       // Update font-weight dropdown dynamically
+//       updateFontWeightDropdown(font.variants);
+//   });
 
-    fontList.appendChild(option);
-  });
+//     fontList.appendChild(option);
+//   });
 
-  fontDropdown.appendChild(fontList);
+//   fontDropdown.appendChild(fontList);
 
-  fontDropdown.addEventListener("click", (event) => {
-    event.stopPropagation();
-    fontList.style.display =
-      fontList.style.display === "block" ? "none" : "block";
-  });
+//   fontDropdown.addEventListener("click", (event) => {
+//     event.stopPropagation();
+//     fontList.style.display =
+//       fontList.style.display === "block" ? "none" : "block";
+//   });
 
-  document.addEventListener("click", () => {
-    fontList.style.display = "none";
-  });
+//   document.addEventListener("click", () => {
+//     fontList.style.display = "none";
+//   });
 
-  // **Function to Update Font Weight Dropdown**
-  function updateFontWeightDropdown(variants) {
-    fontWeightDropdown.innerHTML = ""; // Clear existing options
+//   // **Function to Update Font Weight Dropdown**
+//   function updateFontWeightDropdown(variants) {
+//     fontWeightDropdown.innerHTML = ""; // Clear existing options
 
-    if (!variants || variants.length === 0) {
-      console.warn("No font weights found for the selected font.");
-      fontWeightDropdown.innerHTML = `<option value="400" selected>Regular (400)</option>`;
-      return;
-    }
+//     if (!variants || variants.length === 0) {
+//       console.warn("No font weights found for the selected font.");
+//       fontWeightDropdown.innerHTML = `<option value="400" selected>Regular (400)</option>`;
+//       return;
+//     }
 
-    variants.forEach((variant) => {
-      let weight = variant === "regular" ? "400" : variant; // Convert "regular" to 400
-      let option = document.createElement("option");
-      option.value = weight;
-      option.textContent = `Weight ${weight}`;
-      fontWeightDropdown.appendChild(option);
-    });
+//     variants.forEach((variant) => {
+//       let weight = variant === "regular" ? "400" : variant; // Convert "regular" to 400
+//       let option = document.createElement("option");
+//       option.value = weight;
+//       option.textContent = `Weight ${weight}`;
+//       fontWeightDropdown.appendChild(option);
+//     });
+//   }
+// }
+
+// fontfamilies();
+
+
+async function initializeFontFamilyDropdown() {
+  try {
+      const response = await fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk');
+      const data = await response.json();
+      const fontDropdown = document.getElementById("squareCraft-font-family");
+      const selectedFontText = fontDropdown.querySelector("p");
+
+      // Clear existing options
+      const fontList = fontDropdown.querySelector('.font-list');
+      if (fontList) fontList.remove();
+
+      // Create new font list container
+      const newFontList = document.createElement('div');
+      newFontList.className = 'font-list';
+      newFontList.style.position = 'absolute';
+      newFontList.style.top = '100%';
+      newFontList.style.left = '0';
+      newFontList.style.width = '100%';
+      newFontList.style.maxHeight = '200px';
+      newFontList.style.overflowY = 'auto';
+      newFontList.style.backgroundColor = '#2c2c2c';
+      newFontList.style.border = '1px solid #585858';
+      newFontList.style.borderRadius = '6px';
+      newFontList.style.zIndex = '1000';
+      newFontList.style.display = 'none';
+
+      // Populate font options
+      data.items.forEach(font => {
+          const option = document.createElement('div');
+          option.className = 'font-option';
+          option.textContent = font.family;
+          option.style.padding = '8px';
+          option.style.cursor = 'pointer';
+          option.style.fontFamily = font.family;
+          option.style.color = 'white';
+          option.style.fontSize = '14px';
+          option.dataset.font = font.family;
+
+          // Add hover effect
+          option.addEventListener('mouseover', () => {
+              option.style.backgroundColor = '#4a4a4a';
+          });
+          option.addEventListener('mouseout', () => {
+              option.style.backgroundColor = 'transparent';
+          });
+
+          // Handle font selection
+          option.addEventListener('click', async () => {
+              if (!selectedElement) {
+                  console.warn("⚠️ Please select a block first");
+                  return;
+              }
+
+              const blockId = selectedElement.id;
+              const selectedFont = font.family;
+              
+              // Create or update style tag for this block's strong tags
+              let styleTag = document.getElementById(`style-${blockId}-strong-fontfamily`);
+              if (!styleTag) {
+                  styleTag = document.createElement("style");
+                  styleTag.id = `style-${blockId}-strong-fontfamily`;
+                  document.head.appendChild(styleTag);
+              }
+
+              // Apply font-family to all strong tags within this block
+              styleTag.innerHTML = `
+                  #${blockId} strong {
+                      font-family: "${selectedFont}" !important;
+                  }
+              `;
+
+              // Save modifications
+              const css = {
+                  "font-family": selectedFont
+              };
+
+              await saveModifications(blockId, css);
+              console.log(`✅ Applied font-family: ${selectedFont} to all bold words in block: ${blockId}`);
+
+              // Update selected font display
+              selectedFontText.textContent = selectedFont;
+              selectedFontText.style.fontFamily = selectedFont;
+              newFontList.style.display = 'none';
+          });
+
+          newFontList.appendChild(option);
+      });
+
+      fontDropdown.appendChild(newFontList);
+
+      // Toggle font list visibility
+      fontDropdown.addEventListener('click', (e) => {
+          if (e.target !== newFontList) {
+              newFontList.style.display = newFontList.style.display === 'none' ? 'block' : 'none';
+          }
+      });
+
+      // Close font list when clicking outside
+      document.addEventListener('click', (e) => {
+          if (!fontDropdown.contains(e.target)) {
+              newFontList.style.display = 'none';
+          }
+      });
+
+  } catch (error) {
+      console.error("Error fetching fonts:", error);
   }
 }
 
-fontfamilies();
+// Initialize font dropdown when widget is created
+function createWidget() {
+  // ... existing widget creation code ...
+  
+  // Initialize font dropdown
+  initializeFontFamilyDropdown();
+}
+
+
 
 
   function attachEventListeners() {
