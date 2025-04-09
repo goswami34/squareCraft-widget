@@ -2,7 +2,7 @@ import {typoAllSelect} from "https://goswami34.github.io/squareCraft-widget/src/
 import {typoBoldSelect} from "https://goswami34.github.io/squareCraft-widget/src/components/Typo/typoBoldSelect.js"
 import {typoItalicSelect} from "https://goswami34.github.io/squareCraft-widget/src/components/Typo/typoItalicSelect.js"
 import {typoLinkSelect} from "https://goswami34.github.io/squareCraft-widget/src/components/Typo/typoLinkSelect.js"
-export function createHeadingDropdown(id, fontSizes = [], LetterSpacing = []) {
+export function createHeadingDropdown(id, fontSizes = [], LetterSpacing = [], fontFamily=[]) {
   return `
     <div id="${id}">
       <div class="sc-mt-2 sc-px-2 sc-gap-2">
@@ -31,7 +31,7 @@ export function createHeadingDropdown(id, fontSizes = [], LetterSpacing = []) {
 
        </div>
         <div class="sc-text-xs sc-text-gray-400 sc-mt-1 sc-hidden" id="scDesc-${id}-boldSelect">
-         ${typoBoldSelect( fontSizes, LetterSpacing)}
+         ${typoBoldSelect( fontSizes, LetterSpacing, fontFamily)}
 
       </div>
         <div class="sc-text-xs sc-text-gray-400 sc-mt-1 sc-hidden" id="scDesc-${id}-italicSelect"> 
