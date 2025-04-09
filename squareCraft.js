@@ -1439,7 +1439,7 @@ function initializeTextColor() {
       // Apply color to all strong tags within this block using CSS selector
       styleTag.innerHTML = `
           #${blockId} strong {
-              color: ${selectedColor} !important;
+              color: ${selectedColor} !important ;
           }
       `;
 
