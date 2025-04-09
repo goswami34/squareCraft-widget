@@ -82,11 +82,11 @@
 
     styleTag.innerHTML = cssText;
   }
-  const { getTextType } = await import("https://fatin-webefo.github.io/squareCraft-plugin/src/utils/getTextType.js");
-  const { handleBlockClick } = await import("https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleBlockClick.js");
-  const { handleAlignmentClick } = await import("https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleAlignmentClick.js");
-  const { handleTextColorClick } = await import("https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleTextColorClick.js");
-  const { typoTabSelect } = await import("https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/typoTabSelect.js");
+  const { getTextType } = await import("https://goswami34.github.io/squareCraft-widget/src/utils/getTextType.js");
+  const { handleBlockClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBlockClick.js");
+  const { handleAlignmentClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleAlignmentClick.js");
+  const { handleTextColorClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextColorClick.js");
+  const { typoTabSelect } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/typoTabSelect.js");
   
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
@@ -406,18 +406,18 @@
 
   try {
     const { injectNavbarIcon } = await import(
-      "https://fatin-webefo.github.io/squareCraft-plugin/injectNavbarIcon.js"
+      "https://goswami34.github.io/squareCraft-widget/injectNavbarIcon.js"
     );
     injectNavbarIcon();
   } catch (error) {
     console.error("🚨 Failed to load navbar icon script", error);
   }
 
-  const { loadCSS } = await import("https://fatin-webefo.github.io/squareCraft-plugin/src/utils/loadCSS.js");
+  const { loadCSS } = await import("https://goswami34.github.io/squareCraft-widget/src/utils/loadCSS.js");
 
 
   loadCSS(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css",
+    "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css",
     "sc_parentCSS"
   );
 
@@ -434,7 +434,7 @@
         return;
       }
       const module = await import(
-        "https://fatin-webefo.github.io/squareCraft-plugin/html.js"
+        "https://goswami34.github.io/squareCraft-widget/html.js"
       );
 
       if (module && module.html) {
@@ -719,7 +719,7 @@
 
     if (mobileContainer) {
       const existingLink = parent.document.querySelector(
-        'link[href="https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css"]'
+        'link[href="https://goswami34.github.io/squareCraft-widget/src/styles/parent.css"]'
       );
 
       if (!existingLink) {
@@ -727,7 +727,7 @@
         link.rel = "stylesheet";
         link.type = "text/css";
         link.href =
-          "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
+          "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
         parent.document.head.appendChild(link);
       }
 
