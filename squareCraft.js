@@ -418,7 +418,7 @@
 
   loadCSS(
     "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css",
-    "sc_parentCSS"
+    "sc_parentCSS "
   );
 
 
