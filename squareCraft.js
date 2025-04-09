@@ -1,11 +1,11 @@
 (async function squareCraft() {
   const Url = parent.document.location.href
   console.log("parent", Url)
-  const widgetScript = document.getElementById("sc-script");
+  const widgetScript = document.getElementById("squarecraft-script");
 
   if (!widgetScript) {
     console.error(
-      "❌ Widget script not found! Ensure the script tag exists with id 'sc-script'."
+      "❌ Widget script not found! Ensure the script tag exists with id 'squarecraft-script'."
     );
     return;
   }
