@@ -1608,12 +1608,24 @@ initializeTextColor();
         `;
     
         // Save modifications
-        const css = {
-          "letter-spacing": `${value}px`
-        };
+      
     
-        await saveModifications(blockId, css);
-        console.log(`✅ Applied letter spacing: ${value}px to all bold words in block: ${blockId}`);
+        document.getElementById("squareCraftPublish").addEventListener("click", async function() {
+          if (!selectedElement || !value) {
+              return;
+          }
+  
+          const blockId = selectedElement.id;
+          
+          // Save modifications
+            const css = {
+              "letter-spacing": `${value}px`
+            };
+  
+          await saveModifications(blockId, css);
+          console.log(`✅ Applied letter spacing: ${value}px to all bold words in block: ${blockId}`);
+      });
+
       }
     }
     
@@ -1709,12 +1721,6 @@ initializeTextColor();
       console.log(`🔄 Reset text transform for all bold words in block: ${blockId}`);
     });
   
-
-    // Reset text-transform
-      // const undoButton = document.querySelector(
-      //   ".squareCraft-rounded-6px.squareCraft-rotate-180.squareCraft-px-1_5.squsareCraft-text-transform.squareCraft-cursor-pointer"
-      // );
-
     // text-transform end
     //   hover code start here
     const hoverButton = document.querySelector(
