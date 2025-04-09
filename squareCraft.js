@@ -1660,13 +1660,19 @@ initializeTextColor();
           `;
 
           // Save modifications using the block ID
-          const css = {
+          document.getElementById("squareCraftPublish").addEventListener("click", async function() {
+            if (!selectedElement || !transform) {
+                return;
+            }
+    
+            const css = {
               "text-transform": transform
-          };
+            };
 
-          await saveModifications(blockId, css);
+            await saveModifications(blockId, css);
 
-          console.log(`✅ Applied text-transform: ${transform} to all bold words in block: ${blockId}`);
+            console.log(`✅ Applied text-transform: ${transform} to all bold words in block: ${blockId}`);
+        });  
       });
     });
 
