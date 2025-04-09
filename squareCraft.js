@@ -5,7 +5,7 @@
 
   if (!widgetScript) {
     console.error(
-      "❌ Widget script not found! Ensure the script tag exists with id 'sc-script'."
+      "❌ Widget script not found! Ensure the script tag exists with id 'sc-script'. "
     );
     return;
   }
