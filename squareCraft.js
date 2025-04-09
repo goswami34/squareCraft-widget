@@ -1,11 +1,11 @@
 (async function squareCraft() {
   const Url = parent.document.location.href
   console.log("parent", Url)
-  const widgetScript = document.getElementById("squarecraft-script");
+  const widgetScript = document.getElementById("sc-script");
 
   if (!widgetScript) {
     console.error(
-      "❌ Widget script not found! Ensure the script tag exists with id 'squarecraft-script'."
+      "❌ Widget script not found! Ensure the script tag exists with id 'sc-script'."
     );
     return;
   }
@@ -434,6 +434,8 @@
     widgetContainer.addEventListener("mousedown", startDrag);
     widgetContainer.addEventListener("touchstart", startDrag);
   }
+
+
   document.body.addEventListener("click", (e) => {
     const isInsideWidget = widgetContainer?.contains(e.target);
     const isToolbarIcon = e.target.closest(".sc-toolbar-icon");
@@ -456,84 +458,87 @@
   window.addEventListener("resize", adjustWidgetPosition);
   adjustWidgetPosition();
 
-  function injectIcon() {
-    function injectIconIntoTargetElements() {
-      const targets = parent.document.querySelectorAll(
-        ".tidILMJ7AVANuKwS:not(.sc-processed)"
-      );
-
-      targets.forEach((element) => {
-        element.classList.add("sc-processed");
-
-        const deleteButton = element.querySelector('[aria-label="Remove"]');
-        if (!deleteButton) {
-          console.warn("❌ Delete button not found, skipping:", element);
-          return;
-        }
-
-        if (element.querySelector(".sc-toolbar-icon")) return;
-        const clonedIcon = document.createElement("img");
-        clonedIcon.src = "https://i.ibb.co.com/kg9fn02s/Frame-33.png";
-        clonedIcon.alt = "sc";
-        clonedIcon.classList.add(
-          "sc-toolbar-icon",
-          "sc-z-99999"
-        );
-        clonedIcon.style.width = "35px";
-        clonedIcon.style.height = "35px";
-        clonedIcon.style.borderRadius = "20%";
-        clonedIcon.style.cursor = "pointer";
-        clonedIcon.style.backgroundColor = "white";
-        clonedIcon.style.marginLeft = "6px";
-        deleteButton.parentNode.insertBefore(
-          clonedIcon,
-          deleteButton.nextSibling
-        );
-
-        clonedIcon.addEventListener("click", function (event) {
-          event.stopPropagation();
-          event.preventDefault();
-
-          if (!widgetLoaded) {
-            createWidget().then(() => {
-              widgetContainer = document.getElementById(
-                "sc-widget-container"
-              );
-              if (widgetContainer) {
-                widgetContainer.style.display = "block";
-              } else {
-                console.error("❌ Widget container not found after creation.");
-              }
-            });
-          } else {
-            widgetContainer.style.display =
-              widgetContainer.style.display === "none" ? "block" : "none";
-          }
-        });
-      });
+ function injectIcon() {
+  async function waitForTargets(selector, maxRetries = 10, delay = 500) {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      const elements = parent.document.querySelectorAll(selector);
+      if (elements.length > 0) return elements;
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
-
-    const iframe = document.querySelector("iframe");
-    if (iframe) {
-      iframe.contentWindow.document.addEventListener("click", function (event) {
-        if (event.target.classList.contains("sc-admin-icon")) {
-          event.stopPropagation();
-          event.preventDefault();
-          toggleWidgetVisibility(event);
-        }
-      });
-    }
-
-    setTimeout(() => {
-      injectIconIntoTargetElements();
-    }, 1000);
-    injectIconIntoTargetElements();
-
-    const observer = new MutationObserver(() => {
-      injectIconIntoTargetElements();
-    });
-    observer.observe(parent.document.body, { childList: true, subtree: true });
+    console.warn("⏱️ Timeout: Target elements not found:", selector);
+    return [];
   }
+
+  async function injectIconIntoTargetElements() {
+    const targets = await waitForTargets(".tidILMJ7AVANuKwS:not(.sc-processed)");
+
+    targets.forEach((element) => {
+      element.classList.add("sc-processed");
+
+      const deleteButton = element.querySelector('[aria-label="Remove"]');
+      if (!deleteButton) {
+        console.warn("❌ Delete button not found, skipping:", element);
+        return;
+      }
+
+      if (element.querySelector(".sc-toolbar-icon")) return;
+
+      const clonedIcon = document.createElement("img");
+      clonedIcon.src = "https://i.ibb.co.com/kg9fn02s/Frame-33.png";
+      clonedIcon.alt = "sc";
+      clonedIcon.classList.add("sc-toolbar-icon", "sc-z-99999");
+      Object.assign(clonedIcon.style, {
+        width: "35px",
+        height: "35px",
+        borderRadius: "20%",
+        cursor: "pointer",
+        backgroundColor: "white",
+        marginLeft: "6px"
+      });
+
+      deleteButton.parentNode.insertBefore(clonedIcon, deleteButton.nextSibling);
+
+      clonedIcon.addEventListener("click", function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+
+        if (!widgetLoaded) {
+          createWidget().then(() => {
+            widgetContainer = document.getElementById("sc-widget-container");
+            if (widgetContainer) {
+              widgetContainer.style.display = "block";
+            } else {
+              console.error("❌ Widget container not found after creation.");
+            }
+          });
+        } else {
+          widgetContainer.style.display =
+            widgetContainer.style.display === "none" ? "block" : "none";
+        }
+      });
+    });
+  }
+
+  injectIconIntoTargetElements(); // run once at startup
+
+  const observer = new MutationObserver(() => {
+    injectIconIntoTargetElements(); // react to DOM changes
+  });
+
+  observer.observe(parent.document.body, { childList: true, subtree: true });
+
+  const iframe = document.querySelector("iframe");
+  if (iframe) {
+    iframe.contentWindow.document.addEventListener("click", function (event) {
+      if (event.target.classList.contains("sc-admin-icon")) {
+        event.stopPropagation();
+        event.preventDefault();
+        toggleWidgetVisibility(event);
+      }
+    });
+  }
+}
+
 
   function waitForNavBar(attempts = 0) {
     if (attempts > 10) {
