@@ -463,7 +463,7 @@
   async function createWidget() {
     try {
       const module = await import(
-        "https://fatin-webefo.github.io/squareCraft-plugin/html.js"
+        "https://goswami34.github.io/squareCraft-widget/html.js"
       );
       if (module && typeof module.html === "function") {
         const htmlString = module.html();
