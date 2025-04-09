@@ -120,101 +120,247 @@
   
 
 
+  // async function fetchModifications(retries = 3) {
+  //   const module = await import("https://fatin-webefo.github.io/squareCraft-plugin/html.js");
+  //   const htmlString = module.html();
+  
+  //   if (typeof htmlString === "string" && widgetContainer && widgetContainer.innerHTML.trim() === "") {
+  //     widgetContainer.innerHTML = htmlString;
+  //   }
+  
+  //   setTimeout(() => {
+  //     if (typeof module.initToggleSwitch === "function") {
+  //       module.initToggleSwitch();
+  //     }
+  //   }, 200);
+  
+  //   const isEnabled = localStorage.getItem("sc_enabled") !== "false";
+  
+  //   if (!isEnabled) {
+  //     return;
+  //   }
+  
+  //   const pageId = document.querySelector("article[data-page-sections]")?.getAttribute("data-page-sections");
+  //   if (!pageId) return;
+  
+  //   if (!token || !userId) {
+  //     console.warn("Missing authentication data");
+  //     return;
+  //   }
+  
+  //   try {
+  //     const response = await fetch(
+  //       `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           "Authorization": `Bearer ${token}`,
+  //         }
+  //       }
+  //     );
+  
+  //     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  
+  //     const data = await response.json();
+  
+  //     if (!data.modifications || !Array.isArray(data.modifications)) {
+  //       console.warn("⚠️ No modifications found or invalid format");
+  //       return;
+  //     }
+  
+  //     const modificationMap = new Map();
+  
+  //     data.modifications.forEach(mod => {
+  //       if (mod.pageId === pageId) {
+  //         mod.elements.forEach(elem => {
+  //           if (elem.css) {
+  //             modificationMap.set(elem.elementId, elem.css);
+  //           }
+  //         });
+  //       }
+  //     });
+  
+  //     const observer = new MutationObserver(() => {
+  //       modificationMap.forEach((css, elementId) => {
+  //         const element = document.getElementById(elementId);
+  //         if (element) {
+  //           Object.entries(css).forEach(([prop, value]) => {
+  //             element.style.setProperty(prop, value, "important");
+  //           });
+  
+  //           const nestedElements = element.querySelectorAll("h1, h2, h3, h4, p");
+  //           nestedElements.forEach(nestedElem => {
+  //             Object.entries(css).forEach(([prop, value]) => {
+  //               nestedElem.style.setProperty(prop, value, "important");
+  //             });
+  //           });
+  
+  //           if (!element.classList.contains("sc-font-modified")) {
+  //             element.classList.add("sc-font-modified");
+  //           }
+  
+  //           modificationMap.delete(elementId);
+  //         }
+  //       });
+  //     });
+  
+  //     observer.observe(document.body, { childList: true, subtree: true });
+  
+  //   } catch (error) {
+  //     console.error("❌ Error Fetching Modifications:", error);
+  //     if (retries > 0) {
+  //       setTimeout(() => fetchModifications(retries - 1), 2000);
+  //     }
+  //   }
+  // }
+
+  //save modifications code start here
+  async function saveModifications(blockId, css) {
+    if (!pageId || !blockId || !css) {
+        console.warn("⚠️ Missing required data to save modifications.");
+        return;
+    }
+  
+    const userId = localStorage.getItem("squareCraft_u_id");
+    const token = localStorage.getItem("squareCraft_auth_token");
+    const widgetId = localStorage.getItem("squareCraft_w_id");
+  
+    if (!userId || !token || !widgetId) {
+        console.warn("⚠️ Missing authentication data");
+        return;
+    }
+  
+    const modificationData = {
+        userId,
+        token,
+        widgetId,
+        modifications: [{
+            pageId,
+            elements: [{
+                elementId: blockId,
+                css: {
+                    strong: {
+                        id: blockId,
+                        ...css
+                    }
+                },
+                elementStructure: {
+                    type: 'strong',
+                    content: document.getElementById(blockId)?.textContent || '',
+                    parentId: document.getElementById(blockId)?.parentElement?.id || null
+                }
+            }]
+        }]
+    };
+  
+    try {
+        const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify(modificationData),
+        });
+  
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        const result = await response.json();
+        console.log("✅ Changes Saved Successfully!", result);
+        
+        return result;
+    } catch (error) {
+        console.error("❌ Error saving modifications:", error);
+        throw error;
+    }
+  }
+  //save modifications code end here
+
+  //fetch modifications code start here
   async function fetchModifications(retries = 3) {
-    const module = await import("https://fatin-webefo.github.io/squareCraft-plugin/html.js");
-    const htmlString = module.html();
-  
-    if (typeof htmlString === "string" && widgetContainer && widgetContainer.innerHTML.trim() === "") {
-      widgetContainer.innerHTML = htmlString;
-    }
-  
-    setTimeout(() => {
-      if (typeof module.initToggleSwitch === "function") {
-        module.initToggleSwitch();
-      }
-    }, 200);
-  
-    const isEnabled = localStorage.getItem("sc_enabled") !== "false";
-  
-    if (!isEnabled) {
-      return;
-    }
-  
-    const pageId = document.querySelector("article[data-page-sections]")?.getAttribute("data-page-sections");
     if (!pageId) return;
   
+    const token = localStorage.getItem("squareCraft_auth_token");
+    const userId = localStorage.getItem("squareCraft_u_id");
+    const widgetId = localStorage.getItem("squareCraft_w_id");
+  
     if (!token || !userId) {
-      console.warn("Missing authentication data");
-      return;
+        console.warn("Missing authentication data");
+        return;
     }
   
     try {
-      const response = await fetch(
-        `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          }
-        }
-      );
-  
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
-      const data = await response.json();
-  
-      if (!data.modifications || !Array.isArray(data.modifications)) {
-        console.warn("⚠️ No modifications found or invalid format");
-        return;
-      }
-  
-      const modificationMap = new Map();
-  
-      data.modifications.forEach(mod => {
-        if (mod.pageId === pageId) {
-          mod.elements.forEach(elem => {
-            if (elem.css) {
-              modificationMap.set(elem.elementId, elem.css);
+        const response = await fetch(
+            `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}&widgetId=${widgetId}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                }
             }
-          });
+        );
+  
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-      });
   
-      const observer = new MutationObserver(() => {
-        modificationMap.forEach((css, elementId) => {
-          const element = document.getElementById(elementId);
-          if (element) {
-            Object.entries(css).forEach(([prop, value]) => {
-              element.style.setProperty(prop, value, "important");
-            });
+        const data = await response.json();
+        console.log("Retrieved modifications:", data);
   
-            const nestedElements = element.querySelectorAll("h1, h2, h3, h4, p");
-            nestedElements.forEach(nestedElem => {
-              Object.entries(css).forEach(([prop, value]) => {
-                nestedElem.style.setProperty(prop, value, "important");
-              });
-            });
+        if (!data.modifications || !Array.isArray(data.modifications)) {
+            console.warn("No modifications found or invalid format");
+            return;
+        }
   
-            if (!element.classList.contains("sc-font-modified")) {
-              element.classList.add("sc-font-modified");
+        // Apply modifications for current page
+        data.modifications.forEach(mod => {
+            if (mod.pageId === pageId) {
+                mod.elements.forEach(elem => {
+                    const cssData = elem.css?.strong;
+                    if (cssData) {
+                        const { id, ...styles } = cssData;
+                        const elementStructure = elem.elementStructure;
+                        
+                        // Find the block element
+                        let targetElement = document.getElementById(id);
+                        
+                        if (targetElement) {
+                            // Create or update style tag for this block's strong tags
+                            let styleTag = document.getElementById(`style-${id}-strong`);
+                            if (!styleTag) {
+                                styleTag = document.createElement('style');
+                                styleTag.id = `style-${id}-strong`;
+                                document.head.appendChild(styleTag);
+                            }
+  
+                            // Apply styles to all strong tags within the block
+                            let cssString = `#${id} strong { `;
+                            Object.entries(styles).forEach(([prop, value]) => {
+                                cssString += `${prop}: ${value} !important; `;
+                            });
+                            cssString += '}';
+  
+                            styleTag.innerHTML = cssString;
+                            console.log(`✅ Applied styles to block ${id}:`, styles);
+                        }
+                    }
+                });
             }
-  
-            modificationMap.delete(elementId);
-          }
         });
-      });
-  
-      observer.observe(document.body, { childList: true, subtree: true });
   
     } catch (error) {
-      console.error("❌ Error Fetching Modifications:", error);
-      if (retries > 0) {
-        setTimeout(() => fetchModifications(retries - 1), 2000);
-      }
+        console.error("Error fetching modifications:", error);
+        if (retries > 0) {
+            console.log(`Retrying... (${retries} attempts left)`);
+            setTimeout(() => fetchModifications(retries - 1), 2000);
+        }
     }
   }
-  
+  //fetch modifications code end here
   
 
   window.addEventListener("load", async () => {
@@ -616,7 +762,144 @@
   console.log(testId);
 
 
+  // font family code start here
+  document.addEventListener("mouseup", function () {
+    const selection = window.getSelection();
+    
+    if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+        let range = selection.getRangeAt(0);
+        let parentElement = range.commonAncestorContainer;
 
+        // If the selected text is a text node, get its parent element
+        if (parentElement.nodeType === Node.TEXT_NODE) {
+            parentElement = parentElement.parentElement;
+        }
+
+        // Check if the parent or an ancestor is a <strong> tag
+        const strongElement = parentElement.closest("strong");
+        
+        if (strongElement) {
+          lastSelectedFontfamilyStrong = strongElement;
+            console.log("✅ Selected text inside <strong>: ", strongElement.textContent);
+        } else {
+            lastSelectedFontfamilyStrong = null; // Reset if selection is outside <strong>
+        }
+    }
+  });
+
+
+  async function fontfamilies() {
+    try {
+      const response = await fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk');
+      const data = await response.json();
+      const fontDropdown = document.getElementById("squareCraft-font-family");
+      const selectedFontText = fontDropdown.querySelector("p");
+
+      // Clear existing options
+      const fontList = fontDropdown.querySelector('.font-list');
+      if (fontList) fontList.remove();
+
+      // Create new font list container
+      const newFontList = document.createElement('div');
+      newFontList.className = 'font-list';
+      newFontList.style.position = 'absolute';
+      newFontList.style.top = '100%';
+      newFontList.style.left = '0';
+      newFontList.style.width = '100%';
+      newFontList.style.maxHeight = '200px';
+      newFontList.style.overflowY = 'auto';
+      newFontList.style.backgroundColor = '#2c2c2c';
+      newFontList.style.border = '1px solid #585858';
+      newFontList.style.borderRadius = '6px';
+      newFontList.style.zIndex = '1000';
+      newFontList.style.display = 'none';
+
+      // Populate font options
+      data.items.forEach(font => {
+          const option = document.createElement('div');
+          option.className = 'font-option';
+          option.textContent = font.family;
+          option.style.padding = '8px';
+          option.style.cursor = 'pointer';
+          option.style.fontFamily = font.family;
+          option.style.color = 'white';
+          option.style.fontSize = '14px';
+          option.dataset.font = font.family;
+
+          // Add hover effect
+          option.addEventListener('mouseover', () => {
+              option.style.backgroundColor = '#4a4a4a';
+          });
+          option.addEventListener('mouseout', () => {
+              option.style.backgroundColor = 'transparent';
+          });
+
+          // Handle font selection
+          option.addEventListener('click', async () => {
+              if (!selectedElement) {
+                  console.warn("⚠️ Please select a block first");
+                  return;
+              }
+
+              const blockId = selectedElement.id;
+              const selectedFont = font.family;
+              
+              // Create or update style tag for this block's strong tags
+              let styleTag = document.getElementById(`style-${blockId}-strong-fontfamily`);
+              if (!styleTag) {
+                  styleTag = document.createElement("style");
+                  styleTag.id = `style-${blockId}-strong-fontfamily`;
+                  document.head.appendChild(styleTag);
+              }
+
+              // Apply font-family to all strong tags within this block
+              styleTag.innerHTML = `
+                  #${blockId} strong {
+                      font-family: "${selectedFont}" !important;
+                  }
+              `;
+
+              // Save modifications
+              const css = {
+                  "font-family": selectedFont
+              };
+
+              await saveModifications(blockId, css);
+              console.log(`✅ Applied font-family: ${selectedFont} to all bold words in block: ${blockId}`);
+
+              // Update selected font display
+              selectedFontText.textContent = selectedFont;
+              selectedFontText.style.fontFamily = selectedFont;
+              newFontList.style.display = 'none';
+          });
+
+          newFontList.appendChild(option);
+      });
+
+      fontDropdown.appendChild(newFontList);
+
+      // Toggle font list visibility
+      fontDropdown.addEventListener('click', (e) => {
+          if (e.target !== newFontList) {
+              newFontList.style.display = newFontList.style.display === 'none' ? 'block' : 'none';
+          }
+      });
+
+      // Close font list when clicking outside
+      document.addEventListener('click', (e) => {
+          if (!fontDropdown.contains(e.target)) {
+              newFontList.style.display = 'none';
+          }
+      });
+
+  } catch (error) {
+      console.error("Error fetching fonts:", error);
+  }
+  }
+
+  fontfamilies();
+
+  // font family code end here
 
 
 
