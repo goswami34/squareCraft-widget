@@ -117,4 +117,6 @@ export function typoBoldSelect(fontSizes) {
       </div>
    </div>
     `
+
+    
 }

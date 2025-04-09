@@ -610,4 +610,20 @@
 
   checkView();
   window.addEventListener("resize", checkView);
+
+  //amit code start here
+  const testId = document.getElementById("scTextAlignLeft");
+  console.log(testId);
+
+
+
+
+
+
+
+
+
+
+
+
 })();
