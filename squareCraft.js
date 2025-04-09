@@ -984,8 +984,7 @@ fontfamilies();
     });
 
 
-  document
-  .getElementById("squareCraftPublish")
+  document .getElementById("squareCraftPublish")
   .addEventListener("click", async () => {
     if (!selectedElement) {
       console.warn("⚠️ No element selected.");
@@ -1118,33 +1117,7 @@ window.addEventListener("load", async () => {
   await applySavedStyles();
 });
 
-// font family code start here
-// document.getElementById("squareCraft-font-family").addEventListener("change", async function() {
-//   if (!selectedElement) {
-//       console.warn("⚠️ No block selected");
-//       return;
-//   }
 
-//   const strongElements = selectedElement.querySelectorAll('strong');
-//   if (strongElements.length === 0) {
-//       console.warn("⚠️ No bold text found in the selected block");
-//       return;
-//   }
-
-//   const selectedFont = this.value;
-//   const css = { "font-family": selectedFont };
-
-//   for (const strongElement of strongElements) {
-//       if (!strongElement.id) {
-//           strongElement.id = `font-family-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-//       }
-
-//       applyStylesToElement(strongElement.id, css);
-//       await saveModifications(strongElement.id, css);
-//   }
-
-//   console.log(`✅ Applied font-family: ${selectedFont} to ${strongElements.length} bold words in block: ${selectedElement.id}`);
-// });
 
 // Modify the font-size change handler
 document.getElementById("squareCraftFontSize").addEventListener("input", async function() {
@@ -1177,19 +1150,6 @@ document.getElementById("squareCraftFontSize").addEventListener("input", async f
 
   // font weight code end here
 
-    // Add this event listener for font-weight dropdown
-    // document
-    //   .getElementById("squareCraftFontWeight")
-    //   .addEventListener("change", () => {
-    //     if (selectedElement) {
-    //       let css = {
-    //         "font-weight": document.getElementById("squareCraftFontWeight")
-    //           .value,
-    //       };
-    //       applyStylesToElement(selectedElement.id, css);
-    //       saveModifications(selectedElement.id, css);
-    //     }
-    //   });
 
     document.querySelectorAll(".alignment-icon").forEach((icon) => {
       icon.addEventListener("click", async function () {
@@ -1361,6 +1321,8 @@ function clearPendingChanges() {
 
 // text-color code start here
 
+
+// Function to handle text color changes
 function initializeTextColor() {
   const colorInput = document.getElementById('squareCraftTextColor');
   const colorHexInput = document.getElementById('squareCraftColorHex');
@@ -1370,15 +1332,18 @@ function initializeTextColor() {
       return;
   }
 
+  // Store the selected color temporarily
+  let selectedColor = null;
+
   // Handle color input changes
-  colorInput.addEventListener('input', async function() {
+  colorInput.addEventListener('input', function() {
       if (!selectedElement) {
           console.warn("⚠️ Please select a block first");
           return;
       }
 
       const blockId = selectedElement.id;
-      const selectedColor = this.value;
+      selectedColor = this.value;
 
       // Create or update style tag for this block's strong tags
       let styleTag = document.getElementById(`style-${blockId}-strong-color`);
@@ -1397,36 +1362,30 @@ function initializeTextColor() {
 
       // Update hex input
       colorHexInput.value = selectedColor.toUpperCase();
-
-      // Save modifications
-      const css = {
-          "color": selectedColor
-      };
-
-      await saveModifications(blockId, css);
-      console.log(`✅ Applied color: ${selectedColor} to all bold words in block: ${blockId}`);
   });
 
   // Handle hex input changes
-  colorHexInput.addEventListener('input', async function() {
+  colorHexInput.addEventListener('input', function() {
       if (!selectedElement) {
           console.warn("⚠️ Please select a block first");
           return;
       }
 
       const blockId = selectedElement.id;
-      let selectedColor = this.value;
+      let colorValue = this.value;
 
       // Ensure the color value starts with #
-      if (!selectedColor.startsWith('#')) {
-          selectedColor = '#' + selectedColor;
+      if (!colorValue.startsWith('#')) {
+          colorValue = '#' + colorValue;
       }
 
       // Validate hex color
-      if (!/^#[0-9A-F]{6}$/i.test(selectedColor)) {
+      if (!/^#[0-9A-F]{6}$/i.test(colorValue)) {
           console.warn("⚠️ Invalid hex color format");
           return;
       }
+
+      selectedColor = colorValue;
 
       // Create or update style tag for this block's strong tags
       let styleTag = document.getElementById(`style-${blockId}-strong-color`);
@@ -1439,23 +1398,31 @@ function initializeTextColor() {
       // Apply color to all strong tags within this block using CSS selector
       styleTag.innerHTML = `
           #${blockId} strong {
-              color: ${selectedColor} !important ;
+              color: ${selectedColor} !important;
           }
       `;
 
       // Update color input
       colorInput.value = selectedColor;
+  });
 
+  // Add event listener for Publish Changes button
+  document.getElementById("squareCraftPublish").addEventListener("click", async function() {
+      if (!selectedElement || !selectedColor) {
+          return;
+      }
+
+      const blockId = selectedElement.id;
+      
       // Save modifications
       const css = {
           "color": selectedColor
       };
 
       await saveModifications(blockId, css);
-      console.log(`✅ Applied color: ${selectedColor} to all bold words in block: ${blockId}`);
+      console.log(`✅ Saved color: ${selectedColor} to database for block: ${blockId}`);
   });
 }
-
 
 
 initializeTextColor();
