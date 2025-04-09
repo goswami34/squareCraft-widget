@@ -1359,6 +1359,112 @@ function clearPendingChanges() {
 
 
 
+// text-color code start here
+
+function initializeTextColor() {
+  const colorInput = document.getElementById('squareCraftTextColor');
+  const colorHexInput = document.getElementById('squareCraftColorHex');
+
+  if (!colorInput || !colorHexInput) {
+      console.warn("⚠️ Color input elements not found");
+      return;
+  }
+
+  // Handle color input changes
+  colorInput.addEventListener('input', async function() {
+      if (!selectedElement) {
+          console.warn("⚠️ Please select a block first");
+          return;
+      }
+
+      const blockId = selectedElement.id;
+      const selectedColor = this.value;
+
+      // Create or update style tag for this block's strong tags
+      let styleTag = document.getElementById(`style-${blockId}-strong-color`);
+      if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = `style-${blockId}-strong-color`;
+          document.head.appendChild(styleTag);
+      }
+
+      // Apply color to all strong tags within this block using CSS selector
+      styleTag.innerHTML = `
+          #${blockId} strong {
+              color: ${selectedColor} !important;
+          }
+      `;
+
+      // Update hex input
+      colorHexInput.value = selectedColor.toUpperCase();
+
+      // Save modifications
+      const css = {
+          "color": selectedColor
+      };
+
+      await saveModifications(blockId, css);
+      console.log(`✅ Applied color: ${selectedColor} to all bold words in block: ${blockId}`);
+  });
+
+  // Handle hex input changes
+  colorHexInput.addEventListener('input', async function() {
+      if (!selectedElement) {
+          console.warn("⚠️ Please select a block first");
+          return;
+      }
+
+      const blockId = selectedElement.id;
+      let selectedColor = this.value;
+
+      // Ensure the color value starts with #
+      if (!selectedColor.startsWith('#')) {
+          selectedColor = '#' + selectedColor;
+      }
+
+      // Validate hex color
+      if (!/^#[0-9A-F]{6}$/i.test(selectedColor)) {
+          console.warn("⚠️ Invalid hex color format");
+          return;
+      }
+
+      // Create or update style tag for this block's strong tags
+      let styleTag = document.getElementById(`style-${blockId}-strong-color`);
+      if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = `style-${blockId}-strong-color`;
+          document.head.appendChild(styleTag);
+      }
+
+      // Apply color to all strong tags within this block using CSS selector
+      styleTag.innerHTML = `
+          #${blockId} strong {
+              color: ${selectedColor} !important;
+          }
+      `;
+
+      // Update color input
+      colorInput.value = selectedColor;
+
+      // Save modifications
+      const css = {
+          "color": selectedColor
+      };
+
+      await saveModifications(blockId, css);
+      console.log(`✅ Applied color: ${selectedColor} to all bold words in block: ${blockId}`);
+  });
+}
+
+
+
+initializeTextColor();
+
+
+// text-color code end here
+
+
+
 
     let lastSelectedLineHeightStrong = null;
 
