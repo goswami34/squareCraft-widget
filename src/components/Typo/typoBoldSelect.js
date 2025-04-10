@@ -3,17 +3,8 @@ export function typoBoldSelect(fontSizes) {
         <div
    class="sc-mt-2 sc-relative sc-grid  sc-grid-cols-12 sc-gap-2 ">
 
-   <div id="sc-font-family fontFamily"
-      class="sc-flex sc-bg-494949 sc-h-9 sc-col-span-8 sc-rounded-6px sc-justify-between sc-border sc-border-solid sc-border-585858 sc-items-center">
-      <div  
-         class=" sc-text-sm sc-poppins sc-font-light sc-font-family"
-         style="background: transparent; color: white; border: none; outline: none; appearance: none; cursor: pointer; padding: 0 8px;"> select font family
-      </div>
-      <div class="sc-bg-3f3f3f sc-px-2"
-         style="height: 27px; padding: 0 3px; pointer-events: none;">
-         <img class="sc-rotate-180 sc-mt-3" width="12px"
-            src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
-      </div>
+   <div id="sc-font-family" 
+      class="sc-flex  sc-bg-494949 sc-h-9 sc-col-span-7 sc-cursor-pointer sc-rounded-6px sc-justify-between sc-border sc-border-solid sc-border-585858 sc-rounded-6px sc-items-center ">select font family
    </div>
 
    <div
@@ -69,7 +60,7 @@ export function typoBoldSelect(fontSizes) {
          </div>
          <div class="sc-bg-3f3f3f sc-px-2" style="height: 27px; padding: 0 8px;">
             <img class="sc-mx-auto sc-rotate-180 sc-mt-3" width="10px"
-               src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
+               src="https://goswami34.github.io/sc-widget/public/arrow.svg" alt="">
          </div>
       </div>
 
