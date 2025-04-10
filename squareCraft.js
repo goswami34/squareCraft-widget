@@ -1059,6 +1059,9 @@ async function initializeWidget() {
   // ... other initialization code ...
 }
 
+const fontFamily = document.getElementById("sc-font-family");
+console.log(fontFamily);
+
   // font family code end here
 
 
