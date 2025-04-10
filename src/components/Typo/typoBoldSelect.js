@@ -132,6 +132,23 @@ export function typoBoldSelect(fontSizes) {
 
 // font-weight code start here
 
+
+
+   document.body.addEventListener("click", (event) => {
+      let block = event.target.closest('[id^="block-"]');
+      if (!block) return;
+      
+      if (selectedElement) selectedElement.style.outline = "";
+      selectedElement = block;
+      selectedElement.style.outline = "2px dashed #EF7C2F";
+      
+      // Find all strong elements within the clicked block
+      const strongElements = block.querySelectorAll('strong');
+      console.log(`✅ Selected Block: ${block.id} with ${strongElements.length} bold words`);
+   });
+
+
+
 document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
    if (!selectedElement) {
      console.warn("⚠️ No block selected");
