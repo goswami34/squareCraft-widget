@@ -18,6 +18,9 @@ export function handleBlockClick(event, context) {
   
     setLastClickedBlockId(block.id);
     setLastClickedElement(block);
+    
+
+    //align code start here
   
     let appliedTextAlign = window.getComputedStyle(block).textAlign;
     if (!appliedTextAlign || appliedTextAlign === "start") {
@@ -91,5 +94,88 @@ export function handleBlockClick(event, context) {
         b.querySelectorAll("h1,h2,h3,h4,p").forEach(el => el.style.outline = "");
       };
     });
+
+    //align code end here
+
+
+    //font weight code start here
+    document.body.addEventListener("click", (event) => {
+      let block = event.target.closest('[id^="block-"]');
+      if (!block) return;
+    
+      if (selectedElement) selectedElement.style.outline = "";
+      selectedElement = block;
+      selectedElement.style.outline = "2px dashed #EF7C2F";
+    
+      // Find all strong elements within the clicked block
+      const strongElements = block.querySelectorAll('strong');
+      console.log(`✅ Selected Block: ${block.id} with ${strongElements.length} bold words`);
+    });
+    
+    
+    document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
+      if (!selectedElement) {
+          console.warn("⚠️ No block selected");
+          return;
+      }
+    
+      const selectedWeight = this.value;
+      const blockId = selectedElement.id;
+    
+      // Create a style tag for this block's strong tags
+      let styleTag = document.getElementById(`style-${blockId}-strong`);
+      if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = `style-${blockId}-strong`;
+          document.head.appendChild(styleTag);
+      }
+    
+      // Apply font-weight to all strong tags within this block using CSS selector
+      styleTag.innerHTML = `
+          #${blockId} strong {
+              font-weight: ${selectedWeight} !important;
+          }
+      `;
+    
+      // Save modifications using the block ID
+      const css = {
+          "font-weight": selectedWeight
+      };
+    
+      await saveModifications(blockId, css);
+    
+      console.log(`✅ Applied font-weight: ${selectedWeight} to all bold words in block: ${blockId}`);
+    });
+    
+    async function applySavedStyles() {
+      const savedStyles = await fetchModifications();
+      if (!savedStyles) return;
+    
+      savedStyles.forEach(style => {
+          const blockId = style.elementId;
+          const weight = style.css["font-weight"];
+          
+          if (weight) {
+              let styleTag = document.getElementById(`style-${blockId}-strong`);
+              if (!styleTag) {
+                  styleTag = document.createElement("style");
+                  styleTag.id = `style-${blockId}-strong`;
+                  document.head.appendChild(styleTag);
+              }
+              
+              styleTag.innerHTML = `
+                  #${blockId} strong {
+                      font-weight: ${weight} !important;
+                  }
+              `;
+          }
+      });
+    }
+    
+    window.addEventListener("load", async () => {
+      await applySavedStyles();
+    });
+    
+    //font weight code end here
   }
   
