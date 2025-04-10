@@ -154,6 +154,8 @@ export function handleBlockClick(event, context) {
         return;
       }
 
+      console.log("selectedElement", selectedElement);
+
       const selectedWeight = this.value;
       const blockId = selectedElement.id;
 
