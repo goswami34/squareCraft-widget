@@ -404,6 +404,7 @@
     fetchModifications();
     // font weight functionality start here
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
+    console.log("fontWeightSelect", fontWeightSelect);
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
         initFontWeightFunctionality();
         fontWeightSelect.dataset.initialized = "true";
