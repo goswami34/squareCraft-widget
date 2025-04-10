@@ -402,7 +402,6 @@
   const observer = new MutationObserver(() => {
     addHeadingEventListeners();
     fetchModifications();
-    applySavedStyles();
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
