@@ -1100,6 +1100,7 @@ fontfamilies();
   // });
 
   function initFontWeightFunctionality() {
+    console.log("initFontWeightFunctionality");
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (!fontWeightSelect) return;
 
