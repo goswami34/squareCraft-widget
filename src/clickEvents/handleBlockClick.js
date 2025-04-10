@@ -147,41 +147,36 @@ export function handleBlockClick(event, context) {
     //   console.log(`✅ Applied font-weight: ${selectedWeight} to all bold words in block: ${blockId}`);
     // });
 
+    // When font-weight is selected from dropdown
     document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
       if (!selectedElement) {
         console.warn("⚠️ No block selected");
         return;
       }
-    
+
       const selectedWeight = this.value;
       const blockId = selectedElement.id;
-    
-      // Create a single style tag for all block strong tags
-      let styleTag = document.getElementById("sc-strong-font-weight");
+
+      // Create or update style tag for this block's strong tags
+      let styleTag = document.getElementById(`style-${blockId}-strong`);
       if (!styleTag) {
         styleTag = document.createElement("style");
-        styleTag.id = "sc-strong-font-weight";
+        styleTag.id = `style-${blockId}-strong`;
         document.head.appendChild(styleTag);
       }
-    
-      // Add or update the CSS rule for this block's strong tags
-      const existingStyles = styleTag.innerHTML;
-      const newRule = `#${blockId} strong { font-weight: ${selectedWeight} !important; }`;
-      
-      // Remove any existing rule for this block
-      const updatedStyles = existingStyles.replace(
-        new RegExp(`#${blockId} strong\\s*{[^}]*}`, 'g'),
-        ''
-      );
-      
-      // Add the new rule
-      styleTag.innerHTML = updatedStyles + newRule;
-    
+
+      // Apply font-weight to all strong tags within this block using CSS selector
+      styleTag.innerHTML = `
+        #${blockId} strong {
+          font-weight: ${selectedWeight} !important;
+        }
+      `;
+
       // Save modifications
       const css = {
         "font-weight": selectedWeight
       };
-    
+
       await saveModifications(blockId, css);
       console.log(`✅ Applied font-weight: ${selectedWeight} to bold words in block: ${blockId}`);
     });
