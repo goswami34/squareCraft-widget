@@ -279,6 +279,11 @@
   }
   //save modifications code end here
 
+  let pageId = document.querySelector("article[data-page-sections]")?.getAttribute("data-page-sections");
+  if (!pageId)
+    console.warn(":warning: No page ID found. Plugin may not work correctly.");
+
+
   //fetch modifications code start here
   async function fetchModifications(retries = 3) {
     if (!pageId) return;
