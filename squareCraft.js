@@ -216,6 +216,7 @@
   // }
 
   //save modifications code start here
+  
   async function saveModifications(blockId, css) {
     if (!pageId || !blockId || !css) {
         console.warn("⚠️ Missing required data to save modifications.");
@@ -1095,20 +1096,83 @@ console.log(fontFamily);
 
   // font-weight code start here
 
-  document.body.addEventListener("click", (event) => {
-    let block = event.target.closest('[id^="block-"]');
-    if (!block) return;
+  // document.body.addEventListener("click", (event) => {
+  //   let block = event.target.closest('[id^="block-"]');
+  //   if (!block) return;
   
-    if (selectedElement) selectedElement.style.outline = "";
-    selectedElement = block;
-    selectedElement.style.outline = "2px dashed #EF7C2F";
+  //   if (selectedElement) selectedElement.style.outline = "";
+  //   selectedElement = block;
+  //   selectedElement.style.outline = "2px dashed #EF7C2F";
   
-    // Find all strong elements within the clicked block
-    const strongElements = block.querySelectorAll('strong');
-    console.log(`✅ Selected Block: ${block.id} with ${strongElements.length} bold words`);
-  });
+  //   // Find all strong elements within the clicked block
+  //   const strongElements = block.querySelectorAll('strong');
+  //   console.log(`✅ Selected Block: ${block.id} with ${strongElements.length} bold words`);
+  // });
   
   
+  // document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
+  //   if (!selectedElement) {
+  //       console.warn("⚠️ No block selected");
+  //       return;
+  //   }
+  
+  //   const selectedWeight = this.value;
+  //   const blockId = selectedElement.id;
+  
+  //   // Create a style tag for this block's strong tags
+  //   let styleTag = document.getElementById(`style-${blockId}-strong`);
+  //   if (!styleTag) {
+  //       styleTag = document.createElement("style");
+  //       styleTag.id = `style-${blockId}-strong`;
+  //       document.head.appendChild(styleTag);
+  //   }
+  
+  //   // Apply font-weight to all strong tags within this block using CSS selector
+  //   styleTag.innerHTML = `
+  //       #${blockId} strong {
+  //           font-weight: ${selectedWeight} !important;
+  //       }
+  //   `;
+  
+  //   // Save modifications using the block ID
+  //   const css = {
+  //       "font-weight": selectedWeight
+  //   };
+  
+  //   await saveModifications(blockId, css);
+  
+  //   console.log(`✅ Applied font-weight: ${selectedWeight} to all bold words in block: ${blockId}`);
+  // });
+  
+  // async function applySavedStyles() {
+  //   const savedStyles = await fetchModifications();
+  //   if (!savedStyles) return;
+  
+  //   savedStyles.forEach(style => {
+  //       const blockId = style.elementId;
+  //       const weight = style.css["font-weight"];
+        
+  //       if (weight) {
+  //           let styleTag = document.getElementById(`style-${blockId}-strong`);
+  //           if (!styleTag) {
+  //               styleTag = document.createElement("style");
+  //               styleTag.id = `style-${blockId}-strong`;
+  //               document.head.appendChild(styleTag);
+  //           }
+            
+  //           styleTag.innerHTML = `
+  //               #${blockId} strong {
+  //                   font-weight: ${weight} !important;
+  //               }
+  //           `;
+  //       }
+  //   });
+  // }
+  
+  // window.addEventListener("load", async () => {
+  //   await applySavedStyles();
+  // });
+
   document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
     if (!selectedElement) {
         console.warn("⚠️ No block selected");
@@ -1141,36 +1205,107 @@ console.log(fontFamily);
     await saveModifications(blockId, css);
   
     console.log(`✅ Applied font-weight: ${selectedWeight} to all bold words in block: ${blockId}`);
-  });
-  
-  async function applySavedStyles() {
-    const savedStyles = await fetchModifications();
-    if (!savedStyles) return;
-  
-    savedStyles.forEach(style => {
-        const blockId = style.elementId;
-        const weight = style.css["font-weight"];
-        
-        if (weight) {
-            let styleTag = document.getElementById(`style-${blockId}-strong`);
-            if (!styleTag) {
-                styleTag = document.createElement("style");
-                styleTag.id = `style-${blockId}-strong`;
-                document.head.appendChild(styleTag);
-            }
-            
-            styleTag.innerHTML = `
-                #${blockId} strong {
-                    font-weight: ${weight} !important;
-                }
-            `;
-        }
-    });
+});
+
+
+// Font weight functionality
+function initializeFontWeight() {
+  const fontWeightSelect = document.getElementById("squareCraftFontWeight");
+  if (!fontWeightSelect) {
+      console.warn("⚠️ Font weight select element not found");
+      return;
   }
-  
-  window.addEventListener("load", async () => {
-    await applySavedStyles();
+
+  // Set initial value from saved modifications if any
+  if (selectedElement) {
+      const savedStyles = getSavedStyles(selectedElement.id);
+      if (savedStyles && savedStyles["font-weight"]) {
+          fontWeightSelect.value = savedStyles["font-weight"];
+      }
+  }
+
+  fontWeightSelect.addEventListener("change", async function() {
+      if (!selectedElement) {
+          console.warn("⚠️ No block selected");
+          return;
+      }
+
+      const selectedWeight = this.value;
+      const blockId = selectedElement.id;
+
+      try {
+          // Create or update style tag
+          let styleTag = document.getElementById(`style-${blockId}-strong`);
+          if (!styleTag) {
+              styleTag = document.createElement("style");
+              styleTag.id = `style-${blockId}-strong`;
+              document.head.appendChild(styleTag);
+          }
+
+          // Apply font-weight to all strong tags within this block
+          styleTag.innerHTML = `
+              #${blockId} strong {
+                  font-weight: ${selectedWeight} !important;
+              }
+          `;
+
+          // Save modifications
+          const css = {
+              "font-weight": selectedWeight
+          };
+
+          await saveModifications(blockId, css);
+          console.log(`✅ Applied font-weight: ${selectedWeight} to all bold words in block: ${blockId}`);
+
+          // Update UI feedback
+          updateFontWeightUI(selectedWeight);
+      } catch (error) {
+          console.error("❌ Error applying font weight:", error);
+      }
   });
+}
+
+// Helper function to get saved styles for a block
+function getSavedStyles(blockId) {
+  const savedModifications = localStorage.getItem(`sc_modifications_${blockId}`);
+  return savedModifications ? JSON.parse(savedModifications) : null;
+}
+
+// Helper function to update UI feedback
+function updateFontWeightUI(weight) {
+  const weightLabel = document.getElementById("fontWeightLabel");
+  if (weightLabel) {
+      weightLabel.textContent = getFontWeightName(weight);
+  }
+}
+
+// Helper function to get font weight name
+function getFontWeightName(weight) {
+  const weights = {
+      "100": "Thin",
+      "200": "Extra Light",
+      "300": "Light",
+      "400": "Regular",
+      "500": "Medium",
+      "600": "Semi Bold",
+      "700": "Bold",
+      "800": "Extra Bold",
+      "900": "Black"
+  };
+  return weights[weight] || weight;
+}
+
+// Initialize font weight functionality when DOM is ready
+document.addEventListener("DOMContentLoaded", initializeFontWeight);
+
+// Re-initialize when a new block is selected
+function onBlockSelected(block) {
+  selectedElement = block;
+  initializeFontWeight();
+}
+
+
+
 
   // font-weight code end here
 
