@@ -402,11 +402,13 @@
   const observer = new MutationObserver(() => {
     addHeadingEventListeners();
     fetchModifications();
+    // font weight functionality start here
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
         initFontWeightFunctionality();
         fontWeightSelect.dataset.initialized = "true";
     }
+    // font weight functionality end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
