@@ -931,6 +931,7 @@
 
 // Function to initialize font family dropdown
 async function initializeFontFamilyDropdown() {
+  console.log("initializeFontFamilyDropdown");
   try {
       // Fetch fonts from Google Fonts API
       const response = await fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk');
@@ -1061,6 +1062,8 @@ async function initializeWidget() {
 
 const fontFamily = document.getElementById("sc-font-family");
 console.log(fontFamily);
+
+
 
   // font family code end here
 
