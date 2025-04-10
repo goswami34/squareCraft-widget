@@ -402,6 +402,7 @@
   const observer = new MutationObserver(() => {
     addHeadingEventListeners();
     fetchModifications();
+    initFontWeightFunctionality();
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
