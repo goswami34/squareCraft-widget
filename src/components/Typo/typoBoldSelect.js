@@ -128,3 +128,72 @@ export function typoBoldSelect(fontSizes) {
 
 
 }
+
+
+// font-weight code start here
+
+document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
+   if (!selectedElement) {
+     console.warn("⚠️ No block selected");
+     return;
+   }
+ 
+   console.log("selectedElement", selectedElement);
+ 
+   const selectedWeight = this.value;
+   const blockId = selectedElement.id;
+ 
+   // Create or update style tag for this block's strong tags
+   let styleTag = document.getElementById(`style-${blockId}-strong`);
+   if (!styleTag) {
+     styleTag = document.createElement("style");
+     styleTag.id = `style-${blockId}-strong`;
+     document.head.appendChild(styleTag);
+   }
+ 
+   // Apply font-weight to all strong tags within this block using CSS selector
+   styleTag.innerHTML = `
+     #${blockId} strong {
+       font-weight: ${selectedWeight} !important;
+     }
+   `;
+ 
+   // Save modifications
+   const css = {
+     "font-weight": selectedWeight
+   };
+ 
+   await saveModifications(blockId, css);
+   console.log(`✅ Applied font-weight: ${selectedWeight} to bold words in block: ${blockId}`);
+ });
+ 
+ async function applySavedStyles() {
+   const savedStyles = await fetchModifications();
+   if (!savedStyles) return;
+ 
+   savedStyles.forEach(style => {
+       const blockId = style.elementId;
+       const weight = style.css["font-weight"];
+       
+       if (weight) {
+           let styleTag = document.getElementById(`style-${blockId}-strong`);
+           if (!styleTag) {
+               styleTag = document.createElement("style");
+               styleTag.id = `style-${blockId}-strong`;
+               document.head.appendChild(styleTag);
+           }
+           
+           styleTag.innerHTML = `
+               #${blockId} strong {
+                   font-weight: ${weight} !important;
+               }
+           `;
+       }
+   });
+ }
+ 
+ window.addEventListener("load", async () => {
+   await applySavedStyles();
+ });
+ 
+ // font-weight code end here
