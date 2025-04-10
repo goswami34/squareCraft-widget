@@ -39,10 +39,10 @@ export function parentHtml() {
                     class="sc-rounded-6px sc-mt-6  sc-border sc-border-solid sc-border-EF7C2F sc-bg-color-3d3d3d">
                     <div class="sc-flex sc-p-2 sc-items-center sc-justify-between">
                         <div class="sc-flex sc-gap-2 sc-items-center"><img loading="lazy"
-                                src="https://fatin-webefo.github.io/squareCraft-plugin/public/T.svg" alt="">
+                                src="https://goswami34.github.io/squareCraft-widget/public/T.svg" alt="">
                             <p>Typography</p>
                         </div>
-                        <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt="">
+                        <img src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
                     </div>
                     <div class="sc-h-1px sc-bg-3f3f3f"></div>
                     <div
@@ -57,7 +57,7 @@ export function parentHtml() {
                         class="sc-flex sc-cursor-pointer sc-items-center sc-py-1px sc-rounded-15px sc-gap-2 sc-bg-3f3f3f sc-px-2">
                         <p class="sc-text-sm">Reset</p>
                         <img id="resetIcon" 
-                            src="https://fatin-webefo.github.io/squareCraft-plugin/public/reset.svg"
+                            src="https://goswami34.github.io/squareCraft-widget/public/reset.svg"
                             width="12px" />
                     </div>
                     
@@ -80,7 +80,7 @@ export function parentHtml() {
 
                     <div class="sc-mt-6 sc-px-2 sc-flex sc-justify-between">
                         <p class="sc-text-sm">Text</p>
-                        <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/eye.svg" width="12px" />
+                        <img src="https://goswami34.github.io/squareCraft-widget/public/eye.svg" width="12px" />
                     </div>
 
                     <div class="sc-mt-2 sc-grid sc-w-full sc-grid-cols-12 sc-gap-2 sc-px-2">
@@ -90,7 +90,7 @@ export function parentHtml() {
                             </div>
                             <div class="sc-bg-3f3f3f sc-px-2" style="height: 27px; padding: 0 8px;">
                                 <img class="sc-h-full sc-rotate-180" width="12px"
-                                    src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt="">
+                                    src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
 
                             </div>
                         </div>
@@ -106,7 +106,7 @@ export function parentHtml() {
                            </div>
                             <div class="sc-bg-3f3f3f sc-px-1" style="height: 27px; padding: 0 8px;">
                                 <img class=" sc-rounded-6px sc-rotate-180" width="12px"
-                                    src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt="">
+                                    src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
 
                             </div>
                         </div>
@@ -120,14 +120,14 @@ export function parentHtml() {
                             </div>
                             <div class="sc-bg-3f3f3f sc-px-2" style="height: 27px; padding: 0 8px;">
                                 <img class="sc-h-full sc-rotate-180" width="12px"
-                                    src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt="">
+                                    src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
 
                             </div>
                         </div>
                         <div class="sc-flex sc-w-full  sc-justify-between sc-col-span-4  sc-rounded-6px sc-border sc-border-solid sc-border-585858 sc-items-center sc-h-full">
                           <div class="sc-flex  sc-mx-auto sc-items-center sc-justify-center">
                             <img class=" sc-rounded-6px sc-rotate-180 sc-w-full " 
-                            src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg"  alt="">
+                            src="https://goswami34.github.io/squareCraft-widget/public/dot.svg"  alt="">
                           </div>
                           <div class="sc-border-r   sc-border-585858 sc-h-full"></div>
                             <div class="sc-flex sc-mx-auto sc-items-center sc-justify-center sc-border sc-border-585858 sc-w-13px sc-border-solid sc-h-13px">
@@ -136,14 +136,14 @@ export function parentHtml() {
                             <div class="sc-border-r   sc-border-585858 sc-h-full"></div>
                             
                             <img class=" sc-rounded-6px sc-rotate-180 sc-flex sc-mx-auto sc-items-center sc-justify-center" width="12px"
-                            src="https://fatin-webefo.github.io/squareCraft-plugin/public/gap.svg" alt="">
+                            src="https://goswami34.github.io/squareCraft-widget/public/gap.svg" alt="">
                         </div>
                     </div>
 
 <div id="sc-bg-color-picker" class="sc-bg-color-2c2c2c sc-mt-2 sc-rounded-6px  sc-border sc-border-solid sc-border-585858 sc-w-full" style="z-index: 9999; position: relative;">
     <div class="sc-flex sc-p-2 sc-items-center sc-justify-between">
         <div class="sc-flex sc-gap-2 sc-items-center">
-            <img loading="lazy" src="https://fatin-webefo.github.io/squareCraft-plugin/public/color-picker.svg" alt="">
+            <img loading="lazy" src="https://goswami34.github.io/squareCraft-widget/public/color-picker.svg" alt="">
             <p class="sc-text-sm">Background Color</p>
         </div>
         <input type="color" id="sc-bg-color-input" class="sc-w-10 sc-h-10 sc-cursor-pointer sc-border-none">

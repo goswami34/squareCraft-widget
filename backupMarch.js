@@ -421,7 +421,7 @@
 
   async function fetchModifications(retries = 3) {
     const module = await import(
-      "https://fatin-webefo.github.io/squareCraft-plugin/html.js"
+      "https://goswami34.github.io/squareCraft-widget/html.js"
     );
     const htmlString = module.html();
 
@@ -573,7 +573,7 @@
 
   try {
     const { injectNavbarIcon } = await import(
-      "https://fatin-webefo.github.io/squareCraft-plugin/injectNavbarIcon.js"
+      "https://goswami34.github.io/squareCraft-widget/injectNavbarIcon.js"
     );
     injectNavbarIcon();
   } catch (error) {
@@ -581,11 +581,11 @@
   }
 
   const { loadCSS } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/loadCSS.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/loadCSS.js"
   );
 
   loadCSS(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css",
+    "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css",
     "sc_parentCSS"
   );
 
@@ -601,7 +601,7 @@
         return;
       }
       const module = await import(
-        "https://fatin-webefo.github.io/squareCraft-plugin/html.js"
+        "https://goswami34.github.io/squareCraft-widget/html.js"
       );
 
       if (module && module.html) {
@@ -852,7 +852,7 @@
 
     if (mobileContainer) {
       const existingLink = parent.document.querySelector(
-        'link[href="https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css"]'
+        'link[href="https://goswami34.github.io/squareCraft-widget/src/styles/parent.css"]'
       );
 
       if (!existingLink) {
@@ -860,7 +860,7 @@
         link.rel = "stylesheet";
         link.type = "text/css";
         link.href =
-          "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
+          "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
         parent.document.head.appendChild(link);
       }
 

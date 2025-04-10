@@ -35,7 +35,7 @@
     link.rel = "stylesheet";
     link.type = "text/css";
     link.href =
-        "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
+        "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
     document.head.appendChild(link);
 
     const fontSizes = [
@@ -370,10 +370,10 @@
                     <div class="sc-flex sc-p-2 sc-items-center sc-justify-between">
                     <div class="sc-flex sc-gap-2 sc-items-center">
                         <img loading="lazy"
-                            src="https://fatin-webefo.github.io/squareCraft-plugin/public/T.svg" alt="">
+                            src="https://goswami34.github.io/squareCraft-widget/public/T.svg" alt="">
                         <p class="sc-universal sc-poppins">Typography</p>
                     </div>
-                    <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt="">
+                    <img src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
                     </div>
                     <div class="sc-h-1px sc-bg-3f3f3f"></div>
                     <div
@@ -408,7 +408,7 @@
     
                     <div class=" sc-mt-2 sc-px-2 sc-flex sc-justify-between">
                     <p class="sc-text-sm sc-universal sc-poppins">Text</p>
-                    <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/eye.svg" width="12px" />
+                    <img src="https://goswami34.github.io/squareCraft-widget/public/eye.svg" width="12px" />
                     </div>
                     <div class="sc-mt-2  sc-grid sc-w-full sc-grid-cols-12 sc-gap-2 sc-px-2" >
     
@@ -450,19 +450,19 @@
                         <div
                             class="sc-flex sc-items-center sc-justify-between sc-w-full ">
                             <img id="scTextAlignLeft" data-align="left"
-                                src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (1).svg"
+                                src="https://goswami34.github.io/squareCraft-widget/public/alignment (1).svg"
                                 class="sc-cursor-pointer alignment-icon   sc-mx-auto"  alt="">
                             <div class="sc-v-line"></div>
                             <img id="scTextAlignRight" data-align="right"
-                                src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (3).svg"
+                                src="https://goswami34.github.io/squareCraft-widget/public/alignment (3).svg"
                                 class="sc-cursor-pointer alignment-icon    sc-mx-auto"  alt="">
                             <div class="sc-v-line"></div>
                             <img id="scTextAlignCenter" data-align="center"
-                                src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (2).svg"
+                                src="https://goswami34.github.io/squareCraft-widget/public/alignment (2).svg"
                                 class="sc-cursor-pointer alignment-icon    sc-mx-auto"  alt="">
                             <div class="sc-v-line"></div>
                             <img id="scTextAlignJustify" data-align="justify"
-                                src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (4).svg"
+                                src="https://goswami34.github.io/squareCraft-widget/public/alignment (4).svg"
                                 class="sc-cursor-pointer alignment-icon    sc-mx-auto "  alt="">
                         </div>
                     </div>
@@ -478,7 +478,7 @@
                                 sc-bg-transparent sc-w-full  sc-py-1px sc-font-light">
                             <div class="">
                                 <img id="scLetterSpacingDropdown"
-                                src="https://fatin-webefo.github.io/squareCraft-plugin/public/line-spacing.svg"
+                                src="https://goswami34.github.io/squareCraft-widget/public/line-spacing.svg"
                                 class=" sc-px-1 sc-ml-1 sc-mx-auto sc-cursor-pointer" >
                             </div>
                         </div>
@@ -509,7 +509,7 @@
                             <p  class="sc-font-underline sc-universal sc-text-sm sc-cursor-pointer sc-text-center sc-mx-auto elements-font-style" data-style="dotted">abc</p>
                             <div class="sc-v-line"></div> 
                             <img class=" sc-rounded-6px sc-rotate-180 sc-px-1_5 squsareCraft-font-style sc-cursor-pointer" width="12px"
-                        src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
+                        src="https://goswami34.github.io/squareCraft-widget/public/dot.svg" alt="">
                         </div>
                     </div>
                     </div>
@@ -526,7 +526,7 @@
                             <p class=" sc-universal  sc-text-sm sc-text-center sc-w-full sc-mx-auto squsareCraft-text-transform sc-cursor-pointer" data-transform="capitalize">Ag</p>
                             <div class="sc-v-line"></div>
                             <img class=" sc-rounded-6px sc-rotate-180 sc-px-1_5 squsareCraft-text-transform sc-cursor-pointer" width="12px"
-                        src="https://fatin-webefo.github.io/squareCraft-plugin/public/dot.svg" alt="">
+                        src="https://goswami34.github.io/squareCraft-widget/public/dot.svg" alt="">
                         </div>
                     </div>
                     </div>
@@ -724,7 +724,7 @@
 
         const dropdownArrow = document.createElement("img");
         dropdownArrow.src =
-            "https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg";
+            "https://goswami34.github.io/squareCraft-widget/public/arrow.svg";
         dropdownArrow.style.width = "12px";
         dropdownArrow.style.height = "12px";
         dropdownArrow.style.transform = "rotate(180deg)";

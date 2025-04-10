@@ -121,7 +121,7 @@
 
 
   // async function fetchModifications(retries = 3) {
-  //   const module = await import("https://fatin-webefo.github.io/squareCraft-plugin/html.js");
+  //   const module = await import("https://goswami34.github.io/squareCraft-widget/html.js");
   //   const htmlString = module.html();
   
   //   if (typeof htmlString === "string" && widgetContainer && widgetContainer.innerHTML.trim() === "") {
@@ -414,11 +414,8 @@
   }
 
   const { loadCSS } = await import("https://goswami34.github.io/squareCraft-widget/src/utils/loadCSS.js");
-
-
   loadCSS(
-    "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css",
-    "sc_parentCSS "
+    "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css"
   );
 
 

@@ -12,7 +12,7 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
          <div class="sc-bg-3f3f3f sc-px-2"
             style="height: 27px; padding: 0 3px; pointer-events: none;">
             <img class="sc-rotate-180 sc-mt-3" width="12px"
-               src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt="">
+               src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
          </div>
       </div>
  
@@ -38,7 +38,7 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
                   <div class="sc-bg-3f3f3f sc-px-1_5 sc-ml-2"
                      style="height: 27px; padding: 0 8px; border-radius: 0px 5px 5px 0px;">
                      <img class=" sc-rotate-180 sc-mt-3" width="12px"
-                        src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt="">
+                        src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
                   </div>
                </div>
                <div id="scFontSizeOptions" class="sc-hidden  sc-h-44 sc-font-sm sc-bg-3f3f3f sc-w-20
@@ -71,7 +71,7 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
             </div>
             <div class="sc-bg-3f3f3f sc-px-2" style="height: 27px; padding: 0 8px;">
                <img class="sc-mx-auto sc-rotate-180 sc-mt-3" width="10px"
-                  src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt="">
+                  src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
             </div>
          </div>
  
@@ -95,25 +95,25 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
                <div id="scTextAlignLeft" data-align="left" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
  
                   <img 
-                     src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (4).svg"
+                     src="https://goswami34.github.io/squareCraft-widget/public/alignment (4).svg"
                      class=" alignment-icon   sc-mx-auto" alt="left">
                </div>
                 <div id="scTextAlignCenter" data-align="center" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer ">
  
                   <img 
-                     src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (3).svg"
+                     src="https://goswami34.github.io/squareCraft-widget/public/alignment (3).svg"
                      class=" alignment-icon   sc-mx-auto" alt="center">
                </div>
                 <div id="scTextAlignRight" data-align="right" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer">
  
                   <img 
-                     src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (2).svg"
+                     src="https://goswami34.github.io/squareCraft-widget/public/alignment (2).svg"
                      class=" alignment-icon   sc-mx-auto" alt="right">
                </div>
                <div id="scTextAlignJustify" data-align="justify" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
  
                   <img 
-                     src="https://fatin-webefo.github.io/squareCraft-plugin/public/alignment (1).svg"
+                     src="https://goswami34.github.io/squareCraft-widget/public/alignment (1).svg"
                      class=" alignment-icon   sc-mx-auto" alt="justify">
                </div>
                
@@ -132,7 +132,7 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
                      sc-bg-transparent sc-w-full  sc-py-1px sc-font-light">
                <div class="sc-mx-auto sc-ml-1 sc-flex sc-items-center sc-justify-center">
                   <img id="scLetterSpacingDropdown" loading="lazy"
-                     src="https://fatin-webefo.github.io/squareCraft-plugin/public/line-spacing.svg"
+                     src="https://goswami34.github.io/squareCraft-widget/public/line-spacing.svg"
                    style="width: 12px;"  class=" sc-px-1 sc-flex sc-items-center sc-justify-center sc-mt-1 sc-mx-auto sc-cursor-pointer">
                </div>
             </div>

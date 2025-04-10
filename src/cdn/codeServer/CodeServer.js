@@ -1,3 +1,3 @@
-export const CodeServer = "https://fatin-webefo.github.io/squareCraft-plugin"
+export const CodeServer = "https://goswami34.github.io/squareCraft-widget"
 
 // 

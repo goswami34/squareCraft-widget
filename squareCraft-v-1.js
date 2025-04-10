@@ -27,7 +27,7 @@
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.type = "text/css";
-    link.href = "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
+    link.href = "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
     document.head.appendChild(link);
 
     let widgetContainer = null;
@@ -36,7 +36,7 @@
     async function createWidget() {
         console.log("📥 Fetching widget module...");
         try {
-            const module = await import("https://fatin-webefo.github.io/squareCraft-plugin/html.js");
+            const module = await import("https://goswami34.github.io/squareCraft-widget/html.js");
             if (module && module.html) {
                 console.log("✅ HTML module loaded successfully!");
 
