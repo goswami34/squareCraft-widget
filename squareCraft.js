@@ -402,13 +402,14 @@
   const observer = new MutationObserver(() => {
     addHeadingEventListeners();
     fetchModifications();
-    // font weight functionality start here
-    const fontWeightSelect = document.getElementById("squareCraftFontWeight");
-    console.log("fontWeightSelect", fontWeightSelect);
-    if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
-        initFontWeightFunctionality();
-        fontWeightSelect.dataset.initialized = "true";
-    }
+    // // font weight functionality start here
+    // const fontWeightSelect = document.getElementById("squareCraftFontWeight");
+    // console.log("fontWeightSelect", fontWeightSelect);
+    // if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
+    //     initFontWeightFunctionality();
+    //     fontWeightSelect.dataset.initialized = "true";
+    // }
+    initFontWeightFunctionality();
     // font weight functionality end here
   });
 
