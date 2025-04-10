@@ -132,20 +132,20 @@ export function typoBoldSelect(fontSizes) {
 
 // font-weight code start here
 
+let selectedElement = null;
 
-
-   document.body.addEventListener("click", (event) => {
-      let block = event.target.closest('[id^="block-"]');
-      if (!block) return;
-      
-      if (selectedElement) selectedElement.style.outline = "";
-      selectedElement = block;
-      selectedElement.style.outline = "2px dashed #EF7C2F";
-      
-      // Find all strong elements within the clicked block
-      const strongElements = block.querySelectorAll('strong');
-      console.log(`✅ Selected Block: ${block.id} with ${strongElements.length} bold words`);
-   });
+document.body.addEventListener("click", (event) => {
+   let block = event.target.closest('[id^="block-"]');
+   if (!block) return;
+   
+   if (selectedElement) selectedElement.style.outline = "";
+   selectedElement = block;
+   selectedElement.style.outline = "2px dashed #EF7C2F";
+   
+   // Find all strong elements within the clicked block
+   const strongElements = block.querySelectorAll('strong');
+   console.log(`✅ Selected Block: ${block.id} with ${strongElements.length} bold words`);
+});
 
 
 
