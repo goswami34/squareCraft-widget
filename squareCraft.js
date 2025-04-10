@@ -1050,15 +1050,12 @@ async function initializeFontFamilyDropdown() {
   }
 }
 
-// Call this function when your widget is initialized
-async function initializeWidget() {
-  // ... other initialization code ...
+
+
+
+await initializeFontFamilyDropdown();
   
-  // Initialize font family dropdown
-  await initializeFontFamilyDropdown();
-  
-  // ... other initialization code ...
-}
+
 
 const fontFamily = document.getElementById("sc-font-family");
 console.log(fontFamily);
