@@ -402,7 +402,7 @@
   const observer = new MutationObserver(() => {
     addHeadingEventListeners();
     fetchModifications();
-    initializeFontWeight();
+    applySavedStyles();
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
@@ -1223,141 +1223,85 @@ if (selectOne) {
 
 
 // Font weight functionality
-function initializeFontWeight() {
-  const fontWeightSelect = document.getElementById("squareCraftFontWeight");
-  if (!fontWeightSelect) {
-      console.warn("⚠️ Font weight select element not found");
+document.body.addEventListener("click", (event) => {
+  let block = event.target.closest('[id^="block-"]');
+  if (!block) return;
+
+  if (selectedElement) selectedElement.style.outline = "";
+  selectedElement = block;
+  selectedElement.style.outline = "2px dashed #EF7C2F";
+
+  // Find all strong elements within the clicked block
+  const strongElements = block.querySelectorAll('strong');
+  console.log(`✅ Selected Block: ${block.id} with ${strongElements.length} bold words`);
+});
+
+
+document.getElementById("squareCraftFontWeight").addEventListener("change", async function() {
+  if (!selectedElement) {
+      console.warn("⚠️ No block selected");
       return;
   }
 
-  console.log("✅ Font weight select element found:", fontWeightSelect);
+  const selectedWeight = this.value;
+  const blockId = selectedElement.id;
 
-  // Set initial value from saved modifications if any
-  if (selectedElement) {
-      const savedStyles = getSavedStyles(selectedElement.id);
-      console.log("📝 Saved styles for current block:", savedStyles);
-      
-      if (savedStyles && savedStyles["font-weight"]) {
-          fontWeightSelect.value = savedStyles["font-weight"];
-          console.log("🔄 Set initial font weight from saved styles:", savedStyles["font-weight"]);
-      }
+  // Create a style tag for this block's strong tags
+  let styleTag = document.getElementById(`style-${blockId}-strong`);
+  if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = `style-${blockId}-strong`;
+      document.head.appendChild(styleTag);
   }
 
-  fontWeightSelect.addEventListener("change", async function() {
-      console.log("🔄 Font weight change event triggered");
-      
-      if (!selectedElement) {
-          console.warn("⚠️ No block selected");
-          return;
+  // Apply font-weight to all strong tags within this block using CSS selector
+  styleTag.innerHTML = `
+      #${blockId} strong {
+          font-weight: ${selectedWeight} !important;
       }
-      console.log("✅ Block selected:", selectedElement.id);
+  `;
 
-      const selectedWeight = this.value;
-      console.log("📝 Selected font weight:", selectedWeight);
-      const blockId = selectedElement.id;
+  // Save modifications using the block ID
+  const css = {
+      "font-weight": selectedWeight
+  };
 
-      try {
-          // Create or update style tag
+  await saveModifications(blockId, css);
+
+  console.log(`✅ Applied font-weight: ${selectedWeight} to all bold words in block: ${blockId}`);
+});
+
+async function applySavedStyles() {
+  const savedStyles = await fetchModifications();
+  if (!savedStyles) return;
+
+  savedStyles.forEach(style => {
+      const blockId = style.elementId;
+      const weight = style.css["font-weight"];
+      
+      if (weight) {
           let styleTag = document.getElementById(`style-${blockId}-strong`);
-          console.log("🔍 Existing style tag:", styleTag ? "Found" : "Not found");
-          
           if (!styleTag) {
               styleTag = document.createElement("style");
               styleTag.id = `style-${blockId}-strong`;
               document.head.appendChild(styleTag);
-              console.log("✅ Created new style tag");
           }
-
-          // Apply font-weight to all strong tags within this block
-          const styleContent = `
+          
+          styleTag.innerHTML = `
               #${blockId} strong {
-                  font-weight: ${selectedWeight} !important;
+                  font-weight: ${weight} !important;
               }
           `;
-          styleTag.innerHTML = styleContent;
-          console.log("✅ Applied styles:", styleContent);
-
-          // Save modifications
-          const css = {
-              "font-weight": selectedWeight
-          };
-          console.log("💾 Saving modifications:", css);
-
-          await saveModifications(blockId, css);
-          console.log("✅ Modifications saved successfully");
-
-          // Update UI feedback
-          updateFontWeightUI(selectedWeight);
-          console.log("✅ UI updated with new font weight");
-
-          // Verify the style was applied
-          const strongElements = document.querySelectorAll(`#${blockId} strong`);
-          console.log(`✅ Found ${strongElements.length} strong elements in block`);
-          
-          strongElements.forEach((elem, index) => {
-              console.log(`📝 Strong element ${index + 1} computed font-weight:`, 
-                  window.getComputedStyle(elem).fontWeight);
-          });
-
-      } catch (error) {
-          console.error("❌ Error applying font weight:", error);
       }
   });
-
-  // Add click event listener to verify the select is clickable
-  fontWeightSelect.addEventListener("click", function() {
-      console.log("🖱️ Font weight select clicked");
-  });
-
-  // Add focus event listener
-  fontWeightSelect.addEventListener("focus", function() {
-      console.log("🎯 Font weight select focused");
-  });
-
-  // Add blur event listener
-  fontWeightSelect.addEventListener("blur", function() {
-      console.log("👋 Font weight select lost focus");
-  });
 }
 
-// Helper function to get saved styles for a block
-function getSavedStyles(blockId) {
-  console.log("🔍 Looking for saved styles for block:", blockId);
-  const savedModifications = localStorage.getItem(`sc_modifications_${blockId}`);
-  console.log("📦 Retrieved saved modifications:", savedModifications);
-  return savedModifications ? JSON.parse(savedModifications) : null;
-}
-
-// Helper function to update UI feedback
-function updateFontWeightUI(weight) {
-  console.log("🔄 Updating UI with font weight:", weight);
-  const weightLabel = document.getElementById("fontWeightLabel");
-  if (weightLabel) {
-      const weightName = getFontWeightName(weight);
-      weightLabel.textContent = weightName;
-      console.log("✅ Updated weight label to:", weightName);
-  } else {
-      console.warn("⚠️ Weight label element not found");
-  }
-}
-
-// Initialize font weight functionality when DOM is ready
-document.addEventListener("DOMContentLoaded", function() {
-  console.log("📄 DOM Content Loaded - Initializing font weight");
-  initializeFontWeight();
+window.addEventListener("load", async () => {
+  await applySavedStyles();
 });
 
-// Re-initialize when a new block is selected
-function onBlockSelected(block) {
-  console.log("🔄 New block selected:", block.id);
-  selectedElement = block;
-  initializeFontWeight();
-}
 
-
-
-
-  // font-weight code end here
+// font-weight code end here
 
 
 
