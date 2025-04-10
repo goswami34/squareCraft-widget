@@ -402,7 +402,11 @@
   const observer = new MutationObserver(() => {
     addHeadingEventListeners();
     fetchModifications();
-    initFontWeightFunctionality();
+    const fontWeightSelect = document.getElementById("squareCraftFontWeight");
+    if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
+        initFontWeightFunctionality();
+        fontWeightSelect.dataset.initialized = "true";
+    }
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
@@ -1101,43 +1105,46 @@ fontfamilies();
   // });
 
   function initFontWeightFunctionality() {
-    console.log("initFontWeightFunctionality");
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (!fontWeightSelect) return;
 
-    fontWeightSelect.addEventListener("change", async function() {
-       if (!selectedElement) {
-          console.warn("⚠️ No block selected");
-          return;
-       }
+    // Remove any existing event listeners
+    const newFontWeightSelect = fontWeightSelect.cloneNode(true);
+    fontWeightSelect.parentNode.replaceChild(newFontWeightSelect, fontWeightSelect);
 
-       const selectedWeight = this.value;
-       const blockId = selectedElement.id;
+    newFontWeightSelect.addEventListener("change", async function() {
+        if (!selectedElement) {
+            console.warn("⚠️ No block selected");
+            return;
+        }
 
-       // Create or update style tag for this block's strong tags
-       let styleTag = document.getElementById(`style-${blockId}-strong`);
-       if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = `style-${blockId}-strong`;
-          document.head.appendChild(styleTag);
-       }
+        const selectedWeight = this.value;
+        const blockId = selectedElement.id;
 
-       // Apply font-weight to all strong tags within this block using CSS selector
-       styleTag.innerHTML = `
-          #${blockId} strong {
-             font-weight: ${selectedWeight} !important;
-          }
-       `;
+        // Create or update style tag for this block
+        let styleTag = document.getElementById(`style-${blockId}`);
+        if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = `style-${blockId}`;
+            document.head.appendChild(styleTag);
+        }
 
-       // Save modifications
-       const css = {
-          "font-weight": selectedWeight
-       };
+        // Apply font-weight to the block and its text elements
+        styleTag.innerHTML = `
+            #${blockId}, #${blockId} p, #${blockId} h1, #${blockId} h2, #${blockId} h3, #${blockId} h4, #${blockId} span {
+                font-weight: ${selectedWeight} !important;
+            }
+        `;
 
-       await saveModifications(blockId, css);
-       console.log(`✅ Applied font-weight: ${selectedWeight} to bold words in block: ${blockId}`);
+        // Save modifications
+        const css = {
+            "font-weight": selectedWeight
+        };
+
+        await saveModifications(blockId, css);
+        console.log(`✅ Applied font-weight: ${selectedWeight} to block: ${blockId}`);
     });
- }
+}
 
   initFontWeightFunctionality();
   
