@@ -100,21 +100,15 @@ export function handleBlockClick(event, context) {
 
 
     //font weight code start here
-    // Track strong elements for font weight
-    const strongElements = new Map();
-    
+    const strongElementsByTag = {};
     innerTextElements.forEach(el => {
-        const strongTags = el.querySelectorAll('strong');
-        if (strongTags.length > 0) {
-            strongElements.set(el, strongTags);
-        }
+      const tag = el.tagName.toLowerCase();
+      const strongTags = el.querySelectorAll('strong');
+      if (strongTags.length > 0) {
+        strongElementsByTag[tag] = Array.from(strongTags);
+      }
     });
-
-    // Store strong elements in the block's dataset for later use
-    block.dataset.strongElements = JSON.stringify(Array.from(strongElements.entries()).map(([el, strongTags]) => ({
-        elementId: el.id,
-        strongCount: strongTags.length
-    })));
+    block.dataset.strongElementsByTag = JSON.stringify(strongElementsByTag);
     //font weight code end here
   }
   
