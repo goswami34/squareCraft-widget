@@ -1013,22 +1013,9 @@ fontfamilies();
 
     const textTransform = clickedElement.dataset.textTransform;
     const blockId = lastClickedElement.id;
-    const tagType = getCurrentTextType(); // e.g., 'h1', 'p'
     
-    // Get the strong elements data
-    const data = lastClickedElement.dataset.strongElementsByTag;
-    if (!data || !tagType) return;
-    
-    const parsed = JSON.parse(data);
-    const strongData = parsed[tagType];
-    
-    if (!strongData || strongData.count === 0) {
-        console.warn(`No <strong> tags found inside ${tagType}`);
-        return;
-    }
-
-    // Create a style string to apply only to strong tags inside the current tag type
-    const styleId = `style-${blockId}-${tagType}-strong-texttransform`;
+    // Create a style string to apply to the entire block
+    const styleId = `style-${blockId}-texttransform`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
         styleTag = document.createElement('style');
@@ -1036,14 +1023,13 @@ fontfamilies();
         document.head.appendChild(styleTag);
     }
 
-    // Construct the style selector like: #block-abc h1 strong
-    const css = `#${blockId} ${tagType} strong { text-transform: ${textTransform} !important; }`;
+    // Apply text-transform to the entire block
+    const css = `#${blockId} { text-transform: ${textTransform} !important; }`;
     styleTag.innerHTML = css;
 
     // Save to backend
     saveModifications(blockId, { 
-        "text-transform": textTransform,
-        "tag-type": tagType
+        "text-transform": textTransform
     });
 
     // Update UI to show active state
