@@ -108,7 +108,15 @@ export function handleBlockClick(event, context) {
         strongElementsByTag[tag] = Array.from(strongTags);
       }
     });
-    block.dataset.strongElementsByTag = JSON.stringify(strongElementsByTag);
+    block.dataset.strongElementsByTag = JSON.stringify(
+      Object.fromEntries(
+        Array.from(strongElements.entries()).map(([el, strongTags]) => [
+          el.tagName.toLowerCase(),
+          strongTags.length
+        ])
+      )
+    );
+    
     //font weight code end here
   }
   
