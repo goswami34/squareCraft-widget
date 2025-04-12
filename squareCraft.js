@@ -1008,9 +1008,9 @@ fontfamilies();
     const clickedElement = event.target.closest('[id^="scTextAlign"]');
     if (!clickedElement) return;
   
-    const textTransform = clickedElement.dataset.align === 'left' ? 'uppercase' :
-                         clickedElement.dataset.align === 'center' ? 'lowercase' :
-                         clickedElement.dataset.align === 'right' ? 'capitalize' :
+    const textTransform = clickedElement.dataset.align === 'uppercase' ? 'uppercase' :
+                         clickedElement.dataset.align === 'lowercase' ? 'lowercase' :
+                         clickedElement.dataset.align === 'capitalize' ? 'capitalize' :
                          'none';
   
     const blockId = lastClickedElement.id;
