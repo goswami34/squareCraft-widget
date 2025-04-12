@@ -100,6 +100,7 @@ export function handleBlockClick(event, context) {
 
 
     //font weight code start here
+    //font weight code start here
     const strongElementsByTag = {};
     innerTextElements.forEach(el => {
       const tag = el.tagName.toLowerCase();
@@ -108,14 +109,10 @@ export function handleBlockClick(event, context) {
         strongElementsByTag[tag] = Array.from(strongTags);
       }
     });
-    block.dataset.strongElementsByTag = JSON.stringify(
-      Object.fromEntries(
-        Array.from(strongElements.entries()).map(([el, strongTags]) => [
-          el.tagName.toLowerCase(),
-          strongTags.length
-        ])
-      )
-    );
+
+    // Store the strong elements data in the block's dataset
+    block.dataset.strongElementsByTag = JSON.stringify(strongElementsByTag);
+    //font weight code end here
     
     //font weight code end here
   }
