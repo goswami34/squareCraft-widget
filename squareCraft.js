@@ -415,7 +415,8 @@
     }
     //text decoration code end here
     
-    handleTextTransformClick()
+    const fakeEvent = { target: document.querySelector('[class^="squsareCraft-text-transform"]') };
+    if (fakeEvent.target) handleTextTransformClick(fakeEvent);
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
