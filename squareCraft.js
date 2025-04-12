@@ -985,35 +985,49 @@ fontfamilies();
   // });
 
   // Modify the handleFontWeightChange function in squareCraft.js
-  // In squareCraft.js, modify the handleFontWeightChange function:
   function handleFontWeightChange(event) {
-    console.log("handleFontWeightChange");
     if (!lastClickedElement) {
       console.warn("⚠️ Please select a block first");
       return;
     }
-
+  
     const fontWeight = event.target.value;
     const blockId = lastClickedElement.id;
-
-    // Create or update style tag for this block's strong tags
-    let styleTag = document.getElementById(`style-${blockId}-strong`);
+    const tagType = getCurrentTextType(); // e.g., 'h1', 'p'
+    
+    // Get the strong elements data
+    const data = lastClickedElement.dataset.strongElementsByTag;
+    if (!data || !tagType) return;
+    
+    const parsed = JSON.parse(data);
+    const strongData = parsed[tagType];
+    
+    if (!strongData || strongData.count === 0) {
+      console.warn(`No <strong> tags found inside ${tagType}`);
+      return;
+    }
+  
+    // Create a style string to apply only to strong tags inside the current tag type
+    const styleId = `style-${blockId}-${tagType}-strong`;
+    let styleTag = document.getElementById(styleId);
     if (!styleTag) {
       styleTag = document.createElement('style');
-      styleTag.id = `style-${blockId}-strong`;
+      styleTag.id = styleId;
       document.head.appendChild(styleTag);
     }
-
-    // Apply font-weight to all strong tags within the block
-    styleTag.innerHTML = `#${blockId} strong { font-weight: ${fontWeight} !important; }`;
-
+  
+    // Construct the style selector like: #block-abc h1 strong
+    const css = `#${blockId} ${tagType} strong { font-weight: ${fontWeight} !important; }`;
+    styleTag.innerHTML = css;
+  
     // Save to backend
-    saveModifications(blockId, { "font-weight": fontWeight });
+    saveModifications(blockId, { 
+      "font-weight": fontWeight,
+      "tag-type": tagType
+    });
   }
 
-  // Update the event listener
   document.getElementById('squareCraftFontWeight').addEventListener('change', handleFontWeightChange);
-  
 
   // font weight code end here
 

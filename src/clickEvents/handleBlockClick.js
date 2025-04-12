@@ -100,15 +100,16 @@ export function handleBlockClick(event, context) {
 
 
     //font weight code start here
+    // In handleBlockClick.js
     const strongElementsByTag = {};
     innerTextElements.forEach(el => {
       const tag = el.tagName.toLowerCase();
       const strongTags = el.querySelectorAll('strong');
       if (strongTags.length > 0) {
-        // Instead of storing the DOM elements, store just the count and text content
         strongElementsByTag[tag] = {
           count: strongTags.length,
-          texts: Array.from(strongTags).map(strong => strong.textContent)
+          texts: Array.from(strongTags).map(strong => strong.textContent),
+          elements: Array.from(strongTags) // Store the actual elements
         };
       }
     });
