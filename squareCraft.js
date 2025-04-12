@@ -409,13 +409,13 @@
     }
 
     //text decoration code start here
-    const textDecorationSelect = document.getElementById("squsareCraft-text-transform");
+    const textDecorationSelect = document.getElementById("squareCraftTextTransform");
     if (textDecorationSelect && !textDecorationSelect.dataset.initialized) {
       textDecorationSelect.dataset.initialized = "true";
     }
     //text decoration code end here
     
-    const fakeEvent = { target: document.querySelector('[class^="squsareCraft-text-transform"]') };
+    const fakeEvent = { target: document.querySelector('[class^="squareCraft-text-transform"]') };
     if (fakeEvent.target) handleTextTransformClick(fakeEvent);
   });
 
