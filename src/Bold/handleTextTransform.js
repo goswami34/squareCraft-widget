@@ -14,6 +14,20 @@ function getCurrentTextType() {
 export function handleTextTransformClick(event = null, context = null) {
     console.log("handleTextTransformClick", event, context);
 
+    const {
+        lastClickedElement,
+        getTextType,
+        applyStylesToElement,
+        lastAppliedAlignment,
+        setLastAppliedAlignment,
+        lastActiveAlignmentElement,
+        setLastActiveAlignmentElement,
+        lastClickedBlockId,
+        userId,
+        token,
+        widgetId
+      } = context;
+
     if (!event) {
         const activeButton = document.querySelector('[id^="scTextTransform"].sc-activeTab-border');
         if (!activeButton) return;
