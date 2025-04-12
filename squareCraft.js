@@ -411,11 +411,10 @@
     //text decoration code start here
     const textDecorationSelect = document.getElementById("squareCraftTextTransform");
     if (textDecorationSelect && !textDecorationSelect.dataset.initialized) {
-      textDecorationSelect.dataset.initialized = "true";
+        textDecorationSelect.dataset.initialized = "true";
+        // Call handleTextTransformClick without an event
+        handleTextTransformClick();
     }
-    //text decoration code end here
-    
-    handleTextTransformClick();
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
