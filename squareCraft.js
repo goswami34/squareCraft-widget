@@ -407,6 +407,13 @@
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
       fontWeightSelect.dataset.initialized = "true";
     }
+
+    //text decoration code start here
+    const textDecorationSelect = document.getElementById("squsareCraft-text-transform");
+    if (textDecorationSelect && !textDecorationSelect.dataset.initialized) {
+      textDecorationSelect.dataset.initialized = "true";
+    }
+    //text decoration code end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
@@ -941,50 +948,7 @@ fontfamilies();
 
 
   // font weight code start here
-  // function handleFontWeightChange(event, context) {
-  //   const { lastClickedElement } = context;
-  //   if (!lastClickedElement) return;
-  
-  //   const fontWeight = event.target.value;
-  //   const tagType = getCurrentTextType(); // e.g., 'h1', 'p'
-  //   const data = lastClickedElement.dataset.strongElementsByTag;
-  
-  //   if (!data || !tagType) return;
-  
-  //   const parsed = JSON.parse(data);
-  //   const strongList = parsed[tagType] || [];
-  
-  //   if (strongList.length === 0) {
-  //     console.warn(`No <strong> tags found inside ${tagType}`);
-  //     return;
-  //   }
-  
-  //   // Create a style string to apply only to strong tags inside the current tag type
-  //   const styleId = `style-${lastClickedElement.id}-${tagType}-strong`;
-  //   let styleTag = document.getElementById(styleId);
-  //   if (!styleTag) {
-  //     styleTag = document.createElement('style');
-  //     styleTag.id = styleId;
-  //     document.head.appendChild(styleTag);
-  //   }
-  
-  //   // Construct the style selector like: #block-abc h1 strong
-  //   const css = `#${lastClickedElement.id} ${tagType} strong { font-weight: ${fontWeight} !important; }`;
-  //   styleTag.innerHTML = css;
-  
-  //   // Save to backend
-  //   saveModifications(lastClickedElement.id, { "font-weight": fontWeight });
-  // }
-  
 
-  // document.getElementById('squareCraftFontWeight').addEventListener('change', (event) => {
-  //   handleFontWeightChange(event, {
-  //     lastClickedElement,
-  //     strongElements
-  //   });
-  // });
-
-  // Modify the handleFontWeightChange function in squareCraft.js
   function handleFontWeightChange(event, context) {
     if (!lastClickedElement) {
       console.warn("⚠️ Please select a block first");
@@ -1031,6 +995,74 @@ fontfamilies();
   document.getElementById('squareCraftFontWeight').addEventListener('change', handleFontWeightChange);
 
   // font weight code end here
+
+
+  //text transform code start here
+
+  function handleTextTransformClick(event) {
+    if (!lastClickedElement) {
+      console.warn("⚠️ Please select a block first");
+      return;
+    }
+  
+    const clickedElement = event.target.closest('[id^="scTextAlign"]');
+    if (!clickedElement) return;
+  
+    const textTransform = clickedElement.dataset.align === 'left' ? 'uppercase' :
+                         clickedElement.dataset.align === 'center' ? 'lowercase' :
+                         clickedElement.dataset.align === 'right' ? 'capitalize' :
+                         'none';
+  
+    const blockId = lastClickedElement.id;
+    const tagType = getCurrentTextType(); // e.g., 'h1', 'p'
+    
+    // Get the strong elements data
+    const data = lastClickedElement.dataset.strongElementsByTag;
+    if (!data || !tagType) return;
+    
+    const parsed = JSON.parse(data);
+    const strongData = parsed[tagType];
+    
+    if (!strongData || strongData.count === 0) {
+      console.warn(`No <strong> tags found inside ${tagType}`);
+      return;
+    }
+  
+    // Create a style string to apply only to strong tags inside the current tag type
+    const styleId = `style-${blockId}-${tagType}-strong-texttransform`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+  
+    // Construct the style selector like: #block-abc h1 strong
+    const css = `#${blockId} ${tagType} strong { text-transform: ${textTransform} !important; }`;
+    styleTag.innerHTML = css;
+  
+    // Save to backend
+    saveModifications(blockId, { 
+      "text-transform": textTransform,
+      "tag-type": tagType
+    });
+  
+    // Update UI to show active state
+    document.querySelectorAll('[id^="scTextAlign"]').forEach(el => {
+      el.classList.remove('sc-activeTab-border');
+      el.classList.add('sc-inActiveTab-border');
+    });
+    clickedElement.classList.remove('sc-inActiveTab-border');
+    clickedElement.classList.add('sc-activeTab-border');
+  }
+  
+  // Add event listeners for each text-transform button
+  document.getElementById('scTextAlignLeft').addEventListener('click', handleTextTransformClick);
+  document.getElementById('scTextAlignCenter').addEventListener('click', handleTextTransformClick);
+  document.getElementById('scTextAlignRight').addEventListener('click', handleTextTransformClick);
+  document.getElementById('scTextAlignJustify').addEventListener('click', handleTextTransformClick);
+    
+  //text transform code end here
 
 
 
