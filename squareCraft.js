@@ -410,6 +410,7 @@
     //     fontWeightSelect.dataset.initialized = "true";
     // }
     // font weight functionality end here
+    handleFontWeightChange();
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
