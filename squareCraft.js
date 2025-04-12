@@ -985,13 +985,14 @@ fontfamilies();
   // });
 
   // Modify the handleFontWeightChange function in squareCraft.js
-  function handleFontWeightChange(event) {
+  function handleFontWeightChange(event, context) {
     if (!lastClickedElement) {
       console.warn("⚠️ Please select a block first");
       return;
     }
   
     const fontWeight = event.target.value;
+    console.log("fontWeight", fontWeight);
     const blockId = lastClickedElement.id;
     const tagType = getCurrentTextType(); // e.g., 'h1', 'p'
     
