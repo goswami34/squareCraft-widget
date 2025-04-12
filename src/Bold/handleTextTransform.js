@@ -13,15 +13,13 @@ function getCurrentTextType() {
 
 export function handleTextTransformClick(event = null, context = null) {
     console.log("handleTextTransformClick", event, context);
-    
-    // If no event provided, find the active button
+
     if (!event) {
         const activeButton = document.querySelector('[id^="scTextTransform"].sc-activeTab-border');
         if (!activeButton) return;
         event = { target: activeButton };
     }
 
-    // If no context provided, get it from the last clicked element
     if (!context) {
         const lastClickedElement = document.querySelector('.sc-selected');
         if (!lastClickedElement) {
@@ -39,11 +37,24 @@ export function handleTextTransformClick(event = null, context = null) {
 
     const textTransform = clickedElement.dataset.textTransform;
     const blockId = context.lastClickedElement.id;
-    const rawTagType = getCurrentTextType();
-    if (!rawTagType) return;
+    const tagType = getCurrentTextType(); // h1, h2, p1, etc.
+    if (!tagType) return;
 
-    // Create or update the style tag
-    const styleId = `style-${blockId}-${rawTagType}-strong-texttransform`;
+    // ⛔️ Only apply if that tag type contains <strong> inside
+    const tagElement = context.lastClickedElement.querySelector(tagType);
+    if (!tagElement) {
+        console.warn(`🚫 Tag ${tagType} not found in selected block`);
+        return;
+    }
+
+    const strongTags = tagElement.querySelectorAll("strong");
+    if (strongTags.length === 0) {
+        console.warn(`🚫 No <strong> tags found inside ${tagType}`);
+        return;
+    }
+
+    // ✅ Create or update style tag
+    const styleId = `style-${blockId}-${tagType}-strong-texttransform`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
         styleTag = document.createElement("style");
@@ -51,21 +62,20 @@ export function handleTextTransformClick(event = null, context = null) {
         document.head.appendChild(styleTag);
     }
 
-    // Apply text-transform to strong tags within the current tag type
     const css = `
-        #${blockId} ${rawTagType} strong {
+        #${blockId} ${tagType} strong {
             text-transform: ${textTransform} !important;
         }
     `;
     styleTag.innerHTML = css;
 
-    // Save to backend
+    // ✅ Save to backend
     saveModifications(blockId, {
         "text-transform": textTransform,
-        "tag-type": rawTagType
+        "tag-type": tagType
     });
 
-    // Update UI state
+    // ✅ Update tab UI
     document.querySelectorAll('[id^="scTextTransform"]').forEach(el => {
         el.classList.remove('sc-activeTab-border');
         el.classList.add('sc-inActiveTab-border');
