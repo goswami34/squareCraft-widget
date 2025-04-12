@@ -37,7 +37,15 @@ export function handleTextTransformClick(event = null, context = null) {
 
     const textTransform = clickedElement.dataset.textTransform;
     const blockId = context.lastClickedElement.id;
-    const tagType = getCurrentTextType(); // h1, h2, p1, etc.
+    // const tagType = getCurrentTextType(); // h1, h2, p1, etc.
+    const rawType = getCurrentTextType(); // e.g. 'p1'
+    let tagType = rawType;
+
+    // Map p1 → p, p2 → p, h1 → h1 etc.
+    if (rawType.startsWith('p')) tagType = 'p';
+    if (rawType.startsWith('h')) tagType = `h${rawType.replace('heading', '').replace('h', '')}`;
+
+
     if (!tagType) return;
 
     // ⛔️ Only apply if that tag type contains <strong> inside
