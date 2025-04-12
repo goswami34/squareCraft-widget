@@ -403,14 +403,10 @@
     addHeadingEventListeners();
     fetchModifications();
     // // font weight functionality start here
-    // const fontWeightSelect = document.getElementById("squareCraftFontWeight");
-    // console.log("fontWeightSelect", fontWeightSelect);
-    // if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
-    //     initFontWeightFunctionality();
-    //     fontWeightSelect.dataset.initialized = "true";
-    // }
-    // font weight functionality end here
-    handleFontWeightChange();
+    const fontWeightSelect = document.getElementById("squareCraftFontWeight");
+    if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
+      fontWeightSelect.dataset.initialized = "true";
+    }
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
@@ -945,24 +941,70 @@ fontfamilies();
 
 
   // font weight code start here
-  function handleFontWeightChange(event, context) {
-    const { lastClickedElement } = context;
-    if (!lastClickedElement) return;
+  // function handleFontWeightChange(event, context) {
+  //   const { lastClickedElement } = context;
+  //   if (!lastClickedElement) return;
   
+  //   const fontWeight = event.target.value;
+  //   const tagType = getCurrentTextType(); // e.g., 'h1', 'p'
+  //   const data = lastClickedElement.dataset.strongElementsByTag;
+  
+  //   if (!data || !tagType) return;
+  
+  //   const parsed = JSON.parse(data);
+  //   const strongList = parsed[tagType] || [];
+  
+  //   if (strongList.length === 0) {
+  //     console.warn(`No <strong> tags found inside ${tagType}`);
+  //     return;
+  //   }
+  
+  //   // Create a style string to apply only to strong tags inside the current tag type
+  //   const styleId = `style-${lastClickedElement.id}-${tagType}-strong`;
+  //   let styleTag = document.getElementById(styleId);
+  //   if (!styleTag) {
+  //     styleTag = document.createElement('style');
+  //     styleTag.id = styleId;
+  //     document.head.appendChild(styleTag);
+  //   }
+  
+  //   // Construct the style selector like: #block-abc h1 strong
+  //   const css = `#${lastClickedElement.id} ${tagType} strong { font-weight: ${fontWeight} !important; }`;
+  //   styleTag.innerHTML = css;
+  
+  //   // Save to backend
+  //   saveModifications(lastClickedElement.id, { "font-weight": fontWeight });
+  // }
+  
+
+  // document.getElementById('squareCraftFontWeight').addEventListener('change', (event) => {
+  //   handleFontWeightChange(event, {
+  //     lastClickedElement,
+  //     strongElements
+  //   });
+  // });
+
+  // Modify the handleFontWeightChange function in squareCraft.js
+  function handleFontWeightChange(event) {
+    if (!lastClickedElement) {
+      console.warn("⚠️ Please select a block first");
+      return;
+    }
+
     const fontWeight = event.target.value;
     const tagType = getCurrentTextType(); // e.g., 'h1', 'p'
     const data = lastClickedElement.dataset.strongElementsByTag;
-  
+
     if (!data || !tagType) return;
-  
+
     const parsed = JSON.parse(data);
     const strongList = parsed[tagType] || [];
-  
+
     if (strongList.length === 0) {
       console.warn(`No <strong> tags found inside ${tagType}`);
       return;
     }
-  
+
     // Create a style string to apply only to strong tags inside the current tag type
     const styleId = `style-${lastClickedElement.id}-${tagType}-strong`;
     let styleTag = document.getElementById(styleId);
@@ -971,22 +1013,17 @@ fontfamilies();
       styleTag.id = styleId;
       document.head.appendChild(styleTag);
     }
-  
+
     // Construct the style selector like: #block-abc h1 strong
     const css = `#${lastClickedElement.id} ${tagType} strong { font-weight: ${fontWeight} !important; }`;
     styleTag.innerHTML = css;
-  
+
     // Save to backend
     saveModifications(lastClickedElement.id, { "font-weight": fontWeight });
   }
-  
 
-  document.getElementById('squareCraftFontWeight').addEventListener('change', (event) => {
-    handleFontWeightChange(event, {
-      lastClickedElement,
-      strongElements
-    });
-  });
+  // Update the event listener
+  document.getElementById('squareCraftFontWeight').addEventListener('change', handleFontWeightChange);
 
   // font weight code end here
 
