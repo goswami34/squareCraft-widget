@@ -1016,57 +1016,69 @@ fontfamilies();
 
 
 
-  function handleTextTransformClick(event) {
-    if (!lastClickedElement) {
-        console.warn("⚠️ Please select a block first");
-        return;
-    }
+function handleTextTransformClick(event = null) {
+  if (!lastClickedElement) {
+      console.warn("⚠️ Please select a block first");
+      return;
+  }
 
-    const clickedElement = event.target.closest('[id^="scTextTransform"]');
-    if (!clickedElement) return;
+  // If no event is provided, this is a direct call
+  if (!event) {
+      // Find the active text transform button
+      const activeButton = document.querySelector('[id^="scTextTransform"].sc-activeTab-border');
+      if (!activeButton) return;
+      
+      // Create a fake event object
+      event = {
+          target: activeButton
+      };
+  }
 
-    const textTransform = clickedElement.dataset.textTransform;
-    const blockId = lastClickedElement.id;
-    const tagType = getCurrentTextType(); // e.g., 'h1', 'p'
-    
-    // Get the strong elements data
-    const data = lastClickedElement.dataset.strongElementsByTag;
-    if (!data || !tagType) return;
-    
-    const parsed = JSON.parse(data);
-    const strongData = parsed[tagType];
-    
-    if (!strongData || strongData.count === 0) {
-        console.warn(`No <strong> tags found inside ${tagType}`);
-        return;
-    }
+  const clickedElement = event.target.closest('[id^="scTextTransform"]');
+  if (!clickedElement) return;
 
-    // Create a style string to apply only to strong tags inside the current tag type
-    const styleId = `style-${blockId}-${tagType}-strong-texttransform`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-        styleTag = document.createElement('style');
-        styleTag.id = styleId;
-        document.head.appendChild(styleTag);
-    }
+  const textTransform = clickedElement.dataset.textTransform;
+  const blockId = lastClickedElement.id;
+  const tagType = getCurrentTextType(); // e.g., 'h1', 'p'
+  
+  // Get the strong elements data
+  const data = lastClickedElement.dataset.strongElementsByTag;
+  if (!data || !tagType) return;
+  
+  const parsed = JSON.parse(data);
+  const strongData = parsed[tagType];
+  
+  if (!strongData || strongData.count === 0) {
+      console.warn(`No <strong> tags found inside ${tagType}`);
+      return;
+  }
 
-    // Construct the style selector like: #block-abc h1 strong
-    const css = `#${blockId} ${tagType} strong { text-transform: ${textTransform} !important; }`;
-    styleTag.innerHTML = css;
+  // Create a style string to apply only to strong tags inside the current tag type
+  const styleId = `style-${blockId}-${tagType}-strong-texttransform`;
+  let styleTag = document.getElementById(styleId);
+  if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+  }
 
-    // Save to backend
-    saveModifications(blockId, { 
-        "text-transform": textTransform,
-        "tag-type": tagType
-    });
+  // Construct the style selector like: #block-abc h1 strong
+  const css = `#${blockId} ${tagType} strong { text-transform: ${textTransform} !important; }`;
+  styleTag.innerHTML = css;
 
-    // Update UI to show active state
-    document.querySelectorAll('[id^="scTextTransform"]').forEach(el => {
-        el.classList.remove('sc-activeTab-border');
-        el.classList.add('sc-inActiveTab-border');
-    });
-    clickedElement.classList.remove('sc-inActiveTab-border');
-    clickedElement.classList.add('sc-activeTab-border');
+  // Save to backend
+  saveModifications(blockId, { 
+      "text-transform": textTransform,
+      "tag-type": tagType
+  });
+
+  // Update UI to show active state
+  document.querySelectorAll('[id^="scTextTransform"]').forEach(el => {
+      el.classList.remove('sc-activeTab-border');
+      el.classList.add('sc-inActiveTab-border');
+  });
+  clickedElement.classList.remove('sc-inActiveTab-border');
+  clickedElement.classList.add('sc-activeTab-border');
 }
 
 // Add event listeners for each text-transform button
