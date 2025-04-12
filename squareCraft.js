@@ -426,11 +426,21 @@
     }
 
     //text decoration code start here
-    const textDecorationSelect = document.getElementById("squareCraftTextTransform");
-    if (textDecorationSelect && !textDecorationSelect.dataset.initialized) {
-        textDecorationSelect.dataset.initialized = "true";
-        // Call handleTextTransformClick without an event
-        handleTextTransformClick();
+    const textTransformSelect = document.getElementById("squareCraftTextTransform");
+    if (textTransformSelect && !textTransformSelect.dataset.initialized) {
+        textTransformSelect.dataset.initialized = "true";
+        
+        // Get the last clicked element and its context
+        const lastClickedElement = document.querySelector('.sc-selected');
+        if (lastClickedElement) {
+            const context = {
+                lastClickedElement,
+                lastClickedBlockId: lastClickedElement.id
+            };
+            
+            // Call handleTextTransformClick with the context
+            handleTextTransformClick(null, context);
+        }
     }
   });
 

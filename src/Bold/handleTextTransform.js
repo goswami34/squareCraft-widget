@@ -11,10 +11,30 @@ function getCurrentTextType() {
     return null;
 }
 
-export function handleTextTransformClick(event, context) {
-    if (!context.lastClickedElement) {
-        console.warn("⚠️ Please select a block first");
-        return;
+export function handleTextTransformClick(event = null, context = null) {
+    // If no event is provided, find the active text transform button
+    if (!event) {
+        const activeButton = document.querySelector('[id^="scTextTransform"].sc-activeTab-border');
+        if (!activeButton) return;
+        
+        // Create a fake event object
+        event = {
+            target: activeButton
+        };
+    }
+
+    // If no context is provided, get it from the last clicked element
+    if (!context) {
+        const lastClickedElement = document.querySelector('.sc-selected');
+        if (!lastClickedElement) {
+            console.warn("⚠️ Please select a block first");
+            return;
+        }
+        
+        context = {
+            lastClickedElement,
+            lastClickedBlockId: lastClickedElement.id
+        };
     }
 
     const clickedElement = event.target.closest('[id^="scTextTransform"]');
