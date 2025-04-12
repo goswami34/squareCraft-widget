@@ -98,8 +98,19 @@ export function handleBlockClick(event, context) {
     //align code end here
 
 
+
     //font weight code start here
-    
+    const strongElements = new Map(); // Track strong elements for each text element
+
+    innerTextElements.forEach(el => {
+      const strongTags = el.querySelectorAll('strong');
+      if (strongTags.length > 0) {
+        strongElements.set(el, strongTags);
+      }
+    });
+
+    // Store this information in the context for later use
+    context.setStrongElements(strongElements);
     //font weight code end here
   }
   
