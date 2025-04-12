@@ -409,7 +409,6 @@
     //     initFontWeightFunctionality();
     //     fontWeightSelect.dataset.initialized = "true";
     // }
-    initFontWeightFunctionality();
     // font weight functionality end here
   });
 
