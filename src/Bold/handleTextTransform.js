@@ -39,6 +39,10 @@ export function handleTextTransformClick(event = null, context = null) {
     const blockId = context.lastClickedElement.id;
     // const tagType = getCurrentTextType(); // h1, h2, p1, etc.
     const rawType = getCurrentTextType(); // e.g. 'p1'
+    if (!rawType) {
+        console.warn("❌ No active text type found. Cannot apply text-transform.");
+        return;
+    }
     let tagType = rawType;
 
     // Map p1 → p, p2 → p, h1 → h1 etc.
