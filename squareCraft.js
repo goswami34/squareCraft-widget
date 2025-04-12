@@ -987,6 +987,7 @@ fontfamilies();
   // Modify the handleFontWeightChange function in squareCraft.js
   // In squareCraft.js, modify the handleFontWeightChange function:
   function handleFontWeightChange(event) {
+    console.log("handleFontWeightChange");
     if (!lastClickedElement) {
       console.warn("⚠️ Please select a block first");
       return;
