@@ -106,10 +106,10 @@ export function handleBlockClick(event, context) {
       const tag = el.tagName.toLowerCase();
       const strongTags = el.querySelectorAll('strong');
       if (strongTags.length > 0) {
+        // Instead of storing the DOM elements, store just the count and text content
         strongElementsByTag[tag] = {
           count: strongTags.length,
-          texts: Array.from(strongTags).map(strong => strong.textContent),
-          elements: Array.from(strongTags) // Store the actual elements
+          texts: Array.from(strongTags).map(strong => strong.textContent)
         };
       }
     });
