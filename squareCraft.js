@@ -415,8 +415,7 @@
     }
     //text decoration code end here
     
-    const fakeEvent = { target: document.querySelector('[class^="squareCraft-text-transform"]') };
-    if (fakeEvent.target) handleTextTransformClick(fakeEvent);
+    handleTextTransformClick();
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
@@ -1002,6 +1001,21 @@ fontfamilies();
 
   //text transform code start here
 
+  function getCurrentTextType() {
+    const activeTab = document.querySelector('.sc-activeTab-border');
+    if (!activeTab) return null;
+    
+    const tabId = activeTab.id;
+    if (tabId.startsWith('heading')) {
+        return `h${tabId.replace('heading', '')}`;
+    } else if (tabId.startsWith('paragraph')) {
+        return `p${tabId.replace('paragraph', '')}`;
+    }
+    return null;
+}
+
+
+
   function handleTextTransformClick(event) {
     if (!lastClickedElement) {
         console.warn("⚠️ Please select a block first");
@@ -1013,9 +1027,22 @@ fontfamilies();
 
     const textTransform = clickedElement.dataset.textTransform;
     const blockId = lastClickedElement.id;
+    const tagType = getCurrentTextType(); // e.g., 'h1', 'p'
     
-    // Create a style string to apply to the entire block
-    const styleId = `style-${blockId}-texttransform`;
+    // Get the strong elements data
+    const data = lastClickedElement.dataset.strongElementsByTag;
+    if (!data || !tagType) return;
+    
+    const parsed = JSON.parse(data);
+    const strongData = parsed[tagType];
+    
+    if (!strongData || strongData.count === 0) {
+        console.warn(`No <strong> tags found inside ${tagType}`);
+        return;
+    }
+
+    // Create a style string to apply only to strong tags inside the current tag type
+    const styleId = `style-${blockId}-${tagType}-strong-texttransform`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
         styleTag = document.createElement('style');
@@ -1023,13 +1050,14 @@ fontfamilies();
         document.head.appendChild(styleTag);
     }
 
-    // Apply text-transform to the entire block
-    const css = `#${blockId} { text-transform: ${textTransform} !important; }`;
+    // Construct the style selector like: #block-abc h1 strong
+    const css = `#${blockId} ${tagType} strong { text-transform: ${textTransform} !important; }`;
     styleTag.innerHTML = css;
 
     // Save to backend
     saveModifications(blockId, { 
-        "text-transform": textTransform
+        "text-transform": textTransform,
+        "tag-type": tagType
     });
 
     // Update UI to show active state
