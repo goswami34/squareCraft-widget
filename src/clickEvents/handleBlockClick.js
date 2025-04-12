@@ -100,13 +100,16 @@ export function handleBlockClick(event, context) {
 
 
     //font weight code start here
-    //font weight code start here
     const strongElementsByTag = {};
     innerTextElements.forEach(el => {
       const tag = el.tagName.toLowerCase();
       const strongTags = el.querySelectorAll('strong');
       if (strongTags.length > 0) {
-        strongElementsByTag[tag] = Array.from(strongTags);
+        // Instead of storing the DOM elements, store just the count and text content
+        strongElementsByTag[tag] = {
+          count: strongTags.length,
+          texts: Array.from(strongTags).map(strong => strong.textContent)
+        };
       }
     });
 
@@ -114,6 +117,5 @@ export function handleBlockClick(event, context) {
     block.dataset.strongElementsByTag = JSON.stringify(strongElementsByTag);
     //font weight code end here
     
-    //font weight code end here
   }
   
