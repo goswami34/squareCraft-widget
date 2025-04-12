@@ -414,6 +414,8 @@
       textDecorationSelect.dataset.initialized = "true";
     }
     //text decoration code end here
+    
+    handleTextTransformClick()
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
