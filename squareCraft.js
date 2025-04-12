@@ -985,41 +985,34 @@ fontfamilies();
   // });
 
   // Modify the handleFontWeightChange function in squareCraft.js
+  // In squareCraft.js, modify the handleFontWeightChange function:
   function handleFontWeightChange(event) {
     if (!lastClickedElement) {
       console.warn("⚠️ Please select a block first");
       return;
     }
-  
+
     const fontWeight = event.target.value;
-    const data = lastClickedElement.dataset.strongElementsByTag;
-  
-    if (!data) {
-      console.warn("No strong elements found in the selected block");
-      return;
-    }
-  
-    const parsed = JSON.parse(data);
-    
-    // Create a style string to apply to all strong tags in the block
-    const styleId = `style-${lastClickedElement.id}-strong`;
-    let styleTag = document.getElementById(styleId);
+    const blockId = lastClickedElement.id;
+
+    // Create or update style tag for this block's strong tags
+    let styleTag = document.getElementById(`style-${blockId}-strong`);
     if (!styleTag) {
       styleTag = document.createElement('style');
-      styleTag.id = styleId;
+      styleTag.id = `style-${blockId}-strong`;
       document.head.appendChild(styleTag);
     }
-  
+
     // Apply font-weight to all strong tags within the block
-    const css = `#${lastClickedElement.id} strong { font-weight: ${fontWeight} !important; }`;
-    styleTag.innerHTML = css;
-  
+    styleTag.innerHTML = `#${blockId} strong { font-weight: ${fontWeight} !important; }`;
+
     // Save to backend
-    saveModifications(lastClickedElement.id, { "font-weight": fontWeight });
+    saveModifications(blockId, { "font-weight": fontWeight });
   }
-  
+
   // Update the event listener
   document.getElementById('squareCraftFontWeight').addEventListener('change', handleFontWeightChange);
+  
 
   // font weight code end here
 
