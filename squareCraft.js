@@ -1015,7 +1015,4 @@ fontfamilies();
   // font weight code end here
 
 
-
-
-
 })();
