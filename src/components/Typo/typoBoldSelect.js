@@ -96,19 +96,19 @@ export function typoBoldSelect(fontSizes) {
     <div
         class="sc-flex sc-items-center  ">
         
-        <div id="scTextAlignLeft" data-align="left" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
+        <div id="scTextAlignLeft" data-align="uppercase" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
 
            <p class="sc-universal sc-poppins sc-text-sm squsareCraft-text-transform">AG</p>
         </div>
-         <div id="scTextAlignCenter" data-align="center" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer ">
+         <div id="scTextAlignCenter" data-align="lowercase" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer ">
 
           <p class="sc-universal sc-poppins sc-text-sm squsareCraft-text-transform">ag</p>
         </div>
-         <div id="scTextAlignRight" data-align="right" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer">
+         <div id="scTextAlignRight" data-align="capitalize" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer">
 
           <p class="sc-universal sc-poppins sc-text-sm squsareCraft-text-transform">Ag</p>
         </div>
-        <div id="scTextAlignJustify" data-align="justify" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
+        <div id="scTextAlignJustify" data-align="uppercase" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
           <p class="sc-universal sc-poppins sc-text-sm squsareCraft-text-transform">AG</p>
         </div>
         </div>
