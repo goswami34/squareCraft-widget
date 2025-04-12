@@ -1001,18 +1001,14 @@ fontfamilies();
 
   function handleTextTransformClick(event) {
     if (!lastClickedElement) {
-      console.warn("⚠️ Please select a block first");
-      return;
+        console.warn("⚠️ Please select a block first");
+        return;
     }
-  
-    const clickedElement = event.target.closest('[id^="scTextAlign"]');
+
+    const clickedElement = event.target.closest('[id^="scTextTransform"]');
     if (!clickedElement) return;
-  
-    const textTransform = clickedElement.dataset.align === 'uppercase' ? 'uppercase' :
-                         clickedElement.dataset.align === 'lowercase' ? 'lowercase' :
-                         clickedElement.dataset.align === 'capitalize' ? 'capitalize' :
-                         'none';
-  
+
+    const textTransform = clickedElement.dataset.textTransform;
     const blockId = lastClickedElement.id;
     const tagType = getCurrentTextType(); // e.g., 'h1', 'p'
     
@@ -1024,43 +1020,43 @@ fontfamilies();
     const strongData = parsed[tagType];
     
     if (!strongData || strongData.count === 0) {
-      console.warn(`No <strong> tags found inside ${tagType}`);
-      return;
+        console.warn(`No <strong> tags found inside ${tagType}`);
+        return;
     }
-  
+
     // Create a style string to apply only to strong tags inside the current tag type
     const styleId = `style-${blockId}-${tagType}-strong-texttransform`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
-      styleTag = document.createElement('style');
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
+        styleTag = document.createElement('style');
+        styleTag.id = styleId;
+        document.head.appendChild(styleTag);
     }
-  
+
     // Construct the style selector like: #block-abc h1 strong
     const css = `#${blockId} ${tagType} strong { text-transform: ${textTransform} !important; }`;
     styleTag.innerHTML = css;
-  
+
     // Save to backend
     saveModifications(blockId, { 
-      "text-transform": textTransform,
-      "tag-type": tagType
+        "text-transform": textTransform,
+        "tag-type": tagType
     });
-  
+
     // Update UI to show active state
-    document.querySelectorAll('[id^="scTextAlign"]').forEach(el => {
-      el.classList.remove('sc-activeTab-border');
-      el.classList.add('sc-inActiveTab-border');
+    document.querySelectorAll('[id^="scTextTransform"]').forEach(el => {
+        el.classList.remove('sc-activeTab-border');
+        el.classList.add('sc-inActiveTab-border');
     });
     clickedElement.classList.remove('sc-inActiveTab-border');
     clickedElement.classList.add('sc-activeTab-border');
-  }
-  
-  // Add event listeners for each text-transform button
-  document.getElementById('scTextAlignLeft').addEventListener('click', handleTextTransformClick);
-  document.getElementById('scTextAlignCenter').addEventListener('click', handleTextTransformClick);
-  document.getElementById('scTextAlignRight').addEventListener('click', handleTextTransformClick);
-  document.getElementById('scTextAlignJustify').addEventListener('click', handleTextTransformClick);
+}
+
+// Add event listeners for each text-transform button
+document.getElementById('scTextTransformUppercase').addEventListener('click', handleTextTransformClick);
+document.getElementById('scTextTransformLowercase').addEventListener('click', handleTextTransformClick);
+document.getElementById('scTextTransformCapitalize').addEventListener('click', handleTextTransformClick);
+document.getElementById('scTextTransformNone').addEventListener('click', handleTextTransformClick);
     
   //text transform code end here
 
