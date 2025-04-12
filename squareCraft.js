@@ -425,22 +425,22 @@
       fontWeightSelect.dataset.initialized = "true";
     }
 
-    //text decoration code start here
-    const textTransformSelect = document.getElementById("squareCraftTextTransform");
-    if (textTransformSelect && !textTransformSelect.dataset.initialized) {
-        textTransformSelect.dataset.initialized = "true";
+    const textTransformContainer = document.getElementById("squareCraftTextTransform");
+    if (textTransformContainer && !textTransformContainer.dataset.initialized) {
+        textTransformContainer.dataset.initialized = "true";
         
-        // Get the last clicked element and its context
-        const lastClickedElement = document.querySelector('.sc-selected');
-        if (lastClickedElement) {
-            const context = {
-                lastClickedElement,
-                lastClickedBlockId: lastClickedElement.id
-            };
-            
-            // Call handleTextTransformClick with the context
-            handleTextTransformClick(null, context);
-        }
+        // Add click event listeners to all text transform buttons
+        textTransformContainer.querySelectorAll('[id^="scTextTransform"]').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const lastClickedElement = document.querySelector('.sc-selected');
+                if (lastClickedElement) {
+                    handleTextTransformClick(event, {
+                        lastClickedElement,
+                        lastClickedBlockId: lastClickedElement.id
+                    });
+                }
+            });
+        });
     }
   });
 
