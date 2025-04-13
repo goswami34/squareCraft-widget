@@ -375,7 +375,7 @@
             error: error.message
         };
     }
-}
+  }
 
 // Add notification function
 function showNotification(message, type = "info") {
