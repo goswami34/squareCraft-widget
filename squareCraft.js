@@ -305,9 +305,9 @@
         };
     }
 
-    const userId = localStorage.getItem("squareCraft_u_id");
-    const token = localStorage.getItem("squareCraft_auth_token");
-    const widgetId = localStorage.getItem("squareCraft_w_id");
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
 
     if (!userId || !token || !widgetId) {
         console.warn("⚠️ Missing authentication data");
