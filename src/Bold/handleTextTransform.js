@@ -189,19 +189,19 @@ export function handleTextTransformClick(event = null, context = null) {
   styleTag.innerHTML = css;
 
   // Save to backend and handle the result
-  saveModifications(blockId, {
-      "text-transform": textTransform,
-      "tag-type": tagType
-  }).then(result => {
-      if (result.success) {
-          // Update UI tab state only after successful save
-          document.querySelectorAll('[id^="scTextTransform"]').forEach(el => {
-              el.classList.remove('sc-activeTab-border');
-              el.classList.add('sc-inActiveTab-border');
-          });
-          clickedElement.classList.remove('sc-inActiveTab-border');
-          clickedElement.classList.add('sc-activeTab-border');
-      }
-  });
+  // saveModifications(blockId, {
+  //     "text-transform": textTransform,
+  //     "tag-type": tagType
+  // }).then(result => {
+  //     if (result.success) {
+  //         // Update UI tab state only after successful save
+  //         document.querySelectorAll('[id^="scTextTransform"]').forEach(el => {
+  //             el.classList.remove('sc-activeTab-border');
+  //             el.classList.add('sc-inActiveTab-border');
+  //         });
+  //         clickedElement.classList.remove('sc-inActiveTab-border');
+  //         clickedElement.classList.add('sc-activeTab-border');
+  //     }
+  // });
 }
   
