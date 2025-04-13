@@ -854,159 +854,158 @@ function showNotification(message, type = "info") {
     }
   });
 
-async function fontfamilies() {
-  try {
-    const response = await fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk');
-    const data = await response.json();
-    const fontDropdown = document.getElementById("sc-font-family");
-    const selectedFontText = fontDropdown.querySelector("p");
+  async function fontfamilies() {
+    try {
+      const response = await fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk');
+      const data = await response.json();
+      const fontDropdown = document.getElementById("sc-font-family");
+      const selectedFontText = fontDropdown.querySelector("p");
 
-    // Clear existing options
-    const fontList = fontDropdown.querySelector('.font-list');
-    if (fontList) fontList.remove();
+      // Clear existing options
+      const fontList = fontDropdown.querySelector('.font-list');
+      if (fontList) fontList.remove();
 
-    // Create new font list container
-    const newFontList = document.createElement('div');
-    newFontList.className = 'font-list';
-    newFontList.style.position = 'absolute';
-    newFontList.style.top = '100%';
-    newFontList.style.left = '0';
-    newFontList.style.width = '100%';
-    newFontList.style.maxHeight = '200px';
-    newFontList.style.overflowY = 'auto';
-    newFontList.style.backgroundColor = '#2c2c2c';
-    newFontList.style.border = '1px solid #585858';
-    newFontList.style.borderRadius = '6px';
-    newFontList.style.zIndex = '1000';
-    newFontList.style.display = 'none';
+      // Create new font list container
+      const newFontList = document.createElement('div');
+      newFontList.className = 'font-list';
+      newFontList.style.position = 'absolute';
+      newFontList.style.top = '100%';
+      newFontList.style.left = '0';
+      newFontList.style.width = '100%';
+      newFontList.style.maxHeight = '200px';
+      newFontList.style.overflowY = 'auto';
+      newFontList.style.backgroundColor = '#2c2c2c';
+      newFontList.style.border = '1px solid #585858';
+      newFontList.style.borderRadius = '6px';
+      newFontList.style.zIndex = '1000';
+      newFontList.style.display = 'none';
 
-    // Populate font options
-    data.items.forEach(font => {
-        const option = document.createElement('div');
-        option.className = 'font-option';
-        option.textContent = font.family;
-        option.style.padding = '8px';
-        option.style.cursor = 'pointer';
-        option.style.fontFamily = font.family;
-        option.style.color = 'white';
-        option.style.fontSize = '14px';
-        option.dataset.font = font.family;
+      // Populate font options
+      data.items.forEach(font => {
+          const option = document.createElement('div');
+          option.className = 'font-option';
+          option.textContent = font.family;
+          option.style.padding = '8px';
+          option.style.cursor = 'pointer';
+          option.style.fontFamily = font.family;
+          option.style.color = 'white';
+          option.style.fontSize = '14px';
+          option.dataset.font = font.family;
 
-        // Add hover effect
-        option.addEventListener('mouseover', () => {
-            option.style.backgroundColor = '#4a4a4a';
-        });
-        option.addEventListener('mouseout', () => {
-            option.style.backgroundColor = 'transparent';
-        });
+          // Add hover effect
+          option.addEventListener('mouseover', () => {
+              option.style.backgroundColor = '#4a4a4a';
+          });
+          option.addEventListener('mouseout', () => {
+              option.style.backgroundColor = 'transparent';
+          });
 
-        // Handle font selection
-        // option.addEventListener('click', async () => {
-        //     if (!selectedElement) {
-        //         console.warn("⚠️ Please select a block first");
-        //         return;
-        //     }
+          // Handle font selection
+          // option.addEventListener('click', async () => {
+          //     if (!selectedElement) {
+          //         console.warn("⚠️ Please select a block first");
+          //         return;
+          //     }
 
-        //     const blockId = selectedElement.id;
-        //     const selectedFont = font.family;
-            
-        //     // Create or update style tag for this block's strong tags
-        //     let styleTag = document.getElementById(`style-${blockId}-strong-fontfamily`);
-        //     if (!styleTag) {
-        //         styleTag = document.createElement("style");
-        //         styleTag.id = `style-${blockId}-strong-fontfamily`;
-        //         document.head.appendChild(styleTag);
-        //     }
+          //     const blockId = selectedElement.id;
+          //     const selectedFont = font.family;
+              
+          //     // Create or update style tag for this block's strong tags
+          //     let styleTag = document.getElementById(`style-${blockId}-strong-fontfamily`);
+          //     if (!styleTag) {
+          //         styleTag = document.createElement("style");
+          //         styleTag.id = `style-${blockId}-strong-fontfamily`;
+          //         document.head.appendChild(styleTag);
+          //     }
 
-        //     // Apply font-family to all strong tags within this block
-        //     styleTag.innerHTML = `
-        //         #${blockId} strong {
-        //             font-family: "${selectedFont}" !important;
-        //         }
-        //     `;
+          //     // Apply font-family to all strong tags within this block
+          //     styleTag.innerHTML = `
+          //         #${blockId} strong {
+          //             font-family: "${selectedFont}" !important;
+          //         }
+          //     `;
 
-        //     // Save modifications
-        //     const css = {
-        //         "font-family": selectedFont
-        //     };
+          //     // Save modifications
+          //     const css = {
+          //         "font-family": selectedFont
+          //     };
 
-        //     await saveModifications(blockId, css);
-        //     console.log(`✅ Applied font-family: ${selectedFont} to all bold words in block: ${blockId}`);
+          //     await saveModifications(blockId, css);
+          //     console.log(`✅ Applied font-family: ${selectedFont} to all bold words in block: ${blockId}`);
 
-        //     // Update selected font display
-        //     selectedFontText.textContent = selectedFont;
-        //     selectedFontText.style.fontFamily = selectedFont;
-        //     newFontList.style.display = 'none';
-        // });
+          //     // Update selected font display
+          //     selectedFontText.textContent = selectedFont;
+          //     selectedFontText.style.fontFamily = selectedFont;
+          //     newFontList.style.display = 'none';
+          // });
 
-        option.addEventListener('click', async () => {
-          if (!selectedElement) {
-            console.warn("⚠️ Please select a block first");
-            return;
-          }
-        
-          const blockId = selectedElement.id;
-          const selectedFont = font.family;
-        
-          // ✅ Load font from Google
-          loadGoogleFont(selectedFont);
-        
-          // ✅ Apply font to strong tags
-          let styleTag = document.getElementById(`style-${blockId}-strong-fontfamily`);
-          if (!styleTag) {
-            styleTag = document.createElement("style");
-            styleTag.id = `style-${blockId}-strong-fontfamily`;
-            document.head.appendChild(styleTag);
-          }
-        
-          styleTag.innerHTML = `
-            #${blockId} strong {
-              font-family: "${selectedFont}" !important;
+          option.addEventListener('click', async () => {
+            if (!selectedElement) {
+              console.warn("⚠️ Please select a block first");
+              return;
             }
-          `;
-        
-          // ✅ Save modification to backend
-          const css = {
-            "font-family": selectedFont
-          };
-          await saveModifications(blockId, css);
-        
-          // ✅ Update UI
-          const selectedFontText = fontDropdown.querySelector("div");
-          if (selectedFontText) {
-            selectedFontText.textContent = selectedFont;
-            selectedFontText.style.fontFamily = selectedFont;
-          }
-        
-          newFontList.style.display = 'none';
-        });        
-
-        newFontList.appendChild(option);
-    });
-
-    fontDropdown.appendChild(newFontList);
-
-    // Toggle font list visibility
-    fontDropdown.addEventListener('click', (e) => {
-        if (e.target !== newFontList) {
-            newFontList.style.display = newFontList.style.display === 'none' ? 'block' : 'none';
-        }
-    });
-
-    // Close font list when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!fontDropdown.contains(e.target)) {
+          
+            const blockId = selectedElement.id;
+            const selectedFont = font.family;
+          
+            // ✅ Load font from Google
+            loadGoogleFont(selectedFont);
+          
+            // ✅ Apply font to strong tags
+            let styleTag = document.getElementById(`style-${blockId}-strong-fontfamily`);
+            if (!styleTag) {
+              styleTag = document.createElement("style");
+              styleTag.id = `style-${blockId}-strong-fontfamily`;
+              document.head.appendChild(styleTag);
+            }
+          
+            styleTag.innerHTML = `
+              #${blockId} strong {
+                font-family: "${selectedFont}" !important;
+              }
+            `;
+          
+            // ✅ Save modification to backend
+            const css = {
+              "font-family": selectedFont
+            };
+            await saveModifications(blockId, css);
+          
+            // ✅ Update UI
+            const selectedFontText = fontDropdown.querySelector("div");
+            if (selectedFontText) {
+              selectedFontText.textContent = selectedFont;
+              selectedFontText.style.fontFamily = selectedFont;
+            }
+          
             newFontList.style.display = 'none';
-        }
-    });
+          });        
 
-} catch (error) {
-    console.error("Error fetching fonts:", error);
-}
-}
+          newFontList.appendChild(option);
+      });
 
-fontfamilies();
+      fontDropdown.appendChild(newFontList);
 
+      // Toggle font list visibility
+      fontDropdown.addEventListener('click', (e) => {
+          if (e.target !== newFontList) {
+              newFontList.style.display = newFontList.style.display === 'none' ? 'block' : 'none';
+          }
+      });
+
+      // Close font list when clicking outside
+      document.addEventListener('click', (e) => {
+          if (!fontDropdown.contains(e.target)) {
+              newFontList.style.display = 'none';
+          }
+      });
+
+  } catch (error) {
+      console.error("Error fetching fonts:", error);
+  }
+  }
+
+  fontfamilies();
   // font family code end here
 
 
