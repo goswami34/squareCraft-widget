@@ -251,6 +251,46 @@ export function initToggleSwitch() {
      updateToggleUI();
    });
  }
+
+ async function handlePublish() {
+   const modifiedStyles = [];
+   
+   // Collect all modified styles
+   document.querySelectorAll('style[id*="texttransform"]').forEach(styleTag => {
+       const blockId = styleTag.id.split('-')[1];
+       const tagType = styleTag.id.split('-')[2];
+       const cssText = styleTag.innerHTML;
+       const textTransform = cssText.match(/text-transform:\s*([^;]+)/)?.[1];
+
+       if (blockId && tagType && textTransform) {
+           modifiedStyles.push({
+               blockId,
+               tagType,
+               textTransform
+           });
+       }
+   });
+
+   if (modifiedStyles.length === 0) {
+       showNotification("No changes to publish", "info");
+       return;
+   }
+
+   // Save each modification
+   for (const style of modifiedStyles) {
+       const result = await saveModifications(style.blockId, {
+           "text-transform": style.textTransform,
+           "tag-type": style.tagType
+       });
+
+       if (!result.success) {
+           showNotification(`Failed to save changes for block ${style.blockId}`, "error");
+           return;
+       }
+   }
+
+   showNotification("All changes published successfully!", "success");
+}
  
 
  // Add this new function to handle publish button click
