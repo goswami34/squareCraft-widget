@@ -220,6 +220,8 @@ export function html() {
 
 }
 
+let pageId = document.querySelector("article[data-page-sections]")?.getAttribute("data-page-sections");
+
 async function saveModifications(blockId, css) {
    if (!pageId || !blockId || !css) {
        console.warn("⚠️ Missing required data to save modifications.");

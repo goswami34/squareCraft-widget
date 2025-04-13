@@ -325,7 +325,6 @@ function showNotification(message, type = "info") {
         setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
-  //save modifications code end here
 
   let pageId = document.querySelector("article[data-page-sections]")?.getAttribute("data-page-sections");
   if (!pageId)
