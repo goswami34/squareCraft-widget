@@ -109,7 +109,7 @@ export function typoBoldSelect(fontSizes) {
                   <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">Ag</p>
                </div>
                <div id="scTextTransformNone" 
-                  data-text-transform="font-variant" 
+                  data-text-transform="small-caps" 
                   class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
                   <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
                </div>
