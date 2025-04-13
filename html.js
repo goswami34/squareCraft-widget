@@ -303,84 +303,157 @@ let pageId = document.querySelector("article[data-page-sections]")?.getAttribute
 //    }
 //  }
 
-async function saveModifications(blockId, css, tagType) {
-   if (!pageId || !blockId || !css || !tagType) {
-       console.warn("⚠️ Missing required data to save modifications.");
-       return {
-           success: false,
-           error: "Missing required data"
-       };
-   }
+// async function saveModifications(blockId, css, tagType) {
+//    if (!pageId || !blockId || !css || !tagType) {
+//        console.warn("⚠️ Missing required data to save modifications.");
+//        return {
+//            success: false,
+//            error: "Missing required data"
+//        };
+//    }
 
+//    const userId = localStorage.getItem("sc_u_id");
+//    const token = localStorage.getItem("sc_auth_token");
+//    const widgetId = localStorage.getItem("sc_w_id");
+
+//    if (!userId || !token || !widgetId) {
+//        console.warn("⚠️ Missing authentication data");
+//        return {
+//            success: false,
+//            error: "Missing authentication data"
+//        };
+//    }
+
+//    // Get existing modifications from localStorage
+//    let existingModifications = JSON.parse(localStorage.getItem('sc_modifications') || '[]');
+   
+//    // Find if this block already has modifications
+//    let blockModifications = existingModifications.find(mod => mod.pageId === pageId && mod.blockId === blockId);
+   
+//    if (!blockModifications) {
+//        // Create new block modifications
+//        blockModifications = {
+//            pageId,
+//            blockId,
+//            elements: []
+//        };
+//        existingModifications.push(blockModifications);
+//    }
+
+//    // Find if this tag type already has modifications
+//    // let tagModifications = blockModifications.elements.find(elem => elem.tagType === tagType);
+//    let tagModifications = blockModifications.elements.find(elem => elem.tagType === tagType && elem.elementId === blockId);
+
+   
+//    if (!tagModifications) {
+//        // Create new tag modifications
+//        tagModifications = {
+//             elementId: blockId,  
+//            tagType,
+//            css: {
+//                strong: {
+//                    id: blockId,
+//                    ...css
+//                }
+//            },
+//            elementStructure: {
+//                type: 'strong',
+//                content: document.getElementById(blockId)?.textContent || '',
+//                parentId: document.getElementById(blockId)?.parentElement?.id || null
+//            }
+//        };
+//        blockModifications.elements.push(tagModifications);
+//    } else {
+//        // Update existing tag modifications
+//        tagModifications.css.strong = {
+//            ...tagModifications.css.strong,
+//            ...css
+//        };
+//    }
+
+//    // Save to localStorage
+//    localStorage.setItem('sc_modifications', JSON.stringify(existingModifications));
+
+//    const modificationData = {
+//        userId,
+//        token,
+//        widgetId,
+//        modifications: existingModifications
+//    };
+
+//    try {
+//        const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+//            method: "POST",
+//            headers: {
+//                "Content-Type": "application/json",
+//                "Authorization": `Bearer ${token}`,
+//            },
+//            body: JSON.stringify(modificationData),
+//        });
+
+//        if (!response.ok) {
+//            const errorData = await response.json();
+//            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+//        }
+
+//        const result = await response.json();
+//        console.log("✅ Changes Saved Successfully!", result);
+       
+//        showNotification("Changes saved successfully!", "success");
+       
+//        return {
+//            success: true,
+//            data: result
+//        };
+//    } catch (error) {
+//        console.error("❌ Error saving modifications:", error);
+//        showNotification(`Failed to save changes: ${error.message}`, "error");
+       
+//        return {
+//            success: false,
+//            error: error.message
+//        };
+//    }
+// }
+
+async function saveModifications(blockId, css) {
+   if (!pageId || !blockId || !css) {
+       console.warn("⚠️ Missing required data to save modifications.");
+       return;
+   }
+ 
    const userId = localStorage.getItem("sc_u_id");
    const token = localStorage.getItem("sc_auth_token");
    const widgetId = localStorage.getItem("sc_w_id");
-
+ 
    if (!userId || !token || !widgetId) {
        console.warn("⚠️ Missing authentication data");
-       return {
-           success: false,
-           error: "Missing authentication data"
-       };
+       return;
    }
-
-   // Get existing modifications from localStorage
-   let existingModifications = JSON.parse(localStorage.getItem('sc_modifications') || '[]');
-   
-   // Find if this block already has modifications
-   let blockModifications = existingModifications.find(mod => mod.pageId === pageId && mod.blockId === blockId);
-   
-   if (!blockModifications) {
-       // Create new block modifications
-       blockModifications = {
-           pageId,
-           blockId,
-           elements: []
-       };
-       existingModifications.push(blockModifications);
-   }
-
-   // Find if this tag type already has modifications
-   // let tagModifications = blockModifications.elements.find(elem => elem.tagType === tagType);
-   let tagModifications = blockModifications.elements.find(elem => elem.tagType === tagType && elem.elementId === blockId);
-
-   
-   if (!tagModifications) {
-       // Create new tag modifications
-       tagModifications = {
-            elementId: blockId,  
-           tagType,
-           css: {
-               strong: {
-                   id: blockId,
-                   ...css
-               }
-           },
-           elementStructure: {
-               type: 'strong',
-               content: document.getElementById(blockId)?.textContent || '',
-               parentId: document.getElementById(blockId)?.parentElement?.id || null
-           }
-       };
-       blockModifications.elements.push(tagModifications);
-   } else {
-       // Update existing tag modifications
-       tagModifications.css.strong = {
-           ...tagModifications.css.strong,
-           ...css
-       };
-   }
-
-   // Save to localStorage
-   localStorage.setItem('sc_modifications', JSON.stringify(existingModifications));
-
+ 
    const modificationData = {
        userId,
        token,
        widgetId,
-       modifications: existingModifications
+       modifications: [{
+           pageId,
+           elements: [{
+               elementId: blockId,
+               css: {
+                   strong: {
+                       id: blockId,
+                       ...css
+                   }
+               },
+               elementStructure: {
+                   type: 'strong',
+                   content: document.getElementById(blockId)?.textContent || '',
+                   parentId: document.getElementById(blockId)?.parentElement?.id || null
+               }
+           }]
+       }]
    };
-
+ 
    try {
        const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
            method: "POST",
@@ -390,31 +463,20 @@ async function saveModifications(blockId, css, tagType) {
            },
            body: JSON.stringify(modificationData),
        });
-
+ 
        if (!response.ok) {
-           const errorData = await response.json();
-           throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+           throw new Error(`HTTP error! status: ${response.status}`);
        }
-
+ 
        const result = await response.json();
        console.log("✅ Changes Saved Successfully!", result);
        
-       showNotification("Changes saved successfully!", "success");
-       
-       return {
-           success: true,
-           data: result
-       };
+       return result;
    } catch (error) {
        console.error("❌ Error saving modifications:", error);
-       showNotification(`Failed to save changes: ${error.message}`, "error");
-       
-       return {
-           success: false,
-           error: error.message
-       };
+       throw error;
    }
-}
+ }
 
 
 
