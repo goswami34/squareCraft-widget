@@ -341,11 +341,14 @@ async function saveModifications(blockId, css, tagType) {
    }
 
    // Find if this tag type already has modifications
-   let tagModifications = blockModifications.elements.find(elem => elem.tagType === tagType);
+   // let tagModifications = blockModifications.elements.find(elem => elem.tagType === tagType);
+   let tagModifications = blockModifications.elements.find(elem => elem.tagType === tagType && elem.elementId === blockId);
+
    
    if (!tagModifications) {
        // Create new tag modifications
        tagModifications = {
+            elementId: blockId,  
            tagType,
            css: {
                strong: {
