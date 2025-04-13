@@ -172,8 +172,7 @@ export function html() {
       </div>
       <div class="sc-mt-4">
          <div class="sc-flex  sc-items-center sc-justify-between sc-gap-2">
-            <div id="publish"
-               class="sc-cursor-pointer sc-poppins sc-bg-color-EF7C2F sc-w-full sc-font-light sc-flex sc-items-center sc-text-sm sc-py-1 sc-rounded-6px sc-text-color-white sc-justify-center">
+            <div id="publish" class="sc-cursor-pointer sc-poppins sc-bg-color-EF7C2F sc-w-full sc-font-light sc-flex sc-items-center sc-text-sm sc-py-1 sc-rounded-6px sc-text-color-white sc-justify-center">
                Publish
             </div>
             <div
@@ -253,7 +252,33 @@ export function initToggleSwitch() {
    });
  }
  
- 
+
+ // Add this new function to handle publish button click
+ export function initPublishButton() {
+   const publishButton = document.getElementById('publish');
+   if (!publishButton) {
+       console.warn("Publish button not found");
+       return;
+   }
+
+   publishButton.addEventListener('click', async () => {
+       try {
+           // Show loading state
+           publishButton.disabled = true;
+           publishButton.textContent = "Publishing...";
+
+           // Call the handlePublish function from squareCraft.js
+           await handlePublish();
+
+       } catch (error) {
+           showNotification(error.message, "error");
+       } finally {
+           // Reset button state
+           publishButton.disabled = false;
+           publishButton.textContent = "Publish";
+       }
+   });
+}
  
  
  
