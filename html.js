@@ -416,8 +416,8 @@ let pageId = document.querySelector("article[data-page-sections]")?.getAttribute
 //    }
 // }
 
-let block = event.target.closest('[id^="block-"]');
-let blockId = block?.id;
+// let block = event.target.closest('[id^="block-"]');
+// let blockId = block?.id;
 
 async function saveModifications(blockId, css) {
    if (!pageId || !blockId || !css) {
