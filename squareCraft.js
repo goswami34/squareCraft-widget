@@ -126,6 +126,7 @@
       setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
       lastClickedBlockId,
       userId,
+      saveModifications,
       token,
       widgetId
     });

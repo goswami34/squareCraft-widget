@@ -112,7 +112,8 @@ export function handleTextTransformClick(event = null, context = null) {
       lastClickedBlockId,
       userId,
       token,
-      widgetId
+      widgetId,
+      saveModifications
     } = context;
   
     if (!event) {
