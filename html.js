@@ -505,7 +505,7 @@ export function initToggleSwitch() {
       //      "tag-type": style.tagType
       //  });
 
-      await saveModifications(style.blockId, {
+      const result = await saveModifications(style.blockId, {
          "text-transform": style.textTransform
       }, style.tagType);
 
