@@ -235,21 +235,88 @@
 
   //save modifications code start here
   
+  // async function saveModifications(blockId, css) {
+  //   if (!pageId || !blockId || !css) {
+  //       console.warn("⚠️ Missing required data to save modifications.");
+  //       return;
+  //   }
+  
+  //   const userId = localStorage.getItem("squareCraft_u_id");
+  //   const token = localStorage.getItem("squareCraft_auth_token");
+  //   const widgetId = localStorage.getItem("squareCraft_w_id");
+  
+  //   if (!userId || !token || !widgetId) {
+  //       console.warn("⚠️ Missing authentication data");
+  //       return;
+  //   }
+  
+  //   const modificationData = {
+  //       userId,
+  //       token,
+  //       widgetId,
+  //       modifications: [{
+  //           pageId,
+  //           elements: [{
+  //               elementId: blockId,
+  //               css: {
+  //                   strong: {
+  //                       id: blockId,
+  //                       ...css
+  //                   }
+  //               },
+  //               elementStructure: {
+  //                   type: 'strong',
+  //                   content: document.getElementById(blockId)?.textContent || '',
+  //                   parentId: document.getElementById(blockId)?.parentElement?.id || null
+  //               }
+  //           }]
+  //       }]
+  //   };
+  
+  //   try {
+  //       const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+  //           method: "POST",
+  //           headers: {
+  //               "Content-Type": "application/json",
+  //               "Authorization": `Bearer ${token}`,
+  //           },
+  //           body: JSON.stringify(modificationData),
+  //       });
+  
+  //       if (!response.ok) {
+  //           throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
+  
+  //       const result = await response.json();
+  //       console.log("✅ Changes Saved Successfully!", result);
+        
+  //       return result;
+  //   } catch (error) {
+  //       console.error("❌ Error saving modifications:", error);
+  //       throw error;
+  //   }
+  // }
   async function saveModifications(blockId, css) {
     if (!pageId || !blockId || !css) {
         console.warn("⚠️ Missing required data to save modifications.");
-        return;
+        return {
+            success: false,
+            error: "Missing required data"
+        };
     }
-  
+
     const userId = localStorage.getItem("squareCraft_u_id");
     const token = localStorage.getItem("squareCraft_auth_token");
     const widgetId = localStorage.getItem("squareCraft_w_id");
-  
+
     if (!userId || !token || !widgetId) {
         console.warn("⚠️ Missing authentication data");
-        return;
+        return {
+            success: false,
+            error: "Missing authentication data"
+        };
     }
-  
+
     const modificationData = {
         userId,
         token,
@@ -272,7 +339,7 @@
             }]
         }]
     };
-  
+
     try {
         const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
             method: "POST",
@@ -282,20 +349,61 @@
             },
             body: JSON.stringify(modificationData),
         });
-  
+
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
         }
-  
+
         const result = await response.json();
         console.log("✅ Changes Saved Successfully!", result);
         
-        return result;
+        // Show success notification
+        showNotification("Changes saved successfully!", "success");
+        
+        return {
+            success: true,
+            data: result
+        };
     } catch (error) {
         console.error("❌ Error saving modifications:", error);
-        throw error;
+        // Show error notification
+        showNotification(`Failed to save changes: ${error.message}`, "error");
+        
+        return {
+            success: false,
+            error: error.message
+        };
     }
-  }
+}
+
+// Add notification function
+function showNotification(message, type = "info") {
+    const notification = document.createElement("div");
+    notification.className = `sc-notification sc-notification-${type}`;
+    notification.textContent = message;
+    
+    // Add styles
+    Object.assign(notification.style, {
+        position: "fixed",
+        top: "20px",
+        right: "20px",
+        padding: "10px 20px",
+        borderRadius: "4px",
+        color: "white",
+        zIndex: "9999",
+        animation: "fadeIn 0.3s ease-in-out",
+        backgroundColor: type === "success" ? "#4CAF50" : type === "error" ? "#f44336" : "#2196F3"
+    });
+
+    document.body.appendChild(notification);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = "fadeOut 0.3s ease-in-out";
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
   //save modifications code end here
 
   let pageId = document.querySelector("article[data-page-sections]")?.getAttribute("data-page-sections");
