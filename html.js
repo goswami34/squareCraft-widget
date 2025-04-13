@@ -500,10 +500,14 @@ export function initToggleSwitch() {
 
    // Save each modification
    for (const style of modifiedStyles) {
-       const result = await saveModifications(style.blockId, {
-           "text-transform": style.textTransform,
-           "tag-type": style.tagType
-       });
+      //  const result = await saveModifications(style.blockId, {
+      //      "text-transform": style.textTransform,
+      //      "tag-type": style.tagType
+      //  });
+
+      await saveModifications(style.blockId, {
+         "text-transform": style.textTransform
+      }, style.tagType);
 
        if (!result.success) {
            showNotification(`Failed to save changes for block ${style.blockId}`, "error");
