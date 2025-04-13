@@ -303,6 +303,8 @@ async function saveModifications(blockId, css) {
    }
  }
 
+ 
+
 function showNotification(message, type = "info") {
    const notification = document.createElement("div");
    notification.className = `sc-notification sc-notification-${type}`;

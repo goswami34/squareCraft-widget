@@ -335,9 +335,9 @@ function showNotification(message, type = "info") {
   async function fetchModifications(retries = 3) {
     if (!pageId) return;
   
-    const token = localStorage.getItem("squareCraft_auth_token");
-    const userId = localStorage.getItem("squareCraft_u_id");
-    const widgetId = localStorage.getItem("squareCraft_w_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const userId = localStorage.getItem("sc_u_id");
+    const widgetId = localStorage.getItem("sc_w_id");
   
     if (!token || !userId) {
         console.warn("Missing authentication data");
