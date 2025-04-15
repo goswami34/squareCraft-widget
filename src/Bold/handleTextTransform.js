@@ -113,7 +113,7 @@ export function handleTextTransformClick(event = null, context = null) {
   }
 
   const css = `#${blockId} ${tagType} strong {
-      text-transform: ${textTransform} !important;
+      text-transform: ${textTransform} !important ;
   }`;
   styleTag.innerHTML = css;
 
