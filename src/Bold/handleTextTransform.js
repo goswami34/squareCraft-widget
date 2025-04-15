@@ -159,8 +159,23 @@ function showNotification(message, type = "info") {
 export function handleTextTransformClick(event = null, context = null) {
     const {
         lastClickedElement,
-        saveModifications
+        saveModifications,
+        selectedElement,
+        setSelectedElement,
+        setLastClickedBlockId,
+        setLastClickedElement
     } = context;
+
+    let block = event.target.closest('[id^="block-"]');
+    if (!block) return;
+    console.log("block", block);
+
+    if (selectedElement) selectedElement.style.outline = "";
+    setSelectedElement(block);
+    block.style.outline = "1px dashed #EF7C2F";
+
+    setLastClickedBlockId(block.id);
+    setLastClickedElement(block);
 
     if (!event) {
         const activeButton = document.querySelector('[id^="scTextTransform"].sc-activeTab-border');
