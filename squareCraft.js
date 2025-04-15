@@ -503,6 +503,12 @@ function showNotification(message, type = "info") {
             });
         });
     }
+
+    const fontWeightContainer = document.getElementById("squareCraftFontWeight");
+    if (fontWeightContainer && !fontWeightContainer.dataset.initialized) {
+      fontWeightContainer.dataset.initialized = "true";
+    }
+    
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
