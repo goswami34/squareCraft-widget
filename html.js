@@ -307,21 +307,29 @@ let pageId = document.querySelector("article[data-page-sections]")?.getAttribute
 // let block = event.target.closest('[id^="block-"]');
 // let blockId = block?.id;
 
-// async function saveModifications(blockId, css) {
+
+// async function saveModifications(blockId, css, tagType) {
 //    if (!pageId || !blockId || !css) {
 //        console.warn("⚠️ Missing required data to save modifications.");
-//        return;
+//        return {
+//            success: false,
+//            error: "Missing required data"
+//        };
 //    }
- 
+
 //    const userId = localStorage.getItem("sc_u_id");
 //    const token = localStorage.getItem("sc_auth_token");
 //    const widgetId = localStorage.getItem("sc_w_id");
- 
+
 //    if (!userId || !token || !widgetId) {
 //        console.warn("⚠️ Missing authentication data");
-//        return;
+//        return {
+//            success: false,
+//            error: "Missing authentication data"
+//        };
 //    }
- 
+
+//    // Construct the modification data according to your database structure
 //    const modificationData = {
 //        userId,
 //        token,
@@ -329,11 +337,11 @@ let pageId = document.querySelector("article[data-page-sections]")?.getAttribute
 //        modifications: [{
 //            pageId,
 //            elements: [{
-//                elementId: blockId,
+//                elementId: blockId, // This should be the block ID
 //                css: {
 //                    strong: {
-//                        id: blockId,
-//                        ...css
+//                        id: blockId, // This should match elementId
+//                        ...css // This will include text-transform and other properties
 //                    }
 //                },
 //                elementStructure: {
@@ -344,7 +352,7 @@ let pageId = document.querySelector("article[data-page-sections]")?.getAttribute
 //            }]
 //        }]
 //    };
- 
+
 //    try {
 //        const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
 //            method: "POST",
@@ -354,20 +362,33 @@ let pageId = document.querySelector("article[data-page-sections]")?.getAttribute
 //            },
 //            body: JSON.stringify(modificationData),
 //        });
- 
+
 //        if (!response.ok) {
-//            throw new Error(`HTTP error! status: ${response.status}`);
+//            const errorData = await response.json();
+//            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
 //        }
- 
+
 //        const result = await response.json();
 //        console.log("✅ Changes Saved Successfully!", result);
        
-//        return result;
+//        // Show success notification
+//        showNotification("Changes saved successfully!", "success");
+       
+//        return {
+//            success: true,
+//            data: result
+//        };
 //    } catch (error) {
 //        console.error("❌ Error saving modifications:", error);
-//        throw error;
+//        // Show error notification
+//        showNotification(`Failed to save changes: ${error.message}`, "error");
+       
+//        return {
+//            success: false,
+//            error: error.message
+//        };
 //    }
-//  }
+// }
 
 async function saveModifications(blockId, css, tagType) {
    if (!pageId || !blockId || !css) {
@@ -390,28 +411,60 @@ async function saveModifications(blockId, css, tagType) {
        };
    }
 
-   // Construct the modification data according to your database structure
+   // Get existing modifications from localStorage
+   let existingModifications = JSON.parse(localStorage.getItem('sc_modifications') || '[]');
+   
+   // Find if this page already has modifications
+   let pageModifications = existingModifications.find(mod => mod.pageId === pageId);
+   
+   if (!pageModifications) {
+       // Create new page modifications
+       pageModifications = {
+           pageId,
+           elements: []
+       };
+       existingModifications.push(pageModifications);
+   }
+
+   // Find if this block already has modifications
+   let blockModifications = pageModifications.elements.find(elem => elem.elementId === blockId);
+   
+   if (!blockModifications) {
+       // Create new block modifications
+       blockModifications = {
+           elementId: blockId,
+           css: {},
+           elementStructure: null
+       };
+       pageModifications.elements.push(blockModifications);
+   }
+
+   // Update CSS for the block
+   if (tagType === 'strong') {
+       blockModifications.css.strong = {
+           ...blockModifications.css.strong,
+           ...css
+       };
+   } else if (tagType === 'span') {
+       blockModifications.css.span = {
+           id: `span-${Date.now()}-${Math.random().toString(36).substr(2, 3)}`,
+           ...css
+       };
+   } else {
+       blockModifications.css[tagType] = {
+           ...blockModifications.css[tagType],
+           ...css
+       };
+   }
+
+   // Save to localStorage
+   localStorage.setItem('sc_modifications', JSON.stringify(existingModifications));
+
    const modificationData = {
        userId,
        token,
        widgetId,
-       modifications: [{
-           pageId,
-           elements: [{
-               elementId: blockId, // This should be the block ID
-               css: {
-                   strong: {
-                       id: blockId, // This should match elementId
-                       ...css // This will include text-transform and other properties
-                   }
-               },
-               elementStructure: {
-                   type: 'strong',
-                   content: document.getElementById(blockId)?.textContent || '',
-                   parentId: document.getElementById(blockId)?.parentElement?.id || null
-               }
-           }]
-       }]
+       modifications: existingModifications
    };
 
    try {
@@ -432,7 +485,6 @@ async function saveModifications(blockId, css, tagType) {
        const result = await response.json();
        console.log("✅ Changes Saved Successfully!", result);
        
-       // Show success notification
        showNotification("Changes saved successfully!", "success");
        
        return {
@@ -441,7 +493,6 @@ async function saveModifications(blockId, css, tagType) {
        };
    } catch (error) {
        console.error("❌ Error saving modifications:", error);
-       // Show error notification
        showNotification(`Failed to save changes: ${error.message}`, "error");
        
        return {
@@ -511,6 +562,53 @@ export function initToggleSwitch() {
    });
  }
 
+//  async function handlePublish() {
+//    const modifiedStyles = [];
+   
+//    // Collect all modified styles
+//    document.querySelectorAll('style[id*="texttransform"]').forEach(styleTag => {
+//        const blockId = styleTag.id.split('-')[1];
+//        const tagType = styleTag.id.split('-')[2];
+//        const cssText = styleTag.innerHTML;
+//        const textTransform = cssText.match(/text-transform:\s*([^;]+)/)?.[1];
+
+//        if (blockId && tagType && textTransform) {
+//            modifiedStyles.push({
+//                blockId,
+//                tagType,
+//                textTransform
+//            });
+//        }
+//    });
+
+//    if (modifiedStyles.length === 0) {
+//        showNotification("No changes to publish", "info");
+//        return;
+//    }
+
+//    // Save each modification
+//    for (const style of modifiedStyles) {
+//       //  const result = await saveModifications(style.blockId, {
+//       //      "text-transform": style.textTransform,
+//       //      "tag-type": style.tagType
+//       //  });
+
+//       const result = await saveModifications(style.blockId, {
+//          "text-transform": style.textTransform
+//       }, style.tagType);
+
+//        if (!result.success) {
+//            showNotification(`Failed to save changes for block ${style.blockId}`, "error");
+//            return;
+//        }
+//    }
+
+//    showNotification("All changes published successfully!", "success");
+// }
+ 
+
+ // Add this new function to handle publish button click
+ 
  async function handlePublish() {
    const modifiedStyles = [];
    
@@ -525,7 +623,9 @@ export function initToggleSwitch() {
            modifiedStyles.push({
                blockId,
                tagType,
-               textTransform
+               css: {
+                   "text-transform": textTransform
+               }
            });
        }
    });
@@ -537,15 +637,8 @@ export function initToggleSwitch() {
 
    // Save each modification
    for (const style of modifiedStyles) {
-      //  const result = await saveModifications(style.blockId, {
-      //      "text-transform": style.textTransform,
-      //      "tag-type": style.tagType
-      //  });
-
-      const result = await saveModifications(style.blockId, {
-         "text-transform": style.textTransform
-      }, style.tagType);
-
+       const result = await saveModifications(style.blockId, style.css, style.tagType);
+       
        if (!result.success) {
            showNotification(`Failed to save changes for block ${style.blockId}`, "error");
            return;
@@ -555,8 +648,6 @@ export function initToggleSwitch() {
    showNotification("All changes published successfully!", "success");
 }
  
-
- // Add this new function to handle publish button click
  export function initPublishButton() {
    const publishButton = document.getElementById('publish');
    if (!publishButton) {

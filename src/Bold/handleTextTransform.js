@@ -117,6 +117,10 @@ export function handleTextTransformClick(event = null, context = null) {
   }`;
   styleTag.innerHTML = css;
 
+  const result = saveModifications(blockId, {
+    "text-transform": textTransform
+}, 'strong');
+
   // Save to backend and handle the result
   // saveModifications(blockId, {
   //     "text-transform": textTransform,
