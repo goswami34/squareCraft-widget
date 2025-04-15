@@ -117,6 +117,14 @@
 
 
     handleTextTransformClick(event, {
+
+
+      setSelectedElement: (val) => selectedElement = val,
+
+      setLastClickedElement: (val) => lastClickedElement = val,
+
+      setLastClickedBlockId: (val) => lastClickedBlockId = val,
+
       lastClickedElement,
       getTextType,
       applyStylesToElement,
@@ -127,6 +135,7 @@
       lastClickedBlockId,
       userId,
       // saveModifications,
+      handleBlockClick,
       token,
       widgetId
     });
