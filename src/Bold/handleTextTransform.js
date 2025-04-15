@@ -250,7 +250,8 @@ export function handleTextTransformClick(event = null, context = null) {
         selectedElement,
         setSelectedElement,
         setLastClickedBlockId,
-        setLastClickedElement
+        setLastClickedElement,
+        addPendingModification
     } = context;
 
     // Add a check for saveModifications

@@ -117,14 +117,6 @@
 
 
     handleTextTransformClick(event, {
-
-
-      setSelectedElement: (val) => selectedElement = val,
-
-      setLastClickedElement: (val) => lastClickedElement = val,
-
-      setLastClickedBlockId: (val) => lastClickedBlockId = val,
-
       lastClickedElement,
       getTextType,
       applyStylesToElement,
@@ -137,7 +129,13 @@
       saveModifications,
       handleBlockClick,
       token,
-      widgetId
+      widgetId,
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      }
     });
   
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
