@@ -1,4 +1,3 @@
-
 function showNotification(message, type = "info") {
   const notification = document.createElement("div");
   notification.className = `sc-notification sc-notification-${type}`;
@@ -166,17 +165,19 @@ export function handleTextTransformClick(event = null, context = null) {
         setLastClickedElement
     } = context;
 
+    // First check if we're clicking on a block
     let block = event.target.closest('[id^="block-"]');
-    if (!block) return;
-    console.log("block", block);
+    if (block) {
+        // Handle block selection
+        if (selectedElement) selectedElement.style.outline = "";
+        setSelectedElement(block);
+        block.style.outline = "1px dashed #EF7C2F";
+        setLastClickedBlockId(block.id);
+        setLastClickedElement(block);
+        return; // Return after handling block selection
+    }
 
-    if (selectedElement) selectedElement.style.outline = "";
-    setSelectedElement(block);
-    block.style.outline = "1px dashed #EF7C2F";
-
-    setLastClickedBlockId(block.id);
-    setLastClickedElement(block);
-
+    // If no block was clicked, check for text transform button
     if (!event) {
         const activeButton = document.querySelector('[id^="scTextTransform"].sc-activeTab-border');
         if (!activeButton) return;
