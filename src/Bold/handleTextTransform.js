@@ -155,6 +155,94 @@ function showNotification(message, type = "info") {
 // }
 
 
+// export function handleTextTransformClick(event = null, context = null) {
+//     const {
+//         lastClickedElement,
+//         saveModifications,
+//         selectedElement,
+//         setSelectedElement,
+//         setLastClickedBlockId,
+//         setLastClickedElement
+//     } = context;
+
+//     // First check if we're clicking on a block
+//     let block = event.target.closest('[id^="block-"]');
+//     if (block) {
+//         // Handle block selection
+//         if (selectedElement) selectedElement.style.outline = "";
+//         setSelectedElement(block);
+//         block.style.outline = "1px dashed #EF7C2F";
+//         setLastClickedBlockId(block.id);
+//         setLastClickedElement(block);
+//         return; // Return after handling block selection
+//     }
+
+//     // If no block was clicked, check for text transform button
+//     if (!event) {
+//         const activeButton = document.querySelector('[id^="scTextTransform"].sc-activeTab-border');
+//         if (!activeButton) return;
+//         event = { target: activeButton };
+//     }
+
+//     const clickedElement = event.target.closest('[id^="scTextTransform"]');
+//     if (!clickedElement) return;
+
+//     const textTransform = clickedElement.dataset.textTransform;
+//     const blockId = lastClickedElement?.id;
+
+//     if (!blockId || !lastClickedElement) {
+//         showNotification("Please select a block first", "error");
+//         return;
+//     }
+
+//     // Get the tag type from dataset.strongElementsByTag
+//     const data = lastClickedElement.dataset.strongElementsByTag;
+//     if (!data) {
+//         showNotification("No bold text found in the selected block", "error");
+//         return;
+//     }
+
+//     let tagType = null;
+//     try {
+//         const parsed = JSON.parse(data);
+//         const tagKeys = Object.keys(parsed);
+//         tagType = tagKeys[0];
+//     } catch (err) {
+//         showNotification("Failed to process text data", "error");
+//         return;
+//     }
+
+//     // Apply inline style
+//     const styleId = `style-${blockId}-${tagType}-strong-texttransform`;
+//     let styleTag = document.getElementById(styleId);
+//     if (!styleTag) {
+//         styleTag = document.createElement("style");
+//         styleTag.id = styleId;
+//         document.head.appendChild(styleTag);
+//     }
+
+//     const css = `#${blockId} ${tagType} strong {
+//         text-transform: ${textTransform} !important;
+//     }`;
+//     styleTag.innerHTML = css;
+
+//     // Save modifications with proper structure
+//     saveModifications(blockId, {
+//         "text-transform": textTransform
+//     }, 'strong').then(result => {
+//         if (result.success) {
+//             // Update UI tab state
+//             document.querySelectorAll('[id^="scTextTransform"]').forEach(el => {
+//                 el.classList.remove('sc-activeTab-border');
+//                 el.classList.add('sc-inActiveTab-border');
+//             });
+//             clickedElement.classList.remove('sc-inActiveTab-border');
+//             clickedElement.classList.add('sc-activeTab-border');
+//         }
+//     });
+// }
+
+// In handleTextTransformClick function
 export function handleTextTransformClick(event = null, context = null) {
     const {
         lastClickedElement,
@@ -174,7 +262,7 @@ export function handleTextTransformClick(event = null, context = null) {
         block.style.outline = "1px dashed #EF7C2F";
         setLastClickedBlockId(block.id);
         setLastClickedElement(block);
-        return; // Return after handling block selection
+        return;
     }
 
     // If no block was clicked, check for text transform button
@@ -212,14 +300,18 @@ export function handleTextTransformClick(event = null, context = null) {
         return;
     }
 
-    // Apply inline style
-    const styleId = `style-${blockId}-${tagType}-strong-texttransform`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = styleId;
-        document.head.appendChild(styleTag);
-    }
+    // Generate a unique ID for the style element
+    // This combines block ID, tag type, and a timestamp to ensure uniqueness
+    const uniqueId = `style-${blockId}-${tagType}-strong-texttransform-${Date.now()}`;
+    
+    // Remove any existing style tags for this block and tag type
+    const existingStyleTags = document.querySelectorAll(`[id^="style-${blockId}-${tagType}-strong-texttransform"]`);
+    existingStyleTags.forEach(tag => tag.remove());
+
+    // Create new style tag with unique ID
+    const styleTag = document.createElement("style");
+    styleTag.id = uniqueId;
+    document.head.appendChild(styleTag);
 
     const css = `#${blockId} ${tagType} strong {
         text-transform: ${textTransform} !important;
@@ -228,7 +320,8 @@ export function handleTextTransformClick(event = null, context = null) {
 
     // Save modifications with proper structure
     saveModifications(blockId, {
-        "text-transform": textTransform
+        "text-transform": textTransform,
+        "style-id": uniqueId // Include the unique style ID in the saved data
     }, 'strong').then(result => {
         if (result.success) {
             // Update UI tab state
