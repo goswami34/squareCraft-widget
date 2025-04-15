@@ -91,6 +91,7 @@ let selectedElement = null;
   const { handleTextColorClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextColorClick.js");
   const { typoTabSelect } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/typoTabSelect.js");
   const { handleTextTransformClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleTextTransform.js");
+  const { handleFontWeightFunClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontWeightFunClick.js");
   const { saveModifications } = await import("https://goswami34.github.io/squareCraft-widget/html.js");
 
   document.body.addEventListener("click", (event) => {
@@ -142,6 +143,22 @@ let selectedElement = null;
         pendingModifications.get(blockId).push({ css, tagType });
       }
     });
+
+
+    handleFontWeightFunClick(event, {
+      lastClickedElement,
+      saveModifications,
+      selectedElement,
+      setSelectedElement: (val) => selectedElement = val,
+      setLastClickedBlockId: (val) => lastClickedBlockId = val,
+      setLastClickedElement: (val) => lastClickedElement = val,
+      addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+      }
+  });
   
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
   
@@ -1023,55 +1040,6 @@ function showNotification(message, type = "info") {
   fontfamilies();
   // font family code end here
 
-
-  // font weight code start here
-
-  function handleFontWeightChange(event, context) {
-    if (!lastClickedElement) {
-      console.warn("⚠️ Please select a block first");
-      return;
-    }
-  
-    const fontWeight = event.target.value;
-    console.log("fontWeight", fontWeight);
-    const blockId = lastClickedElement.id;
-    const tagType = getCurrentTextType(); // e.g., 'h1', 'p'
-    
-    // Get the strong elements data
-    const data = lastClickedElement.dataset.strongElementsByTag;
-    if (!data || !tagType) return;
-    
-    const parsed = JSON.parse(data);
-    const strongData = parsed[tagType];
-    
-    if (!strongData || strongData.count === 0) {
-      console.warn(`No <strong> tags found inside ${tagType}`);
-      return;
-    }
-  
-    // Create a style string to apply only to strong tags inside the current tag type
-    const styleId = `style-${blockId}-${tagType}-strong`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-      styleTag = document.createElement('style');
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
-    }
-  
-    // Construct the style selector like: #block-abc h1 strong
-    const css = `#${blockId} ${tagType} strong { font-weight: ${fontWeight} !important; }`;
-    styleTag.innerHTML = css;
-  
-    // Save to backend
-    saveModifications(blockId, { 
-      "font-weight": fontWeight,
-      "tag-type": tagType
-    });
-  }
-
-  document.getElementById('squareCraftFontWeight').addEventListener('change', handleFontWeightChange);
-
-  // font weight code end here
 
 
   // publish button code start here
