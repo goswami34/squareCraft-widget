@@ -641,6 +641,8 @@ export function initToggleSwitch() {
    });
  }
 
+ // Add this new function to handle publish button click
+ 
 //  async function handlePublish() {
 //    const modifiedStyles = [];
    
@@ -655,7 +657,9 @@ export function initToggleSwitch() {
 //            modifiedStyles.push({
 //                blockId,
 //                tagType,
-//                textTransform
+//                css: {
+//                    "text-transform": textTransform
+//                }
 //            });
 //        }
 //    });
@@ -667,15 +671,8 @@ export function initToggleSwitch() {
 
 //    // Save each modification
 //    for (const style of modifiedStyles) {
-//       //  const result = await saveModifications(style.blockId, {
-//       //      "text-transform": style.textTransform,
-//       //      "tag-type": style.tagType
-//       //  });
-
-//       const result = await saveModifications(style.blockId, {
-//          "text-transform": style.textTransform
-//       }, style.tagType);
-
+//        const result = await saveModifications(style.blockId, style.css, style.tagType);
+       
 //        if (!result.success) {
 //            showNotification(`Failed to save changes for block ${style.blockId}`, "error");
 //            return;
@@ -685,49 +682,59 @@ export function initToggleSwitch() {
 //    showNotification("All changes published successfully!", "success");
 // }
  
+//  export function initPublishButton() {
+//    const publishButton = document.getElementById('publish');
+//    if (!publishButton) {
+//        console.warn("Publish button not found");
+//        return;
+//    }
 
- // Add this new function to handle publish button click
- 
- async function handlePublish() {
-   const modifiedStyles = [];
-   
-   // Collect all modified styles
-   document.querySelectorAll('style[id*="texttransform"]').forEach(styleTag => {
-       const blockId = styleTag.id.split('-')[1];
-       const tagType = styleTag.id.split('-')[2];
-       const cssText = styleTag.innerHTML;
-       const textTransform = cssText.match(/text-transform:\s*([^;]+)/)?.[1];
+//    publishButton.addEventListener('click', async () => {
+//        try {
+//            // Show loading state
+//            publishButton.disabled = true;
+//            publishButton.textContent = "Publishing...";
 
-       if (blockId && tagType && textTransform) {
-           modifiedStyles.push({
-               blockId,
-               tagType,
-               css: {
-                   "text-transform": textTransform
-               }
-           });
-       }
-   });
+//            // Call the handlePublish function from squareCraft.js
+//            await handlePublish();
 
-   if (modifiedStyles.length === 0) {
+//        } catch (error) {
+//            showNotification(error.message, "error");
+//        } finally {
+//            // Reset button state
+//            publishButton.disabled = false;
+//            publishButton.textContent = "Publish";
+//        }
+//    });
+// }
+
+// In html.js
+async function handlePublish() {
+   if (pendingModifications.size === 0) {
        showNotification("No changes to publish", "info");
        return;
    }
 
-   // Save each modification
-   for (const style of modifiedStyles) {
-       const result = await saveModifications(style.blockId, style.css, style.tagType);
-       
-       if (!result.success) {
-           showNotification(`Failed to save changes for block ${style.blockId}`, "error");
-           return;
+   try {
+       // Save each pending modification
+       for (const [blockId, modifications] of pendingModifications.entries()) {
+           for (const mod of modifications) {
+               const result = await saveModifications(blockId, mod.css, mod.tagType);
+               if (!result.success) {
+                   throw new Error(`Failed to save changes for block ${blockId}`);
+               }
+           }
        }
-   }
 
-   showNotification("All changes published successfully!", "success");
+       // Clear pending modifications after successful save
+       pendingModifications.clear();
+       showNotification("All changes published successfully!", "success");
+   } catch (error) {
+       showNotification(error.message, "error");
+   }
 }
- 
- export function initPublishButton() {
+
+export function initPublishButton() {
    const publishButton = document.getElementById('publish');
    if (!publishButton) {
        console.warn("Publish button not found");
@@ -740,9 +747,7 @@ export function initToggleSwitch() {
            publishButton.disabled = true;
            publishButton.textContent = "Publishing...";
 
-           // Call the handlePublish function from squareCraft.js
            await handlePublish();
-
        } catch (error) {
            showNotification(error.message, "error");
        } finally {

@@ -322,25 +322,39 @@ export function handleTextTransformClick(event = null, context = null) {
     styleTag.innerHTML = css;
 
     // Save modifications with proper structure
-    saveModifications(blockId, {
+    // saveModifications(blockId, {
+    //     "text-transform": textTransform
+    // }, 'strong').then(result => {
+    //     if (result.success) {
+    //         // Update UI tab state
+    //         document.querySelectorAll('[id^="scTextTransform"]').forEach(el => {
+    //             el.classList.remove('sc-activeTab-border');
+    //             el.classList.add('sc-inActiveTab-border');
+    //         });
+    //         clickedElement.classList.remove('sc-inActiveTab-border');
+    //         clickedElement.classList.add('sc-activeTab-border');
+    //         showNotification("Text transform applied successfully!", "success");
+    //     } else {
+    //         showNotification(`Failed to save changes: ${result.error}`, "error");
+    //     }
+    // }).catch(error => {
+    //     console.error("Error saving modifications:", error);
+    //     showNotification("Failed to save changes", "error");
+    // });
+
+    addPendingModification(blockId, {
         "text-transform": textTransform
-    }, 'strong').then(result => {
-        if (result.success) {
-            // Update UI tab state
-            document.querySelectorAll('[id^="scTextTransform"]').forEach(el => {
-                el.classList.remove('sc-activeTab-border');
-                el.classList.add('sc-inActiveTab-border');
-            });
-            clickedElement.classList.remove('sc-inActiveTab-border');
-            clickedElement.classList.add('sc-activeTab-border');
-            showNotification("Text transform applied successfully!", "success");
-        } else {
-            showNotification(`Failed to save changes: ${result.error}`, "error");
-        }
-    }).catch(error => {
-        console.error("Error saving modifications:", error);
-        showNotification("Failed to save changes", "error");
+    }, 'strong');
+
+    // Update UI immediately
+    document.querySelectorAll('[id^="scTextTransform"]').forEach(el => {
+        el.classList.remove('sc-activeTab-border');
+        el.classList.add('sc-inActiveTab-border');
     });
+    clickedElement.classList.remove('sc-inActiveTab-border');
+    clickedElement.classList.add('sc-activeTab-border');
+    showNotification("Text transform applied! Click Publish to save changes.", "info");
+
 }
 
 

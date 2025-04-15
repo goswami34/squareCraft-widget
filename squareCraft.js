@@ -1071,4 +1071,27 @@ function showNotification(message, type = "info") {
   // font weight code end here
 
 
+  // publish button code start here
+  let pendingModifications = new Map()
+  function addPendingModification(blockId, css, tagType) {
+    if (!pendingModifications.has(blockId)) {
+        pendingModifications.set(blockId, []);
+    }
+    pendingModifications.get(blockId).push({ css, tagType });
+}
+  function updatePublishButton() {
+    const publishButton = document.getElementById('publish');
+    if (!publishButton) return;
+
+    if (pendingModifications.size > 0) {
+        publishButton.classList.add('has-pending-changes');
+        publishButton.textContent = `Publish (${pendingModifications.size})`;
+    } else {
+        publishButton.classList.remove('has-pending-changes');
+        publishButton.textContent = 'Publish';
+    }
+}
+  // publish button code end here
+
+
 })();
