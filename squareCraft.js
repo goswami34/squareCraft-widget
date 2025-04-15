@@ -131,6 +131,7 @@ let selectedElement = null;
       userId,
       saveModifications,
       handleBlockClick,
+      setLastClickedBlockId: (val) => lastClickedBlockId = val,
       token,
       widgetId,
       setSelectedElement: (val) => selectedElement = val, // Add this line
