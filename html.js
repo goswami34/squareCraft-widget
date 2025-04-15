@@ -308,7 +308,89 @@ let pageId = document.querySelector("article[data-page-sections]")?.getAttribute
 // let blockId = block?.id;
 
 
-async function saveModifications(blockId, css, tagType) {
+// async function saveModifications(blockId, css, tagType) {
+//    if (!pageId || !blockId || !css) {
+//        console.warn("⚠️ Missing required data to save modifications.");
+//        return {
+//            success: false,
+//            error: "Missing required data"
+//        };
+//    }
+
+//    const userId = localStorage.getItem("sc_u_id");
+//    const token = localStorage.getItem("sc_auth_token");
+//    const widgetId = localStorage.getItem("sc_w_id");
+
+//    if (!userId || !token || !widgetId) {
+//        console.warn("⚠️ Missing authentication data");
+//        return {
+//            success: false,
+//            error: "Missing authentication data"
+//        };
+//    }
+
+//    // Construct the modification data according to your database structure
+//    const modificationData = {
+//        userId,
+//        token,
+//        widgetId,
+//        modifications: [{
+//            pageId,
+//            elements: [{
+//                elementId: blockId, // This should be the block ID
+//                css: {
+//                    strong: {
+//                        id: blockId, // This should match elementId
+//                        ...css // This will include text-transform and other properties
+//                    }
+//                },
+//                elementStructure: {
+//                    type: 'strong',
+//                    content: document.getElementById(blockId)?.textContent || '',
+//                    parentId: document.getElementById(blockId)?.parentElement?.id || null
+//                }
+//            }]
+//        }]
+//    };
+
+//    try {
+//        const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
+//            method: "POST",
+//            headers: {
+//                "Content-Type": "application/json",
+//                "Authorization": `Bearer ${token}`,
+//            },
+//            body: JSON.stringify(modificationData),
+//        });
+
+//        if (!response.ok) {
+//            const errorData = await response.json();
+//            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+//        }
+
+//        const result = await response.json();
+//        console.log("✅ Changes Saved Successfully!", result);
+       
+//        // Show success notification
+//        showNotification("Changes saved successfully!", "success");
+       
+//        return {
+//            success: true,
+//            data: result
+//        };
+//    } catch (error) {
+//        console.error("❌ Error saving modifications:", error);
+//        // Show error notification
+//        showNotification(`Failed to save changes: ${error.message}`, "error");
+       
+//        return {
+//            success: false,
+//            error: error.message
+//        };
+//    }
+// }
+
+export async function saveModifications(blockId, css, tagType) {
    if (!pageId || !blockId || !css) {
        console.warn("⚠️ Missing required data to save modifications.");
        return {
@@ -316,11 +398,11 @@ async function saveModifications(blockId, css, tagType) {
            error: "Missing required data"
        };
    }
-
+ 
    const userId = localStorage.getItem("sc_u_id");
    const token = localStorage.getItem("sc_auth_token");
    const widgetId = localStorage.getItem("sc_w_id");
-
+ 
    if (!userId || !token || !widgetId) {
        console.warn("⚠️ Missing authentication data");
        return {
@@ -328,8 +410,7 @@ async function saveModifications(blockId, css, tagType) {
            error: "Missing authentication data"
        };
    }
-
-   // Construct the modification data according to your database structure
+ 
    const modificationData = {
        userId,
        token,
@@ -337,11 +418,11 @@ async function saveModifications(blockId, css, tagType) {
        modifications: [{
            pageId,
            elements: [{
-               elementId: blockId, // This should be the block ID
+               elementId: blockId,
                css: {
                    strong: {
-                       id: blockId, // This should match elementId
-                       ...css // This will include text-transform and other properties
+                       id: blockId,
+                       ...css
                    }
                },
                elementStructure: {
@@ -352,7 +433,7 @@ async function saveModifications(blockId, css, tagType) {
            }]
        }]
    };
-
+ 
    try {
        const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
            method: "POST",
@@ -362,16 +443,15 @@ async function saveModifications(blockId, css, tagType) {
            },
            body: JSON.stringify(modificationData),
        });
-
+ 
        if (!response.ok) {
            const errorData = await response.json();
            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
        }
-
+ 
        const result = await response.json();
        console.log("✅ Changes Saved Successfully!", result);
        
-       // Show success notification
        showNotification("Changes saved successfully!", "success");
        
        return {
@@ -380,7 +460,6 @@ async function saveModifications(blockId, css, tagType) {
        };
    } catch (error) {
        console.error("❌ Error saving modifications:", error);
-       // Show error notification
        showNotification(`Failed to save changes: ${error.message}`, "error");
        
        return {
@@ -388,7 +467,7 @@ async function saveModifications(blockId, css, tagType) {
            error: error.message
        };
    }
-}
+ }
 
 // async function saveModifications(blockId, css, tagType) {
 //    if (!pageId || !blockId || !css) {
