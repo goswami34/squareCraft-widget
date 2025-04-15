@@ -253,6 +253,13 @@ export function handleTextTransformClick(event = null, context = null) {
         setLastClickedElement
     } = context;
 
+    // Add a check for saveModifications
+    if (typeof saveModifications !== 'function') {
+        console.error("saveModifications function is not available");
+        showNotification("Error: Save functionality not available", "error");
+        return;
+    }
+
     // First check if we're clicking on a block
     let block = event.target.closest('[id^="block-"]');
     if (block) {
@@ -262,7 +269,7 @@ export function handleTextTransformClick(event = null, context = null) {
         block.style.outline = "1px dashed #EF7C2F";
         setLastClickedBlockId(block.id);
         setLastClickedElement(block);
-        return;
+        return; // Return after handling block selection
     }
 
     // If no block was clicked, check for text transform button
@@ -300,18 +307,14 @@ export function handleTextTransformClick(event = null, context = null) {
         return;
     }
 
-    // Generate a unique ID for the style element
-    // This combines block ID, tag type, and a timestamp to ensure uniqueness
-    const uniqueId = `style-${blockId}-${tagType}-strong-texttransform-${Date.now()}`;
-    
-    // Remove any existing style tags for this block and tag type
-    const existingStyleTags = document.querySelectorAll(`[id^="style-${blockId}-${tagType}-strong-texttransform"]`);
-    existingStyleTags.forEach(tag => tag.remove());
-
-    // Create new style tag with unique ID
-    const styleTag = document.createElement("style");
-    styleTag.id = uniqueId;
-    document.head.appendChild(styleTag);
+    // Apply inline style
+    const styleId = `style-${blockId}-${tagType}-strong-texttransform`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = styleId;
+        document.head.appendChild(styleTag);
+    }
 
     const css = `#${blockId} ${tagType} strong {
         text-transform: ${textTransform} !important;
@@ -320,8 +323,7 @@ export function handleTextTransformClick(event = null, context = null) {
 
     // Save modifications with proper structure
     saveModifications(blockId, {
-        "text-transform": textTransform,
-        "style-id": uniqueId // Include the unique style ID in the saved data
+        "text-transform": textTransform
     }, 'strong').then(result => {
         if (result.success) {
             // Update UI tab state
@@ -331,7 +333,13 @@ export function handleTextTransformClick(event = null, context = null) {
             });
             clickedElement.classList.remove('sc-inActiveTab-border');
             clickedElement.classList.add('sc-activeTab-border');
+            showNotification("Text transform applied successfully!", "success");
+        } else {
+            showNotification(`Failed to save changes: ${result.error}`, "error");
         }
+    }).catch(error => {
+        console.error("Error saving modifications:", error);
+        showNotification("Failed to save changes", "error");
     });
 }
 

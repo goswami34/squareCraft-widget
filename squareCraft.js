@@ -88,7 +88,7 @@
   const { handleTextColorClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextColorClick.js");
   const { typoTabSelect } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/typoTabSelect.js");
   const { handleTextTransformClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleTextTransform.js");
-
+  const { saveModifications } = await import("https://goswami34.github.io/squareCraft-widget/html.js");
 
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
