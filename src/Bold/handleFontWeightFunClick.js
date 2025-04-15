@@ -45,7 +45,6 @@ export function handleFontWeightFunClick(event = null, context = null) {
       const fontWeight = event.target.value;
       const blockId = lastClickedElement.id;
       
-      // Get the tag type from dataset.strongElementsByTag
       const data = lastClickedElement.dataset.strongElementsByTag;
       if (!data) {
           showNotification("No bold text found in the selected block", "error");
@@ -62,7 +61,6 @@ export function handleFontWeightFunClick(event = null, context = null) {
           return;
       }
 
-      // Apply inline style
       const styleId = `style-${blockId}-${tagType}-strong-fontweight`;
       let styleTag = document.getElementById(styleId);
       if (!styleTag) {
@@ -76,7 +74,6 @@ export function handleFontWeightFunClick(event = null, context = null) {
       }`;
       styleTag.innerHTML = css;
 
-      // Add to pending modifications
       addPendingModification(blockId, {
           "font-weight": fontWeight
       }, 'strong');
