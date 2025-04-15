@@ -1,3 +1,6 @@
+let pendingModifications = new Map();
+let selectedElement = null;
+
 (async function squareCraft() {
   const Url = parent.document.location.href
   console.log("parent", Url)
@@ -130,6 +133,7 @@
       handleBlockClick,
       token,
       widgetId,
+      setSelectedElement: (val) => selectedElement = val, // Add this line
       addPendingModification: (blockId, css, tagType) => {
         if (!pendingModifications.has(blockId)) {
           pendingModifications.set(blockId, []);
@@ -1070,7 +1074,7 @@ function showNotification(message, type = "info") {
 
 
   // publish button code start here
-  let pendingModifications = new Map()
+  //let pendingModifications = new Map()
   function addPendingModification(blockId, css, tagType) {
     if (!pendingModifications.has(blockId)) {
         pendingModifications.set(blockId, []);
