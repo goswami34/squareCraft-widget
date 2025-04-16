@@ -438,6 +438,7 @@ function showNotification(message, type = "info") {
             });
         }, 100);
     }
+    
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
