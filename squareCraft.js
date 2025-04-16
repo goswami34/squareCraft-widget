@@ -197,9 +197,11 @@ if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
         lastClickedElement,
         saveModifications,
         selectedElement,
-        setSelectedElement,
-        setLastClickedBlockId,
-        setLastClickedElement,
+        setLastClickedBlockId: (val) => lastClickedBlockId = val,
+        token,
+        widgetId,
+        setSelectedElement: (val) => selectedElement = val, // Add this line
+        setLastClickedElement: (val) => lastClickedElement = val,
         addPendingModification,
         getTextType
     });
@@ -526,9 +528,26 @@ function showNotification(message, type = "info") {
     addHeadingEventListeners();
     fetchModifications();
     // // font weight functionality start here
+    // const fontWeightSelect = document.getElementById("squareCraftFontWeight");
+    // if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
+    //   fontWeightSelect.dataset.initialized = "true";
+    // }
+
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
-      fontWeightSelect.dataset.initialized = "true";
+        fontWeightSelect.dataset.initialized = "true";
+        handleFontWeightFunClick(null, {
+            lastClickedElement,
+            saveModifications,
+            selectedElement,
+            setLastClickedBlockId: (val) => lastClickedBlockId = val,
+            token,
+            widgetId,
+            setSelectedElement: (val) => selectedElement = val, // Add this line
+            setLastClickedElement: (val) => lastClickedElement = val,
+            addPendingModification,
+            getTextType
+        });
     }
 
     const textTransformContainer = document.getElementById("squareCraftTextTransform");
