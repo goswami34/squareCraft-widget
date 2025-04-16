@@ -533,6 +533,7 @@ function showNotification(message, type = "info") {
     //   fontWeightSelect.dataset.initialized = "true";
     // }
 
+    // Add this to your observer callback
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
         fontWeightSelect.dataset.initialized = "true";
@@ -540,10 +541,8 @@ function showNotification(message, type = "info") {
             lastClickedElement,
             saveModifications,
             selectedElement,
+            setSelectedElement: (val) => selectedElement = val,
             setLastClickedBlockId: (val) => lastClickedBlockId = val,
-            token,
-            widgetId,
-            setSelectedElement: (val) => selectedElement = val, // Add this line
             setLastClickedElement: (val) => lastClickedElement = val,
             addPendingModification,
             getTextType

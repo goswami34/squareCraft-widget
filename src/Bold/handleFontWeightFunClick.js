@@ -268,7 +268,6 @@
 
 
 export function handleFontWeightFunClick(event = null, context = null) {
-    console.log("handleFontWeightFunClick");
     const {
         lastClickedElement,
         saveModifications,
@@ -287,15 +286,18 @@ export function handleFontWeightFunClick(event = null, context = null) {
         return;
     }
 
+    // Remove any existing event listeners to prevent duplicates
+    const newFontWeightSelect = fontWeightSelect.cloneNode(true);
+    fontWeightSelect.parentNode.replaceChild(newFontWeightSelect, fontWeightSelect);
+
     // Add event listener for font weight changes
-    fontWeightSelect.addEventListener('change', async (event) => {
+    newFontWeightSelect.addEventListener('change', async (event) => {
         if (!lastClickedElement) {
             showNotification("Please select a block first", "error");
             return;
         }
 
-        const fontWeight = this.value;
-        console.log(fontWeight);
+        const fontWeight = event.target.value;
         const blockId = lastClickedElement.id;
         
         // Get the current active tag type (h1, h2, etc.)
@@ -337,6 +339,3 @@ export function handleFontWeightFunClick(event = null, context = null) {
         }
     });
 }
-  
-    
-  
