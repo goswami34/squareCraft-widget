@@ -268,6 +268,7 @@
 
 
 export function handleFontWeightFunClick(event = null, context = null) {
+    console.log("handleFontWeightFunClick");
     const {
         lastClickedElement,
         saveModifications,
