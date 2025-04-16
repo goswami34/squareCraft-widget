@@ -27,6 +27,7 @@ function showNotification(message, type = "info") {
 
 
 export function handleFontSize(event = null, context = null) {
+    console.log("handleFontSize");
     const {
         lastClickedElement,
         getTextType,
@@ -41,6 +42,7 @@ export function handleFontSize(event = null, context = null) {
 
     // First check if we're clicking on a block
     let block = event?.target?.closest('[id^="block-"]');
+    console.log(block);
     if (block) {
         // Handle block selection
         if (selectedElement) selectedElement.style.outline = "";
@@ -53,6 +55,7 @@ export function handleFontSize(event = null, context = null) {
 
     // Get the font size input element
     const fontSizeInput = document.getElementById('scFontSizeInput');
+    console.log(fontSizeInput);
     if (!fontSizeInput) {
         console.error("Font size input element not found");
         return;
