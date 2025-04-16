@@ -435,8 +435,7 @@ function showNotification(message, type = "info") {
                     }
                     pendingModifications.get(blockId).push({ css, tagType });
                 },
-                showNotification,
-                applyStylesToElement // Add this line
+                showNotification
             });
         }, 100);
     }
