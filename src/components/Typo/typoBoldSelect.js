@@ -63,7 +63,7 @@ export function typoBoldSelect(fontSizes) {
       <div
          class="sc-flex sc-bg-494949  sc-col-span-7  sc-justify-between sc-border sc-border-solid sc-border-585858 sc-rounded-6px sc-items-center ">
          <div class="sc-px-2   ">
-            <select id="squareCraftFontWeight">
+            <select id="squareCraftFontWeight" data-font-weight-select>
                <option value="100">Thin (100)</option>
                <option value="200">Extra Light (200)</option>
                <option value="300">Light (300)</option>
