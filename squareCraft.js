@@ -129,6 +129,7 @@ let selectedElement = null;
       lastActiveAlignmentElement,
       setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
       lastClickedBlockId,
+      setLastClickedElement: (val) => lastClickedElement = val,
       userId,
       saveModifications,
       handleBlockClick,
