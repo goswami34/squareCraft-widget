@@ -1478,3 +1478,21 @@
   opacity: 0.9;
   transition: opacity 0.3s ease-in-out;
 }
+
+/* amit code start here */
+
+.sc-font-weight-select option {
+  background-color: #494949;
+  color: white;
+  padding: 5px;
+}
+
+.sc-font-weight-select:focus {
+  outline: none;
+  border: none;
+}
+
+
+
+
+/* amit code end here */

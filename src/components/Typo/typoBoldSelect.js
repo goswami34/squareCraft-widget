@@ -69,7 +69,7 @@ export function typoBoldSelect(fontSizes) {
                   style="
                      background: transparent;
                      border: none;
-                     color: black;
+                     color: white;
                      padding: 5px;
                      width: 100%;
                      cursor: pointer;
@@ -77,6 +77,8 @@ export function typoBoldSelect(fontSizes) {
                      -webkit-appearance: none;
                      -moz-appearance: none;
                      appearance: none;
+                     position: relative;
+                     z-index: 1;
                   "
             >
                   <option value="100">Thin (100)</option>
