@@ -81,6 +81,12 @@ export function handleFontSize(event = null, context = null) {
     //     return;
     // }
 
+    const selectedTag = lastClickedElement.querySelector(activeTagType);
+    if (!selectedTag) {
+        showNotification(`No ${activeTagType} tag found in this block`, "error");
+        return;
+    }
+
     const strongTags = selectedTag.querySelectorAll('strong');
     if (strongTags.length === 0) {
         showNotification(`No bold text found in ${activeTagType}`, "error");
