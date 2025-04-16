@@ -157,6 +157,12 @@ let selectedElement = null;
               pendingModifications.set(blockId, []);
           }
           pendingModifications.get(blockId).push({ css, tagType });
+      },
+      getTextType: () => {
+          // This function should return the currently selected text type (h1, h2, etc.)
+          const activeTab = document.querySelector('.sc-activeTab-border');
+          if (!activeTab) return null;
+          return activeTab.id.replace('heading', 'h').replace('paragraph', 'p');
       }
   });
   
