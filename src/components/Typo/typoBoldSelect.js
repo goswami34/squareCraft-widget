@@ -25,7 +25,9 @@ export function typoBoldSelect(fontSizes) {
                <input 
                   type="number" 
                   id="scFontSizeInput" 
-                  value="16" 
+                  value="16"
+                  min="8"
+                  max="120" 
                   class="sc-font-size-input sc-font-light sc-z-99999 sc-text-sm sc-text-color-white sc-bg-transparent sc-universal sc-font-light"
                   data-tag-type="p"
                >
