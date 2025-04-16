@@ -147,7 +147,8 @@ function showNotification(message, type = "info") {
 
 // }
 
-function handleFontSize(event, context) {
+// src/Bold/handleFontSize.js
+export function handleFontSize(event, context) {
     // Destructure required context properties
     const {
         lastClickedElement,
@@ -209,68 +210,3 @@ function handleFontSize(event, context) {
     // Show success notification
     showNotification("Font size applied! Click Publish to save changes.", "success");
 }
-
-// Function to initialize the font size functionality
-function initFontSize() {
-    const fontSizeInput = document.getElementById('scFontSizeInput');
-    
-    if (!fontSizeInput) {
-        return;
-    }
-
-    // Add input event listener
-    fontSizeInput.addEventListener('input', (event) => {
-        // Validate input value
-        let value = parseInt(event.target.value);
-        if (value < 8) value = 8;
-        if (value > 72) value = 72;
-        event.target.value = value;
-
-        // Call handleFontSize with current context
-        handleFontSize(event, {
-            lastClickedElement: document.querySelector('.sc-selected'),
-            selectedElement: document.querySelector('.sc-selected'),
-            addPendingModification: (blockId, css, tagType) => {
-                // Implementation of addPendingModification
-                if (!window.pendingModifications) {
-                    window.pendingModifications = new Map();
-                }
-                if (!window.pendingModifications.has(blockId)) {
-                    window.pendingModifications.set(blockId, []);
-                }
-                window.pendingModifications.get(blockId).push({ css, tagType });
-            },
-            showNotification: (message, type) => {
-                // Implementation of showNotification
-                const notification = document.createElement('div');
-                notification.className = `sc-notification sc-notification-${type}`;
-                notification.textContent = message;
-                
-                Object.assign(notification.style, {
-                    position: 'fixed',
-                    top: '20px',
-                    right: '20px',
-                    padding: '10px 20px',
-                    borderRadius: '4px',
-                    color: 'white',
-                    zIndex: '9999',
-                    backgroundColor: type === 'success' ? '#4CAF50' : '#f44336'
-                });
-
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            }
-        });
-    });
-
-    // Add change event for when input loses focus
-    fontSizeInput.addEventListener('change', (event) => {
-        let value = parseInt(event.target.value);
-        if (isNaN(value) || value < 8) value = 8;
-        if (value > 72) value = 72;
-        event.target.value = value;
-    });
-}
-
-// Call this function when the page loads
-document.addEventListener('DOMContentLoaded', initFontSize);
