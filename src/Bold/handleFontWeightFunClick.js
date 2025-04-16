@@ -294,6 +294,7 @@ export function handleFontWeightFunClick(event = null, context = null) {
         }
 
         const fontWeight = event.target.value;
+        console.log(fontWeight);
         const blockId = lastClickedElement.id;
         
         // Get the current active tag type (h1, h2, etc.)
