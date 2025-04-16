@@ -89,7 +89,7 @@ export function handleFontSize(event = null, context = null) {
     }
 
     // Convert activeTab.id (like 'heading1') to tagName (e.g., h1)
-    const activeTagType = getTextType(activeTab.id, lastClickedElement);
+    const activeTagType = (activeTab.id, lastClickedElement);
     if (!activeTagType) {
         showNotification("Unable to determine text type", "error");
         return;
