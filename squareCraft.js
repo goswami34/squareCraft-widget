@@ -1017,39 +1017,6 @@ function showNotification(message, type = "info") {
   fontfamilies();
   // font family code end here
 
-  document.body.addEventListener("click", (event) => {
-    handleFontSize(event, {
-        lastClickedElement,
-        selectedElement,
-        addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-                pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-        },
-        showNotification: (message, type) => {
-            const notification = document.createElement('div');
-            notification.className = `sc-notification sc-notification-${type}`;
-            notification.textContent = message;
-            
-            Object.assign(notification.style, {
-                position: 'fixed',
-                top: '20px',
-                right: '20px',
-                padding: '10px 20px',
-                borderRadius: '4px',
-                color: 'white',
-                zIndex: '9999',
-                backgroundColor: type === 'success' ? '#4CAF50' : '#f44336'
-            });
-
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
-        }
-    });
-
-  });
-
 
 
   // publish button code start here
@@ -1073,8 +1040,6 @@ function showNotification(message, type = "info") {
     }
 }
   // publish button code end here
-
-  
 
 
 })();
