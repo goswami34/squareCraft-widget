@@ -534,19 +534,39 @@ function showNotification(message, type = "info") {
     // }
 
     // Add this to your observer callback
+    // const fontWeightSelect = document.getElementById("squareCraftFontWeight");
+    // if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
+    //     fontWeightSelect.dataset.initialized = "true";
+    //     handleFontWeightFunClick(null, {
+    //         lastClickedElement,
+    //         saveModifications,
+    //         selectedElement,
+    //         setSelectedElement: (val) => selectedElement = val,
+    //         setLastClickedBlockId: (val) => lastClickedBlockId = val,
+    //         setLastClickedElement: (val) => lastClickedElement = val,
+    //         addPendingModification,
+    //         getTextType
+    //     });
+    // }
+
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
+        console.log("Initializing font weight select");
         fontWeightSelect.dataset.initialized = "true";
-        handleFontWeightFunClick(null, {
-            lastClickedElement,
-            saveModifications,
-            selectedElement,
-            setSelectedElement: (val) => selectedElement = val,
-            setLastClickedBlockId: (val) => lastClickedBlockId = val,
-            setLastClickedElement: (val) => lastClickedElement = val,
-            addPendingModification,
-            getTextType
-        });
+        
+        // Add a small delay to ensure the DOM is fully loaded
+        setTimeout(() => {
+            handleFontWeightFunClick(null, {
+                lastClickedElement,
+                saveModifications,
+                selectedElement,
+                setSelectedElement: (val) => selectedElement = val,
+                setLastClickedBlockId: (val) => lastClickedBlockId = val,
+                setLastClickedElement: (val) => lastClickedElement = val,
+                addPendingModification,
+                getTextType
+            });
+        }, 100);
     }
 
     const textTransformContainer = document.getElementById("squareCraftTextTransform");
