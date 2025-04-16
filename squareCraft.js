@@ -550,6 +550,7 @@ function showNotification(message, type = "info") {
     }
 
     const fontWeightContainer = document.getElementById("squareCraftFontWeight");
+    console.log(fontWeightContainer);
     if (fontWeightContainer && !fontWeightContainer.dataset.initialized) {
       fontWeightContainer.dataset.initialized = "true";
     }
