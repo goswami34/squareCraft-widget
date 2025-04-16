@@ -168,23 +168,25 @@ let selectedElement = null;
 
   handleFontWeightFunClick(event, {
     lastClickedElement,
+    getTextType,
     saveModifications,
     selectedElement,
     setSelectedElement: (val) => selectedElement = val,
     setLastClickedBlockId: (val) => lastClickedBlockId = val,
-    setLastClickedElement: (val) => lastClickedElement = val,
-    addPendingModification: (blockId, css, tagType) => {
+    lastClickedBlockId,
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => lastClickedBlockId = val,
+      token,
+      widgetId,
+      setSelectedElement: (val) => selectedElement = val, // Add this line
+      addPendingModification: (blockId, css, tagType) => {
         if (!pendingModifications.has(blockId)) {
-            pendingModifications.set(blockId, []);
+          pendingModifications.set(blockId, []);
         }
         pendingModifications.get(blockId).push({ css, tagType });
-    },
-    getTextType: () => {
-        // This function should return the currently selected text type (h1, h2, etc.)
-        const activeTab = document.querySelector('.sc-activeTab-border');
-        if (!activeTab) return null;
-        return activeTab.id.replace('heading', 'h').replace('paragraph', 'p');
-    }
+      }
 });
   
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
