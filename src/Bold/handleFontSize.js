@@ -66,7 +66,7 @@ export function handleFontSize(event = null, context = null) {
     const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
     if (!clickedElement) return;
 
-    const fontSize = clickedElement.dataset.fontSize;
+    const fontSize = clickedElement.number.fontSize;
     const blockId = lastClickedElement?.id;
 
     if (!blockId || !lastClickedElement) {
@@ -75,7 +75,7 @@ export function handleFontSize(event = null, context = null) {
     }
 
     // Get the tag type from dataset.strongElementsByTag
-    const data = lastClickedElement.dataset.strongElementsByTag;
+    const data = lastClickedElement.number.strongElementsByTag;
     if (!data) {
         showNotification("No bold text found in the selected block", "error");
         return;
