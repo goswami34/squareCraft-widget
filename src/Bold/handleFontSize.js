@@ -81,6 +81,20 @@ export function handleFontSize(event = null, context = null) {
     //     return;
     // }
 
+    // Get currently selected text type tab (e.g., h1, h2, p1)
+    const activeTab = document.querySelector(".sc-activeTab-border");
+    if (!activeTab) {
+        showNotification("No text type selected", "error");
+        return;
+    }
+
+    // Convert activeTab.id (like 'heading1') to tagName (e.g., h1)
+    const activeTagType = getTextType(activeTab.id, lastClickedElement);
+    if (!activeTagType) {
+        showNotification("Unable to determine text type", "error");
+        return;
+    }
+
     const selectedTag = lastClickedElement.querySelector(activeTagType);
     if (!selectedTag) {
         showNotification(`No ${activeTagType} tag found in this block`, "error");
