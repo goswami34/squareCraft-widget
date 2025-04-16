@@ -41,7 +41,7 @@ export function handleFontSize(event = null, context = null) {
     } = context;
 
     // First check if we're clicking on a block
-    let block = event?.target?.closest('[id^="block-"]');
+    let block = event.target.closest('[id^="block-"]');
     console.log(block);
     if (block) {
         // Handle block selection
