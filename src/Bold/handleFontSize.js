@@ -66,7 +66,7 @@ export function handleFontSize(event = null, context = null) {
     const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
     if (!clickedElement) return;
 
-    const fontSize = clickedElement.number.fontSize;
+    const fontSize = event.target.value + "px";
     const blockId = lastClickedElement?.id;
 
     if (!blockId || !lastClickedElement) {
