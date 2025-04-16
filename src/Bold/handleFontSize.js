@@ -134,7 +134,9 @@ export function handleFontSize(event = null, context = null) {
         setSelectedElement,
         setLastClickedBlockId,
         setLastClickedElement,
-        addPendingModification
+        addPendingModification,
+        showNotification,
+        applyStylesToElement
     } = context;
 
     // First check if we're clicking on a block
@@ -214,6 +216,11 @@ export function handleFontSize(event = null, context = null) {
             font-size: ${fontSize} !important;
         }`;
         styleTag.innerHTML = css;
+
+        // Apply styles immediately
+        applyStylesToElement(lastClickedElement, {
+            "font-size": fontSize
+        });
 
         // Add to pending modifications
         addPendingModification(blockId, {
