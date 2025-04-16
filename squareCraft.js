@@ -1,3 +1,5 @@
+import { handleFontSize } from "./src/Bold/handleFontSize.JS";
+
 let pendingModifications = new Map();
 let selectedElement = null;
 
@@ -92,6 +94,7 @@ let selectedElement = null;
   const { typoTabSelect } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/typoTabSelect.js");
   const { handleTextTransformClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleTextTransform.js");
   const { handleFontWeightFunClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontWeightFunClick.js");
+  const { handleFontSize } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontSize.js");
   const { saveModifications } = await import("https://goswami34.github.io/squareCraft-widget/html.js");
 
   document.body.addEventListener("click", (event) => {
@@ -118,6 +121,32 @@ let selectedElement = null;
       token,
       widgetId
     });
+
+    handleFontSize(event, {
+      lastClickedElement,
+      getTextType,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
+      lastClickedBlockId,
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => lastClickedBlockId = val,
+      token,
+      widgetId,
+      setSelectedElement: (val) => selectedElement = val, // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      }
+    });
+
+    
 
 
     handleTextTransformClick(event, {
@@ -212,168 +241,6 @@ if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
     typoTabSelect(event);
   });
   
-
-
-  // async function fetchModifications(retries = 3) {
-  //   const module = await import("https://goswami34.github.io/squareCraft-widget/html.js");
-  //   const htmlString = module.html();
-  
-  //   if (typeof htmlString === "string" && widgetContainer && widgetContainer.innerHTML.trim() === "") {
-  //     widgetContainer.innerHTML = htmlString;
-  //   }
-  
-  //   setTimeout(() => {
-  //     if (typeof module.initToggleSwitch === "function") {
-  //       module.initToggleSwitch();
-  //     }
-  //   }, 200);
-  
-  //   const isEnabled = localStorage.getItem("sc_enabled") !== "false";
-  
-  //   if (!isEnabled) {
-  //     return;
-  //   }
-  
-  //   const pageId = document.querySelector("article[data-page-sections]")?.getAttribute("data-page-sections");
-  //   if (!pageId) return;
-  
-  //   if (!token || !userId) {
-  //     console.warn("Missing authentication data");
-  //     return;
-  //   }
-  
-  //   try {
-  //     const response = await fetch(
-  //       `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}`,
-  //       {
-  //         method: "GET",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           "Authorization": `Bearer ${token}`,
-  //         }
-  //       }
-  //     );
-  
-  //     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
-  //     const data = await response.json();
-  
-  //     if (!data.modifications || !Array.isArray(data.modifications)) {
-  //       console.warn("⚠️ No modifications found or invalid format");
-  //       return;
-  //     }
-  
-  //     const modificationMap = new Map();
-  
-  //     data.modifications.forEach(mod => {
-  //       if (mod.pageId === pageId) {
-  //         mod.elements.forEach(elem => {
-  //           if (elem.css) {
-  //             modificationMap.set(elem.elementId, elem.css);
-  //           }
-  //         });
-  //       }
-  //     });
-  
-  //     const observer = new MutationObserver(() => {
-  //       modificationMap.forEach((css, elementId) => {
-  //         const element = document.getElementById(elementId);
-  //         if (element) {
-  //           Object.entries(css).forEach(([prop, value]) => {
-  //             element.style.setProperty(prop, value, "important");
-  //           });
-  
-  //           const nestedElements = element.querySelectorAll("h1, h2, h3, h4, p");
-  //           nestedElements.forEach(nestedElem => {
-  //             Object.entries(css).forEach(([prop, value]) => {
-  //               nestedElem.style.setProperty(prop, value, "important");
-  //             });
-  //           });
-  
-  //           if (!element.classList.contains("sc-font-modified")) {
-  //             element.classList.add("sc-font-modified");
-  //           }
-  
-  //           modificationMap.delete(elementId);
-  //         }
-  //       });
-  //     });
-  
-  //     observer.observe(document.body, { childList: true, subtree: true });
-  
-  //   } catch (error) {
-  //     console.error("❌ Error Fetching Modifications:", error);
-  //     if (retries > 0) {
-  //       setTimeout(() => fetchModifications(retries - 1), 2000);
-  //     }
-  //   }
-  // }
-
-  //save modifications code start here
-  
-  // async function saveModifications(blockId, css) {
-  //   if (!pageId || !blockId || !css) {
-  //       console.warn("⚠️ Missing required data to save modifications.");
-  //       return;
-  //   }
-  
-  //   const userId = localStorage.getItem("squareCraft_u_id");
-  //   const token = localStorage.getItem("squareCraft_auth_token");
-  //   const widgetId = localStorage.getItem("squareCraft_w_id");
-  
-  //   if (!userId || !token || !widgetId) {
-  //       console.warn("⚠️ Missing authentication data");
-  //       return;
-  //   }
-  
-  //   const modificationData = {
-  //       userId,
-  //       token,
-  //       widgetId,
-  //       modifications: [{
-  //           pageId,
-  //           elements: [{
-  //               elementId: blockId,
-  //               css: {
-  //                   strong: {
-  //                       id: blockId,
-  //                       ...css
-  //                   }
-  //               },
-  //               elementStructure: {
-  //                   type: 'strong',
-  //                   content: document.getElementById(blockId)?.textContent || '',
-  //                   parentId: document.getElementById(blockId)?.parentElement?.id || null
-  //               }
-  //           }]
-  //       }]
-  //   };
-  
-  //   try {
-  //       const response = await fetch("https://admin.squareplugin.com/api/v1/modifications", {
-  //           method: "POST",
-  //           headers: {
-  //               "Content-Type": "application/json",
-  //               "Authorization": `Bearer ${token}`,
-  //           },
-  //           body: JSON.stringify(modificationData),
-  //       });
-  
-  //       if (!response.ok) {
-  //           throw new Error(`HTTP error! status: ${response.status}`);
-  //       }
-  
-  //       const result = await response.json();
-  //       console.log("✅ Changes Saved Successfully!", result);
-        
-  //       return result;
-  //   } catch (error) {
-  //       console.error("❌ Error saving modifications:", error);
-  //       throw error;
-  //   }
-  // }
-
-  // In html.js
 
   
 
@@ -548,6 +415,27 @@ function showNotification(message, type = "info") {
     //         getTextType
     //     });
     // }
+
+    const fontsizeSelect = document.getElementById("scFontSizeInput");
+    if (fontsizeSelect && !fontsizeSelect.dataset.initialized) {
+        console.log("Initializing font weight select");
+        fontsizeSelect.dataset.initialized = "true";
+        
+        // Add a small delay to ensure the DOM is fully loaded
+        setTimeout(() => {
+            handleFontWeightFunClick(null, {
+                lastClickedElement,
+                saveModifications,
+                selectedElement,
+                setSelectedElement: (val) => selectedElement = val,
+                setLastClickedBlockId: (val) => lastClickedBlockId = val,
+                setLastClickedElement: (val) => lastClickedElement = val,
+                addPendingModification,
+                getTextType
+            });
+        }, 100);
+    }
+
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
