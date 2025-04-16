@@ -3,8 +3,24 @@ export function handleFontSize(event = null, context = null) {
         lastClickedElement,
         getTextType,
         saveModifications,
+        selectedElement,
+        setSelectedElement,
+        setLastClickedBlockId,
+        setLastClickedElement,
         addPendingModification
     } = context;
+
+    // First check if we're clicking on a block
+    let block = event?.target?.closest('[id^="block-"]');
+    if (block) {
+        // Handle block selection
+        if (selectedElement) selectedElement.style.outline = "";
+        setSelectedElement(block);
+        block.style.outline = "1px dashed #EF7C2F";
+        setLastClickedBlockId(block.id);
+        setLastClickedElement(block);
+        return;
+    }
 
     // Get the font size input element
     const fontSizeInput = document.getElementById('scFontSizeInput');
@@ -36,18 +52,23 @@ export function handleFontSize(event = null, context = null) {
 
         // Get the strong elements data
         const data = lastClickedElement.dataset.strongElementsByTag;
-        if (!data) return;
+        if (!data) {
+            showNotification("No bold text found in the selected block", "error");
+            return;
+        }
         
-        const parsed = JSON.parse(data);
-        const strongData = parsed[currentTagType];
-        
-        if (!strongData || strongData.count === 0) {
-            console.warn(`No <strong> tags found inside ${currentTagType}`);
+        let tagType = null;
+        try {
+            const parsed = JSON.parse(data);
+            const tagKeys = Object.keys(parsed);
+            tagType = tagKeys[0];
+        } catch (err) {
+            showNotification("Failed to process text data", "error");
             return;
         }
 
         // Create or update style tag
-        const styleId = `style-${blockId}-${currentTagType}-strong-fontsize`;
+        const styleId = `style-${blockId}-${tagType}-strong-fontsize`;
         let styleTag = document.getElementById(styleId);
         if (!styleTag) {
             styleTag = document.createElement("style");
@@ -56,7 +77,7 @@ export function handleFontSize(event = null, context = null) {
         }
 
         // Create CSS rule that targets strong tags within the current tag type
-        const css = `#${blockId} ${currentTagType} strong {
+        const css = `#${blockId} ${tagType} strong {
             font-size: ${fontSize} !important;
         }`;
         styleTag.innerHTML = css;
@@ -66,15 +87,6 @@ export function handleFontSize(event = null, context = null) {
             "font-size": fontSize
         }, 'strong');
 
-        // Save modifications
-        try {
-            await saveModifications(blockId, {
-                "font-size": fontSize
-            }, 'strong');
-            showNotification("Font size applied successfully!", "success");
-        } catch (error) {
-            showNotification("Failed to save font size changes", "error");
-            console.error("Error saving font size:", error);
-        }
+        showNotification("Font size applied! Click Publish to save changes.", "info");
     });
 }
