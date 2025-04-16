@@ -73,7 +73,7 @@
 
 
 export function handleFontWeightFunClick(event = null, context = null) {
-    console.log("handleFontWeightFunClick called");
+    console.log("handleFontWeightFunClick called with context:", context);
     
     const {
         lastClickedElement,
@@ -88,7 +88,7 @@ export function handleFontWeightFunClick(event = null, context = null) {
 
     // Get the font weight select element
     const fontWeightSelect = document.getElementById('squareCraftFontWeight');
-    console.log("Font weight select element:", fontWeightSelect);
+    console.log("Font weight select element found:", !!fontWeightSelect);
     
     if (!fontWeightSelect) {
         console.error("Font weight select element not found");
@@ -101,15 +101,21 @@ export function handleFontWeightFunClick(event = null, context = null) {
 
     // Add click event listener to the select element
     newFontWeightSelect.addEventListener('click', (e) => {
-        e.stopPropagation();
         console.log("Select clicked");
+        e.stopPropagation();
+    });
+
+    // Add mousedown event to prevent event bubbling
+    newFontWeightSelect.addEventListener('mousedown', (e) => {
+        console.log("Select mousedown");
+        e.stopPropagation();
     });
 
     // Add change event listener
     newFontWeightSelect.addEventListener('change', async (e) => {
-        e.stopPropagation();
         console.log("Font weight change event triggered");
         console.log("Selected value:", e.target.value);
+        console.log("Last clicked element:", lastClickedElement);
         
         if (!lastClickedElement) {
             console.log("No last clicked element");
@@ -140,6 +146,7 @@ export function handleFontWeightFunClick(event = null, context = null) {
             styleTag = document.createElement("style");
             styleTag.id = styleId;
             document.head.appendChild(styleTag);
+            console.log("Created new style tag");
         }
 
         // Create CSS rule that targets strong tags within the current tag type
@@ -154,6 +161,7 @@ export function handleFontWeightFunClick(event = null, context = null) {
         addPendingModification(blockId, {
             "font-weight": fontWeight
         }, 'strong');
+        console.log("Added to pending modifications");
 
         // Save modifications
         try {
@@ -168,8 +176,15 @@ export function handleFontWeightFunClick(event = null, context = null) {
         }
     });
 
-    // Add mousedown event to prevent event bubbling
-    newFontWeightSelect.addEventListener('mousedown', (e) => {
+    // Add focus event listener
+    newFontWeightSelect.addEventListener('focus', (e) => {
+        console.log("Select focused");
+        e.stopPropagation();
+    });
+
+    // Add blur event listener
+    newFontWeightSelect.addEventListener('blur', (e) => {
+        console.log("Select blurred");
         e.stopPropagation();
     });
 }
