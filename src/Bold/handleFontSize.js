@@ -27,7 +27,6 @@ function showNotification(message, type = "info") {
 
 
 export function handleFontSize(event = null, context = null) {
-    console.log("handleFontSize");
     const {
         lastClickedElement,
         getTextType,
@@ -41,21 +40,21 @@ export function handleFontSize(event = null, context = null) {
     } = context;
 
     // First check if we're clicking on a block
-    let block = event.target.closest('[id^="block-"]');
-    console.log(block);
-    if (block) {
-        // Handle block selection
-        if (selectedElement) selectedElement.style.outline = "";
-        setSelectedElement(block);
-        block.style.outline = "1px dashed #EF7C2F";
-        setLastClickedBlockId(block.id);
-        setLastClickedElement(block);
-        return;
+    if (event && event.target) {
+        let block = event.target.closest('[id^="block-"]');
+        if (block) {
+            // Handle block selection
+            if (selectedElement) selectedElement.style.outline = "";
+            setSelectedElement(block);
+            block.style.outline = "1px dashed #EF7C2F";
+            setLastClickedBlockId(block.id);
+            setLastClickedElement(block);
+            return;
+        }
     }
 
     // Get the font size input element
     const fontSizeInput = document.getElementById('scFontSizeInput');
-    console.log(fontSizeInput);
     if (!fontSizeInput) {
         console.error("Font size input element not found");
         return;
@@ -74,15 +73,14 @@ export function handleFontSize(event = null, context = null) {
         const fontSize = event.target.value + "px";
         const blockId = lastClickedElement.id;
 
-        // Get currently selected text type tab (e.g., h1, h2, p1)
-        const activeTab = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
-        console.log(activeTab);
+        // Get currently selected text type tab
+        const activeTab = document.querySelector('.sc-activeTab-border');
         if (!activeTab) {
             showNotification("No text type selected", "error");
             return;
         }
 
-        // Convert activeTab.id (like 'heading1') to tagName (e.g., h1)
+        // Convert activeTab.id to tagName (e.g., h1)
         const activeTagType = getTextType(activeTab.id, lastClickedElement);
         if (!activeTagType) {
             showNotification("Unable to determine text type", "error");
