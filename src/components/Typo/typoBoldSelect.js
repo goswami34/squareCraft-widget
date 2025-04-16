@@ -24,7 +24,7 @@ export function typoBoldSelect(fontSizes) {
             <div class="sc-font-size-container sc-poppins sc-universal sc-flex sc-justify-between sc-items-center sc-flex sc-items-center  
                   sc-rounded-6px 
                   ">
-               <input type="text" id="scFontSizeInput" value="16" class="sc-font-size-input sc-font-light sc-z-99999 sc-text-sm sc-text-color-white 
+               <input type="number" id="scFontSizeInput" value="16" class="sc-font-size-input sc-font-light sc-z-99999 sc-text-sm sc-text-color-white 
                      sc-bg-transparent  sc-universal sc-font-light">
                <div class="sc-v-line"></div>
                <div
@@ -33,7 +33,7 @@ export function typoBoldSelect(fontSizes) {
                      class=" sc-font-light sc-text-sm sc-px-1  ">
                      px
                </div>
-               
+
                <div class="sc-bg-3f3f3f sc-px-1_5 sc-ml-2"
                   style="height: 27px; padding: 0 8px; border-radius: 0px 5px 5px 0px;">
                   <img class=" sc-rotate-180 sc-mt-3" width="12px"
