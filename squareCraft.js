@@ -416,24 +416,27 @@ function showNotification(message, type = "info") {
 
     const fontsizeSelect = document.getElementById("scFontSizeInput");
     if (fontsizeSelect && !fontsizeSelect.dataset.initialized) {
-        console.log("Initializing font weight select");
         fontsizeSelect.dataset.initialized = "true";
         
         // Add a small delay to ensure the DOM is fully loaded
         setTimeout(() => {
-            handleFontWeightFunClick(null, {
+            handleFontSize(null, {
                 lastClickedElement,
+                getTextType,
                 saveModifications,
                 selectedElement,
                 setSelectedElement: (val) => selectedElement = val,
                 setLastClickedBlockId: (val) => lastClickedBlockId = val,
                 setLastClickedElement: (val) => lastClickedElement = val,
-                addPendingModification,
-                getTextType
+                addPendingModification: (blockId, css, tagType) => {
+                    if (!pendingModifications.has(blockId)) {
+                        pendingModifications.set(blockId, []);
+                    }
+                    pendingModifications.get(blockId).push({ css, tagType });
+                }
             });
         }, 100);
     }
-
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {

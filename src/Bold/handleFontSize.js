@@ -62,6 +62,12 @@ export function handleFontSize(event = null, context = null) {
             const parsed = JSON.parse(data);
             const tagKeys = Object.keys(parsed);
             tagType = tagKeys[0];
+            
+            // Check if the selected tag type has any strong elements
+            if (!parsed[tagType] || parsed[tagType].count === 0) {
+                showNotification(`No bold text found in ${tagType}`, "error");
+                return;
+            }
         } catch (err) {
             showNotification("Failed to process text data", "error");
             return;
