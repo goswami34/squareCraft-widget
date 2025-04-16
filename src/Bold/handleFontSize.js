@@ -64,47 +64,61 @@ export function handleFontSize(event = null, context = null) {
 
     newFontSizeInput.addEventListener('input', async (event) => {
         if (!lastClickedElement) {
-          showNotification("Please select a block first", "error");
-          return;
+            showNotification("Please select a block first", "error");
+            return;
         }
-      
+
         const fontSize = event.target.value + "px";
         const blockId = lastClickedElement.id;
-      
+
         // Get currently selected text type tab (e.g., h1, h2, p1)
         const activeTab = document.querySelector(".sc-activeTab-border");
         if (!activeTab) {
-          showNotification("No text type selected", "error");
-          return;
+            showNotification("No text type selected", "error");
+            return;
         }
-      
+
         // Convert activeTab.id (like 'heading1') to tagName (e.g., h1)
         const activeTagType = getTextType(activeTab.id, lastClickedElement);
         if (!activeTagType) {
-          showNotification("Unable to determine text type", "error");
-          return;
+            showNotification("Unable to determine text type", "error");
+            return;
         }
-      
-        // Example: apply styles to #blockId h1 strong { ... }
+
+        // Check if the selected tag exists in the block
+        const selectedTag = lastClickedElement.querySelector(activeTagType);
+        if (!selectedTag) {
+            showNotification(`No ${activeTagType} tag found in this block`, "error");
+            return;
+        }
+
+        // Check for strong tags within the selected tag
+        const strongTags = selectedTag.querySelectorAll('strong');
+        if (strongTags.length === 0) {
+            showNotification(`No bold text found in ${activeTagType}`, "error");
+            return;
+        }
+
+        // Create or update style tag for this block's strong tags
         let styleTag = document.getElementById(`style-${blockId}-${activeTagType}-strong-fontsize`);
         if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = `style-${blockId}-${activeTagType}-strong-fontsize`;
-          document.head.appendChild(styleTag);
+            styleTag = document.createElement("style");
+            styleTag.id = `style-${blockId}-${activeTagType}-strong-fontsize`;
+            document.head.appendChild(styleTag);
         }
-      
-        // Only target strong tags inside the selected tag
+
+        // Apply font-size only to strong tags within the selected tag
         styleTag.innerHTML = `
-          #${blockId} ${activeTagType} strong {
-            font-size: ${fontSize} !important;
-          }
+            #${blockId} ${activeTagType} strong {
+                font-size: ${fontSize} !important;
+            }
         `;
-      
+
+        // Add to pending modifications
         addPendingModification(blockId, {
-          "font-size": fontSize
+            "font-size": fontSize
         }, `${activeTagType} strong`);
-      
-        showNotification("Font size applied to bold text!", "success");
-      });
-      
+
+        showNotification(`Font size applied to bold text in ${activeTagType}!`, "success");
+    });
 }
