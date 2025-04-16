@@ -96,7 +96,7 @@ export function handleFontWeightFunClick(event = null, context = null) {
     }
 
     // First check if we're clicking on a block
-    let block = event.target.closest('[id^="block-"]');
+    let block = event?.target?.closest('[id^="block-"]');
     if (block) {
         // Handle block selection
         if (selectedElement) selectedElement.style.outline = "";
