@@ -69,7 +69,7 @@ export function typoBoldSelect(fontSizes) {
                   style="
                      background: transparent;
                      border: none;
-                     color: white;
+                     color: black;
                      padding: 5px;
                      width: 100%;
                      cursor: pointer;
