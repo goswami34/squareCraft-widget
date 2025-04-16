@@ -75,6 +75,18 @@
 export function handleFontWeightFunClick(event = null, context = null) {
     console.log("handleFontWeightFunClick called");
     
+    const {
+        lastClickedElement,
+        saveModifications,
+        selectedElement,
+        setSelectedElement,
+        setLastClickedBlockId,
+        setLastClickedElement,
+        addPendingModification,
+        getTextType
+    } = context;
+
+    // Get the font weight select element
     const fontWeightSelect = document.getElementById('squareCraftFontWeight');
     console.log("Font weight select element:", fontWeightSelect);
     
@@ -83,15 +95,21 @@ export function handleFontWeightFunClick(event = null, context = null) {
         return;
     }
 
-    // Remove any existing event listeners to prevent duplicates
+    // Remove any existing event listeners
     const newFontWeightSelect = fontWeightSelect.cloneNode(true);
     fontWeightSelect.parentNode.replaceChild(newFontWeightSelect, fontWeightSelect);
 
-    // Add event listener for font weight changes
-    newFontWeightSelect.addEventListener('change', async (event) => {
+    // Add click event listener to the select element
+    newFontWeightSelect.addEventListener('click', (e) => {
+        e.stopPropagation();
+        console.log("Select clicked");
+    });
+
+    // Add change event listener
+    newFontWeightSelect.addEventListener('change', async (e) => {
+        e.stopPropagation();
         console.log("Font weight change event triggered");
-        console.log("Selected value:", event.target.value);
-        console.log("Last clicked element:", lastClickedElement);
+        console.log("Selected value:", e.target.value);
         
         if (!lastClickedElement) {
             console.log("No last clicked element");
@@ -99,7 +117,7 @@ export function handleFontWeightFunClick(event = null, context = null) {
             return;
         }
 
-        const fontWeight = event.target.value;
+        const fontWeight = e.target.value;
         const blockId = lastClickedElement.id;
         console.log("Block ID:", blockId);
         
@@ -148,5 +166,10 @@ export function handleFontWeightFunClick(event = null, context = null) {
             console.error("Error saving font weight:", error);
             showNotification("Failed to save font weight changes", "error");
         }
+    });
+
+    // Add mousedown event to prevent event bubbling
+    newFontWeightSelect.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
     });
 }
