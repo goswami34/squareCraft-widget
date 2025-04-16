@@ -186,11 +186,8 @@ export function handleFontSize(event = null, context = null) {
         return;
     }
 
-    // Remove any existing event listeners to prevent duplicates
-    const newFontSizeInput = fontSizeInput.cloneNode(true);
-    fontSizeInput.parentNode.replaceChild(newFontSizeInput, fontSizeInput);
-
-    newFontSizeInput.addEventListener('input', async (event) => {
+    // Add event listener for input changes
+    fontSizeInput.addEventListener('input', (event) => {
         if (!lastClickedElement) {
             showNotification("Please select a block first", "error");
             return;
@@ -208,12 +205,15 @@ export function handleFontSize(event = null, context = null) {
         }
 
         // Get the tag type from the active tab's ID
-        let tagType = activeTab.id.replace('heading', 'h').replace('paragraph', 'p');
-        
-        // If it's a paragraph, we need to handle it differently
-        if (tagType.startsWith('p')) {
-            tagType = 'p'; // Convert p1, p2, etc. to just 'p'
+        let tagType = activeTab.id;
+        if (tagType.startsWith('heading')) {
+            tagType = tagType.replace('heading', 'h');
+        } else if (tagType.startsWith('paragraph')) {
+            tagType = 'p';
         }
+
+        console.log("Active tab ID:", activeTab.id);
+        console.log("Determined tag type:", tagType);
 
         // Check if the selected tag exists in the block
         const selectedTag = lastClickedElement.querySelector(tagType);
@@ -252,4 +252,17 @@ export function handleFontSize(event = null, context = null) {
 
         showNotification(`Font size applied to bold text in ${tagType}!`, "success");
     });
+
+    // Add event listener for font size options
+    const fontSizeOptions = document.getElementById('scFontSizeOptions');
+    if (fontSizeOptions) {
+        fontSizeOptions.addEventListener('click', (event) => {
+            const option = event.target.closest('.sc-dropdown-item');
+            if (option) {
+                const value = option.dataset.value;
+                fontSizeInput.value = value;
+                fontSizeInput.dispatchEvent(new Event('input'));
+            }
+        });
+    }
 }
