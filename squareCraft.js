@@ -1,5 +1,3 @@
-import { handleFontSize } from "./src/Bold/handleFontSize.JS";
-
 let pendingModifications = new Map();
 let selectedElement = null;
 
