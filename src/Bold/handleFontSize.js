@@ -75,9 +75,15 @@ export function handleFontSize(event = null, context = null) {
     }
 
     // Get the tag type from dataset.strongElementsByTag
-    const data = lastClickedElement.number.strongElementsByTag;
-    if (!data) {
-        showNotification("No bold text found in the selected block", "error");
+    // const data = lastClickedElement.number.strongElementsByTag;
+    // if (!data) {
+    //     showNotification("No bold text found in the selected block", "error");
+    //     return;
+    // }
+
+    const strongTags = selectedTag.querySelectorAll('strong');
+    if (strongTags.length === 0) {
+        showNotification(`No bold text found in ${activeTagType}`, "error");
         return;
     }
 
