@@ -294,7 +294,7 @@ export function handleFontWeightFunClick(event = null, context = null) {
             return;
         }
 
-        const fontWeight = event.target.value;
+        const fontWeight = this.value;
         console.log(fontWeight);
         const blockId = lastClickedElement.id;
         
