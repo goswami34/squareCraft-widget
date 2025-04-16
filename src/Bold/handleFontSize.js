@@ -25,129 +25,6 @@ function showNotification(message, type = "info") {
     }, 3000);
   }
 
-// export function handleFontSize(event = null, context = null) {
-//     const {
-//         lastClickedElement,
-//         getTextType,
-//         saveModifications,
-//         selectedElement,
-//         setSelectedElement,
-//         setLastClickedBlockId,
-//         setLastClickedElement,
-//         addPendingModification,
-//         showNotification
-//     } = context;
-
-//     if (typeof saveModifications !== 'function') {
-//         console.error("saveModifications function is not available");
-//         showNotification("Error: Save functionality not available", "error");
-//         return;
-//     }
-
-//     // First check if we're clicking on a block
-//     let block = event.target.closest('[id^="block-"]');
-//     if (block) {
-//         // Handle block selection
-//         if (selectedElement) selectedElement.style.outline = "";
-//         setSelectedElement(block);
-//         block.style.outline = "1px dashed #EF7C2F";
-//         setLastClickedBlockId(block.id);
-//         setLastClickedElement(block);
-//         return; // Return after handling block selection
-//     }
-
-//     // If no block was clicked, check for text transform button
-//     if (!event) {
-//         const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
-//         if (!activeButton) return;
-//         event = { target: activeButton };
-//     }
-
-//     const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
-//     if (!clickedElement) return;
-
-//     const fontSize = event.target.value + "px";
-//     const blockId = lastClickedElement?.id;
-
-//     if (!blockId || !lastClickedElement) {
-//         showNotification("Please select a block first", "error");
-//         return;
-//     }
-
-//     // Get the tag type from dataset.strongElementsByTag
-//     // const data = lastClickedElement.number.strongElementsByTag;
-//     // if (!data) {
-//     //     showNotification("No bold text found in the selected block", "error");
-//     //     return;
-//     // }
-
-//     // Get currently selected text type tab (e.g., h1, h2, p1)
-//     const activeTab = document.querySelector(".sc-activeTab-border");
-//     if (!activeTab) {
-//         showNotification("No text type selected", "error");
-//         return;
-//     }
-
-//     // Convert activeTab.id (like 'heading1') to tagName (e.g., h1)
-//     const activeTagType = getTextType(activeTab.id, lastClickedElement);
-//     if (!activeTagType) {
-//         showNotification("Unable to determine text type", "error");
-//         return;
-//     }
-
-//     const selectedTag = lastClickedElement.querySelector(activeTagType);
-//     if (!selectedTag) {
-//         showNotification(`No ${activeTagType} tag found in this block`, "error");
-//         return;
-//     }
-
-//     const strongTags = selectedTag.querySelectorAll('strong');
-//     if (strongTags.length === 0) {
-//         showNotification(`No bold text found in ${activeTagType}`, "error");
-//         return;
-//     }
-
-//     let tagType = null;
-//     try {
-//         const parsed = JSON.parse(data);
-//         const tagKeys = Object.keys(parsed);
-//         tagType = tagKeys[0];
-//     } catch (err) {
-//         showNotification("Failed to process text data", "error");
-//         return;
-//     }
-
-//     // Apply inline style
-//     const styleId = `style-${blockId}-${tagType}-strong-font-size`;
-//     let styleTag = document.getElementById(styleId);
-//     if (!styleTag) {
-//         styleTag = document.createElement("style");
-//         styleTag.id = styleId;
-//         document.head.appendChild(styleTag);
-//     }
-
-//     const css = `#${blockId} ${tagType} strong {
-//         font-size: ${fontSize} !important;
-//     }`;
-//     styleTag.innerHTML = css;
-
-
-//     addPendingModification(blockId, {
-//         "font-size": fontSize
-//     }, 'strong');
-
-//     // Update UI immediately
-//     document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
-//         el.classList.remove('sc-activeTab-border');
-//         el.classList.add('sc-inActiveTab-border');
-//     });
-//     clickedElement.classList.remove('sc-inActiveTab-border');
-//     clickedElement.classList.add('sc-activeTab-border');
-//     showNotification("font size applied! Click Publish to save changes.", "info");
-
-// }
-
-
 export function handleFontSize(event = null, context = null) {
     const {
         lastClickedElement,
@@ -168,7 +45,7 @@ export function handleFontSize(event = null, context = null) {
     }
 
     // First check if we're clicking on a block
-    let block = event?.target?.closest('[id^="block-"]');
+    let block = event.target.closest('[id^="block-"]');
     if (block) {
         // Handle block selection
         if (selectedElement) selectedElement.style.outline = "";
@@ -176,93 +53,96 @@ export function handleFontSize(event = null, context = null) {
         block.style.outline = "1px dashed #EF7C2F";
         setLastClickedBlockId(block.id);
         setLastClickedElement(block);
+        return; // Return after handling block selection
+    }
+
+    // If no block was clicked, check for text transform button
+    if (!event) {
+        const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
+        if (!activeButton) return;
+        event = { target: activeButton };
+    }
+
+    const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
+    if (!clickedElement) return;
+
+    const fontSize = event.target.value + "px";
+    const blockId = lastClickedElement?.id;
+
+    if (!blockId || !lastClickedElement) {
+        showNotification("Please select a block first", "error");
         return;
     }
 
-    // Get the font size input element
-    const fontSizeInput = document.getElementById('scFontSizeInput');
-    if (!fontSizeInput) {
-        console.error("Font size input element not found");
+    // Get the tag type from dataset.strongElementsByTag
+    // const data = lastClickedElement.number.strongElementsByTag;
+    // if (!data) {
+    //     showNotification("No bold text found in the selected block", "error");
+    //     return;
+    // }
+
+    // Get currently selected text type tab (e.g., h1, h2, p1)
+    const activeTab = document.querySelector(".sc-activeTab-border");
+    if (!activeTab) {
+        showNotification("No text type selected", "error");
         return;
     }
 
-    // Add event listener for input changes
-    fontSizeInput.addEventListener('input', (event) => {
-        if (!lastClickedElement) {
-            showNotification("Please select a block first", "error");
-            return;
-        }
+    // Convert activeTab.id (like 'heading1') to tagName (e.g., h1)
+    const activeTagType = getTextType(activeTab.id, lastClickedElement);
+    if (!activeTagType) {
+        showNotification("Unable to determine text type", "error");
+        return;
+    }
 
-        // Get the font size value from the input
-        const fontSize = event.target.value + "px";
-        const blockId = lastClickedElement.id;
+    const selectedTag = lastClickedElement.querySelector(activeTagType);
+    if (!selectedTag) {
+        showNotification(`No ${activeTagType} tag found in this block`, "error");
+        return;
+    }
 
-        // Get currently selected text type tab (e.g., h1, h2, p1)
-        const activeTab = document.querySelector(".sc-activeTab-border");
-        if (!activeTab) {
-            showNotification("No text type selected", "error");
-            return;
-        }
+    const strongTags = selectedTag.querySelectorAll('strong');
+    if (strongTags.length === 0) {
+        showNotification(`No bold text found in ${activeTagType}`, "error");
+        return;
+    }
 
-        // Get the tag type from the active tab's ID
-        let tagType = activeTab.id;
-        if (tagType.startsWith('heading')) {
-            tagType = tagType.replace('heading', 'h');
-        } else if (tagType.startsWith('paragraph')) {
-            tagType = 'p';
-        }
+    let tagType = null;
+    try {
+        const parsed = JSON.parse(data);
+        const tagKeys = Object.keys(parsed);
+        tagType = tagKeys[0];
+    } catch (err) {
+        showNotification("Failed to process text data", "error");
+        return;
+    }
 
-        console.log("Active tab ID:", activeTab.id);
-        console.log("Determined tag type:", tagType);
+    // Apply inline style
+    const styleId = `style-${blockId}-${tagType}-strong-font-size`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = styleId;
+        document.head.appendChild(styleTag);
+    }
 
-        // Check if the selected tag exists in the block
-        const selectedTag = lastClickedElement.querySelector(tagType);
-        if (!selectedTag) {
-            showNotification(`No ${tagType} tag found in this block`, "error");
-            return;
-        }
+    const css = `#${blockId} ${tagType} strong {
+        font-size: ${fontSize} !important;
+    }`;
+    styleTag.innerHTML = css;
 
-        // Check for strong tags within the selected tag
-        const strongTags = selectedTag.querySelectorAll('strong');
-        if (strongTags.length === 0) {
-            showNotification(`No bold text found in ${tagType}`, "error");
-            return;
-        }
 
-        // Create or update style tag for this block's strong tags
-        const styleId = `style-${blockId}-${tagType}-strong-fontsize`;
-        let styleTag = document.getElementById(styleId);
-        if (!styleTag) {
-            styleTag = document.createElement("style");
-            styleTag.id = styleId;
-            document.head.appendChild(styleTag);
-        }
+    addPendingModification(blockId, {
+        "font-size": fontSize
+    }, 'strong');
 
-        // Apply font-size only to strong tags within the selected tag
-        styleTag.innerHTML = `
-            #${blockId} ${tagType} strong {
-                font-size: ${fontSize} !important;
-            }
-        `;
-
-        // Add to pending modifications
-        addPendingModification(blockId, {
-            "font-size": fontSize
-        }, `${tagType} strong`);
-
-        showNotification(`Font size applied to bold text in ${tagType}!`, "success");
+    // Update UI immediately
+    document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
+        el.classList.remove('sc-activeTab-border');
+        el.classList.add('sc-inActiveTab-border');
     });
+    clickedElement.classList.remove('sc-inActiveTab-border');
+    clickedElement.classList.add('sc-activeTab-border');
+    showNotification("font size applied! Click Publish to save changes.", "info");
 
-    // Add event listener for font size options
-    const fontSizeOptions = document.getElementById('scFontSizeOptions');
-    if (fontSizeOptions) {
-        fontSizeOptions.addEventListener('click', (event) => {
-            const option = event.target.closest('.sc-dropdown-item');
-            if (option) {
-                const value = option.dataset.value;
-                fontSizeInput.value = value;
-                fontSizeInput.dispatchEvent(new Event('input'));
-            }
-        });
-    }
 }
