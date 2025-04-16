@@ -73,6 +73,7 @@ export function handleFontSize(event = null, context = null) {
 
         // Get currently selected text type tab (e.g., h1, h2, p1)
         const activeTab = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
+        console.log(activeTab);
         if (!activeTab) {
             showNotification("No text type selected", "error");
             return;
