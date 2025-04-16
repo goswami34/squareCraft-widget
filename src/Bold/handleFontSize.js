@@ -15,16 +15,15 @@ function showNotification(message, type = "info") {
         animation: "fadeIn 0.3s ease-in-out",
         backgroundColor: type === "success" ? "#4CAF50" : type === "error" ? "#f44336" : "#2196F3"
     });
-
+  
     document.body.appendChild(notification);
-
+  
     // Remove after 3 seconds
     setTimeout(() => {
         notification.style.animation = "fadeOut 0.3s ease-in-out";
         setTimeout(() => notification.remove(), 300);
     }, 3000);
-}
-
+  }
 
 export function handleFontSize(event = null, context = null) {
     const {
