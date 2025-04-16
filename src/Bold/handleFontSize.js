@@ -40,8 +40,21 @@ export function handleFontSize(event = null, context = null) {
     } = context;
 
     // First check if we're clicking on a block
-    if (event && event.target) {
-        let block = event.target.closest('[id^="block-"]');
+    // if (event && event.target) {
+    //     let block = event.target.closest('[id^="block-"]');
+    //     console.log(block);
+    //     if (block) {
+    //         // Handle block selection
+    //         if (selectedElement) selectedElement.style.outline = "";
+    //         setSelectedElement(block);
+    //         block.style.outline = "1px dashed #EF7C2F";
+    //         setLastClickedBlockId(block.id);
+    //         setLastClickedElement(block);
+    //         return;
+    //     }
+    // }
+
+    let block = event.target.closest('[id^="block-"]');
         console.log(block);
         if (block) {
             // Handle block selection
@@ -52,7 +65,6 @@ export function handleFontSize(event = null, context = null) {
             setLastClickedElement(block);
             return;
         }
-    }
 
     // Get the font size input element
     const fontSizeInput = document.getElementById('scFontSizeInput');
