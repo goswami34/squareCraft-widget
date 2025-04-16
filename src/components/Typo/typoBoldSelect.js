@@ -83,10 +83,6 @@ export function typoBoldSelect(fontSizes) {
                <option value="900">Black (900)</option>
             </select>
          </div>
-         <div class="sc-bg-3f3f3f sc-px-2" style="height: 27px; padding: 0 8px;">
-            <img class="sc-mx-auto sc-rotate-180 sc-mt-3" width="10px"
-               src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
-         </div>
       </div>
 
       <div class="sc-col-span-5 sc-bg-3f3f3f sc-inActiveTab-border sc-flex sc-justify-between sc-items-center sc-px-2 sc-rounded-6px">
