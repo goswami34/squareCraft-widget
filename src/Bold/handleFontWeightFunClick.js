@@ -95,6 +95,18 @@ export function handleFontWeightFunClick(event = null, context = null) {
         return;
     }
 
+    // First check if we're clicking on a block
+    let block = event.target.closest('[id^="block-"]');
+    if (block) {
+        // Handle block selection
+        if (selectedElement) selectedElement.style.outline = "";
+        setSelectedElement(block);
+        block.style.outline = "1px dashed #EF7C2F";
+        setLastClickedBlockId(block.id);
+        setLastClickedElement(block);
+        return; // Return after handling block selection
+    }
+
     // Remove any existing event listeners
     const newFontWeightSelect = fontWeightSelect.cloneNode(true);
     fontWeightSelect.parentNode.replaceChild(newFontWeightSelect, fontWeightSelect);
