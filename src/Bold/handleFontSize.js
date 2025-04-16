@@ -42,6 +42,7 @@ export function handleFontSize(event = null, context = null) {
     // First check if we're clicking on a block
     if (event && event.target) {
         let block = event.target.closest('[id^="block-"]');
+        console.log(block);
         if (block) {
             // Handle block selection
             if (selectedElement) selectedElement.style.outline = "";
@@ -75,6 +76,7 @@ export function handleFontSize(event = null, context = null) {
 
         // Get currently selected text type tab
         const activeTab = document.querySelector('.sc-activeTab-border');
+        console.log(activeTab);
         if (!activeTab) {
             showNotification("No text type selected", "error");
             return;
