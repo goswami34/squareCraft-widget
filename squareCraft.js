@@ -145,26 +145,47 @@ let selectedElement = null;
     });
 
 
-    handleFontWeightFunClick(event, {
-      lastClickedElement,
-      saveModifications,
-      selectedElement,
-      setSelectedElement: (val) => selectedElement = val,
-      setLastClickedBlockId: (val) => lastClickedBlockId = val,
-      setLastClickedElement: (val) => lastClickedElement = val,
-      addPendingModification: (blockId, css, tagType) => {
-          if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-          }
-          pendingModifications.get(blockId).push({ css, tagType });
-      },
-      getTextType: () => {
-          // This function should return the currently selected text type (h1, h2, etc.)
-          const activeTab = document.querySelector('.sc-activeTab-border');
-          if (!activeTab) return null;
-          return activeTab.id.replace('heading', 'h').replace('paragraph', 'p');
-      }
-  });
+  //   handleFontWeightFunClick(event, {
+  //     lastClickedElement,
+  //     saveModifications,
+  //     selectedElement,
+  //     setSelectedElement: (val) => selectedElement = val,
+  //     setLastClickedBlockId: (val) => lastClickedBlockId = val,
+  //     setLastClickedElement: (val) => lastClickedElement = val,
+  //     addPendingModification: (blockId, css, tagType) => {
+  //         if (!pendingModifications.has(blockId)) {
+  //             pendingModifications.set(blockId, []);
+  //         }
+  //         pendingModifications.get(blockId).push({ css, tagType });
+  //     },
+  //     getTextType: () => {
+  //         // This function should return the currently selected text type (h1, h2, etc.)
+  //         const activeTab = document.querySelector('.sc-activeTab-border');
+  //         if (!activeTab) return null;
+  //         return activeTab.id.replace('heading', 'h').replace('paragraph', 'p');
+  //     }
+  // });
+
+  handleFontWeightFunClick(event, {
+    lastClickedElement,
+    saveModifications,
+    selectedElement,
+    setSelectedElement: (val) => selectedElement = val,
+    setLastClickedBlockId: (val) => lastClickedBlockId = val,
+    setLastClickedElement: (val) => lastClickedElement = val,
+    addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+    },
+    getTextType: () => {
+        // This function should return the currently selected text type (h1, h2, etc.)
+        const activeTab = document.querySelector('.sc-activeTab-border');
+        if (!activeTab) return null;
+        return activeTab.id.replace('heading', 'h').replace('paragraph', 'p');
+    }
+});
   
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
   
