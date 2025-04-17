@@ -17,7 +17,7 @@ export function handleBlockClick(event, context) {
     block.style.outline = "1px dashed #EF7C2F";
   
     setLastClickedBlockId(block.id);
-    setLastClickedElement(block);
+    // setLastClickedElement(block);
     
 
     //align code start here
@@ -100,49 +100,40 @@ export function handleBlockClick(event, context) {
 
 
     //bold section font size code start here
-      const textElements = block.querySelectorAll("h1,h2,h3,h4,p1,p2,p3");
+    const textElements = block.querySelectorAll("h1,h2,h3,h4,p1,p2,p3");
 
-      // Process each text element
-      textElements.forEach(el => {
-          const tag = el.tagName.toLowerCase();
-          const result = getTextType(tag, el);
-          
-          if (result) {
-              // Add visual styling to show the element is selectable
-              const strongTags = el.querySelectorAll('strong');
-              if (strongTags.length > 0) {
-                  // Store the element type and strong tag count
-                  el.dataset.hasStrongTags = 'true';
-                  el.dataset.textType = result.type;
-                  el.dataset.elementTag = tag;
-              };
+    textElements.forEach(el => {
+      const tag = el.tagName.toLowerCase();
+      const result = getTextType(tag, el);
 
-              // Add click handler for text element selection
-            el.addEventListener('click', (e) => {
-              e.stopPropagation();
-              
-              if (el.dataset.hasStrongTags !== 'true') {
-                  showNotification(`No bold text found in ${result.type}`, "error");
-                  return;
-              }
+      if (result) {
+        const strongTags = el.querySelectorAll('strong');
+        if (strongTags.length > 0) {
+          el.dataset.hasStrongTags = 'true';
+          el.dataset.textType = result.type;
+          el.dataset.elementTag = tag;
+        };
 
-              // Store the selected element's information
-              block.dataset.selectedTextType = result.type;
-              block.dataset.selectedElementTag = tag;
-              block.dataset.selectedElementId = el.id;
-              
-              // Set the last clicked element to the text element
-              setLastClickedElement(el);
-              
-              // Activate the corresponding font size input
-              const fontSizeInput = document.getElementById(`scFontSizeInput-${result.type}`);
-              if (fontSizeInput) {
-                  fontSizeInput.classList.remove('sc-inActiveTab-border');
-                  fontSizeInput.classList.add('sc-activeTab-border');
-              }
-            });
+        // Now this click is only for text elements, not block
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+
+          if (el.dataset.hasStrongTags !== 'true') {
+              showNotification(`No bold text found in ${result.type}`, "error");
+              return;
           }
-      });
+
+          // 🔥 Now finally set lastClickedElement properly!
+          setLastClickedElement(el); // Correct
+
+          const fontSizeInput = document.getElementById(`scFontSizeInput-${result.type}`);
+          if (fontSizeInput) {
+              fontSizeInput.classList.remove('sc-inActiveTab-border');
+              fontSizeInput.classList.add('sc-activeTab-border');
+          }
+        });
+      }
+    });
     
     //bold section font size code end here
 
