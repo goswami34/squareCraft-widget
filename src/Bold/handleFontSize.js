@@ -126,6 +126,12 @@ export function handleFontSize(event = null, context = null) {
         showNotification
     } = context;
 
+    if (typeof saveModifications !== 'function') {
+        console.error("saveModifications function is not available");
+        showNotification("Error: Save functionality not available", "error");
+        return;
+    }
+
     // First check if we're clicking on a block
     let block = event?.target?.closest('[id^="block-"]');
     if (block) {
@@ -140,44 +146,14 @@ export function handleFontSize(event = null, context = null) {
 
     // If no block was clicked, check for font size input
     if (!event) {
-        // First check if we have a selected text element
-        let selectedTextType = lastClickedElement?.dataset?.selectedTextType;
-        let selectedElementTag = lastClickedElement?.dataset?.selectedElementTag;
-        
-        // If not found in the element, check the block
-        if (!selectedTextType || !selectedElementTag) {
-            const block = lastClickedElement?.closest('[id^="block-"]');
-            if (block) {
-                selectedTextType = block.dataset.selectedTextType;
-                selectedElementTag = block.dataset.selectedElementTag;
-            }
-        }
-
-        if (!selectedTextType) {
-            showNotification("Please click on a text element (heading or paragraph) first", "error");
-            return;
-        }
-
-        // Try to find the corresponding font size input
-        const fontSizeInput = document.getElementById(`scFontSizeInput-${selectedTextType}`);
-        if (!fontSizeInput) {
-            showNotification(`Font size input not found for ${selectedTextType}`, "error");
-            return;
-        }
-
-        // Make sure the font size input is active
-        fontSizeInput.classList.remove('sc-inActiveTab-border');
-        fontSizeInput.classList.add('sc-activeTab-border');
-        
-        event = { target: fontSizeInput };
+        const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
+        if (!activeButton) return;
+        event = { target: activeButton };
     }
-
 
     const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
-    if (!clickedElement) {
-        showNotification("Please click on a text element (heading or paragraph) first", "error");
-        return;
-    }
+    if (!clickedElement) return;
+
     const fontSize = event.target.value + "px";
     const blockId = lastClickedElement?.id;
 
@@ -186,44 +162,32 @@ export function handleFontSize(event = null, context = null) {
         return;
     }
 
-    // Get the selected text type and element tag from the block's dataset
-        const selectedTextType = lastClickedElement.dataset.selectedTextType;
-        const selectedElementTag = lastClickedElement.dataset.selectedElementTag;
-        const selectedElementId = lastClickedElement.dataset.selectedElementId;
+    // Find all strong tags within the selected block
+    const strongTags = lastClickedElement.querySelectorAll('strong');
+    if (strongTags.length === 0) {
+        showNotification("No bold text found in the selected block", "error");
+        return;
+    }
 
-        // Find the specific element that was selected
-        const targetElement = lastClickedElement.querySelector(`${selectedElementTag}[data-text-type="${selectedTextType}"]`);
-        if (!targetElement) {
-            showNotification("No matching text element found", "error");
-            return;
-        }
+    // Apply inline style
+    const styleId = `style-${blockId}-strong-font-size`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = styleId;
+        document.head.appendChild(styleTag);
+    }
 
-        // Find strong tags only within this specific element
-        const strongTags = targetElement.querySelectorAll('strong');
-        if (strongTags.length === 0) {
-            showNotification(`No bold text found in ${selectedTextType}`, "error");
-            return;
-        }
-
-        // Create a unique style ID for this specific element's strong tags
-        const styleId = `style-${blockId}-${selectedTextType}-strong-font-size`;
-        let styleTag = document.getElementById(styleId);
-        if (!styleTag) {
-            styleTag = document.createElement("style");
-            styleTag.id = styleId;
-            document.head.appendChild(styleTag);
-        }
-
-        // Apply styles only to strong tags within this specific element
-        const css = `#${blockId} ${selectedElementTag}[data-text-type="${selectedTextType}"] strong {
-            font-size: ${fontSize} !important;
-        }`;
-        styleTag.innerHTML = css;
+    // Apply styles to all strong tags within the block
+    const css = `#${blockId} strong {
+        font-size: ${fontSize} !important;
+    }`;
+    styleTag.innerHTML = css;
 
     // Add to pending modifications
     addPendingModification(blockId, {
         "font-size": fontSize
-    }, `${selectedTextType}-strong`);
+    }, 'strong');
 
     // Update UI
     document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
@@ -233,5 +197,5 @@ export function handleFontSize(event = null, context = null) {
     clickedElement.classList.remove('sc-inActiveTab-border');
     clickedElement.classList.add('sc-activeTab-border');
     
-    showNotification(`Font size applied to ${selectedTextType} bold text! Click Publish to save changes.`, "info");
+    showNotification("Font size applied! Click Publish to save changes.", "info");
 }
