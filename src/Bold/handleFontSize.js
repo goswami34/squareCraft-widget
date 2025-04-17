@@ -148,6 +148,8 @@ function showNotification(message, type = "info") {
 // }
 
 // Modified handleFontSize function
+
+
 export function handleFontSize(event = null, context = null) {
     const {
         lastClickedElement,
@@ -205,7 +207,7 @@ export function handleFontSize(event = null, context = null) {
     }
 
     // Get the text type based on the active tab
-    const textType = getTextType(activeTab.id);
+    const textType = getTextType(activeTab.id, lastClickedElement);
     if (!textType) {
         showNotification("Unable to determine text type", "error");
         return;
@@ -247,18 +249,4 @@ export function handleFontSize(event = null, context = null) {
     clickedElement.classList.add('sc-activeTab-border');
     
     showNotification("Font size applied! Click Publish to save changes.", "info");
-}
-
-// Modified getTextType function
-export function getTextType(tagName) {
-    if (!tagName) return null;
-    
-    // Convert tab ID to text type
-    if (tagName.startsWith('heading')) {
-        return `h${tagName.replace('heading', '')}`;
-    } else if (tagName.startsWith('paragraph')) {
-        return 'p';
-    }
-    
-    return null;
 }
