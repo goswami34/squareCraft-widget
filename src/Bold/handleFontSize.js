@@ -167,28 +167,26 @@ export function handleFontSize(event = null, context = null) {
         return;
     }
 
-    // Get the selected text type from the block's dataset
+    // Get the selected text type and tag from the block's dataset
     const selectedTextType = lastClickedElement.dataset.selectedTextType;
-    if (!selectedTextType) {
+    const selectedElementTag = lastClickedElement.dataset.selectedElementTag;
+
+    if (!selectedTextType || !selectedElementTag) {
         showNotification("Please click on a text element (heading or paragraph) first", "error");
         return;
     }
 
     // Find the corresponding element in the block
-    const textElements = lastClickedElement.querySelectorAll("h1, h2, h3, h4, p");
-    let targetElement = null;
-
-    for (const element of textElements) {
-        const tagName = element.tagName.toLowerCase();
-        const result = getTextType(tagName, element);
-        if (result && result.type === selectedTextType) {
-            targetElement = element;
-            break;
-        }
-    }
-
+    const targetElement = lastClickedElement.querySelector(selectedElementTag);
     if (!targetElement) {
         showNotification("No matching text element found", "error");
+        return;
+    }
+
+    // Verify the element type matches
+    const result = getTextType(selectedElementTag, targetElement);
+    if (!result || result.type !== selectedTextType) {
+        showNotification("Text element type mismatch", "error");
         return;
     }
 
@@ -209,7 +207,7 @@ export function handleFontSize(event = null, context = null) {
     }
 
     // Apply styles only to strong tags within the specific element type
-    const css = `#${blockId} ${targetElement.tagName.toLowerCase()} strong {
+    const css = `#${blockId} ${selectedElementTag} strong {
         font-size: ${fontSize} !important;
     }`;
     styleTag.innerHTML = css;
