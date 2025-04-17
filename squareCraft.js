@@ -64,7 +64,7 @@ let selectedElement = null;
   let lastClickedElement = null;
   let lastAppliedAlignment = null;
   let lastActiveAlignmentElement = null;
-  let selectedTextType = null;
+  let selectedTextType = [];
 
   function applyStylesToElement(element, css) {
     if (!element || !css) return;
@@ -106,7 +106,7 @@ let selectedElement = null;
       setLastClickedElement: (val) => lastClickedElement = val,
       setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
       setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
-      setSelectedTextType: (val) => selectedTextType = val
+      setSelectedTextType: (array) => selectedTextType = array
     });
   
     handleAlignmentClick(event, {
@@ -130,7 +130,7 @@ let selectedElement = null;
       applyStylesToElement,
       lastAppliedAlignment,
       selectedTextType,
-      setSelectedTextType: (val) => selectedTextType = val,
+      setSelectedTextType: (array) => selectedTextType = array,
       setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
       lastActiveAlignmentElement,
       setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
