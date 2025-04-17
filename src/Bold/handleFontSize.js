@@ -169,6 +169,12 @@ export function handleFontSize(event = null, context = null) {
         return;
     }
 
+    const selectedTextType = lastClickedElement.dataset.selectedTextType;
+    if (!selectedTextType) {
+        showNotification("Please select a text element first", "error");
+        return;
+    }
+
     // Apply inline style
     const styleId = `style-${blockId}-strong-font-size`;
     let styleTag = document.getElementById(styleId);
@@ -179,7 +185,7 @@ export function handleFontSize(event = null, context = null) {
     }
 
     // Apply styles to all strong tags within the block
-    const css = `#${blockId} strong {
+    const css = `#${blockId} ${selectedTextType} strong {
         font-size: ${fontSize} !important;
     }`;
     styleTag.innerHTML = css;

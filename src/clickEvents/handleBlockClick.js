@@ -121,7 +121,6 @@ export function handleBlockClick(event, context) {
               el.addEventListener('click', (e) => {
                 e.stopPropagation();
                 
-                // Only proceed if this element has strong tags
                 if (el.dataset.hasStrongTags !== 'true') {
                     showNotification(`No bold text found in ${result.type}`, "error");
                     return;
