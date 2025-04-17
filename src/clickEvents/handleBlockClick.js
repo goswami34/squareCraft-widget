@@ -99,24 +99,17 @@ export function handleBlockClick(event, context) {
 
 
     //bold section font size code start here
-    // In handleBlockClick.js
       const textElements = block.querySelectorAll("h1, h2, h3, h4, p");
-      const allPartsfontSize = [
-          "heading1Part", "heading2Part", "heading3Part", "heading4Part",
-          "paragraph1Part", "paragraph2Part", "paragraph3Part"
-      ];
-      const visiblePartsfontSize = new Set();
 
       // Process each text element
       textElements.forEach(el => {
           const tag = el.tagName.toLowerCase();
           const result = getTextType(tag, el);
           if (result) {
-              visiblePartsfontSize.add(`${result.type}Part`);
               el.style.border = `1px solid ${result.borderColor}`;
               el.style.borderRadius = "4px";
               el.style.padding = "2px 4px";
-
+      
               // Add click handler for text element selection
               el.addEventListener('click', (e) => {
                   e.stopPropagation();
@@ -126,7 +119,7 @@ export function handleBlockClick(event, context) {
                       input.classList.remove('sc-activeTab-border');
                       input.classList.add('sc-inActiveTab-border');
                   });
-
+      
                   // Add active class to the corresponding font size input
                   const fontSizeInput = document.getElementById(`scFontSizeInput-${result.type}`);
                   if (fontSizeInput) {
@@ -137,11 +130,15 @@ export function handleBlockClick(event, context) {
                       block.dataset.selectedTextType = result.type;
                       block.dataset.selectedElementTag = tag;
                       
+                      // Also store the selected element itself for reference
+                      block.dataset.selectedElement = el.id;
+                      
                       // Log for debugging
                       console.log('Selected text element:', {
                           type: result.type,
                           tag: tag,
-                          element: el
+                          element: el,
+                          blockId: block.id
                       });
                   } else {
                       console.error(`Font size input not found for type: ${result.type}`);
@@ -149,6 +146,7 @@ export function handleBlockClick(event, context) {
               });
           }
       });
+
     //bold section font size code end here
 
 
