@@ -127,6 +127,14 @@ export function handleFontSize(event = null, context = null) {
         getTextType
     } = context;
 
+    // Debug logging
+    console.log('handleFontSize called with:', { 
+        event, 
+        lastClickedElement,
+        selectedTextType: lastClickedElement?.dataset?.selectedTextType,
+        selectedElementTag: lastClickedElement?.dataset?.selectedElementTag
+    });
+
     // First check if we're clicking on a block
     let block = event?.target?.closest('[id^="block-"]');
     if (block) {
@@ -142,7 +150,10 @@ export function handleFontSize(event = null, context = null) {
     // If no block was clicked, check for font size input
     if (!event) {
         const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
-        if (!activeButton) return;
+        if (!activeButton) {
+            showNotification("Please click on a text element (heading or paragraph) first", "error");
+            return;
+        }
         event = { target: activeButton };
     }
 
@@ -162,7 +173,7 @@ export function handleFontSize(event = null, context = null) {
     const selectedElementTag = lastClickedElement.dataset.selectedElementTag;
 
     if (!selectedTextType || !selectedElementTag) {
-        showNotification("Please click on a text element first", "error");
+        showNotification("Please click on a text element (heading or paragraph) first", "error");
         return;
     }
 
@@ -173,10 +184,17 @@ export function handleFontSize(event = null, context = null) {
         return;
     }
 
+    // Verify the element type matches
+    const result = getTextType(selectedElementTag, targetElement);
+    if (!result || result.type !== selectedTextType) {
+        showNotification("Text element type mismatch", "error");
+        return;
+    }
+
     // Find strong tags within the specific element
     const strongTags = targetElement.querySelectorAll('strong');
     if (strongTags.length === 0) {
-        showNotification("No bold text found in the selected element", "error");
+        showNotification(`No bold text found in ${selectedTextType}`, "error");
         return;
     }
 
