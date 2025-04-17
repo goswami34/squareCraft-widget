@@ -102,11 +102,24 @@ export function handleBlockClick(event, context) {
 
     //bold section font size code start here
     const innerTextElementsFont = block.querySelectorAll("h1,h2,h3,h4,p,p1,p2,p3");
-    if (innerTextElementsFont.length > 0) {
-        const firstTag = innerTextElementsFont[0].tagName.toLowerCase();
-        setSelectedTextType(firstTag);  // save selected tag type
+    // if (innerTextElementsFont.length > 0) {
+    //     const firstTag = innerTextElementsFont[0].tagName.toLowerCase();
+    //     setSelectedTextType(firstTag);  // save selected tag type
+    // } else {
+    //     setSelectedTextType(null);
+    // }
+
+    const detectedTags = new Set(); // to collect all tag names
+
+    innerTextElementsFont.forEach(el => {
+        const tag = el.tagName.toLowerCase();
+        detectedTags.add(tag);
+    });
+
+    if (detectedTags.size > 0) {
+        setSelectedTextType(Array.from(detectedTags)); // save all tags
     } else {
-        setSelectedTextType(null);
+        setSelectedTextType([]);
     }
     
     //bold section font size code end here
