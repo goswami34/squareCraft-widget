@@ -123,17 +123,8 @@ export function handleFontSize(event = null, context = null) {
         setLastClickedBlockId,
         setLastClickedElement,
         addPendingModification,
-        showNotification,
-        getTextType
+        showNotification
     } = context;
-
-    // Debug logging
-    console.log('handleFontSize called with:', { 
-        event, 
-        lastClickedElement,
-        selectedTextType: lastClickedElement?.dataset?.selectedTextType,
-        selectedElementTag: lastClickedElement?.dataset?.selectedElementTag
-    });
 
     // First check if we're clicking on a block
     let block = event?.target?.closest('[id^="block-"]');
