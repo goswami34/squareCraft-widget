@@ -153,8 +153,6 @@ function showNotification(message, type = "info") {
 export function handleFontSize(event = null, context = null) {
     const {
         lastClickedElement,
-        getTextTypeBold,
-        getTextType,
         saveModifications,
         selectedElement,
         setSelectedElement,
@@ -197,20 +195,6 @@ export function handleFontSize(event = null, context = null) {
 
     if (!blockId || !lastClickedElement) {
         showNotification("Please select a block first", "error");
-        return;
-    }
-
-    // Get the active tab
-    const activeTab = document.querySelector(".sc-activeTab-border");
-    if (!activeTab) {
-        showNotification("No text type selected", "error");
-        return;
-    }
-
-    // Get the text type based on the active tab
-    const textType = getTextTypeBold(activeTab.id, lastClickedElement);
-    if (!textType) {
-        showNotification("Unable to determine text type", "error");
         return;
     }
 
