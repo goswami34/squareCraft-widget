@@ -146,8 +146,8 @@ export function handleFontSize(event = null, context = null) {
         setLastClickedElement(block);
         
         // Clear any previously selected text type when clicking on a block
-        block.dataset.selectedTextType = undefined;
-        block.dataset.selectedElementTag = undefined;
+        delete block.dataset.selectedTextType;
+        delete block.dataset.selectedElementTag;
         return;
     }
 
@@ -176,7 +176,9 @@ export function handleFontSize(event = null, context = null) {
     const selectedTextType = lastClickedElement.dataset.selectedTextType;
     const selectedElementTag = lastClickedElement.dataset.selectedElementTag;
 
-    if (!selectedTextType || !selectedElementTag) {
+    // Check if the values are actually undefined or the string "undefined"
+    if (!selectedTextType || selectedTextType === "undefined" || 
+        !selectedElementTag || selectedElementTag === "undefined") {
         showNotification("Please click on a text element (heading or paragraph) first", "error");
         return;
     }
