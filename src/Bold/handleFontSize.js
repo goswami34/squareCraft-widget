@@ -226,18 +226,6 @@ export function handleFontSize(event = null, context = null) {
         return;
     }
 
-    // First check if we're clicking on a block
-    let block = event?.target?.closest('[id^="block-"]');
-    if (block) {
-        // Handle block selection
-        if (selectedElement) selectedElement.style.outline = "";
-        setSelectedElement(block);
-        block.style.outline = "1px dashed #EF7C2F";
-        setLastClickedBlockId(block.id);
-        setLastClickedElement(block);
-        return;
-    }
-
     // If no block was clicked, check for font size input
     if (!event) {
         const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
@@ -249,29 +237,37 @@ export function handleFontSize(event = null, context = null) {
     if (!clickedElement) return;
 
     const fontSize = event.target.value + "px";
-    const blockId = lastClickedElement?.id;
 
-    if (!blockId || !lastClickedElement) {
-        showNotification("Please select a block first", "error");
-        return;
-    }
-
-    // Get the text type from the last clicked element
-    const textType = lastClickedElement.dataset.textType;
-    if (!textType) {
+    if (!lastClickedElement) {
         showNotification("Please select a text element first", "error");
         return;
     }
 
-    // Find strong tags within the selected text element
+    // lastClickedElement must be a text element like h1, h2, p1, p2 etc.
+    const tagName = lastClickedElement.tagName.toLowerCase();
+    if (!["h1","h2","h3","h4","p","p1","p2","p3"].includes(tagName)) {
+        showNotification("Please select a text element first", "error");
+        return;
+    }
+
+    const block = lastClickedElement.closest('[id^="block-"]');
+    if (!block) {
+        showNotification("Block not found for selected element", "error");
+        return;
+    }
+
+    const blockId = block.id;
+    const selectedElementId = lastClickedElement.id || generateRandomIdForElement(lastClickedElement);
+
+    // Find only the <strong> tags inside the selected element
     const strongTags = lastClickedElement.querySelectorAll('strong');
     if (strongTags.length === 0) {
         showNotification("No bold text found in the selected element", "error");
         return;
     }
 
-    // Apply inline style
-    const styleId = `style-${blockId}-${textType}-strong-font-size` ;
+    // Create a style tag uniquely for this selected element
+    const styleId = `style-${blockId}-${selectedElementId}-strong-font-size`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
         styleTag = document.createElement("style");
@@ -279,25 +275,33 @@ export function handleFontSize(event = null, context = null) {
         document.head.appendChild(styleTag);
     }
 
-    // Apply styles only to strong tags within the selected text type
-    const css = `#${blockId} ${textType} strong {
+    // Apply styles only for strong tags inside selected element
+    const css = `
+    #${blockId} #${selectedElementId} strong {
         font-size: ${fontSize} !important;
     }`;
     styleTag.innerHTML = css;
 
-    // Add to pending modifications
+    // Add to pending modifications (optional if you want to save)
     addPendingModification(blockId, {
         "font-size": fontSize,
-        "text-type": textType
+        "target": selectedElementId
     }, 'strong');
 
-    // Update UI
+    // UI Update
     document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
         el.classList.remove('sc-activeTab-border');
         el.classList.add('sc-inActiveTab-border');
     });
     clickedElement.classList.remove('sc-inActiveTab-border');
     clickedElement.classList.add('sc-activeTab-border');
-    
-    showNotification("Font size applied! Click Publish to save changes.", "info");
+
+    showNotification("Font size applied successfully! Click Publish to save.", "info");
+}
+
+// Helper function to generate id if missing
+function generateRandomIdForElement(el) {
+    const randomId = "sc-elem-" + Math.random().toString(36).substr(2, 9);
+    el.id = randomId;
+    return randomId;
 }
