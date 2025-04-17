@@ -98,6 +98,56 @@ export function handleBlockClick(event, context) {
     //align code end here
 
 
+    //bold section font size code start here
+    // Get all text elements in the block
+    const textElements = block.querySelectorAll("h1, h2, h3, h4, p");
+    const allPartsfontSize = [
+        "heading1Part", "heading2Part", "heading3Part", "heading4Part",
+        "paragraph1Part", "paragraph2Part", "paragraph3Part"
+    ];
+    const visiblePartsfontSize = new Set();
+
+    // Process each text element
+    textElements.forEach(el => {
+        const tag = el.tagName.toLowerCase();
+        const result = getTextType(tag, el);
+        if (result) {
+            visiblePartsfontSize.add(`${result.type}Part`);
+            el.style.border = `1px solid ${result.borderColor}`;
+            el.style.borderRadius = "4px";
+            el.style.padding = "2px 4px";
+
+            // Add click handler for font size selection
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                // Remove active class from all font size inputs
+                document.querySelectorAll('[id^="scFontSizeInput"]').forEach(input => {
+                    input.classList.remove('sc-activeTab-border');
+                    input.classList.add('sc-inActiveTab-border');
+                });
+
+                // Add active class to the corresponding font size input
+                const fontSizeInput = document.getElementById(`scFontSizeInput-${result.type}`);
+                if (fontSizeInput) {
+                    fontSizeInput.classList.remove('sc-inActiveTab-border');
+                    fontSizeInput.classList.add('sc-activeTab-border');
+                }
+            });
+        }
+    });
+
+    // Show/hide parts based on visible elements
+    allPartsfontSize.forEach(id => {
+        const part = document.getElementById(id);
+        if (part) {
+            part.classList.toggle("sc-hidden", !visiblePartsfontSize.has(id));
+        }
+    });
+
+    //bold section font size code end here
+
+
 
     //font weight code start here
     // In handleBlockClick.js
