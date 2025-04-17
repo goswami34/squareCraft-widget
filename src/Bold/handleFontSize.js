@@ -144,6 +144,10 @@ export function handleFontSize(event = null, context = null) {
         block.style.outline = "1px dashed #EF7C2F";
         setLastClickedBlockId(block.id);
         setLastClickedElement(block);
+        
+        // Clear any previously selected text type when clicking on a block
+        block.dataset.selectedTextType = undefined;
+        block.dataset.selectedElementTag = undefined;
         return;
     }
 
