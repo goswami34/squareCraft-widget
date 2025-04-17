@@ -153,6 +153,7 @@ function showNotification(message, type = "info") {
 export function handleFontSize(event = null, context = null) {
     const {
         lastClickedElement,
+        getTextTypeBold,
         getTextType,
         saveModifications,
         selectedElement,
@@ -207,7 +208,7 @@ export function handleFontSize(event = null, context = null) {
     }
 
     // Get the text type based on the active tab
-    const textType = getTextType(activeTab.id, lastClickedElement);
+    const textType = getTextTypeBold(activeTab.id, lastClickedElement);
     if (!textType) {
         showNotification("Unable to determine text type", "error");
         return;

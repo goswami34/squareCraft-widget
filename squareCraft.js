@@ -86,6 +86,7 @@ let selectedElement = null;
     styleTag.innerHTML = cssText;
   }
   const { getTextType } = await import("https://goswami34.github.io/squareCraft-widget/src/utils/getTextType.js");
+  const { getTextTypeBold } = await import("https://goswami34.github.io/squareCraft-widget/src/utils/getTexttypeBold.js");
   const { handleBlockClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBlockClick.js");
   const { handleAlignmentClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleAlignmentClick.js");
   const { handleTextColorClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextColorClick.js");
@@ -123,6 +124,7 @@ let selectedElement = null;
     handleFontSize(event, {
       lastClickedElement,
       getTextType,
+      getTextTypeBold,
       applyStylesToElement,
       lastAppliedAlignment,
       setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
