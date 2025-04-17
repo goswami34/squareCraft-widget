@@ -138,6 +138,7 @@ export function handleFontSize(event = null, context = null) {
         return;
     }
 
+    // If no block was clicked, check for font size input
     if (!event) {
         // First check if we have a selected text element
         const selectedTextType = lastClickedElement?.dataset?.selectedTextType;
@@ -145,25 +146,25 @@ export function handleFontSize(event = null, context = null) {
             showNotification("Please click on a text element (heading or paragraph) first", "error");
             return;
         }
-    
+
         // Try to find the corresponding font size input
         const fontSizeInput = document.getElementById(`scFontSizeInput-${selectedTextType}`);
         if (!fontSizeInput) {
             showNotification(`Font size input not found for ${selectedTextType}`, "error");
             return;
         }
-    
+
         // Make sure the font size input is active
         fontSizeInput.classList.remove('sc-inActiveTab-border');
         fontSizeInput.classList.add('sc-activeTab-border');
         
         event = { target: fontSizeInput };
     }
-    
+
     const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
     if (!clickedElement) {
         showNotification("Please click on a text element (heading or paragraph) first", "error");
-        return
+        return;
     }
     const fontSize = event.target.value + "px";
     const blockId = lastClickedElement?.id;
