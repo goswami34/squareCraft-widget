@@ -99,55 +99,53 @@ export function handleBlockClick(event, context) {
 
 
     //bold section font size code start here
-      //bold section font size code start here
-const textElements = block.querySelectorAll("h1, h2, h3, h4, p");
+    const textElements = block.querySelectorAll("h1, h2, h3, h4, p");
 
-// Process each text element
-textElements.forEach(el => {
-    const tag = el.tagName.toLowerCase();
-    const result = getTextType(tag, el);
-    if (result) {
-        el.style.border = `1px solid ${result.borderColor}`;
-        el.style.borderRadius = "4px";
-        el.style.padding = "2px 4px";
+    // Process each text element
+    textElements.forEach(el => {
+        const tag = el.tagName.toLowerCase();
+        const result = getTextType(tag, el);
+        if (result) {
+            el.style.border = `1px solid ${result.borderColor}`;
+            el.style.borderRadius = "4px";
+            el.style.padding = "2px 4px";
 
-        // Add click handler for text element selection
-        el.addEventListener('click', (e) => {
-            e.stopPropagation();
-            
-            // Remove active class from all font size inputs
-            document.querySelectorAll('[id^="scFontSizeInput"]').forEach(input => {
-                input.classList.remove('sc-activeTab-border');
-                input.classList.add('sc-inActiveTab-border');
-            });
-
-            // Add active class to the corresponding font size input
-            const fontSizeInput = document.getElementById(`scFontSizeInput-${result.type}`);
-            if (fontSizeInput) {
-                fontSizeInput.classList.remove('sc-inActiveTab-border');
-                fontSizeInput.classList.add('sc-activeTab-border');
+            // Add click handler for text element selection
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
                 
-                // Store the selected text type and element in the block's dataset
-                block.dataset.selectedTextType = result.type;
-                block.dataset.selectedElementTag = tag;
-                
-                // Also store the selected element itself for reference
-                block.dataset.selectedElement = el.id;
-                
-                // Log for debugging
-                console.log('Selected text element:', {
-                    type: result.type,
-                    tag: tag,
-                    element: el,
-                    blockId: block.id
+                // Remove active class from all font size inputs
+                document.querySelectorAll('[id^="scFontSizeInput"]').forEach(input => {
+                    input.classList.remove('sc-activeTab-border');
+                    input.classList.add('sc-inActiveTab-border');
                 });
-            } else {
-                console.error(`Font size input not found for type: ${result.type}`);
-            }
-        });
-    }
-});
 
+                // Add active class to the corresponding font size input
+                const fontSizeInput = document.getElementById(`scFontSizeInput-${result.type}`);
+                if (fontSizeInput) {
+                    fontSizeInput.classList.remove('sc-inActiveTab-border');
+                    fontSizeInput.classList.add('sc-activeTab-border');
+                    
+                    // Store the selected text type and element in the block's dataset
+                    block.dataset.selectedTextType = result.type;
+                    block.dataset.selectedElementTag = tag;
+                    
+                    // Also store the selected element itself for reference
+                    block.dataset.selectedElement = el.id;
+                    
+                    // Log for debugging
+                    console.log('Selected text element:', {
+                        type: result.type,
+                        tag: tag,
+                        element: el,
+                        blockId: block.id
+                    });
+                } else {
+                    console.error(`Font size input not found for type: ${result.type}`);
+                }
+            });
+        }
+    });
     //bold section font size code end here
 
 
