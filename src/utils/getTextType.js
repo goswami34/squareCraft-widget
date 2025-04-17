@@ -1,5 +1,9 @@
 export function getTextType(tagName, element) {
+  console.log('getTextType called with:', { tagName, element });
+
     const classList = element?.classList || [];
+    console.log('Element classList:', classList);
+
   
     if (tagName === "h1") return { type: "heading1", borderColor: "#EF7C2F" };
     if (tagName === "h2") return { type: "heading2", borderColor: "#EF7C2F" };
@@ -17,6 +21,8 @@ export function getTextType(tagName, element) {
     }
   
     console.log("Element classList:", classList);
+    console.log("No matching text type found");
+
     return null;
   }
 
