@@ -271,7 +271,7 @@ export function handleFontSize(event = null, context = null) {
     }
 
     // Apply inline style
-    const styleId = `style-${blockId}-${textType}-strong-font-size`;
+    const styleId = `style-${blockId}-${textType}-strong-font-size` ;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
         styleTag = document.createElement("style");
