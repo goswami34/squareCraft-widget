@@ -6,7 +6,8 @@ export function handleBlockClick(event, context) {
       setLastClickedBlockId,
       setLastClickedElement,
       setLastAppliedAlignment,
-      setLastActiveAlignmentElement
+      setLastActiveAlignmentElement,
+      setLastAppliedFontSize
     } = context;
   
     let block = event.target.closest('[id^="block-"]');
@@ -19,9 +20,7 @@ export function handleBlockClick(event, context) {
     setLastClickedBlockId(block.id);
     setLastClickedElement(block);
     
-
-    //align code start here
-  
+    // Handle text alignment
     let appliedTextAlign = window.getComputedStyle(block).textAlign;
     if (!appliedTextAlign || appliedTextAlign === "start") {
       const nested = block.querySelector("h1,h2,h3,h4,p");
@@ -48,6 +47,7 @@ export function handleBlockClick(event, context) {
       }
     }
   
+    // Handle text elements and their visibility
     const innerTextElements = block.querySelectorAll("h1,h2,h3,h4,p");
     const allParts = [
       "heading1Part", "heading2Part", "heading3Part", "heading4Part",
@@ -63,6 +63,10 @@ export function handleBlockClick(event, context) {
         el.style.border = `1px solid ${result.borderColor}`;
         el.style.borderRadius = "4px";
         el.style.padding = "2px 4px";
+        
+        // Store the text type and element tag in the block's dataset
+        el.dataset.selectedTextType = result.type;
+        el.dataset.selectedElementTag = tag;
       }
     });
   
@@ -95,89 +99,32 @@ export function handleBlockClick(event, context) {
       };
     });
 
-    //align code end here
+    // Handle font size for each text type
+    innerTextElements.forEach(el => {
+      const tag = el.tagName.toLowerCase();
+      const result = getTextType(tag, el);
+      if (result) {
+        const fontSize = window.getComputedStyle(el).fontSize;
+        if (fontSize) {
+          setLastAppliedFontSize(fontSize);
+          
+          // Update the corresponding font size input UI
+          const fontSizeInput = document.getElementById(`scFontSizeInput-${result.type}`);
+          if (fontSizeInput) {
+            fontSizeInput.value = parseInt(fontSize);
+            fontSizeInput.classList.add('sc-activeTab-border');
+            fontSizeInput.classList.remove('sc-inActiveTab-border');
+          }
+        }
+      }
+    });
 
-
-
-    //bold section font size code start here
-      //bold section font size code start here
-const textElements = block.querySelectorAll("h1,h2,h3,h4,p");
-
-// Process each text element
-textElements.forEach(el => {
-    const tag = el.tagName.toLowerCase();
-    const result = getTextType(tag, el);
-    
-    if (result) {
-        // Add visual styling to show the element is selectable
-        el.style.border = `1px solid ${result.borderColor}`;
-        el.style.borderRadius = "4px";
-        el.style.padding = "2px 4px";
-        el.style.cursor = "pointer";
-
-        // Add click handler for text element selection
-        el.addEventListener('click', (e) => {
-            e.stopPropagation();
-            
-            // Remove active class from all font size inputs
-            document.querySelectorAll('[id^="scFontSizeInput"]').forEach(input => {
-                input.classList.remove('sc-activeTab-border');
-                input.classList.add('sc-inActiveTab-border');
-            });
-
-            // Add active class to the corresponding font size input
-            const fontSizeInput = document.getElementById(`scFontSizeInput-${result.type}`);
-            if (fontSizeInput) {
-                fontSizeInput.classList.remove('sc-inActiveTab-border');
-                fontSizeInput.classList.add('sc-activeTab-border');
-                
-                // Store the selected text type and element in the block's dataset
-                block.dataset.selectedTextType = result.type;
-                block.dataset.selectedElementTag = tag;
-                block.dataset.selectedElementId = el.id;
-                
-                // Add visual feedback for selected element
-                textElements.forEach(textEl => {
-                    textEl.style.outline = "";
-                    textEl.classList.remove('sc-selected-text');
-                });
-                el.style.outline = `2px solid ${result.borderColor}`;
-                el.classList.add('sc-selected-text');
-
-                // Show success notification
-                showNotification(`Selected ${result.type} for font size changes`, "info");
-            } else {
-                showNotification(`Font size input not found for ${result.type}`, "error");
-            }
-        });
-
-        // Add hover effects
-        el.addEventListener('mouseenter', () => {
-            if (!el.classList.contains('sc-selected-text')) {
-                el.style.outline = `2px solid ${result.borderColor}`;
-            }
-        });
-
-        el.addEventListener('mouseleave', () => {
-            if (!el.classList.contains('sc-selected-text')) {
-                el.style.outline = "";
-            }
-        });
-    }
-});
-    
-    //bold section font size code end here
-
-
-
-    //font weight code start here
-    // In handleBlockClick.js
+    // Handle bold text elements
     const strongElementsByTag = {};
     innerTextElements.forEach(el => {
       const tag = el.tagName.toLowerCase();
       const strongTags = el.querySelectorAll('strong');
       if (strongTags.length > 0) {
-        // Instead of storing the DOM elements, store just the count and text content
         strongElementsByTag[tag] = {
           count: strongTags.length,
           texts: Array.from(strongTags).map(strong => strong.textContent)
@@ -187,7 +134,5 @@ textElements.forEach(el => {
 
     // Store the strong elements data in the block's dataset
     block.dataset.strongElementsByTag = JSON.stringify(strongElementsByTag);
-    //font weight code end here
-    
-  }
+}
   
