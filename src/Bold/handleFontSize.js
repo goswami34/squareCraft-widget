@@ -127,20 +127,6 @@ export function handleFontSize(event = null, context = null) {
         getTextType
     } = context;
 
-    // Debug logging
-    console.log('handleFontSize called with:', { 
-        event, 
-        lastClickedElement,
-        selectedTextType: lastClickedElement?.dataset?.selectedTextType,
-        selectedElementTag: lastClickedElement?.dataset?.selectedElementTag
-    });
-
-    if (typeof saveModifications !== 'function') {
-        console.error("saveModifications function is not available");
-        showNotification("Error: Save functionality not available", "error");
-        return;
-    }
-
     // First check if we're clicking on a block
     let block = event?.target?.closest('[id^="block-"]');
     if (block) {
@@ -156,10 +142,7 @@ export function handleFontSize(event = null, context = null) {
     // If no block was clicked, check for font size input
     if (!event) {
         const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
-        if (!activeButton) {
-            showNotification("Please click on a text element (heading or paragraph) first", "error");
-            return;
-        }
+        if (!activeButton) return;
         event = { target: activeButton };
     }
 
@@ -174,12 +157,12 @@ export function handleFontSize(event = null, context = null) {
         return;
     }
 
-    // Get the selected text type and element info from the block's dataset
+    // Get the selected text type and element tag from the block's dataset
     const selectedTextType = lastClickedElement.dataset.selectedTextType;
     const selectedElementTag = lastClickedElement.dataset.selectedElementTag;
 
     if (!selectedTextType || !selectedElementTag) {
-        showNotification("Please click on a text element (heading or paragraph) first", "error");
+        showNotification("Please click on a text element first", "error");
         return;
     }
 
@@ -190,17 +173,10 @@ export function handleFontSize(event = null, context = null) {
         return;
     }
 
-    // Verify the element type matches
-    const result = getTextType(selectedElementTag, targetElement);
-    if (!result || result.type !== selectedTextType) {
-        showNotification("Text element type mismatch", "error");
-        return;
-    }
-
     // Find strong tags within the specific element
     const strongTags = targetElement.querySelectorAll('strong');
     if (strongTags.length === 0) {
-        showNotification(`No bold text found in ${selectedTextType}`, "error");
+        showNotification("No bold text found in the selected element", "error");
         return;
     }
 
