@@ -226,7 +226,6 @@ export function handleFontSize(event = null, context = null) {
         return;
     }
 
-    // If no block was clicked, check for font size input
     if (!event) {
         const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
         if (!activeButton) return;
@@ -238,35 +237,35 @@ export function handleFontSize(event = null, context = null) {
 
     const fontSize = event.target.value + "px";
 
-    if (!lastClickedElement) {
-        showNotification("Please select a text element first", "error");
+    if (!lastClickedElement || !(lastClickedElement.tagName)) {
+        showNotification("Please click on a bold text (h2, p2, etc.) first before applying font size", "error");
+        console.warn("Last clicked element missing or invalid:", lastClickedElement);
         return;
     }
 
-    // lastClickedElement must be a text element like h1, h2, p1, p2 etc.
     const tagName = lastClickedElement.tagName.toLowerCase();
     if (!["h1","h2","h3","h4","p","p1","p2","p3"].includes(tagName)) {
-        showNotification("Please select a text element first", "error");
+        showNotification("Please click on a bold text element first (h2, p2, etc.)", "error");
         return;
     }
 
     const block = lastClickedElement.closest('[id^="block-"]');
     if (!block) {
-        showNotification("Block not found for selected element", "error");
+        showNotification("Block not found for selected text element", "error");
         return;
     }
 
     const blockId = block.id;
     const selectedElementId = lastClickedElement.id || generateRandomIdForElement(lastClickedElement);
 
-    // Find only the <strong> tags inside the selected element
+    // Find only the <strong> tags inside the selected text
     const strongTags = lastClickedElement.querySelectorAll('strong');
     if (strongTags.length === 0) {
-        showNotification("No bold text found in the selected element", "error");
+        showNotification("No bold text found inside selected text element", "error");
         return;
     }
 
-    // Create a style tag uniquely for this selected element
+    // Apply style only to selected strongs
     const styleId = `style-${blockId}-${selectedElementId}-strong-font-size`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
@@ -275,20 +274,19 @@ export function handleFontSize(event = null, context = null) {
         document.head.appendChild(styleTag);
     }
 
-    // Apply styles only for strong tags inside selected element
     const css = `
     #${blockId} #${selectedElementId} strong {
         font-size: ${fontSize} !important;
     }`;
     styleTag.innerHTML = css;
 
-    // Add to pending modifications (optional if you want to save)
+    // Save modification
     addPendingModification(blockId, {
         "font-size": fontSize,
         "target": selectedElementId
     }, 'strong');
 
-    // UI Update
+    // Update UI
     document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
         el.classList.remove('sc-activeTab-border');
         el.classList.add('sc-inActiveTab-border');
@@ -296,10 +294,10 @@ export function handleFontSize(event = null, context = null) {
     clickedElement.classList.remove('sc-inActiveTab-border');
     clickedElement.classList.add('sc-activeTab-border');
 
-    showNotification("Font size applied successfully! Click Publish to save.", "info");
+    showNotification("Font size applied to bold text!", "success");
 }
 
-// Helper function to generate id if missing
+// Helper if no ID
 function generateRandomIdForElement(el) {
     const randomId = "sc-elem-" + Math.random().toString(36).substr(2, 9);
     el.id = randomId;
