@@ -129,7 +129,13 @@ export function handleFontSize(event = null, context = null) {
     } = context;
 
     // Debug logging
-    console.log('handleFontSize called with:', { event, lastClickedElement });
+    console.log('handleFontSize called with:', { 
+        event, 
+        lastClickedElement,
+        selectedTextType: lastClickedElement?.dataset?.selectedTextType,
+        selectedElementTag: lastClickedElement?.dataset?.selectedElementTag,
+        selectedElementId: lastClickedElement?.dataset?.selectedElementId
+    });
 
     if (typeof saveModifications !== 'function') {
         console.error("saveModifications function is not available");
@@ -167,17 +173,26 @@ export function handleFontSize(event = null, context = null) {
         return;
     }
 
-    // Get the selected text type and tag from the block's dataset
+    // Get the selected text type and element info from the block's dataset
     const selectedTextType = lastClickedElement.dataset.selectedTextType;
     const selectedElementTag = lastClickedElement.dataset.selectedElementTag;
+    const selectedElementId = lastClickedElement.dataset.selectedElementId;
 
     if (!selectedTextType || !selectedElementTag) {
         showNotification("Please click on a text element (heading or paragraph) first", "error");
         return;
     }
 
-    // Find the corresponding element in the block
-    const targetElement = lastClickedElement.querySelector(selectedElementTag);
+    // Find the target element using the stored information
+    let targetElement;
+    if (selectedElementId) {
+        targetElement = document.getElementById(selectedElementId);
+    }
+    
+    if (!targetElement) {
+        targetElement = lastClickedElement.querySelector(selectedElementTag);
+    }
+
     if (!targetElement) {
         showNotification("No matching text element found", "error");
         return;
