@@ -142,10 +142,22 @@ export function handleFontSize(event = null, context = null) {
     if (!event) {
         const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
         if (!activeButton) {
-            showNotification("Please click on a text element (heading or paragraph) first", "error");
-            return;
+            // Check if we have a selected text element
+            const selectedTextType = lastClickedElement?.dataset?.selectedTextType;
+            if (!selectedTextType) {
+                showNotification("Please click on a text element (heading or paragraph) first", "error");
+                return;
+            }
+            // Try to find the corresponding font size input
+            const fontSizeInput = document.getElementById(`scFontSizeInput-${selectedTextType}`);
+            if (!fontSizeInput) {
+                showNotification(`Font size input not found for ${selectedTextType}`, "error");
+                return;
+            }
+            event = { target: fontSizeInput };
+        } else {
+            event = { target: activeButton };
         }
-        event = { target: activeButton };
     }
 
     const clickedElement = event.target.closest('[id^="scFontSizeInput"]');

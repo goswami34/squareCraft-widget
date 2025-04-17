@@ -100,8 +100,7 @@ export function handleBlockClick(event, context) {
 
 
     //bold section font size code start here
-      // Get all text elements in the block
-    const textElements = block.querySelectorAll("h1,h2,h3,h4,p1,p2,p3");
+    const textElements = block.querySelectorAll("h1,h2,h3,h4,p");
 
     // Process each text element
     textElements.forEach(el => {
@@ -114,7 +113,7 @@ export function handleBlockClick(event, context) {
             el.style.borderRadius = "4px";
             el.style.padding = "2px 4px";
             el.style.cursor = "pointer";
-
+    
             // Add click handler for text element selection
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -124,7 +123,7 @@ export function handleBlockClick(event, context) {
                     input.classList.remove('sc-activeTab-border');
                     input.classList.add('sc-inActiveTab-border');
                 });
-
+    
                 // Add active class to the corresponding font size input
                 const fontSizeInput = document.getElementById(`scFontSizeInput-${result.type}`);
                 if (fontSizeInput) {
@@ -137,20 +136,29 @@ export function handleBlockClick(event, context) {
                     
                     // Also store the selected element itself for reference
                     block.dataset.selectedElement = el.id;
-
+    
                     // Add visual feedback for selected element
                     textElements.forEach(textEl => {
                         textEl.style.outline = "";
+                        textEl.classList.remove('sc-selected-text');
                     });
+                    el.style.outline = `2px solid ${result.borderColor}`;
+                    el.classList.add('sc-selected-text');
+    
+                    // Show success notification
+                    showNotification(`Selected ${result.type} for font size changes`, "info");
+                } else {
+                    showNotification(`Font size input not found for ${result.type}`, "error");
+                }
+            });
+    
+            // Add hover effects
+            el.addEventListener('mouseenter', () => {
+                if (!el.classList.contains('sc-selected-text')) {
                     el.style.outline = `2px solid ${result.borderColor}`;
                 }
             });
-
-            // Add hover effects
-            el.addEventListener('mouseenter', () => {
-                el.style.outline = `2px solid ${result.borderColor}`;
-            });
-
+    
             el.addEventListener('mouseleave', () => {
                 if (!el.classList.contains('sc-selected-text')) {
                     el.style.outline = "";
