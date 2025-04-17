@@ -118,25 +118,28 @@ export function handleBlockClick(event, context) {
               };
 
               // Add click handler for text element selection
-              el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                
-                if (el.dataset.hasStrongTags !== 'true') {
-                    showNotification(`No bold text found in ${result.type}`, "error");
-                    return;
-                }
-            
-                // Store the selected element's information
-                block.dataset.selectedTextType = result.type;
-                block.dataset.selectedElementTag = tag;
-                block.dataset.selectedElementId = el.id;
-                
-                // Activate the corresponding font size input
-                const fontSizeInput = document.getElementById(`scFontSizeInput-${result.type}`);
-                if (fontSizeInput) {
-                    fontSizeInput.classList.remove('sc-inActiveTab-border');
-                    fontSizeInput.classList.add('sc-activeTab-border');
-                }
+            el.addEventListener('click', (e) => {
+              e.stopPropagation();
+              
+              if (el.dataset.hasStrongTags !== 'true') {
+                  showNotification(`No bold text found in ${result.type}`, "error");
+                  return;
+              }
+
+              // Store the selected element's information
+              block.dataset.selectedTextType = result.type;
+              block.dataset.selectedElementTag = tag;
+              block.dataset.selectedElementId = el.id;
+              
+              // Set the last clicked element to the text element
+              setLastClickedElement(el);
+              
+              // Activate the corresponding font size input
+              const fontSizeInput = document.getElementById(`scFontSizeInput-${result.type}`);
+              if (fontSizeInput) {
+                  fontSizeInput.classList.remove('sc-inActiveTab-border');
+                  fontSizeInput.classList.add('sc-activeTab-border');
+              }
             });
           }
       });
