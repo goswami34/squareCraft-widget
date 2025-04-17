@@ -144,10 +144,6 @@ export function handleFontSize(event = null, context = null) {
         block.style.outline = "1px dashed #EF7C2F";
         setLastClickedBlockId(block.id);
         setLastClickedElement(block);
-        
-        // Clear any previously selected text type when clicking on a block
-        delete block.dataset.selectedTextType;
-        delete block.dataset.selectedElementTag;
         return;
     }
 
@@ -176,9 +172,7 @@ export function handleFontSize(event = null, context = null) {
     const selectedTextType = lastClickedElement.dataset.selectedTextType;
     const selectedElementTag = lastClickedElement.dataset.selectedElementTag;
 
-    // Check if the values are actually undefined or the string "undefined"
-    if (!selectedTextType || selectedTextType === "undefined" || 
-        !selectedElementTag || selectedElementTag === "undefined") {
+    if (!selectedTextType || !selectedElementTag) {
         showNotification("Please click on a text element (heading or paragraph) first", "error");
         return;
     }
@@ -187,13 +181,6 @@ export function handleFontSize(event = null, context = null) {
     const targetElement = lastClickedElement.querySelector(selectedElementTag);
     if (!targetElement) {
         showNotification("No matching text element found", "error");
-        return;
-    }
-
-    // Verify the element type matches
-    const result = getTextType(selectedElementTag, targetElement);
-    if (!result || result.type !== selectedTextType) {
-        showNotification("Text element type mismatch", "error");
         return;
     }
 
