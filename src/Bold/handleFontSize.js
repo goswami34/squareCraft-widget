@@ -177,7 +177,7 @@ export function handleFontSize(event = null, context = null) {
     }
 
     // Get all text elements in the block
-    const textElements = lastClickedElement.getTextType("h1, h2, h3, h4, p1, p2, p3");
+    const textElements = lastClickedElement.querySelectorAll("h1, h2, h3, h4, p");
     console.log('Text elements found:', textElements);
 
     if (textElements.length === 0) {
