@@ -170,26 +170,37 @@ export function handleFontSize(event = null, context = null) {
         return;
     }
 
-    // Convert activeTab.id to element type (e.g., 'heading2' -> 'h2', 'paragraph2' -> 'p')
+    // Convert activeTab.id to element type
     let elementType = null;
-    if (activeTab.id.startsWith('heading')) {
-        elementType = `h${activeTab.id.replace('heading', '')}`;
-    } else if (activeTab.id.startsWith('paragraph')) {
-        elementType = 'p';
+    const tabId = activeTab.id.toLowerCase();
+    
+    if (tabId.startsWith('heading')) {
+        // Handle heading tags (h1, h2, h3, h4)
+        const headingNumber = tabId.replace('heading', '');
+        if (['1', '2', '3', '4'].includes(headingNumber)) {
+            elementType = `h${headingNumber}`;
+        }
+    } else if (tabId.startsWith('paragraph')) {
+        // Handle paragraph tags (p1, p2, p3, p4)
+        const paraNumber = tabId.replace('paragraph', '');
+        if (['1', '2', '3', '4'].includes(paraNumber)) {
+            elementType = `p${paraNumber}`;
+        }
     }
 
     if (!elementType) {
-        showNotification("Unable to determine element type", "error");
+        showNotification("Unable to determine text type. Please select a valid heading or paragraph.", "error");
         return;
     }
 
-    // Find strong tags within the specific element type
+    // Find the specific element within the block
     const element = lastClickedElement.querySelector(elementType);
     if (!element) {
         showNotification(`No ${elementType} element found in this block`, "error");
         return;
     }
 
+    // Find strong tags within the specific element
     const strongTags = element.querySelectorAll('strong');
     if (strongTags.length === 0) {
         showNotification(`No bold text found in ${elementType}`, "error");
