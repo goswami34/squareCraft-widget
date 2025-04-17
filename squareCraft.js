@@ -64,6 +64,7 @@ let selectedElement = null;
   let lastClickedElement = null;
   let lastAppliedAlignment = null;
   let lastActiveAlignmentElement = null;
+  let selectedTextType = null;
 
   function applyStylesToElement(element, css) {
     if (!element || !css) return;
@@ -127,6 +128,8 @@ let selectedElement = null;
       getTextTypeBold,
       applyStylesToElement,
       lastAppliedAlignment,
+      selectedTextType,
+      setSelectedTextType: (val) => selectedTextType = val,
       setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
       lastActiveAlignmentElement,
       setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
