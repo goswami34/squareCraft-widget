@@ -238,7 +238,7 @@ export function handleFontSize(event = null, context = null) {
     const fontSize = event.target.value + "px";
 
     if (!lastClickedElement || !selectedTextType) {
-        showNotification("Please click on a block first to select text type", "error");
+        showNotification("Please click on a block first to select text type111111", "error");
         return;
     }
 
