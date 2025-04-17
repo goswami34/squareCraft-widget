@@ -99,10 +99,9 @@ export function handleBlockClick(event, context) {
 
 
     //bold section font size code start here
-    // Get all text elements in the block
     const textElements = block.querySelectorAll("h1, h2, h3, h4, p");
     const allPartsfontSize = [
-        "heading1Part", "heading2Part", "heading3Part", "heading4Part",
+        "heading1Part", "heading2Part", "heading3Part", "heading3Part", "heading4Part",
         "paragraph1Part", "paragraph2Part", "paragraph3Part"
     ];
     const visiblePartsfontSize = new Set();
@@ -117,7 +116,7 @@ export function handleBlockClick(event, context) {
             el.style.borderRadius = "4px";
             el.style.padding = "2px 4px";
 
-            // Add click handler for font size selection
+            // Add click handler for text element selection
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
                 
@@ -132,16 +131,11 @@ export function handleBlockClick(event, context) {
                 if (fontSizeInput) {
                     fontSizeInput.classList.remove('sc-inActiveTab-border');
                     fontSizeInput.classList.add('sc-activeTab-border');
+                    
+                    // Store the selected text type in the block's dataset
+                    block.dataset.selectedTextType = result.type;
                 }
             });
-        }
-    });
-
-    // Show/hide parts based on visible elements
-    allPartsfontSize.forEach(id => {
-        const part = document.getElementById(id);
-        if (part) {
-            part.classList.toggle("sc-hidden", !visiblePartsfontSize.has(id));
         }
     });
 
