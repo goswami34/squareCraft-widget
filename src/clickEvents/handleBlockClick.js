@@ -109,66 +109,36 @@ export function handleBlockClick(event, context) {
           
           if (result) {
               // Add visual styling to show the element is selectable
-              el.style.border = `1px solid ${result.borderColor}`;
-              el.style.borderRadius = "4px";
-              el.style.padding = "2px 4px";
-              el.style.cursor = "pointer";
+              const strongTags = el.querySelectorAll('strong');
+              if (strongTags.length > 0) {
+                  // Store the element type and strong tag count
+                  el.dataset.hasStrongTags = 'true';
+                  el.dataset.textType = result.type;
+                  el.dataset.elementTag = tag;
+              };
 
               // Add click handler for text element selection
               el.addEventListener('click', (e) => {
                 e.stopPropagation();
                 
-                // Remove active class from all font size inputs
-                document.querySelectorAll('[id^="scFontSizeInput"]').forEach(input => {
-                    input.classList.remove('sc-activeTab-border');
-                    input.classList.add('sc-inActiveTab-border');
-                });
+                // Only proceed if this element has strong tags
+                if (el.dataset.hasStrongTags !== 'true') {
+                    showNotification(`No bold text found in ${result.type}`, "error");
+                    return;
+                }
             
-                // Add active class to the corresponding font size input
+                // Store the selected element's information
+                block.dataset.selectedTextType = result.type;
+                block.dataset.selectedElementTag = tag;
+                block.dataset.selectedElementId = el.id;
+                
+                // Activate the corresponding font size input
                 const fontSizeInput = document.getElementById(`scFontSizeInput-${result.type}`);
                 if (fontSizeInput) {
                     fontSizeInput.classList.remove('sc-inActiveTab-border');
                     fontSizeInput.classList.add('sc-activeTab-border');
-                    
-                    // Store the selected text type and element in both block and element datasets
-                    block.dataset.selectedTextType = result.type;
-                    block.dataset.selectedElementTag = tag;
-                    block.dataset.selectedElementId = el.id;
-                    
-                    // Also store in the element's dataset
-                    el.dataset.selectedTextType = result.type;
-                    el.dataset.selectedElementTag = tag;
-                    
-                    // Add visual feedback for selected element
-                    textElements.forEach(textEl => {
-                        textEl.style.outline = "";
-                        textEl.classList.remove('sc-selected-text');
-                        // Clear any previous selection data
-                        delete textEl.dataset.selectedTextType;
-                        delete textEl.dataset.selectedElementTag;
-                    });
-                    el.style.outline = `2px solid ${result.borderColor}`;
-                    el.classList.add('sc-selected-text');
-            
-                    // Show success notification
-                    showNotification(`Selected ${result.type} for font size changes`, "info");
-                } else {
-                    showNotification(`Font size input not found for ${result.type}`, "error");
                 }
             });
-
-              // Add hover effects
-              el.addEventListener('mouseenter', () => {
-                  if (!el.classList.contains('sc-selected-text')) {
-                      el.style.outline = `2px solid ${result.borderColor}`;
-                  }
-              });
-
-              el.addEventListener('mouseleave', () => {
-                  if (!el.classList.contains('sc-selected-text')) {
-                      el.style.outline = "";
-                  }
-              });
           }
       });
     

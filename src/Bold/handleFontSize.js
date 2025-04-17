@@ -187,42 +187,38 @@ export function handleFontSize(event = null, context = null) {
     }
 
     // Get the selected text type and element tag from the block's dataset
-    const selectedTextType = lastClickedElement.dataset.selectedTextType;
-    const selectedElementTag = lastClickedElement.dataset.selectedElementTag;
+        const selectedTextType = lastClickedElement.dataset.selectedTextType;
+        const selectedElementTag = lastClickedElement.dataset.selectedElementTag;
+        const selectedElementId = lastClickedElement.dataset.selectedElementId;
 
-    if (!selectedTextType || !selectedElementTag) {
-        showNotification("Please click on a text element (heading or paragraph) first", "error");
-        return;
-    }
+        // Find the specific element that was selected
+        const targetElement = lastClickedElement.querySelector(`${selectedElementTag}[data-text-type="${selectedTextType}"]`);
+        if (!targetElement) {
+            showNotification("No matching text element found", "error");
+            return;
+        }
 
-    // Find the target element
-    const targetElement = lastClickedElement.querySelector(selectedElementTag);
-    if (!targetElement) {
-        showNotification("No matching text element found", "error");
-        return;
-    }
+        // Find strong tags only within this specific element
+        const strongTags = targetElement.querySelectorAll('strong');
+        if (strongTags.length === 0) {
+            showNotification(`No bold text found in ${selectedTextType}`, "error");
+            return;
+        }
 
-    // Find strong tags within the specific element
-    const strongTags = targetElement.querySelectorAll('strong');
-    if (strongTags.length === 0) {
-        showNotification(`No bold text found in ${selectedTextType}`, "error");
-        return;
-    }
+        // Create a unique style ID for this specific element's strong tags
+        const styleId = `style-${blockId}-${selectedTextType}-strong-font-size`;
+        let styleTag = document.getElementById(styleId);
+        if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = styleId;
+            document.head.appendChild(styleTag);
+        }
 
-    // Apply inline style with specific selector
-    const styleId = `style-${blockId}-${selectedTextType}-strong-font-size`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = styleId;
-        document.head.appendChild(styleTag);
-    }
-
-    // Apply styles only to strong tags within the specific element type
-    const css = `#${blockId} ${selectedElementTag} strong {
-        font-size: ${fontSize} !important;
-    }`;
-    styleTag.innerHTML = css;
+        // Apply styles only to strong tags within this specific element
+        const css = `#${blockId} ${selectedElementTag}[data-text-type="${selectedTextType}"] strong {
+            font-size: ${fontSize} !important;
+        }`;
+        styleTag.innerHTML = css;
 
     // Add to pending modifications
     addPendingModification(blockId, {
