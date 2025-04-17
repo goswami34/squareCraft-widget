@@ -192,7 +192,8 @@ export function handleFontSize(event = null, context = null) {
 
     // Add to pending modifications
     addPendingModification(blockId, {
-        "font-size": fontSize
+        "font-size": fontSize,
+        "text-type": selectedTextType
     }, 'strong');
 
     // Update UI
