@@ -114,7 +114,6 @@ function showNotification(message, type = "info") {
 //     showNotification("Font size applied! Click Publish to save changes.", "info");
 // }
 
-
 export function handleFontSize(event = null, context = null) {
     const {
         lastClickedElement,
@@ -133,8 +132,7 @@ export function handleFontSize(event = null, context = null) {
         event, 
         lastClickedElement,
         selectedTextType: lastClickedElement?.dataset?.selectedTextType,
-        selectedElementTag: lastClickedElement?.dataset?.selectedElementTag,
-        selectedElementId: lastClickedElement?.dataset?.selectedElementId
+        selectedElementTag: lastClickedElement?.dataset?.selectedElementTag
     });
 
     if (typeof saveModifications !== 'function') {
@@ -158,7 +156,10 @@ export function handleFontSize(event = null, context = null) {
     // If no block was clicked, check for font size input
     if (!event) {
         const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
-        if (!activeButton) return;
+        if (!activeButton) {
+            showNotification("Please click on a text element (heading or paragraph) first", "error");
+            return;
+        }
         event = { target: activeButton };
     }
 
@@ -176,23 +177,14 @@ export function handleFontSize(event = null, context = null) {
     // Get the selected text type and element info from the block's dataset
     const selectedTextType = lastClickedElement.dataset.selectedTextType;
     const selectedElementTag = lastClickedElement.dataset.selectedElementTag;
-    const selectedElementId = lastClickedElement.dataset.selectedElementId;
 
     if (!selectedTextType || !selectedElementTag) {
         showNotification("Please click on a text element (heading or paragraph) first", "error");
         return;
     }
 
-    // Find the target element using the stored information
-    let targetElement;
-    if (selectedElementId) {
-        targetElement = document.getElementById(selectedElementId);
-    }
-    
-    if (!targetElement) {
-        targetElement = lastClickedElement.querySelector(selectedElementTag);
-    }
-
+    // Find the target element
+    const targetElement = lastClickedElement.querySelector(selectedElementTag);
     if (!targetElement) {
         showNotification("No matching text element found", "error");
         return;
