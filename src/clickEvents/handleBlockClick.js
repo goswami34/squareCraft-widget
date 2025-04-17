@@ -100,7 +100,7 @@ export function handleBlockClick(event, context) {
 
 
     //bold section font size code start here
-      const textElements = block.querySelectorAll("h1,h2,h3,h4,p");
+      const textElements = block.querySelectorAll("h1,h2,h3,h4,p1,p2,p3");
 
       // Process each text element
       textElements.forEach(el => {

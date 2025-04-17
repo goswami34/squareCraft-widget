@@ -139,39 +139,38 @@ export function handleFontSize(event = null, context = null) {
     }
 
     // If no block was clicked, check for font size input
-    // If no block was clicked, check for font size input
-if (!event) {
-    // First check if we have a selected text element
-    let selectedTextType = lastClickedElement?.dataset?.selectedTextType;
-    let selectedElementTag = lastClickedElement?.dataset?.selectedElementTag;
-    
-    // If not found in the element, check the block
-    if (!selectedTextType || !selectedElementTag) {
-        const block = lastClickedElement?.closest('[id^="block-"]');
-        if (block) {
-            selectedTextType = block.dataset.selectedTextType;
-            selectedElementTag = block.dataset.selectedElementTag;
+    if (!event) {
+        // First check if we have a selected text element
+        let selectedTextType = lastClickedElement?.dataset?.selectedTextType;
+        let selectedElementTag = lastClickedElement?.dataset?.selectedElementTag;
+        
+        // If not found in the element, check the block
+        if (!selectedTextType || !selectedElementTag) {
+            const block = lastClickedElement?.closest('[id^="block-"]');
+            if (block) {
+                selectedTextType = block.dataset.selectedTextType;
+                selectedElementTag = block.dataset.selectedElementTag;
+            }
         }
-    }
 
-    if (!selectedTextType) {
-        showNotification("Please click on a text element (heading or paragraph) first", "error");
-        return;
-    }
+        if (!selectedTextType) {
+            showNotification("Please click on a text element (heading or paragraph) first", "error");
+            return;
+        }
 
-    // Try to find the corresponding font size input
-    const fontSizeInput = document.getElementById(`scFontSizeInput-${selectedTextType}`);
-    if (!fontSizeInput) {
-        showNotification(`Font size input not found for ${selectedTextType}`, "error");
-        return;
-    }
+        // Try to find the corresponding font size input
+        const fontSizeInput = document.getElementById(`scFontSizeInput-${selectedTextType}`);
+        if (!fontSizeInput) {
+            showNotification(`Font size input not found for ${selectedTextType}`, "error");
+            return;
+        }
 
-    // Make sure the font size input is active
-    fontSizeInput.classList.remove('sc-inActiveTab-border');
-    fontSizeInput.classList.add('sc-activeTab-border');
-    
-    event = { target: fontSizeInput };
-}
+        // Make sure the font size input is active
+        fontSizeInput.classList.remove('sc-inActiveTab-border');
+        fontSizeInput.classList.add('sc-activeTab-border');
+        
+        event = { target: fontSizeInput };
+    }
 
 
     const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
