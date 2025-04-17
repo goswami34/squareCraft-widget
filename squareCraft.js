@@ -105,7 +105,8 @@ let selectedElement = null;
       setLastClickedBlockId: (val) => lastClickedBlockId = val,
       setLastClickedElement: (val) => lastClickedElement = val,
       setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
-      setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val
+      setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
+      setSelectedTextType: (val) => selectedTextType = val
     });
   
     handleAlignmentClick(event, {
