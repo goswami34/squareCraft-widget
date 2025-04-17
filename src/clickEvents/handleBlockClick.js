@@ -98,7 +98,7 @@ export function handleBlockClick(event, context) {
     //align code end here
 
 
-    //bold section font size code start here
+
     //bold section font size code start here
       // Get all text elements in the block
     const textElements = block.querySelectorAll("h1,h2,h3,h4,p1,p2,p3");
