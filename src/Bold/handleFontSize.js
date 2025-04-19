@@ -474,113 +474,215 @@ function showNotification(message, type = "info") {
 //     showNotification(`Font size applied to bold text inside: ${updatedSelectedTextType}`, "success");
 // }
 
+// export function handleFontSize(event = null, context = null) {
+//     const {
+//         lastClickedElement,
+//         selectedSingleTextType,
+//         setSelectedSingleTextType,
+//         saveModifications,
+//         setSelectedElement,
+//         setLastClickedBlockId,
+//         setLastClickedElement,
+//         addPendingModification,
+//         showNotification,
+//         selectedTextElement
+//     } = context;
+
+//     if (typeof saveModifications !== 'function') {
+//         console.error("saveModifications function is not available");
+//         showNotification("Error: Save functionality not available", "error");
+//         return;
+//     }
+
+//     if (!event) {
+//         const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
+//         if (!activeButton) return;
+//         event = { target: activeButton };
+//     }
+
+//     const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
+//     if (!clickedElement) return;
+
+//     const fontSize = event.target.value + "px";
+
+//     if (!lastClickedElement) {
+//         showNotification("Please select a block first", "error");
+//         return;
+//     }
+
+//     const block = lastClickedElement.closest('[id^="block-"]');
+//     if (!block) {
+//         showNotification("Block not found", "error");
+//         return;
+//     }
+
+//     // Get all text elements within the block
+//     const textElements = block.querySelectorAll('h1, h2, h3, h4, p');
+//     if (textElements.length === 0) {
+//         showNotification("No text elements found in block", "error");
+//         return;
+//     }
+
+//     // Create a single style tag for all text types
+//     const blockId = block.id;
+//     const styleId = `style-${blockId}-strong-font-size`;
+//     let styleTag = document.getElementById(styleId);
+
+//     if (!styleTag) {
+//         styleTag = document.createElement("style");
+//         styleTag.id = styleId;
+//         document.head.appendChild(styleTag);
+//     }
+
+//     // Build CSS for all text types
+//     let css = '';
+//     textElements.forEach(textElement => {
+//         const tagName = textElement.tagName.toLowerCase();
+//         const strongElements = textElement.querySelectorAll("strong");
+        
+//         if (strongElements.length > 0) {
+//             css += `
+//                 #${blockId} ${tagName} strong {
+//                     font-size: ${fontSize} !important;
+//                 }
+//             `;
+            
+//             // Apply font size directly to strong elements
+//             strongElements.forEach(strong => {
+//                 strong.style.fontSize = fontSize;
+//             });
+//         }
+//     });
+
+//     if (css) {
+//         styleTag.innerHTML = css;
+
+//         // Add pending modification for each text type with strong elements
+//         textElements.forEach(textElement => {
+//             const tagName = textElement.tagName.toLowerCase();
+//             if (textElement.querySelectorAll("strong").length > 0) {
+//                 addPendingModification(blockId, {
+//                     "font-size": fontSize,
+//                     "target": tagName
+//                 }, 'strong');
+//             }
+//         });
+
+//         // UI update
+//         document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
+//             el.classList.remove('sc-activeTab-border');
+//             el.classList.add('sc-inActiveTab-border');
+//         });
+//         clickedElement.classList.remove('sc-inActiveTab-border');
+//         clickedElement.classList.add('sc-activeTab-border');
+
+//         showNotification(`Font size applied to bold text in all text elements`, "success");
+//     } else {
+//         showNotification("No bold text found in the block", "info");
+//     }
+// }
+
+
 export function handleFontSize(event = null, context = null) {
     const {
-        lastClickedElement,
-        selectedSingleTextType,
-        setSelectedSingleTextType,
-        saveModifications,
-        setSelectedElement,
-        setLastClickedBlockId,
-        setLastClickedElement,
-        addPendingModification,
-        showNotification,
-        selectedTextElement
+      lastClickedElement,
+      selectedSingleTextType,
+      setSelectedSingleTextType,
+      saveModifications,
+      setSelectedElement,
+      setLastClickedBlockId,
+      setLastClickedElement,
+      addPendingModification,
+      showNotification,
+      selectedTextElement
     } = context;
-
+  
     if (typeof saveModifications !== 'function') {
-        console.error("saveModifications function is not available");
-        showNotification("Error: Save functionality not available", "error");
-        return;
+      console.error("saveModifications function is not available");
+      showNotification("Error: Save functionality not available", "error");
+      return;
     }
-
+  
     if (!event) {
-        const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
-        if (!activeButton) return;
-        event = { target: activeButton };
+      const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
+      if (!activeButton) return;
+      event = { target: activeButton };
     }
-
+  
     const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
     if (!clickedElement) return;
-
+  
     const fontSize = event.target.value + "px";
-
+  
     if (!lastClickedElement) {
-        showNotification("Please select a block first", "error");
-        return;
+      showNotification("Please select a block first", "error");
+      return;
     }
-
+  
+    if (!selectedSingleTextType) {
+      showNotification("Please select a text type (Heading or Paragraph)", "error");
+      return;
+    }
+  
     const block = lastClickedElement.closest('[id^="block-"]');
     if (!block) {
-        showNotification("Block not found", "error");
-        return;
+      showNotification("Block not found", "error");
+      return;
     }
-
-    // Get all text elements within the block
-    const textElements = block.querySelectorAll('h1, h2, h3, h4, p');
-    if (textElements.length === 0) {
-        showNotification("No text elements found in block", "error");
-        return;
+  
+    // 🎯 Only select the selectedSingleTextType
+    const targetElement = block.querySelector(selectedSingleTextType);
+    if (!targetElement) {
+      showNotification(`No ${selectedSingleTextType} found in block`, "error");
+      return;
     }
-
-    // Create a single style tag for all text types
-    const blockId = block.id;
-    const styleId = `style-${blockId}-strong-font-size`;
-    let styleTag = document.getElementById(styleId);
-
-    if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = styleId;
-        document.head.appendChild(styleTag);
+  
+    const strongElements = targetElement.querySelectorAll("strong");
+    if (strongElements.length === 0) {
+      showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
+      return;
     }
-
-    // Build CSS for all text types
-    let css = '';
-    textElements.forEach(textElement => {
-        const tagName = textElement.tagName.toLowerCase();
-        const strongElements = textElement.querySelectorAll("strong");
-        
-        if (strongElements.length > 0) {
-            css += `
-                #${blockId} ${tagName} strong {
-                    font-size: ${fontSize} !important;
-                }
-            `;
-            
-            // Apply font size directly to strong elements
-            strongElements.forEach(strong => {
-                strong.style.fontSize = fontSize;
-            });
-        }
+  
+    // Apply font size to all strong elements inside selected tag
+    strongElements.forEach(strong => {
+      strong.style.fontSize = fontSize;
     });
-
-    if (css) {
-        styleTag.innerHTML = css;
-
-        // Add pending modification for each text type with strong elements
-        textElements.forEach(textElement => {
-            const tagName = textElement.tagName.toLowerCase();
-            if (textElement.querySelectorAll("strong").length > 0) {
-                addPendingModification(blockId, {
-                    "font-size": fontSize,
-                    "target": tagName
-                }, 'strong');
-            }
-        });
-
-        // UI update
-        document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
-            el.classList.remove('sc-activeTab-border');
-            el.classList.add('sc-inActiveTab-border');
-        });
-        clickedElement.classList.remove('sc-inActiveTab-border');
-        clickedElement.classList.add('sc-activeTab-border');
-
-        showNotification(`Font size applied to bold text in all text elements`, "success");
-    } else {
-        showNotification("No bold text found in the block", "info");
+  
+    const blockId = block.id;
+    const styleId = `style-${blockId}-${selectedSingleTextType}-strong-font-size`;
+    let styleTag = document.getElementById(styleId);
+  
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
     }
-}
+  
+    // Apply CSS only to selected text type
+    const css = `
+      #${blockId} ${selectedSingleTextType} strong {
+        font-size: ${fontSize} !important;
+      }
+    `;
+  
+    styleTag.innerHTML = css;
+  
+    addPendingModification(blockId, {
+      "font-size": fontSize,
+      "target": selectedSingleTextType
+    }, 'strong');
+  
+    // UI update
+    document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
+      el.classList.remove('sc-activeTab-border');
+      el.classList.add('sc-inActiveTab-border');
+    });
+    clickedElement.classList.remove('sc-inActiveTab-border');
+    clickedElement.classList.add('sc-activeTab-border');
+  
+    showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
+  }
+  
 
 
 
