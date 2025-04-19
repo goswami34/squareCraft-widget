@@ -219,6 +219,7 @@ export function handleBlockClick(event, context) {
     setLastAppliedAlignment,
     setLastActiveAlignmentElement,
     setSelectedSingleTextType,
+    selectedTextElement
   } = context;
 
   let block = event.target.closest('[id^="block-"]');
@@ -290,7 +291,9 @@ export function handleBlockClick(event, context) {
 
     tab.onclick = () => {
       const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
-      setSelectedSingleTextType(clickedTag);
+      // setSelectedSingleTextType(clickedTag);
+      selectedTextElement = block.querySelector(clickedTag);
+
       console.log("✅ Now selected text type by click:", clickedTag);
 
       const fontSizeInput = document.getElementById(`scFontSizeInput-${typeId}`);

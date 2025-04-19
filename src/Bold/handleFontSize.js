@@ -374,7 +374,8 @@ export function handleFontSize(event = null, context = null) {
         setLastClickedBlockId,
         setLastClickedElement,
         addPendingModification,
-        showNotification
+        showNotification,
+        selectedTextElement
     } = context;
 
     if (typeof saveModifications !== 'function') {
@@ -428,6 +429,16 @@ export function handleFontSize(event = null, context = null) {
         showNotification("Block not found", "error");
         return;
     }
+    if (!selectedTextElement) {
+        showNotification("Please select a text type", "error");
+        return;
+      }
+      
+      let strongElements = selectedTextElement.querySelectorAll("strong");
+      strongElements.forEach(strong => {
+        strong.style.fontSize = fontSize;
+      });
+      
 
     const blockId = block.id;
     const styleId = `style-${blockId}-${updatedSelectedTextType}-strong-font-size`;
