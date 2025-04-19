@@ -367,7 +367,8 @@ function showNotification(message, type = "info") {
 export function handleFontSize(event = null, context = null) {
     const {
         lastClickedElement,
-        selectedSingleTextType,  // ✅ single, not array
+        selectedSingleTextType,
+        setSelectedSingleTextType,
         saveModifications,
         setSelectedElement,
         setLastClickedBlockId,
@@ -393,16 +394,34 @@ export function handleFontSize(event = null, context = null) {
 
     const fontSize = event.target.value + "px";
 
-    if (!lastClickedElement || !selectedSingleTextType) {
-        showNotification("Please select a text type first", "error");
+    if (!lastClickedElement) {
+        showNotification("Please select a block first", "error");
         return;
     }
 
-    if (!selectedSingleTextType) {
+    // 🛠 Fix: if no text type selected, auto-pick first visible one
+    let updatedSelectedTextType = selectedSingleTextType;
+    if (!updatedSelectedTextType) {
+        const activeTab = document.querySelector('.sc-activeTab-border');
+        if (activeTab) {
+            const activeId = activeTab.id;
+            if (activeId.startsWith("heading")) {
+                const num = activeId.replace("heading", "");
+                updatedSelectedTextType = `h${num}`;
+            } else if (activeId.startsWith("paragraph")) {
+                updatedSelectedTextType = "p"; // paragraph always p
+            }
+            if (updatedSelectedTextType) {
+                setSelectedSingleTextType(updatedSelectedTextType);
+                console.log("✅ Auto selected text type:", updatedSelectedTextType);
+            }
+        }
+    }
+
+    if (!updatedSelectedTextType) {
         showNotification("⚡ Please click a text type tab (Heading or Paragraph) first", "error");
         return;
-     }
-     
+    }
 
     const block = lastClickedElement.closest('[id^="block-"]');
     if (!block) {
@@ -411,28 +430,26 @@ export function handleFontSize(event = null, context = null) {
     }
 
     const blockId = block.id;
-
-    const styleId = `style-${blockId}-${selectedSingleTextType}-strong-font-size`;
+    const styleId = `style-${blockId}-${updatedSelectedTextType}-strong-font-size`;
     let styleTag = document.getElementById(styleId);
+
     if (!styleTag) {
         styleTag = document.createElement("style");
         styleTag.id = styleId;
         document.head.appendChild(styleTag);
     }
 
-    // Only apply to selected tag
     const css = `
-        #${blockId} ${selectedSingleTextType} strong {
+        #${blockId} ${updatedSelectedTextType} strong {
             font-size: ${fontSize} !important;
         }
-        `;
+    `;
 
     styleTag.innerHTML = css;
 
-    // Save modification
     addPendingModification(blockId, {
         "font-size": fontSize,
-        "target": selectedSingleTextType
+        "target": updatedSelectedTextType
     }, 'strong');
 
     // UI update
@@ -443,8 +460,9 @@ export function handleFontSize(event = null, context = null) {
     clickedElement.classList.remove('sc-inActiveTab-border');
     clickedElement.classList.add('sc-activeTab-border');
 
-    showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
+    showNotification(`Font size applied to bold text inside: ${updatedSelectedTextType}`, "success");
 }
+
 
 
 
