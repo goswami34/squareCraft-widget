@@ -216,128 +216,109 @@
     
 //   }
 
-
-export function handleBlockClick(event, context) {
+export function handleFontSize(event = null, context = null) {
   const {
-    getTextType,
-    setSelectedElement,
-    selectedElement,
-    setLastClickedBlockId,
-    setLastClickedElement,
-    setLastAppliedAlignment,
-    setLastActiveAlignmentElement,
-    setSelectedSingleTextType,
+    lastClickedElement,
+    selectedSingleTextType,
+    saveModifications,
+    addPendingModification,
+    showNotification,
   } = context;
 
-  let block = event.target.closest('[id^="block-"]');
-  if (!block) return;
-
-  if (selectedElement) selectedElement.style.outline = "";
-  setSelectedElement(block);
-  block.style.outline = "1px dashed #EF7C2F";
-
-  setLastClickedBlockId(block.id);
-  setLastClickedElement(block);
-
-  // Alignment detect
-  let appliedTextAlign = window.getComputedStyle(block).textAlign;
-  if (!appliedTextAlign || appliedTextAlign === "start") {
-    const nested = block.querySelector("h1,h2,h3,h4,p");
-    if (nested) {
-      appliedTextAlign = window.getComputedStyle(nested).textAlign;
-    }
+  if (typeof saveModifications !== 'function') {
+    console.error("saveModifications function is not available");
+    showNotification("Error: Save functionality not available", "error");
+    return;
   }
 
-  if (appliedTextAlign) {
-    setLastAppliedAlignment(appliedTextAlign);
-
-    const map = {
-      left: "scTextAlignLeft",
-      center: "scTextAlignCenter",
-      right: "scTextAlignRight",
-      justify: "scTextAlignJustify"
-    };
-
-    const activeIcon = document.getElementById(map[appliedTextAlign]);
-    if (activeIcon) {
-      activeIcon.classList.add("sc-activeTab-border");
-      activeIcon.classList.remove("sc-inActiveTab-border");
-      setLastActiveAlignmentElement(activeIcon);
-    }
+  if (!event) {
+    const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
+    if (!activeButton) return;
+    event = { target: activeButton };
   }
 
-  const innerTextElements = block.querySelectorAll("h1,h2,h3,h4,p");
-  const allParts = [
-    "heading1Part", "heading2Part", "heading3Part", "heading4Part",
-    "paragraph1Part", "paragraph2Part", "paragraph3Part"
-  ];
-  const visibleParts = new Set();
+  const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
+  if (!clickedElement) return;
 
-  innerTextElements.forEach(el => {
-    const tag = el.tagName.toLowerCase();
-    const result = getTextType(tag, el);
-    if (result) {
-      visibleParts.add(`${result.type}Part`);
-      el.style.border = `1px solid ${result.borderColor}`;
-      el.style.borderRadius = "4px";
-      el.style.padding = "2px 4px";
-    }
-  });
+  const fontSize = event.target.value + "px";
 
-  allParts.forEach(id => {
-    const part = document.getElementById(id);
-    if (part) {
-      part.classList.toggle("sc-hidden", !visibleParts.has(id));
-    }
-  });
-
-  // Clear previous tab selection
-  document.querySelectorAll('[id^="heading"], [id^="paragraph"]').forEach(tab => {
-    tab.classList.remove("sc-activeTab-border");
-    tab.classList.add("sc-inActiveTab-border");
-  });
-
-  // 🛠 Auto-select first text type if available
-  const firstInnerTextElement = block.querySelector("h1,h2,h3,h4,p");
-  if (firstInnerTextElement) {
-    const firstTag = firstInnerTextElement.tagName.toLowerCase();
-    setSelectedSingleTextType(firstTag);
-    console.log("✅ Default selected text type:", firstTag);
-  } else {
-    setSelectedSingleTextType(null);
+  if (!lastClickedElement) {
+    showNotification("Please select a block first", "error");
+    return;
   }
 
-  // Attach tab click events
-  visibleParts.forEach(partId => {
-    const typeId = partId.replace("Part", "");
-    const tab = document.getElementById(typeId);
-    if (!tab) return;
+  if (!selectedSingleTextType) {
+    showNotification("Please select a text type (Heading or Paragraph)", "error");
+    return;
+  }
 
-    tab.onclick = () => {
-      const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
-      setSelectedSingleTextType(clickedTag);
-      console.log("✅ Now selected text type by tab click:", clickedTag);
+  const block = lastClickedElement.closest('[id^="block-"]');
+  if (!block) {
+    showNotification("Block not found", "error");
+    return;
+  }
 
-      const fontSizeInput = document.getElementById(`scFontSizeInput-${typeId}`);
-      if (fontSizeInput) fontSizeInput.focus();
-    };
-  });
+  const targetElements = block.querySelectorAll(selectedSingleTextType);
+  if (!targetElements.length) {
+    showNotification(`No ${selectedSingleTextType} found in block`, "error");
+    return;
+  }
 
-  // --- Store strong elements
-  const strongElementsByTag = {};
-  innerTextElements.forEach(el => {
-    const tag = el.tagName.toLowerCase();
-    const strongTags = el.querySelectorAll('strong');
-    if (strongTags.length > 0) {
-      strongElementsByTag[tag] = {
-        count: strongTags.length,
-        texts: Array.from(strongTags).map(strong => strong.textContent)
-      };
+  let strongFound = false;
+  let styleContent = "";
+
+  targetElements.forEach((targetElement, index) => {
+    const strongElements = targetElement.querySelectorAll("strong");
+    if (strongElements.length > 0) {
+      strongFound = true;
+      
+      strongElements.forEach(strong => {
+        strong.style.fontSize = fontSize;
+      });
+
+      // 🛠 Instead of per-element style, collect them into 1 style rule
+      const selector = `#${block.id} ${selectedSingleTextType}:nth-of-type(${index + 1}) strong`;
+      styleContent += `
+        ${selector} {
+          font-size: ${fontSize} !important;
+        }
+      `;
     }
   });
 
-  block.dataset.strongElementsByTag = JSON.stringify(strongElementsByTag);
+  if (!strongFound) {
+    showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
+    return;
+  }
+
+  // 🛠 Apply one single <style> for all affected elements
+  const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
+  let styleTag = document.getElementById(styleId);
+
+  if (!styleTag) {
+    styleTag = document.createElement("style");
+    styleTag.id = styleId;
+    document.head.appendChild(styleTag);
+  }
+
+  styleTag.innerHTML = styleContent;
+
+  addPendingModification(block.id, {
+    "font-size": fontSize,
+    "target": selectedSingleTextType
+  }, 'strong');
+
+  // UI update
+  document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
+    el.classList.remove('sc-activeTab-border');
+    el.classList.add('sc-inActiveTab-border');
+  });
+  clickedElement.classList.remove('sc-inActiveTab-border');
+  clickedElement.classList.add('sc-activeTab-border');
+
+  showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
 }
+
 
 
 
