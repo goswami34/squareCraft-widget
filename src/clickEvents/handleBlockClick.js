@@ -8,6 +8,8 @@ export function handleBlockClick(event, context) {
       setLastAppliedAlignment,
       setLastActiveAlignmentElement,
       setSelectedTextType,
+      setSelectedSingleTextType,
+      selectedSingleTextType
     } = context;
   
     let block = event.target.closest('[id^="block-"]');
@@ -109,18 +111,43 @@ export function handleBlockClick(event, context) {
     //     setSelectedTextType(null);
     // }
 
-    const detectedTags = new Set(); // to collect all tag names
+    // const detectedTags = new Set(); // to collect all tag names
 
-    innerTextElementsFont.forEach(el => {
-        const tag = el.tagName.toLowerCase();
-        detectedTags.add(tag);
-    });
+    // innerTextElementsFont.forEach(el => {
+    //     const tag = el.tagName.toLowerCase();
+    //     detectedTags.add(tag);
+    // });
 
-    if (detectedTags.size > 0) {
-        setSelectedTextType(Array.from(detectedTags)); // save all tags
-    } else {
-        setSelectedTextType([]);
-    }
+    // if (detectedTags.size > 0) {
+    //     setSelectedTextType(Array.from(detectedTags)); // save all tags
+    // } else {
+    //     setSelectedTextType([]);
+    // }
+
+  //   visibleParts.forEach(partId => {
+  //     const typeId = partId.replace("Part", "");
+  //     const tab = document.getElementById(typeId);
+  //     if (!tab) return;
+  
+  //     tab.onclick = () => {
+  //         setSelectedSingleTextType(typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p");
+  //         console.log("✅ Now selected text type:", selectedSingleTextType);
+  //     };
+  // });
+
+  visibleParts.forEach(partId => {
+    const typeId = partId.replace("Part", "");
+    const tab = document.getElementById(typeId);
+    if (!tab) return;
+
+    tab.onclick = () => {
+        const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
+        setSelectedSingleTextType(clickedTag);
+        console.log("✅ Now selected text type:", clickedTag);
+    };
+});
+
+  
     
     //bold section font size code end here
 
