@@ -330,7 +330,7 @@ export function handleBlockClick(event, context) {
     const firstTab = document.getElementById(firstTypeId);
 
     if (firstTab) {
-      firstTab.click();  // 🛠 Simulate click on first tab
+      firstTab.click();  
     }
   } else {
     // No visible parts
