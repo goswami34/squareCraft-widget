@@ -131,7 +131,7 @@ let selectedElement = null;
       getTextTypeBold,
       applyStylesToElement,
       lastAppliedAlignment,
-      selectedTextType,
+      // selectedTextType,
       // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
       setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
       setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
