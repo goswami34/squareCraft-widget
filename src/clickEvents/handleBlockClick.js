@@ -102,14 +102,27 @@ export function handleBlockClick(event, context) {
     //align code end here
 
 
-    const innerText = block.querySelector("h1,h2,h3,h4,p");
-if (innerText) {
-    const tagName = innerText.tagName.toLowerCase();
-    setSelectedSingleTextType(tagName);
-    console.log("✅ Default selected text type from block:", tagName);
-} else {
-    setSelectedSingleTextType(null);
-}
+    // const innerText = block.querySelector("h1,h2,h3,h4,p");
+    // if (innerText) {
+    //     const tagName = innerText.tagName.toLowerCase();
+    //     setSelectedSingleTextType(tagName);
+    //     console.log("✅ Default selected text type from block:", tagName);
+    // } else {
+    //     setSelectedSingleTextType(null);
+    // }
+
+    visibleParts.forEach(partId => {
+      const typeId = partId.replace("Part", "");
+      const tab = document.getElementById(typeId);
+      if (!tab) return;
+    
+      tab.onclick = () => {
+        const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
+        setSelectedSingleTextType(clickedTag);
+        console.log("✅ Now selected text type:", clickedTag);
+      };
+    });
+    
 
 
 
