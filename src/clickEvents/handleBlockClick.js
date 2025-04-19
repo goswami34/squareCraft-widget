@@ -231,7 +231,7 @@ export function handleBlockClick(event, context) {
   setLastClickedBlockId(block.id);
   setLastClickedElement(block);
 
-  // align code
+  // --- Alignment code
   let appliedTextAlign = window.getComputedStyle(block).textAlign;
   if (!appliedTextAlign || appliedTextAlign === "start") {
     const nested = block.querySelector("h1,h2,h3,h4,p");
@@ -242,7 +242,12 @@ export function handleBlockClick(event, context) {
 
   if (appliedTextAlign) {
     setLastAppliedAlignment(appliedTextAlign);
-    const map = { left: "scTextAlignLeft", center: "scTextAlignCenter", right: "scTextAlignRight", justify: "scTextAlignJustify" };
+    const map = {
+      left: "scTextAlignLeft",
+      center: "scTextAlignCenter",
+      right: "scTextAlignRight",
+      justify: "scTextAlignJustify"
+    };
     const activeIcon = document.getElementById(map[appliedTextAlign]);
     if (activeIcon) {
       activeIcon.classList.add("sc-activeTab-border");
@@ -251,7 +256,7 @@ export function handleBlockClick(event, context) {
     }
   }
 
-  // handle text types
+  // --- Text type detection
   const innerTextElements = block.querySelectorAll("h1,h2,h3,h4,p");
   const allParts = [
     "heading1Part", "heading2Part", "heading3Part", "heading4Part",
@@ -277,7 +282,7 @@ export function handleBlockClick(event, context) {
     }
   });
 
-  // 👉 Always attach tab onclick
+  // --- Tab click event attach
   visibleParts.forEach(partId => {
     const typeId = partId.replace("Part", "");
     const tab = document.getElementById(typeId);
@@ -286,14 +291,26 @@ export function handleBlockClick(event, context) {
     tab.onclick = () => {
       const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
       setSelectedSingleTextType(clickedTag);
-      console.log("✅ Now selected text type:", clickedTag);
+      console.log("✅ Now selected text type by click:", clickedTag);
 
       const fontSizeInput = document.getElementById(`scFontSizeInput-${typeId}`);
       if (fontSizeInput) fontSizeInput.focus();
     };
   });
 
-  // bold section: strong detection
+  // --- Auto-select text type if only one visible
+  if (visibleParts.size === 1) {
+    const onlyPartId = Array.from(visibleParts)[0];
+    const typeId = onlyPartId.replace("Part", "");
+    const autoSelectedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
+    setSelectedSingleTextType(autoSelectedTag);
+    console.log("🚀 Auto-selected text type:", autoSelectedTag);
+  } else {
+    // If multiple parts visible, do not auto-select anything
+    setSelectedSingleTextType(null);
+  }
+
+  // --- Bold text detection (optional)
   const strongElementsByTag = {};
   innerTextElements.forEach(el => {
     const tag = el.tagName.toLowerCase();
@@ -308,5 +325,6 @@ export function handleBlockClick(event, context) {
 
   block.dataset.strongElementsByTag = JSON.stringify(strongElementsByTag);
 }
+
 
   
