@@ -231,7 +231,7 @@ export function handleBlockClick(event, context) {
   setLastClickedBlockId(block.id);
   setLastClickedElement(block);
 
-  // --- Alignment code
+  // Alignment code
   let appliedTextAlign = window.getComputedStyle(block).textAlign;
   if (!appliedTextAlign || appliedTextAlign === "start") {
     const nested = block.querySelector("h1,h2,h3,h4,p");
@@ -298,15 +298,24 @@ export function handleBlockClick(event, context) {
     };
   });
 
-  // --- Auto-select text type if only one visible
+  // --- Auto-select text type
   if (visibleParts.size === 1) {
     const onlyPartId = Array.from(visibleParts)[0];
     const typeId = onlyPartId.replace("Part", "");
     const autoSelectedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
     setSelectedSingleTextType(autoSelectedTag);
     console.log("🚀 Auto-selected text type:", autoSelectedTag);
+  } else if (visibleParts.size > 1) {
+    // 🛠 Automatically click first visible tab if multiple types exist
+    const firstVisiblePart = Array.from(visibleParts)[0];
+    const firstTypeId = firstVisiblePart.replace("Part", "");
+    const firstTab = document.getElementById(firstTypeId);
+
+    if (firstTab) {
+      firstTab.click();  // 🛠 Simulate click on first tab
+    }
   } else {
-    // If multiple parts visible, do not auto-select anything
+    // No visible parts
     setSelectedSingleTextType(null);
   }
 
