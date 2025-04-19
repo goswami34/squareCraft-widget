@@ -416,10 +416,10 @@ export function handleFontSize(event = null, context = null) {
 
     // Only apply to selected tag
     const css = `
-#${blockId} ${selectedSingleTextType} strong {
-    font-size: ${fontSize} !important;
-}
-`;
+        #${blockId} ${selectedSingleTextType} strong {
+            font-size: ${fontSize} !important;
+        }
+        `;
 
     styleTag.innerHTML = css;
 
