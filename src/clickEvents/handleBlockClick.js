@@ -102,6 +102,16 @@ export function handleBlockClick(event, context) {
     //align code end here
 
 
+    const innerText = block.querySelector("h1,h2,h3,h4,p");
+if (innerText) {
+    const tagName = innerText.tagName.toLowerCase();
+    setSelectedSingleTextType(tagName);
+    console.log("✅ Default selected text type from block:", tagName);
+} else {
+    setSelectedSingleTextType(null);
+}
+
+
 
     //bold section font size code start here
     const innerTextElementsFont = block.querySelectorAll("h1,h2,h3,h4,p,p1,p2,p3");
