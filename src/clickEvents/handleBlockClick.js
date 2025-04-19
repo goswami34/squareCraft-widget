@@ -111,17 +111,22 @@ export function handleBlockClick(event, context) {
     //     setSelectedSingleTextType(null);
     // }
 
-    visibleParts.forEach(partId => {
-      const typeId = partId.replace("Part", "");
-      const tab = document.getElementById(typeId);
-      if (!tab) return;
-    
-      tab.onclick = () => {
-        const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
-        setSelectedSingleTextType(clickedTag);
-        console.log("✅ Now selected text type:", clickedTag);
-      };
-    });
+    const innerText = block.querySelector("h1,h2,h3,h4,p");
+    if (innerText) {
+        visibleParts.forEach(partId => {
+          const typeId = partId.replace("Part", "");
+          const tab = document.getElementById(typeId);
+          if (!tab) return;
+        
+          tab.onclick = () => {
+            const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
+            setSelectedSingleTextType(clickedTag);
+            console.log("✅ Now selected text type:", clickedTag);
+          };
+        });
+      }else{
+        setSelectedSingleTextType(null);
+      }
     
 
 
