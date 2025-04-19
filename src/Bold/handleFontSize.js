@@ -583,18 +583,183 @@ function showNotification(message, type = "info") {
 // }
 
 
+// export function handleFontSize(event = null, context = null) {
+//     const {
+//       lastClickedElement,
+//       selectedSingleTextType,
+//       setSelectedSingleTextType,
+//       saveModifications,
+//       setSelectedElement,
+//       setLastClickedBlockId,
+//       setLastClickedElement,
+//       addPendingModification,
+//       showNotification,
+//       selectedTextElement
+//     } = context;
+  
+//     if (typeof saveModifications !== 'function') {
+//       console.error("saveModifications function is not available");
+//       showNotification("Error: Save functionality not available", "error");
+//       return;
+//     }
+  
+//     if (!event) {
+//       const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
+//       if (!activeButton) return;
+//       event = { target: activeButton };
+//     }
+  
+//     const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
+//     if (!clickedElement) return;
+  
+//     const fontSize = event.target.value + "px";
+  
+//     if (!lastClickedElement) {
+//       showNotification("Please select a block first", "error");
+//       return;
+//     }
+  
+//     if (!selectedSingleTextType) {
+//       showNotification("Please select a text type (Heading or Paragraph)", "error");
+//       return;
+//     }
+  
+//     const block = lastClickedElement.closest('[id^="block-"]');
+//     if (!block) {
+//       showNotification("Block not found", "error");
+//       return;
+//     }
+  
+//     // 🎯 Only select the selectedSingleTextType
+//     // const targetElements = block.querySelectorAll(selectedSingleTextType);
+//     // if (!targetElements) {
+//     //   showNotification(`No ${selectedSingleTextType} found in block`, "error");
+//     //   return;
+//     // }
+  
+//     // // const strongElements = targetElement.querySelectorAll("strong");
+//     // // if (strongElements.length === 0) {
+//     // //   showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
+//     // //   return;
+//     // // }
+  
+//     // // // Apply font size to all strong elements inside selected tag
+//     // // strongElements.forEach(strong => {
+//     // //   strong.style.fontSize = fontSize;
+//     // // });
+
+//     // let strongFound = false;
+
+//     // targetElements.forEach(targetElement => {
+//     //   const strongElements = targetElement.querySelectorAll("strong");
+//     //   if (strongElements.length > 0) {
+//     //     strongFound = true;
+//     //     strongElements.forEach(strong => {
+//     //       strong.style.fontSize = fontSize;
+//     //     });
+//     //   }
+//     // });
+  
+//     // if (!strongFound) {
+//     //   showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
+//     //   return;
+//     // }
+  
+//     // const blockId = block.id;
+//     // const styleId = `style-${blockId}-${selectedSingleTextType}-strong-font-size`;
+//     // let styleTag = document.getElementById(styleId);
+  
+//     // if (!styleTag) {
+//     //   styleTag = document.createElement("style");
+//     //   styleTag.id = styleId;
+//     //   document.head.appendChild(styleTag);
+//     // }
+  
+//     // // Apply CSS only to selected text type
+//     // const css = `
+//     //   #${blockId} ${selectedSingleTextType} strong {
+//     //     font-size: ${fontSize} !important;
+//     //   }
+//     // `;
+  
+//     // styleTag.innerHTML = css;
+  
+//     // addPendingModification(blockId, {
+//     //   "font-size": fontSize,
+//     //   "target": selectedSingleTextType
+//     // }, 'strong');
+
+
+//     const targetElements = block.querySelectorAll(selectedSingleTextType);
+//     if (!targetElements || targetElements.length === 0) {
+//         showNotification(`No ${selectedSingleTextType} found in block`, "error");
+//         return;
+//     }
+
+//     let strongFound = false;
+
+//     // Apply font size to strong elements within each target element
+//     targetElements.forEach(targetElement => {
+//         const strongElements = targetElement.querySelectorAll("strong");
+//         if (strongElements.length > 0) {
+//             strongFound = true;
+//             strongElements.forEach(strong => {
+//                 strong.style.fontSize = fontSize;
+//             });
+//         }
+//     });
+
+//     if (!strongFound) {
+//         showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
+//         return;
+//     }
+
+//     const blockId = block.id;
+//     // Create a unique style ID that includes the text type
+//     const styleId = `style-${blockId}-${selectedSingleTextType}-strong-font-size`;
+//     let styleTag = document.getElementById(styleId);
+
+//     if (!styleTag) {
+//         styleTag = document.createElement("style");
+//         styleTag.id = styleId;
+//         document.head.appendChild(styleTag);
+//     }
+
+//     // Apply CSS only to strong elements within the selected text type
+//     const css = `
+//         #${blockId} ${selectedSingleTextType} strong {
+//             font-size: ${fontSize} !important;
+//         }
+//     `;
+
+//     styleTag.innerHTML = css;
+
+//     // Save the modification with the specific text type
+//     addPendingModification(blockId, {
+//         "font-size": fontSize,
+//         "target": selectedSingleTextType
+//     }, 'strong');
+
+  
+//     // UI update
+//     document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
+//       el.classList.remove('sc-activeTab-border');
+//       el.classList.add('sc-inActiveTab-border');
+//     });
+//     clickedElement.classList.remove('sc-inActiveTab-border');
+//     clickedElement.classList.add('sc-activeTab-border');
+  
+//     showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
+//   }
+  
+
 export function handleFontSize(event = null, context = null) {
     const {
       lastClickedElement,
       selectedSingleTextType,
-      setSelectedSingleTextType,
       saveModifications,
-      setSelectedElement,
-      setLastClickedBlockId,
-      setLastClickedElement,
       addPendingModification,
       showNotification,
-      selectedTextElement
     } = context;
   
     if (typeof saveModifications !== 'function') {
@@ -630,116 +795,52 @@ export function handleFontSize(event = null, context = null) {
       return;
     }
   
-    // 🎯 Only select the selectedSingleTextType
-    // const targetElements = block.querySelectorAll(selectedSingleTextType);
-    // if (!targetElements) {
-    //   showNotification(`No ${selectedSingleTextType} found in block`, "error");
-    //   return;
-    // }
-  
-    // // const strongElements = targetElement.querySelectorAll("strong");
-    // // if (strongElements.length === 0) {
-    // //   showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
-    // //   return;
-    // // }
-  
-    // // // Apply font size to all strong elements inside selected tag
-    // // strongElements.forEach(strong => {
-    // //   strong.style.fontSize = fontSize;
-    // // });
-
-    // let strongFound = false;
-
-    // targetElements.forEach(targetElement => {
-    //   const strongElements = targetElement.querySelectorAll("strong");
-    //   if (strongElements.length > 0) {
-    //     strongFound = true;
-    //     strongElements.forEach(strong => {
-    //       strong.style.fontSize = fontSize;
-    //     });
-    //   }
-    // });
-  
-    // if (!strongFound) {
-    //   showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
-    //   return;
-    // }
-  
-    // const blockId = block.id;
-    // const styleId = `style-${blockId}-${selectedSingleTextType}-strong-font-size`;
-    // let styleTag = document.getElementById(styleId);
-  
-    // if (!styleTag) {
-    //   styleTag = document.createElement("style");
-    //   styleTag.id = styleId;
-    //   document.head.appendChild(styleTag);
-    // }
-  
-    // // Apply CSS only to selected text type
-    // const css = `
-    //   #${blockId} ${selectedSingleTextType} strong {
-    //     font-size: ${fontSize} !important;
-    //   }
-    // `;
-  
-    // styleTag.innerHTML = css;
-  
-    // addPendingModification(blockId, {
-    //   "font-size": fontSize,
-    //   "target": selectedSingleTextType
-    // }, 'strong');
-
-
     const targetElements = block.querySelectorAll(selectedSingleTextType);
-    if (!targetElements || targetElements.length === 0) {
-        showNotification(`No ${selectedSingleTextType} found in block`, "error");
-        return;
+    if (!targetElements.length) {
+      showNotification(`No ${selectedSingleTextType} found in block`, "error");
+      return;
     }
-
+  
     let strongFound = false;
-
-    // Apply font size to strong elements within each target element
-    targetElements.forEach(targetElement => {
-        const strongElements = targetElement.querySelectorAll("strong");
-        if (strongElements.length > 0) {
-            strongFound = true;
-            strongElements.forEach(strong => {
-                strong.style.fontSize = fontSize;
-            });
+  
+    targetElements.forEach((targetElement, index) => {
+      const strongElements = targetElement.querySelectorAll("strong");
+      if (strongElements.length > 0) {
+        strongFound = true;
+        
+        strongElements.forEach(strong => {
+          strong.style.fontSize = fontSize;
+        });
+  
+        // ✅ Create a unique style ID for each text type inside the block
+        const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size-${index}`;
+        let styleTag = document.getElementById(styleId);
+  
+        if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = styleId;
+          document.head.appendChild(styleTag);
         }
-    });
-
-    if (!strongFound) {
-        showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
-        return;
-    }
-
-    const blockId = block.id;
-    // Create a unique style ID that includes the text type
-    const styleId = `style-${blockId}-${selectedSingleTextType}-strong-font-size`;
-    let styleTag = document.getElementById(styleId);
-
-    if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = styleId;
-        document.head.appendChild(styleTag);
-    }
-
-    // Apply CSS only to strong elements within the selected text type
-    const css = `
-        #${blockId} ${selectedSingleTextType} strong {
+  
+        // ✅ CSS only for this text type inside the block
+        const css = `
+          #${block.id} ${selectedSingleTextType} strong {
             font-size: ${fontSize} !important;
-        }
-    `;
-
-    styleTag.innerHTML = css;
-
-    // Save the modification with the specific text type
-    addPendingModification(blockId, {
-        "font-size": fontSize,
-        "target": selectedSingleTextType
-    }, 'strong');
-
+          }
+        `;
+        styleTag.innerHTML = css;
+        
+        addPendingModification(block.id, {
+          "font-size": fontSize,
+          "target": selectedSingleTextType
+        }, 'strong');
+      }
+    });
+  
+    if (!strongFound) {
+      showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
+      return;
+    }
   
     // UI update
     document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
@@ -752,7 +853,6 @@ export function handleFontSize(event = null, context = null) {
     showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
   }
   
-
 
 
 
