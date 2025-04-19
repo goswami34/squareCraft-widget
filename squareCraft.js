@@ -64,7 +64,7 @@ let selectedElement = null;
   let lastClickedElement = null;
   let lastAppliedAlignment = null;
   let lastActiveAlignmentElement = null;
-  let selectedTextType = [];
+  // let selectedTextType = [];
   let selectedSingleTextType = null;
 
   function applyStylesToElement(element, css) {
@@ -107,7 +107,7 @@ let selectedElement = null;
       setLastClickedElement: (val) => lastClickedElement = val,
       setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
       setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
-      setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
       setSelectedSingleTextType: (tag) => selectedSingleTextType = tag
     });
   
@@ -132,7 +132,7 @@ let selectedElement = null;
       applyStylesToElement,
       lastAppliedAlignment,
       selectedTextType,
-      setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
       setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
       setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
       lastActiveAlignmentElement,
