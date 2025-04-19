@@ -631,22 +631,39 @@ export function handleFontSize(event = null, context = null) {
     }
   
     // 🎯 Only select the selectedSingleTextType
-    const targetElement = block.querySelector(selectedSingleTextType);
-    if (!targetElement) {
+    const targetElements = block.querySelectorAll(selectedSingleTextType);
+    if (!targetElements) {
       showNotification(`No ${selectedSingleTextType} found in block`, "error");
       return;
     }
   
-    const strongElements = targetElement.querySelectorAll("strong");
-    if (strongElements.length === 0) {
+    // const strongElements = targetElement.querySelectorAll("strong");
+    // if (strongElements.length === 0) {
+    //   showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
+    //   return;
+    // }
+  
+    // // Apply font size to all strong elements inside selected tag
+    // strongElements.forEach(strong => {
+    //   strong.style.fontSize = fontSize;
+    // });
+
+    let strongFound = false;
+
+    targetElements.forEach(targetElement => {
+      const strongElements = targetElement.querySelectorAll("strong");
+      if (strongElements.length > 0) {
+        strongFound = true;
+        strongElements.forEach(strong => {
+          strong.style.fontSize = fontSize;
+        });
+      }
+    });
+  
+    if (!strongFound) {
       showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
       return;
     }
-  
-    // Apply font size to all strong elements inside selected tag
-    strongElements.forEach(strong => {
-      strong.style.fontSize = fontSize;
-    });
   
     const blockId = block.id;
     const styleId = `style-${blockId}-${selectedSingleTextType}-strong-font-size`;
