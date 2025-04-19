@@ -802,6 +802,7 @@ export function handleFontSize(event = null, context = null) {
     }
   
     let strongFound = false;
+    let styleContent = "";
   
     targetElements.forEach((targetElement, index) => {
       const strongElements = targetElement.querySelectorAll("strong");
@@ -812,28 +813,13 @@ export function handleFontSize(event = null, context = null) {
           strong.style.fontSize = fontSize;
         });
   
-        // ✅ Create a unique style ID for each text type inside the block
-        const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size-${index}`;
-        let styleTag = document.getElementById(styleId);
-  
-        if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = styleId;
-          document.head.appendChild(styleTag);
-        }
-  
-        // ✅ CSS only for this text type inside the block
-        const css = `
-          #${block.id} ${selectedSingleTextType} strong {
+        // 🛠 Instead of per-element style, collect them into 1 style rule
+        const selector = `#${block.id} ${selectedSingleTextType}:nth-of-type(${index + 1}) strong`;
+        styleContent += `
+          ${selector} {
             font-size: ${fontSize} !important;
           }
         `;
-        styleTag.innerHTML = css;
-        
-        addPendingModification(block.id, {
-          "font-size": fontSize,
-          "target": selectedSingleTextType
-        }, 'strong');
       }
     });
   
@@ -841,6 +827,23 @@ export function handleFontSize(event = null, context = null) {
       showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
       return;
     }
+  
+    // 🛠 Apply one single <style> for all affected elements
+    const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
+    let styleTag = document.getElementById(styleId);
+  
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+  
+    styleTag.innerHTML = styleContent;
+  
+    addPendingModification(block.id, {
+      "font-size": fontSize,
+      "target": selectedSingleTextType
+    }, 'strong');
   
     // UI update
     document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
@@ -852,6 +855,7 @@ export function handleFontSize(event = null, context = null) {
   
     showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
   }
+  
   
 
 
