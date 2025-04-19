@@ -137,8 +137,8 @@ let selectedElement = null;
       // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
       selectedSingleTextType,
       setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
-      selectedTextElement: (clickedTag) => selectedTextElement = clickedTag,
-
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag,
       
       setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
       lastActiveAlignmentElement,
