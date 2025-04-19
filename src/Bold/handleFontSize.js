@@ -393,10 +393,16 @@ export function handleFontSize(event = null, context = null) {
 
     const fontSize = event.target.value + "px";
 
-    if (!lastClickedElement || !selectedSingleTextType) {
-        showNotification("Please select a text type first", "error");
+    // if (!lastClickedElement || !selectedSingleTextType) {
+    //     showNotification("Please select a text type first", "error");
+    //     return;
+    // }
+
+    if (!selectedSingleTextType) {
+        showNotification("⚡ Please click a text type tab (Heading or Paragraph) first", "error");
         return;
-    }
+     }
+     
 
     const block = lastClickedElement.closest('[id^="block-"]');
     if (!block) {

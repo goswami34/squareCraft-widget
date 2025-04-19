@@ -142,10 +142,15 @@ export function handleBlockClick(event, context) {
     if (!tab) return;
 
     tab.onclick = () => {
-        const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
-        setSelectedSingleTextType(clickedTag);
-        console.log("✅ Now selected text type:", clickedTag);
-    };
+      const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
+      setSelectedSingleTextType(clickedTag);
+      console.log("✅ Now selected text type:", clickedTag);
+   
+      const fontSizeInput = document.getElementById(`scFontSizeInput-${typeId}`);
+      if (fontSizeInput) {
+        fontSizeInput.focus(); // focus automatically
+      }
+   };
 });
 
   
