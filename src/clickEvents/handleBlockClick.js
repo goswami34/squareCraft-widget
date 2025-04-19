@@ -219,7 +219,8 @@ export function handleBlockClick(event, context) {
     setLastAppliedAlignment,
     setLastActiveAlignmentElement,
     setSelectedSingleTextType,
-    selectedTextElement
+    selectedTextElement,
+    setSelectedTextElement
   } = context;
 
   let block = event.target.closest('[id^="block-"]');
@@ -289,16 +290,30 @@ export function handleBlockClick(event, context) {
     const tab = document.getElementById(typeId);
     if (!tab) return;
 
+    // tab.onclick = () => {
+    //   const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
+    //   setSelectedSingleTextType(clickedTag);
+    //   selectedTextElement = block.querySelector(clickedTag);
+
+    //   console.log("✅ Now selected text type by click:", clickedTag);
+
+    //   const fontSizeInput = document.getElementById(`scFontSizeInput-${typeId}`);
+    //   if (fontSizeInput) fontSizeInput.focus();
+    // };
     tab.onclick = () => {
       const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
-      // setSelectedSingleTextType(clickedTag);
-      selectedTextElement = block.querySelector(clickedTag);
-
+      setSelectedSingleTextType(clickedTag); // ✅ must set text type
+      const targetElement = block.querySelector(clickedTag);
+      if (targetElement) {
+        setSelectedTextElement(targetElement); // ✅ use setter function
+      }
+    
       console.log("✅ Now selected text type by click:", clickedTag);
-
+    
       const fontSizeInput = document.getElementById(`scFontSizeInput-${typeId}`);
       if (fontSizeInput) fontSizeInput.focus();
     };
+    
   });
 
   // --- Auto-select text type

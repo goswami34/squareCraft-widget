@@ -110,7 +110,7 @@ let selectedElement = null;
       setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
       // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
       setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
-      selectedTextElement: (clickedTag) => selectedTextElement = clickedTag
+      setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag
     });
   
     handleAlignmentClick(event, {
