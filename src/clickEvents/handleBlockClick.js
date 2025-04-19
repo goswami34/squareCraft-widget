@@ -110,7 +110,7 @@ export function handleBlockClick(event, context) {
     // } else {
     //     setSelectedSingleTextType(null);
     // }
-    const firstInnerTextElement = block.querySelector("h1,h2,h3,h4,p");
+    const firstInnerTextElement = block.querySelector("h1,h2,h3,h4,p1,p2,p3");
     if (firstInnerTextElement) {
       const firstTag = firstInnerTextElement.tagName.toLowerCase();
       setSelectedSingleTextType(firstTag);
@@ -119,7 +119,7 @@ export function handleBlockClick(event, context) {
       setSelectedSingleTextType(null);
     }
 
-    const innerText = block.querySelector("h1,h2,h3,h4,p");
+    const innerText = block.querySelector("h1,h2,h3,h4,p1,p2,p3");
     if (innerText) {
         visibleParts.forEach(partId => {
           const typeId = partId.replace("Part", "");
