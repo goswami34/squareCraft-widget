@@ -111,13 +111,13 @@ export function handleBlockClick(event, context) {
     //     setSelectedSingleTextType(null);
     // }
     const firstInnerTextElement = block.querySelector("h1,h2,h3,h4,p");
-if (firstInnerTextElement) {
-  const firstTag = firstInnerTextElement.tagName.toLowerCase();
-  setSelectedSingleTextType(firstTag);
-  console.log("✅ Default selected text type after block click:", firstTag);
-} else {
-  setSelectedSingleTextType(null);
-}
+    if (firstInnerTextElement) {
+      const firstTag = firstInnerTextElement.tagName.toLowerCase();
+      setSelectedSingleTextType(firstTag);
+      console.log("✅ Default selected text type after block click:", firstTag);
+    } else {
+      setSelectedSingleTextType(null);
+    }
 
     const innerText = block.querySelector("h1,h2,h3,h4,p");
     if (innerText) {
