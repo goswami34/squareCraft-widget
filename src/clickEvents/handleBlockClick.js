@@ -315,6 +315,7 @@ export function handleBlockClick(event, context) {
 
     tab.onclick = () => {
       const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
+      console.log(clickedTag)
       setSelectedSingleTextType(clickedTag);
       console.log("✅ Now selected text type by tab click:", clickedTag);
 

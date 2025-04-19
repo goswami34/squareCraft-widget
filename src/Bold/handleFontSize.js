@@ -762,12 +762,6 @@ export function handleFontSize(event = null, context = null) {
       showNotification,
     } = context;
   
-    if (typeof saveModifications !== 'function') {
-      console.error("saveModifications function is not available");
-      showNotification("Error: Save functionality not available", "error");
-      return;
-    }
-  
     if (!event) {
       const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
       if (!activeButton) return;
@@ -802,9 +796,8 @@ export function handleFontSize(event = null, context = null) {
     }
   
     let strongFound = false;
-    let styleContent = "";
   
-    targetElements.forEach((targetElement, index) => {
+    targetElements.forEach((targetElement) => {
       const strongElements = targetElement.querySelectorAll("strong");
       if (strongElements.length > 0) {
         strongFound = true;
@@ -812,14 +805,6 @@ export function handleFontSize(event = null, context = null) {
         strongElements.forEach(strong => {
           strong.style.fontSize = fontSize;
         });
-  
-        // 🛠 Instead of per-element style, collect them into 1 style rule
-        const selector = `#${block.id} ${selectedSingleTextType}:nth-of-type(${index + 1}) strong`;
-        styleContent += `
-          ${selector} {
-            font-size: ${fontSize} !important;
-          }
-        `;
       }
     });
   
@@ -828,7 +813,7 @@ export function handleFontSize(event = null, context = null) {
       return;
     }
   
-    // 🛠 Apply one single <style> for all affected elements
+    // --- ✅ Apply simple clean CSS without nth-of-type
     const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
     let styleTag = document.getElementById(styleId);
   
@@ -838,7 +823,11 @@ export function handleFontSize(event = null, context = null) {
       document.head.appendChild(styleTag);
     }
   
-    styleTag.innerHTML = styleContent;
+    styleTag.innerHTML = `
+      #${block.id} ${selectedSingleTextType} strong {
+        font-size: ${fontSize} !important;
+      }
+    `;
   
     addPendingModification(block.id, {
       "font-size": fontSize,
@@ -855,6 +844,7 @@ export function handleFontSize(event = null, context = null) {
   
     showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
   }
+  
   
   
 
