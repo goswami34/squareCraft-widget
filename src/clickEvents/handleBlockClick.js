@@ -9,7 +9,8 @@ export function handleBlockClick(event, context) {
       setLastActiveAlignmentElement,
       setSelectedTextType,
       setSelectedSingleTextType,
-      selectedSingleTextType
+      selectedSingleTextType,
+      lastClickedElement
     } = context;
   
     let block = event.target.closest('[id^="block-"]');
