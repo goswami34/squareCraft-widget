@@ -475,111 +475,6 @@ function showNotification(message, type = "info") {
 // }
 
 
-// export function handleFontSize(event = null, context = null) {
-//   const {
-//     lastClickedElement,
-//     selectedSingleTextType,
-//     saveModifications,
-//     addPendingModification,
-//     showNotification,
-//   } = context;
-
-//   if (!event) {
-//     const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
-//     if (!activeButton) return;
-//     event = { target: activeButton };
-//   }
-
-//   const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
-//   if (!clickedElement) return;
-
-//   const fontSize = event.target.value + "px";
-
-//   if (!lastClickedElement) {
-//     showNotification("Please select a block first", "error");
-//     return;
-//   }
-
-//   if (!selectedSingleTextType) {
-//     showNotification("Please select a text type (Heading or Paragraph)", "error");
-//     return;
-//   }
-
-//   const block = lastClickedElement.closest('[id^="block-"]');
-//   if (!block) {
-//     showNotification("Block not found", "error");
-//     return;
-//   }
-
-//   let paragraphSelector = "";
-
-//   // if (selectedSingleTextType === "paragraph1") {
-//   //   paragraphSelector = "p1.sqsrte-large";
-//   //   console.log("🔍 paragraphSelector:", paragraphSelector);
-//   // } else if (selectedSingleTextType === "paragraph2") {
-//   //   paragraphSelector = "p2:not(.sqsrte-large):not(.sqsrte-small)";
-//   // } else if (selectedSingleTextType === "paragraph3") {
-//   //   paragraphSelector = "p3.sqsrte-small";
-//   // } else {
-//   //   paragraphSelector = selectedSingleTextType;
-//   // }
-
-//   // if (selectedSingleTextType === "p1") {
-//   //   paragraphSelector = "p[data-sc-type='p1']";
-//   // } else if (selectedSingleTextType === "p2") {
-//   //   paragraphSelector = "p[data-sc-type='p2']";
-//   // } else if (selectedSingleTextType === "p3") {
-//   //   paragraphSelector = "p[data-sc-type='p3']";
-//   // } else {
-//   //   paragraphSelector = selectedSingleTextType;
-//   // }
-
-//   if (selectedSingleTextType === "p1") {
-//     paragraphSelector = "p1.sqsrte-large";
-//   } else if (selectedSingleTextType === "p2") {
-//     paragraphSelector = "p2:not(.sqsrte-large):not(.sqsrte-small)";
-//   } else if (selectedSingleTextType === "p3") {
-//     paragraphSelector = "p3.sqsrte-small";
-//   } else {
-//     paragraphSelector = selectedSingleTextType;
-//   }
-
-//   console.log("🔍 paragraphSelector:", paragraphSelector);
-
-//   // --- ✅ Apply only CSS (no manual inline style on strong)
-//   const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
-//   let styleTag = document.getElementById(styleId);
-
-//   if (!styleTag) {
-//     styleTag = document.createElement("style");
-//     styleTag.id = styleId;
-//     document.head.appendChild(styleTag);
-//   }
-
-//   styleTag.innerHTML = `
-//     #${block.id} ${paragraphSelector} strong {
-//       font-size: ${fontSize} !important;
-//     }
-//   `;
-
-//   // Save modifications
-//   addPendingModification(block.id, {
-//     "font-size": fontSize,
-//     "target": selectedSingleTextType
-//   }, 'strong');
-
-//   // Update UI
-//   document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
-//     el.classList.remove('sc-activeTab-border');
-//     el.classList.add('sc-inActiveTab-border');
-//   });
-//   clickedElement.classList.remove('sc-inActiveTab-border');
-//   clickedElement.classList.add('sc-activeTab-border');
-
-//   showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
-// }
-
-
 export function handleFontSize(event = null, context = null) {
   const {
     lastClickedElement,
@@ -618,39 +513,40 @@ export function handleFontSize(event = null, context = null) {
 
   let paragraphSelector = "";
 
-  // Use data-sc-type attribute for targeting paragraphs
+  // if (selectedSingleTextType === "paragraph1") {
+  //   paragraphSelector = "p1.sqsrte-large";
+  //   console.log("🔍 paragraphSelector:", paragraphSelector);
+  // } else if (selectedSingleTextType === "paragraph2") {
+  //   paragraphSelector = "p2:not(.sqsrte-large):not(.sqsrte-small)";
+  // } else if (selectedSingleTextType === "paragraph3") {
+  //   paragraphSelector = "p3.sqsrte-small";
+  // } else {
+  //   paragraphSelector = selectedSingleTextType;
+  // }
+
+  // if (selectedSingleTextType === "p1") {
+  //   paragraphSelector = "p[data-sc-type='p1']";
+  // } else if (selectedSingleTextType === "p2") {
+  //   paragraphSelector = "p[data-sc-type='p2']";
+  // } else if (selectedSingleTextType === "p3") {
+  //   paragraphSelector = "p[data-sc-type='p3']";
+  // } else {
+  //   paragraphSelector = selectedSingleTextType;
+  // }
+
   if (selectedSingleTextType === "p1") {
-    paragraphSelector = "p[data-sc-type='p1']";
+    paragraphSelector = "p1.sqsrte-large";
   } else if (selectedSingleTextType === "p2") {
-    paragraphSelector = "p[data-sc-type='p2']";
+    paragraphSelector = "p2:not(.sqsrte-large):not(.sqsrte-small)";
   } else if (selectedSingleTextType === "p3") {
-    paragraphSelector = "p[data-sc-type='p3']";
+    paragraphSelector = "p3.sqsrte-small";
   } else {
     paragraphSelector = selectedSingleTextType;
   }
 
   console.log("🔍 paragraphSelector:", paragraphSelector);
 
-  // First, find and apply to existing strong elements
-  const targetElements = block.querySelectorAll(paragraphSelector);
-  let strongFound = false;
-
-  targetElements.forEach(targetElement => {
-    const strongElements = targetElement.querySelectorAll("strong");
-    if (strongElements.length > 0) {
-      strongFound = true;
-      strongElements.forEach(strong => {
-        strong.style.fontSize = fontSize;
-      });
-    }
-  });
-
-  if (!strongFound) {
-    showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
-    return;
-  }
-
-  // Create and apply CSS style
+  // --- ✅ Apply only CSS (no manual inline style on strong)
   const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
   let styleTag = document.getElementById(styleId);
 
@@ -682,6 +578,8 @@ export function handleFontSize(event = null, context = null) {
 
   showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
 }
+
+
 
 
 
