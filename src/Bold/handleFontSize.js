@@ -523,6 +523,8 @@ export function handleFontSize(event = null, context = null) {
     paragraphSelector = selectedSingleTextType;
   }
 
+  console.log("🔍 paragraphSelector:", paragraphSelector);
+
   // --- ✅ Apply only CSS (no manual inline style on strong)
   const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
   let styleTag = document.getElementById(styleId);
