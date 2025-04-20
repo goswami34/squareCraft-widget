@@ -157,7 +157,7 @@ export function handleFontSize(event = null, context = null) {
   let targetElements = [];
 
   if (selectedSingleTextType.startsWith("paragraph")) {
-    // 🎯 Handling paragraph1, paragraph2, paragraph3 separately
+    // 🛠 Find only correct paragraph
     const blockParagraphs = block.querySelectorAll("p");
 
     blockParagraphs.forEach(p => {
@@ -174,7 +174,7 @@ export function handleFontSize(event = null, context = null) {
       }
     });
   } else {
-    // 🎯 Handling headings normally
+    // 🛠 Normal h1, h2, h3, h4
     targetElements = block.querySelectorAll(selectedSingleTextType);
   }
 
@@ -200,7 +200,6 @@ export function handleFontSize(event = null, context = null) {
     return;
   }
 
-  // --- ✅ Apply clean CSS
   const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
   let styleTag = document.getElementById(styleId);
 
@@ -233,7 +232,7 @@ export function handleFontSize(event = null, context = null) {
     "target": selectedSingleTextType
   }, 'strong');
 
-  // UI update
+  // Update UI active tab
   document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
     el.classList.remove('sc-activeTab-border');
     el.classList.add('sc-inActiveTab-border');
@@ -243,6 +242,7 @@ export function handleFontSize(event = null, context = null) {
 
   showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
 }
+
 
 
   
