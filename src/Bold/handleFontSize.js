@@ -163,11 +163,11 @@ export function handleFontSize(event = null, context = null) {
     blockParagraphs.forEach(p => {
       const classList = p.classList;
 
-      if (selectedSingleTextType === "paragraph1" && classList.contains("sqsrte-large")) {
+      if (selectedSingleTextType === "p1" && classList.contains("sqsrte-large")) {
         targetElements.push(p);
-      } else if (selectedSingleTextType === "paragraph3" && classList.contains("sqsrte-small")) {
+      } else if (selectedSingleTextType === "p3" && classList.contains("sqsrte-small")) {
         targetElements.push(p);
-      } else if (selectedSingleTextType === "paragraph2" && 
+      } else if (selectedSingleTextType === "p2" && 
                 !classList.contains("sqsrte-large") && 
                 !classList.contains("sqsrte-small")) {
         targetElements.push(p);
@@ -212,11 +212,11 @@ export function handleFontSize(event = null, context = null) {
 
   let paragraphSelector = "";
 
-  if (selectedSingleTextType === "paragraph1") {
+  if (selectedSingleTextType === "p1") {
     paragraphSelector = `p.sqsrte-large`;
-  } else if (selectedSingleTextType === "paragraph2") {
+  } else if (selectedSingleTextType === "p2") {
     paragraphSelector = `p:not(.sqsrte-large):not(.sqsrte-small)`;
-  } else if (selectedSingleTextType === "paragraph3") {
+  } else if (selectedSingleTextType === "p3") {
     paragraphSelector = `p.sqsrte-small`;
   } else {
     paragraphSelector = selectedSingleTextType;
