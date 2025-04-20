@@ -395,13 +395,13 @@ export function handleFontSize(event = null, context = null) {
   if (selectedSingleTextType.startsWith("paragraph")) {
     const blockParagraphs = block.querySelectorAll("p");
     blockParagraphs.forEach(p => {
-      const custom = p.getAttribute("data-sc-custom");
-
-      if (selectedSingleTextType === "paragraph1" && custom === "p1") {
+      if (selectedSingleTextType === "paragraph1" && p.classList.contains("sqsrte-large")) {
         targetElements.push(p);
-      } else if (selectedSingleTextType === "paragraph2" && custom === "p2") {
+      } else if (selectedSingleTextType === "paragraph3" && p.classList.contains("sqsrte-small")) {
         targetElements.push(p);
-      } else if (selectedSingleTextType === "paragraph3" && custom === "p3") {
+      } else if (selectedSingleTextType === "paragraph2" && 
+                 !p.classList.contains("sqsrte-large") && 
+                 !p.classList.contains("sqsrte-small")) {
         targetElements.push(p);
       }
     });
@@ -430,20 +430,30 @@ export function handleFontSize(event = null, context = null) {
     return;
   }
 
-  // Now properly apply CSS
-  const label = selectedSingleTextType.replace("paragraph", "p"); // p1, p2, p3 or h1,h2,h3,h4
-  const styleId = `style-${block.id}-${label}-strong-font-size`;
-
+  // --- ✅ Now generate the correct CSS selector
+  const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
   let styleTag = document.getElementById(styleId);
+
   if (!styleTag) {
     styleTag = document.createElement("style");
     styleTag.id = styleId;
     document.head.appendChild(styleTag);
   }
 
-  const finalSelector = `#${block.id} ${label} strong`; // ✅ virtual p1, p2, p3 selector
+  let paragraphSelector = "";
+
+  if (selectedSingleTextType === "paragraph1") {
+    paragraphSelector = "p.sqsrte-large";
+  } else if (selectedSingleTextType === "paragraph2") {
+    paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+  } else if (selectedSingleTextType === "paragraph3") {
+    paragraphSelector = "p.sqsrte-small";
+  } else {
+    paragraphSelector = selectedSingleTextType;
+  }
+
   styleTag.innerHTML = `
-    ${finalSelector} {
+    #${block.id} ${paragraphSelector} strong {
       font-size: ${fontSize} !important;
     }
   `;
