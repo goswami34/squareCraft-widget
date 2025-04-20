@@ -156,18 +156,18 @@ export function handleFontSize(event = null, context = null) {
 
   let targetElements = [];
 
-  if (selectedSingleTextType.startsWith("p")) {
+  if (selectedSingleTextType.startsWith("paragraph")) {
     // 🎯 Handling paragraph1, paragraph2, paragraph3 separately
     const blockParagraphs = block.querySelectorAll("p");
 
     blockParagraphs.forEach(p => {
       const classList = p.classList;
 
-      if (selectedSingleTextType === "p1" && classList.contains("sqsrte-large")) {
+      if (selectedSingleTextType === "paragraph1" && classList.contains("sqsrte-large")) {
         targetElements.push(p);
-      } else if (selectedSingleTextType === "p3" && classList.contains("sqsrte-small")) {
+      } else if (selectedSingleTextType === "paragraph3" && classList.contains("sqsrte-small")) {
         targetElements.push(p);
-      } else if (selectedSingleTextType === "p2" && 
+      } else if (selectedSingleTextType === "paragraph2" && 
                 !classList.contains("sqsrte-large") && 
                 !classList.contains("sqsrte-small")) {
         targetElements.push(p);
@@ -212,11 +212,11 @@ export function handleFontSize(event = null, context = null) {
 
   let paragraphSelector = "";
 
-  if (selectedSingleTextType === "p1") {
+  if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = `p.sqsrte-large`;
-  } else if (selectedSingleTextType === "p2") {
+  } else if (selectedSingleTextType === "paragraph2") {
     paragraphSelector = `p:not(.sqsrte-large):not(.sqsrte-small)`;
-  } else if (selectedSingleTextType === "p3") {
+  } else if (selectedSingleTextType === "paragraph3") {
     paragraphSelector = `p.sqsrte-small`;
   } else {
     paragraphSelector = selectedSingleTextType;
@@ -243,6 +243,7 @@ export function handleFontSize(event = null, context = null) {
 
   showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
 }
+
 
   
   
