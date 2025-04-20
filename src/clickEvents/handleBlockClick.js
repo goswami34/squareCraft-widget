@@ -96,7 +96,7 @@ export function handleBlockClick(event, context) {
   
       tab.onmouseenter = () => {
         const b = document.getElementById(block.id);
-        const t = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : typeId;
+        const t = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
         b.querySelectorAll(t).forEach(el => {
           const r = getTextType(t, el);
           if (r?.type === typeId) {
@@ -131,7 +131,7 @@ export function handleBlockClick(event, context) {
           if (!tab) return;
         
           tab.onclick = () => {
-            const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
+            const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : typeId;
             console.log("🔍 clickedTag:", clickedTag);
             setSelectedSingleTextType(clickedTag);
             console.log("✅ Now selected text type:", clickedTag);
@@ -153,7 +153,7 @@ export function handleBlockClick(event, context) {
     if (!tab) return;
 
     tab.onclick = () => {
-      const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
+      const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : typeId;
       setSelectedSingleTextType(clickedTag);
       console.log("✅ Now selected text type:", clickedTag);
    
