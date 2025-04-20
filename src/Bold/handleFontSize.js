@@ -283,21 +283,9 @@ export function handleFontSize(event = null, context = null) {
   let targetElements = [];
 
   if (selectedSingleTextType.startsWith("paragraph")) {
-    const blockParagraphs = block.querySelectorAll("p");
-
-    blockParagraphs.forEach(p => {
-      const classList = p.classList;
-
-      if (selectedSingleTextType === "paragraph1" && classList.contains("sqsrte-large")) {
-        targetElements.push(p);
-      } else if (selectedSingleTextType === "paragraph3" && classList.contains("sqsrte-small")) {
-        targetElements.push(p);
-      } else if (selectedSingleTextType === "paragraph2" && 
-                !classList.contains("sqsrte-large") && 
-                !classList.contains("sqsrte-small")) {
-        targetElements.push(p);
-      }
-    });
+    // 🎯 Instead of class, match data-sc-type attribute!
+    let typeLabel = selectedSingleTextType.replace("paragraph", "p"); // p1, p2, p3
+    targetElements = block.querySelectorAll(`p[data-sc-type="${typeLabel}"]`);
   } else {
     targetElements = block.querySelectorAll(selectedSingleTextType);
   }
@@ -324,7 +312,7 @@ export function handleFontSize(event = null, context = null) {
     return;
   }
 
-  // ✅ Corrected style generator
+  // 🎯 Now generate final clean CSS
   const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
   let styleTag = document.getElementById(styleId);
 
@@ -334,33 +322,13 @@ export function handleFontSize(event = null, context = null) {
     document.head.appendChild(styleTag);
   }
 
-  let paragraphSelector = "";
-  let label = ""; // p1, p2, p3
-
-  if (selectedSingleTextType === "paragraph1") {
-    paragraphSelector = "p.sqsrte-large";
-    label = "p1";
-  } else if (selectedSingleTextType === "paragraph2") {
-    paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-    label = "p2";
-  } else if (selectedSingleTextType === "paragraph3") {
-    paragraphSelector = "p.sqsrte-small";
-    label = "p3";
-  } else {
-    paragraphSelector = selectedSingleTextType;
-  }
-
-  // ✅ Now add data-sc-type filter
   let finalSelector = "";
 
-  if (label) {
-    if (selectedSingleTextType === "paragraph2") {
-      finalSelector = `#${block.id} ${paragraphSelector}[data-sc-type="${label}"] strong`;
-    } else {
-      finalSelector = `#${block.id} ${paragraphSelector}[data-sc-type="${label}"] strong`;
-    }
+  if (selectedSingleTextType.startsWith("paragraph")) {
+    let typeLabel = selectedSingleTextType.replace("paragraph", "p"); // p1, p2, p3
+    finalSelector = `#${block.id} p[data-sc-type="${typeLabel}"] strong`;
   } else {
-    finalSelector = `#${block.id} ${paragraphSelector} strong`;
+    finalSelector = `#${block.id} ${selectedSingleTextType} strong`;
   }
 
   styleTag.innerHTML = `
