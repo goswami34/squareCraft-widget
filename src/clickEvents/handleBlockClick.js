@@ -55,7 +55,7 @@ export function handleBlockClick(event, context) {
     const innerTextElements = block.querySelectorAll("h1,h2,h3,h4,p");
     const allParts = [
       "heading1Part", "heading2Part", "heading3Part", "heading4Part",
-      "p1Part", "p2Part", "p3Part"
+      "paragraph1Part", "paragraph2Part", "paragraph3Part"
     ];
     const visibleParts = new Set();
   
