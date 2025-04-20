@@ -96,7 +96,7 @@ export function handleBlockClick(event, context) {
   
       tab.onmouseenter = () => {
         const b = document.getElementById(block.id);
-        const t = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
+        const t = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : typeId;
         b.querySelectorAll(t).forEach(el => {
           const r = getTextType(t, el);
           if (r?.type === typeId) {
