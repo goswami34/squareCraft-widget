@@ -68,6 +68,18 @@ export function handleBlockClick(event, context) {
         el.style.borderRadius = "4px";
         el.style.padding = "2px 4px";
       }
+
+      //new added code start here
+      if (tag === "p") {
+        if (el.classList.contains("sqsrte-large")) {
+          el.setAttribute("data-sc-type", "p1");
+        } else if (el.classList.contains("sqsrte-small")) {
+          el.setAttribute("data-sc-type", "p3");
+        } else {
+          el.setAttribute("data-sc-type", "p2");
+        }
+      }
+      //new added code end here
     });
   
     allParts.forEach(id => {
@@ -102,14 +114,6 @@ export function handleBlockClick(event, context) {
     //align code end here
 
 
-    // const innerText = block.querySelector("h1,h2,h3,h4,p");
-    // if (innerText) {
-    //     const tagName = innerText.tagName.toLowerCase();
-    //     setSelectedSingleTextType(tagName);
-    //     console.log("✅ Default selected text type from block:", tagName);
-    // } else {
-    //     setSelectedSingleTextType(null);
-    // }
     const firstInnerTextElement = block.querySelector("h1,h2,h3,h4,p1,p2,p3");
     if (firstInnerTextElement) {
       const firstTag = firstInnerTextElement.tagName.toLowerCase();
@@ -141,36 +145,6 @@ export function handleBlockClick(event, context) {
 
     //bold section font size code start here
     const innerTextElementsFont = block.querySelectorAll("h1,h2,h3,h4,p,p1,p2,p3");
-    // if (innerTextElementsFont.length > 0) {
-    //     const firstTag = innerTextElementsFont[0].tagName.toLowerCase();
-    //     setSelectedTextType(firstTag);  // save selected tag type
-    // } else {
-    //     setSelectedTextType(null);
-    // }
-
-    // const detectedTags = new Set(); // to collect all tag names
-
-    // innerTextElementsFont.forEach(el => {
-    //     const tag = el.tagName.toLowerCase();
-    //     detectedTags.add(tag);
-    // });
-
-    // if (detectedTags.size > 0) {
-    //     setSelectedTextType(Array.from(detectedTags)); // save all tags
-    // } else {
-    //     setSelectedTextType([]);
-    // }
-
-  //   visibleParts.forEach(partId => {
-  //     const typeId = partId.replace("Part", "");
-  //     const tab = document.getElementById(typeId);
-  //     if (!tab) return;
-  
-  //     tab.onclick = () => {
-  //         setSelectedSingleTextType(typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p");
-  //         console.log("✅ Now selected text type:", selectedSingleTextType);
-  //     };
-  // });
 
   visibleParts.forEach(partId => {
     const typeId = partId.replace("Part", "");
@@ -188,8 +162,6 @@ export function handleBlockClick(event, context) {
       }
    };
 });
-
-  
     
     //bold section font size code end here
 

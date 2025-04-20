@@ -347,11 +347,25 @@ export function handleFontSize(event = null, context = null) {
     paragraphSelector = selectedSingleTextType;
   }
 
+  // styleTag.innerHTML = `
+  //   #${block.id} ${paragraphSelector} strong {
+  //     font-size: ${fontSize} !important;
+  //   }
+  // `;
+
+  let finalSelector = `#${block.id} ${paragraphSelector} strong`;
+
+  const label = selectedSingleTextType.replace("paragraph", "p"); // Converts to p1, p2, p3
+  finalSelector = finalSelector.replace("p.sqsrte-large", `p.sqsrte-large[data-sc-type="${label}"]`);
+  finalSelector = finalSelector.replace("p.sqsrte-small", `p.sqsrte-small[data-sc-type="${label}"]`);
+  finalSelector = finalSelector.replace("p:not(.sqsrte-large):not(.sqsrte-small)", `p:not(.sqsrte-large):not(.sqsrte-small)[data-sc-type="${label}"]`);
+
   styleTag.innerHTML = `
-    #${block.id} ${paragraphSelector} strong {
+    ${finalSelector} {
       font-size: ${fontSize} !important;
     }
   `;
+
 
   addPendingModification(block.id, {
     "font-size": fontSize,
