@@ -513,20 +513,18 @@ export function handleFontSize(event = null, context = null) {
 
   let paragraphSelector = "";
 
-  if (selectedSingleTextType === "paragraph1") {
-    paragraphSelector = "p.sqsrte-large";
-    console.log("🔍 paragraphSelector:", paragraphSelector);
-  } else if (selectedSingleTextType === "paragraph2") {
-    paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-  } else if (selectedSingleTextType === "paragraph3") {
-    paragraphSelector = "p.sqsrte-small";
+  if (selectedSingleTextType === "p1") {
+    paragraphSelector = 'p.sqsrte-large[data-sc-type="p1"]';
+  } else if (selectedSingleTextType === "p2") {
+    paragraphSelector = 'p:not(.sqsrte-large):not(.sqsrte-small)[data-sc-type="p2"]';
+  } else if (selectedSingleTextType === "p3") {
+    paragraphSelector = 'p.sqsrte-small[data-sc-type="p3"]';
   } else {
-    paragraphSelector = selectedSingleTextType;
+    paragraphSelector = selectedSingleTextType; // h1, h2, h3, h4
   }
 
   console.log("🔍 paragraphSelector:", paragraphSelector);
 
-  // --- ✅ Apply only CSS (no manual inline style on strong)
   const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
   let styleTag = document.getElementById(styleId);
 
@@ -542,7 +540,6 @@ export function handleFontSize(event = null, context = null) {
     }
   `;
 
-  // Save modifications
   addPendingModification(block.id, {
     "font-size": fontSize,
     "target": selectedSingleTextType
@@ -558,6 +555,7 @@ export function handleFontSize(event = null, context = null) {
 
   showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
 }
+
 
 
 
