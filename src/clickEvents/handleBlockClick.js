@@ -132,7 +132,7 @@ export function handleBlockClick(event, context) {
           if (!tab) return;
         
           tab.onclick = () => {
-            const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : typeId;
+            const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
             console.log("🔍 clickedTag:", clickedTag);
             setSelectedSingleTextType(clickedTag);
             console.log("✅ Now selected text type:", clickedTag);
@@ -154,7 +154,7 @@ export function handleBlockClick(event, context) {
     if (!tab) return;
 
     tab.onclick = () => {
-      const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : typeId;
+      const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
       setSelectedSingleTextType(clickedTag);
       console.log("✅ Now selected text type:", clickedTag);
    
