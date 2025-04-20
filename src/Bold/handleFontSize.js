@@ -283,7 +283,6 @@ export function handleFontSize(event = null, context = null) {
   let targetElements = [];
 
   if (selectedSingleTextType.startsWith("paragraph")) {
-    // Handle p1, p2, p3
     const blockParagraphs = block.querySelectorAll("p");
 
     blockParagraphs.forEach(p => {
@@ -300,7 +299,6 @@ export function handleFontSize(event = null, context = null) {
       }
     });
   } else {
-    // Headings
     targetElements = block.querySelectorAll(selectedSingleTextType);
   }
 
@@ -326,6 +324,7 @@ export function handleFontSize(event = null, context = null) {
     return;
   }
 
+  // ✅ Corrected style generator
   const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
   let styleTag = document.getElementById(styleId);
 
@@ -336,36 +335,39 @@ export function handleFontSize(event = null, context = null) {
   }
 
   let paragraphSelector = "";
+  let label = ""; // p1, p2, p3
 
   if (selectedSingleTextType === "paragraph1") {
-    paragraphSelector = `p.sqsrte-large`;
+    paragraphSelector = "p.sqsrte-large";
+    label = "p1";
   } else if (selectedSingleTextType === "paragraph2") {
-    paragraphSelector = `p:not(.sqsrte-large):not(.sqsrte-small)`;
+    paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+    label = "p2";
   } else if (selectedSingleTextType === "paragraph3") {
-    paragraphSelector = `p.sqsrte-small`;
+    paragraphSelector = "p.sqsrte-small";
+    label = "p3";
   } else {
     paragraphSelector = selectedSingleTextType;
   }
 
-  // styleTag.innerHTML = `
-  //   #${block.id} ${paragraphSelector} strong {
-  //     font-size: ${fontSize} !important;
-  //   }
-  // `;
+  // ✅ Now add data-sc-type filter
+  let finalSelector = "";
 
-  let finalSelector = `#${block.id} ${paragraphSelector} strong`;
-
-  const label = selectedSingleTextType.replace("paragraph", "p"); // Converts to p1, p2, p3
-  finalSelector = finalSelector.replace("p.sqsrte-large", `p.sqsrte-large[data-sc-type="${label}"]`);
-  finalSelector = finalSelector.replace("p.sqsrte-small", `p.sqsrte-small[data-sc-type="${label}"]`);
-  finalSelector = finalSelector.replace("p:not(.sqsrte-large):not(.sqsrte-small)", `p:not(.sqsrte-large):not(.sqsrte-small)[data-sc-type="${label}"]`);
+  if (label) {
+    if (selectedSingleTextType === "paragraph2") {
+      finalSelector = `#${block.id} ${paragraphSelector}[data-sc-type="${label}"] strong`;
+    } else {
+      finalSelector = `#${block.id} ${paragraphSelector}[data-sc-type="${label}"] strong`;
+    }
+  } else {
+    finalSelector = `#${block.id} ${paragraphSelector} strong`;
+  }
 
   styleTag.innerHTML = `
     ${finalSelector} {
       font-size: ${fontSize} !important;
     }
   `;
-
 
   addPendingModification(block.id, {
     "font-size": fontSize,
@@ -382,6 +384,7 @@ export function handleFontSize(event = null, context = null) {
 
   showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
 }
+
 
 
 
