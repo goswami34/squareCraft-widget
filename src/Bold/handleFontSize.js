@@ -244,6 +244,116 @@ function showNotification(message, type = "info") {
 // }
 
 
+// export function handleFontSize(event = null, context = null) {
+//   const {
+//     lastClickedElement,
+//     selectedSingleTextType,
+//     saveModifications,
+//     addPendingModification,
+//     showNotification,
+//   } = context;
+
+//   if (!event) {
+//     const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
+//     if (!activeButton) return;
+//     event = { target: activeButton };
+//   }
+
+//   const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
+//   if (!clickedElement) return;
+
+//   const fontSize = event.target.value + "px";
+
+//   if (!lastClickedElement) {
+//     showNotification("Please select a block first", "error");
+//     return;
+//   }
+
+//   if (!selectedSingleTextType) {
+//     showNotification("Please select a text type (Heading or Paragraph)", "error");
+//     return;
+//   }
+
+//   const block = lastClickedElement.closest('[id^="block-"]');
+//   if (!block) {
+//     showNotification("Block not found", "error");
+//     return;
+//   }
+
+//   let targetElements = [];
+
+//   if (selectedSingleTextType.startsWith("paragraph")) {
+//     // 🎯 Instead of class, match data-sc-type attribute!
+//     let typeLabel = selectedSingleTextType.replace("paragraph", "p"); // p1, p2, p3
+//     targetElements = block.querySelectorAll(`p[data-sc-type="${typeLabel}"]`);
+//   } else {
+//     targetElements = block.querySelectorAll(selectedSingleTextType);
+//   }
+
+//   if (!targetElements.length) {
+//     showNotification(`No ${selectedSingleTextType} found in block`, "error");
+//     return;
+//   }
+
+//   let strongFound = false;
+
+//   targetElements.forEach(targetElement => {
+//     const strongElements = targetElement.querySelectorAll("strong");
+//     if (strongElements.length > 0) {
+//       strongFound = true;
+//       strongElements.forEach(strong => {
+//         strong.style.fontSize = fontSize;
+//       });
+//     }
+//   });
+
+//   if (!strongFound) {
+//     showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
+//     return;
+//   }
+
+//   // 🎯 Now generate final clean CSS
+//   const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
+//   let styleTag = document.getElementById(styleId);
+
+//   if (!styleTag) {
+//     styleTag = document.createElement("style");
+//     styleTag.id = styleId;
+//     document.head.appendChild(styleTag);
+//   }
+
+//   let finalSelector = "";
+
+//   if (selectedSingleTextType.startsWith("paragraph")) {
+//     let typeLabel = selectedSingleTextType.replace("paragraph", "p"); // p1, p2, p3
+//     finalSelector = `#${block.id} p[data-sc-type="${typeLabel}"] strong`;
+//   } else {
+//     finalSelector = `#${block.id} ${selectedSingleTextType} strong`;
+//   }
+
+//   styleTag.innerHTML = `
+//     ${finalSelector} {
+//       font-size: ${fontSize} !important;
+//     }
+//   `;
+
+//   addPendingModification(block.id, {
+//     "font-size": fontSize,
+//     "target": selectedSingleTextType
+//   }, 'strong');
+
+//   // Update UI
+//   document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
+//     el.classList.remove('sc-activeTab-border');
+//     el.classList.add('sc-inActiveTab-border');
+//   });
+//   clickedElement.classList.remove('sc-inActiveTab-border');
+//   clickedElement.classList.add('sc-activeTab-border');
+
+//   showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
+// }
+
+
 export function handleFontSize(event = null, context = null) {
   const {
     lastClickedElement,
@@ -283,9 +393,18 @@ export function handleFontSize(event = null, context = null) {
   let targetElements = [];
 
   if (selectedSingleTextType.startsWith("paragraph")) {
-    // 🎯 Instead of class, match data-sc-type attribute!
-    let typeLabel = selectedSingleTextType.replace("paragraph", "p"); // p1, p2, p3
-    targetElements = block.querySelectorAll(`p[data-sc-type="${typeLabel}"]`);
+    const blockParagraphs = block.querySelectorAll("p");
+    blockParagraphs.forEach(p => {
+      const custom = p.getAttribute("data-sc-custom");
+
+      if (selectedSingleTextType === "paragraph1" && custom === "p1") {
+        targetElements.push(p);
+      } else if (selectedSingleTextType === "paragraph2" && custom === "p2") {
+        targetElements.push(p);
+      } else if (selectedSingleTextType === "paragraph3" && custom === "p3") {
+        targetElements.push(p);
+      }
+    });
   } else {
     targetElements = block.querySelectorAll(selectedSingleTextType);
   }
@@ -296,7 +415,6 @@ export function handleFontSize(event = null, context = null) {
   }
 
   let strongFound = false;
-
   targetElements.forEach(targetElement => {
     const strongElements = targetElement.querySelectorAll("strong");
     if (strongElements.length > 0) {
@@ -312,25 +430,18 @@ export function handleFontSize(event = null, context = null) {
     return;
   }
 
-  // 🎯 Now generate final clean CSS
-  const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
-  let styleTag = document.getElementById(styleId);
+  // Now properly apply CSS
+  const label = selectedSingleTextType.replace("paragraph", "p"); // p1, p2, p3 or h1,h2,h3,h4
+  const styleId = `style-${block.id}-${label}-strong-font-size`;
 
+  let styleTag = document.getElementById(styleId);
   if (!styleTag) {
     styleTag = document.createElement("style");
     styleTag.id = styleId;
     document.head.appendChild(styleTag);
   }
 
-  let finalSelector = "";
-
-  if (selectedSingleTextType.startsWith("paragraph")) {
-    let typeLabel = selectedSingleTextType.replace("paragraph", "p"); // p1, p2, p3
-    finalSelector = `#${block.id} p[data-sc-type="${typeLabel}"] strong`;
-  } else {
-    finalSelector = `#${block.id} ${selectedSingleTextType} strong`;
-  }
-
+  const finalSelector = `#${block.id} ${label} strong`; // ✅ virtual p1, p2, p3 selector
   styleTag.innerHTML = `
     ${finalSelector} {
       font-size: ${fontSize} !important;
@@ -352,6 +463,7 @@ export function handleFontSize(event = null, context = null) {
 
   showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
 }
+
 
 
 
