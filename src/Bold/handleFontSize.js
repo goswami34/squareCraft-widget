@@ -515,6 +515,7 @@ export function handleFontSize(event = null, context = null) {
 
   if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = "p.sqsrte-large";
+    console.log("🔍 paragraphSelector:", paragraphSelector);
   } else if (selectedSingleTextType === "paragraph2") {
     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
   } else if (selectedSingleTextType === "paragraph3") {
