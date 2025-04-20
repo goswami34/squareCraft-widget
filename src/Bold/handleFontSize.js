@@ -618,11 +618,11 @@ export function handleFontSize(event = null, context = null) {
   // STEP 1️⃣: Correct selector for paragraph based on p1 / p2 / p3
   let paragraphSelector = "";
 
-  if (selectedSingleTextType === "p1") {
+  if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = "p.sqsrte-large";
-  } else if (selectedSingleTextType === "p2") {
+  } else if (selectedSingleTextType === "paragraph2") {
     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-  } else if (selectedSingleTextType === "p3") {
+  } else if (selectedSingleTextType === "paragraph3") {
     paragraphSelector = "p.sqsrte-small";
   } else {
     paragraphSelector = selectedSingleTextType; // headings like h1, h2, h3, h4
