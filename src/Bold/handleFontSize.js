@@ -534,16 +534,15 @@ export function handleFontSize(event = null, context = null) {
   //   paragraphSelector = selectedSingleTextType;
   // }
 
-  if (selectedSingleTextType === "paragraph1") {
-    paragraphSelector = 'p.sqsrte-large[data-sc-type="p1"]';
-  } else if (selectedSingleTextType === "paragraph2") {
-    paragraphSelector = 'p:not(.sqsrte-large):not(.sqsrte-small)[data-sc-type="p2"]';
-  } else if (selectedSingleTextType === "paragraph3") {
-    paragraphSelector = 'p.sqsrte-small[data-sc-type="p3"]';
+  if (selectedSingleTextType === "p1") {
+    paragraphSelector = "p.sqsrte-large";
+  } else if (selectedSingleTextType === "p2") {
+    paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+  } else if (selectedSingleTextType === "p3") {
+    paragraphSelector = "p.sqsrte-small";
   } else {
-    paragraphSelector = selectedSingleTextType; // h1, h2, h3, h4
+    paragraphSelector = selectedSingleTextType;
   }
-
 
   console.log("🔍 paragraphSelector:", paragraphSelector);
 
