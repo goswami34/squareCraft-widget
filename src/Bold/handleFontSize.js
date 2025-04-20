@@ -118,6 +118,132 @@ function showNotification(message, type = "info") {
 //     showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
 //   }
 
+// export function handleFontSize(event = null, context = null) {
+//   const {
+//     lastClickedElement,
+//     selectedSingleTextType,
+//     saveModifications,
+//     addPendingModification,
+//     showNotification,
+//   } = context;
+
+//   if (!event) {
+//     const activeButton = document.querySelector('[id^="scFontSizeInput"].sc-activeTab-border');
+//     if (!activeButton) return;
+//     event = { target: activeButton };
+//   }
+
+//   const clickedElement = event.target.closest('[id^="scFontSizeInput"]');
+//   if (!clickedElement) return;
+
+//   const fontSize = event.target.value + "px";
+
+//   if (!lastClickedElement) {
+//     showNotification("Please select a block first", "error");
+//     return;
+//   }
+
+//   if (!selectedSingleTextType) {
+//     showNotification("Please select a text type (Heading or Paragraph)", "error");
+//     return;
+//   }
+
+//   const block = lastClickedElement.closest('[id^="block-"]');
+//   if (!block) {
+//     showNotification("Block not found", "error");
+//     return;
+//   }
+
+//   let targetElements = [];
+
+//   if (selectedSingleTextType.startsWith("paragraph")) {
+//     // 🛠 Find only correct paragraph
+//     const blockParagraphs = block.querySelectorAll("p");
+
+//     blockParagraphs.forEach(p => {
+//       const classList = p.classList;
+
+//       if (selectedSingleTextType === "paragraph1" && classList.contains("sqsrte-large")) {
+//         targetElements.push(p);
+//       } else if (selectedSingleTextType === "paragraph3" && classList.contains("sqsrte-small")) {
+//         targetElements.push(p);
+//       } else if (selectedSingleTextType === "paragraph2" && 
+//                 !classList.contains("sqsrte-large") && 
+//                 !classList.contains("sqsrte-small")) {
+//         targetElements.push(p);
+//       }
+//     });
+//   } else {
+//     // 🛠 Normal h1, h2, h3, h4
+//     targetElements = block.querySelectorAll(selectedSingleTextType);
+//   }
+
+//   if (!targetElements.length) {
+//     showNotification(`No ${selectedSingleTextType} found in block`, "error");
+//     return;
+//   }
+
+//   let strongFound = false;
+
+//   targetElements.forEach(targetElement => {
+//     const strongElements = targetElement.querySelectorAll("strong");
+//     if (strongElements.length > 0) {
+//       strongFound = true;
+//       strongElements.forEach(strong => {
+//         strong.style.fontSize = fontSize;
+//       });
+//     }
+//   });
+
+//   if (!strongFound) {
+//     showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
+//     return;
+//   }
+
+//   const styleId = `style-${block.id}-${selectedSingleTextType}-strong-font-size`;
+//   let styleTag = document.getElementById(styleId);
+
+//   if (!styleTag) {
+//     styleTag = document.createElement("style");
+//     styleTag.id = styleId;
+//     document.head.appendChild(styleTag);
+//   }
+
+//   let paragraphSelector = "";
+
+//   if (selectedSingleTextType === "paragraph1") {
+//     paragraphSelector = `p.sqsrte-large`;
+//   } else if (selectedSingleTextType === "paragraph2") {
+//     paragraphSelector = `p:not(.sqsrte-large):not(.sqsrte-small)`;
+//   } else if (selectedSingleTextType === "paragraph3") {
+//     paragraphSelector = `p.sqsrte-small`;
+//   } else {
+//     paragraphSelector = selectedSingleTextType;
+//   }
+
+//   styleTag.innerHTML = `
+//     #${block.id} ${paragraphSelector} strong {
+//       font-size: ${fontSize} !important;
+//     }
+//   `;
+
+//   addPendingModification(block.id, {
+//     "font-size": fontSize,
+//     "target": selectedSingleTextType
+//   }, 'strong');
+
+//   // Update UI active tab
+//   document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
+//     el.classList.remove('sc-activeTab-border');
+//     el.classList.add('sc-inActiveTab-border');
+//   });
+//   clickedElement.classList.remove('sc-inActiveTab-border');
+//   clickedElement.classList.add('sc-activeTab-border');
+
+//   showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
+// }
+
+
 export function handleFontSize(event = null, context = null) {
   const {
     lastClickedElement,
@@ -157,7 +283,7 @@ export function handleFontSize(event = null, context = null) {
   let targetElements = [];
 
   if (selectedSingleTextType.startsWith("paragraph")) {
-    // 🛠 Find only correct paragraph
+    // Handle p1, p2, p3
     const blockParagraphs = block.querySelectorAll("p");
 
     blockParagraphs.forEach(p => {
@@ -174,7 +300,7 @@ export function handleFontSize(event = null, context = null) {
       }
     });
   } else {
-    // 🛠 Normal h1, h2, h3, h4
+    // Headings
     targetElements = block.querySelectorAll(selectedSingleTextType);
   }
 
@@ -232,7 +358,7 @@ export function handleFontSize(event = null, context = null) {
     "target": selectedSingleTextType
   }, 'strong');
 
-  // Update UI active tab
+  // Update UI
   document.querySelectorAll('[id^="scFontSizeInput"]').forEach(el => {
     el.classList.remove('sc-activeTab-border');
     el.classList.add('sc-inActiveTab-border');
@@ -242,6 +368,7 @@ export function handleFontSize(event = null, context = null) {
 
   showNotification(`Font size applied to bold text inside: ${selectedSingleTextType}`, "success");
 }
+
 
 
 
