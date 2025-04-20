@@ -58,6 +58,7 @@ export function handleBlockClick(event, context) {
       "paragraph1Part", "paragraph2Part", "paragraph3Part"
     ];
     const visibleParts = new Set();
+    console.log("🔍 visibleParts:", visibleParts);
   
     innerTextElements.forEach(el => {
       const tag = el.tagName.toLowerCase();
