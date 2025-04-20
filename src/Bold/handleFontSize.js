@@ -514,12 +514,12 @@ export function handleFontSize(event = null, context = null) {
   let paragraphSelector = "";
 
   if (selectedSingleTextType === "paragraph1") {
-    paragraphSelector = "p.sqsrte-large";
+    paragraphSelector = "p1.sqsrte-large";
     console.log("🔍 paragraphSelector:", paragraphSelector);
   } else if (selectedSingleTextType === "paragraph2") {
-    paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+    paragraphSelector = "p2:not(.sqsrte-large):not(.sqsrte-small)";
   } else if (selectedSingleTextType === "paragraph3") {
-    paragraphSelector = "p.sqsrte-small";
+    paragraphSelector = "p3.sqsrte-small";
   } else {
     paragraphSelector = selectedSingleTextType;
   }
