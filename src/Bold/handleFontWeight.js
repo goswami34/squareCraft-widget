@@ -86,7 +86,11 @@ export function handleFontWeightClick(event = null, context = null) {
   
       console.log("Target paragraph selector:", paragraphSelector);
   
-      const targetElements = block.querySelectorAll(paragraphSelector);
+    //   const targetElements = block.querySelectorAll(paragraphSelector);
+
+    const targetElements = block.querySelectorAll('h1, h2, h3, h4, p');
+
+    // const targetElements = block.querySelectorAll(paragraphSelector);
       if (!targetElements.length) {
         showNotification(`No element found for ${selectedSingleTextType}`, "error");
         return;
