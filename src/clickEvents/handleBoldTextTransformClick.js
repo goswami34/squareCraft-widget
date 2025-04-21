@@ -216,15 +216,9 @@ export function handleBoldTextTransformClick(event, context) {
           clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
         }
       
-        console.log("✅ Clicked tab detected:", clickedTag);
         setSelectedSingleTextType(clickedTag);
       
-        const fontSizeInput = document.getElementById(`squareCraft-text-transform-${typeId}`);
-        if (fontSizeInput) {
-          fontSizeInput.focus();
-        }
-      
-        // ✅ Correct: only initialize Text Color input when a text type selected
+        // ✅ Only after setting selected text type, now call:
         handleTextColorclicked({
           lastClickedElement,
           selectedSingleTextType: clickedTag,
@@ -232,6 +226,7 @@ export function handleBoldTextTransformClick(event, context) {
           showNotification,
         });
       };
+      
       
     });
     
