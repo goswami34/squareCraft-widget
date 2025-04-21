@@ -240,68 +240,6 @@ let selectedElement = null;
     })
 
 
-  //   handleFontWeightFunClick(event, {
-  //     lastClickedElement,
-  //     saveModifications,
-  //     selectedElement,
-  //     setSelectedElement: (val) => selectedElement = val,
-  //     setLastClickedBlockId: (val) => lastClickedBlockId = val,
-  //     setLastClickedElement: (val) => lastClickedElement = val,
-  //     addPendingModification: (blockId, css, tagType) => {
-  //         if (!pendingModifications.has(blockId)) {
-  //             pendingModifications.set(blockId, []);
-  //         }
-  //         pendingModifications.get(blockId).push({ css, tagType });
-  //     },
-  //     getTextType: () => {
-  //         // This function should return the currently selected text type (h1, h2, etc.)
-  //         const activeTab = document.querySelector('.sc-activeTab-border');
-  //         if (!activeTab) return null;
-  //         return activeTab.id.replace('heading', 'h').replace('paragraph', 'p');
-  //     }
-  // });
-
-//   handleFontWeightFunClick(event, {
-//     lastClickedElement,
-//     getTextType,
-//     saveModifications,
-//     selectedElement,
-//     setSelectedElement: (val) => selectedElement = val,
-//     setLastClickedBlockId: (val) => lastClickedBlockId = val,
-//     lastClickedBlockId,
-//       userId,
-//       saveModifications,
-//       handleBlockClick,
-//       setLastClickedBlockId: (val) => lastClickedBlockId = val,
-//       token,
-//       widgetId,
-//       setSelectedElement: (val) => selectedElement = val, // Add this line
-//       addPendingModification: (blockId, css, tagType) => {
-//         if (!pendingModifications.has(blockId)) {
-//           pendingModifications.set(blockId, []);
-//         }
-//         pendingModifications.get(blockId).push({ css, tagType });
-//       }
-// });
-
-
-const fontWeightSelect = document.getElementById("squareCraftFontWeight");
-if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
-    fontWeightSelect.dataset.initialized = "true";
-    handleFontWeightFunClick(null, {
-        lastClickedElement,
-        saveModifications,
-        selectedElement,
-        setLastClickedBlockId: (val) => lastClickedBlockId = val,
-        token,
-        widgetId,
-        setSelectedElement: (val) => selectedElement = val, // Add this line
-        setLastClickedElement: (val) => lastClickedElement = val,
-        addPendingModification,
-        getTextType
-    });
-}
-  
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
   
     typoTabSelect(event);
