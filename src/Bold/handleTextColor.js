@@ -26,38 +26,67 @@ function showNotification(message, type = "info") {
   }
   
 
-  export function handleTextColorclicked(context = null) {
+  export function initializeTextColor(context = null) {
     const {
       lastClickedElement,
       selectedSingleTextType,
       addPendingModification,
-      showNotification,
+    //   showNotification,
     } = context;
   
-    const textColorInput = document.getElementById('scTextColor'); // ✅ Corrected id
+    const colorInput = document.getElementById('scTextColor');
+    const colorHexInput = document.getElementById('scColorHex');
   
-    if (!textColorInput) {
-      console.error("Text color input not found!");
+    if (!colorInput || !colorHexInput) {
+      console.warn("⚠️ Color input elements not found!");
       return;
     }
   
-    // Remove previous listeners if any
-    textColorInput.removeEventListener('input', handleColorChange);
+    let selectedColor = colorInput.value;
   
-    function handleColorChange() {
-      const color = textColorInput.value;
-      console.log("Selected text color:", color);
-  
+    // Update strong color from color picker
+    colorInput.addEventListener('input', function () {
       if (!lastClickedElement) {
         showNotification("Please select a block first", "error");
         return;
       }
-  
       if (!selectedSingleTextType) {
-        showNotification("Please select a text type (like p1, p2, heading1)", "error");
+        showNotification("Please select a text type", "error");
         return;
       }
   
+      selectedColor = colorInput.value;
+      applyColorToStrong(selectedColor);
+      colorHexInput.value = selectedColor.toUpperCase();
+    });
+  
+    // Update strong color from hex input
+    colorHexInput.addEventListener('input', function () {
+      if (!lastClickedElement) {
+        showNotification("Please select a block first", "error");
+        return;
+      }
+      if (!selectedSingleTextType) {
+        showNotification("Please select a text type", "error");
+        return;
+      }
+  
+      let colorValue = colorHexInput.value;
+      if (!colorValue.startsWith('#')) {
+        colorValue = '#' + colorValue;
+      }
+  
+      if (!/^#[0-9A-F]{6}$/i.test(colorValue)) {
+        console.warn("⚠️ Invalid hex color format");
+        return;
+      }
+  
+      selectedColor = colorValue;
+      applyColorToStrong(selectedColor);
+      colorInput.value = selectedColor;
+    });
+  
+    function applyColorToStrong(color) {
       const block = lastClickedElement.closest('[id^="block-"]');
       if (!block) {
         showNotification("Block not found", "error");
@@ -80,7 +109,6 @@ function showNotification(message, type = "info") {
       }
   
       const targetElements = block.querySelectorAll(paragraphSelector);
-  
       if (!targetElements.length) {
         showNotification(`No element found for ${selectedSingleTextType}`, "error");
         return;
@@ -125,9 +153,7 @@ function showNotification(message, type = "info") {
   
       showNotification(`✅ Text color applied to bold text inside: ${selectedSingleTextType}`, "success");
     }
-  
-    // ✅ Attach the event correctly
-    textColorInput.addEventListener('input', handleColorChange);
   }
+  
   
   
