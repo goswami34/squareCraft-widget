@@ -11,7 +11,8 @@ export function handleBoldTextTransformClick(event, context) {
       setSelectedSingleTextType,
       selectedSingleTextType,
       lastClickedElement,
-      handleFontWeightClick
+      handleFontWeightClick,
+      addPendingModification
     } = context;
   
     let block = event.target.closest('[id^="block-"]');
