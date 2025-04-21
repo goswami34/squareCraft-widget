@@ -29,11 +29,6 @@ export function handleTextTransformClick(event = null, context = null) {
     const {
       lastClickedElement,
       selectedSingleTextType,
-      saveModifications,
-      selectedElement,
-      setSelectedElement,
-      setLastClickedBlockId,
-      setLastClickedElement,
       addPendingModification,
       showNotification
     } = context;
@@ -55,7 +50,7 @@ export function handleTextTransformClick(event = null, context = null) {
     }
   
     if (!selectedSingleTextType) {
-      showNotification("Please select a text type first (like p1, p2, p3)", "error");
+      showNotification("Please select a text type first", "error");
       return;
     }
   
@@ -65,33 +60,41 @@ export function handleTextTransformClick(event = null, context = null) {
       return;
     }
   
-    // STEP 1️⃣: Find the correct paragraph selector
     let paragraphSelector = "";
   
+    // 🎯 Correct mapping here
     if (selectedSingleTextType === "paragraph1") {
       paragraphSelector = "p.sqsrte-large";
     } else if (selectedSingleTextType === "paragraph2") {
       paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-    } else if (selectedSingleTextType === "pparagraph3") {
+    } else if (selectedSingleTextType === "paragraph3") {
       paragraphSelector = "p.sqsrte-small";
+    } else if (selectedSingleTextType === "heading1") {
+      paragraphSelector = "h1";
+    } else if (selectedSingleTextType === "heading2") {
+      paragraphSelector = "h2";
+    } else if (selectedSingleTextType === "heading3") {
+      paragraphSelector = "h3";
+    } else if (selectedSingleTextType === "heading4") {
+      paragraphSelector = "h4";
     } else {
-      paragraphSelector = selectedSingleTextType;
-    }
-  
-    console.log("🔍 paragraphSelector for text-transform:", paragraphSelector);
-  
-    // STEP 2️⃣: Find paragraphs inside the block
-    const targetParagraphs = block.querySelectorAll(paragraphSelector);
-    if (!targetParagraphs.length) {
-      showNotification(`No paragraph found for ${selectedSingleTextType}`, "error");
+      showNotification("Unknown selected type: " + selectedSingleTextType, "error");
       return;
     }
   
-    // STEP 3️⃣: Apply inline text-transform to <strong> inside the paragraphs
+    console.log("✅ Applying text-transform for selector:", paragraphSelector);
+  
+    // Find target paragraphs or headings
+    const targetElements = block.querySelectorAll(paragraphSelector);
+    if (!targetElements.length) {
+      showNotification(`No text found for ${selectedSingleTextType}`, "error");
+      return;
+    }
+  
     let strongFound = false;
   
-    targetParagraphs.forEach(paragraph => {
-      const strongs = paragraph.querySelectorAll('strong');
+    targetElements.forEach(el => {
+      const strongs = el.querySelectorAll('strong');
       if (strongs.length > 0) {
         strongFound = true;
         strongs.forEach(strong => {
@@ -101,11 +104,11 @@ export function handleTextTransformClick(event = null, context = null) {
     });
   
     if (!strongFound) {
-      showNotification(`No bold text (<strong>) found inside ${selectedSingleTextType}`, "info");
+      showNotification(`No bold text found inside ${selectedSingleTextType}`, "info");
       return;
     }
   
-    // STEP 4️⃣: Create dynamic CSS
+    // ✅ Dynamic CSS injection
     const styleId = `style-${block.id}-${selectedSingleTextType}-strong-texttransform`;
     let styleTag = document.getElementById(styleId);
   
@@ -126,7 +129,7 @@ export function handleTextTransformClick(event = null, context = null) {
       "target": selectedSingleTextType
     }, 'strong');
   
-    // STEP 5️⃣: Update UI
+    // Update active button
     document.querySelectorAll('[id^="scTextTransform"]').forEach(el => {
       el.classList.remove('sc-activeTab-border');
       el.classList.add('sc-inActiveTab-border');
@@ -134,8 +137,9 @@ export function handleTextTransformClick(event = null, context = null) {
     clickedElement.classList.remove('sc-inActiveTab-border');
     clickedElement.classList.add('sc-activeTab-border');
   
-    showNotification(`Text-transform applied to bold text inside: ${selectedSingleTextType}`, "success");
+    showNotification(`Text-transform applied to bold words in: ${selectedSingleTextType}`, "success");
   }
+  
   
 
 

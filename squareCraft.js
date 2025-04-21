@@ -98,7 +98,7 @@ let selectedElement = null;
   const { handleFontWeightFunClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontWeightFunClick.js");
   const { handleFontSize } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontSize.js");
   const { saveModifications } = await import("https://goswami34.github.io/squareCraft-widget/html.js");
-
+  const { handleBoldTextTransformClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleBoldTextTransformClick.js");
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -109,6 +109,16 @@ let selectedElement = null;
       setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
       setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
       // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
+      setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag
+    });
+
+    handleBoldTextTransformClick(event, {
+      getTextType,
+      selectedElement,
+      setSelectedElement: (val) => selectedElement = val,
+      setLastClickedBlockId: (val) => lastClickedBlockId = val,
+      setLastClickedElement: (val) => lastClickedElement = val,
       setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
       setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag
     });
