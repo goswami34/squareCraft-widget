@@ -521,6 +521,24 @@ function showNotification(message, type = "info") {
             });
         });
     }
+
+    const textColorContainer = document.getElementById("scTextColor");
+    if (textColorContainer && !textColorContainer.dataset.initialized) {
+      textColorContainer.dataset.initialized = "true";
+        
+        // Add click event listeners to all text colro buttons
+        textColorContainer.querySelectorAll('[id^="scTextColor"]').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const lastClickedElement = document.querySelector('.sc-selected');
+                if (lastClickedElement) {
+                    handleTextTransformClick(event, {
+                        lastClickedElement,
+                        lastClickedBlockId: lastClickedElement.id
+                    });
+                }
+            });
+        });
+    }
     
   });
 
