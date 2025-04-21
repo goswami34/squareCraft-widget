@@ -98,47 +98,10 @@ export function typoBoldSelect(fontSizes) {
          </div>
       </div>
 
-      <div class="squareCraft-mt-2 squareCraft-px-2">
-                <div class="squareCraft-flex squareCraft-items-center squareCraft-justify-between">
-                  <label class="squareCraft-text-sm squareCraft-universal squareCraft-poppins">Text Color</label>
-                  <div class="squareCraft-flex squareCraft-items-center squareCraft-gap-2">
-                    <input 
-                      type="color" 
-                      id="squareCraftTextColor" 
-                      value="#ffffff" 
-                      class="squareCraft-color-input"
-                      style="
-                        width: 40px;
-                        height: 40px;
-                        padding: 0;
-                        border: 2px solid #585858;
-                        border-radius: 6px;
-                        background: #2c2c2c;
-                        cursor: pointer;
-                        -webkit-appearance: none;
-                        -moz-appearance: none;
-                        appearance: none;
-                      "
-                    >
-                    <input 
-                      type="text" 
-                      id="squareCraftColorHex" 
-                      class="squareCraft-color-hex"
-                      style="
-                        width: 80px;
-                        padding: 8px;
-                        background: #2c2c2c;
-                        border: 1px solid #585858;
-                        border-radius: 6px;
-                        color: white;
-                        font-size: 14px;
-                        font-family: 'Poppins', sans-serif;
-                      "
-                      placeholder="#FFFFFF"
-                    >
-                  </div>
-                </div>
-              </div>
+      <div class="sc-col-span-5 sc-bg-3f3f3f sc-inActiveTab-border sc-flex sc-justify-between sc-items-center sc-px-2 sc-rounded-6px">
+         <p id="textcolorHtml" class="sc-text-sm sc-poppins sc-universal">Select</p>
+         <input id="textColorPalate" class="sc-square-6 sc-border-colors sc-cursor-pointer" type="color"></input>
+      </div>
      <div>
       
      </div>
