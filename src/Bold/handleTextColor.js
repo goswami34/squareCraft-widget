@@ -31,7 +31,7 @@ function showNotification(message, type = "info") {
       lastClickedElement,
       selectedSingleTextType,
       addPendingModification,
-      showNotification,
+    //   showNotification,
     } = context;
   
     if (!lastClickedElement) {
