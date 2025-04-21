@@ -143,69 +143,43 @@ export function handleBoldTextTransformClick(event, context) {
     // text transform code end here
 
     // font weight code start here
-    // visibleParts.forEach(partId => {
-    //     const typeId = partId.replace("Part", "");
-    //     const tab = document.getElementById(typeId);
-    //     if (!tab) return;
+    visibleParts.forEach(partId => {
+        const typeId = partId.replace("Part", "");
+        const tab = document.getElementById(typeId);
+        if (!tab) return;
       
-    //     tab.onclick = () => {
-    //       let clickedTag = "";
-      
-    //     //   if (typeId.startsWith("heading")) {
-    //     //     clickedTag = `heading${typeId.replace("heading", "")}`;
-    //     //   } else if (typeId.startsWith("paragraph")) {
-    //     //     clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
-    //     //   }
-  
-    //     if (typeId.startsWith("heading")) {
-    //         clickedTag = `heading${typeId.replace("heading", "")}`;
-    //     } else if (typeId.startsWith("paragraph")) {
-    //         clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
-    //     } else if (typeId.startsWith("p")) {
-    //         clickedTag = `paragraph${typeId.replace("p", "")}`; 
-    //     } else {
-    //         clickedTag = typeId; // fallback
-    //     }
-      
-    //       console.log("✅ Clicked tab detected:", clickedTag);
-    //       setSelectedSingleTextType(clickedTag);
-      
-    //       const fontSizeInput = document.getElementById(`squareCraftFontWeight-${typeId}`);
-    //       if (fontSizeInput) {
-    //         fontSizeInput.focus(); // auto focus
-    //       }
-    //     };
-    //   });
-
-    tab.onclick = () => {
-        let clickedTag = "";
-      
-        if (typeId.startsWith("heading")) {
-          clickedTag = `heading${typeId.replace("heading", "")}`;
-        } else if (typeId.startsWith("paragraph")) {
-          clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
-        } else if (typeId.startsWith("p")) {
-          clickedTag = `paragraph${typeId.replace("p", "")}`; 
-        } else {
-          clickedTag = typeId;
-        }
-      
-        console.log("✅ Clicked tab detected:", clickedTag);
-        setSelectedSingleTextType(clickedTag);
-      
-        // ✅ Now trigger Font Weight select change manually
-        const fontWeightSelect = document.getElementById("squareCraftFontWeight");
-        if (fontWeightSelect) {
-          fontWeightSelect.onchange = () => {
-            handleFontWeightClick(null, {
-              lastClickedElement,
-              selectedSingleTextType: clickedTag, // Pass the latest clicked tag
-              addPendingModification,
-              showNotification
-            });
+        tab.onclick = () => {
+            let clickedTag = "";
+          
+            if (typeId.startsWith("heading")) {
+              clickedTag = `heading${typeId.replace("heading", "")}`;
+            } else if (typeId.startsWith("paragraph")) {
+              clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+            } else if (typeId.startsWith("p")) {
+              clickedTag = `paragraph${typeId.replace("p", "")}`; 
+            } else {
+              clickedTag = typeId;
+            }
+          
+            console.log("✅ Clicked tab detected:", clickedTag);
+            setSelectedSingleTextType(clickedTag);
+          
+            // ✅ Now trigger Font Weight select change manually
+            const fontWeightSelect = document.getElementById("squareCraftFontWeight");
+            if (fontWeightSelect) {
+              fontWeightSelect.onchange = () => {
+                handleFontWeightClick(null, {
+                  lastClickedElement,
+                  selectedSingleTextType: clickedTag, // Pass the latest clicked tag
+                  addPendingModification,
+                  showNotification
+                });
+              };
+            }
           };
-        }
-      };
+      });
+
+    
       
     // font weight code end here
 
