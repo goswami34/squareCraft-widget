@@ -165,7 +165,7 @@ export function handleTextColorclicked(context) {
       lastClickedElement,
       selectedSingleTextType,
       addPendingModification,
-      showNotification,
+    //   showNotification,
     } = context;
   
     const colorInput = document.getElementById('scTextColor');
