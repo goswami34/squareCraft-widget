@@ -117,6 +117,7 @@ let selectedElement = null;
     handleBoldTextTransformClick(event, {
       getTextType,
       selectedElement,
+      handleFontWeightClick,
       setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
       setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
       setSelectedElement: (val) => selectedElement = val,

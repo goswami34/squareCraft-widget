@@ -10,7 +10,8 @@ export function handleBoldTextTransformClick(event, context) {
       setSelectedTextType,
       setSelectedSingleTextType,
       selectedSingleTextType,
-      lastClickedElement
+      lastClickedElement,
+      handleFontWeightClick
     } = context;
   
     let block = event.target.closest('[id^="block-"]');
