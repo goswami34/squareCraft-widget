@@ -181,39 +181,7 @@ export function handleBlockClick(event, context) {
     // // Store the strong elements data in the block's dataset
     // block.dataset.strongElementsByTag = JSON.stringify(strongElementsByTag);
 
-    visibleParts.forEach(partId => {
-      const typeId = partId.replace("Part", "");
-      const tab = document.getElementById(typeId);
-      if (!tab) return;
-    
-      tab.onclick = () => {
-        let clickedTag = "";
-    
-      //   if (typeId.startsWith("heading")) {
-      //     clickedTag = `heading${typeId.replace("heading", "")}`;
-      //   } else if (typeId.startsWith("paragraph")) {
-      //     clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
-      //   }
-
-      if (typeId.startsWith("heading")) {
-          clickedTag = `heading${typeId.replace("heading", "")}`;
-      } else if (typeId.startsWith("paragraph")) {
-          clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
-      } else if (typeId.startsWith("p")) {
-          clickedTag = `paragraph${typeId.replace("p", "")}`; 
-      } else {
-          clickedTag = typeId; // fallback
-      }
-    
-        console.log("✅ Clicked tab detected:", clickedTag);
-        setSelectedSingleTextType(clickedTag);
-    
-        const fontSizeInput = document.getElementById(`squareCraftFontWeight-${typeId}`);
-        if (fontSizeInput) {
-          fontSizeInput.focus(); // auto focus
-        }
-      };
-    });
+   
     //font weight code end here
     
   }
