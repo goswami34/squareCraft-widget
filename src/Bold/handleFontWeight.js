@@ -71,13 +71,13 @@ export function handleFontWeightClick(event = null, context = null) {
         paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
       } else if (selectedSingleTextType === "paragraph3") {
         paragraphSelector = "p.sqsrte-small";
-      } else if (selectedSingleTextType === "heading1") {
+      } else if (selectedSingleTextType === "h1") {
         paragraphSelector = "h1";
-      } else if (selectedSingleTextType === "heading2") {
+      } else if (selectedSingleTextType === "h2") {
         paragraphSelector = "h2";
-      } else if (selectedSingleTextType === "heading3") {
+      } else if (selectedSingleTextType === "h3") {
         paragraphSelector = "h3";
-      } else if (selectedSingleTextType === "heading4") {
+      } else if (selectedSingleTextType === "h4") {
         paragraphSelector = "h4";
       } else {
         showNotification("Unknown text type: " + selectedSingleTextType, "error");
