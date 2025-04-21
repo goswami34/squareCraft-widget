@@ -143,7 +143,7 @@ function showNotification(message, type = "info") {
 //   }
 
 
-export function applyColorToStrong(color) {
+export function handleTextColorclicked(color) {
     if (!lastClickedElement) {
       showNotification("Please select a block first", "error");
       return;
