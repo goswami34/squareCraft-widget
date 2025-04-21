@@ -160,7 +160,6 @@ function showNotification(message, type = "info") {
 //     }
 //   }
 
-
 export function handleTextColorclicked(context) {
     const {
       lastClickedElement,
@@ -177,8 +176,9 @@ export function handleTextColorclicked(context) {
       return;
     }
   
-    // No need to check lastClickedElement here immediately!
-    // Wait inside the 'input' event.
+    // ✅ Clear previous listeners
+    colorInput.oninput = null;
+    colorHexInput.oninput = null;
   
     function applyColorToStrong(color) {
       if (!lastClickedElement) {
@@ -212,7 +212,6 @@ export function handleTextColorclicked(context) {
       }
   
       const targetElements = block.querySelectorAll(paragraphSelector);
-  
       if (!targetElements.length) {
         showNotification(`No element found for ${selectedSingleTextType}`, "error");
         return;
@@ -257,8 +256,7 @@ export function handleTextColorclicked(context) {
       showNotification(`✅ Text color applied to bold text inside: ${selectedSingleTextType}`, "success");
     }
   
-    // Attach event listeners now:
-  
+    // ✅ Now add clean fresh input listeners
     colorInput.addEventListener('input', function () {
       const color = colorInput.value;
       applyColorToStrong(color);
@@ -278,6 +276,7 @@ export function handleTextColorclicked(context) {
       colorInput.value = color;
     });
   }
+  
   
   
   

@@ -186,28 +186,27 @@ export function handleBoldTextTransformClick(event, context) {
       if (!tab) return;
     
       tab.onclick = () => {
-          let clickedTag = "";
-        
-          if (typeId.startsWith("heading")) {
-            clickedTag = `heading${typeId.replace("heading", "")}`;
-          } else if (typeId.startsWith("paragraph")) {
-            clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
-          } else if (typeId.startsWith("p")) {
-            clickedTag = `paragraph${typeId.replace("p", "")}`; 
-          } else {
-            clickedTag = typeId;
-          }
-        
-          console.log("✅ Clicked tab detected:", clickedTag);
-          setSelectedSingleTextType(clickedTag);
-        
-          // ✅ Now trigger Font Weight select change manually
-          const fontWeightSelect = document.getElementById(`scTextColor-${typeId}`);
-          if (fontWeightSelect) {
-            fontWeightSelect.focus();
-          }
-        };
+        let clickedTag = "";
+    
+        if (typeId.startsWith("heading")) {
+          clickedTag = `heading${typeId.replace("heading", "")}`;
+        } else if (typeId.startsWith("paragraph")) {
+          clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+        }
+    
+        console.log("✅ Clicked tab detected:", clickedTag);
+        setSelectedSingleTextType(clickedTag);
+    
+        // Now initialize the color input for the selected text
+        handleTextColorclicked({
+          lastClickedElement,
+          selectedSingleTextType: clickedTag,
+          addPendingModification,
+          showNotification
+        });
+      };
     });
+    
 
     // text color code end here
 
