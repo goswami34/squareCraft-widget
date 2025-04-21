@@ -26,7 +26,7 @@ function showNotification(message, type = "info") {
   }
   
 
-  export function handleTextColorClick(event = null, context = null) {
+  export function handleTextColorclicked(event = null, context = null) {
     const {
       lastClickedElement,
       selectedSingleTextType,
