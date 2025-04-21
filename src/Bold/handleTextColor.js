@@ -31,9 +31,14 @@ function showNotification(message, type = "info") {
       lastClickedElement,
       selectedSingleTextType,
       addPendingModification,
-    //   showNotification,
+      showNotification,
     } = context;
   
+    if (!lastClickedElement) {
+      showNotification("Please select a block first", "error");
+      return;
+    }
+
     const colorInput = document.getElementById('scTextColor');
     const colorHexInput = document.getElementById('scColorHex');
   
