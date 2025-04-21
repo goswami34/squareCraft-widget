@@ -452,7 +452,7 @@ function showNotification(message, type = "info") {
         
         // Add a small delay to ensure the DOM is fully loaded
         setTimeout(() => {
-            handleFontWeightFunClick(null, {
+            handleFontWeightClick(null, {
                 lastClickedElement,
                 saveModifications,
                 selectedElement,
