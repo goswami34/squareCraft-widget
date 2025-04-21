@@ -118,6 +118,8 @@ let selectedElement = null;
     handleBoldTextTransformClick(event, {
       getTextType,
       selectedElement,
+      setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
+      setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
       setSelectedElement: (val) => selectedElement = val,
       setLastClickedBlockId: (val) => lastClickedBlockId = val,
       setLastClickedElement: (val) => lastClickedElement = val,
