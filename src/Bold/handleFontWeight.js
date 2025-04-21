@@ -1,0 +1,143 @@
+function showNotification(message, type = "info") {
+    const notification = document.createElement("div");
+    notification.className = `sc-notification sc-notification-${type}`;
+    notification.textContent = message;
+    
+    // Add styles
+    Object.assign(notification.style, {
+        position: "fixed",
+        top: "20px",
+        right: "20px",
+        padding: "10px 20px",
+        borderRadius: "4px",
+        color: "white",
+        zIndex: "9999",
+        animation: "fadeIn 0.3s ease-in-out",
+        backgroundColor: type === "success" ? "#4CAF50" : type === "error" ? "#f44336" : "#2196F3"
+    });
+  
+    document.body.appendChild(notification);
+  
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = "fadeOut 0.3s ease-in-out";
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+  }
+
+
+  export function handleFontWeightClick(event = null, context = null) {
+    const {
+      lastClickedElement,
+      selectedSingleTextType,
+      addPendingModification,
+      showNotification,
+    } = context;
+  
+    if (!event) {
+      const activeButton = document.querySelector('[id^="scFontWeight"].sc-activeTab-border');
+      if (!activeButton) return;
+      event = { target: activeButton };
+    }
+  
+    const clickedElement = event.target.closest('[id^="squareCraftFontWeight"]');
+    if (!clickedElement) return;
+  
+    const fontWeight = clickedElement.dataset.fontWeight;
+  
+    if (!lastClickedElement) {
+      showNotification("Please select a block first", "error");
+      return;
+    }
+  
+    if (!selectedSingleTextType) {
+      showNotification("Please select a text type first", "error");
+      return;
+    }
+  
+    const block = lastClickedElement.closest('[id^="block-"]');
+    if (!block) {
+      showNotification("Block not found", "error");
+      return;
+    }
+  
+    // 🎯 Step 1: Build the correct paragraph or heading selector
+    let paragraphSelector = "";
+  
+    if (selectedSingleTextType === "paragraph1") {
+      paragraphSelector = "p.sqsrte-large";
+    } else if (selectedSingleTextType === "paragraph2") {
+      paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+    } else if (selectedSingleTextType === "paragraph3") {
+      paragraphSelector = "p.sqsrte-small";
+    } else if (selectedSingleTextType === "heading1") {
+      paragraphSelector = "h1";
+    } else if (selectedSingleTextType === "heading2") {
+      paragraphSelector = "h2";
+    } else if (selectedSingleTextType === "heading3") {
+      paragraphSelector = "h3";
+    } else if (selectedSingleTextType === "heading4") {
+      paragraphSelector = "h4";
+    } else {
+      showNotification("Unknown selected text type: " + selectedSingleTextType, "error");
+      return;
+    }
+  
+    console.log("🎯 paragraphSelector for font-weight:", paragraphSelector);
+  
+    // 🎯 Step 2: Find target paragraphs/headings
+    const targetElements = block.querySelectorAll(paragraphSelector);
+    if (!targetElements.length) {
+      showNotification(`No element found for ${selectedSingleTextType}`, "error");
+      return;
+    }
+  
+    let strongFound = false;
+    targetElements.forEach(el => {
+      const strongs = el.querySelectorAll('strong');
+      if (strongs.length > 0) {
+        strongFound = true;
+        strongs.forEach(strong => {
+          strong.style.fontWeight = fontWeight;
+        });
+      }
+    });
+  
+    if (!strongFound) {
+      showNotification(`No bold (<strong>) text found inside ${selectedSingleTextType}`, "info");
+      return;
+    }
+  
+    // 🎯 Step 3: Create dynamic style
+    const styleId = `style-${block.id}-${selectedSingleTextType}-strong-fontweight`;
+    let styleTag = document.getElementById(styleId);
+  
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+  
+    styleTag.innerHTML = `
+      #${block.id} ${paragraphSelector} strong {
+        font-weight: ${fontWeight} !important;
+      }
+    `;
+  
+    // 🎯 Step 4: Save
+    addPendingModification(block.id, {
+      "font-weight": fontWeight,
+      "target": selectedSingleTextType
+    }, 'strong');
+  
+    // 🎯 Step 5: Update button UI
+    document.querySelectorAll('[id^="scFontWeight"]').forEach(el => {
+      el.classList.remove('sc-activeTab-border');
+      el.classList.add('sc-inActiveTab-border');
+    });
+    clickedElement.classList.remove('sc-inActiveTab-border');
+    clickedElement.classList.add('sc-activeTab-border');
+  
+    showNotification(`Font weight applied to bold text inside: ${selectedSingleTextType}`, "success");
+  }
+  

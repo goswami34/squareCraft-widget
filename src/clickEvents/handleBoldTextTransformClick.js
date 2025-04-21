@@ -142,7 +142,33 @@ export function handleBoldTextTransformClick(event, context) {
 
     // text transform code end here
 
-    
+    // font weight code start here
+    visibleParts.forEach(partId => {
+        const typeId = partId.replace("Part", "");
+        const tab = document.getElementById(typeId);
+        if (!tab) return;
+      
+        tab.onclick = () => {
+          let clickedTag = "";
+      
+          if (typeId.startsWith("heading")) {
+            clickedTag = `heading${typeId.replace("heading", "")}`;
+          } else if (typeId.startsWith("paragraph")) {
+            clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+          }
+      
+          console.log("✅ Clicked tab detected:", clickedTag);
+          setSelectedSingleTextType(clickedTag);
+      
+          const fontSizeInput = document.getElementById(`squareCraftFontWeight-${typeId}`);
+          if (fontSizeInput) {
+            fontSizeInput.focus(); // auto focus
+          }
+        };
+      });
+    // font weight code end here
+
+
   }
 
 
