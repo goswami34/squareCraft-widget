@@ -12,7 +12,8 @@ export function handleBoldTextTransformClick(event, context) {
       selectedSingleTextType,
       lastClickedElement,
       handleFontWeightClick,
-      addPendingModification
+      addPendingModification,
+      showNotification,
     } = context;
   
     let block = event.target.closest('[id^="block-"]');
@@ -169,14 +170,7 @@ export function handleBoldTextTransformClick(event, context) {
             // ✅ Now trigger Font Weight select change manually
             const fontWeightSelect = document.getElementById("squareCraftFontWeight");
             if (fontWeightSelect) {
-              fontWeightSelect.onchange = () => {
-                handleFontWeightClick(null, {
-                  lastClickedElement,
-                  selectedSingleTextType: clickedTag, // Pass the latest clicked tag
-                  addPendingModification,
-                  showNotification
-                });
-              };
+              fontWeightSelect.focus();
             }
           };
       });

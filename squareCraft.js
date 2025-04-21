@@ -119,6 +119,7 @@ let selectedElement = null;
       selectedElement,
       handleFontWeightClick,
       addPendingModification,
+      showNotification,
       setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
       setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
       setSelectedElement: (val) => selectedElement = val,
