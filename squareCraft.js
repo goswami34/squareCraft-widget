@@ -201,7 +201,9 @@ let selectedElement = null;
           pendingModifications.set(blockId, []);
         }
         pendingModifications.get(blockId).push({ css, tagType });
-      }
+      },
+
+      showNotification: showNotification
     });
 
 
