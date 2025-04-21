@@ -97,7 +97,12 @@ export function typoBoldSelect(fontSizes) {
                   src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
          </div>
       </div>
+     <div>
+      
+     </div>
+   </div>
 
+   <div>
       <div class="sc-mt-2 sc-px-2">
                 <div class="sc-flex sc-items-center sc-justify-between">
                   <label class="sc-text-sm sc-universal sc-poppins">Text Color</label>
@@ -139,9 +144,7 @@ export function typoBoldSelect(fontSizes) {
                   </div>
                 </div>
               </div>
-     <div>
-      
-     </div>
+   
    </div>
 
 
