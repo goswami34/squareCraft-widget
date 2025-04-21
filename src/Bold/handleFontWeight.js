@@ -65,23 +65,33 @@ export function handleFontWeightClick(event = null, context = null) {
       // Build selector
       let paragraphSelector = "";
   
-      if (selectedSingleTextType === "paragraph1") {
+    //   if (selectedSingleTextType === "paragraph1") {
+    //     paragraphSelector = "p.sqsrte-large";
+    //   } else if (selectedSingleTextType === "paragraph2") {
+    //     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+    //   } else if (selectedSingleTextType === "paragraph3") {
+    //     paragraphSelector = "p.sqsrte-small";
+    //   } else if (selectedSingleTextType === "heading1") {
+    //     paragraphSelector = "h1";
+    //   } else if (selectedSingleTextType === "heading2") {
+    //     paragraphSelector = "h2";
+    //   } else if (selectedSingleTextType === "heading3") {
+    //     paragraphSelector = "h3";
+    //   } else if (selectedSingleTextType === "heading4") {
+    //     paragraphSelector = "h4";
+    //   } else {
+    //     showNotification("Unknown text type: " + selectedSingleTextType, "error");
+    //     return;
+    //   }
+
+    if (selectedSingleTextType === "paragraph1") {
         paragraphSelector = "p.sqsrte-large";
       } else if (selectedSingleTextType === "paragraph2") {
         paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
       } else if (selectedSingleTextType === "paragraph3") {
         paragraphSelector = "p.sqsrte-small";
-      } else if (selectedSingleTextType === "heading1") {
-        paragraphSelector = "h1";
-      } else if (selectedSingleTextType === "heading2") {
-        paragraphSelector = "h2";
-      } else if (selectedSingleTextType === "heading3") {
-        paragraphSelector = "h3";
-      } else if (selectedSingleTextType === "heading4") {
-        paragraphSelector = "h4";
       } else {
-        showNotification("Unknown text type: " + selectedSingleTextType, "error");
-        return;
+        paragraphSelector = selectedSingleTextType; // headings like h1, h2, h3, h4
       }
   
       console.log("Target paragraph selector:", paragraphSelector);
