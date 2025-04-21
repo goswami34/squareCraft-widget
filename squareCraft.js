@@ -95,7 +95,6 @@ let selectedElement = null;
   const { handleTextColorClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextColorClick.js");
   const { typoTabSelect } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/typoTabSelect.js");
   const { handleTextTransformClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleTextTransform.js");
-  const { handleFontWeightFunClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontWeightFunClick.js");
   const { handleFontSize } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontSize.js");
   const { saveModifications } = await import("https://goswami34.github.io/squareCraft-widget/html.js");
   const { handleBoldTextTransformClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextTransformClick.js");
