@@ -181,54 +181,104 @@ export function handleBoldTextTransformClick(event, context) {
     // font weight code end here
 
     // text color code start here
-    visibleParts.forEach(partId => {
-      const typeId = partId.replace("Part", "");
-      const tab = document.getElementById(typeId);
-      if (!tab) return;
+    // visibleParts.forEach(partId => {
+    //   const typeId = partId.replace("Part", "");
+    //   const tab = document.getElementById(typeId);
+    //   if (!tab) return;
     
-      // tab.onclick = () => {
-      //   let clickedTag = "";
+    //   // tab.onclick = () => {
+    //   //   let clickedTag = "";
     
-      //   if (typeId.startsWith("heading")) {
-      //     clickedTag = `heading${typeId.replace("heading", "")}`;
-      //   } else if (typeId.startsWith("paragraph")) {
-      //     clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
-      //   }
+    //   //   if (typeId.startsWith("heading")) {
+    //   //     clickedTag = `heading${typeId.replace("heading", "")}`;
+    //   //   } else if (typeId.startsWith("paragraph")) {
+    //   //     clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+    //   //   }
     
-      //   console.log("✅ Clicked tab detected:", clickedTag);
-      //   setSelectedSingleTextType(clickedTag);
+    //   //   console.log("✅ Clicked tab detected:", clickedTag);
+    //   //   setSelectedSingleTextType(clickedTag);
     
-      //   // Now initialize the color input for the selected text
-      //   handleTextColorclicked({
-      //     lastClickedElement,
-      //     selectedSingleTextType: clickedTag,
-      //     addPendingModification,
-      //     showNotification
-      //   });
-      // };
+    //   //   // Now initialize the color input for the selected text
+    //   //   handleTextColorclicked({
+    //   //     lastClickedElement,
+    //   //     selectedSingleTextType: clickedTag,
+    //   //     addPendingModification,
+    //   //     showNotification
+    //   //   });
+    //   // };
 
-      tab.onclick = () => {
-        let clickedTag = "";
+    //   tab.onclick = () => {
+    //     let clickedTag = "";
       
-        if (typeId.startsWith("heading")) {
-          clickedTag = `heading${typeId.replace("heading", "")}`;
-        } else if (typeId.startsWith("paragraph")) {
-          clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+    //     if (typeId.startsWith("heading")) {
+    //       clickedTag = `heading${typeId.replace("heading", "")}`;
+    //     } else if (typeId.startsWith("paragraph")) {
+    //       clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+    //     }
+      
+    //     setSelectedSingleTextType(clickedTag);
+      
+    //     // ✅ Only after setting selected text type, now call:
+    //     handleTextColorclicked({
+    //       lastClickedElement,
+    //       selectedSingleTextType: clickedTag,
+    //       addPendingModification,
+    //       showNotification,
+    //     });
+    //   };
+      
+      
+    // });
+
+    // In handleBoldTextTransformClick.js, modify the text color section:
+visibleParts.forEach(partId => {
+  const typeId = partId.replace("Part", "");
+  const tab = document.getElementById(typeId);
+  if (!tab) return;
+
+  tab.onclick = () => {
+    let clickedTag = "";
+    
+    if (typeId.startsWith("heading")) {
+      clickedTag = `heading${typeId.replace("heading", "")}`;
+    } else if (typeId.startsWith("paragraph")) {
+      clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+    }
+    
+    setSelectedSingleTextType(clickedTag);
+    
+    // Initialize text color functionality
+    const colorInput = document.getElementById('scTextColor');
+    const colorHexInput = document.getElementById('scColorHex');
+    
+    if (colorInput && colorHexInput) {
+      // Remove old listeners
+      colorInput.oninput = null;
+      colorHexInput.oninput = null;
+      
+      // Add new listeners
+      colorInput.addEventListener('input', function() {
+        const color = colorInput.value;
+        applyColorToStrong(color);
+        colorHexInput.value = color.toUpperCase();
+      });
+      
+      colorHexInput.addEventListener('input', function() {
+        let color = colorHexInput.value;
+        if (!color.startsWith('#')) {
+          color = '#' + color;
         }
-      
-        setSelectedSingleTextType(clickedTag);
-      
-        // ✅ Only after setting selected text type, now call:
-        handleTextColorclicked({
-          lastClickedElement,
-          selectedSingleTextType: clickedTag,
-          addPendingModification,
-          showNotification,
-        });
-      };
-      
-      
-    });
+        if (/^#[0-9A-F]{6}$/i.test(color)) {
+          applyColorToStrong(color);
+          colorInput.value = color;
+        }
+      });
+    }
+  };
+});
+
+// In handleTextColor.js, modify the applyColorToStrong function:
+
     
 
     // text color code end here

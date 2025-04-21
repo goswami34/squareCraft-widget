@@ -26,120 +26,197 @@ function showNotification(message, type = "info") {
   }
   
 
-export function handleTextColorclicked(context) {
-    const {
-      lastClickedElement,
-      selectedSingleTextType,
-      addPendingModification,
-    //   showNotification,
-    } = context;
+// export function handleTextColorclicked(context) {
+//     const {
+//       lastClickedElement,
+//       selectedSingleTextType,
+//       addPendingModification,
+//     //   showNotification,
+//     } = context;
   
-    const colorInput = document.getElementById('scTextColor');
-    const colorHexInput = document.getElementById('scColorHex');
+//     const colorInput = document.getElementById('scTextColor');
+//     const colorHexInput = document.getElementById('scColorHex');
   
-    if (!colorInput || !colorHexInput) {
-      console.warn("⚠️ Color input elements not found!");
+//     if (!colorInput || !colorHexInput) {
+//       console.warn("⚠️ Color input elements not found!");
+//       return;
+//     }
+  
+//     // Remove old listeners
+//     colorInput.oninput = null;
+//     colorHexInput.oninput = null;
+  
+//     function applyColorToStrong(color) {
+//       if (!lastClickedElement) {
+//         showNotification("Please select a block first", "error");
+//         return;
+//       }
+  
+//       if (!selectedSingleTextType) {
+//         showNotification("Please select a text type", "error");
+//         return;
+//       }
+  
+//       const block = lastClickedElement.closest('[id^="block-"]');
+//       if (!block) {
+//         showNotification("Block not found", "error");
+//         return;
+//       }
+  
+//       let paragraphSelector = "";
+//       if (selectedSingleTextType === "paragraph1") {
+//         paragraphSelector = "p.sqsrte-large";
+//       } else if (selectedSingleTextType === "paragraph2") {
+//         paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+//       } else if (selectedSingleTextType === "paragraph3") {
+//         paragraphSelector = "p.sqsrte-small";
+//       } else if (selectedSingleTextType.startsWith("heading")) {
+//         paragraphSelector = "h" + selectedSingleTextType.replace("heading", "");
+//       } else {
+//         showNotification("Unknown text type: " + selectedSingleTextType, "error");
+//         return;
+//       }
+  
+//       const targetElements = block.querySelectorAll(paragraphSelector);
+//       if (!targetElements.length) {
+//         showNotification(`No element found for ${selectedSingleTextType}`, "error");
+//         return;
+//       }
+  
+//       let strongFound = false;
+//       targetElements.forEach(el => {
+//         const strongs = el.querySelectorAll('strong');
+//         if (strongs.length > 0) {
+//           strongFound = true;
+//           strongs.forEach(strong => {
+//             strong.style.color = color;
+//           });
+//         }
+//       });
+  
+//       if (!strongFound) {
+//         showNotification(`No bold (<strong>) text found inside ${selectedSingleTextType}`, "info");
+//         return;
+//       }
+  
+//       const styleId = `style-${block.id}-${selectedSingleTextType}-strong-textcolor`;
+//       let styleTag = document.getElementById(styleId);
+  
+//       if (!styleTag) {
+//         styleTag = document.createElement("style");
+//         styleTag.id = styleId;
+//         document.head.appendChild(styleTag);
+//       }
+  
+//       styleTag.innerHTML = `
+//         #${block.id} ${paragraphSelector} strong {
+//           color: ${color} !important;
+//         }
+//       `;
+  
+//       addPendingModification(block.id, {
+//         "color": color,
+//         "target": selectedSingleTextType
+//       }, 'strong');
+  
+//       showNotification(`✅ Text color applied to bold text inside: ${selectedSingleTextType}`, "success");
+//     }
+  
+//     colorInput.addEventListener('input', function () {
+//       const color = colorInput.value;
+//       applyColorToStrong(color);
+//       colorHexInput.value = color.toUpperCase();
+//     });
+  
+//     colorHexInput.addEventListener('input', function () {
+//       let color = colorHexInput.value;
+//       if (!color.startsWith('#')) {
+//         color = '#' + color;
+//       }
+//       if (!/^#[0-9A-F]{6}$/i.test(color)) {
+//         console.warn("⚠️ Invalid hex color");
+//         return;
+//       }
+//       applyColorToStrong(color);
+//       colorInput.value = color;
+//     });
+//   }
+
+
+export function applyColorToStrong(color) {
+    if (!lastClickedElement) {
+      showNotification("Please select a block first", "error");
       return;
     }
   
-    // Remove old listeners
-    colorInput.oninput = null;
-    colorHexInput.oninput = null;
-  
-    function applyColorToStrong(color) {
-      if (!lastClickedElement) {
-        showNotification("Please select a block first", "error");
-        return;
-      }
-  
-      if (!selectedSingleTextType) {
-        showNotification("Please select a text type", "error");
-        return;
-      }
-  
-      const block = lastClickedElement.closest('[id^="block-"]');
-      if (!block) {
-        showNotification("Block not found", "error");
-        return;
-      }
-  
-      let paragraphSelector = "";
-      if (selectedSingleTextType === "paragraph1") {
-        paragraphSelector = "p.sqsrte-large";
-      } else if (selectedSingleTextType === "paragraph2") {
-        paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-      } else if (selectedSingleTextType === "paragraph3") {
-        paragraphSelector = "p.sqsrte-small";
-      } else if (selectedSingleTextType.startsWith("heading")) {
-        paragraphSelector = "h" + selectedSingleTextType.replace("heading", "");
-      } else {
-        showNotification("Unknown text type: " + selectedSingleTextType, "error");
-        return;
-      }
-  
-      const targetElements = block.querySelectorAll(paragraphSelector);
-      if (!targetElements.length) {
-        showNotification(`No element found for ${selectedSingleTextType}`, "error");
-        return;
-      }
-  
-      let strongFound = false;
-      targetElements.forEach(el => {
-        const strongs = el.querySelectorAll('strong');
-        if (strongs.length > 0) {
-          strongFound = true;
-          strongs.forEach(strong => {
-            strong.style.color = color;
-          });
-        }
-      });
-  
-      if (!strongFound) {
-        showNotification(`No bold (<strong>) text found inside ${selectedSingleTextType}`, "info");
-        return;
-      }
-  
-      const styleId = `style-${block.id}-${selectedSingleTextType}-strong-textcolor`;
-      let styleTag = document.getElementById(styleId);
-  
-      if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = styleId;
-        document.head.appendChild(styleTag);
-      }
-  
-      styleTag.innerHTML = `
-        #${block.id} ${paragraphSelector} strong {
-          color: ${color} !important;
-        }
-      `;
-  
-      addPendingModification(block.id, {
-        "color": color,
-        "target": selectedSingleTextType
-      }, 'strong');
-  
-      showNotification(`✅ Text color applied to bold text inside: ${selectedSingleTextType}`, "success");
+    if (!selectedSingleTextType) {
+      showNotification("Please select a text type", "error");
+      return;
     }
   
-    colorInput.addEventListener('input', function () {
-      const color = colorInput.value;
-      applyColorToStrong(color);
-      colorHexInput.value = color.toUpperCase();
+    const block = lastClickedElement.closest('[id^="block-"]');
+    if (!block) {
+      showNotification("Block not found", "error");
+      return;
+    }
+  
+    let paragraphSelector = "";
+    if (selectedSingleTextType === "paragraph1") {
+      paragraphSelector = "p.sqsrte-large";
+    } else if (selectedSingleTextType === "paragraph2") {
+      paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+    } else if (selectedSingleTextType === "paragraph3") {
+      paragraphSelector = "p.sqsrte-small";
+    } else if (selectedSingleTextType.startsWith("heading")) {
+      paragraphSelector = "h" + selectedSingleTextType.replace("heading", "");
+    } else {
+      showNotification("Unknown text type: " + selectedSingleTextType, "error");
+      return;
+    }
+  
+    const targetElements = block.querySelectorAll(paragraphSelector);
+    if (!targetElements.length) {
+      showNotification(`No element found for ${selectedSingleTextType}`, "error");
+      return;
+    }
+  
+    let strongFound = false;
+    targetElements.forEach(el => {
+      const strongs = el.querySelectorAll('strong');
+      if (strongs.length > 0) {
+        strongFound = true;
+        strongs.forEach(strong => {
+          strong.style.color = color;
+        });
+      }
     });
   
-    colorHexInput.addEventListener('input', function () {
-      let color = colorHexInput.value;
-      if (!color.startsWith('#')) {
-        color = '#' + color;
+    if (!strongFound) {
+      showNotification(`No bold (<strong>) text found inside ${selectedSingleTextType}`, "info");
+      return;
+    }
+  
+    const styleId = `style-${block.id}-${selectedSingleTextType}-strong-textcolor`;
+    let styleTag = document.getElementById(styleId);
+  
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+  
+    styleTag.innerHTML = `
+      #${block.id} ${paragraphSelector} strong {
+        color: ${color} !important;
       }
-      if (!/^#[0-9A-F]{6}$/i.test(color)) {
-        console.warn("⚠️ Invalid hex color");
-        return;
-      }
-      applyColorToStrong(color);
-      colorInput.value = color;
-    });
+    `;
+  
+    addPendingModification(block.id, {
+      "color": color,
+      "target": selectedSingleTextType
+    }, 'strong');
+  
+    showNotification(`✅ Text color applied to bold text inside: ${selectedSingleTextType}`, "success");
   }
   
   
