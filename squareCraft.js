@@ -209,6 +209,37 @@ let selectedElement = null;
     });
 
 
+    handleFontWeightClick(event, {
+      lastClickedElement,
+      getTextType,
+      applyStylesToElement,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag,
+      lastAppliedAlignment,
+      setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
+      lastClickedBlockId,
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => lastClickedBlockId = val,
+      token,
+      widgetId,
+      setSelectedElement: (val) => selectedElement = val, // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+
+      showNotification: showNotification
+    })
+
+
   //   handleFontWeightFunClick(event, {
   //     lastClickedElement,
   //     saveModifications,
