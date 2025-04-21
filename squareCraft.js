@@ -99,6 +99,8 @@ let selectedElement = null;
   const { handleFontSize } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontSize.js");
   const { saveModifications } = await import("https://goswami34.github.io/squareCraft-widget/html.js");
   const { handleBoldTextTransformClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextTransformClick.js");
+  
+  
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,

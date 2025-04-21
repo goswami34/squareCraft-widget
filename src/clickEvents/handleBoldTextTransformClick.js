@@ -1,4 +1,4 @@
-export function handleBlockClick(event, context) {
+export function handleBoldTextTransformClick(event, context) {
     const {
       getTextType,
       setSelectedElement,
