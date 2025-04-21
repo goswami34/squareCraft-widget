@@ -98,15 +98,15 @@ export function typoBoldSelect(fontSizes) {
          </div>
       </div>
 
-      <div class="squareCraft-mt-2 squareCraft-px-2">
-                <div class="squareCraft-flex squareCraft-items-center squareCraft-justify-between">
-                  <label class="squareCraft-text-sm squareCraft-universal squareCraft-poppins">Text Color</label>
-                  <div class="squareCraft-flex squareCraft-items-center squareCraft-gap-2">
+      <div class="sc-mt-2 sc-px-2">
+                <div class="sc-flex sc-items-center sc-justify-between">
+                  <label class="sc-text-sm sc-universal sc-poppins">Text Color</label>
+                  <div class="sc-flex sc-items-center sc-gap-2">
                     <input 
                       type="color" 
-                      id="squareCraftTextColor" 
+                      id="scTextColor" 
                       value="#ffffff" 
-                      class="squareCraft-color-input"
+                      class="sc-color-input"
                       style="
                         width: 40px;
                         height: 40px;
@@ -122,8 +122,8 @@ export function typoBoldSelect(fontSizes) {
                     >
                     <input 
                       type="text" 
-                      id="squareCraftColorHex" 
-                      class="squareCraft-color-hex"
+                      id="scColorHex" 
+                      class="sc-color-hex"
                       style="
                         width: 80px;
                         padding: 8px;
