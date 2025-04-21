@@ -151,11 +151,21 @@ export function handleBoldTextTransformClick(event, context) {
         tab.onclick = () => {
           let clickedTag = "";
       
-          if (typeId.startsWith("heading")) {
+        //   if (typeId.startsWith("heading")) {
+        //     clickedTag = `heading${typeId.replace("heading", "")}`;
+        //   } else if (typeId.startsWith("paragraph")) {
+        //     clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+        //   }
+
+        if (typeId.startsWith("heading")) {
             clickedTag = `heading${typeId.replace("heading", "")}`;
-          } else if (typeId.startsWith("paragraph")) {
+        } else if (typeId.startsWith("paragraph")) {
             clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
-          }
+        } else if (typeId.startsWith("p")) {
+            clickedTag = `paragraph${typeId.replace("p", "")}`; 
+        } else {
+            clickedTag = typeId; // fallback
+        }
       
           console.log("✅ Clicked tab detected:", clickedTag);
           setSelectedSingleTextType(clickedTag);
