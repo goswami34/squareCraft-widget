@@ -168,7 +168,7 @@ export function handleBoldTextTransformClick(event, context) {
             setSelectedSingleTextType(clickedTag);
           
             // ✅ Now trigger Font Weight select change manually
-            const fontWeightSelect = document.getElementById("squareCraftFontWeight");
+            const fontWeightSelect = document.getElementById(`squareCraftFontWeight-${typeId}`);
             if (fontWeightSelect) {
               fontWeightSelect.focus();
             }
