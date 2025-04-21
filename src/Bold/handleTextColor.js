@@ -182,7 +182,7 @@ export function handleTextColorclicked(color) {
   
     let strongFound = false;
     targetElements.forEach(el => {
-      const strongs = el.querySelectorAll('strong');
+      const strongs = el.querySelectorAll('strong') ;
       if (strongs.length > 0) {
         strongFound = true;
         strongs.forEach(strong => {
