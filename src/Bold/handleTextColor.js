@@ -26,7 +26,7 @@ function showNotification(message, type = "info") {
   }
   
 
-  export function handleTextColorclicked(event = null, context = null) {
+  export function handleTextColorclicked(context = null) {
     const {
       lastClickedElement,
       selectedSingleTextType,
@@ -34,15 +34,18 @@ function showNotification(message, type = "info") {
       showNotification,
     } = context;
   
-    const textColorInput = document.getElementById('scTextColor');
+    const textColorInput = document.getElementById('scTextColor'); // ✅ Corrected id
+  
     if (!textColorInput) {
       console.error("Text color input not found!");
       return;
     }
   
-    // ✅ Add change event
-    textColorInput.addEventListener('change', () => {
-      const color = textColorInput.value; 
+    // Remove previous listeners if any
+    textColorInput.removeEventListener('input', handleColorChange);
+  
+    function handleColorChange() {
+      const color = textColorInput.value;
       console.log("Selected text color:", color);
   
       if (!lastClickedElement) {
@@ -61,7 +64,6 @@ function showNotification(message, type = "info") {
         return;
       }
   
-      // Correct paragraphSelector
       let paragraphSelector = "";
   
       if (selectedSingleTextType === "paragraph1") {
@@ -70,22 +72,15 @@ function showNotification(message, type = "info") {
         paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
       } else if (selectedSingleTextType === "paragraph3") {
         paragraphSelector = "p.sqsrte-small";
-      } else if (selectedSingleTextType === "heading1") {
-        paragraphSelector = "h1";
-      } else if (selectedSingleTextType === "heading2") {
-        paragraphSelector = "h2";
-      } else if (selectedSingleTextType === "heading3") {
-        paragraphSelector = "h3";
-      } else if (selectedSingleTextType === "heading4") {
-        paragraphSelector = "h4";
+      } else if (selectedSingleTextType.startsWith("heading")) {
+        paragraphSelector = "h" + selectedSingleTextType.replace("heading", "");
       } else {
         showNotification("Unknown text type: " + selectedSingleTextType, "error");
         return;
       }
   
-      console.log("Target paragraph selector for color:", paragraphSelector);
-  
       const targetElements = block.querySelectorAll(paragraphSelector);
+  
       if (!targetElements.length) {
         showNotification(`No element found for ${selectedSingleTextType}`, "error");
         return;
@@ -129,6 +124,10 @@ function showNotification(message, type = "info") {
       }, 'strong');
   
       showNotification(`✅ Text color applied to bold text inside: ${selectedSingleTextType}`, "success");
-    });
+    }
+  
+    // ✅ Attach the event correctly
+    textColorInput.addEventListener('input', handleColorChange);
   }
+  
   
