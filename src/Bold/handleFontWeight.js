@@ -32,7 +32,7 @@ export function handleFontWeightClick(event = null, context = null) {
       lastClickedElement,
       selectedSingleTextType,
       addPendingModification,
-      showNotification,
+    //   showNotification,
     } = context;
   
     const fontWeightSelect = document.getElementById('squareCraftFontWeight');
