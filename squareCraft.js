@@ -99,6 +99,7 @@ let selectedElement = null;
   const { saveModifications } = await import("https://goswami34.github.io/squareCraft-widget/html.js");
   const { handleBoldTextTransformClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextTransformClick.js");
   const { handleFontWeightClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontWeight.js");
+  const { handleTextColor } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleTextColor.js");
   
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
@@ -207,6 +208,41 @@ let selectedElement = null;
         pendingModifications.get(blockId).push({ css, tagType });
       },
 
+      showNotification: showNotification
+    });
+
+
+    handleTextColor(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag,
+      
+      setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
+      lastClickedBlockId,
+      setLastClickedElement: (val) => lastClickedElement = val,
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => lastClickedBlockId = val,
+      token,
+      widgetId,
+      setSelectedElement: (val) => selectedElement = val, // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
       showNotification: showNotification
     });
 
