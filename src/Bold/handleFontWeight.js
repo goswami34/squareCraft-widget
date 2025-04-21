@@ -64,25 +64,25 @@ export function handleFontWeightClick(event = null, context = null) {
   
       // Build selector
       let paragraphSelector = "";
-  
-      if (selectedSingleTextType === "paragraph1") {
+
+        if (selectedSingleTextType === "paragraph1") {
         paragraphSelector = "p.sqsrte-large";
-      } else if (selectedSingleTextType === "paragraph2") {
+        } else if (selectedSingleTextType === "paragraph2") {
         paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-      } else if (selectedSingleTextType === "paragraph3") {
+        } else if (selectedSingleTextType === "paragraph3") {
         paragraphSelector = "p.sqsrte-small";
-      } else if (selectedSingleTextType === "h1") {
+        } else if (selectedSingleTextType === "heading1") {
         paragraphSelector = "h1";
-      } else if (selectedSingleTextType === "h2") {
+        } else if (selectedSingleTextType === "heading2") {
         paragraphSelector = "h2";
-      } else if (selectedSingleTextType === "h3") {
+        } else if (selectedSingleTextType === "heading3") {
         paragraphSelector = "h3";
-      } else if (selectedSingleTextType === "h4") {
+        } else if (selectedSingleTextType === "heading4") {
         paragraphSelector = "h4";
-      } else {
+        } else {
         showNotification("Unknown text type: " + selectedSingleTextType, "error");
         return;
-      }
+        }
   
       console.log("Target paragraph selector:", paragraphSelector);
   
