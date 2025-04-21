@@ -104,46 +104,45 @@ export function typoBoldSelect(fontSizes) {
 
    <div>
       <div class="sc-mt-2 sc-px-2">
-                <div class="sc-flex sc-items-center sc-justify-between">
-                  <label class="sc-text-sm sc-universal sc-poppins">Text Color</label>
-                  <div class="sc-flex sc-items-center sc-gap-2">
-                    <input 
-                      type="color" 
-                      id="scTextColor" 
-                      value="#ffffff" 
-                      class="sc-color-input"
-                      style="
-                        width: 40px;
-                        height: 40px;
-                        padding: 0;
-                        border: 2px solid #585858;
-                        border-radius: 6px;
-                        background: #2c2c2c;
-                        cursor: pointer;
-                        -webkit-appearance: none;
-                        -moz-appearance: none;
-                        appearance: none;
-                      "
-                    >
-                    <input 
-                      type="text" 
-                      id="scColorHex" 
-                      class="sc-color-hex"
-                      style="
-                        width: 80px;
-                        padding: 8px;
-                        background: #2c2c2c;
-                        border: 1px solid #585858;
-                        border-radius: 6px;
-                        color: white;
-                        font-size: 14px;
-                        font-family: 'Poppins', sans-serif;
-                      "
-                      placeholder="#FFFFFF"
-                    >
-                  </div>
-                </div>
-              </div>
+         <div class="sc-flex sc-items-center sc-justify-between">
+         <div class="sc-flex sc-items-center sc-gap-2">
+            <input 
+               type="color" 
+               id="scTextColor" 
+               value="#ffffff" 
+               class="sc-color-input"
+               style="
+               width: 40px;
+               height: 40px;
+               padding: 0;
+               border: 2px solid #585858;
+               border-radius: 6px;
+               background: #2c2c2c;
+               cursor: pointer;
+               -webkit-appearance: none;
+               -moz-appearance: none;
+               appearance: none;
+               "
+            >
+            <input 
+               type="text" 
+               id="scColorHex" 
+               class="sc-color-hex"
+               style="
+               width: 80px;
+               padding: 8px;
+               background: #2c2c2c;
+               border: 1px solid #585858;
+               border-radius: 6px;
+               color: white;
+               font-size: 14px;
+               font-family: 'Poppins', sans-serif;
+               "
+               placeholder="#FFFFFF"
+            >
+         </div>
+         </div>
+      </div>
    
    </div>
 
