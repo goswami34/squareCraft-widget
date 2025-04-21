@@ -34,7 +34,7 @@ function showNotification(message, type = "info") {
       showNotification,
     } = context;
   
-    const textColorInput = document.getElementById('textColorPalate');
+    const textColorInput = document.getElementById('scTextColor');
     if (!textColorInput) {
       console.error("Text color input not found!");
       return;

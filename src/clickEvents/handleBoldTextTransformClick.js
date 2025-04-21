@@ -202,7 +202,7 @@ export function handleBoldTextTransformClick(event, context) {
           setSelectedSingleTextType(clickedTag);
         
           // ✅ Now trigger Font Weight select change manually
-          const fontWeightSelect = document.getElementById(`textColorPalate-${typeId}`);
+          const fontWeightSelect = document.getElementById(`scTextColor-${typeId}`);
           if (fontWeightSelect) {
             fontWeightSelect.focus();
           }
