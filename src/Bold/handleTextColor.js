@@ -165,7 +165,7 @@ export function handleTextColorclicked(context) {
       lastClickedElement,
       selectedSingleTextType,
       addPendingModification,
-    //   showNotification,
+      showNotification,
     } = context;
   
     const colorInput = document.getElementById('scTextColor');
@@ -176,7 +176,7 @@ export function handleTextColorclicked(context) {
       return;
     }
   
-    // ✅ Clear previous listeners
+    // Remove old listeners
     colorInput.oninput = null;
     colorHexInput.oninput = null;
   
@@ -256,7 +256,6 @@ export function handleTextColorclicked(context) {
       showNotification(`✅ Text color applied to bold text inside: ${selectedSingleTextType}`, "success");
     }
   
-    // ✅ Now add clean fresh input listeners
     colorInput.addEventListener('input', function () {
       const color = colorInput.value;
       applyColorToStrong(color);
@@ -276,6 +275,7 @@ export function handleTextColorclicked(context) {
       colorInput.value = color;
     });
   }
+  
   
   
   

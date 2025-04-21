@@ -186,26 +186,53 @@ export function handleBoldTextTransformClick(event, context) {
       const tab = document.getElementById(typeId);
       if (!tab) return;
     
+      // tab.onclick = () => {
+      //   let clickedTag = "";
+    
+      //   if (typeId.startsWith("heading")) {
+      //     clickedTag = `heading${typeId.replace("heading", "")}`;
+      //   } else if (typeId.startsWith("paragraph")) {
+      //     clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+      //   }
+    
+      //   console.log("✅ Clicked tab detected:", clickedTag);
+      //   setSelectedSingleTextType(clickedTag);
+    
+      //   // Now initialize the color input for the selected text
+      //   handleTextColorclicked({
+      //     lastClickedElement,
+      //     selectedSingleTextType: clickedTag,
+      //     addPendingModification,
+      //     showNotification
+      //   });
+      // };
+
       tab.onclick = () => {
         let clickedTag = "";
-    
+      
         if (typeId.startsWith("heading")) {
           clickedTag = `heading${typeId.replace("heading", "")}`;
         } else if (typeId.startsWith("paragraph")) {
           clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
         }
-    
+      
         console.log("✅ Clicked tab detected:", clickedTag);
         setSelectedSingleTextType(clickedTag);
-    
-        // Now initialize the color input for the selected text
+      
+        const fontSizeInput = document.getElementById(`squareCraft-text-transform-${typeId}`);
+        if (fontSizeInput) {
+          fontSizeInput.focus();
+        }
+      
+        // ✅ Correct: only initialize Text Color input when a text type selected
         handleTextColorclicked({
           lastClickedElement,
           selectedSingleTextType: clickedTag,
           addPendingModification,
-          showNotification
+          showNotification,
         });
       };
+      
     });
     
 
