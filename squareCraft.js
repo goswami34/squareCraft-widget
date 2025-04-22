@@ -714,7 +714,7 @@ function showNotification(message, type = "info") {
     const fontWeightLinkSelect = document.getElementById("squareCraftLinkFontWeight");
     if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
       fontWeightLinkSelect.dataset.initialized = "true";
-    
+
       fontWeightLinkSelect.addEventListener("change", (event) => {
         const lastClickedElement = document.querySelector('.sc-selected');
         if (lastClickedElement) {
@@ -727,6 +727,7 @@ function showNotification(message, type = "info") {
         }
       });
     }
+
 
 
 
