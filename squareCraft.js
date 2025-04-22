@@ -294,49 +294,49 @@ let selectedElement = null;
 
     //Link code start here
 
-    // handleFontSizeLink(event, {
-    //   lastClickedElement,
-    //   getTextType,
-    //   getTextTypeBold,
-    //   applyStylesToElement,
-    //   lastAppliedAlignment,
-    //   // selectedTextType,
-    //   // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
-    //   selectedSingleTextType,
-    //   setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
-    //   selectedTextElement,
-    //   setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag,
+    handleFontSizeLink(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag,
       
-    //   setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
-    //   lastActiveAlignmentElement,
-    //   setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
-    //   lastClickedBlockId,
-    //   setLastClickedElement: (val) => lastClickedElement = val,
-    //   userId,
-    //   saveModifications,
-    //   handleBlockClick,
-    //   setLastClickedBlockId: (val) => lastClickedBlockId = val,
-    //   token,
-    //   widgetId,
-    //   setSelectedElement: (val) => selectedElement = val, // Add this line
-    //   addPendingModification: (blockId, css, tagType) => {
-    //     if (!pendingModifications.has(blockId)) {
-    //       pendingModifications.set(blockId, []);
-    //     }
-    //     pendingModifications.get(blockId).push({ css, tagType });
-    //   },
-    //   showNotification: showNotification
-    // });
-
-    document.getElementById('scFontSizeInputLink')?.addEventListener('input', (event) => {
-      handleFontSizeLink(event, {
-        lastClickedElement,
-        selectedSingleTextType,
-        addPendingModification,
-        saveModifications,
-        showNotification
-      });
+      setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
+      lastClickedBlockId,
+      setLastClickedElement: (val) => lastClickedElement = val,
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => lastClickedBlockId = val,
+      token,
+      widgetId,
+      setSelectedElement: (val) => selectedElement = val, // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification
     });
+
+    // document.getElementById('scFontSizeInputLink')?.addEventListener('input', (event) => {
+    //   handleFontSizeLink(event, {
+    //     lastClickedElement,
+    //     selectedSingleTextType,
+    //     addPendingModification,
+    //     saveModifications,
+    //     showNotification
+    //   });
+    // });
     
 
     //Link code end here
@@ -603,6 +603,38 @@ function showNotification(message, type = "info") {
             });
         });
     }
+
+
+    //Link code start here
+    const LinkfontsizeSelect = document.getElementById("scFontSizeInputLink");
+    if (LinkfontsizeSelect && !LinkfontsizeSelect.dataset.initialized) {
+      LinkfontsizeSelect.dataset.initialized = "true";
+        
+        // Add a small delay to ensure the DOM is fully loaded
+        setTimeout(() => {
+            handleFontSizeLink(null, {
+                lastClickedElement,
+                getTextType,
+                saveModifications,
+                selectedElement,
+                setSelectedElement: (val) => selectedElement = val,
+                setLastClickedBlockId: (val) => lastClickedBlockId = val,
+                setLastClickedElement: (val) => lastClickedElement = val,
+                addPendingModification: (blockId, css, tagType) => {
+                    if (!pendingModifications.has(blockId)) {
+                        pendingModifications.set(blockId, []);
+                    }
+                    pendingModifications.get(blockId).push({ css, tagType });
+                },
+                showNotification
+            });
+        }, 100);
+    }
+
+
+    //Link code end here
+
+
     
   });
 
