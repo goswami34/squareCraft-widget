@@ -800,7 +800,6 @@ let selectedElement = null;
           return;
         }
 
-        // Call handleFontWeightLink with the correct context
         handleFontWeightLink(event, {
           lastClickedElement: currentlySelectedBlock,
           selectedSingleTextType,
