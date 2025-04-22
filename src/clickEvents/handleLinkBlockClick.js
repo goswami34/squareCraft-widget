@@ -142,47 +142,29 @@ export function handleLinkBlockClick(event, context) {
       }
     
 
-    //bold section font size code start here
+    //Link section font size code start here
     const innerTextElementsFont = block.querySelectorAll("h1,h2,h3,h4,p,p1,p2,p3");
 
     visibleParts.forEach(partId => {
         const typeId = partId.replace("Part", "");
         const tab = document.getElementById(typeId);
         if (!tab) return;
-
+      
         tab.onclick = () => {
           const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : typeId;
           setSelectedSingleTextType(clickedTag);
           console.log("✅ Now selected text type:", clickedTag);
       
-          const fontSizeInput = document.getElementById(`scFontSizeInput-${typeId}`);
-          if (fontSizeInput) {
-            fontSizeInput.focus(); // focus automatically
+          const linkFontSizeInput = document.getElementById(`scFontSizeInputLink-${typeId}`);
+          if (linkFontSizeInput) {
+            linkFontSizeInput.focus(); // 👈 Focus Link font size input separately
           }
-      };
-    });
+        };
+      });
     
-    //bold section font size code end here
+    //Link section font size code end here
 
-    //font weight code start here
-    // const strongElementsByTag = {};
-    // innerTextElements.forEach(el => {
-    //   const tag = el.tagName.toLowerCase();
-    //   const strongTags = el.querySelectorAll('strong');
-    //   if (strongTags.length > 0) {
-    //     // Instead of storing the DOM elements, store just the count and text content
-    //     strongElementsByTag[tag] = {
-    //       count: strongTags.length,
-    //       texts: Array.from(strongTags).map(strong => strong.textContent)
-    //     };
-    //   }
-    // });
-
-    // // Store the strong elements data in the block's dataset
-    // block.dataset.strongElementsByTag = JSON.stringify(strongElementsByTag);
-
-   
-    //font weight code end here
+ 
     
   }
 

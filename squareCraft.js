@@ -100,9 +100,24 @@ let selectedElement = null;
   const { handleBoldTextTransformClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextTransformClick.js");
   const { handleFontWeightClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontWeight.js");
   const { handleTextColorclicked } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleTextColor.js");
-  
+  const { handleFontSizeLink } = await import("https://goswami34.github.io/squareCraft-widget/src/Link/handleFontSizeLink.js");
+  const { handleLinkBlockClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleLinkBlockClick.js");
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
+      getTextType,
+      selectedElement,
+      setSelectedElement: (val) => selectedElement = val,
+      setLastClickedBlockId: (val) => lastClickedBlockId = val,
+      setLastClickedElement: (val) => lastClickedElement = val,
+      setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
+      setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
+      setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag
+    });
+
+    handleLinkBlockClick(event, {
       getTextType,
       selectedElement,
       setSelectedElement: (val) => selectedElement = val,
@@ -180,8 +195,6 @@ let selectedElement = null;
     });
 
     
-
-
     handleTextTransformClick(event, {
       lastClickedElement,
       getTextType,
@@ -277,6 +290,56 @@ let selectedElement = null;
 
       showNotification: showNotification
     })
+
+
+    //Link code start here
+
+    // handleFontSizeLink(event, {
+    //   lastClickedElement,
+    //   getTextType,
+    //   getTextTypeBold,
+    //   applyStylesToElement,
+    //   lastAppliedAlignment,
+    //   // selectedTextType,
+    //   // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+    //   selectedSingleTextType,
+    //   setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
+    //   selectedTextElement,
+    //   setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag,
+      
+    //   setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
+    //   lastActiveAlignmentElement,
+    //   setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
+    //   lastClickedBlockId,
+    //   setLastClickedElement: (val) => lastClickedElement = val,
+    //   userId,
+    //   saveModifications,
+    //   handleBlockClick,
+    //   setLastClickedBlockId: (val) => lastClickedBlockId = val,
+    //   token,
+    //   widgetId,
+    //   setSelectedElement: (val) => selectedElement = val, // Add this line
+    //   addPendingModification: (blockId, css, tagType) => {
+    //     if (!pendingModifications.has(blockId)) {
+    //       pendingModifications.set(blockId, []);
+    //     }
+    //     pendingModifications.get(blockId).push({ css, tagType });
+    //   },
+    //   showNotification: showNotification
+    // });
+
+    document.getElementById('scFontSizeInputLink')?.addEventListener('input', (event) => {
+      handleFontSizeLink(event, {
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification,
+        saveModifications,
+        showNotification
+      });
+    });
+    
+
+    //Link code end here
 
 
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
