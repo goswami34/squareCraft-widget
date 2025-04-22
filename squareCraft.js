@@ -692,22 +692,39 @@ function showNotification(message, type = "info") {
     }
 
 
-    const fontWeightLinkContainer = document.getElementById("squareCraftLinkFontWeight");
-    if (fontWeightLinkContainer && !fontWeightLinkContainer.dataset.initialized) {
-      fontWeightLinkContainer.dataset.initialized = "true";
+    // const fontWeightLinkContainer = document.getElementById("squareCraftLinkFontWeight");
+    // if (fontWeightLinkContainer && !fontWeightLinkContainer.dataset.initialized) {
+    //   fontWeightLinkContainer.dataset.initialized = "true";
 
-      fontWeightLinkContainer.querySelectorAll('[id^="scFontWeight"]').forEach(button => {
-        button.addEventListener('click', (event) => {
-          const lastClickedElement = document.querySelector('.sc-selected');
-          if (lastClickedElement) {
-            handleFontWeightLink(event, {
-              lastClickedElement,
-              selectedSingleTextType,
-              addPendingModification,
-              showNotification
-            });
-          }
-        });
+    //   fontWeightLinkContainer.querySelectorAll('[id^="scFontWeight"]').forEach(button => {
+    //     button.addEventListener('click', (event) => {
+    //       const lastClickedElement = document.querySelector('.sc-selected');
+    //       if (lastClickedElement) {
+    //         handleFontWeightLink(event, {
+    //           lastClickedElement,
+    //           selectedSingleTextType,
+    //           addPendingModification,
+    //           showNotification
+    //         });
+    //       }
+    //     });
+    //   });
+    // }
+
+    const fontWeightLinkSelect = document.getElementById("squareCraftLinkFontWeight");
+    if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
+      fontWeightLinkSelect.dataset.initialized = "true";
+    
+      fontWeightLinkSelect.addEventListener("change", (event) => {
+        const lastClickedElement = document.querySelector('.sc-selected');
+        if (lastClickedElement) {
+          handleFontWeightLink(event, {
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification
+          });
+        }
       });
     }
 

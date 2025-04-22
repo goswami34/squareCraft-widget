@@ -192,22 +192,29 @@ export function handleLinkBlockClick(event, context) {
     //Link section text transform code end here
 
     //Link section font weight code start here
-    const fontWeightLinkSelect = document.getElementById("squareCraftLinkFontWeight");
-    if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
-      fontWeightLinkSelect.dataset.initialized = "true";
-    
-      fontWeightLinkSelect.addEventListener("change", (event) => {
-        const lastClickedElement = document.querySelector('.sc-selected');
-        if (lastClickedElement) {
-          handleFontWeightLink(event, {
-            lastClickedElement,
-            selectedSingleTextType,
-            addPendingModification,
-            showNotification
-          });
-        }
+    visibleParts.forEach(partId => {
+        const typeId = partId.replace("Part", "");
+        const tab = document.getElementById(typeId);
+        if (!tab) return;
+      
+        tab.onclick = () => {
+          let clickedTag = "";
+      
+          if (typeId.startsWith("heading")) {
+            clickedTag = `heading${typeId.replace("heading", "")}`;
+          } else if (typeId.startsWith("paragraph")) {
+            clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+          }
+      
+          console.log("✅ Clicked tab detected:", clickedTag);
+          setSelectedSingleTextType(clickedTag);
+      
+          const fontweightInput = document.getElementById(`squareCraftLinkFontWeight-${typeId}`);
+          if (fontweightInput) {
+            fontweightInput.focus(); // auto focus
+          }
+        };
       });
-    }
     
     //Link section font weight code end here
 
