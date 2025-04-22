@@ -231,20 +231,24 @@ export function handleLinkBlockClick(event, context) {
         clickedTag = `p${typeId.replace("paragraph", "")}`;
       }
 
-      console.log("✅ Clicked tab detected:", clickedTag);
+      console.log("Clicked tab detected:", clickedTag);
       setSelectedSingleTextType(clickedTag);
 
       // Initialize font weight select if not already initialized
       const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
       if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
+        console.log("Initializing font weight select");
         fontWeightSelect.dataset.initialized = "true";
         fontWeightSelect.addEventListener("change", (event) => {
-          handleFontWeightLink(event, {
-            lastClickedElement: document.querySelector(".sc-selected"),
-            selectedSingleTextType: clickedTag,
-            addPendingModification,
-            showNotification
-          });
+          const currentlySelectedBlock = document.querySelector(".sc-selected");
+          if (currentlySelectedBlock) {
+            handleFontWeightLink(event, {
+              lastClickedElement: currentlySelectedBlock,
+              selectedSingleTextType: clickedTag,
+              addPendingModification,
+              showNotification
+            });
+          }
         });
       }
     };

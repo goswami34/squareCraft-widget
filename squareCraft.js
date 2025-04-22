@@ -780,33 +780,39 @@ let selectedElement = null;
     // }
 
     // In squareCraft.js
+    // In squareCraft.js
     const fontWeightLinkSelect = document.getElementById("squareCraftLinkFontWeight");
     if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
+      console.log("Initializing font weight select for links");
       fontWeightLinkSelect.dataset.initialized = "true";
 
-      fontWeightLinkSelect.addEventListener("change", (event) => {
-        const currentlySelectedBlock = document.querySelector(".sc-selected");
-        const selectedFontWeight = fontWeightLinkSelect.value;
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        fontWeightLinkSelect.addEventListener("change", (event) => {
+          console.log("Font weight select changed");
+          const currentlySelectedBlock = document.querySelector(".sc-selected");
+          const selectedFontWeight = fontWeightLinkSelect.value;
 
-        if (!currentlySelectedBlock) {
-          showNotification("❌ Please select a block first.", "error");
-          fontWeightLinkSelect.value = "400"; // Reset to default
-          return;
-        }
+          if (!currentlySelectedBlock) {
+            showNotification("❌ Please select a block first.", "error");
+            fontWeightLinkSelect.value = "400"; // Reset to default
+            return;
+          }
 
-        if (!selectedSingleTextType) {
-          showNotification("❌ Please select a text type (h1, h2, p1 etc) first.", "error");
-          fontWeightLinkSelect.value = "400"; // Reset to default
-          return;
-        }
+          if (!selectedSingleTextType) {
+            showNotification("❌ Please select a text type (h1, h2, p1 etc) first.", "error");
+            fontWeightLinkSelect.value = "400"; // Reset to default
+            return;
+          }
 
-        handleFontWeightLink(event, {
-          lastClickedElement: currentlySelectedBlock,
-          selectedSingleTextType,
-          addPendingModification,
-          showNotification
+          handleFontWeightLink(event, {
+            lastClickedElement: currentlySelectedBlock,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification
+          });
         });
-      });
+      }, 100);
     }
 
     //Link code end here

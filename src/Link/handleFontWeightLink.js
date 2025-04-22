@@ -171,7 +171,10 @@ function showNotification(message, type = "info") {
 
 
 // In handleFontWeightLink.js
+
+// In handleFontWeightLink.js
 export function handleFontWeightLink(event, context) {
+  console.log("handleFontWeightLink called with context:", context);
   const {
     lastClickedElement,
     selectedSingleTextType,
@@ -214,38 +217,26 @@ export function handleFontWeightLink(event, context) {
 
   // Determine the selector based on text type
   let selector = "";
-  // if (selectedSingleTextType === "paragraph1") {
-  //   selector = "p.sqsrte-large";
-  // } else if (selectedSingleTextType === "paragraph2") {
-  //   selector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-  // } else if (selectedSingleTextType === "paragraph3") {
-  //   selector = "p.sqsrte-small";
-  // } else if (selectedSingleTextType === "h1") {
-  //   selector = "h1";
-  // } else if (selectedSingleTextType === "h2") {
-  //   selector = "h2";
-  // } else if (selectedSingleTextType === "h3") {
-  //   selector = "h3";
-  // } else if (selectedSingleTextType === "h4") {
-  //   selector = "h4";
-  // } else {
-  //   showNotification("Unknown text type: " + selectedSingleTextType, "error");
-  //   return;
-  // }
-
-  if (selectedSingleTextType === "paragraph1") {
+  if (selectedSingleTextType === "p1") {
     selector = "p.sqsrte-large";
-  } else if (selectedSingleTextType === "paragraph2") {
+  } else if (selectedSingleTextType === "p2") {
     selector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-  } else if (selectedSingleTextType === "paragraph3") {
+  } else if (selectedSingleTextType === "p3") {
     selector = "p.sqsrte-small";
-  } else if (selectedSingleTextType.startsWith("heading")) {
-    selector = `h${selectedSingleTextType.replace("heading", "")}`;
+  } else if (selectedSingleTextType === "h1") {
+    selector = "h1";
+  } else if (selectedSingleTextType === "h2") {
+    selector = "h2";
+  } else if (selectedSingleTextType === "h3") {
+    selector = "h3";
+  } else if (selectedSingleTextType === "h4") {
+    selector = "h4";
   } else {
-    selector = selectedSingleTextType;
+    showNotification("Unknown text type: " + selectedSingleTextType, "error");
+    return;
   }
 
-  console.log("🔎 Applying font-size to links inside:", selector);
+  console.log("Applying font weight to selector:", selector);
 
   // Find all matching elements in the block
   const targetElements = block.querySelectorAll(selector);
