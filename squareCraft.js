@@ -427,8 +427,8 @@ let selectedElement = null;
         type === "success"
           ? "#4CAF50"
           : type === "error"
-          ? "#f44336"
-          : "#2196F3",
+            ? "#f44336"
+            : "#2196F3",
     });
 
     document.body.appendChild(notification);
@@ -779,41 +779,32 @@ let selectedElement = null;
     //   });
     // }
 
-    const fontWeightLinkSelect = document.getElementById(
-      "squareCraftLinkFontWeight"
-    );
+    // In squareCraft.js
+    const fontWeightLinkSelect = document.getElementById("squareCraftLinkFontWeight");
     if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
       fontWeightLinkSelect.dataset.initialized = "true";
 
       fontWeightLinkSelect.addEventListener("change", (event) => {
         const currentlySelectedBlock = document.querySelector(".sc-selected");
-        const selectedFontWeight = fontWeightLinkSelect.value; // New line added to capture font-weight
+        const selectedFontWeight = fontWeightLinkSelect.value;
 
         if (!currentlySelectedBlock) {
-          // Show proper error
           showNotification("❌ Please select a block first.", "error");
-          // Reset dropdown to default after error
-          fontWeightLinkSelect.value = "400"; // set back to Regular (400)
+          fontWeightLinkSelect.value = "400"; // Reset to default
           return;
         }
 
         if (!selectedSingleTextType) {
-          // Show proper error
-          showNotification(
-            "❌ Please select a text type (h1, h2, p1 etc) first.",
-            "error"
-          );
-          // Reset dropdown to default after error
-          fontWeightLinkSelect.value = "400"; // set back to Regular (400)
+          showNotification("❌ Please select a text type (h1, h2, p1 etc) first.", "error");
+          fontWeightLinkSelect.value = "400"; // Reset to default
           return;
         }
 
-        // ✅ Now everything is okay, apply font-weight normally
         handleFontWeightLink(event, {
           lastClickedElement: currentlySelectedBlock,
           selectedSingleTextType,
           addPendingModification,
-          showNotification,
+          showNotification
         });
       });
     }

@@ -1,5 +1,5 @@
 export function typoLinkSelect(fontSizes) {
-  return `
+   return `
        <div
    class="sc-mt-2 sc-relative sc-grid  sc-grid-cols-12 sc-gap-2 ">
 
@@ -45,14 +45,14 @@ export function typoLinkSelect(fontSizes) {
                   sc-rounded-6px sc-border sc-border-585858 sc-absolute 
                   sc-mt-1">
                ${fontSizes
-                 ?.map(
-                   (size) => `
+         ?.map(
+            (size) => `
                <div
                   class="sc-dropdown-item sc-py-1px sc-text-center  sc-text-sm"
                   data-value="${size}">${size}</div>
               `
-                 )
-                 .join("")}
+         )
+         .join("")}
             </div>
          </div>
       </div>
