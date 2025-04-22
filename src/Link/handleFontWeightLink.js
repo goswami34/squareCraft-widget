@@ -34,6 +34,16 @@ function showNotification(message, type = "info") {
       addPendingModification,
     //   showNotification,
     } = context;
+
+    if (!event) {
+        const activeButton = document.querySelector('[id^="scFontWeight"].sc-activeTab-border');
+        if (!activeButton) return;
+        event = { target: activeButton };
+      }
+    
+      const clickedElement = event.target.closest('[id^="scFontWeight"]');
+      if (!clickedElement) return;
+    
   
     const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
     if (!fontWeightSelect) {
