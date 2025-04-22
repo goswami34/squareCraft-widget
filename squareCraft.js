@@ -102,6 +102,8 @@ let selectedElement = null;
   const { handleTextColorclicked } = await import("https://goswami34.github.io/squareCraft-widget/src/Bold/handleTextColor.js");
   const { handleFontSizeLink } = await import("https://goswami34.github.io/squareCraft-widget/src/Link/handleFontSizeLink.js");
   const { handleLinkBlockClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleLinkBlockClick.js");
+  const { handleTextTransformLinkClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Link/handleTextTransformLinkClick.js");
+
 
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
