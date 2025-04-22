@@ -786,8 +786,15 @@ let selectedElement = null;
       fontWeightLinkSelect.dataset.initialized = "true";
 
       fontWeightLinkSelect.addEventListener("change", (event) => {
+        const currentlySelectedBlock = document.querySelector(".sc-selected");
+
+        if (!currentlySelectedBlock) {
+          showNotification("Please select a block first.", "error");
+          return;
+        }
+
         handleFontWeightLink(event, {
-          lastClickedElement,
+          lastClickedElement: currentlySelectedBlock, // ✅ Pass the current block here
           selectedSingleTextType,
           addPendingModification,
           showNotification,
