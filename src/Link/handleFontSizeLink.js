@@ -52,7 +52,7 @@ export function handleFontSize(event = null, context = null) {
   }
 
   if (!selectedSingleTextType) {
-    showNotification("Please select a text type (Heading or Paragraph)", "error");
+    showNotification("Please select a text type (Heading or Paragraph)", "error") ;
     return;
   }
 
