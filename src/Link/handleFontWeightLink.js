@@ -214,24 +214,38 @@ export function handleFontWeightLink(event, context) {
 
   // Determine the selector based on text type
   let selector = "";
+  // if (selectedSingleTextType === "paragraph1") {
+  //   selector = "p.sqsrte-large";
+  // } else if (selectedSingleTextType === "paragraph2") {
+  //   selector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+  // } else if (selectedSingleTextType === "paragraph3") {
+  //   selector = "p.sqsrte-small";
+  // } else if (selectedSingleTextType === "h1") {
+  //   selector = "h1";
+  // } else if (selectedSingleTextType === "h2") {
+  //   selector = "h2";
+  // } else if (selectedSingleTextType === "h3") {
+  //   selector = "h3";
+  // } else if (selectedSingleTextType === "h4") {
+  //   selector = "h4";
+  // } else {
+  //   showNotification("Unknown text type: " + selectedSingleTextType, "error");
+  //   return;
+  // }
+
   if (selectedSingleTextType === "paragraph1") {
     selector = "p.sqsrte-large";
   } else if (selectedSingleTextType === "paragraph2") {
     selector = "p:not(.sqsrte-large):not(.sqsrte-small)";
   } else if (selectedSingleTextType === "paragraph3") {
     selector = "p.sqsrte-small";
-  } else if (selectedSingleTextType === "h1") {
-    selector = "h1";
-  } else if (selectedSingleTextType === "h2") {
-    selector = "h2";
-  } else if (selectedSingleTextType === "h3") {
-    selector = "h3";
-  } else if (selectedSingleTextType === "h4") {
-    selector = "h4";
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    selector = `h${selectedSingleTextType.replace("heading", "")}`;
   } else {
-    showNotification("Unknown text type: " + selectedSingleTextType, "error");
-    return;
+    selector = selectedSingleTextType;
   }
+
+  console.log("🔎 Applying font-size to links inside:", selector);
 
   // Find all matching elements in the block
   const targetElements = block.querySelectorAll(selector);
