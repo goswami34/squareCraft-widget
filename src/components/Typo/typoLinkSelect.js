@@ -26,7 +26,7 @@ export function typoLinkSelect(fontSizes) {
             <div class="sc-font-size-container sc-poppins sc-universal sc-flex sc-justify-between sc-items-center sc-flex sc-items-center  
                   sc-rounded-6px 
                   ">
-               <input type="text" id="scFontSizeInput" value="16" class="sc-font-size-input sc-font-light sc-z-99999 sc-text-sm sc-text-color-white 
+               <input type="number" id="scFontSizeInputLink" value="16" class="sc-font-size-input sc-font-light sc-z-99999 sc-text-sm sc-text-color-white 
                      sc-bg-transparent  sc-universal sc-font-light">
                <div class="sc-v-line"></div>
                <div
