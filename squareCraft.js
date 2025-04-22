@@ -792,6 +792,7 @@ let selectedElement = null;
           console.log("Font weight select changed");
           const currentlySelectedBlock = document.querySelector(".sc-selected");
           const selectedFontWeight = fontWeightLinkSelect.value;
+          console.log("Selected font weight:", selectedFontWeight);
 
           if (!currentlySelectedBlock) {
             showNotification("❌ Please select a block first.", "error");
