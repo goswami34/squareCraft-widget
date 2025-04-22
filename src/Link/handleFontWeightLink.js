@@ -31,50 +31,44 @@ export function handleFontWeightLink(event = null, context = null) {
     lastClickedElement,
     selectedSingleTextType,
     addPendingModification,
-    //   showNotification,
+    showNotification,
   } = context;
 
-  if (!event) {
-    const activeButton = document.querySelector(
-      '[id^="scFontWeight"].sc-activeTab-border'
-    );
-    if (!activeButton) return;
-    event = { target: activeButton };
-  }
-
-  const clickedElement = event.target.closest('[id^="scFontWeight"]');
-  if (!clickedElement) return;
-
+  // Get the font weight select element
   const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
   if (!fontWeightSelect) {
     showNotification("Font weight selector not found", "error");
     return;
   }
 
+  // Get the selected font weight value
   const fontWeight = fontWeightSelect.value;
   if (!fontWeight) {
     showNotification("Please select a font-weight", "error");
     return;
   }
 
+  // Check if a block is selected
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
     return;
   }
 
+  // Check if a text type is selected
   if (!selectedSingleTextType) {
     showNotification("Please select a text type first", "error");
     return;
   }
 
+  // Get the block element
   const block = lastClickedElement.closest('[id^="block-"]');
   if (!block) {
     showNotification("Block not found", "error");
     return;
   }
 
+  // Determine the selector based on text type
   let paragraphSelector = "";
-
   if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = "p.sqsrte-large";
   } else if (selectedSingleTextType === "paragraph2") {
@@ -97,8 +91,7 @@ export function handleFontWeightLink(event = null, context = null) {
     return;
   }
 
-  console.log("✅ Applying LINK font-weight for selector:", paragraphSelector);
-
+  // Find all matching elements in the block
   const targetElements = block.querySelectorAll(paragraphSelector);
   if (!targetElements.length) {
     showNotification(
@@ -108,8 +101,8 @@ export function handleFontWeightLink(event = null, context = null) {
     return;
   }
 
+  // Apply font weight to links
   let linkFound = false;
-
   targetElements.forEach((el) => {
     const links = el.querySelectorAll("a");
     if (links.length > 0) {
@@ -128,22 +121,23 @@ export function handleFontWeightLink(event = null, context = null) {
     return;
   }
 
+  // Create or update style tag
   const styleId = `style-${block.id}-${selectedSingleTextType}-link-fontweight`;
   let styleTag = document.getElementById(styleId);
-
   if (!styleTag) {
     styleTag = document.createElement("style");
     styleTag.id = styleId;
     document.head.appendChild(styleTag);
   }
 
+  // Apply the style
   styleTag.innerHTML = `
       #${block.id} ${paragraphSelector} a {
         font-weight: ${fontWeight} !important;
       }
     `;
 
-  // 🛠 Important: Save separately for link (not strong)
+  // Save the modification
   addPendingModification(
     block.id,
     {
@@ -152,8 +146,9 @@ export function handleFontWeightLink(event = null, context = null) {
       tag: "a",
     },
     "link"
-  ); // 'link' type
+  );
 
+  // Show success notification
   showNotification(
     `Font-weight applied to link words inside: ${selectedSingleTextType}`,
     "success"
