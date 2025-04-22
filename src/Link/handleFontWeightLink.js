@@ -32,7 +32,6 @@ function showNotification(message, type = "info") {
       lastClickedElement,
       selectedSingleTextType,
       addPendingModification,
-      showNotification,
     } = context;
   
     const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
