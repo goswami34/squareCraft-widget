@@ -225,38 +225,39 @@ export function handleLinkBlockClick(event, context) {
     tab.onclick = () => {
       let clickedTag = "";
 
+      // Fix the text type mapping
       if (typeId.startsWith("heading")) {
         clickedTag = `h${typeId.replace("heading", "")}`;
       } else if (typeId.startsWith("paragraph")) {
         clickedTag = `p${typeId.replace("paragraph", "")}`;
       }
 
-      console.log("Clicked tab detected:", clickedTag);
+      console.log("✅ Clicked tab detected:", clickedTag);
       setSelectedSingleTextType(clickedTag);
 
-      // Initialize font weight select if not already initialized
+      // Add this to highlight the selected tab
+      const allTabs = document.querySelectorAll('[id^="heading"], [id^="paragraph"]');
+      allTabs.forEach(t => t.classList.remove('sc-selected-tab'));
+      tab.classList.add('sc-selected-tab');
+
+      // Initialize font weight select
       const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
       if (fontWeightSelect) {
-        console.log("Font weight select found");
+        console.log("Font weight select found, selected text type:", clickedTag);
+        fontWeightSelect.value = "400"; // Reset to default
+
         // Remove any existing event listeners
         const newSelect = fontWeightSelect.cloneNode(true);
         fontWeightSelect.parentNode.replaceChild(newSelect, fontWeightSelect);
 
         // Add new event listener
         newSelect.addEventListener("change", function (event) {
-          console.log("Font weight select changed");
-          const currentlySelectedBlock = document.querySelector(".sc-selected");
-          const selectedFontWeight = this.value;
-          console.log("Selected font weight:", selectedFontWeight);
+          event.preventDefault();
+          console.log("Font weight changed for", clickedTag);
 
+          const currentlySelectedBlock = document.querySelector(".sc-selected");
           if (!currentlySelectedBlock) {
             showNotification("❌ Please select a block first.", "error");
-            this.value = "400";
-            return;
-          }
-
-          if (!clickedTag) {
-            showNotification("❌ Please select a text type (h1, h2, p1 etc) first.", "error");
             this.value = "400";
             return;
           }

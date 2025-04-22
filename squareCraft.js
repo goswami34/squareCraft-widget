@@ -699,23 +699,6 @@ let selectedElement = null;
       }, 100);
     }
 
-    // const textTransformLinkContainer = document.getElementById("squareCraftLink-text-transform");
-    // if (textTransformLinkContainer && !textTransformLinkContainer.dataset.initialized) {
-    //   textTransformLinkContainer.dataset.initialized = "true";
-
-    //     // Add click event listeners to all text transform buttons
-    //     textTransformLinkContainer.querySelectorAll('[id^="scTextTransform"]').forEach(button => {
-    //         button.addEventListener('click', (event) => {
-    //             const lastClickedElement = document.querySelector('.sc-selected');
-    //             if (lastClickedElement) {
-    //                 handleTextTransformClick(event, {
-    //                     lastClickedElement,
-    //                     lastClickedBlockId: lastClickedElement.id
-    //                 });
-    //             }
-    //         });
-    //     });
-    // }
 
     const textTransformLinkContainer = document.getElementById(
       "squareCraftLink-text-transform"
@@ -785,28 +768,30 @@ let selectedElement = null;
       console.log("Initializing font weight select for links");
       fontWeightLinkSelect.dataset.initialized = "true";
 
-      // Add change event listener directly
       fontWeightLinkSelect.addEventListener("change", function (event) {
+        event.preventDefault();
         console.log("Font weight select changed");
+
         const currentlySelectedBlock = document.querySelector(".sc-selected");
-        const selectedFontWeight = this.value; // Use 'this' to reference the select element
+        const selectedFontWeight = this.value;
         console.log("Selected font weight:", selectedFontWeight);
 
         if (!currentlySelectedBlock) {
           showNotification("❌ Please select a block first.", "error");
-          this.value = "400"; // Reset to default
+          this.value = "400";
           return;
         }
 
-        if (!selectedSingleTextType) {
+        const selectedTab = document.querySelector('.sc-selected-tab');
+        if (!selectedTab) {
           showNotification("❌ Please select a text type (h1, h2, p1 etc) first.", "error");
-          this.value = "400"; // Reset to default
+          this.value = "400";
           return;
         }
 
         handleFontWeightLink(event, {
           lastClickedElement: currentlySelectedBlock,
-          selectedSingleTextType,
+          selectedSingleTextType: selectedSingleTextType,
           addPendingModification,
           showNotification
         });

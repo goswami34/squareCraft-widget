@@ -173,6 +173,7 @@ function showNotification(message, type = "info") {
 // In handleFontWeightLink.js
 
 // In handleFontWeightLink.js
+// In handleFontWeightLink.js
 export function handleFontWeightLink(event, context) {
   console.log("handleFontWeightLink called with context:", context);
   const {
@@ -193,49 +194,44 @@ export function handleFontWeightLink(event, context) {
   // Get the selected font weight value
   const fontWeight = fontWeightSelect.value;
   console.log("Selected font weight:", fontWeight);
-  if (!fontWeight) {
-    console.log("No font weight selected");
-    showNotification("Please select a font weight", "error");
-    return;
-  }
 
   // Check if a block is selected
   if (!lastClickedElement) {
-    showNotification("Please select a block first", "error");
+    console.log("No block selected");
+    showNotification("❌ Please select a block first", "error");
     return;
   }
 
   // Check if a text type is selected
   if (!selectedSingleTextType) {
-    showNotification("Please select a text type (h1, h2, p1 etc) first", "error");
+    console.log("No text type selected");
+    showNotification("❌ Please select a text type (h1, h2, p1 etc) first", "error");
     return;
   }
 
   // Get the block element
   const block = lastClickedElement.closest('[id^="block-"]');
   if (!block) {
+    console.log("Block not found");
     showNotification("Block not found", "error");
     return;
   }
 
-  // Determine the selector based on text type
-  let selector = "";
-  if (selectedSingleTextType === "p1") {
-    selector = "p.sqsrte-large";
-  } else if (selectedSingleTextType === "p2") {
-    selector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-  } else if (selectedSingleTextType === "p3") {
-    selector = "p.sqsrte-small";
-  } else if (selectedSingleTextType === "h1") {
-    selector = "h1";
-  } else if (selectedSingleTextType === "h2") {
-    selector = "h2";
-  } else if (selectedSingleTextType === "h3") {
-    selector = "h3";
-  } else if (selectedSingleTextType === "h4") {
-    selector = "h4";
-  } else {
-    showNotification("Unknown text type: " + selectedSingleTextType, "error");
+  // Map text types to selectors
+  const selectorMap = {
+    'h1': 'h1',
+    'h2': 'h2',
+    'h3': 'h3',
+    'h4': 'h4',
+    'p1': 'p.sqsrte-large',
+    'p2': 'p:not(.sqsrte-large):not(.sqsrte-small)',
+    'p3': 'p.sqsrte-small'
+  };
+
+  const selector = selectorMap[selectedSingleTextType];
+  if (!selector) {
+    console.log("Invalid text type:", selectedSingleTextType);
+    showNotification("Invalid text type selected", "error");
     return;
   }
 
@@ -244,7 +240,8 @@ export function handleFontWeightLink(event, context) {
   // Find all matching elements in the block
   const targetElements = block.querySelectorAll(selector);
   if (!targetElements.length) {
-    showNotification(`No matching elements found for ${selectedSingleTextType}`, "error");
+    console.log("No matching elements found");
+    showNotification(`No ${selectedSingleTextType} elements found in selected block`, "error");
     return;
   }
 
@@ -261,6 +258,7 @@ export function handleFontWeightLink(event, context) {
   });
 
   if (!linkFound) {
+    console.log("No links found");
     showNotification(`No links found in ${selectedSingleTextType}`, "info");
     return;
   }
