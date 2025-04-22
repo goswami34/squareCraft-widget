@@ -780,41 +780,39 @@ let selectedElement = null;
     // }
 
     // In squareCraft.js
-    // In squareCraft.js
     const fontWeightLinkSelect = document.getElementById("squareCraftLinkFontWeight");
     if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
       console.log("Initializing font weight select for links");
       fontWeightLinkSelect.dataset.initialized = "true";
 
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        fontWeightLinkSelect.addEventListener("change", (event) => {
-          console.log("Font weight select changed");
-          const currentlySelectedBlock = document.querySelector(".sc-selected");
-          const selectedFontWeight = fontWeightLinkSelect.value;
-          console.log("Selected font weight:", selectedFontWeight);
+      // Add change event listener directly
+      fontWeightLinkSelect.addEventListener("change", function (event) {
+        console.log("Font weight select changed");
+        const currentlySelectedBlock = document.querySelector(".sc-selected");
+        const selectedFontWeight = this.value; // Use 'this' to reference the select element
+        console.log("Selected font weight:", selectedFontWeight);
 
-          if (!currentlySelectedBlock) {
-            showNotification("❌ Please select a block first.", "error");
-            fontWeightLinkSelect.value = "400"; // Reset to default
-            return;
-          }
+        if (!currentlySelectedBlock) {
+          showNotification("❌ Please select a block first.", "error");
+          this.value = "400"; // Reset to default
+          return;
+        }
 
-          if (!selectedSingleTextType) {
-            showNotification("❌ Please select a text type (h1, h2, p1 etc) first.", "error");
-            fontWeightLinkSelect.value = "400"; // Reset to default
-            return;
-          }
+        if (!selectedSingleTextType) {
+          showNotification("❌ Please select a text type (h1, h2, p1 etc) first.", "error");
+          this.value = "400"; // Reset to default
+          return;
+        }
 
-          handleFontWeightLink(event, {
-            lastClickedElement: currentlySelectedBlock,
-            selectedSingleTextType,
-            addPendingModification,
-            showNotification
-          });
+        handleFontWeightLink(event, {
+          lastClickedElement: currentlySelectedBlock,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification
         });
-      }, 100);
+      });
     }
+
 
     //Link code end here
   });

@@ -236,19 +236,37 @@ export function handleLinkBlockClick(event, context) {
 
       // Initialize font weight select if not already initialized
       const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
-      if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
-        console.log("Initializing font weight select");
-        fontWeightSelect.dataset.initialized = "true";
-        fontWeightSelect.addEventListener("change", (event) => {
+      if (fontWeightSelect) {
+        console.log("Font weight select found");
+        // Remove any existing event listeners
+        const newSelect = fontWeightSelect.cloneNode(true);
+        fontWeightSelect.parentNode.replaceChild(newSelect, fontWeightSelect);
+
+        // Add new event listener
+        newSelect.addEventListener("change", function (event) {
+          console.log("Font weight select changed");
           const currentlySelectedBlock = document.querySelector(".sc-selected");
-          if (currentlySelectedBlock) {
-            handleFontWeightLink(event, {
-              lastClickedElement: currentlySelectedBlock,
-              selectedSingleTextType: clickedTag,
-              addPendingModification,
-              showNotification
-            });
+          const selectedFontWeight = this.value;
+          console.log("Selected font weight:", selectedFontWeight);
+
+          if (!currentlySelectedBlock) {
+            showNotification("❌ Please select a block first.", "error");
+            this.value = "400";
+            return;
           }
+
+          if (!clickedTag) {
+            showNotification("❌ Please select a text type (h1, h2, p1 etc) first.", "error");
+            this.value = "400";
+            return;
+          }
+
+          handleFontWeightLink(event, {
+            lastClickedElement: currentlySelectedBlock,
+            selectedSingleTextType: clickedTag,
+            addPendingModification,
+            showNotification
+          });
         });
       }
     };

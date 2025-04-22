@@ -185,13 +185,16 @@ export function handleFontWeightLink(event, context) {
   // Get the font weight select element
   const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
   if (!fontWeightSelect) {
+    console.log("Font weight selector not found");
     showNotification("Font weight selector not found", "error");
     return;
   }
 
   // Get the selected font weight value
   const fontWeight = fontWeightSelect.value;
+  console.log("Selected font weight:", fontWeight);
   if (!fontWeight) {
+    console.log("No font weight selected");
     showNotification("Please select a font weight", "error");
     return;
   }
