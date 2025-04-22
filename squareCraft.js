@@ -655,23 +655,43 @@ function showNotification(message, type = "info") {
     }
 
 
+    // const textTransformLinkContainer = document.getElementById("squareCraftLink-text-transform");
+    // if (textTransformLinkContainer && !textTransformLinkContainer.dataset.initialized) {
+    //   textTransformLinkContainer.dataset.initialized = "true";
+        
+    //     // Add click event listeners to all text transform buttons
+    //     textTransformLinkContainer.querySelectorAll('[id^="scTextTransform"]').forEach(button => {
+    //         button.addEventListener('click', (event) => {
+    //             const lastClickedElement = document.querySelector('.sc-selected');
+    //             if (lastClickedElement) {
+    //                 handleTextTransformClick(event, {
+    //                     lastClickedElement,
+    //                     lastClickedBlockId: lastClickedElement.id
+    //                 });
+    //             }
+    //         });
+    //     });
+    // }
+
     const textTransformLinkContainer = document.getElementById("squareCraftLink-text-transform");
     if (textTransformLinkContainer && !textTransformLinkContainer.dataset.initialized) {
       textTransformLinkContainer.dataset.initialized = "true";
-        
-        // Add click event listeners to all text transform buttons
-        textTransformLinkContainer.querySelectorAll('[id^="scTextTransform"]').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const lastClickedElement = document.querySelector('.sc-selected');
-                if (lastClickedElement) {
-                    handleTextTransformClick(event, {
-                        lastClickedElement,
-                        lastClickedBlockId: lastClickedElement.id
-                    });
-                }
+
+      textTransformLinkContainer.querySelectorAll('[id^="scTextTransform"]').forEach(button => {
+        button.addEventListener('click', (event) => {
+          const lastClickedElement = document.querySelector('.sc-selected');
+          if (lastClickedElement) {
+            handleTextTransformLinkClick(event, {
+              lastClickedElement,
+              selectedSingleTextType,
+              addPendingModification,
+              showNotification
             });
+          }
         });
+      });
     }
+
 
 
     //Link code end here
