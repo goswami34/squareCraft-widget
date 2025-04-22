@@ -330,15 +330,36 @@ let selectedElement = null;
       showNotification: showNotification
     });
 
-    // document.getElementById('scFontSizeInputLink')?.addEventListener('input', (event) => {
-    //   handleFontSizeLink(event, {
-    //     lastClickedElement,
-    //     selectedSingleTextType,
-    //     addPendingModification,
-    //     saveModifications,
-    //     showNotification
-    //   });
-    // });
+
+    handleTextTransformLinkClick(event, {
+      lastClickedElement,
+      getTextType,
+      applyStylesToElement,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag,
+      lastAppliedAlignment,
+      setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
+      lastClickedBlockId,
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => lastClickedBlockId = val,
+      token,
+      widgetId,
+      setSelectedElement: (val) => selectedElement = val, // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+
+      showNotification: showNotification
+    });
     
 
     //Link code end here
@@ -631,6 +652,25 @@ function showNotification(message, type = "info") {
                 showNotification
             });
         }, 100);
+    }
+
+
+    const textTransformLinkContainer = document.getElementById("squareCraftLink-text-transform");
+    if (textTransformLinkContainer && !textTransformLinkContainer.dataset.initialized) {
+      textTransformLinkContainer.dataset.initialized = "true";
+        
+        // Add click event listeners to all text transform buttons
+        textTransformLinkContainer.querySelectorAll('[id^="scTextTransform"]').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const lastClickedElement = document.querySelector('.sc-selected');
+                if (lastClickedElement) {
+                    handleTextTransformClick(event, {
+                        lastClickedElement,
+                        lastClickedBlockId: lastClickedElement.id
+                    });
+                }
+            });
+        });
     }
 
 
