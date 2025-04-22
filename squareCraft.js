@@ -743,22 +743,23 @@ let selectedElement = null;
         });
     }
 
-    // const fontWeightLinkContainer = document.getElementById("squareCraftLinkFontWeight");
-    // if (fontWeightLinkContainer && !fontWeightLinkContainer.dataset.initialized) {
-    //   fontWeightLinkContainer.dataset.initialized = "true";
+    // const fontWeightLinkSelect = document.getElementById(
+    //   "squareCraftLinkFontWeight"
+    // );
+    // if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
+    //   fontWeightLinkSelect.dataset.initialized = "true";
 
-    //   fontWeightLinkContainer.querySelectorAll('[id^="scFontWeight"]').forEach(button => {
-    //     button.addEventListener('click', (event) => {
-    //       const lastClickedElement = document.querySelector('.sc-selected');
-    //       if (lastClickedElement) {
-    //         handleFontWeightLink(event, {
-    //           lastClickedElement,
-    //           selectedSingleTextType,
-    //           addPendingModification,
-    //           showNotification
-    //         });
-    //       }
-    //     });
+    //   // Add change event listener
+    //   fontWeightLinkSelect.addEventListener("change", (event) => {
+    //     const lastClickedElement = document.querySelector(".sc-selected");
+    //     if (lastClickedElement) {
+    //       handleFontWeightLink(event, {
+    //         lastClickedElement,
+    //         selectedSingleTextType,
+    //         addPendingModification,
+    //         showNotification,
+    //       });
+    //     }
     //   });
     // }
 
@@ -768,17 +769,13 @@ let selectedElement = null;
     if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
       fontWeightLinkSelect.dataset.initialized = "true";
 
-      // Add change event listener
       fontWeightLinkSelect.addEventListener("change", (event) => {
-        const lastClickedElement = document.querySelector(".sc-selected");
-        if (lastClickedElement) {
-          handleFontWeightLink(event, {
-            lastClickedElement,
-            selectedSingleTextType,
-            addPendingModification,
-            showNotification,
-          });
-        }
+        handleFontWeightLink(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
       });
     }
 
