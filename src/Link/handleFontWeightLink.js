@@ -37,7 +37,10 @@ export function handleFontWeightLink(event = null, context = null) {
   // Get the font weight select element
   const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
   if (!fontWeightSelect) {
-    showNotification("Font weight selector not found", "error");
+    showNotification(
+      "Font weight selector not found. Please go to Link section.",
+      "error"
+    );
     return;
   }
 
@@ -56,7 +59,10 @@ export function handleFontWeightLink(event = null, context = null) {
 
   // Check if a text type is selected
   if (!selectedSingleTextType) {
-    showNotification("Please select a text type first", "error");
+    showNotification(
+      "Please select a text type (h1, h2, p1, etc) first.",
+      "error"
+    );
     return;
   }
 

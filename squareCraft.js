@@ -767,16 +767,14 @@ let selectedElement = null;
     );
     if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
       fontWeightLinkSelect.dataset.initialized = "true";
+
       fontWeightLinkSelect.addEventListener("change", (event) => {
-        const lastClickedElement = document.querySelector(".sc-selected");
-        if (lastClickedElement) {
-          handleFontWeightLink(event, {
-            lastClickedElement,
-            selectedSingleTextType,
-            addPendingModification,
-            showNotification,
-          });
-        }
+        handleFontWeightLink(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
       });
     }
 
