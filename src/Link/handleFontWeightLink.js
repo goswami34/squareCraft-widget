@@ -32,6 +32,7 @@ function showNotification(message, type = "info") {
       lastClickedElement,
       selectedSingleTextType,
       addPendingModification,
+    //   showNotification,
     } = context;
   
     const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
@@ -123,12 +124,15 @@ function showNotification(message, type = "info") {
       }
     `;
   
+    // 🛠 Important: Save separately for link (not strong)
     addPendingModification(block.id, {
       "font-weight": fontWeight,
-      "target": selectedSingleTextType
-    }, 'link');
+      "target": selectedSingleTextType,
+      "tag": "a"
+    }, 'link'); // 'link' type
   
     showNotification(`Font-weight applied to link words inside: ${selectedSingleTextType}`, "success");
   }
+  
   
   
