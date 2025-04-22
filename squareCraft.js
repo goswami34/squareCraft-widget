@@ -763,6 +763,22 @@ let selectedElement = null;
     //   });
     // }
 
+    // const fontWeightLinkSelect = document.getElementById(
+    //   "squareCraftLinkFontWeight"
+    // );
+    // if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
+    //   fontWeightLinkSelect.dataset.initialized = "true";
+
+    //   fontWeightLinkSelect.addEventListener("change", (event) => {
+    //     handleFontWeightLink(event, {
+    //       lastClickedElement,
+    //       selectedSingleTextType,
+    //       addPendingModification,
+    //       showNotification,
+    //     });
+    //   });
+    // }
+
     const fontWeightLinkSelect = document.getElementById(
       "squareCraftLinkFontWeight"
     );
