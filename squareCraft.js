@@ -787,14 +787,30 @@ let selectedElement = null;
 
       fontWeightLinkSelect.addEventListener("change", (event) => {
         const currentlySelectedBlock = document.querySelector(".sc-selected");
+        const selectedFontWeight = fontWeightLinkSelect.value; // New line added to capture font-weight
 
         if (!currentlySelectedBlock) {
-          showNotification("Please select a block first.", "error");
+          // Show proper error
+          showNotification("❌ Please select a block first.", "error");
+          // Reset dropdown to default after error
+          fontWeightLinkSelect.value = "400"; // set back to Regular (400)
           return;
         }
 
+        if (!selectedSingleTextType) {
+          // Show proper error
+          showNotification(
+            "❌ Please select a text type (h1, h2, p1 etc) first.",
+            "error"
+          );
+          // Reset dropdown to default after error
+          fontWeightLinkSelect.value = "400"; // set back to Regular (400)
+          return;
+        }
+
+        // ✅ Now everything is okay, apply font-weight normally
         handleFontWeightLink(event, {
-          lastClickedElement: currentlySelectedBlock, // ✅ Pass the current block here
+          lastClickedElement: currentlySelectedBlock,
           selectedSingleTextType,
           addPendingModification,
           showNotification,
