@@ -65,7 +65,7 @@ export function typoLinkSelect(fontSizes) {
       <div class="sc-flex sc-bg-494949 sc-col-span-7 sc-justify-between sc-border sc-border-solid sc-border-585858 sc-rounded-6px sc-items-center">
          <div class="sc-px-2">
             <select 
-                   id="squareCraftFontWeight"
+                   id="squareCraftLinkFontWeight"
                   class="sc-font-weight-select"
                   data-font-weight-select
                   style="
@@ -83,15 +83,15 @@ export function typoLinkSelect(fontSizes) {
                      z-index: 1;
                   "
             >
-                  <option id="squareCraftFontWeight" value="100">Thin (100)</option>
-                  <option id="squareCraftFontWeight" value="200">Extra Light (200)</option>
-                  <option id="squareCraftFontWeight" value="300">Light (300)</option>
-                  <option id="squareCraftFontWeight" value="400" selected>Regular (400)</option>
-                  <option id="squareCraftFontWeight" value="500">Medium (500)</option>
-                  <option id="squareCraftFontWeight" value="600">Semi Bold (600)</option>
-                  <option id="squareCraftFontWeight" value="700">Bold (700)</option>
-                  <option id="squareCraftFontWeight" value="800">Extra Bold (800)</option>
-                  <option id="squareCraftFontWeight" value="900">Black (900)</option>
+                  <option id="squareCraftLinkFontWeight" value="100">Thin (100)</option>
+                  <option id="squareCraftLinkFontWeight" value="200">Extra Light (200)</option>
+                  <option id="squareCraftLinkFontWeight" value="300">Light (300)</option>
+                  <option id="squareCraftLinkFontWeight" value="400" selected>Regular (400)</option>
+                  <option id="squareCraftLinkFontWeight" value="500">Medium (500)</option>
+                  <option id="squareCraftLinkFontWeight" value="600">Semi Bold (600)</option>
+                  <option id="squareCraftLinkFontWeight" value="700">Bold (700)</option>
+                  <option id="squareCraftLinkFontWeight" value="800">Extra Bold (800)</option>
+                  <option id="squareCraftLinkFontWeight" value="900">Black (900)</option>
             </select>
          </div>
          <div class="sc-bg-3f3f3f sc-px-2" style="height: 27px; padding: 0 8px;">
