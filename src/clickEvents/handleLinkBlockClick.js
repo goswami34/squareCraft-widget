@@ -191,6 +191,10 @@ export function handleLinkBlockClick(event, context) {
 
     //Link section text transform code end here
 
+    //Link section font weight code start here
+      
+    //Link section font weight code end here
+
  
     
   }

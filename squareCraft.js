@@ -103,7 +103,7 @@ let selectedElement = null;
   const { handleFontSizeLink } = await import("https://goswami34.github.io/squareCraft-widget/src/Link/handleFontSizeLink.js");
   const { handleLinkBlockClick } = await import("https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleLinkBlockClick.js");
   const { handleTextTransformLinkClick } = await import("https://goswami34.github.io/squareCraft-widget/src/Link/handleTextTransformLinkClick.js");
-
+  const { handleFontWeightLink } = await import("https://goswami34.github.io/squareCraft-widget/src/Link/handleFontWeightLink.js");
 
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
@@ -228,39 +228,6 @@ let selectedElement = null;
     });
 
 
-    // handleTextColorclicked (event, {
-    //   lastClickedElement,
-    //   getTextType,
-    //   getTextTypeBold,
-    //   applyStylesToElement,
-    //   lastAppliedAlignment,
-    //   // selectedTextType,
-    //   // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
-    //   selectedSingleTextType,
-    //   setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
-    //   selectedTextElement,
-    //   setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag,
-      
-    //   setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
-    //   lastActiveAlignmentElement,
-    //   setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
-    //   lastClickedBlockId,
-    //   setLastClickedElement: (val) => lastClickedElement = val,
-    //   userId,
-    //   saveModifications,
-    //   handleBlockClick,
-    //   setLastClickedBlockId: (val) => lastClickedBlockId = val,
-    //   token,
-    //   widgetId,
-    //   setSelectedElement: (val) => selectedElement = val, // Add this line
-    //   addPendingModification: (blockId, css, tagType) => {
-    //     if (!pendingModifications.has(blockId)) {
-    //       pendingModifications.set(blockId, []);
-    //     }
-    //     pendingModifications.get(blockId).push({ css, tagType });
-    //   },
-    //   showNotification: showNotification
-    // });
 
 
     handleFontWeightClick(event, {
@@ -360,6 +327,38 @@ let selectedElement = null;
 
       showNotification: showNotification
     });
+
+
+
+    handleFontWeightLink(event, {
+      lastClickedElement,
+      getTextType,
+      applyStylesToElement,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => selectedSingleTextType = tag,
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) => selectedTextElement = clickedTag,
+      lastAppliedAlignment,
+      setLastAppliedAlignment: (val) => lastAppliedAlignment = val,
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) => lastActiveAlignmentElement = val,
+      lastClickedBlockId,
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => lastClickedBlockId = val,
+      token,
+      widgetId,
+      setSelectedElement: (val) => selectedElement = val, // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+
+      showNotification: showNotification
+    })
     
 
     //Link code end here
@@ -682,6 +681,26 @@ function showNotification(message, type = "info") {
           const lastClickedElement = document.querySelector('.sc-selected');
           if (lastClickedElement) {
             handleTextTransformLinkClick(event, {
+              lastClickedElement,
+              selectedSingleTextType,
+              addPendingModification,
+              showNotification
+            });
+          }
+        });
+      });
+    }
+
+
+    const fontWeightLinkContainer = document.getElementById("squareCraftLinkFontWeight");
+    if (fontWeightLinkContainer && !fontWeightLinkContainer.dataset.initialized) {
+      fontWeightLinkContainer.dataset.initialized = "true";
+
+      fontWeightLinkContainer.querySelectorAll('[id^="scFontWeight"]').forEach(button => {
+        button.addEventListener('click', (event) => {
+          const lastClickedElement = document.querySelector('.sc-selected');
+          if (lastClickedElement) {
+            handleFontWeightLink(event, {
               lastClickedElement,
               selectedSingleTextType,
               addPendingModification,
