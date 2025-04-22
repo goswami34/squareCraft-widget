@@ -182,7 +182,7 @@ export function handleLinkBlockClick(event, context) {
           console.log("✅ Clicked tab detected:", clickedTag);
           setSelectedSingleTextType(clickedTag);
       
-          const fontSizeInput = document.getElementById(`squareCraft-text-transform-${typeId}`);
+          const fontSizeInput = document.getElementById(`squareCraftLink-text-transform-${typeId}`);
           if (fontSizeInput) {
             fontSizeInput.focus(); // auto focus
           }
