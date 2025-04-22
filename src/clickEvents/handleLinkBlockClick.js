@@ -164,6 +164,33 @@ export function handleLinkBlockClick(event, context) {
     
     //Link section font size code end here
 
+    //Link section text transform code start here
+    visibleParts.forEach(partId => {
+        const typeId = partId.replace("Part", "");
+        const tab = document.getElementById(typeId);
+        if (!tab) return;
+      
+        tab.onclick = () => {
+          let clickedTag = "";
+      
+          if (typeId.startsWith("heading")) {
+            clickedTag = `heading${typeId.replace("heading", "")}`;
+          } else if (typeId.startsWith("paragraph")) {
+            clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+          }
+      
+          console.log("✅ Clicked tab detected:", clickedTag);
+          setSelectedSingleTextType(clickedTag);
+      
+          const fontSizeInput = document.getElementById(`squareCraft-text-transform-${typeId}`);
+          if (fontSizeInput) {
+            fontSizeInput.focus(); // auto focus
+          }
+        };
+      });
+
+    //Link section text transform code end here
+
  
     
   }
