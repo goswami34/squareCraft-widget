@@ -214,11 +214,11 @@ export function handleFontWeightLink(event, context) {
 
   // Determine the selector based on text type
   let selector = "";
-  if (selectedSingleTextType === "p1") {
+  if (selectedSingleTextType === "paragraph1") {
     selector = "p.sqsrte-large";
-  } else if (selectedSingleTextType === "p2") {
+  } else if (selectedSingleTextType === "paragraph2") {
     selector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-  } else if (selectedSingleTextType === "p3") {
+  } else if (selectedSingleTextType === "paragraph3") {
     selector = "p.sqsrte-small";
   } else if (selectedSingleTextType === "h1") {
     selector = "h1";
