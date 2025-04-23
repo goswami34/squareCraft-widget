@@ -284,6 +284,7 @@ let selectedElement = null;
       handleBlockClick,
       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
       token,
+      selectedElement,
       widgetId,
       setSelectedElement: (val) => (selectedElement = val), // Add this line
       addPendingModification: (blockId, css, tagType) => {
