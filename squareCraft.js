@@ -12,7 +12,7 @@ let selectedElement = null;
     );
     return;
   }
-  let selectedElement = null;
+  // let selectedElement = null;
   let widgetContainer = null;
   let widgetLoaded = false;
   let token = widgetScript.dataset?.token;
@@ -35,9 +35,7 @@ let selectedElement = null;
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    const selectedElement = document.querySelector(
-      ".sc-selected .sqs-html-content"
-    );
+    selectedElement = document.querySelector(".sc-selected .sqs-html-content");
 
     if (!selectedElement) {
       console.error("No selected element found.");
