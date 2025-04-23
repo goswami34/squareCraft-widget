@@ -162,17 +162,7 @@ function showNotification(message, type = "info") {
 // }
 
 // In handleFontWeightLink.js
-
-// In handleFontWeightLink.js
-
-// In handleFontWeightLink.js
-
-// In handleFontWeightLink.js
-
-// In handleFontWeightLink.js
-// In handleFontWeightLink.js
 export function handleFontWeightLink(event, context) {
-  console.log("handleFontWeightLink called with context:", context);
   const {
     lastClickedElement,
     selectedSingleTextType,
@@ -180,45 +170,36 @@ export function handleFontWeightLink(event, context) {
     showNotification,
   } = context;
 
-  // Get the font weight select element
   const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
   if (!fontWeightSelect) {
-    console.log("Font weight selector not found");
-    showNotification("Font weight selector not found", "error");
+    showNotification("Font weight selector not found.", "error");
     return;
   }
 
-  // Get the selected font weight value
   const fontWeight = fontWeightSelect.value;
-  console.log("Selected font weight:", fontWeight);
+  if (!fontWeight) {
+    showNotification("Please select a font-weight.", "error");
+    return;
+  }
 
-  // Check if a block is selected
   if (!lastClickedElement) {
-    console.log("No block selected");
-    showNotification("❌ Please select a block first amitjnhgjhg", "error");
+    showNotification("❌ Please select a block first.", "error");
     return;
   }
 
-  // Check if a text type is selected
   if (!selectedSingleTextType) {
-    console.log("No text type selected");
-    showNotification(
-      "❌ Please select a text type (h1, h2, p1 etc) first",
-      "error"
-    );
+    showNotification("❌ Please select a text type (h1, h2, p1 etc).", "error");
     return;
   }
 
-  // Get the block element
   const block = lastClickedElement.closest('[id^="block-"]');
   if (!block) {
-    console.log("Block not found");
-    showNotification("Block not found", "error");
+    showNotification("❌ Block not found.", "error");
     return;
   }
 
-  // Map text types to selectors
-  const selectorMap = {
+  // ✅ Map text types to selectors
+  const typeMap = {
     h1: "h1",
     h2: "h2",
     h3: "h3",
@@ -228,29 +209,20 @@ export function handleFontWeightLink(event, context) {
     p3: "p.sqsrte-small",
   };
 
-  const selector = selectorMap[selectedSingleTextType];
+  const selector = typeMap[selectedSingleTextType];
   if (!selector) {
-    console.log("Invalid text type:", selectedSingleTextType);
-    showNotification("Invalid text type selected", "error");
+    showNotification("❌ Invalid text type selected.", "error");
     return;
   }
 
-  console.log("Applying font weight to selector:", selector);
-
-  // Find all matching elements in the block
-  const targetElements = block.querySelectorAll(selector);
-  if (!targetElements.length) {
-    console.log("No matching elements found");
-    showNotification(
-      `No ${selectedSingleTextType} elements found in selected block`,
-      "error"
-    );
+  const elements = block.querySelectorAll(selector);
+  if (!elements.length) {
+    showNotification(`No ${selectedSingleTextType} elements found.`, "error");
     return;
   }
 
-  // Apply font weight to links
   let linkFound = false;
-  targetElements.forEach((el) => {
+  elements.forEach((el) => {
     const links = el.querySelectorAll("a");
     if (links.length > 0) {
       linkFound = true;
@@ -261,12 +233,14 @@ export function handleFontWeightLink(event, context) {
   });
 
   if (!linkFound) {
-    console.log("No links found");
-    showNotification(`No links found in ${selectedSingleTextType}`, "info");
+    showNotification(
+      `ℹ️ No links (<a>) found inside ${selectedSingleTextType}`,
+      "info"
+    );
     return;
   }
 
-  // Create or update style tag
+  // ✅ Apply persistent styles
   const styleId = `style-${block.id}-${selectedSingleTextType}-link-fontweight`;
   let styleTag = document.getElementById(styleId);
   if (!styleTag) {
@@ -275,14 +249,12 @@ export function handleFontWeightLink(event, context) {
     document.head.appendChild(styleTag);
   }
 
-  // Apply the style
   styleTag.innerHTML = `
     #${block.id} ${selector} a {
       font-weight: ${fontWeight} !important;
     }
   `;
 
-  // Save the modification
   addPendingModification(
     block.id,
     {
@@ -293,9 +265,8 @@ export function handleFontWeightLink(event, context) {
     "link"
   );
 
-  // Show success notification
   showNotification(
-    `Font weight applied to links in ${selectedSingleTextType}`,
+    `✅ Font weight applied to link words in ${selectedSingleTextType}`,
     "success"
   );
 }
