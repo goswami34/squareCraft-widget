@@ -10,7 +10,7 @@ export function handleLinkBlockClick(event, context) {
     setSelectedTextType,
     setSelectedSingleTextType,
     selectedSingleTextType,
-    lastClickedElement
+    lastClickedElement,
   } = context;
 
   let block = event.target.closest('[id^="block-"]');
@@ -22,7 +22,6 @@ export function handleLinkBlockClick(event, context) {
 
   setLastClickedBlockId(block.id);
   setLastClickedElement(block);
-
 
   //align code start here
 
@@ -41,7 +40,7 @@ export function handleLinkBlockClick(event, context) {
       left: "scTextAlignLeft",
       center: "scTextAlignCenter",
       right: "scTextAlignRight",
-      justify: "scTextAlignJustify"
+      justify: "scTextAlignJustify",
     };
 
     const activeIcon = document.getElementById(map[appliedTextAlign]);
@@ -54,13 +53,18 @@ export function handleLinkBlockClick(event, context) {
 
   const innerTextElements = block.querySelectorAll("h1,h2,h3,h4,p");
   const allParts = [
-    "heading1Part", "heading2Part", "heading3Part", "heading4Part",
-    "paragraph1Part", "paragraph2Part", "paragraph3Part"
+    "heading1Part",
+    "heading2Part",
+    "heading3Part",
+    "heading4Part",
+    "paragraph1Part",
+    "paragraph2Part",
+    "paragraph3Part",
   ];
   const visibleParts = new Set();
   console.log("🔍 visibleParts:", visibleParts);
 
-  innerTextElements.forEach(el => {
+  innerTextElements.forEach((el) => {
     const tag = el.tagName.toLowerCase();
     const result = getTextType(tag, el);
     if (result) {
@@ -82,22 +86,24 @@ export function handleLinkBlockClick(event, context) {
     }
   });
 
-  allParts.forEach(id => {
+  allParts.forEach((id) => {
     const part = document.getElementById(id);
     if (part) {
       part.classList.toggle("sc-hidden", !visibleParts.has(id));
     }
   });
 
-  visibleParts.forEach(partId => {
+  visibleParts.forEach((partId) => {
     const typeId = partId.replace("Part", "");
     const tab = document.getElementById(typeId);
     if (!tab) return;
 
     tab.onmouseenter = () => {
       const b = document.getElementById(block.id);
-      const t = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : "p";
-      b.querySelectorAll(t).forEach(el => {
+      const t = typeId.startsWith("heading")
+        ? `h${typeId.replace("heading", "")}`
+        : "p";
+      b.querySelectorAll(t).forEach((el) => {
         const r = getTextType(t, el);
         if (r?.type === typeId) {
           el.style.outline = `2px solid ${r.borderColor}`;
@@ -107,12 +113,13 @@ export function handleLinkBlockClick(event, context) {
 
     tab.onmouseleave = () => {
       const b = document.getElementById(block.id);
-      b.querySelectorAll("h1,h2,h3,h4,p").forEach(el => el.style.outline = "");
+      b.querySelectorAll("h1,h2,h3,h4,p").forEach(
+        (el) => (el.style.outline = "")
+      );
     };
   });
 
   //align code end here
-
 
   const firstInnerTextElement = block.querySelector("h1,h2,h3,h4,p1,p2,p3");
   if (firstInnerTextElement) {
@@ -125,13 +132,15 @@ export function handleLinkBlockClick(event, context) {
 
   const innerText = block.querySelector("h1,h2,h3,h4,p1,p2,p3");
   if (innerText) {
-    visibleParts.forEach(partId => {
+    visibleParts.forEach((partId) => {
       const typeId = partId.replace("Part", "");
       const tab = document.getElementById(typeId);
       if (!tab) return;
 
       tab.onclick = () => {
-        const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : typeId;
+        const clickedTag = typeId.startsWith("heading")
+          ? `h${typeId.replace("heading", "")}`
+          : typeId;
         console.log("🔍 clickedTag:", clickedTag);
         setSelectedSingleTextType(clickedTag);
         console.log("✅ Now selected text type:", clickedTag);
@@ -141,21 +150,26 @@ export function handleLinkBlockClick(event, context) {
     setSelectedSingleTextType(null);
   }
 
-
   //Link section font size code start here
-  const innerTextElementsFont = block.querySelectorAll("h1,h2,h3,h4,p,p1,p2,p3");
+  const innerTextElementsFont = block.querySelectorAll(
+    "h1,h2,h3,h4,p,p1,p2,p3"
+  );
 
-  visibleParts.forEach(partId => {
+  visibleParts.forEach((partId) => {
     const typeId = partId.replace("Part", "");
     const tab = document.getElementById(typeId);
     if (!tab) return;
 
     tab.onclick = () => {
-      const clickedTag = typeId.startsWith("heading") ? `h${typeId.replace("heading", "")}` : typeId;
+      const clickedTag = typeId.startsWith("heading")
+        ? `h${typeId.replace("heading", "")}`
+        : typeId;
       setSelectedSingleTextType(clickedTag);
       console.log("✅ Now selected text type:", clickedTag);
 
-      const linkFontSizeInput = document.getElementById(`scFontSizeInputLink-${typeId}`);
+      const linkFontSizeInput = document.getElementById(
+        `scFontSizeInputLink-${typeId}`
+      );
       if (linkFontSizeInput) {
         linkFontSizeInput.focus(); // 👈 Focus Link font size input separately
       }
@@ -165,7 +179,7 @@ export function handleLinkBlockClick(event, context) {
   //Link section font size code end here
 
   //Link section text transform code start here
-  visibleParts.forEach(partId => {
+  visibleParts.forEach((partId) => {
     const typeId = partId.replace("Part", "");
     const tab = document.getElementById(typeId);
     if (!tab) return;
@@ -182,7 +196,9 @@ export function handleLinkBlockClick(event, context) {
       console.log("✅ Clicked tab detected:", clickedTag);
       setSelectedSingleTextType(clickedTag);
 
-      const fontSizeInput = document.getElementById(`squareCraftLink-text-transform-${typeId}`);
+      const fontSizeInput = document.getElementById(
+        `squareCraftLink-text-transform-${typeId}`
+      );
       if (fontSizeInput) {
         fontSizeInput.focus(); // auto focus
       }
@@ -217,56 +233,107 @@ export function handleLinkBlockClick(event, context) {
   //   });
 
   // In handleLinkBlockClick.js
-  visibleParts.forEach(partId => {
+  // visibleParts.forEach(partId => {
+  //   const typeId = partId.replace("Part", "");
+  //   const tab = document.getElementById(typeId);
+  //   if (!tab) return;
+
+  //   tab.onclick = () => {
+  //     let clickedTag = "";
+
+  //     // Fix the text type mapping
+  //     if (typeId.startsWith("heading")) {
+  //       clickedTag = `h${typeId.replace("heading", "")}`;
+  //     } else if (typeId.startsWith("paragraph")) {
+  //       clickedTag = `p${typeId.replace("paragraph", "")}`;
+  //     }
+
+  //     console.log("✅ Clicked tab detected:", clickedTag);
+  //     setSelectedSingleTextType(clickedTag);
+
+  //     // Add this to highlight the selected tab
+  //     const allTabs = document.querySelectorAll('[id^="heading"], [id^="paragraph"]');
+  //     allTabs.forEach(t => t.classList.remove('sc-selected-tab'));
+  //     tab.classList.add('sc-selected-tab');
+
+  //     // Initialize font weight select
+  //     const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
+  //     if (fontWeightSelect) {
+  //       console.log("Font weight select found, selected text type:", clickedTag);
+  //       fontWeightSelect.value = "400"; // Reset to default
+
+  //       // Remove any existing event listeners
+  //       const newSelect = fontWeightSelect.cloneNode(true);
+  //       fontWeightSelect.parentNode.replaceChild(newSelect, fontWeightSelect);
+
+  //       // Add new event listener
+  //       newSelect.addEventListener("change", function (event) {
+  //         event.preventDefault();
+  //         console.log("Font weight changed for", clickedTag);
+
+  //         const currentlySelectedBlock = document.querySelector(".sc-selected");
+  //         if (!currentlySelectedBlock) {
+  //           showNotification("❌ Please select a block first.", "error");
+  //           this.value = "400";
+  //           return;
+  //         }
+
+  //         handleFontWeightLink(event, {
+  //           lastClickedElement: currentlySelectedBlock,
+  //           selectedSingleTextType: clickedTag,
+  //           addPendingModification,
+  //           showNotification
+  //         });
+  //       });
+  //     }
+  //   };
+  // });
+
+  visibleParts.forEach((partId) => {
     const typeId = partId.replace("Part", "");
     const tab = document.getElementById(typeId);
     if (!tab) return;
 
     tab.onclick = () => {
       let clickedTag = "";
-
-      // Fix the text type mapping
       if (typeId.startsWith("heading")) {
         clickedTag = `h${typeId.replace("heading", "")}`;
       } else if (typeId.startsWith("paragraph")) {
         clickedTag = `p${typeId.replace("paragraph", "")}`;
       }
 
-      console.log("✅ Clicked tab detected:", clickedTag);
       setSelectedSingleTextType(clickedTag);
+      console.log("✅ Now selected text type:", clickedTag);
 
-      // Add this to highlight the selected tab
-      const allTabs = document.querySelectorAll('[id^="heading"], [id^="paragraph"]');
-      allTabs.forEach(t => t.classList.remove('sc-selected-tab'));
-      tab.classList.add('sc-selected-tab');
+      // highlight
+      document
+        .querySelectorAll('[id^="heading"], [id^="paragraph"]')
+        .forEach((t) => t.classList.remove("sc-selected-tab"));
+      tab.classList.add("sc-selected-tab");
 
-      // Initialize font weight select
-      const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
-      if (fontWeightSelect) {
-        console.log("Font weight select found, selected text type:", clickedTag);
-        fontWeightSelect.value = "400"; // Reset to default
+      // Reset and attach font weight listener
+      const fwSelect = document.getElementById("squareCraftLinkFontWeight");
+      if (fwSelect) {
+        const cloned = fwSelect.cloneNode(true);
+        fwSelect.parentNode.replaceChild(cloned, fwSelect);
 
-        // Remove any existing event listeners
-        const newSelect = fontWeightSelect.cloneNode(true);
-        fontWeightSelect.parentNode.replaceChild(newSelect, fontWeightSelect);
-
-        // Add new event listener
-        newSelect.addEventListener("change", function (event) {
-          event.preventDefault();
-          console.log("Font weight changed for", clickedTag);
-
+        cloned.value = "400";
+        cloned.addEventListener("change", function (e) {
           const currentlySelectedBlock = document.querySelector(".sc-selected");
           if (!currentlySelectedBlock) {
             showNotification("❌ Please select a block first.", "error");
-            this.value = "400";
             return;
           }
 
-          handleFontWeightLink(event, {
-            lastClickedElement: currentlySelectedBlock,
-            selectedSingleTextType: clickedTag,
-            addPendingModification,
-            showNotification
+          import(
+            "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontWeightLink.js"
+          ).then((module) => {
+            module.handleFontWeightLink(e, {
+              lastClickedElement: currentlySelectedBlock,
+              selectedSingleTextType: clickedTag,
+              addPendingModification,
+              showNotification,
+            });
           });
         });
       }
@@ -274,14 +341,4 @@ export function handleLinkBlockClick(event, context) {
   });
 
   //Link section font weight code end here
-
-
-
 }
-
-
-
-
-
-
-
