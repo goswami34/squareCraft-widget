@@ -725,73 +725,84 @@ let selectedElement = null;
         });
     }
 
-    // In squareCraft.js
     // const fontWeightLinkSelect = document.getElementById(
     //   "squareCraftLinkFontWeight"
     // );
     // if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
-    //   console.log("Initializing font weight select for links");
     //   fontWeightLinkSelect.dataset.initialized = "true";
 
-    //   fontWeightLinkSelect.addEventListener("change", function (event) {
-    //     event.preventDefault();
-    //     console.log("Font weight select changed");
-
-    //     const currentlySelectedBlock = document.querySelector(".sc-selected");
-    //     const selectedFontWeight = this.value;
-    //     console.log("Selected font weight:", selectedFontWeight);
-
-    //     if (!currentlySelectedBlock) {
-    //       showNotification(
-    //         "❌ Please select a block first fsfgsfgsfgsgfsgsg.",
-    //         "error"
-    //       );
-    //       this.value = "400";
-    //       return;
+    //   // Add change event listener
+    //   fontWeightLinkSelect.addEventListener("change", (event) => {
+    //     const lastClickedElement = document.querySelector(".sc-selected");
+    //     if (lastClickedElement) {
+    //       handleFontWeightLink(event, {
+    //         lastClickedElement,
+    //         selectedSingleTextType,
+    //         addPendingModification,
+    //         showNotification,
+    //       });
     //     }
+    //   });
+    // }
 
-    //     const selectedTab = document.querySelector(".sc-selected-tab");
-    //     if (!selectedTab) {
-    //       showNotification(
-    //         "❌ Please select a text type (h1, h2, p1 etc) first.",
-    //         "error"
-    //       );
-    //       this.value = "400";
-    //       return;
-    //     }
+    // const fontWeightLinkSelect = document.getElementById(
+    //   "squareCraftLinkFontWeight"
+    // );
+    // if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
+    //   fontWeightLinkSelect.dataset.initialized = "true";
 
+    //   fontWeightLinkSelect.addEventListener("change", (event) => {
     //     handleFontWeightLink(event, {
-    //       lastClickedElement: currentlySelectedBlock,
-    //       selectedSingleTextType: selectedSingleTextType,
+    //       lastClickedElement,
+    //       selectedSingleTextType,
     //       addPendingModification,
     //       showNotification,
     //     });
     //   });
     // }
 
-    const fontWeightLinkSelect = document.getElementById("scFontSizeInputLink");
+    // In squareCraft.js
+    const fontWeightLinkSelect = document.getElementById(
+      "squareCraftLinkFontWeight"
+    );
     if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
+      console.log("Initializing font weight select for links");
       fontWeightLinkSelect.dataset.initialized = "true";
 
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        handleFontWeightLink(null, {
-          lastClickedElement,
-          getTextType,
-          saveModifications,
-          selectedElement,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
+      fontWeightLinkSelect.addEventListener("change", function (event) {
+        event.preventDefault();
+        console.log("Font weight select changed");
+
+        const currentlySelectedBlock = document.querySelector(".sc-selected");
+        const selectedFontWeight = this.value;
+        console.log("Selected font weight:", selectedFontWeight);
+
+        if (!currentlySelectedBlock) {
+          showNotification(
+            "❌ Please select a block first fsfgsfgsfgsgfsgsg.",
+            "error"
+          );
+          this.value = "400";
+          return;
+        }
+
+        const selectedTab = document.querySelector(".sc-selected-tab");
+        if (!selectedTab) {
+          showNotification(
+            "❌ Please select a text type (h1, h2, p1 etc) first.",
+            "error"
+          );
+          this.value = "400";
+          return;
+        }
+
+        handleFontWeightLink(event, {
+          lastClickedElement: currentlySelectedBlock,
+          selectedSingleTextType: selectedSingleTextType,
+          addPendingModification,
           showNotification,
         });
-      }, 100);
+      });
     }
 
     //Link code end here
