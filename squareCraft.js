@@ -427,8 +427,8 @@ let selectedElement = null;
         type === "success"
           ? "#4CAF50"
           : type === "error"
-            ? "#f44336"
-            : "#2196F3",
+          ? "#f44336"
+          : "#2196F3",
     });
 
     document.body.appendChild(notification);
@@ -699,7 +699,6 @@ let selectedElement = null;
       }, 100);
     }
 
-
     const textTransformLinkContainer = document.getElementById(
       "squareCraftLink-text-transform"
     );
@@ -763,7 +762,9 @@ let selectedElement = null;
     // }
 
     // In squareCraft.js
-    const fontWeightLinkSelect = document.getElementById("squareCraftLinkFontWeight");
+    const fontWeightLinkSelect = document.getElementById(
+      "squareCraftLinkFontWeight"
+    );
     if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
       console.log("Initializing font weight select for links");
       fontWeightLinkSelect.dataset.initialized = "true";
@@ -777,14 +778,20 @@ let selectedElement = null;
         console.log("Selected font weight:", selectedFontWeight);
 
         if (!currentlySelectedBlock) {
-          showNotification("❌ Please select a block first.", "error");
+          showNotification(
+            "❌ Please select a block first fsfgsfgsfgsgfsgsg.",
+            "error"
+          );
           this.value = "400";
           return;
         }
 
-        const selectedTab = document.querySelector('.sc-selected-tab');
+        const selectedTab = document.querySelector(".sc-selected-tab");
         if (!selectedTab) {
-          showNotification("❌ Please select a text type (h1, h2, p1 etc) first.", "error");
+          showNotification(
+            "❌ Please select a text type (h1, h2, p1 etc) first.",
+            "error"
+          );
           this.value = "400";
           return;
         }
@@ -793,11 +800,10 @@ let selectedElement = null;
           lastClickedElement: currentlySelectedBlock,
           selectedSingleTextType: selectedSingleTextType,
           addPendingModification,
-          showNotification
+          showNotification,
         });
       });
     }
-
 
     //Link code end here
   });
