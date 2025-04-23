@@ -27,7 +27,7 @@ function showNotification(message, type = "info") {
 }
 
 // handleTextHighlight.js
-export function handleTextHighlight(
+export function handleTextHighLinghtClick(
   event,
   {
     lastClickedElement,
