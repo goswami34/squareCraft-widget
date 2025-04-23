@@ -673,6 +673,7 @@ let selectedElement = null;
     }
 
     //Link code start here
+
     const LinkfontsizeSelect = document.getElementById("scFontSizeInputLink");
     if (LinkfontsizeSelect && !LinkfontsizeSelect.dataset.initialized) {
       LinkfontsizeSelect.dataset.initialized = "true";
@@ -773,19 +774,16 @@ let selectedElement = null;
         console.log("Font weight select changed");
 
         const currentlySelectedBlock = document.querySelector(".sc-selected");
+        const selectedTab = document.querySelector(".sc-selected-tab");
         const selectedFontWeight = this.value;
         console.log("Selected font weight:", selectedFontWeight);
 
         if (!currentlySelectedBlock) {
-          showNotification(
-            "❌ Please select a block first fsfgsfgsfgsgfsgsg.",
-            "error"
-          );
+          showNotification("❌ Please select a block first.", "error");
           this.value = "400";
           return;
         }
 
-        const selectedTab = document.querySelector(".sc-selected-tab");
         if (!selectedTab) {
           showNotification(
             "❌ Please select a text type (h1, h2, p1 etc) first.",
@@ -795,9 +793,14 @@ let selectedElement = null;
           return;
         }
 
+        // Get the selected text type from the tab
+        const selectedTextType = selectedTab.id.startsWith("heading")
+          ? `h${selectedTab.id.replace("heading", "")}`
+          : `p${selectedTab.id.replace("paragraph", "")}`;
+
         handleFontWeightLink(event, {
           lastClickedElement: currentlySelectedBlock,
-          selectedSingleTextType: selectedSingleTextType,
+          selectedSingleTextType: selectedTextType,
           addPendingModification,
           showNotification,
         });
