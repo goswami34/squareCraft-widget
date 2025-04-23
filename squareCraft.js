@@ -882,6 +882,24 @@ let selectedElement = null;
       });
     }
 
+    // In squareCraft.js
+    const colorInput = document.getElementById("scTextHighLight");
+    const hexInput = document.getElementById("scTextHeighlightHex");
+
+    if (colorInput && hexInput) {
+      // Sync color input with hex input
+      colorInput.addEventListener("input", function () {
+        hexInput.value = this.value;
+      });
+
+      // Sync hex input with color input
+      hexInput.addEventListener("input", function () {
+        if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+          colorInput.value = this.value;
+        }
+      });
+    }
+
     //Link code end here
   });
 
