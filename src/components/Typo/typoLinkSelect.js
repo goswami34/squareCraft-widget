@@ -131,47 +131,47 @@ export function typoLinkSelect(fontSizes) {
         </div>
      </div>
 
-   <div class="sc-mt-4 ">
-      <p class="sc-text-xs sc-font-thin sc-mt-4 sc-universal sc-text-gray-300 sc-poppins">Text Highlight</p>
-      <div class="sc-py-1 sc-mt-2 sc-bg-3f3f3f sc-inActiveTab-border sc-w-50 sc-flex sc-justify-between sc-items-center sc-px-2 sc-rounded-6px">
-         <p class="sc-text-sm sc-poppins sc-universal sc-font-light">#363544</p>
-         <div class="sc-flex sc-items-center sc-gap-2">
-            <input 
-               type="color" 
-               id="scTextColor" 
-               value="#ffffff" 
-               class="sc-color-input"
-               style="
-               width: 40px;
-               height: 40px;
-               padding: 0;
-               border: 2px solid #585858;
-               border-radius: 6px;
-               background: #2c2c2c;
-               cursor: pointer;
-               -webkit-appearance: none;
-               -moz-appearance: none;
-               appearance: none;
-               "
-            >
-            <input 
-               type="text" 
-               id="scColorHex" 
-               class="sc-color-hex"
-               style="
-               width: 80px;
-               padding: 8px;
-               background: #2c2c2c;
-               border: 1px solid #585858;
-               border-radius: 6px;
-               color: white;
-               font-size: 14px;
-               font-family: 'Poppins', sans-serif;
-               "
-               placeholder="#FFFFFF"
-            >
-         </div>
-      </div>
-   </div> 
+   <div class="sc-mt-4">
+  <p class="sc-text-xs sc-font-thin sc-mt-4 sc-universal sc-text-gray-300 sc-poppins">Text Highlight</p>
+  <div class="sc-py-1 sc-mt-2 sc-bg-3f3f3f sc-inActiveTab-border sc-w-50 sc-flex sc-justify-between sc-items-center sc-px-2 sc-rounded-6px">
+    <p class="sc-text-sm sc-poppins sc-universal sc-font-light">Highlight Color</p>
+    <div class="sc-flex sc-items-center sc-gap-2">
+      <input 
+        type="color" 
+        id="scTextHighLight" 
+        value="#363544" 
+        class="sc-color-input"
+        style="
+          width: 40px;
+          height: 40px;
+          padding: 0;
+          border: 2px solid #585858;
+          border-radius: 6px;
+          background: #2c2c2c;
+          cursor: pointer;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+        "
+      >
+      <input 
+        type="text" 
+        id="scTextHeighlightHex" 
+        class="sc-color-hex"
+        style="
+          width: 80px;
+          padding: 8px;
+          background: #2c2c2c;
+          border: 1px solid #585858;
+          border-radius: 6px;
+          color: white;
+          font-size: 14px;
+          font-family: 'Poppins', sans-serif;
+        "
+        placeholder="#363544"
+      >
+    </div>
+  </div>
+</div>
     `;
 }

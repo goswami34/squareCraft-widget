@@ -132,6 +132,9 @@ let selectedElement = null;
   const { handleFontWeightLink } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontWeightLink.js"
   );
+  const { handleTextHighLinghtClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextHighLinght.js"
+  );
 
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
@@ -399,6 +402,38 @@ let selectedElement = null;
 
     //   showNotification: showNotification,
     // });
+
+    handleTextHighLinghtClick(event, {
+      lastClickedElement,
+      getTextType,
+      applyStylesToElement,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+      lastAppliedAlignment,
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+
+      showNotification: showNotification,
+    });
 
     //Link code end here
 
@@ -800,6 +835,47 @@ let selectedElement = null;
         handleFontWeightLink(event, {
           lastClickedElement: currentlySelectedBlock,
           selectedSingleTextType: selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+      });
+    }
+
+    //text high light code start here
+    // In squareCraft.js
+    const textHighlightInput = document.getElementById("scTextHighLight");
+    if (textHighlightInput && !textHighlightInput.dataset.initialized) {
+      console.log("Initializing text highlight input");
+      textHighlightInput.dataset.initialized = "true";
+
+      textHighlightInput.addEventListener("change", function (event) {
+        event.preventDefault();
+        console.log("Text highlight color changed");
+
+        const currentlySelectedBlock = document.querySelector(".sc-selected");
+        const selectedTab = document.querySelector(".sc-selected-tab");
+
+        if (!currentlySelectedBlock) {
+          showNotification("❌ Please select a block first.", "error");
+          return;
+        }
+
+        if (!selectedTab) {
+          showNotification(
+            "❌ Please select a text type (h1, h2, p1 etc) first.",
+            "error"
+          );
+          return;
+        }
+
+        // Get the selected text type from the tab
+        const selectedTextType = selectedTab.id.startsWith("heading")
+          ? `h${selectedTab.id.replace("heading", "")}`
+          : `p${selectedTab.id.replace("paragraph", "")}`;
+
+        handleTextHighLinghtClick(event, {
+          lastClickedElement: currentlySelectedBlock,
+          selectedSingleTextType: selectedTextType,
           addPendingModification,
           showNotification,
         });
