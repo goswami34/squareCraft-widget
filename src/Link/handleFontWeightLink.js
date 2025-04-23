@@ -190,6 +190,9 @@ export function handleFontWeightLink(event, context) {
     return;
   }
 
+  console.log("selectedSingleTextType:", selectedSingleTextType);
+  console.log("normalizedType:", normalizedType);
+
   const block = lastClickedElement.closest('[id^="block-"]');
   if (!block) {
     showNotification("❌ Block not found.", "error");
