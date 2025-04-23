@@ -163,12 +163,9 @@ function showNotification(message, type = "info") {
 
 // In handleFontWeightLink.js
 
-
 // In handleFontWeightLink.js
 
-
 // In handleFontWeightLink.js
-
 
 // In handleFontWeightLink.js
 
@@ -180,7 +177,7 @@ export function handleFontWeightLink(event, context) {
     lastClickedElement,
     selectedSingleTextType,
     addPendingModification,
-    showNotification
+    showNotification,
   } = context;
 
   // Get the font weight select element
@@ -198,14 +195,17 @@ export function handleFontWeightLink(event, context) {
   // Check if a block is selected
   if (!lastClickedElement) {
     console.log("No block selected");
-    showNotification("❌ Please select a block first", "error");
+    showNotification("❌ Please select a block first amitjnhgjhg", "error");
     return;
   }
 
   // Check if a text type is selected
   if (!selectedSingleTextType) {
     console.log("No text type selected");
-    showNotification("❌ Please select a text type (h1, h2, p1 etc) first", "error");
+    showNotification(
+      "❌ Please select a text type (h1, h2, p1 etc) first",
+      "error"
+    );
     return;
   }
 
@@ -219,13 +219,13 @@ export function handleFontWeightLink(event, context) {
 
   // Map text types to selectors
   const selectorMap = {
-    'h1': 'h1',
-    'h2': 'h2',
-    'h3': 'h3',
-    'h4': 'h4',
-    'p1': 'p.sqsrte-large',
-    'p2': 'p:not(.sqsrte-large):not(.sqsrte-small)',
-    'p3': 'p.sqsrte-small'
+    h1: "h1",
+    h2: "h2",
+    h3: "h3",
+    h4: "h4",
+    p1: "p.sqsrte-large",
+    p2: "p:not(.sqsrte-large):not(.sqsrte-small)",
+    p3: "p.sqsrte-small",
   };
 
   const selector = selectorMap[selectedSingleTextType];
@@ -241,17 +241,20 @@ export function handleFontWeightLink(event, context) {
   const targetElements = block.querySelectorAll(selector);
   if (!targetElements.length) {
     console.log("No matching elements found");
-    showNotification(`No ${selectedSingleTextType} elements found in selected block`, "error");
+    showNotification(
+      `No ${selectedSingleTextType} elements found in selected block`,
+      "error"
+    );
     return;
   }
 
   // Apply font weight to links
   let linkFound = false;
-  targetElements.forEach(el => {
+  targetElements.forEach((el) => {
     const links = el.querySelectorAll("a");
     if (links.length > 0) {
       linkFound = true;
-      links.forEach(link => {
+      links.forEach((link) => {
         link.style.fontWeight = fontWeight;
       });
     }
@@ -280,12 +283,19 @@ export function handleFontWeightLink(event, context) {
   `;
 
   // Save the modification
-  addPendingModification(block.id, {
-    "font-weight": fontWeight,
-    target: selectedSingleTextType,
-    tag: "a"
-  }, "link");
+  addPendingModification(
+    block.id,
+    {
+      "font-weight": fontWeight,
+      target: selectedSingleTextType,
+      tag: "a",
+    },
+    "link"
+  );
 
   // Show success notification
-  showNotification(`Font weight applied to links in ${selectedSingleTextType}`, "success");
+  showNotification(
+    `Font weight applied to links in ${selectedSingleTextType}`,
+    "success"
+  );
 }
