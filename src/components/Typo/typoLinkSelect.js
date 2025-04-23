@@ -1,5 +1,5 @@
 export function typoLinkSelect(fontSizes) {
-   return `
+  return `
        <div
    class="sc-mt-2 sc-relative sc-grid  sc-grid-cols-12 sc-gap-2 ">
 
@@ -45,14 +45,14 @@ export function typoLinkSelect(fontSizes) {
                   sc-rounded-6px sc-border sc-border-585858 sc-absolute 
                   sc-mt-1">
                ${fontSizes
-         ?.map(
-            (size) => `
+                 ?.map(
+                   (size) => `
                <div
                   class="sc-dropdown-item sc-py-1px sc-text-center  sc-text-sm"
                   data-value="${size}">${size}</div>
               `
-         )
-         .join("")}
+                 )
+                 .join("")}
             </div>
          </div>
       </div>
@@ -82,15 +82,15 @@ export function typoLinkSelect(fontSizes) {
           z-index: 1;
         "
       >
-        <option value="100">Thin (100)</option>
-        <option value="200">Extra Light (200)</option>
-        <option value="300">Light (300)</option>
-        <option value="400" selected>Regular (400)</option>
-        <option value="500">Medium (500)</option>
-        <option value="600">Semi Bold (600)</option>
-        <option value="700">Bold (700)</option>
-        <option value="800">Extra Bold (800)</option>
-        <option value="900">Black (900)</option>
+        <option id="squareCraftFontWeight" value="100">Thin (100)</option>
+        <option id="squareCraftFontWeight" value="200">Extra Light (200)</option>
+        <option id="squareCraftFontWeight" value="300">Light (300)</option>
+        <option id="squareCraftFontWeight" value="400" selected>Regular (400)</option>
+        <option id="squareCraftFontWeight" value="500">Medium (500)</option>
+        <option id="squareCraftFontWeight" value="600">Semi Bold (600)</option>
+        <option id="squareCraftFontWeight" value="700">Bold (700)</option>
+        <option id="squareCraftFontWeight" value="800">Extra Bold (800)</option>
+        <option id="squareCraftFontWeight" value="900">Black (900)</option>
       </select>
     </div>
     <div class="sc-bg-3f3f3f sc-px-2" style="height: 27px; padding: 0 8px;">
