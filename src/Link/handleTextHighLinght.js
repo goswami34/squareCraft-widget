@@ -117,7 +117,7 @@ function showNotification(message, type = "info") {
 //   }
 // }
 
-export function handleTextHighlight(
+export function handleTextHighLinghtClick(
   event,
   {
     lastClickedElement,
