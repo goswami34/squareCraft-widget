@@ -207,88 +207,6 @@ export function handleLinkBlockClick(event, context) {
 
   //Link section text transform code end here
 
-  //Link section font weight code start here
-  // visibleParts.forEach(partId => {
-  //     const typeId = partId.replace("Part", "");
-  //     const tab = document.getElementById(typeId);
-  //     if (!tab) return;
-
-  //     tab.onclick = () => {
-  //       let clickedTag = "";
-
-  //       if (typeId.startsWith("heading")) {
-  //         clickedTag = `heading${typeId.replace("heading", "")}`;
-  //       } else if (typeId.startsWith("paragraph")) {
-  //         clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
-  //       }
-
-  //       console.log("✅ Clicked tab detected:", clickedTag);
-  //       setSelectedSingleTextType(clickedTag);
-
-  //       const fontweightInput = document.getElementById(`squareCraftLinkFontWeight-${typeId}`);
-  //       if (fontweightInput) {
-  //         fontweightInput.focus(); // auto focus
-  //       }
-  //     };
-  //   });
-
-  // In handleLinkBlockClick.js
-  // visibleParts.forEach(partId => {
-  //   const typeId = partId.replace("Part", "");
-  //   const tab = document.getElementById(typeId);
-  //   if (!tab) return;
-
-  //   tab.onclick = () => {
-  //     let clickedTag = "";
-
-  //     // Fix the text type mapping
-  //     if (typeId.startsWith("heading")) {
-  //       clickedTag = `h${typeId.replace("heading", "")}`;
-  //     } else if (typeId.startsWith("paragraph")) {
-  //       clickedTag = `p${typeId.replace("paragraph", "")}`;
-  //     }
-
-  //     console.log("✅ Clicked tab detected:", clickedTag);
-  //     setSelectedSingleTextType(clickedTag);
-
-  //     // Add this to highlight the selected tab
-  //     const allTabs = document.querySelectorAll('[id^="heading"], [id^="paragraph"]');
-  //     allTabs.forEach(t => t.classList.remove('sc-selected-tab'));
-  //     tab.classList.add('sc-selected-tab');
-
-  //     // Initialize font weight select
-  //     const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
-  //     if (fontWeightSelect) {
-  //       console.log("Font weight select found, selected text type:", clickedTag);
-  //       fontWeightSelect.value = "400"; // Reset to default
-
-  //       // Remove any existing event listeners
-  //       const newSelect = fontWeightSelect.cloneNode(true);
-  //       fontWeightSelect.parentNode.replaceChild(newSelect, fontWeightSelect);
-
-  //       // Add new event listener
-  //       newSelect.addEventListener("change", function (event) {
-  //         event.preventDefault();
-  //         console.log("Font weight changed for", clickedTag);
-
-  //         const currentlySelectedBlock = document.querySelector(".sc-selected");
-  //         if (!currentlySelectedBlock) {
-  //           showNotification("❌ Please select a block first.", "error");
-  //           this.value = "400";
-  //           return;
-  //         }
-
-  //         handleFontWeightLink(event, {
-  //           lastClickedElement: currentlySelectedBlock,
-  //           selectedSingleTextType: clickedTag,
-  //           addPendingModification,
-  //           showNotification
-  //         });
-  //       });
-  //     }
-  //   };
-  // });
-
   visibleParts.forEach((partId) => {
     const typeId = partId.replace("Part", "");
     const tab = document.getElementById(typeId);
@@ -336,6 +254,42 @@ export function handleLinkBlockClick(event, context) {
             });
           });
         });
+      }
+    };
+  });
+
+  //text high light code start here
+  // ✅ FINAL text highlight code — insert this at the bottom of handleLinkBlockClick
+
+  visibleParts.forEach((partId) => {
+    const typeId = partId.replace("Part", "");
+    const tab = document.getElementById(typeId);
+    if (!tab) return;
+
+    tab.onclick = () => {
+      let clickedTag = "";
+
+      // Detect correct tag type for h1–h4 and p1–p3
+      if (typeId.startsWith("heading")) {
+        clickedTag = `h${typeId.replace("heading", "")}`; // h1, h2, ...
+      } else if (typeId.startsWith("paragraph")) {
+        clickedTag = `p${typeId.replace("paragraph", "")}`; // p1, p2, p3
+      }
+
+      // Set selected text type for highlight
+      setSelectedSingleTextType(clickedTag);
+      console.log("✅ Now selected for text highlight:", clickedTag);
+
+      // Highlight the selected tab for visual feedback
+      document
+        .querySelectorAll('[id^="heading"], [id^="paragraph"]')
+        .forEach((t) => t.classList.remove("sc-selected-tab"));
+      tab.classList.add("sc-selected-tab");
+
+      // Auto-focus color input for text highlight
+      const textHighlightInput = document.getElementById("scTextHighLight");
+      if (textHighlightInput) {
+        textHighlightInput.focus();
       }
     };
   });
