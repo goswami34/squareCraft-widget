@@ -145,34 +145,46 @@ export function handleTextHighLinghtClick(
   const colorInput = document.getElementById("scTextHighLight");
   const selectedColor = colorInput?.value || "#ef7c2f";
 
-  // Convert p1, p2, p3 to p tag selector with class
+  let foundLinks = false;
   let tagSelector = selectedSingleTextType;
-  if (tagSelector.startsWith("p")) {
+
+  // Determine if we're dealing with paragraph types
+  let paragraphClass = null;
+  if (selectedSingleTextType === "p1") {
     tagSelector = "p";
+    paragraphClass = "sqsrte-large";
+  } else if (selectedSingleTextType === "p2") {
+    tagSelector = "p";
+    paragraphClass = null; // default
+  } else if (selectedSingleTextType === "p3") {
+    tagSelector = "p";
+    paragraphClass = "sqsrte-small";
   }
 
   const elements = lastClickedElement.querySelectorAll(tagSelector);
-  let foundLinks = false;
 
   elements.forEach((element) => {
-    const isValidParagraph =
-      (selectedSingleTextType === "p1" &&
-        element.classList.contains("sqsrte-large")) ||
-      (selectedSingleTextType === "p2" &&
-        !element.classList.contains("sqsrte-large") &&
-        !element.classList.contains("sqsrte-small")) ||
-      (selectedSingleTextType === "p3" &&
-        element.classList.contains("sqsrte-small"));
+    let isValid = false;
 
-    const isParagraph = selectedSingleTextType.startsWith("p");
-    const isHeading = selectedSingleTextType.startsWith("h");
+    if (selectedSingleTextType.startsWith("h")) {
+      isValid = element.tagName.toLowerCase() === selectedSingleTextType;
+    } else if (selectedSingleTextType.startsWith("p")) {
+      if (paragraphClass === null) {
+        isValid =
+          !element.classList.contains("sqsrte-large") &&
+          !element.classList.contains("sqsrte-small");
+      } else {
+        isValid = element.classList.contains(paragraphClass);
+      }
+    }
 
-    if ((isParagraph && isValidParagraph) || isHeading) {
+    if (isValid) {
       const links = element.querySelectorAll("a");
       if (links.length > 0) {
         foundLinks = true;
 
-        const styleId = `highlight-${blockId}-${selectedSingleTextType}-links`;
+        // Inject CSS for links inside the matching element
+        const styleId = `style-${blockId}-${selectedSingleTextType}-highlight`;
         let styleTag = document.getElementById(styleId);
         if (!styleTag) {
           styleTag = document.createElement("style");
@@ -181,7 +193,15 @@ export function handleTextHighLinghtClick(
         }
 
         styleTag.innerHTML = `
-          #${blockId} ${selectedSingleTextType} a {
+          #${blockId} ${
+          selectedSingleTextType.startsWith("p")
+            ? `p${
+                paragraphClass
+                  ? `.${paragraphClass}`
+                  : ":not(.sqsrte-large):not(.sqsrte-small)"
+              }`
+            : selectedSingleTextType
+        } a {
             background-image: linear-gradient(to top, ${selectedColor} 50%, transparent 0%);
             display: inline;
           }
@@ -201,7 +221,7 @@ export function handleTextHighLinghtClick(
     );
 
     showNotification(
-      `✅ Text highlight applied to <a> tags in ${selectedSingleTextType}.`,
+      `✅ Highlight applied to links in ${selectedSingleTextType}.`,
       "success"
     );
   } else {
