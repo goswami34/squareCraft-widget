@@ -36,6 +36,7 @@ let selectedElement = null;
 
   document.addEventListener("DOMContentLoaded", function () {
     selectedElement = document.querySelector(".sc-selected .sqs-html-content");
+    console.log("selectedElement", selectedElement);
 
     if (!selectedElement) {
       console.error("No selected element found.");
