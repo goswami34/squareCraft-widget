@@ -313,7 +313,7 @@ export function handleLinkBlockClick(event, context) {
       const allBlocks = document.querySelectorAll('[id^="block-"]');
       allBlocks.forEach((b) => b.classList.remove("sc-selected"));
 
-      block.classList.add("sc-selected"); // ✅ KEY FIX
+      block.classList.add("sc-selected");
       setSelectedSingleTextType(clickedTag);
       setLastClickedElement(block);
 
