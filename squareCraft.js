@@ -929,6 +929,8 @@ let selectedElement = null;
       });
     }
 
+    //text high light code end here
+
     //Link code end here
   });
 
