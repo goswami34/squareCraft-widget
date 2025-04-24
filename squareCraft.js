@@ -159,6 +159,21 @@ let selectedElement = null;
         (selectedTextElement = clickedTag),
     });
 
+    handleAllBlockClick(event, {
+      getTextType,
+      selectedElement,
+      setSelectedElement: (val) => (selectedElement = val),
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+    });
+
     handleLinkBlockClick(event, {
       getTextType,
       selectedElement,
