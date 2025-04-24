@@ -873,15 +873,15 @@ let selectedElement = null;
         event.preventDefault();
         console.log("Text highlight color changed");
 
-        const currentlySelectedBlock = document.querySelector(".sc-selected");
-        console.log(currentlySelectedBlock);
+        // const currentlySelectedBlock = document.querySelector(".sc-selected");
+        // console.log(currentlySelectedBlock);
         const selectedTab = document.querySelector(".sc-selected-tab");
         console.log(selectedTab);
 
-        if (!currentlySelectedBlock) {
-          showNotification("❌ Please select a block first.", "error");
-          return;
-        }
+        // if (!currentlySelectedBlock) {
+        //   showNotification("❌ Please select a block first.", "error");
+        //   return;
+        // }
 
         if (!selectedTab) {
           showNotification(
