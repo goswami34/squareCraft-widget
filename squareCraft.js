@@ -1014,6 +1014,7 @@ let selectedElement = null;
       setTimeout(() => {
         handleAllFontSizeClick(null, {
           lastClickedElement,
+          selectedSingleTextType,
           getTextType,
           saveModifications,
           selectedElement,
