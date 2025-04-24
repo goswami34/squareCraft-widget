@@ -667,31 +667,6 @@ let selectedElement = null;
     //     });
     // }
 
-    const AllfontsizeSelect = document.getElementById("scAllFontSizeInput");
-    if (AllfontsizeSelect && !AllfontsizeSelect.dataset.initialized) {
-      AllfontsizeSelect.dataset.initialized = "true";
-
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        handleAllFontSizeClick(null, {
-          lastClickedElement,
-          getTextType,
-          saveModifications,
-          selectedElement,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
-          showNotification,
-        });
-      }, 100);
-    }
-
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
       console.log("Initializing font weight select");
@@ -1031,7 +1006,30 @@ let selectedElement = null;
     //Link code end here
 
     //All font size code start here
+    const AllfontsizeSelect = document.getElementById("scAllFontSizeInput");
+    if (AllfontsizeSelect && !AllfontsizeSelect.dataset.initialized) {
+      AllfontsizeSelect.dataset.initialized = "true";
 
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleAllFontSizeClick(null, {
+          lastClickedElement,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
     //All font size code end here
   });
 
