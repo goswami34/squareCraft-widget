@@ -905,7 +905,7 @@ let selectedElement = null;
         console.log("Selected text type:", selectedTextType);
 
         handleTextHighLinghtClick(event, {
-          lastClickedElement: currentlySelectedBlock,
+          lastClickedElement,
           selectedSingleTextType: selectedTextType,
           addPendingModification,
           showNotification,
