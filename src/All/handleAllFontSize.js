@@ -178,6 +178,14 @@ export function handleAllFontSizeClick(event = null, context = null) {
     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
   } else if (selectedSingleTextType === "paragraph3") {
     paragraphSelector = "p.sqsrte-small";
+  } else if (selectedSingleTextType === "heading1") {
+    paragraphSelector = "h1";
+  } else if (selectedSingleTextType === "heading2") {
+    paragraphSelector = "h2";
+  } else if (selectedSingleTextType === "heading3") {
+    paragraphSelector = "h3";
+  } else if (selectedSingleTextType === "heading4") {
+    paragraphSelector = "h4";
   } else {
     paragraphSelector = selectedSingleTextType; // headings like h1, h2, h3, h4
   }
