@@ -92,7 +92,7 @@ export function handleAllFontSizeClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-      #${blockId} ${selector} {
+      #${blockId} ${paragraphSelector} {
         font-size: ${fontSize} !important;
       }
     `;
