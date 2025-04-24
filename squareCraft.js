@@ -874,7 +874,9 @@ let selectedElement = null;
         console.log("Text highlight color changed");
 
         const currentlySelectedBlock = document.querySelector(".sc-selected");
+        console.log(currentlySelectedBlock);
         const selectedTab = document.querySelector(".sc-selected-tab");
+        console.log(selectedTab);
 
         if (!currentlySelectedBlock) {
           showNotification("❌ Please select a block first.", "error");
