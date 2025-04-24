@@ -139,6 +139,10 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontSize.js"
   );
 
+  const { handleAllBlockClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleAllBlockClick.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -442,7 +446,7 @@ let selectedElement = null;
 
     //All font size code start here
 
-    handleAllFontSizeClick(event, {
+    handleAllBlockClick(event, {
       lastClickedElement,
       getTextType,
       getTextTypeBold,
@@ -1033,7 +1037,7 @@ let selectedElement = null;
 
       // Add a small delay to ensure the DOM is fully loaded
       setTimeout(() => {
-        handleFontSize(null, {
+        handleAllBlockClick(null, {
           lastClickedElement,
           getTextType,
           saveModifications,

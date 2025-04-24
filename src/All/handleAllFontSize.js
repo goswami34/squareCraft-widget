@@ -30,34 +30,68 @@ export function handleAllFontSizeClick(event = null, context = null) {
   const {
     lastClickedElement,
     selectedSingleTextType,
-    saveModifications,
     addPendingModification,
     showNotification,
+    saveModifications,
   } = context;
 
+  if (!lastClickedElement) {
+    showNotification("❌ Please select a block first.", "error");
+    return;
+  }
+
+  if (!selectedSingleTextType) {
+    showNotification("❌ Please select a text type (h1, h2, p1 etc).", "error");
+    return;
+  }
+
+  const fontSizeInput = document.getElementById("scAllFontSizeInput");
+  if (!fontSizeInput) {
+    showNotification("❌ Font size input not found.", "error");
+    return;
+  }
+
+  const fontSize = fontSizeInput.value + "px";
+  const blockId = lastClickedElement.id;
+
+  let selector = "";
+  if (selectedSingleTextType.startsWith("h")) {
+    selector = selectedSingleTextType;
+  } else if (selectedSingleTextType === "p1") {
+    selector = "p.sqsrte-large";
+  } else if (selectedSingleTextType === "p2") {
+    selector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+  } else if (selectedSingleTextType === "p3") {
+    selector = "p.sqsrte-small";
+  }
+
+  let styleTag = document.getElementById(
+    `style-${blockId}-${selectedSingleTextType}-fontsize`
+  );
+  if (!styleTag) {
+    styleTag = document.createElement("style");
+    styleTag.id = `style-${blockId}-${selectedSingleTextType}-fontsize`;
+    document.head.appendChild(styleTag);
+  }
+
   styleTag.innerHTML = `
-      #${block.id} ${paragraphSelector} strong {
+      #${blockId} ${selector} {
         font-size: ${fontSize} !important;
       }
     `;
 
   addPendingModification(
-    block.id,
-    {
-      "font-size": fontSize,
-      target: selectedSingleTextType,
-    },
-    "strong"
+    blockId,
+    { "font-size": fontSize },
+    selectedSingleTextType
   );
 
-  // STEP 5️⃣: Update UI highlighting
-  document.querySelectorAll('[id^="scFontSizeInput"]').forEach((el) => {
-    el.classList.remove("sc-activeTab-border");
-    el.classList.add("sc-inActiveTab-border");
-  });
+  if (typeof saveModifications === "function") {
+    saveModifications(blockId, { "font-size": fontSize });
+  }
 
   showNotification(
-    `✅ Font size applied to bold text inside: ${selectedSingleTextType}`,
+    `✅ Font size applied to ${selectedSingleTextType}.`,
     "success"
   );
 }
