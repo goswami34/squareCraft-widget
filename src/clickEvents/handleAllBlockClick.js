@@ -224,7 +224,7 @@ export function handleAllBlockClick(event, context) {
           `scFontSizeInput-${typeId}`
         );
         if (fontSizeInput) {
-          fontSizeInput.focus(); // focus automatically
+          fontSizeInput.focus();
         }
       };
     });
