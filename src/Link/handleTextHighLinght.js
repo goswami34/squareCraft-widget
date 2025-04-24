@@ -142,7 +142,10 @@ export function handleTextHighLinghtClick(
   }
 
   const blockId = lastClickedElement.id;
-  const colorInput = document.getElementById("scTextHighLight");
+  const colorInput = document.getElementById(
+    `scTextHighLight-${selectedSingleTextType}`
+  );
+
   const selectedColor = colorInput?.value || "#ef7c2f";
 
   let tagSelector = selectedSingleTextType;
