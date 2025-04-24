@@ -88,6 +88,7 @@ export function handleAllBlockClick(event, context) {
 
   allParts.forEach((id) => {
     const part = document.getElementById(id);
+    console.log("🔍 part:", part);
     if (part) {
       part.classList.toggle("sc-hidden", !visibleParts.has(id));
     }
