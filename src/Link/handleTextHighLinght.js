@@ -145,6 +145,8 @@ export function handleTextHighLinghtClick(
   const colorInput = document.getElementById(
     `scTextHighLight-${selectedSingleTextType}`
   );
+  console.log(colorInput);
+  console.log(colorInput?.value);
 
   const selectedColor = colorInput?.value || "#ef7c2f";
 
