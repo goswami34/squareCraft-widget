@@ -161,19 +161,51 @@ export function handleAllBlockClick(event, context) {
     const tab = document.getElementById(typeId);
     if (!tab) return;
 
+    // tab.onclick = () => {
+    //   const clickedTag = typeId.startsWith("heading")
+    //     ? `h${typeId.replace("heading", "")}`
+    //     : typeId;
+    //   setSelectedSingleTextType(clickedTag);
+    //   console.log("✅ Now selected text type:", clickedTag);
+
+    //   const linkFontSizeInput = document.getElementById(
+    //     `scFontSizeInputLink-${typeId}`
+    //   );
+    //   if (linkFontSizeInput) {
+    //     linkFontSizeInput.focus();
+    //   }
+    // };
     tab.onclick = () => {
       const clickedTag = typeId.startsWith("heading")
         ? `h${typeId.replace("heading", "")}`
         : typeId;
       setSelectedSingleTextType(clickedTag);
-      console.log("✅ Now selected text type:", clickedTag);
 
-      const linkFontSizeInput = document.getElementById(
-        `scFontSizeInputLink-${typeId}`
+      // Get the actual font size of the clicked text type
+      const selectedElements = block.querySelectorAll(
+        clickedTag === "p1"
+          ? "p.sqsrte-large"
+          : clickedTag === "p2"
+          ? "p:not(.sqsrte-large):not(.sqsrte-small)"
+          : clickedTag === "p3"
+          ? "p.sqsrte-small"
+          : clickedTag
       );
-      if (linkFontSizeInput) {
-        linkFontSizeInput.focus();
+
+      if (selectedElements.length > 0) {
+        const computedFontSize = window.getComputedStyle(
+          selectedElements[0]
+        ).fontSize;
+        const fontSizeValue = parseInt(computedFontSize);
+
+        // Update the font size input value
+        const fontSizeInput = document.getElementById("scAllFontSizeInput");
+        if (fontSizeInput) {
+          fontSizeInput.value = fontSizeValue;
+        }
       }
+
+      console.log("✅ Now selected text type:", clickedTag);
     };
   });
 
