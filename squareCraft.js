@@ -918,39 +918,19 @@ let selectedElement = null;
       console.log("Initializing text highlight input");
       textHighlightInput.dataset.initialized = "true";
 
-      // Add click event listener to the widget container
-      const widgetContainer = document.getElementById("sc-widget-container");
-      if (widgetContainer) {
-        widgetContainer.addEventListener("click", function (event) {
-          // Check if the click is on a text type tab
-          const tab = event.target.closest(
-            '[id^="heading"], [id^="paragraph"]'
-          );
-          if (tab) {
-            // Remove selected-tab class from all tabs
-            document
-              .querySelectorAll('[id^="heading"], [id^="paragraph"]')
-              .forEach((t) => {
-                t.classList.remove("sc-selected-tab");
-              });
-            // Add selected-tab class to clicked tab
-            tab.classList.add("sc-selected-tab");
-          }
-        });
-      }
-
       textHighlightInput.addEventListener("change", function (event) {
         event.preventDefault();
         console.log("Text highlight color changed");
 
+        // Check for selected block
         const currentlySelectedBlock = document.querySelector(".sc-selected");
-        const selectedTab = document.querySelector(".sc-selected-tab");
-
         if (!currentlySelectedBlock) {
           showNotification("❌ Please select a block first.", "error");
           return;
         }
 
+        // Check for selected text type
+        const selectedTab = document.querySelector(".sc-selected-tab");
         if (!selectedTab) {
           showNotification(
             "❌ Please select a text type (h1, h2, p1 etc) first.",
