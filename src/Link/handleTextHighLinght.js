@@ -234,6 +234,9 @@ export function handleTextHighLinghtClick(
     selectedSingleTextType,
     addPendingModification,
     showNotification,
+    setSelectedElement,
+    setLastClickedBlockId,
+    setLastClickedElement,
   }
 ) {
   event.preventDefault();
@@ -242,10 +245,22 @@ export function handleTextHighLinghtClick(
     selectedSingleTextType,
   });
 
-  if (!lastClickedElement) {
-    showNotification("❌ Please select a block first.", "error");
-    return;
+  let block = event.target.closest('[id^="block-"]');
+  if (!block) return;
+
+  // Remove selection from previously selected block
+  if (selectedElement) {
+    selectedElement.style.outline = "";
+    selectedElement.classList.remove("sc-selected");
   }
+
+  // Add selection to new block
+  setSelectedElement(block);
+  block.style.outline = "1px dashed #EF7C2F";
+  block.classList.add("sc-selected");
+
+  setLastClickedBlockId(block.id);
+  setLastClickedElement(block);
 
   if (!selectedSingleTextType) {
     showNotification(

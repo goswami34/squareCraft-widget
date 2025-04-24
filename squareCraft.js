@@ -977,6 +977,9 @@ let selectedElement = null;
           selectedSingleTextType: selectedTextType,
           addPendingModification,
           showNotification,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
         });
       });
     }
