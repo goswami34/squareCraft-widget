@@ -271,14 +271,15 @@ export function handleLinkBlockClick(event, context) {
 
       // Detect correct tag type for h1–h4 and p1–p3
       if (typeId.startsWith("heading")) {
-        clickedTag = `h${typeId.replace("heading", "")}`; // h1, h2, ...
+        clickedTag = `heading${typeId.replace("heading", "")}`;
       } else if (typeId.startsWith("paragraph")) {
-        clickedTag = `p${typeId.replace("paragraph", "")}`; // p1, p2, p3
+        clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
       }
 
       // Set selected text type for highlight
       setSelectedSingleTextType(clickedTag);
       setLastClickedElement(block);
+      console.log(setLastClickedElement(block));
       console.log("✅ Now selected for text highlight:", clickedTag);
 
       // Highlight the selected tab for visual feedback
