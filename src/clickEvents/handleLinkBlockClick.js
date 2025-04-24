@@ -286,16 +286,23 @@ export function handleLinkBlockClick(event, context) {
       console.log("✅ Now selected for text highlight:", clickedTag);
 
       // Highlight the selected tab for visual feedback
-      document
-        .querySelectorAll('[id^="heading"], [id^="paragraph"]')
-        .forEach((t) => t.classList.remove("sc-selected-tab"));
-      tab.classList.add("sc-selected-tab");
+      // document
+      //   .querySelectorAll('[id^="heading"], [id^="paragraph"]')
+      //   .forEach((t) => t.classList.remove("sc-selected-tab"));
+      // tab.classList.add("sc-selected-tab");
+
+      const textHighlightInput = document.getElementById(
+        `scTextHighLight-${typeId}`
+      );
+      if (fontSizeInput) {
+        textHighlightInput.focus(); // auto focus
+      }
 
       // Auto-focus color input for text highlight
-      const textHighlightInput = document.getElementById("scTextHighLight");
-      if (textHighlightInput) {
-        textHighlightInput.focus();
-      }
+      // const textHighlightInput = document.getElementById("scTextHighLight");
+      // if (textHighlightInput) {
+      //   textHighlightInput.focus();
+      // }
     };
   });
 
