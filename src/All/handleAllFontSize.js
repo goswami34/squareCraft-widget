@@ -35,42 +35,59 @@ export function handleAllFontSizeClick(event = null, context = null) {
     saveModifications,
   } = context;
 
+  if (!event) {
+    const activeButton = document.querySelector(
+      '[id^="scFontSizeInputLink"].sc-activeTab-border'
+    );
+    if (!activeButton) return;
+    event = { target: activeButton };
+  }
+
+  const clickedInput = event.target.closest('[id^="scFontSizeInputLink"]');
+  if (!clickedInput) return;
+
+  const fontSize = clickedInput.value + "px";
+
   if (!lastClickedElement) {
-    showNotification("❌ Please select a block first.", "error");
+    showNotification("Please select a block first", "error");
     return;
   }
 
   if (!selectedSingleTextType) {
-    showNotification("❌ Please select a text type (h1, h2, p1 etc).", "error");
+    showNotification("Please select a text type first", "error");
     return;
   }
 
-  const fontSizeInput = document.getElementById("scAllFontSizeInput");
-  if (!fontSizeInput) {
-    showNotification("❌ Font size input not found.", "error");
+  const block = lastClickedElement.closest('[id^="block-"]');
+  if (!block) {
+    showNotification("Block not found", "error");
     return;
   }
 
-  const fontSize = fontSizeInput.value + "px";
   const blockId = lastClickedElement.id;
 
-  let selector = "";
-  if (selectedSingleTextType.startsWith("h")) {
-    selector = selectedSingleTextType;
-  } else if (selectedSingleTextType === "p1") {
-    selector = "p.sqsrte-large";
-  } else if (selectedSingleTextType === "p2") {
-    selector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-  } else if (selectedSingleTextType === "p3") {
-    selector = "p.sqsrte-small";
+  // Correct Paragraph Selector Setup
+  let paragraphSelector = "";
+  if (selectedSingleTextType === "paragraph1") {
+    paragraphSelector = "p.sqsrte-large";
+  } else if (selectedSingleTextType === "paragraph2") {
+    paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+  } else if (selectedSingleTextType === "paragraph3") {
+    paragraphSelector = "p.sqsrte-small";
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    paragraphSelector = `h${selectedSingleTextType.replace("heading", "")}`;
+  } else {
+    paragraphSelector = selectedSingleTextType;
   }
 
+  console.log("🔎 Applying font-size to links inside:", paragraphSelector);
+
   let styleTag = document.getElementById(
-    `style-${blockId}-${selectedSingleTextType}-fontsize`
+    `style-${blockId}-${paragraphSelector}-fontsize`
   );
   if (!styleTag) {
     styleTag = document.createElement("style");
-    styleTag.id = `style-${blockId}-${selectedSingleTextType}-fontsize`;
+    styleTag.id = `style-${blockId}-${paragraphSelector}-fontsize`;
     document.head.appendChild(styleTag);
   }
 
