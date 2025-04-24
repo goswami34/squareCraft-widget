@@ -259,7 +259,6 @@ export function handleLinkBlockClick(event, context) {
   });
 
   //text high light code start here
-  // ✅ FINAL text highlight code — insert this at the bottom of handleLinkBlockClick
 
   visibleParts.forEach((partId) => {
     const typeId = partId.replace("Part", "");
@@ -267,14 +266,18 @@ export function handleLinkBlockClick(event, context) {
     if (!tab) return;
 
     tab.onclick = () => {
-      let clickedTag = "";
+      // let clickedTag = "";
 
       // Detect correct tag type for h1–h4 and p1–p3
-      if (typeId.startsWith("heading")) {
-        clickedTag = `heading${typeId.replace("heading", "")}`;
-      } else if (typeId.startsWith("paragraph")) {
-        clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
-      }
+      // if (typeId.startsWith("heading")) {
+      //   clickedTag = `heading${typeId.replace("heading", "")}`;
+      // } else if (typeId.startsWith("paragraph")) {
+      //   clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+      // }
+
+      const clickedTag = typeId.startsWith("heading")
+        ? `h${typeId.replace("heading", "")}`
+        : typeId;
 
       // Set selected text type for highlight
       setSelectedSingleTextType(clickedTag);
