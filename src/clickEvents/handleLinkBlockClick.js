@@ -278,6 +278,7 @@ export function handleLinkBlockClick(event, context) {
 
       // Set selected text type for highlight
       setSelectedSingleTextType(clickedTag);
+      setLastClickedElement(block);
       console.log("✅ Now selected for text highlight:", clickedTag);
 
       // Highlight the selected tab for visual feedback
