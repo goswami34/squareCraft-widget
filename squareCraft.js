@@ -446,7 +446,7 @@ let selectedElement = null;
 
     //All font size code start here
 
-    handleAllBlockClick(event, {
+    handleAllFontSizeClick(event, {
       lastClickedElement,
       getTextType,
       getTextTypeBold,
