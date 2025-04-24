@@ -154,18 +154,31 @@ export function handleTextHighLinghtClick(
   let classSelector = ""; // For paragraph class handling
 
   // Handle p1, p2, p3 to select paragraph tags properly
-  if (selectedSingleTextType.startsWith("p")) {
-    tagSelector = "p";
-    if (selectedSingleTextType === "p1") {
-      classSelector = ".sqsrte-large";
-    } else if (selectedSingleTextType === "p2") {
-      classSelector = ":not(.sqsrte-large):not(.sqsrte-small)";
-    } else if (selectedSingleTextType === "p3") {
-      classSelector = ".sqsrte-small";
-    }
+  // if (selectedSingleTextType.startsWith("p")) {
+  //   tagSelector = "p";
+  //   if (selectedSingleTextType === "p1") {
+  //     classSelector = ".sqsrte-large";
+  //   } else if (selectedSingleTextType === "p2") {
+  //     classSelector = ":not(.sqsrte-large):not(.sqsrte-small)";
+  //   } else if (selectedSingleTextType === "p3") {
+  //     classSelector = ".sqsrte-small";
+  //   }
+  // }
+
+  let selector = "";
+  if (selectedSingleTextType === "paragraph1") {
+    selector = "p.sqsrte-large";
+  } else if (selectedSingleTextType === "paragraph2") {
+    selector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+  } else if (selectedSingleTextType === "paragraph3") {
+    selector = "p.sqsrte-small";
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    selector = `h${selectedSingleTextType.replace("heading", "")}`;
+  } else {
+    selector = selectedSingleTextType;
   }
 
-  const selector = `${tagSelector}${classSelector}`;
+  // const selector = `${tagSelector}${classSelector}`;
   const matchingElements = lastClickedElement.querySelectorAll(selector);
 
   let found = false;
