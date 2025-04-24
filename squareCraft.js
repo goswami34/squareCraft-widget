@@ -135,6 +135,9 @@ let selectedElement = null;
   const { handleTextHighLinghtClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextHighLinght.js"
   );
+  const { handleAllFontSizeClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontSize.js"
+  );
 
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
@@ -437,6 +440,45 @@ let selectedElement = null;
 
     //Link code end here
 
+    //All font size code start here
+
+    handleAllFontSizeClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+    //All font size code end here
+
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
 
     typoTabSelect(event);
@@ -621,13 +663,13 @@ let selectedElement = null;
     //     });
     // }
 
-    const fontsizeSelect = document.getElementById("scFontSizeInput");
-    if (fontsizeSelect && !fontsizeSelect.dataset.initialized) {
-      fontsizeSelect.dataset.initialized = "true";
+    const AllfontsizeSelect = document.getElementById("scAllFontSizeInput");
+    if (AllfontsizeSelect && !AllfontsizeSelect.dataset.initialized) {
+      AllfontsizeSelect.dataset.initialized = "true";
 
       // Add a small delay to ensure the DOM is fully loaded
       setTimeout(() => {
-        handleFontSize(null, {
+        handleAllFontSizeClick(null, {
           lastClickedElement,
           getTextType,
           saveModifications,
@@ -983,6 +1025,33 @@ let selectedElement = null;
     }
 
     //Link code end here
+
+    //All font size code start here
+    const fontsizeSelect = document.getElementById("scFontSizeInput");
+    if (fontsizeSelect && !fontsizeSelect.dataset.initialized) {
+      fontsizeSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleFontSize(null, {
+          lastClickedElement,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //All font size code end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });

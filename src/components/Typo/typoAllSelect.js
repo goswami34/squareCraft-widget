@@ -1,5 +1,5 @@
 export function typoAllSelect(fontSizes, LetterSpacing) {
-   return `
+  return `
       <div
       class="sc-mt-2 sc-relative sc-grid  sc-grid-cols-12 sc-gap-2 ">
  
@@ -26,7 +26,7 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
                <div class="sc-font-size-container sc-poppins sc-universal sc-flex sc-justify-between sc-items-center sc-flex sc-items-center  
                      sc-rounded-6px 
                      ">
-                  <input type="text" id="scFontSizeInput" value="16" class="sc-font-size-input sc-font-light sc-z-99999 sc-text-sm sc-text-color-white 
+                  <input type="number" id="scAllFontSizeInput" value="16" class="sc-font-size-input sc-font-light sc-z-99999 sc-text-sm sc-text-color-white 
                         sc-bg-transparent  sc-universal sc-font-light">
                   <div class="sc-v-line"></div>
                   <div
@@ -45,14 +45,14 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
                      sc-rounded-6px sc-border sc-border-585858 sc-absolute 
                      sc-mt-1">
                   ${fontSizes
-         ?.map(
-            (size) => `
+                    ?.map(
+                      (size) => `
                   <div
                      class="sc-dropdown-item sc-py-1px sc-text-center  sc-text-sm"
                      data-value="${size}">${size}</div>
                   `
-         )
-         .join("")}
+                    )
+                    .join("")}
                </div>
             </div>
          </div>
@@ -140,13 +140,13 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
                   sc-rounded-6px sc-border sc-border-585858 sc-absolute 
                   sc-mt-1">
                ${LetterSpacing?.map(
-            (gap) => `
+                 (gap) => `
                <div
                   class="sc-dropdown-item sc-py-1px sc-text-center  sc-text-sm"
                   data-value="${gap}">${gap}
                </div>
                `
-         ).join("")}
+               ).join("")}
             </div>
          </div>
          <div class="sc-flex sc-text-color-white sc-px-1 
@@ -168,7 +168,7 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
             sc-rounded-6px sc-border sc-border-585858 sc-absolute 
             sc-mt-1">
          ${LetterSpacing?.map(
-            (gap) => `
+           (gap) => `
          <div
             class="sc-dropdown-item sc-py-1px sc-text-center  sc-text-sm"
             data-value="${gap}">${gap}
@@ -212,5 +212,5 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
             <p class="sc-text-sm sc-poppins c-font-light sc-universal">#363544</p>
             <div class="sc-square-6 sc-border-colors sc-cursor-pointer"></div>
          </div>
-      </div> `
+      </div> `;
 }
