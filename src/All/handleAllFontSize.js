@@ -35,59 +35,70 @@ export function handleAllFontSizeClick(event = null, context = null) {
     saveModifications,
   } = context;
 
-  if (!event) {
-    const activeButton = document.querySelector(
-      '[id^="scFontSizeInputLink"].sc-activeTab-border'
-    );
-    if (!activeButton) return;
-    event = { target: activeButton };
-  }
+  // Get the font size input
+  const fontSizeInput = document.getElementById("scAllFontSizeInput");
+  if (!fontSizeInput) return;
 
-  const clickedInput = event.target.closest('[id^="scFontSizeInputLink"]');
-  if (!clickedInput) return;
+  const fontSize = fontSizeInput.value + "px";
 
-  const fontSize = clickedInput.value + "px";
-
+  // Validate block selection
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
     return;
   }
 
+  // Validate text type selection
   if (!selectedSingleTextType) {
     showNotification("Please select a text type first", "error");
     return;
   }
 
+  // Get the block element
   const block = lastClickedElement.closest('[id^="block-"]');
   if (!block) {
     showNotification("Block not found", "error");
     return;
   }
 
-  const blockId = lastClickedElement.id;
+  const blockId = block.id;
 
-  // Correct Paragraph Selector Setup
+  // Set up the correct selector based on text type
   let paragraphSelector = "";
-  if (selectedSingleTextType === "paragraph1") {
-    paragraphSelector = "p.sqsrte-large";
-  } else if (selectedSingleTextType === "paragraph2") {
-    paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-  } else if (selectedSingleTextType === "paragraph3") {
-    paragraphSelector = "p.sqsrte-small";
-  } else if (selectedSingleTextType.startsWith("heading")) {
-    paragraphSelector = `h${selectedSingleTextType.replace("heading", "")}`;
-  } else {
-    paragraphSelector = selectedSingleTextType;
+  switch (selectedSingleTextType) {
+    case "paragraph1":
+      paragraphSelector = "p.sqsrte-large";
+      break;
+    case "paragraph2":
+      paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+      break;
+    case "paragraph3":
+      paragraphSelector = "p.sqsrte-small";
+      break;
+    case "heading1":
+    case "heading2":
+    case "heading3":
+    case "heading4":
+    case "heading5":
+    case "heading6":
+      paragraphSelector = `h${selectedSingleTextType.replace("heading", "")}`;
+      break;
+    default:
+      paragraphSelector = selectedSingleTextType;
   }
 
-  console.log("🔎 Applying font-size to links inside:", paragraphSelector);
+  // Apply font size directly to elements for immediate feedback
+  const elements = block.querySelectorAll(paragraphSelector);
+  elements.forEach((el) => {
+    el.style.fontSize = fontSize;
+  });
 
-  let styleTag = document.getElementById(
-    `style-${blockId}-${paragraphSelector}-fontsize`
-  );
+  // Create or update style tag for persistence
+  const styleId = `style-${blockId}-${paragraphSelector}-fontsize`;
+  let styleTag = document.getElementById(styleId);
+
   if (!styleTag) {
     styleTag = document.createElement("style");
-    styleTag.id = `style-${blockId}-${paragraphSelector}-fontsize`;
+    styleTag.id = styleId;
     document.head.appendChild(styleTag);
   }
 
@@ -97,16 +108,19 @@ export function handleAllFontSizeClick(event = null, context = null) {
       }
     `;
 
+  // Save the modification
   addPendingModification(
     blockId,
     { "font-size": fontSize },
     selectedSingleTextType
   );
 
+  // Save to storage if available
   if (typeof saveModifications === "function") {
     saveModifications(blockId, { "font-size": fontSize });
   }
 
+  // Show success notification
   showNotification(
     `✅ Font size applied to ${selectedSingleTextType}.`,
     "success"
