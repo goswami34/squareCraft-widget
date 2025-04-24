@@ -229,38 +229,16 @@ function showNotification(message, type = "info") {
 
 export function handleTextHighLinghtClick(
   event,
-  {
-    lastClickedElement,
-    selectedSingleTextType,
-    addPendingModification,
-    showNotification,
-    setSelectedElement,
-    setLastClickedBlockId,
-    setLastClickedElement,
-  }
+  { selectedSingleTextType, addPendingModification, showNotification }
 ) {
   event.preventDefault();
-  console.log("handleTextHighLinghtClick called with:", {
-    lastClickedElement,
-    selectedSingleTextType,
-  });
 
-  let block = event.target.closest('[id^="block-"]');
-  if (!block) return;
-
-  // Remove selection from previously selected block
-  if (selectedElement) {
-    selectedElement.style.outline = "";
-    selectedElement.classList.remove("sc-selected");
+  // Get selected block
+  const block = document.querySelector(".sc-selected");
+  if (!block) {
+    showNotification("❌ Please select a block first.", "error");
+    return;
   }
-
-  // Add selection to new block
-  setSelectedElement(block);
-  block.style.outline = "1px dashed #EF7C2F";
-  block.classList.add("sc-selected");
-
-  setLastClickedBlockId(block.id);
-  setLastClickedElement(block);
 
   if (!selectedSingleTextType) {
     showNotification(
@@ -270,55 +248,43 @@ export function handleTextHighLinghtClick(
     return;
   }
 
-  const blockId = lastClickedElement.id;
+  const blockId = block.id;
   const colorInput = document.getElementById("scTextHighLight");
   const selectedColor = colorInput?.value || "#ef7c2f";
 
-  // Convert text type to proper selector
   let selector = "";
   if (selectedSingleTextType.startsWith("h")) {
     selector = selectedSingleTextType;
-  } else if (selectedSingleTextType.startsWith("p")) {
-    if (selectedSingleTextType === "p1") {
-      selector = "p.sqsrte-large";
-    } else if (selectedSingleTextType === "p2") {
-      selector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-    } else if (selectedSingleTextType === "p3") {
-      selector = "p.sqsrte-small";
-    }
+  } else if (selectedSingleTextType === "p1") {
+    selector = "p.sqsrte-large";
+  } else if (selectedSingleTextType === "p2") {
+    selector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+  } else if (selectedSingleTextType === "p3") {
+    selector = "p.sqsrte-small";
   }
 
-  // Find all elements of the selected type within the block
-  const elements = lastClickedElement.querySelectorAll(selector);
-  console.log("Found elements:", elements.length);
-
-  if (elements.length === 0) {
+  const elements = block.querySelectorAll(selector);
+  if (!elements.length) {
     showNotification(
-      `❌ No ${selectedSingleTextType} elements found in the selected block.`,
+      `❌ No ${selectedSingleTextType} elements found.`,
       "error"
     );
     return;
   }
 
   let foundLinks = false;
-
-  elements.forEach((element) => {
-    const links = element.querySelectorAll("a");
+  elements.forEach((el) => {
+    const links = el.querySelectorAll("a");
     if (links.length > 0) {
       foundLinks = true;
-
-      // Create a unique ID for this highlight style
-      const highlightId = `highlight-${blockId}-${selectedSingleTextType}`;
-
-      // Create or update the style tag
-      let styleTag = document.getElementById(highlightId);
+      const styleId = `highlight-${blockId}-${selectedSingleTextType}`;
+      let styleTag = document.getElementById(styleId);
       if (!styleTag) {
         styleTag = document.createElement("style");
-        styleTag.id = highlightId;
+        styleTag.id = styleId;
         document.head.appendChild(styleTag);
       }
 
-      // Apply the highlight style to all links within the selected elements
       styleTag.innerHTML = `
         #${blockId} ${selector} a {
           background-image: linear-gradient(to top, ${selectedColor} 50%, transparent 0%);

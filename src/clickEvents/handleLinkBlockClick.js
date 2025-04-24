@@ -265,44 +265,63 @@ export function handleLinkBlockClick(event, context) {
     const tab = document.getElementById(typeId);
     if (!tab) return;
 
+    // tab.onclick = () => {
+    //   // let clickedTag = "";
+
+    //   // Detect correct tag type for h1–h4 and p1–p3
+    //   // if (typeId.startsWith("heading")) {
+    //   //   clickedTag = `heading${typeId.replace("heading", "")}`;
+    //   // } else if (typeId.startsWith("paragraph")) {
+    //   //   clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+    //   // }
+
+    //   const clickedTag = typeId.startsWith("heading")
+    //     ? `h${typeId.replace("heading", "")}`
+    //     : typeId;
+
+    //   // Set selected text type for highlight
+    //   setSelectedSingleTextType(clickedTag);
+    //   setLastClickedElement(block);
+    //   console.log(setLastClickedElement(block));
+    //   console.log("✅ Now selected for text highlight:", clickedTag);
+
+    //   // Highlight the selected tab for visual feedback
+    //   // document
+    //   //   .querySelectorAll('[id^="heading"], [id^="paragraph"]')
+    //   //   .forEach((t) => t.classList.remove("sc-selected-tab"));
+    //   // tab.classList.add("sc-selected-tab");
+
+    //   const textHighlightInput = document.getElementById(
+    //     `scTextHighLight-${typeId}`
+    //   );
+    //   if (fontSizeInput) {
+    //     textHighlightInput.focus(); // auto focus
+    //   }
+
+    //   // Auto-focus color input for text highlight
+    //   // const textHighlightInput = document.getElementById("scTextHighLight");
+    //   // if (textHighlightInput) {
+    //   //   textHighlightInput.focus();
+    //   // }
+    // };
     tab.onclick = () => {
-      // let clickedTag = "";
-
-      // Detect correct tag type for h1–h4 and p1–p3
-      // if (typeId.startsWith("heading")) {
-      //   clickedTag = `heading${typeId.replace("heading", "")}`;
-      // } else if (typeId.startsWith("paragraph")) {
-      //   clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
-      // }
-
       const clickedTag = typeId.startsWith("heading")
         ? `h${typeId.replace("heading", "")}`
-        : typeId;
+        : `p${typeId.replace("paragraph", "")}`;
 
-      // Set selected text type for highlight
+      // Mark block as selected visually and logically
+      const allBlocks = document.querySelectorAll('[id^="block-"]');
+      allBlocks.forEach((b) => b.classList.remove("sc-selected"));
+
+      block.classList.add("sc-selected"); // ✅ KEY FIX
       setSelectedSingleTextType(clickedTag);
       setLastClickedElement(block);
-      console.log(setLastClickedElement(block));
-      console.log("✅ Now selected for text highlight:", clickedTag);
 
-      // Highlight the selected tab for visual feedback
-      // document
-      //   .querySelectorAll('[id^="heading"], [id^="paragraph"]')
-      //   .forEach((t) => t.classList.remove("sc-selected-tab"));
-      // tab.classList.add("sc-selected-tab");
-
-      const textHighlightInput = document.getElementById(
-        `scTextHighLight-${typeId}`
-      );
-      if (fontSizeInput) {
-        textHighlightInput.focus(); // auto focus
-      }
-
-      // Auto-focus color input for text highlight
-      // const textHighlightInput = document.getElementById("scTextHighLight");
-      // if (textHighlightInput) {
-      //   textHighlightInput.focus();
-      // }
+      // Also highlight active tab (optional UX)
+      document
+        .querySelectorAll('[id^="heading"], [id^="paragraph"]')
+        .forEach((t) => t.classList.remove("sc-selected-tab"));
+      tab.classList.add("sc-selected-tab");
     };
   });
 
