@@ -1031,30 +1031,69 @@ let selectedElement = null;
     //Link code end here
 
     //All font size code start here
-    const fontsizeSelect = document.getElementById("scFontSizeInput");
-    if (fontsizeSelect && !fontsizeSelect.dataset.initialized) {
-      fontsizeSelect.dataset.initialized = "true";
+    const allFontSizeInput = document.getElementById("scAllFontSizeInput");
+    if (allFontSizeInput && !allFontSizeInput.dataset.initialized) {
+      allFontSizeInput.dataset.initialized = "true";
 
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        handleAllBlockClick(null, {
-          lastClickedElement,
-          getTextType,
-          saveModifications,
-          selectedElement,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
+      allFontSizeInput.addEventListener("change", function () {
+        const fontSize = this.value;
+        const currentlySelectedBlock = document.querySelector(".sc-selected");
+        const selectedTab = document.querySelector(".sc-selected-tab");
+
+        if (!currentlySelectedBlock) {
+          showNotification("❌ Please select a block first.", "error");
+          return;
+        }
+
+        if (!selectedTab) {
+          showNotification(
+            "❌ Please select a text type first (h1, h2, p1 etc.).",
+            "error"
+          );
+          return;
+        }
+
+        let tag = "";
+        if (selectedTab.id.startsWith("heading")) {
+          tag = `h${selectedTab.id.replace("heading", "")}`;
+        } else if (selectedTab.id.startsWith("paragraph")) {
+          const map = {
+            paragraph1: "p.sqsrte-large",
+            paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
+            paragraph3: "p.sqsrte-small",
+          };
+          tag = map[selectedTab.id];
+        }
+
+        const styleId = `style-${currentlySelectedBlock.id}-${tag}-fontsize`;
+        let styleTag = document.getElementById(styleId);
+        if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = styleId;
+          document.head.appendChild(styleTag);
+        }
+
+        styleTag.innerHTML = `
+      #${currentlySelectedBlock.id} ${tag} {
+        font-size: ${fontSize}px !important;
+      }
+    `;
+
+        addPendingModification(
+          currentlySelectedBlock.id,
+          {
+            "font-size": `${fontSize}px`,
           },
-          showNotification,
-        });
-      }, 100);
+          tag
+        );
+
+        showNotification(
+          `✅ Font size ${fontSize}px applied to ${tag}.`,
+          "success"
+        );
+      });
     }
+
     //All font size code end here
   });
 
