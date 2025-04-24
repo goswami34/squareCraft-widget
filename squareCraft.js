@@ -843,6 +843,76 @@ let selectedElement = null;
 
     //text high light code start here
     // In squareCraft.js
+    // const textHighlightInput = document.getElementById("scTextHighLight");
+    // if (textHighlightInput && !textHighlightInput.dataset.initialized) {
+    //   console.log("Initializing text highlight input");
+    //   textHighlightInput.dataset.initialized = "true";
+
+    //   // Add click event listener to the widget container
+    //   const widgetContainer = document.getElementById("sc-widget-container");
+    //   if (widgetContainer) {
+    //     widgetContainer.addEventListener("click", function (event) {
+    //       // Check if the click is on a text type tab
+    //       const tab = event.target.closest(
+    //         '[id^="heading"], [id^="paragraph"]'
+    //       );
+    //       if (tab) {
+    //         // Remove selected-tab class from all tabs
+    //         document
+    //           .querySelectorAll('[id^="heading"], [id^="paragraph"]')
+    //           .forEach((t) => {
+    //             t.classList.remove("sc-selected-tab");
+    //           });
+    //         // Add selected-tab class to clicked tab
+    //         tab.classList.add("sc-selected-tab");
+    //       }
+    //     });
+    //   }
+
+    //   textHighlightInput.addEventListener("change", function (event) {
+    //     event.preventDefault();
+    //     console.log("Text highlight color changed");
+
+    //     // const currentlySelectedBlock = document.querySelector(".sc-selected");
+    //     // console.log(currentlySelectedBlock);
+    //     const selectedTab = document.querySelector(".sc-selected-tab");
+    //     console.log(selectedTab);
+
+    //     // if (!currentlySelectedBlock) {
+    //     //   showNotification("❌ Please select a block first.", "error");
+    //     //   return;
+    //     // }
+
+    //     if (!selectedTab) {
+    //       showNotification(
+    //         "❌ Please select a text type (h1, h2, p1 etc) first.",
+    //         "error"
+    //       );
+    //       return;
+    //     }
+
+    //     // Get the selected text type from the tab
+    //     let selectedTextType;
+    //     if (selectedTab.id.startsWith("heading")) {
+    //       selectedTextType = `h${selectedTab.id.replace("heading", "")}`;
+    //     } else if (selectedTab.id.startsWith("paragraph")) {
+    //       selectedTextType = `p${selectedTab.id.replace("paragraph", "")}`;
+    //     } else {
+    //       showNotification("❌ Invalid text type selected.", "error");
+    //       return;
+    //     }
+
+    //     console.log("Selected text type:", selectedTextType);
+
+    //     handleTextHighLinghtClick(event, {
+    //       lastClickedElement,
+    //       selectedSingleTextType: selectedTextType,
+    //       addPendingModification,
+    //       showNotification,
+    //     });
+    //   });
+    // }
+
     const textHighlightInput = document.getElementById("scTextHighLight");
     if (textHighlightInput && !textHighlightInput.dataset.initialized) {
       console.log("Initializing text highlight input");
@@ -873,15 +943,13 @@ let selectedElement = null;
         event.preventDefault();
         console.log("Text highlight color changed");
 
-        // const currentlySelectedBlock = document.querySelector(".sc-selected");
-        // console.log(currentlySelectedBlock);
+        const currentlySelectedBlock = document.querySelector(".sc-selected");
         const selectedTab = document.querySelector(".sc-selected-tab");
-        console.log(selectedTab);
 
-        // if (!currentlySelectedBlock) {
-        //   showNotification("❌ Please select a block first.", "error");
-        //   return;
-        // }
+        if (!currentlySelectedBlock) {
+          showNotification("❌ Please select a block first.", "error");
+          return;
+        }
 
         if (!selectedTab) {
           showNotification(
@@ -905,7 +973,7 @@ let selectedElement = null;
         console.log("Selected text type:", selectedTextType);
 
         handleTextHighLinghtClick(event, {
-          lastClickedElement,
+          lastClickedElement: currentlySelectedBlock,
           selectedSingleTextType: selectedTextType,
           addPendingModification,
           showNotification,
