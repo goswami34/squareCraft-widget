@@ -61,6 +61,7 @@ export function handleAllFontSizeClick(event = null, context = null) {
   }
 
   const blockId = block.id;
+  console.log("🔍 blockId:", blockId);
 
   // Set up the correct selector based on text type
   let paragraphSelector = "";
