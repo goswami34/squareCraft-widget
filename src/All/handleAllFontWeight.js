@@ -34,6 +34,9 @@ export function handleAllFontWeightClick(event = null, context = null) {
     event = { target: document.getElementById("squareCraftAllFontWeight") };
   }
 
+  const clickedElement = event.target.closest('[id^="scAllFontSizeInput"]');
+  if (!clickedElement) return;
+
   const fontWeight = event.target.value;
 
   if (!lastClickedElement) {
