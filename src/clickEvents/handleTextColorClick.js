@@ -69,7 +69,7 @@ export function handleTextColorClick(
         }
 
         // ✅ Correctly accessing from context
-        context.handleAllTextColorClick({ selectedColor }, context);
+        handleAllTextColorClick({ selectedColor }, context);
       }
     });
   }
