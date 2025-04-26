@@ -148,6 +148,9 @@ let selectedElement = null;
   const { handleAllTextAlignClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextAlign.js"
   );
+  const { handleAllLetterSpacingClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleLetterSpeacing.js"
+  );
 
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
@@ -540,6 +543,42 @@ let selectedElement = null;
     });
 
     handleAllTextAlignClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    handleAllLetterSpacingClick(event, {
       lastClickedElement,
       getTextType,
       getTextTypeBold,
@@ -1157,35 +1196,7 @@ let selectedElement = null;
     //All text transform code end here
 
     //All text align code start here
-    // const AllTextAlignSelect = document.getElementById(
-    //   "squareCraftAllTextAlign"
-    // );
-    // if (AllTextAlignSelect && !AllTextAlignSelect.dataset.initialized) {
-    //   AllTextAlignSelect.dataset.initialized = "true";
 
-    //   // Add a small delay to ensure the DOM is fully loaded
-    //   setTimeout(() => {
-    //     handleAllTextAlignClick(null, {
-    //       lastClickedElement,
-    //       selectedSingleTextType,
-    //       getTextType,
-    //       saveModifications,
-    //       selectedElement,
-    //       setSelectedElement: (val) => (selectedElement = val),
-    //       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-    //       setLastClickedElement: (val) => (lastClickedElement = val),
-    //       addPendingModification: (blockId, css, tagType) => {
-    //         if (!pendingModifications.has(blockId)) {
-    //           pendingModifications.set(blockId, []);
-    //         }
-    //         pendingModifications.get(blockId).push({ css, tagType });
-    //       },
-    //       showNotification,
-    //     });
-    //   }, 100);
-    // }
-
-    // ➡️ Text Align buttons inside MutationObserver
     const AlltextAlignContainer = document.getElementById(
       "squareCraftAllTextAlign"
     );
@@ -1207,6 +1218,36 @@ let selectedElement = null;
     }
 
     //All text align code end here
+
+    //All letter spacing code start here
+    const AllLetterSpacingSelect = document.getElementById(
+      "scLetterSpacingInput"
+    );
+    if (AllLetterSpacingSelect && !AllLetterSpacingSelect.dataset.initialized) {
+      AllLetterSpacingSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleAllLetterSpacingClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //All letter spacing code end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
