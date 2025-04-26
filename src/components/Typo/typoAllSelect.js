@@ -127,7 +127,7 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
             <div class="sc-Letter-spacing-container sc-flex sc-justify-between sc-items-center sc-flex sc-items-center sc-border 
                   sc-border-solid sc-border-3d3d3d  sc-rounded-6px 
                   ">
-               <input type="number" id="scLetterSpacingInput" value="15px"
+               <input type="number" id="scLetterSpacingInput" value="15"
                   class="sc-Letter-spacing-input sc-font-light sc-text-sm sc-text-color-white 
                      sc-bg-transparent sc-w-full  sc-py-1px sc-font-light">
                <div class="sc-mx-auto sc-ml-1 sc-flex sc-items-center sc-justify-center">
