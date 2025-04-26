@@ -31,17 +31,10 @@ export function handleAllFontWeightClick(event = null, context = null) {
     context;
 
   if (!event) {
-    const activeButton = document.querySelector(
-      '[id^="scAllFontWeight"].sc-activeTab-border'
-    );
-    if (!activeButton) return;
-    event = { target: activeButton };
+    event = { target: document.getElementById("squareCraftAllFontWeight") };
   }
 
-  const clickedElement = event.target.closest('[id^="scAllFontWeight"]');
-  if (!clickedElement) return;
-
-  const fontWeight = event.target.value + "px";
+  const fontWeight = event.target.value;
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
