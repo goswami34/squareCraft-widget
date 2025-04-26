@@ -90,7 +90,7 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
          <div
             class="sc-flex sc-col-span-5 sc-justify-between  sc-items-center ">
            <div
-               class="sc-flex sc-items-center  ">
+               class="sc-flex sc-items-center  id="squareCraftAllTextAlign">
                
                <div id="scTextAlignLeft" data-align="left" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
  
