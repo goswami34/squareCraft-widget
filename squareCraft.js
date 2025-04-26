@@ -213,20 +213,20 @@ let selectedElement = null;
         (selectedTextElement = clickedTag),
     });
 
-    handleAlignmentClick(event, {
-      lastClickedElement,
-      getTextType,
-      applyStylesToElement,
-      lastAppliedAlignment,
-      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
-      lastActiveAlignmentElement,
-      setLastActiveAlignmentElement: (val) =>
-        (lastActiveAlignmentElement = val),
-      lastClickedBlockId,
-      userId,
-      token,
-      widgetId,
-    });
+    // handleAlignmentClick(event, {
+    //   lastClickedElement,
+    //   getTextType,
+    //   applyStylesToElement,
+    //   lastAppliedAlignment,
+    //   setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+    //   lastActiveAlignmentElement,
+    //   setLastActiveAlignmentElement: (val) =>
+    //     (lastActiveAlignmentElement = val),
+    //   lastClickedBlockId,
+    //   userId,
+    //   token,
+    //   widgetId,
+    // });
 
     handleFontSize(event, {
       lastClickedElement,
