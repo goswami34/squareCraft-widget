@@ -747,10 +747,15 @@ let selectedElement = null;
     // );
 
     handleTextColorClick(event, lastClickedElement, applyStylesToElement, {
-      handleAllTextColorClick,
+      handleAllTextColorClick, // ✅ এটা অবশ্যই দিতে হবে!
       lastClickedElement,
       selectedSingleTextType,
-      addPendingModification,
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
       showNotification,
     });
 
