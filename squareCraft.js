@@ -156,6 +156,10 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllLineHeight.js"
   );
 
+  const { handleAllFontWeightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontWeight.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -619,6 +623,42 @@ let selectedElement = null;
     });
 
     handleAllLineHeightClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    handleAllFontWeightClick(event, {
       lastClickedElement,
       getTextType,
       getTextTypeBold,
@@ -1317,6 +1357,36 @@ let selectedElement = null;
       }, 100);
     }
     //All line height code end here
+
+    //All font weight code start here
+
+    const AllFontWeightSelect = document.getElementById(
+      "squareCraftAllFontWeight"
+    );
+    if (AllFontWeightSelect && !AllFontWeightSelect.dataset.initialized) {
+      AllFontWeightSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleAllLineHeightClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
