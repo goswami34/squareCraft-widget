@@ -35,7 +35,7 @@ export function handleAllTextColorClick(event = null, context = null) {
   }
 
   const textColorDiv = document.getElementById("textColorPalate");
-  const textColor = window.getComputedStyle(textColorDiv).backgroundColor; // 🛠
+  //   const textColor = window.getComputedStyle(textColorDiv).backgroundColor; // 🛠
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
@@ -51,6 +51,17 @@ export function handleAllTextColorClick(event = null, context = null) {
   if (!block) {
     showNotification("Block not found", "error");
     return;
+  }
+
+  let textColor = null;
+
+  if (event?.selectedColor) {
+    // ✅ If manually passed selectedColor (from color picker)
+    textColor = event.selectedColor;
+  } else {
+    // ✅ Otherwise get background color from div
+    const textColorDiv = document.getElementById("textColorPalate");
+    textColor = window.getComputedStyle(textColorDiv).backgroundColor;
   }
 
   let paragraphSelector = "";

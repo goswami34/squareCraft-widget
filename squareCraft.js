@@ -164,6 +164,10 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextColor.js"
   );
 
+  // const { handleTextColorClick } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextColorClick.js"
+  // );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -699,6 +703,7 @@ let selectedElement = null;
     });
 
     handleAllTextColorClick(event, {
+      handleAllTextColorClick,
       lastClickedElement,
       getTextType,
       getTextTypeBold,
@@ -734,7 +739,12 @@ let selectedElement = null;
 
     //All font size code end here
 
-    handleTextColorClick(event, lastClickedElement, applyStylesToElement);
+    handleTextColorClick(
+      event,
+      lastClickedElement,
+      applyStylesToElement,
+      handleAllTextColorClick
+    );
 
     typoTabSelect(event);
   });
@@ -1429,7 +1439,7 @@ let selectedElement = null;
       textColorDiv.dataset.initialized = "true";
 
       textColorDiv.addEventListener("click", (event) => {
-        handleAllTextColorClick(event, {
+        handleTextColorClick(event, lastClickedElement, applyStylesToElement, {
           lastClickedElement,
           selectedSingleTextType,
           addPendingModification,
