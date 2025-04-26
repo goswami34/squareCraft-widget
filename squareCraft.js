@@ -160,6 +160,10 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontWeight.js"
   );
 
+  const { handleAllTextColorClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextColor.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -666,6 +670,40 @@ let selectedElement = null;
       lastAppliedAlignment,
       // selectedTextType,
       // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    handleAllTextColorClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
       selectedSingleTextType,
       setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
       selectedTextElement,
@@ -1360,34 +1398,6 @@ let selectedElement = null;
 
     //All font weight code start here
 
-    // const AllFontWeightSelect = document.getElementById(
-    //   "squareCraftAllFontWeight"
-    // );
-    // if (AllFontWeightSelect && !AllFontWeightSelect.dataset.initialized) {
-    //   AllFontWeightSelect.dataset.initialized = "true";
-
-    //   // Add a small delay to ensure the DOM is fully loaded
-    //   setTimeout(() => {
-    //     handleAllLineHeightClick(null, {
-    //       lastClickedElement,
-    //       selectedSingleTextType,
-    //       getTextType,
-    //       saveModifications,
-    //       selectedElement,
-    //       setSelectedElement: (val) => (selectedElement = val),
-    //       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-    //       setLastClickedElement: (val) => (lastClickedElement = val),
-    //       addPendingModification: (blockId, css, tagType) => {
-    //         if (!pendingModifications.has(blockId)) {
-    //           pendingModifications.set(blockId, []);
-    //         }
-    //         pendingModifications.get(blockId).push({ css, tagType });
-    //       },
-    //       showNotification,
-    //     });
-    //   }, 100);
-    // }
-
     const AllFontWeightSelect = document.getElementById(
       "squareCraftAllFontWeight"
     );
@@ -1410,6 +1420,31 @@ let selectedElement = null;
         }
       });
     }
+
+    //All font weight code end here
+
+    //All text color code start here
+    const AllTextColorSelect = document.getElementById("textcolorHtml");
+    if (AllTextColorSelect && !AllTextColorSelect.dataset.initialized) {
+      AllTextColorSelect.dataset.initialized = "true";
+
+      AllTextColorSelect.addEventListener("change", (event) => {
+        handleAllFontWeightClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Font weight applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+    //All text color code end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });

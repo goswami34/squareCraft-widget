@@ -99,10 +99,6 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
                   </select>
                </div>
             </div>
-            <div class="sc-bg-3f3f3f sc-px-2" style="height: 27px; padding: 0 8px;">
-               <img class="sc-mx-auto sc-rotate-180 sc-mt-3" width="10px"
-                  src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
-            </div>
          </div>
  
          <div class="sc-col-span-5 sc-px-2 sc-bg-3f3f3f sc-inActiveTab-border sc-flex sc-justify-between sc-items-center  sc-rounded-6px">
