@@ -123,7 +123,7 @@ export function handleAllLetterSpacingClick(event = null, context = null) {
   clickedElement.classList.add("sc-activeTab-border");
 
   showNotification(
-    `Text-align applied to bold words in: ${selectedSingleTextType}`,
+    `Letter-speacing applied to bold words in: ${selectedSingleTextType}`,
     "success"
   );
 }
