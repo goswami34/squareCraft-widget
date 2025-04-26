@@ -183,22 +183,22 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
       <div
      class="sc-flex sc-col-span-6 sc-mt-2 sc-justify-between  sc-items-center ">
     <div
-        class="sc-flex sc-items-center  ">
+        class="sc-flex sc-items-center" id="squareCraftAllTextTransform">
         
         <div id="scTextAlignLeft" data-align="left" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
 
-           <p class="sc-universal sc-poppins sc-text-sm">AG</p>
+           <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
         </div>
          <div id="scTextAlignCenter" data-align="center" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer ">
 
-          <p class="sc-universal sc-poppins sc-text-sm">ag</p>
+          <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">ag</p>
         </div>
          <div id="scTextAlignRight" data-align="right" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer">
 
-          <p class="sc-universal sc-poppins sc-text-sm">Ag</p>
+          <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">Ag</p>
         </div>
         <div id="scTextAlignJustify" data-align="justify" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
-          <p class="sc-universal sc-poppins sc-text-sm">AG</p>
+          <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
         </div>
         
        
