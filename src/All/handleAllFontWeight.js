@@ -34,9 +34,6 @@ export function handleAllFontWeightClick(event = null, context = null) {
     event = { target: document.getElementById("squareCraftAllFontWeight") };
   }
 
-  const clickedElement = event.target.closest('[id^="scAllFontWeightInput"]');
-  if (!clickedElement) return;
-
   const fontWeight = event.target.value;
 
   if (!lastClickedElement) {
@@ -115,8 +112,8 @@ export function handleAllFontWeightClick(event = null, context = null) {
     el.classList.remove("sc-activeTab-border");
     el.classList.add("sc-inActiveTab-border");
   });
-  clickedElement.classList.remove("sc-inActiveTab-border");
-  clickedElement.classList.add("sc-activeTab-border");
+  //   clickedElement.classList.remove("sc-inActiveTab-border");
+  //   clickedElement.classList.add("sc-activeTab-border");
 
   showNotification(
     `Font-weight applied to bold words in: ${selectedSingleTextType}`,
