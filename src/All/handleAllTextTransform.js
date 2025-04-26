@@ -97,26 +97,6 @@ export function handleAllTextTransformClick(event = null, context = null) {
     return;
   }
 
-  let strongFound = false;
-
-  targetElements.forEach((el) => {
-    const strongs = el.querySelectorAll("strong");
-    if (strongs.length > 0) {
-      strongFound = true;
-      strongs.forEach((strong) => {
-        strong.style.textTransform = textTransform;
-      });
-    }
-  });
-
-  if (!strongFound) {
-    showNotification(
-      `No bold text found inside ${selectedSingleTextType}`,
-      "info"
-    );
-    return;
-  }
-
   // ✅ Dynamic CSS injection
   const styleId = `style-${block.id}-${selectedSingleTextType}-strong-texttransform`;
   let styleTag = document.getElementById(styleId);
@@ -133,14 +113,10 @@ export function handleAllTextTransformClick(event = null, context = null) {
       }
     `;
 
-  addPendingModification(
-    block.id,
-    {
-      "text-transform": textTransform,
-      target: selectedSingleTextType,
-    },
-    "strong"
-  );
+  addPendingModification(block.id, {
+    "text-transform": textTransform,
+    target: selectedSingleTextType,
+  });
 
   // Update active button
   document.querySelectorAll('[id^="scTextTransform"]').forEach((el) => {
