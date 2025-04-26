@@ -1446,6 +1446,7 @@ let selectedElement = null;
 
       textColorDiv.addEventListener("click", (event) => {
         handleTextColorClick(event, lastClickedElement, applyStylesToElement, {
+          handleAllTextColorClick,
           lastClickedElement,
           selectedSingleTextType,
           addPendingModification,
