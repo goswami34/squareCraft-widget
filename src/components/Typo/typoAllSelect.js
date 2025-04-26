@@ -41,6 +41,8 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
                         src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
                   </div>
                </div>
+
+
                <div id="scFontSizeOptions" class="sc-hidden  sc-h-44 sc-font-sm sc-bg-3f3f3f sc-w-20
                      sc-rounded-6px sc-border sc-border-585858 sc-absolute 
                      sc-mt-1">
@@ -65,9 +67,37 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
          <div
             class="sc-flex sc-bg-494949 sc-pl-2 sc-col-span-7  sc-justify-between sc-border sc-border-solid sc-border-585858 sc-rounded-6px sc-items-center ">
             <div >
-               <p
-                  class="sc-text-sm sc-universal sc-poppins sc-font-light">
-                  Regular</p>
+               <div class="sc-px-2">
+                  <select 
+                        id="squareCraftAllFontWeight"
+                        class="sc-font-weight-select"
+                        data-font-weight-select
+                        style="
+                           background: transparent;
+                           border: none;
+                           color: white;
+                           padding: 5px;
+                           width: 100%;
+                           cursor: pointer;
+                           outline: none;
+                           -webkit-appearance: none;
+                           -moz-appearance: none;
+                           appearance: none;
+                           position: relative;
+                           z-index: 1;
+                        "
+                  >
+                        <option id="squareCraftAllFontWeight" value="100">Thin (100)</option>
+                        <option id="squareCraftAllFontWeight" value="200">Extra Light (200)</option>
+                        <option id="squareCraftAllFontWeight" value="300">Light (300)</option>
+                        <option id="squareCraftAllFontWeight" value="400" selected>Regular (400)</option>
+                        <option id="squareCraftAllFontWeight" value="500">Medium (500)</option>
+                        <option id="squareCraftAllFontWeight" value="600">Semi Bold (600)</option>
+                        <option id="squareCraftAllFontWeight" value="700">Bold (700)</option>
+                        <option id="squareCraftAllFontWeight" value="800">Extra Bold (800)</option>
+                        <option id="squareCraftAllFontWeight" value="900">Black (900)</option>
+                  </select>
+               </div>
             </div>
             <div class="sc-bg-3f3f3f sc-px-2" style="height: 27px; padding: 0 8px;">
                <img class="sc-mx-auto sc-rotate-180 sc-mt-3" width="10px"
