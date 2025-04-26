@@ -26,22 +26,22 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
-export function handleAllLineHeightClick(event = null, context = null) {
+export function handleAllFontWeightClick(event = null, context = null) {
   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
     context;
 
   if (!event) {
     const activeButton = document.querySelector(
-      '[id^="scLineHeight"].sc-activeTab-border'
+      '[id^="scAllFontWeight"].sc-activeTab-border'
     );
     if (!activeButton) return;
     event = { target: activeButton };
   }
 
-  const clickedElement = event.target.closest('[id^="scLineHeight"]');
+  const clickedElement = event.target.closest('[id^="scAllFontWeight"]');
   if (!clickedElement) return;
 
-  const lineHeight = event.target.value + "px";
+  const fontWeight = event.target.value + "px";
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
@@ -84,7 +84,7 @@ export function handleAllLineHeightClick(event = null, context = null) {
     return;
   }
 
-  console.log("✅ Applying line-height for selector:", paragraphSelector);
+  console.log("✅ Applying font-weight for selector:", paragraphSelector);
 
   // Find target paragraphs or headings
   const targetElements = block.querySelectorAll(paragraphSelector);
@@ -94,7 +94,7 @@ export function handleAllLineHeightClick(event = null, context = null) {
   }
 
   // ✅ Dynamic CSS injection
-  const styleId = `style-${block.id}-${selectedSingleTextType}-all-lineHeight`;
+  const styleId = `style-${block.id}-${selectedSingleTextType}-all-fontWeight`;
   let styleTag = document.getElementById(styleId);
 
   if (!styleTag) {
@@ -105,17 +105,17 @@ export function handleAllLineHeightClick(event = null, context = null) {
 
   styleTag.innerHTML = `
               #${block.id} ${paragraphSelector} {
-                line-height: ${lineHeight} !important;
+                font-weight: ${fontWeight} !important;
               }
             `;
 
   addPendingModification(block.id, {
-    "line-height": lineHeight,
+    "font-weight": fontWeight,
     target: selectedSingleTextType,
   });
 
   // Update active button
-  document.querySelectorAll('[id^="scLineHeight"]').forEach((el) => {
+  document.querySelectorAll('[id^="scFontWeight"]').forEach((el) => {
     el.classList.remove("sc-activeTab-border");
     el.classList.add("sc-inActiveTab-border");
   });
@@ -123,7 +123,7 @@ export function handleAllLineHeightClick(event = null, context = null) {
   clickedElement.classList.add("sc-activeTab-border");
 
   showNotification(
-    `Line-height applied to bold words in: ${selectedSingleTextType}`,
+    `Font-weight applied to bold words in: ${selectedSingleTextType}`,
     "success"
   );
 }
