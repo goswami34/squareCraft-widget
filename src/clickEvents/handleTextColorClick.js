@@ -39,7 +39,8 @@ export function handleTextColorClick(
   applyStylesToElement,
   context
 ) {
-  const { handleAllTextColorClick } = context; // ✅ pull from context
+  const { handleAllTextColorClick } = context; // ✅ pulling from context
+
   const textColorPalate = event.target.closest("#textColorPalate");
   if (!textColorPalate) return;
 
@@ -56,6 +57,7 @@ export function handleTextColorClick(
 
     textColorPalate.appendChild(colorPalette);
 
+    // ✅ Corrected event listener
     colorPalette.addEventListener("input", function (event) {
       const selectedColor = event.target.value;
       if (lastClickedElement) {
@@ -66,8 +68,8 @@ export function handleTextColorClick(
           textColorHtml.textContent = selectedColor;
         }
 
-        // 🛠 Call handleAllTextColorClick with selectedColor
-        handleAllTextColorClick({ selectedColor }, context);
+        // ✅ Correctly accessing from context
+        context.handleAllTextColorClick({ selectedColor }, context);
       }
     });
   }
