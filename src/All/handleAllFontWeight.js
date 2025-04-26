@@ -70,10 +70,6 @@ export function handleAllFontWeightClick(event = null, context = null) {
   } else if (selectedSingleTextType === "heading4") {
     paragraphSelector = "h4";
   } else {
-    showNotification(
-      "Unknown selected type: " + selectedSingleTextType,
-      "error"
-    );
     return;
   }
 
