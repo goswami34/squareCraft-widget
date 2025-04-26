@@ -293,5 +293,26 @@ export function handleAllBlockClick(event, context) {
     };
   });
 
+  visibleParts.forEach((partId) => {
+    const typeId = partId.replace("Part", "");
+    const tab = document.getElementById(typeId);
+    if (!tab) return;
+
+    tab.onclick = () => {
+      const clickedTag = typeId.startsWith("heading")
+        ? `h${typeId.replace("heading", "")}`
+        : typeId;
+      setSelectedSingleTextType(clickedTag);
+      console.log("✅ Now selected text type:", clickedTag);
+
+      const fontWeightInput = document.getElementById(
+        `scFontWeightInput-${typeId}`
+      );
+      if (fontWeightInput) {
+        fontWeightInput.focus();
+      }
+    };
+  });
+
   //all section font size code end here
 }
