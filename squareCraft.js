@@ -739,12 +739,20 @@ let selectedElement = null;
 
     //All font size code end here
 
-    handleTextColorClick(
-      event,
+    // handleTextColorClick(
+    //   event,
+    //   lastClickedElement,
+    //   applyStylesToElement,
+    //   handleAllTextColorClick
+    // );
+
+    handleTextColorClick(event, lastClickedElement, applyStylesToElement, {
+      handleAllTextColorClick,
       lastClickedElement,
-      applyStylesToElement,
-      handleAllTextColorClick
-    );
+      selectedSingleTextType,
+      addPendingModification,
+      showNotification,
+    });
 
     typoTabSelect(event);
   });
