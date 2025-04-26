@@ -739,15 +739,8 @@ let selectedElement = null;
 
     //All font size code end here
 
-    // handleTextColorClick(
-    //   event,
-    //   lastClickedElement,
-    //   applyStylesToElement,
-    //   handleAllTextColorClick
-    // );
-
     handleTextColorClick(event, lastClickedElement, applyStylesToElement, {
-      handleAllTextColorClick, // ✅ এটা অবশ্যই দিতে হবে!
+      handleAllTextColorClick,
       lastClickedElement,
       selectedSingleTextType,
       addPendingModification: (blockId, css, tagType) => {
