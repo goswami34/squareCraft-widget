@@ -37,9 +37,9 @@ export function handleTextColorClick(
   event,
   lastClickedElement,
   applyStylesToElement,
-  context,
-  handleAllTextColorClick
+  context
 ) {
+  const { handleAllTextColorClick } = context; // ✅ pull from context
   const textColorPalate = event.target.closest("#textColorPalate");
   if (!textColorPalate) return;
 
@@ -59,21 +59,18 @@ export function handleTextColorClick(
     colorPalette.addEventListener("input", function (event) {
       const selectedColor = event.target.value;
       if (lastClickedElement) {
-        // Update button background color
         textColorPalate.style.backgroundColor = selectedColor;
 
-        // Update label text
         const textColorHtml = document.getElementById("textcolorHtml");
         if (textColorHtml) {
           textColorHtml.textContent = selectedColor;
         }
 
-        // ✅ Apply new selected color immediately
+        // 🛠 Call handleAllTextColorClick with selectedColor
         handleAllTextColorClick({ selectedColor }, context);
       }
     });
   }
 
-  // 📌 Always trigger color picker click
   colorPalette.click();
 }
