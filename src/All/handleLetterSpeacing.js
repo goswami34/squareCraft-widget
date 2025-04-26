@@ -41,7 +41,7 @@ export function handleAllLetterSpacingClick(event = null, context = null) {
   const clickedElement = event.target.closest('[id^="scLetterSpacing"]');
   if (!clickedElement) return;
 
-  const letterSpacing = clickedElement.dataset.letterSpacing;
+  const letterSpacing = event.target.value + "px";
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
