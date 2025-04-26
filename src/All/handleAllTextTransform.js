@@ -98,7 +98,7 @@ export function handleAllTextTransformClick(event = null, context = null) {
   }
 
   // ✅ Dynamic CSS injection
-  const styleId = `style-${block.id}-${selectedSingleTextType}-strong-texttransform`;
+  const styleId = `style-${block.id}-${selectedSingleTextType}-all-texttransform`;
   let styleTag = document.getElementById(styleId);
 
   if (!styleTag) {
@@ -108,7 +108,7 @@ export function handleAllTextTransformClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-      #${block.id} ${paragraphSelector} strong {
+      #${block.id} ${paragraphSelector} {
         text-transform: ${textTransform} !important;
       }
     `;
