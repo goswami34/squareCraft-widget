@@ -1157,33 +1157,55 @@ let selectedElement = null;
     //All text transform code end here
 
     //All text align code start here
-    const AllTextAlignSelect = document.getElementById(
+    // const AllTextAlignSelect = document.getElementById(
+    //   "squareCraftAllTextAlign"
+    // );
+    // if (AllTextAlignSelect && !AllTextAlignSelect.dataset.initialized) {
+    //   AllTextAlignSelect.dataset.initialized = "true";
+
+    //   // Add a small delay to ensure the DOM is fully loaded
+    //   setTimeout(() => {
+    //     handleAllTextAlignClick(null, {
+    //       lastClickedElement,
+    //       selectedSingleTextType,
+    //       getTextType,
+    //       saveModifications,
+    //       selectedElement,
+    //       setSelectedElement: (val) => (selectedElement = val),
+    //       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+    //       setLastClickedElement: (val) => (lastClickedElement = val),
+    //       addPendingModification: (blockId, css, tagType) => {
+    //         if (!pendingModifications.has(blockId)) {
+    //           pendingModifications.set(blockId, []);
+    //         }
+    //         pendingModifications.get(blockId).push({ css, tagType });
+    //       },
+    //       showNotification,
+    //     });
+    //   }, 100);
+    // }
+
+    // ➡️ Text Align buttons inside MutationObserver
+    const textAlignContainer = document.getElementById(
       "squareCraftAllTextAlign"
     );
-    if (AllTextAlignSelect && !AllTextAlignSelect.dataset.initialized) {
-      AllTextAlignSelect.dataset.initialized = "true";
+    if (textAlignContainer && !textAlignContainer.dataset.initialized) {
+      textAlignContainer.dataset.initialized = "true";
 
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        handleAllTextAlignClick(null, {
-          lastClickedElement,
-          selectedSingleTextType,
-          getTextType,
-          saveModifications,
-          selectedElement,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
-          showNotification,
+      textAlignContainer
+        .querySelectorAll('[id^="scTextAlign"]')
+        .forEach((button) => {
+          button.addEventListener("click", (event) => {
+            handleAllTextAlignClick(event, {
+              lastClickedElement,
+              selectedSingleTextType,
+              addPendingModification,
+              showNotification,
+            });
+          });
         });
-      }, 100);
     }
+
     //All text align code end here
   });
 
