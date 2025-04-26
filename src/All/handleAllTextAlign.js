@@ -41,7 +41,7 @@ export function handleAllTextAlignClick(event = null, context = null) {
   const clickedElement = event.target.closest('[id^="scTextAlign"]');
   if (!clickedElement) return;
 
-  const textAlign = clickedElement.dataset.textAlign;
+  const textAlign = clickedElement.dataset.align;
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
