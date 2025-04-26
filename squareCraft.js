@@ -1360,32 +1360,55 @@ let selectedElement = null;
 
     //All font weight code start here
 
+    // const AllFontWeightSelect = document.getElementById(
+    //   "squareCraftAllFontWeight"
+    // );
+    // if (AllFontWeightSelect && !AllFontWeightSelect.dataset.initialized) {
+    //   AllFontWeightSelect.dataset.initialized = "true";
+
+    //   // Add a small delay to ensure the DOM is fully loaded
+    //   setTimeout(() => {
+    //     handleAllLineHeightClick(null, {
+    //       lastClickedElement,
+    //       selectedSingleTextType,
+    //       getTextType,
+    //       saveModifications,
+    //       selectedElement,
+    //       setSelectedElement: (val) => (selectedElement = val),
+    //       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+    //       setLastClickedElement: (val) => (lastClickedElement = val),
+    //       addPendingModification: (blockId, css, tagType) => {
+    //         if (!pendingModifications.has(blockId)) {
+    //           pendingModifications.set(blockId, []);
+    //         }
+    //         pendingModifications.get(blockId).push({ css, tagType });
+    //       },
+    //       showNotification,
+    //     });
+    //   }, 100);
+    // }
+
     const AllFontWeightSelect = document.getElementById(
       "squareCraftAllFontWeight"
     );
     if (AllFontWeightSelect && !AllFontWeightSelect.dataset.initialized) {
       AllFontWeightSelect.dataset.initialized = "true";
 
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        handleAllLineHeightClick(null, {
+      AllFontWeightSelect.addEventListener("change", (event) => {
+        handleAllFontWeightClick(event, {
           lastClickedElement,
           selectedSingleTextType,
-          getTextType,
-          saveModifications,
-          selectedElement,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
+          addPendingModification,
           showNotification,
         });
-      }, 100);
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Font weight applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
     }
   });
 

@@ -111,8 +111,8 @@ export function handleAllFontWeightClick(event = null, context = null) {
   //   clickedElement.classList.remove("sc-inActiveTab-border");
   //   clickedElement.classList.add("sc-activeTab-border");
 
-  showNotification(
-    `Font-weight applied to bold words in: ${selectedSingleTextType}`,
-    "success"
-  );
+  //   showNotification(
+  //     `Font-weight applied to bold words in: ${selectedSingleTextType}`,
+  //     "success"
+  //   );
 }
