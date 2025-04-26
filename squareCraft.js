@@ -1186,15 +1186,14 @@ let selectedElement = null;
     // }
 
     // ➡️ Text Align buttons inside MutationObserver
-    const textAlignContainer = document.getElementById(
+    const AlltextAlignContainer = document.getElementById(
       "squareCraftAllTextAlign"
     );
-    if (textAlignContainer && !textAlignContainer.dataset.initialized) {
-      textAlignContainer.dataset.initialized = "true";
+    if (AlltextAlignContainer && !AlltextAlignContainer.dataset.initialized) {
+      AlltextAlignContainer.dataset.initialized = "true";
 
-      textAlignContainer
-        .querySelectorAll('[id^="scTextAlign"]')
-        .forEach((button) => {
+      AlltextAlignContainer.querySelectorAll('[id^="scTextAlign"]').forEach(
+        (button) => {
           button.addEventListener("click", (event) => {
             handleAllTextAlignClick(event, {
               lastClickedElement,
@@ -1203,7 +1202,8 @@ let selectedElement = null;
               showNotification,
             });
           });
-        });
+        }
+      );
     }
 
     //All text align code end here
