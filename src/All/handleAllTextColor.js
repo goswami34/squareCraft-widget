@@ -31,10 +31,11 @@ export function handleAllTextColorClick(event = null, context = null) {
     context;
 
   if (!event) {
-    event = { target: document.getElementById("textcolorHtml") };
+    event = { target: document.getElementById("textColorPalate") };
   }
 
-  const textColor = event.target.value;
+  const textColorDiv = document.getElementById("textColorPalate");
+  const textColor = window.getComputedStyle(textColorDiv).backgroundColor; // 🛠
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
@@ -54,7 +55,6 @@ export function handleAllTextColorClick(event = null, context = null) {
 
   let paragraphSelector = "";
 
-  // 🎯 Correct mapping here
   if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = "p.sqsrte-large";
   } else if (selectedSingleTextType === "paragraph2") {
@@ -73,16 +73,14 @@ export function handleAllTextColorClick(event = null, context = null) {
     return;
   }
 
-  console.log("✅ Applying font-weight for selector:", paragraphSelector);
+  console.log("✅ Applying text color for selector:", paragraphSelector);
 
-  // Find target paragraphs or headings
   const targetElements = block.querySelectorAll(paragraphSelector);
   if (!targetElements.length) {
     showNotification(`No text found for ${selectedSingleTextType}`, "error");
     return;
   }
 
-  // ✅ Dynamic CSS injection
   const styleId = `style-${block.id}-${selectedSingleTextType}-all-textColor`;
   let styleTag = document.getElementById(styleId);
 
@@ -93,26 +91,18 @@ export function handleAllTextColorClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-                #${block.id} ${paragraphSelector} {
-                   color: ${textColor} !important;
-                }
-              `;
+      #${block.id} ${paragraphSelector} {
+        color: ${textColor} !important;
+      }
+    `;
 
   addPendingModification(block.id, {
     color: textColor,
     target: selectedSingleTextType,
   });
 
-  // Update active button
-  document.querySelectorAll('[id^="scFontWeight"]').forEach((el) => {
-    el.classList.remove("sc-activeTab-border");
-    el.classList.add("sc-inActiveTab-border");
-  });
-  //   clickedElement.classList.remove("sc-inActiveTab-border");
-  //   clickedElement.classList.add("sc-activeTab-border");
-
-  //   showNotification(
-  //     `Font-weight applied to bold words in: ${selectedSingleTextType}`,
-  //     "success"
-  //   );
+  showNotification(
+    `Text color applied to: ${selectedSingleTextType}`,
+    "success"
+  ); // 🎯
 }

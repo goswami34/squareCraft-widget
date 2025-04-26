@@ -1424,12 +1424,12 @@ let selectedElement = null;
     //All font weight code end here
 
     //All text color code start here
-    const AllTextColorSelect = document.getElementById("textcolorHtml");
-    if (AllTextColorSelect && !AllTextColorSelect.dataset.initialized) {
-      AllTextColorSelect.dataset.initialized = "true";
+    const textColorDiv = document.getElementById("textColorPalate");
+    if (textColorDiv && !textColorDiv.dataset.initialized) {
+      textColorDiv.dataset.initialized = "true";
 
-      AllTextColorSelect.addEventListener("change", (event) => {
-        handleAllFontWeightClick(event, {
+      textColorDiv.addEventListener("click", (event) => {
+        handleAllTextColorClick(event, {
           lastClickedElement,
           selectedSingleTextType,
           addPendingModification,
@@ -1438,12 +1438,13 @@ let selectedElement = null;
 
         if (selectedSingleTextType) {
           showNotification(
-            `Font weight applied to: ${selectedSingleTextType}`,
+            `Text color applied to: ${selectedSingleTextType}`,
             "success"
           );
         }
       });
     }
+
     //All text color code end here
   });
 
