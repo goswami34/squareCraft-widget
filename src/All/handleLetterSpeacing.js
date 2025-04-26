@@ -84,7 +84,7 @@ export function handleAllLetterSpacingClick(event = null, context = null) {
     return;
   }
 
-  console.log("✅ Applying text-transform for selector:", paragraphSelector);
+  console.log("✅ Applying letter-spacing for selector:", paragraphSelector);
 
   // Find target paragraphs or headings
   const targetElements = block.querySelectorAll(paragraphSelector);
