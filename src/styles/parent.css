@@ -1276,7 +1276,7 @@
 }
 
 .sc-border-colors {
-  border: 1px solid #757474;
+  border: 1px solid black;
 }
 .sc-cursor-pointer {
   cursor: pointer !important;
