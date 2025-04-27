@@ -68,47 +68,47 @@ export function handleTextColorClick(
       const selectedColor = event.target.value;
       if (!lastClickedElement) return;
 
+      // Get the currently selected tab
+      const selectedTab = document.querySelector(".sc-selected-tab");
+      if (!selectedTab) {
+        console.error("❌ No selected text type available");
+        return;
+      }
+
+      // Determine the text type based on the selected tab
+      let selectedTextType = null;
+      if (selectedTab.id.startsWith("heading")) {
+        selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
+      } else if (selectedTab.id.startsWith("paragraph")) {
+        selectedTextType = `paragraph${selectedTab.id.replace(
+          "paragraph",
+          ""
+        )}`;
+      }
+
+      if (!selectedTextType) {
+        console.error("❌ Invalid text type");
+        return;
+      }
+
+      // Update the color palette background
       textColorPalate.style.backgroundColor = selectedColor;
 
+      // Update the color text display
       const textColorHtml = document.getElementById("textcolorHtml");
       if (textColorHtml) {
         textColorHtml.textContent = selectedColor;
       }
 
-      // ✅ Try to detect selected tab
-      const selectedTab = document.querySelector(".sc-selected-tab");
-      let selectedTextType = null;
-
-      if (selectedTab) {
-        if (selectedTab.id.startsWith("heading")) {
-          selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
-        } else if (selectedTab.id.startsWith("paragraph")) {
-          selectedTextType = `paragraph${selectedTab.id.replace(
-            "paragraph",
-            ""
-          )}`;
-        }
-      }
-
-      // ✅ If still not found, fallback to context.selectedSingleTextType
-      if (!selectedTextType && context.selectedSingleTextType) {
-        selectedTextType = context.selectedSingleTextType;
-      }
-
-      if (!selectedTextType) {
-        console.error("❌ No selected text type available");
-        return;
-      }
-
-      // ✅ Real-time color apply
+      // Find the block element
       const block = lastClickedElement.closest('[id^="block-"]');
       if (!block) {
         console.error("❌ Block not found.");
         return;
       }
 
+      // Determine the selector based on text type
       let paragraphSelector = "";
-
       if (selectedTextType === "paragraph1") {
         paragraphSelector = "p.sqsrte-large";
       } else if (selectedTextType === "paragraph2") {
@@ -127,13 +127,13 @@ export function handleTextColorClick(
         return;
       }
 
+      // Apply color to the selected elements
       const targetElements = block.querySelectorAll(paragraphSelector);
-
       targetElements.forEach((el) => {
         el.style.color = selectedColor;
       });
 
-      // ✅ Also call handleAllTextColorClick for permanent CSS save
+      // Call handleAllTextColorClick for permanent CSS save
       context.handleAllTextColorClick(
         { selectedColor },
         {
@@ -145,5 +145,7 @@ export function handleTextColorClick(
     });
   }
 
+  // Reset color palette value when clicked
+  colorPalette.value = "#000000";
   colorPalette.click();
 }
