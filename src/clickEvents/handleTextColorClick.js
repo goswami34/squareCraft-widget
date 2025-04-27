@@ -79,13 +79,31 @@ export function handleTextColorClick(
       const selectedTab = document.querySelector(".sc-selected-tab");
       let selectedTextType = null;
 
-      if (selectedTab?.id?.startsWith("heading")) {
-        selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
-      } else if (selectedTab?.id?.startsWith("paragraph")) {
-        selectedTextType = `paragraph${selectedTab.id.replace(
-          "paragraph",
-          ""
-        )}`;
+      // if (selectedTab?.id?.startsWith("heading")) {
+      //   selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
+      // } else if (selectedTab?.id?.startsWith("paragraph")) {
+      //   selectedTextType = `paragraph${selectedTab.id.replace(
+      //     "paragraph",
+      //     ""
+      //   )}`;
+      // }
+
+      if (selectedTab === "paragraph1") {
+        paragraphSelector = "p.sqsrte-large";
+      } else if (selectedTab === "paragraph2") {
+        paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+      } else if (selectedTab === "paragraph3") {
+        paragraphSelector = "p.sqsrte-small";
+      } else if (selectedTab === "heading1") {
+        paragraphSelector = "h1";
+      } else if (selectedTab === "heading2") {
+        paragraphSelector = "h2";
+      } else if (selectedTab === "heading3") {
+        paragraphSelector = "h3";
+      } else if (selectedTab === "heading4") {
+        paragraphSelector = "h4";
+      } else {
+        return;
       }
 
       if (!selectedTextType) {
