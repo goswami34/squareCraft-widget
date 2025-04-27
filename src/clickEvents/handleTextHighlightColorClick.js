@@ -46,9 +46,9 @@ export function handleTextHighlightColorClick(
         textHighlightPalate.style.backgroundColor = selectedColor;
       }
 
-      const textColorHtml = document.getElementById("textcolorHtml");
-      if (textColorHtml) {
-        textColorHtml.textContent = selectedColor;
+      const textHighlightHtml = document.getElementById("texHeightlistHtml");
+      if (textHighlightHtml) {
+        textHighlightHtml.textContent = selectedColor;
       }
 
       const selectedTab = document.querySelector(".sc-selected-tab");
