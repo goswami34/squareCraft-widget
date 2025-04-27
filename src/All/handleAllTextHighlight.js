@@ -26,6 +26,87 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// export function handleAllTextHighlightClick(event = null, context = null) {
+//   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
+//     context;
+
+//   if (!event) {
+//     event = { target: document.getElementById("texHeightlistPalate") };
+//   }
+
+//   const texHighlightDiv = document.getElementById("texHeightlistPalate");
+
+//   if (!lastClickedElement) {
+//     showNotification("Please select a block first", "error");
+//     return;
+//   }
+
+//   if (!selectedSingleTextType) {
+//     showNotification("Please select a text type first", "error");
+//     return;
+//   }
+
+//   const block = lastClickedElement.closest('[id^="block-"]');
+//   if (!block) {
+//     showNotification("Block not found", "error");
+//     return;
+//   }
+
+//   let texHighlight = null;
+
+//   if (event?.selectedColor) {
+//     texHighlight = event.selectedColor;
+//   } else {
+//     texHighlight = window.getComputedStyle(texHighlightDiv).backgroundColor;
+//   }
+
+//   const selectorMap = {
+//     paragraph1: "p.sqsrte-large",
+//     paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
+//     paragraph3: "p.sqsrte-small",
+//     heading1: "h1",
+//     heading2: "h2",
+//     heading3: "h3",
+//     heading4: "h4",
+//   };
+
+//   const paragraphSelector = selectorMap[selectedSingleTextType] || "";
+
+//   console.log("✅ Applying highlight for selector:", paragraphSelector);
+
+//   const targetElements = block.querySelectorAll(paragraphSelector);
+//   if (!targetElements.length) {
+//     showNotification(`No text found for ${selectedSingleTextType}`, "error");
+//     return;
+//   }
+
+//   const styleId = `style-${block.id}-${selectedSingleTextType}-highlight`;
+//   let styleTag = document.getElementById(styleId);
+
+//   if (!styleTag) {
+//     styleTag = document.createElement("style");
+//     styleTag.id = styleId;
+//     document.head.appendChild(styleTag);
+//   }
+
+//   styleTag.innerHTML = `
+//       #${block.id} ${paragraphSelector} {
+//         background-image: linear-gradient(to top, ${texHighlight} 50%, transparent 0%);
+//         display: inline;
+//       }
+//     `;
+
+//   addPendingModification(block.id, {
+//     "background-image": `linear-gradient(to top, ${texHighlight} 50%, transparent 0%)`,
+//     target: selectedSingleTextType,
+//   });
+
+//   showNotification(
+//     `Text highlight applied to: ${selectedSingleTextType}`,
+//     "success"
+//   );
+// }
+
 export function handleAllTextHighlightClick(event = null, context = null) {
   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
     context;
@@ -52,13 +133,9 @@ export function handleAllTextHighlightClick(event = null, context = null) {
     return;
   }
 
-  let texHighlight = null;
-
-  if (event?.selectedColor) {
-    texHighlight = event.selectedColor;
-  } else {
-    texHighlight = window.getComputedStyle(texHighlightDiv).backgroundColor;
-  }
+  let selectedHighlightColor = event?.selectedColor
+    ? event.selectedColor
+    : window.getComputedStyle(texHighlightDiv).backgroundColor;
 
   const selectorMap = {
     paragraph1: "p.sqsrte-large",
@@ -72,11 +149,12 @@ export function handleAllTextHighlightClick(event = null, context = null) {
 
   const paragraphSelector = selectorMap[selectedSingleTextType] || "";
 
-  console.log("✅ Applying highlight for selector:", paragraphSelector);
-
-  const targetElements = block.querySelectorAll(paragraphSelector);
+  const targetElements = block.querySelectorAll(`${paragraphSelector} strong`);
   if (!targetElements.length) {
-    showNotification(`No text found for ${selectedSingleTextType}`, "error");
+    showNotification(
+      `No <strong> tags found inside ${selectedSingleTextType}`,
+      "error"
+    );
     return;
   }
 
@@ -90,14 +168,14 @@ export function handleAllTextHighlightClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-      #${block.id} ${paragraphSelector} {
-        background-image: linear-gradient(to top, ${texHighlight} 50%, transparent 0%);
+      #${block.id} ${paragraphSelector} strong {
+        background-image: linear-gradient(to top, ${selectedHighlightColor} 50%, transparent 0%);
         display: inline;
       }
     `;
 
   addPendingModification(block.id, {
-    "background-image": `linear-gradient(to top, ${texHighlight} 50%, transparent 0%)`,
+    "background-image": `linear-gradient(to top, ${selectedHighlightColor} 50%, transparent 0%)`,
     target: selectedSingleTextType,
   });
 
