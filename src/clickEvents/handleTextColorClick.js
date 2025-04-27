@@ -42,8 +42,6 @@
 //   colorPalette.click();
 // }
 
-let colorPalette = null; // Move this outside export function globally
-
 export function handleTextColorClick(
   event,
   lastClickedElement,
@@ -53,8 +51,9 @@ export function handleTextColorClick(
   const textColorPalate = event.target.closest("#textColorPalate");
   if (!textColorPalate) return;
 
+  let colorPalette = document.getElementById("scColorPalette");
+
   if (!colorPalette) {
-    // Only create once
     colorPalette = document.createElement("input");
     colorPalette.type = "color";
     colorPalette.id = "scColorPalette";
@@ -63,13 +62,21 @@ export function handleTextColorClick(
     colorPalette.style.height = "0px";
     colorPalette.style.marginTop = "14px";
 
-    document.body.appendChild(colorPalette);
+    textColorPalate.appendChild(colorPalette);
 
-    // Add input listener only ONCE
     colorPalette.addEventListener("input", function (event) {
       const selectedColor = event.target.value;
-      const selectedTab = document.querySelector(".sc-selected-tab");
+      if (!lastClickedElement) return;
 
+      textColorPalate.style.backgroundColor = selectedColor;
+
+      const textColorHtml = document.getElementById("textcolorHtml");
+      if (textColorHtml) {
+        textColorHtml.textContent = selectedColor;
+      }
+
+      // ✅ Try to detect selected tab
+      const selectedTab = document.querySelector(".sc-selected-tab");
       let selectedTextType = null;
 
       if (selectedTab) {
@@ -83,22 +90,25 @@ export function handleTextColorClick(
         }
       }
 
+      // ✅ If still not found, fallback to context.selectedSingleTextType
       if (!selectedTextType && context.selectedSingleTextType) {
         selectedTextType = context.selectedSingleTextType;
       }
 
       if (!selectedTextType) {
-        console.error("❌ No selected text type found.");
+        console.error("❌ No selected text type available");
         return;
       }
 
-      const block = context.lastClickedElement?.closest('[id^="block-"]');
+      // ✅ Real-time color apply
+      const block = lastClickedElement.closest('[id^="block-"]');
       if (!block) {
-        console.error("❌ No block found.");
+        console.error("❌ Block not found.");
         return;
       }
 
       let paragraphSelector = "";
+
       if (selectedTextType === "paragraph1") {
         paragraphSelector = "p.sqsrte-large";
       } else if (selectedTextType === "paragraph2") {
@@ -113,6 +123,8 @@ export function handleTextColorClick(
         paragraphSelector = "h3";
       } else if (selectedTextType === "heading4") {
         paragraphSelector = "h4";
+      } else {
+        return;
       }
 
       const targetElements = block.querySelectorAll(paragraphSelector);
@@ -121,23 +133,17 @@ export function handleTextColorClick(
         el.style.color = selectedColor;
       });
 
-      textColorPalate.style.backgroundColor = selectedColor;
-      const textColorHtml = document.getElementById("textcolorHtml");
-      if (textColorHtml) {
-        textColorHtml.textContent = selectedColor;
-      }
-
+      // ✅ Also call handleAllTextColorClick for permanent CSS save
       context.handleAllTextColorClick(
         { selectedColor },
         {
           ...context,
           selectedSingleTextType: selectedTextType,
-          lastClickedElement: context.lastClickedElement,
+          lastClickedElement: lastClickedElement,
         }
       );
     });
   }
 
-  // ✅ Only open color picker without recalling handleTextColorClick
   colorPalette.click();
 }
