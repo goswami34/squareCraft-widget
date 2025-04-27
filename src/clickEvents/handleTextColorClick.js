@@ -75,35 +75,19 @@ export function handleTextColorClick(
         textColorHtml.textContent = selectedColor;
       }
 
-      // ✅ Real-time detect selected tab (h1, h2, etc.)
+      // ✅ Correctly detect selectedTab
       const selectedTab = document.querySelector(".sc-selected-tab");
       let selectedTextType = null;
 
-      // if (selectedTab?.id?.startsWith("heading")) {
-      //   selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
-      // } else if (selectedTab?.id?.startsWith("paragraph")) {
-      //   selectedTextType = `paragraph${selectedTab.id.replace(
-      //     "paragraph",
-      //     ""
-      //   )}`;
-      // }
-
-      if (selectedTab === "paragraph1") {
-        paragraphSelector = "p.sqsrte-large";
-      } else if (selectedTab === "paragraph2") {
-        paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-      } else if (selectedTab === "paragraph3") {
-        paragraphSelector = "p.sqsrte-small";
-      } else if (selectedTab === "heading1") {
-        paragraphSelector = "h1";
-      } else if (selectedTab === "heading2") {
-        paragraphSelector = "h2";
-      } else if (selectedTab === "heading3") {
-        paragraphSelector = "h3";
-      } else if (selectedTab === "heading4") {
-        paragraphSelector = "h4";
-      } else {
-        return;
+      if (selectedTab) {
+        if (selectedTab.id.startsWith("heading")) {
+          selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
+        } else if (selectedTab.id.startsWith("paragraph")) {
+          selectedTextType = `paragraph${selectedTab.id.replace(
+            "paragraph",
+            ""
+          )}`;
+        }
       }
 
       if (!selectedTextType) {
@@ -111,13 +95,46 @@ export function handleTextColorClick(
         return;
       }
 
-      // ✅ Now call handleAllTextColorClick immediately with correct context
+      // ✅ Real-time color apply
+      const block = lastClickedElement.closest('[id^="block-"]');
+      if (!block) {
+        console.error("❌ Block not found.");
+        return;
+      }
+
+      let paragraphSelector = "";
+
+      if (selectedTextType === "paragraph1") {
+        paragraphSelector = "p.sqsrte-large";
+      } else if (selectedTextType === "paragraph2") {
+        paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+      } else if (selectedTextType === "paragraph3") {
+        paragraphSelector = "p.sqsrte-small";
+      } else if (selectedTextType === "heading1") {
+        paragraphSelector = "h1";
+      } else if (selectedTextType === "heading2") {
+        paragraphSelector = "h2";
+      } else if (selectedTextType === "heading3") {
+        paragraphSelector = "h3";
+      } else if (selectedTextType === "heading4") {
+        paragraphSelector = "h4";
+      } else {
+        return;
+      }
+
+      const targetElements = block.querySelectorAll(paragraphSelector);
+
+      targetElements.forEach((el) => {
+        el.style.color = selectedColor;
+      });
+
+      // ✅ Also call handleAllTextColorClick for permanent CSS save
       context.handleAllTextColorClick(
         { selectedColor },
         {
           ...context,
           selectedSingleTextType: selectedTextType,
-          lastClickedElement: lastClickedElement, // Pass updated block
+          lastClickedElement: lastClickedElement,
         }
       );
     });
