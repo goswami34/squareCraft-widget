@@ -686,7 +686,7 @@ let selectedElement = null;
       lastClickedElement,
       applyStylesToElement,
       {
-        handleAllTextColorClick,
+        handleAllTextHighlightClick,
         lastClickedElement,
         selectedSingleTextType,
         addPendingModification: (blockId, css, tagType) => {
