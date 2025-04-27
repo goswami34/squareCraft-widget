@@ -168,6 +168,14 @@ let selectedElement = null;
   //   "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextColorClick.js"
   // );
 
+  const { handleAllTextHighlightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextHighlight.js"
+  );
+
+  const { handleTextHighlightColorClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextHighlightColorClick.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -672,6 +680,24 @@ let selectedElement = null;
       },
       showNotification,
     });
+
+    handleTextHighlightColorClick(
+      event,
+      lastClickedElement,
+      applyStylesToElement,
+      {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      }
+    );
 
     typoTabSelect(event);
   });
@@ -1255,6 +1281,36 @@ let selectedElement = null;
     }
 
     //All text color code end here
+
+    //All text highlight color code start here
+    const textHighlightColorDiv = document.getElementById(
+      "texHeightlistPalate"
+    );
+    if (textHighlightColorDiv && !textHighlightColorDiv.dataset.initialized) {
+      textHighlightColorDiv.dataset.initialized = "true";
+
+      textHighlightColorDiv.addEventListener("click", (event) => {
+        handleTextHighlightColorClick(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextHighlightClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });

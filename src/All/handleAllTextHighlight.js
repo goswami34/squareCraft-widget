@@ -31,10 +31,10 @@ export function handleAllTextHighlightClick(event = null, context = null) {
     context;
 
   if (!event) {
-    event = { target: document.getElementById("textColorPalate") };
+    event = { target: document.getElementById("texHeightlistPalate") };
   }
 
-  const textColorDiv = document.getElementById("textColorPalate");
+  const textColorDiv = document.getElementById("texHeightlistPalate");
   //   const textColor = window.getComputedStyle(textColorDiv).backgroundColor; // 🛠
 
   if (!lastClickedElement) {
@@ -60,7 +60,7 @@ export function handleAllTextHighlightClick(event = null, context = null) {
     textColor = event.selectedColor;
   } else {
     // ✅ Otherwise get background color from div
-    const textColorDiv = document.getElementById("textColorPalate");
+    const textColorDiv = document.getElementById("texHeightlistPalate");
     textColor = window.getComputedStyle(textColorDiv).backgroundColor;
   }
 

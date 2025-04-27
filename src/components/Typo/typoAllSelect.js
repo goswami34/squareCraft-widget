@@ -230,16 +230,13 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
                   data-text-transform="small-caps"  class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
           <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
         </div>
-        
-       
-       
         </div>
      </div>
  
       <div class="sc-mt-4 ">
          <p class="sc-text-xs sc-font-thin sc-mt-4 sc-universal sc-text-gray-300 sc-poppins">Text Highlight</p>
          <div class="sc-py-1 sc-mt-2 sc-bg-3f3f3f sc-inActiveTab-border sc-w-50 sc-flex sc-justify-between sc-items-center sc-px-2 sc-rounded-6px">
-            <p class="sc-text-sm sc-poppins c-font-light sc-universal">Select</p>
+            <p class="sc-text-sm sc-poppins c-font-light sc-universal" id="texHeightlistHtml">Select</p>
             <div id="texHeightlistPalate" class="sc-square-6 sc-border-colors sc-cursor-pointer"></div>
          </div>
       </div> `;
