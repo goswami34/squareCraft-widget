@@ -26,6 +26,99 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// export function handleAllTextHighlightClick(event = null, context = null) {
+//   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
+//     context;
+
+//   if (!event) {
+//     event = { target: document.getElementById("texHeightlistPalate") };
+//   }
+
+//   const texHighlightDiv = document.getElementById("texHeightlistPalate");
+//   //   const texHighlight = window.getComputedStyle(texHighlightDiv).backgroundColor; // 🛠
+
+//   if (!lastClickedElement) {
+//     showNotification("Please select a block first", "error");
+//     return;
+//   }
+
+//   if (!selectedSingleTextType) {
+//     showNotification("Please select a text type first", "error");
+//     return;
+//   }
+
+//   const block = lastClickedElement.closest('[id^="block-"]');
+//   if (!block) {
+//     showNotification("Block not found", "error");
+//     return;
+//   }
+
+//   let texHighlight = null;
+
+//   if (event?.selectedColor) {
+//     // ✅ If manually passed selectedColor (from color picker)
+//     texHighlight = event.selectedColor;
+//   } else {
+//     // ✅ Otherwise get background color from div
+//     const texHighlightDiv = document.getElementById("texHeightlistPalate");
+//     texHighlight = window.getComputedStyle(texHighlightDiv).backgroundColor;
+//   }
+
+//   let paragraphSelector = "";
+
+//   if (selectedSingleTextType === "paragraph1") {
+//     paragraphSelector = "p.sqsrte-large";
+//   } else if (selectedSingleTextType === "paragraph2") {
+//     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+//   } else if (selectedSingleTextType === "paragraph3") {
+//     paragraphSelector = "p.sqsrte-small";
+//   } else if (selectedSingleTextType === "heading1") {
+//     paragraphSelector = "h1";
+//   } else if (selectedSingleTextType === "heading2") {
+//     paragraphSelector = "h2";
+//   } else if (selectedSingleTextType === "heading3") {
+//     paragraphSelector = "h3";
+//   } else if (selectedSingleTextType === "heading4") {
+//     paragraphSelector = "h4";
+//   } else {
+//     return;
+//   }
+
+//   console.log("✅ Applying text color for selector:", paragraphSelector);
+
+//   const targetElements = block.querySelectorAll(paragraphSelector);
+//   if (!targetElements.length) {
+//     showNotification(`No text found for ${selectedSingleTextType}`, "error");
+//     return;
+//   }
+
+//   const styleId = `style-${block.id}-${selectedSingleTextType}-all-texHighlight`;
+//   let styleTag = document.getElementById(styleId);
+
+//   if (!styleTag) {
+//     styleTag = document.createElement("style");
+//     styleTag.id = styleId;
+//     document.head.appendChild(styleTag);
+//   }
+
+//   styleTag.innerHTML = `
+//         #${block.id} ${paragraphSelector} {
+//           background-image: linear-gradient(to top, hsl(var(--accent-hsl)) 50%, transparent 0%);
+// 	display: inline;
+//         }
+//       `;
+
+//   addPendingModification(block.id, {
+//     color: texHighlight,
+//     target: selectedSingleTextType,
+//   });
+
+//   showNotification(
+//     `Text color applied to: ${selectedSingleTextType}`,
+//     "success"
+//   ); // 🎯
+// }
+
 export function handleAllTextHighlightClick(event = null, context = null) {
   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
     context;
@@ -34,8 +127,7 @@ export function handleAllTextHighlightClick(event = null, context = null) {
     event = { target: document.getElementById("texHeightlistPalate") };
   }
 
-  const textColorDiv = document.getElementById("texHeightlistPalate");
-  //   const textColor = window.getComputedStyle(textColorDiv).backgroundColor; // 🛠
+  const texHighlightDiv = document.getElementById("texHeightlistPalate");
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
@@ -53,38 +145,27 @@ export function handleAllTextHighlightClick(event = null, context = null) {
     return;
   }
 
-  let textColor = null;
+  let texHighlight = null;
 
   if (event?.selectedColor) {
-    // ✅ If manually passed selectedColor (from color picker)
-    textColor = event.selectedColor;
+    texHighlight = event.selectedColor;
   } else {
-    // ✅ Otherwise get background color from div
-    const textColorDiv = document.getElementById("texHeightlistPalate");
-    textColor = window.getComputedStyle(textColorDiv).backgroundColor;
+    texHighlight = window.getComputedStyle(texHighlightDiv).backgroundColor;
   }
 
-  let paragraphSelector = "";
+  const selectorMap = {
+    paragraph1: "p.sqsrte-large",
+    paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
+    paragraph3: "p.sqsrte-small",
+    heading1: "h1",
+    heading2: "h2",
+    heading3: "h3",
+    heading4: "h4",
+  };
 
-  if (selectedSingleTextType === "paragraph1") {
-    paragraphSelector = "p.sqsrte-large";
-  } else if (selectedSingleTextType === "paragraph2") {
-    paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-  } else if (selectedSingleTextType === "paragraph3") {
-    paragraphSelector = "p.sqsrte-small";
-  } else if (selectedSingleTextType === "heading1") {
-    paragraphSelector = "h1";
-  } else if (selectedSingleTextType === "heading2") {
-    paragraphSelector = "h2";
-  } else if (selectedSingleTextType === "heading3") {
-    paragraphSelector = "h3";
-  } else if (selectedSingleTextType === "heading4") {
-    paragraphSelector = "h4";
-  } else {
-    return;
-  }
+  const paragraphSelector = selectorMap[selectedSingleTextType] || "";
 
-  console.log("✅ Applying text color for selector:", paragraphSelector);
+  console.log("✅ Applying highlight for selector:", paragraphSelector);
 
   const targetElements = block.querySelectorAll(paragraphSelector);
   if (!targetElements.length) {
@@ -92,7 +173,7 @@ export function handleAllTextHighlightClick(event = null, context = null) {
     return;
   }
 
-  const styleId = `style-${block.id}-${selectedSingleTextType}-all-textColor`;
+  const styleId = `style-${block.id}-${selectedSingleTextType}-highlight`;
   let styleTag = document.getElementById(styleId);
 
   if (!styleTag) {
@@ -102,18 +183,19 @@ export function handleAllTextHighlightClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-        #${block.id} ${paragraphSelector} {
-          color: ${textColor} !important;
-        }
-      `;
+      #${block.id} ${paragraphSelector} {
+        background-image: linear-gradient(to top, ${texHighlight} 50%, transparent 0%);
+        display: inline;
+      }
+    `;
 
   addPendingModification(block.id, {
-    color: textColor,
+    "background-image": `linear-gradient(to top, ${texHighlight} 50%, transparent 0%)`,
     target: selectedSingleTextType,
   });
 
   showNotification(
-    `Text color applied to: ${selectedSingleTextType}`,
+    `Text highlight applied to: ${selectedSingleTextType}`,
     "success"
-  ); // 🎯
+  );
 }
