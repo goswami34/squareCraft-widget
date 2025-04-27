@@ -42,34 +42,6 @@
 //   colorPalette.click();
 // }
 
-function showNotification(message, type = "info") {
-  const notification = document.createElement("div");
-  notification.className = `sc-notification sc-notification-${type}`;
-  notification.textContent = message;
-
-  // Add styles
-  Object.assign(notification.style, {
-    position: "fixed",
-    top: "20px",
-    right: "20px",
-    padding: "10px 20px",
-    borderRadius: "4px",
-    color: "white",
-    zIndex: "9999",
-    animation: "fadeIn 0.3s ease-in-out",
-    backgroundColor:
-      type === "success" ? "#4CAF50" : type === "error" ? "#f44336" : "#2196F3",
-  });
-
-  document.body.appendChild(notification);
-
-  // Remove after 3 seconds
-  setTimeout(() => {
-    notification.style.animation = "fadeOut 0.3s ease-in-out";
-    setTimeout(() => notification.remove(), 300);
-  }, 3000);
-}
-
 export function handleTextColorClick(
   event,
   lastClickedElement,
@@ -78,16 +50,6 @@ export function handleTextColorClick(
 ) {
   const textColorPalate = event.target.closest("#textColorPalate");
   if (!textColorPalate) return;
-
-  // Get the currently selected tab first
-  const selectedTab = document.querySelector(".sc-selected-tab");
-  if (!selectedTab) {
-    showNotification(
-      "Please select a text type (h1, h2, p1 etc) first",
-      "error"
-    );
-    return;
-  }
 
   let colorPalette = document.getElementById("scColorPalette");
 
@@ -104,45 +66,49 @@ export function handleTextColorClick(
 
     colorPalette.addEventListener("input", function (event) {
       const selectedColor = event.target.value;
-      if (!lastClickedElement) {
-        showNotification("Please select a block first", "error");
-        return;
-      }
+      if (!lastClickedElement) return;
 
-      // Determine the text type based on the selected tab
-      let selectedTextType = null;
-      if (selectedTab.id.startsWith("heading")) {
-        selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
-      } else if (selectedTab.id.startsWith("paragraph")) {
-        selectedTextType = `paragraph${selectedTab.id.replace(
-          "paragraph",
-          ""
-        )}`;
-      }
-
-      if (!selectedTextType) {
-        showNotification("Invalid text type selected", "error");
-        return;
-      }
-
-      // Update the color palette background
       textColorPalate.style.backgroundColor = selectedColor;
 
-      // Update the color text display
       const textColorHtml = document.getElementById("textcolorHtml");
       if (textColorHtml) {
         textColorHtml.textContent = selectedColor;
       }
 
-      // Find the block element
-      const block = lastClickedElement.closest('[id^="block-"]');
-      if (!block) {
-        showNotification("Block not found", "error");
+      // ✅ Try to detect selected tab
+      const selectedTab = document.querySelector(".sc-selected-tab");
+      let selectedTextType = null;
+
+      if (selectedTab) {
+        if (selectedTab.id.startsWith("heading")) {
+          selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
+        } else if (selectedTab.id.startsWith("paragraph")) {
+          selectedTextType = `paragraph${selectedTab.id.replace(
+            "paragraph",
+            ""
+          )}`;
+        }
+      }
+
+      // ✅ If still not found, fallback to context.selectedSingleTextType
+      if (!selectedTextType && context.selectedSingleTextType) {
+        selectedTextType = context.selectedSingleTextType;
+      }
+
+      if (!selectedTextType) {
+        console.error("❌ No selected text type available");
         return;
       }
 
-      // Determine the selector based on text type
+      // ✅ Real-time color apply
+      const block = lastClickedElement.closest('[id^="block-"]');
+      if (!block) {
+        console.error("❌ Block not found.");
+        return;
+      }
+
       let paragraphSelector = "";
+
       if (selectedTextType === "paragraph1") {
         paragraphSelector = "p.sqsrte-large";
       } else if (selectedTextType === "paragraph2") {
@@ -158,25 +124,16 @@ export function handleTextColorClick(
       } else if (selectedTextType === "heading4") {
         paragraphSelector = "h4";
       } else {
-        showNotification("Invalid text type", "error");
         return;
       }
 
-      // Apply color to the selected elements
       const targetElements = block.querySelectorAll(paragraphSelector);
-      if (targetElements.length === 0) {
-        showNotification(
-          `No ${selectedTextType} elements found in the block`,
-          "error"
-        );
-        return;
-      }
 
       targetElements.forEach((el) => {
         el.style.color = selectedColor;
       });
 
-      // Call handleAllTextColorClick for permanent CSS save
+      // ✅ Also call handleAllTextColorClick for permanent CSS save
       context.handleAllTextColorClick(
         { selectedColor },
         {
@@ -185,12 +142,8 @@ export function handleTextColorClick(
           lastClickedElement: lastClickedElement,
         }
       );
-
-      showNotification(`Color applied to ${selectedTextType}`, "success");
     });
   }
 
-  // Reset color palette value when clicked
-  colorPalette.value = "#000000";
   colorPalette.click();
 }
