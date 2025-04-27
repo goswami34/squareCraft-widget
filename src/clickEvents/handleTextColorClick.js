@@ -48,8 +48,6 @@ export function handleTextColorClick(
   applyStylesToElement,
   context
 ) {
-  const { handleAllTextColorClick } = context;
-
   const textColorPalate = event.target.closest("#textColorPalate");
   if (!textColorPalate) return;
 
@@ -68,38 +66,42 @@ export function handleTextColorClick(
 
     colorPalette.addEventListener("input", function (event) {
       const selectedColor = event.target.value;
-      if (lastClickedElement) {
-        textColorPalate.style.backgroundColor = selectedColor;
+      if (!lastClickedElement) return;
 
-        const textColorHtml = document.getElementById("textcolorHtml");
-        if (textColorHtml) {
-          textColorHtml.textContent = selectedColor;
-        }
+      textColorPalate.style.backgroundColor = selectedColor;
 
-        // 🛠 [FIX] Detect currently selected tab and update selectedSingleTextType
-        const selectedTab = document.querySelector(".sc-selected-tab");
-        let selectedTextType = null;
-
-        if (selectedTab?.id?.startsWith("heading")) {
-          selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
-        } else if (selectedTab?.id?.startsWith("paragraph")) {
-          selectedTextType = `paragraph${selectedTab.id.replace(
-            "paragraph",
-            ""
-          )}`;
-        }
-
-        if (!selectedTextType) {
-          console.error("❌ No selected tab found for text type");
-          return;
-        }
-
-        // ✅ Pass the correct selectedSingleTextType in context
-        handleAllTextColorClick(
-          { selectedColor },
-          { ...context, selectedSingleTextType: selectedTextType }
-        );
+      const textColorHtml = document.getElementById("textcolorHtml");
+      if (textColorHtml) {
+        textColorHtml.textContent = selectedColor;
       }
+
+      // ✅ Real-time detect selected tab (h1, h2, etc.)
+      const selectedTab = document.querySelector(".sc-selected-tab");
+      let selectedTextType = null;
+
+      if (selectedTab?.id?.startsWith("heading")) {
+        selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
+      } else if (selectedTab?.id?.startsWith("paragraph")) {
+        selectedTextType = `paragraph${selectedTab.id.replace(
+          "paragraph",
+          ""
+        )}`;
+      }
+
+      if (!selectedTextType) {
+        console.error("❌ No selected tab found for text type");
+        return;
+      }
+
+      // ✅ Now call handleAllTextColorClick immediately with correct context
+      context.handleAllTextColorClick(
+        { selectedColor },
+        {
+          ...context,
+          selectedSingleTextType: selectedTextType,
+          lastClickedElement: lastClickedElement, // Pass updated block
+        }
+      );
     });
   }
 
