@@ -90,6 +90,7 @@ export function handleTextColorClick(
       }
 
       const selectedTab = document.querySelector(".sc-selected-tab");
+      console.log("selectedTab", selectedTab);
       let selectedTextType = null;
 
       if (selectedTab) {
