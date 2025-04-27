@@ -46,7 +46,8 @@ export function handleTextColorClick(
   event,
   lastClickedElement,
   applyStylesToElement,
-  context
+  context,
+  showNotification
 ) {
   const textColorPalate = event.target.closest("#textColorPalate");
   if (!textColorPalate) return;
