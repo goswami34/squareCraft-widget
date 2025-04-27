@@ -42,6 +42,10 @@
 //   colorPalette.click();
 // }
 
+// Keep global updated reference
+let colorPalette = null;
+let colorPickerContext = null;
+
 export function handleTextColorClick(
   event,
   lastClickedElement,
@@ -51,8 +55,6 @@ export function handleTextColorClick(
   const textColorPalate = event.target.closest("#textColorPalate");
   if (!textColorPalate) return;
 
-  let colorPalette = document.getElementById("scColorPalette");
-
   if (!colorPalette) {
     colorPalette = document.createElement("input");
     colorPalette.type = "color";
@@ -61,21 +63,23 @@ export function handleTextColorClick(
     colorPalette.style.width = "0px";
     colorPalette.style.height = "0px";
     colorPalette.style.marginTop = "14px";
-
-    textColorPalate.appendChild(colorPalette);
+    document.body.appendChild(colorPalette);
 
     colorPalette.addEventListener("input", function (event) {
       const selectedColor = event.target.value;
-      if (!lastClickedElement) return;
 
-      textColorPalate.style.backgroundColor = selectedColor;
+      if (!colorPickerContext?.lastClickedElement) return;
+
+      const textColorPalate = document.getElementById("textColorPalate");
+      if (textColorPalate) {
+        textColorPalate.style.backgroundColor = selectedColor;
+      }
 
       const textColorHtml = document.getElementById("textcolorHtml");
       if (textColorHtml) {
         textColorHtml.textContent = selectedColor;
       }
 
-      // ✅ Try to detect selected tab
       const selectedTab = document.querySelector(".sc-selected-tab");
       let selectedTextType = null;
 
@@ -90,27 +94,23 @@ export function handleTextColorClick(
         }
       }
 
-      console.log("🔍 selectedTextType:", selectedTextType);
-
-      // ✅ If still not found, fallback to context.selectedSingleTextType
-      if (!selectedTextType && context.selectedSingleTextType) {
-        selectedTextType = context.selectedSingleTextType;
+      if (!selectedTextType && colorPickerContext?.selectedSingleTextType) {
+        selectedTextType = colorPickerContext.selectedSingleTextType;
       }
 
       if (!selectedTextType) {
-        console.error("❌ No selected text type available");
+        console.error("❌ No selected text type found");
         return;
       }
 
-      // ✅ Real-time color apply
-      const block = lastClickedElement.closest('[id^="block-"]');
+      const block =
+        colorPickerContext.lastClickedElement.closest('[id^="block-"]');
       if (!block) {
-        console.error("❌ Block not found.");
+        console.error("❌ Block not found");
         return;
       }
 
       let paragraphSelector = "";
-
       if (selectedTextType === "paragraph1") {
         paragraphSelector = "p.sqsrte-large";
       } else if (selectedTextType === "paragraph2") {
@@ -125,8 +125,6 @@ export function handleTextColorClick(
         paragraphSelector = "h3";
       } else if (selectedTextType === "heading4") {
         paragraphSelector = "h4";
-      } else {
-        return;
       }
 
       const targetElements = block.querySelectorAll(paragraphSelector);
@@ -135,17 +133,23 @@ export function handleTextColorClick(
         el.style.color = selectedColor;
       });
 
-      // ✅ Also call handleAllTextColorClick for permanent CSS save
-      context.handleAllTextColorClick(
+      colorPickerContext.handleAllTextColorClick(
         { selectedColor },
         {
-          ...context,
+          ...colorPickerContext,
           selectedSingleTextType: selectedTextType,
-          lastClickedElement: lastClickedElement,
+          lastClickedElement: colorPickerContext.lastClickedElement,
         }
       );
     });
   }
+
+  // 🔥 Important: Update color picker context every time!
+  colorPickerContext = {
+    ...context,
+    lastClickedElement,
+    selectedSingleTextType: context.selectedSingleTextType,
+  };
 
   colorPalette.click();
 }
