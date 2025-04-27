@@ -51,6 +51,16 @@ export function handleTextColorClick(
   const textColorPalate = event.target.closest("#textColorPalate");
   if (!textColorPalate) return;
 
+  // Get the currently selected tab first
+  const selectedTab = document.querySelector(".sc-selected-tab");
+  if (!selectedTab) {
+    showNotification(
+      "Please select a text type (h1, h2, p1 etc) first",
+      "error"
+    );
+    return;
+  }
+
   let colorPalette = document.getElementById("scColorPalette");
 
   if (!colorPalette) {
@@ -66,12 +76,8 @@ export function handleTextColorClick(
 
     colorPalette.addEventListener("input", function (event) {
       const selectedColor = event.target.value;
-      if (!lastClickedElement) return;
-
-      // Get the currently selected tab
-      const selectedTab = document.querySelector(".sc-selected-tab");
-      if (!selectedTab) {
-        console.error("❌ No selected text type available");
+      if (!lastClickedElement) {
+        showNotification("Please select a block first", "error");
         return;
       }
 
@@ -87,7 +93,7 @@ export function handleTextColorClick(
       }
 
       if (!selectedTextType) {
-        console.error("❌ Invalid text type");
+        showNotification("Invalid text type selected", "error");
         return;
       }
 
@@ -103,7 +109,7 @@ export function handleTextColorClick(
       // Find the block element
       const block = lastClickedElement.closest('[id^="block-"]');
       if (!block) {
-        console.error("❌ Block not found.");
+        showNotification("Block not found", "error");
         return;
       }
 
@@ -124,11 +130,20 @@ export function handleTextColorClick(
       } else if (selectedTextType === "heading4") {
         paragraphSelector = "h4";
       } else {
+        showNotification("Invalid text type", "error");
         return;
       }
 
       // Apply color to the selected elements
       const targetElements = block.querySelectorAll(paragraphSelector);
+      if (targetElements.length === 0) {
+        showNotification(
+          `No ${selectedTextType} elements found in the block`,
+          "error"
+        );
+        return;
+      }
+
       targetElements.forEach((el) => {
         el.style.color = selectedColor;
       });
@@ -142,6 +157,8 @@ export function handleTextColorClick(
           lastClickedElement: lastClickedElement,
         }
       );
+
+      showNotification(`Color applied to ${selectedTextType}`, "success");
     });
   }
 
