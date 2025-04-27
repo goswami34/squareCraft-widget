@@ -99,7 +99,7 @@ export function handleTextHighlightColorClick(
         el.style.color = selectedColor;
       });
 
-      colorPickerContext.handleAllTextColorClick(
+      colorPickerContext.handleAllTextHighlightClick(
         { selectedColor },
         {
           ...colorPickerContext,
