@@ -43,6 +43,7 @@
 // }
 
 // Keep global updated reference
+
 let colorPalette = null;
 let colorPickerContext = null;
 
@@ -55,6 +56,7 @@ export function handleTextColorClick(
   const textColorPalate = event.target.closest("#textColorPalate");
   if (!textColorPalate) return;
 
+  // Create hidden color input if not already created
   if (!colorPalette) {
     colorPalette = document.createElement("input");
     colorPalette.type = "color";
@@ -63,7 +65,14 @@ export function handleTextColorClick(
     colorPalette.style.width = "0px";
     colorPalette.style.height = "0px";
     colorPalette.style.marginTop = "14px";
-    document.body.appendChild(colorPalette);
+
+    // ✅ Important: append input inside widget to prevent widget disappearing
+    const widgetContainer = document.getElementById("sc-widget-container");
+    if (widgetContainer) {
+      widgetContainer.appendChild(colorPalette);
+    } else {
+      document.body.appendChild(colorPalette); // fallback safety
+    }
 
     colorPalette.addEventListener("input", function (event) {
       const selectedColor = event.target.value;
@@ -94,6 +103,7 @@ export function handleTextColorClick(
         }
       }
 
+      // If no tab detected, fallback to saved context
       if (!selectedTextType && colorPickerContext?.selectedSingleTextType) {
         selectedTextType = colorPickerContext.selectedSingleTextType;
       }
@@ -133,6 +143,7 @@ export function handleTextColorClick(
         el.style.color = selectedColor;
       });
 
+      // Save to backend also
       colorPickerContext.handleAllTextColorClick(
         { selectedColor },
         {
@@ -144,7 +155,7 @@ export function handleTextColorClick(
     });
   }
 
-  // 🔥 Important: Update color picker context every time!
+  // 🔥 Every click: Update fresh context
   colorPickerContext = {
     ...context,
     lastClickedElement,
