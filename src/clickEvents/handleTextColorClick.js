@@ -75,7 +75,7 @@ export function handleTextColorClick(
         textColorHtml.textContent = selectedColor;
       }
 
-      // ✅ Correctly detect selectedTab
+      // ✅ Try to detect selected tab
       const selectedTab = document.querySelector(".sc-selected-tab");
       let selectedTextType = null;
 
@@ -90,8 +90,13 @@ export function handleTextColorClick(
         }
       }
 
+      // ✅ If still not found, fallback to context.selectedSingleTextType
+      if (!selectedTextType && context.selectedSingleTextType) {
+        selectedTextType = context.selectedSingleTextType;
+      }
+
       if (!selectedTextType) {
-        console.error("❌ No selected tab found for text type");
+        console.error("❌ No selected text type available");
         return;
       }
 
