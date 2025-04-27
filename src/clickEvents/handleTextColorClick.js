@@ -53,7 +53,6 @@ export function handleTextColorClick(
   context
 ) {
   const textColorPalate = event.target.closest("#textColorPalate");
-  console.log("textColorPalate", textColorPalate);
   if (!textColorPalate) return;
 
   if (!colorPalette) {

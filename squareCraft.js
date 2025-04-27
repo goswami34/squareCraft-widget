@@ -232,21 +232,6 @@ let selectedElement = null;
         (selectedTextElement = clickedTag),
     });
 
-    // handleAlignmentClick(event, {
-    //   lastClickedElement,
-    //   getTextType,
-    //   applyStylesToElement,
-    //   lastAppliedAlignment,
-    //   setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
-    //   lastActiveAlignmentElement,
-    //   setLastActiveAlignmentElement: (val) =>
-    //     (lastActiveAlignmentElement = val),
-    //   lastClickedBlockId,
-    //   userId,
-    //   token,
-    //   widgetId,
-    // });
-
     handleFontSize(event, {
       lastClickedElement,
       getTextType,
@@ -417,70 +402,6 @@ let selectedElement = null;
 
       showNotification: showNotification,
     });
-
-    // handleFontWeightLink(event, {
-    //   lastClickedElement,
-    //   getTextType,
-    //   applyStylesToElement,
-    //   selectedSingleTextType,
-    //   setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
-    //   selectedTextElement,
-    //   setSelectedTextElement: (clickedTag) =>
-    //     (selectedTextElement = clickedTag),
-    //   lastAppliedAlignment,
-    //   setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
-    //   lastActiveAlignmentElement,
-    //   setLastActiveAlignmentElement: (val) =>
-    //     (lastActiveAlignmentElement = val),
-    //   lastClickedBlockId,
-    //   userId,
-    //   saveModifications,
-    //   handleBlockClick,
-    //   setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-    //   token,
-    //   widgetId,
-    //   setSelectedElement: (val) => (selectedElement = val), // Add this line
-    //   addPendingModification: (blockId, css, tagType) => {
-    //     if (!pendingModifications.has(blockId)) {
-    //       pendingModifications.set(blockId, []);
-    //     }
-    //     pendingModifications.get(blockId).push({ css, tagType });
-    //   },
-
-    //   showNotification: showNotification,
-    // });
-
-    // handleTextHighLinghtClick(event, {
-    //   lastClickedElement,
-    //   getTextType,
-    //   applyStylesToElement,
-    //   selectedSingleTextType,
-    //   setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
-    //   selectedTextElement,
-    //   setSelectedTextElement: (clickedTag) =>
-    //     (selectedTextElement = clickedTag),
-    //   lastAppliedAlignment,
-    //   setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
-    //   lastActiveAlignmentElement,
-    //   setLastActiveAlignmentElement: (val) =>
-    //     (lastActiveAlignmentElement = val),
-    //   lastClickedBlockId,
-    //   userId,
-    //   saveModifications,
-    //   handleBlockClick,
-    //   setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-    //   token,
-    //   widgetId,
-    //   setSelectedElement: (val) => (selectedElement = val), // Add this line
-    //   addPendingModification: (blockId, css, tagType) => {
-    //     if (!pendingModifications.has(blockId)) {
-    //       pendingModifications.set(blockId, []);
-    //     }
-    //     pendingModifications.get(blockId).push({ css, tagType });
-    //   },
-
-    //   showNotification: showNotification,
-    // });
 
     //Link code end here
 
@@ -912,27 +833,6 @@ let selectedElement = null;
   const observer = new MutationObserver(() => {
     addHeadingEventListeners();
     fetchModifications();
-    // // font weight functionality start here
-    // const fontWeightSelect = document.getElementById("squareCraftFontWeight");
-    // if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
-    //   fontWeightSelect.dataset.initialized = "true";
-    // }
-
-    // Add this to your observer callback
-    // const fontWeightSelect = document.getElementById("squareCraftFontWeight");
-    // if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
-    //     fontWeightSelect.dataset.initialized = "true";
-    //     handleFontWeightFunClick(null, {
-    //         lastClickedElement,
-    //         saveModifications,
-    //         selectedElement,
-    //         setSelectedElement: (val) => selectedElement = val,
-    //         setLastClickedBlockId: (val) => lastClickedBlockId = val,
-    //         setLastClickedElement: (val) => lastClickedElement = val,
-    //         addPendingModification,
-    //         getTextType
-    //     });
-    // }
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
@@ -1049,42 +949,6 @@ let selectedElement = null;
         });
     }
 
-    // const fontWeightLinkSelect = document.getElementById(
-    //   "squareCraftLinkFontWeight"
-    // );
-    // if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
-    //   fontWeightLinkSelect.dataset.initialized = "true";
-
-    //   // Add change event listener
-    //   fontWeightLinkSelect.addEventListener("change", (event) => {
-    //     const lastClickedElement = document.querySelector(".sc-selected");
-    //     if (lastClickedElement) {
-    //       handleFontWeightLink(event, {
-    //         lastClickedElement,
-    //         selectedSingleTextType,
-    //         addPendingModification,
-    //         showNotification,
-    //       });
-    //     }
-    //   });
-    // }
-
-    // const fontWeightLinkSelect = document.getElementById(
-    //   "squareCraftLinkFontWeight"
-    // );
-    // if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
-    //   fontWeightLinkSelect.dataset.initialized = "true";
-
-    //   fontWeightLinkSelect.addEventListener("change", (event) => {
-    //     handleFontWeightLink(event, {
-    //       lastClickedElement,
-    //       selectedSingleTextType,
-    //       addPendingModification,
-    //       showNotification,
-    //     });
-    //   });
-    // }
-
     // In squareCraft.js
     const fontWeightLinkSelect = document.getElementById(
       "squareCraftLinkFontWeight"
@@ -1128,78 +992,6 @@ let selectedElement = null;
         });
       });
     }
-
-    //text high light code start here
-    // In squareCraft.js
-    // const textHighlightInput = document.getElementById("scTextHighLight");
-    // if (textHighlightInput && !textHighlightInput.dataset.initialized) {
-    //   console.log("Initializing text highlight input");
-    //   textHighlightInput.dataset.initialized = "true";
-
-    //   // Add click event listener to the widget container
-    //   const widgetContainer = document.getElementById("sc-widget-container");
-    //   if (widgetContainer) {
-    //     widgetContainer.addEventListener("click", function (event) {
-    //       // Check if the click is on a text type tab
-    //       const tab = event.target.closest(
-    //         '[id^="heading"], [id^="paragraph"]'
-    //       );
-    //       if (tab) {
-    //         // Remove selected-tab class from all tabs
-    //         document
-    //           .querySelectorAll('[id^="heading"], [id^="paragraph"]')
-    //           .forEach((t) => {
-    //             t.classList.remove("sc-selected-tab");
-    //           });
-    //         // Add selected-tab class to clicked tab
-    //         tab.classList.add("sc-selected-tab");
-    //       }
-    //     });
-    //   }
-
-    //   textHighlightInput.addEventListener("change", function (event) {
-    //     event.preventDefault();
-    //     console.log("Text highlight color changed");
-
-    //     // const currentlySelectedBlock = document.querySelector(".sc-selected");
-    //     // console.log(currentlySelectedBlock);
-    //     const selectedTab = document.querySelector(".sc-selected-tab");
-    //     console.log(selectedTab);
-
-    //     // if (!currentlySelectedBlock) {
-    //     //   showNotification("❌ Please select a block first.", "error");
-    //     //   return;
-    //     // }
-
-    //     if (!selectedTab) {
-    //       showNotification(
-    //         "❌ Please select a text type (h1, h2, p1 etc) first.",
-    //         "error"
-    //       );
-    //       return;
-    //     }
-
-    //     // Get the selected text type from the tab
-    //     let selectedTextType;
-    //     if (selectedTab.id.startsWith("heading")) {
-    //       selectedTextType = `h${selectedTab.id.replace("heading", "")}`;
-    //     } else if (selectedTab.id.startsWith("paragraph")) {
-    //       selectedTextType = `p${selectedTab.id.replace("paragraph", "")}`;
-    //     } else {
-    //       showNotification("❌ Invalid text type selected.", "error");
-    //       return;
-    //     }
-
-    //     console.log("Selected text type:", selectedTextType);
-
-    //     handleTextHighLinghtClick(event, {
-    //       lastClickedElement,
-    //       selectedSingleTextType: selectedTextType,
-    //       addPendingModification,
-    //       showNotification,
-    //     });
-    //   });
-    // }
 
     const textHighlightInput = document.getElementById("scTextHighLight");
     if (textHighlightInput && !textHighlightInput.dataset.initialized) {
