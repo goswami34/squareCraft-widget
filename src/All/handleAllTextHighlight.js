@@ -158,6 +158,8 @@ export function handleAllTextHighlightClick(event = null, context = null) {
   //     return;
   //   }
 
+  console.log("✅ Applying highlight for selector:", paragraphSelector);
+
   const styleId = `style-${block.id}-${selectedSingleTextType}-highlight`;
   let styleTag = document.getElementById(styleId);
 
