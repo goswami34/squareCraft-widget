@@ -170,7 +170,7 @@ export function handleAllTextHighlightClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-      #${block.id} ${paragraphSelector} strong {
+      #${block.id} ${paragraphSelector} {
         background-image: linear-gradient(to top, ${selectedHighlightColor} 50%, transparent 0%);
         display: inline;
       }
