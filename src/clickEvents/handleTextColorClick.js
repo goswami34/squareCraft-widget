@@ -90,6 +90,8 @@ export function handleTextColorClick(
         }
       }
 
+      console.log("🔍 selectedTextType:", selectedTextType);
+
       // ✅ If still not found, fallback to context.selectedSingleTextType
       if (!selectedTextType && context.selectedSingleTextType) {
         selectedTextType = context.selectedSingleTextType;
