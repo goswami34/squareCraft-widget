@@ -7,8 +7,8 @@ export function handleTextHighlightColorClick(
   applyStylesToElement,
   context
 ) {
-  const textColorPalate = event.target.closest("#textColorPalate");
-  if (!textColorPalate) return;
+  const textHighlightPalate = event.target.closest("#texHeightlistPalate");
+  if (!textHighlightPalate) return;
 
   // ✅ Fresh context every time
   colorPickerContext = {
@@ -39,9 +39,11 @@ export function handleTextHighlightColorClick(
 
       if (!colorPickerContext?.lastClickedElement) return;
 
-      const textColorPalate = document.getElementById("textColorPalate");
-      if (textColorPalate) {
-        textColorPalate.style.backgroundColor = selectedColor;
+      const textHighlightPalate = document.getElementById(
+        "textHighlightPalate"
+      );
+      if (textHighlightPalate) {
+        textHighlightPalate.style.backgroundColor = selectedColor;
       }
 
       const textColorHtml = document.getElementById("textcolorHtml");
