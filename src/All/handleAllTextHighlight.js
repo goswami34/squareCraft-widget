@@ -66,18 +66,18 @@ export function handleAllTextHighlightClick(event = null, context = null) {
     heading4: "h4",
   };
 
-  //   const paragraphSelector = selectorMap[selectedSingleTextType] || "";
+  const paragraphSelector = selectorMap[selectedSingleTextType] || "";
 
-  //   const targetElements = block.querySelectorAll(`${paragraphSelector} strong`);
-  //   if (!targetElements.length) {
-  //     showNotification(
-  //       `No <strong> tags found inside ${selectedSingleTextType}`,
-  //       "error"
-  //     );
-  //     return;
-  //   }
+  const targetElements = block.querySelectorAll(`${paragraphSelector} `);
+  if (!targetElements.length) {
+    showNotification(
+      `No ${selectedSingleTextType} tags found inside ${selectedSingleTextType}`,
+      "error"
+    );
+    return;
+  }
 
-  //   console.log("✅ Applying highlight for selector:", paragraphSelector);
+  console.log("✅ Applying highlight for selector:", paragraphSelector);
 
   const styleId = `style-${block.id}-${selectedSingleTextType}-highlight`;
   let styleTag = document.getElementById(styleId);
