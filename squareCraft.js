@@ -725,6 +725,8 @@ let selectedElement = null;
         const response = await fetch(
           "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
         );
+
+        console.log("✅ Font families response:", response);
         const data = await response.json();
 
         data.items.forEach((font) => {
