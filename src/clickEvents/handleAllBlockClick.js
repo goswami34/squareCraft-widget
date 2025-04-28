@@ -124,13 +124,31 @@ export function handleAllBlockClick(event, context) {
   //align code end here
 
   const firstInnerTextElement = block.querySelector("h1,h2,h3,h4,p1,p2,p3");
+
   if (firstInnerTextElement) {
-    const firstTag = firstInnerTextElement.tagName.toLowerCase();
-    setSelectedSingleTextType(firstTag);
-    console.log("✅ Default selected text type after block click:", firstTag);
+    const tag = firstInnerTextElement.tagName.toLowerCase();
+    if (tag === "p") {
+      if (firstInnerTextElement.classList.contains("sqsrte-large")) {
+        setSelectedSingleTextType("paragraph1");
+      } else if (firstInnerTextElement.classList.contains("sqsrte-small")) {
+        setSelectedSingleTextType("paragraph3");
+      } else {
+        setSelectedSingleTextType("paragraph2");
+      }
+    } else {
+      setSelectedSingleTextType(`heading${tag.replace("h", "")}`);
+    }
   } else {
     setSelectedSingleTextType(null);
   }
+
+  // if (firstInnerTextElement) {
+  //   const firstTag = firstInnerTextElement.tagName.toLowerCase();
+  //   setSelectedSingleTextType(firstTag);
+  //   console.log("✅ Default selected text type after block click:", firstTag);
+  // } else {
+  //   setSelectedSingleTextType(null);
+  // }
 
   const innerText = block.querySelector("h1,h2,h3,h4,p1,p2,p3");
   if (innerText) {
@@ -316,14 +334,12 @@ export function handleAllBlockClick(event, context) {
   });
 
   // Inside your handleBlockClick, after you detect clicked block
-
-  const blockId = lastClickedBlockId; // you already have this
+  const blockId = block.id;
   const savedMods = pendingModifications.get(blockId);
 
   if (savedMods && Array.isArray(savedMods)) {
     savedMods.forEach((mod) => {
       if (mod.css && mod.css["font-family"]) {
-        // Reapply the font-family manually
         const selectorMap = {
           paragraph1: "p.sqsrte-large",
           paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
@@ -339,7 +355,6 @@ export function handleAllBlockClick(event, context) {
           let styleTag = document.getElementById(
             `style-${blockId}-${mod.target}-fontFamily`
           );
-
           if (!styleTag) {
             styleTag = document.createElement("style");
             styleTag.id = `style-${blockId}-${mod.target}-fontFamily`;
@@ -347,10 +362,10 @@ export function handleAllBlockClick(event, context) {
           }
 
           styleTag.innerHTML = `
-          #${blockId} ${paragraphSelector} {
-            font-family: '${mod.css["font-family"]}' !important;
-          }
-        `;
+            #${blockId} ${paragraphSelector} {
+              font-family: '${mod.css["font-family"]}' !important;
+            }
+          `;
         }
       }
     });
