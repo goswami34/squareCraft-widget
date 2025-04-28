@@ -79,30 +79,6 @@ export function handleAllFontFamilyClick(event = null, context = null) {
     return;
   }
 
-  // Get the current font family of the selected text type
-  //   const selectedElements = block.querySelectorAll(paragraphSelector);
-  //   let currentFontFamily = "";
-  //   if (selectedElements.length > 0) {
-  //     currentFontFamily = window.getComputedStyle(selectedElements[0]).fontFamily;
-  //     // Remove quotes and trim
-  //     currentFontFamily = currentFontFamily.replace(/['"]/g, "").trim();
-  //   }
-
-  //   // Update the dropdown value to match the current font family
-  //   const fontFamilyDropdown = document.getElementById(
-  //     "squareCraftAllFontFamily"
-  //   );
-  //   if (fontFamilyDropdown) {
-  //     // Find the option that matches the current font family
-  //     const options = fontFamilyDropdown.options;
-  //     for (let i = 0; i < options.length; i++) {
-  //       if (options[i].value === currentFontFamily) {
-  //         fontFamilyDropdown.selectedIndex = i;
-  //         break;
-  //       }
-  //     }
-  //   }
-
   // When a text type is selected
   const selectedElements = block.querySelectorAll(paragraphSelector);
   console.log("🔍 selectedElements:", selectedElements);
