@@ -716,35 +716,111 @@ let selectedElement = null;
     });
 
     // Load font families into dropdown for all font family
-    async function loadFontFamiliesIntoDropdown() {
-      const fontFamilyDropdown = document.getElementById(
-        "squareCraftAllFontFamily"
-      );
-      if (!fontFamilyDropdown) return;
+    // async function loadFontFamiliesIntoDropdown() {
+    //   const fontFamilyDropdown = document.getElementById(
+    //     "squareCraftAllFontFamily"
+    //   );
+    //   if (!fontFamilyDropdown) return;
 
-      try {
-        const response = await fetch(
-          "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
-        );
+    //   try {
+    //     const response = await fetch(
+    //       "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
+    //     );
 
-        console.log("✅ Font families response:", response);
-        const data = await response.json();
+    //     console.log("✅ Font families response:", response);
+    //     const data = await response.json();
 
-        data.items.forEach((font) => {
-          const option = document.createElement("option");
-          console.log("✅ Font family:", option);
-          option.value = font.family;
-          option.textContent = font.family;
-          fontFamilyDropdown.appendChild(option);
-        });
+    //     data.items.forEach((font) => {
+    //       const option = document.createElement("option");
+    //       console.log("✅ Font family:", option);
+    //       option.value = font.family;
+    //       option.textContent = font.family;
+    //       fontFamilyDropdown.appendChild(option);
+    //     });
 
-        console.log("✅ Loaded font families into dropdown.");
-      } catch (error) {
-        console.error("Error loading font families:", error);
+    //     console.log("✅ Loaded font families into dropdown.");
+    //   } catch (error) {
+    //     console.error("Error loading font families:", error);
+    //   }
+    // }
+
+    // loadFontFamiliesIntoDropdown();
+
+    // Predefined font list for faster dropdown
+    const predefinedFonts = [
+      "Roboto",
+      "Open Sans",
+      "Lato",
+      "Montserrat",
+      "Oswald",
+      "Poppins",
+      "Raleway",
+      "Playfair Display",
+      "Merriweather",
+      "Ubuntu",
+      "Rubik",
+      "Inter",
+      "Nunito",
+      "Muli",
+      "PT Sans",
+      "Work Sans",
+      "Fira Sans",
+      "Manrope",
+      "Mulish",
+      "Josefin Sans",
+    ];
+
+    // Function to inject Google Fonts link dynamically
+    function loadSelectedFont(fontFamily) {
+      const fontName = fontFamily.replace(/\s+/g, "+"); // Replace spaces with '+'
+      const linkId = `font-${fontName}`;
+
+      if (!document.getElementById(linkId)) {
+        const link = document.createElement("link");
+        link.id = linkId;
+        link.rel = "stylesheet";
+        link.href = `https://fonts.googleapis.com/css2?family=${fontName}&display=swap`;
+        document.head.appendChild(link);
+        console.log(`✅ Font loaded: ${fontFamily}`);
       }
     }
 
+    // Main function to load fonts into the dropdown
+    function loadFontFamiliesIntoDropdown() {
+      const fontFamilyDropdown = document.getElementById(
+        "squareCraftAllFontFamily"
+      );
+
+      if (!fontFamilyDropdown) {
+        console.error("❌ Font family dropdown not found.");
+        return;
+      }
+
+      // First add default option
+      fontFamilyDropdown.innerHTML = `
+    <option value="" selected disabled hidden>Select Font</option>
+  `;
+
+      // Add predefined fonts
+      predefinedFonts.forEach((font) => {
+        const option = document.createElement("option");
+        option.value = font;
+        option.textContent = font;
+        fontFamilyDropdown.appendChild(option);
+      });
+
+      console.log("✅ Predefined fonts loaded into dropdown.");
+
+      // Add change event
+      fontFamilyDropdown.addEventListener("change", (event) => {
+        const selectedFont = event.target.value;
+        fontFamilyDropdown.style.color = "black"; // Make selected font name black
+        loadSelectedFont(selectedFont); // Inject font link
+      });
+    }
+
     loadFontFamiliesIntoDropdown();
+
     // Load font families into dropdown for all font family end here
 
     // Make the selected font-family name color black after choosing
