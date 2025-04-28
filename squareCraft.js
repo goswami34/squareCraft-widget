@@ -715,6 +715,38 @@ let selectedElement = null;
       showNotification,
     });
 
+    // Load font families into dropdown for all font family
+    function loadFontFamiliesIntoDropdown() {
+      const fontFamilyDropdown = document.getElementById(
+        "squareCraftAllFontFamily"
+      );
+      if (!fontFamilyDropdown) return;
+
+      try {
+        const response = fetch(
+          "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
+        );
+
+        console.log("✅ Font families response:", response);
+        const data = response.json();
+
+        data.items.forEach((font) => {
+          const option = document.createElement("option");
+          console.log("✅ Font family:", option);
+          option.value = font.family;
+          option.textContent = font.family;
+          fontFamilyDropdown.appendChild(option);
+        });
+
+        console.log("✅ Loaded font families into dropdown.");
+      } catch (error) {
+        console.error("Error loading font families:", error);
+      }
+    }
+
+    loadFontFamiliesIntoDropdown();
+    // Load font families into dropdown for all font family end here
+
     // Make the selected font-family name color black after choosing
     const fontFamilyDropdown = document.getElementById(
       "squareCraftAllFontFamily"
@@ -727,38 +759,6 @@ let selectedElement = null;
 
     typoTabSelect(event);
   });
-
-  // Load font families into dropdown for all font family
-  async function loadFontFamiliesIntoDropdown() {
-    const fontFamilyDropdown = document.getElementById(
-      "squareCraftAllFontFamily"
-    );
-    if (!fontFamilyDropdown) return;
-
-    try {
-      const response = await fetch(
-        "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
-      );
-
-      console.log("✅ Font families response:", response);
-      const data = await response.json();
-
-      data.items.forEach((font) => {
-        const option = document.createElement("option");
-        console.log("✅ Font family:", option);
-        option.value = font.family;
-        option.textContent = font.family;
-        fontFamilyDropdown.appendChild(option);
-      });
-
-      console.log("✅ Loaded font families into dropdown.");
-    } catch (error) {
-      console.error("Error loading font families:", error);
-    }
-  }
-
-  await loadFontFamiliesIntoDropdown();
-  // Load font families into dropdown for all font family end here
 
   // Add notification function
   function showNotification(message, type = "info") {
