@@ -11,6 +11,7 @@ export function handleAllBlockClick(event, context) {
     setSelectedSingleTextType,
     selectedSingleTextType,
     lastClickedElement,
+    lastClickedBlockId,
   } = context;
 
   let block = event.target.closest('[id^="block-"]');
@@ -314,5 +315,46 @@ export function handleAllBlockClick(event, context) {
     };
   });
 
-  //all section font size code end here
+  // Inside your handleBlockClick, after you detect clicked block
+
+  const blockId = lastClickedBlockId; // you already have this
+  const savedMods = pendingModifications.get(blockId);
+
+  if (savedMods && Array.isArray(savedMods)) {
+    savedMods.forEach((mod) => {
+      if (mod.css && mod.css["font-family"]) {
+        // Reapply the font-family manually
+        const selectorMap = {
+          paragraph1: "p.sqsrte-large",
+          paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
+          paragraph3: "p.sqsrte-small",
+          heading1: "h1",
+          heading2: "h2",
+          heading3: "h3",
+          heading4: "h4",
+        };
+
+        const paragraphSelector = selectorMap[mod.target];
+        if (paragraphSelector) {
+          let styleTag = document.getElementById(
+            `style-${blockId}-${mod.target}-fontFamily`
+          );
+
+          if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = `style-${blockId}-${mod.target}-fontFamily`;
+            document.head.appendChild(styleTag);
+          }
+
+          styleTag.innerHTML = `
+          #${blockId} ${paragraphSelector} {
+            font-family: '${mod.css["font-family"]}' !important;
+          }
+        `;
+        }
+      }
+    });
+  }
+
+  //all section code end here
 }

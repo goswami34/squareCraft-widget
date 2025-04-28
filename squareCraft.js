@@ -209,6 +209,7 @@ let selectedElement = null;
       setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
       setSelectedTextElement: (clickedTag) =>
         (selectedTextElement = clickedTag),
+      lastClickedBlockId,
     });
 
     handleLinkBlockClick(event, {
