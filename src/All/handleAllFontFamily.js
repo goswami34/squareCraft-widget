@@ -56,18 +56,6 @@ export function handleAllFontFamilyClick(event = null, context = null) {
     return;
   }
 
-  //   const selectorMap = {
-  //     paragraph1: "p.sqsrte-large",
-  //     paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
-  //     paragraph3: "p.sqsrte-small",
-  //     heading1: "h1",
-  //     heading2: "h2",
-  //     heading3: "h3",
-  //     heading4: "h4",
-  //   };
-
-  //   const paragraphSelector = selectorMap[selectedSingleTextType] || "";
-
   let paragraphSelector = "";
 
   if (selectedSingleTextType === "paragraph1") {
@@ -89,11 +77,33 @@ export function handleAllFontFamilyClick(event = null, context = null) {
     return;
   }
 
-  console.log("🔍 paragraphSelector:", paragraphSelector);
-
   if (!paragraphSelector) {
     showNotification("Selector not found", "error");
     return;
+  }
+
+  // Get the current font family of the selected text type
+  const selectedElements = block.querySelectorAll(paragraphSelector);
+  let currentFontFamily = "";
+  if (selectedElements.length > 0) {
+    currentFontFamily = window.getComputedStyle(selectedElements[0]).fontFamily;
+    // Remove quotes and trim
+    currentFontFamily = currentFontFamily.replace(/['"]/g, "").trim();
+  }
+
+  // Update the dropdown value to match the current font family
+  const fontFamilyDropdown = document.getElementById(
+    "squareCraftAllFontFamily"
+  );
+  if (fontFamilyDropdown) {
+    // Find the option that matches the current font family
+    const options = fontFamilyDropdown.options;
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].value === currentFontFamily) {
+        fontFamilyDropdown.selectedIndex = i;
+        break;
+      }
+    }
   }
 
   const styleId = `style-${block.id}-${selectedSingleTextType}-fontFamily`;
