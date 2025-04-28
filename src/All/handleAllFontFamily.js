@@ -105,6 +105,7 @@ export function handleAllFontFamilyClick(event = null, context = null) {
 
   // When a text type is selected
   const selectedElements = block.querySelectorAll(paragraphSelector);
+  console.log("🔍 selectedElements:", selectedElements);
   if (selectedElements.length > 0) {
     const currentFontFamily = window.getComputedStyle(
       selectedElements[0]
