@@ -123,7 +123,7 @@ export function handleAllBlockClick(event, context) {
 
   //align code end here
 
-  const firstInnerTextElement = block.querySelector("h1,h2,h3,h4,p1,p2,p3");
+  const firstInnerTextElement = block.querySelector("h1,h2,h3,h4,p");
 
   if (firstInnerTextElement) {
     const tag = firstInnerTextElement.tagName.toLowerCase();
