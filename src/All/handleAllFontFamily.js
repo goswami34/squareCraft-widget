@@ -73,7 +73,6 @@ export function handleAllFontFamilyClick(event = null, context = null) {
   } else if (selectedSingleTextType === "heading4") {
     paragraphSelector = "h4";
   } else {
-    showNotification("Unknown text type", "error");
     return;
   }
 
@@ -107,19 +106,25 @@ export function handleAllFontFamilyClick(event = null, context = null) {
   //   }
 
   // When a text type is selected
+  // Get the current font family of the selected text type
+  // Get the current font family of the selected text type
   const selectedElements = block.querySelectorAll(paragraphSelector);
   if (selectedElements.length > 0) {
     const currentFontFamily = window.getComputedStyle(
       selectedElements[0]
     ).fontFamily;
-    // Update dropdown to show current font family
+    // Remove quotes and trim
+    const cleanFontFamily = currentFontFamily.replace(/['"]/g, "").trim();
+
+    // Update the dropdown value to match the current font family
     const fontFamilyDropdown = document.getElementById(
       "squareCraftAllFontFamily"
     );
     if (fontFamilyDropdown) {
-      // Find and select the matching option
-      for (let i = 0; i < fontFamilyDropdown.options.length; i++) {
-        if (fontFamilyDropdown.options[i].value === currentFontFamily) {
+      // Find the option that matches the current font family
+      const options = fontFamilyDropdown.options;
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value === cleanFontFamily) {
           fontFamilyDropdown.selectedIndex = i;
           break;
         }
