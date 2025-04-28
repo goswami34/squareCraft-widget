@@ -433,6 +433,7 @@ export function handleAllBlockClick(event, context) {
     // setSelectedSingleTextType(clickedTag);
     const clickedTag = typeId; // ✅ No conversion
     setSelectedSingleTextType(clickedTag);
+
     console.log("✅ Now selected text type:", clickedTag);
 
     // Update font family dropdown value to match current selection
