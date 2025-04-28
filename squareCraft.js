@@ -716,19 +716,19 @@ let selectedElement = null;
     });
 
     // Load font families into dropdown for all font family
-    function loadFontFamiliesIntoDropdown() {
+    async function loadFontFamiliesIntoDropdown() {
       const fontFamilyDropdown = document.getElementById(
         "squareCraftAllFontFamily"
       );
       if (!fontFamilyDropdown) return;
 
       try {
-        const response = fetch(
+        const response = await fetch(
           "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
         );
 
         console.log("✅ Font families response:", response);
-        const data = response.json();
+        const data = await response.json();
 
         data.items.forEach((font) => {
           const option = document.createElement("option");
