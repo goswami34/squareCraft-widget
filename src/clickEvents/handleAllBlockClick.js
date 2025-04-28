@@ -392,6 +392,8 @@ export function handleAllBlockClick(event, context) {
       const fontFamilyInput = document.getElementById(
         `squareCraftAllFontFamily-${typeId}`
       );
+
+      console.log("🔍 fontFamilyInput:", fontFamilyInput);
       if (fontFamilyInput) {
         fontFamilyInput.focus();
       }
