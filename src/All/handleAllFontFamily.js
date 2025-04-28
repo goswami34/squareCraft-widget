@@ -27,12 +27,8 @@ function showNotification(message, type = "info") {
 }
 
 export function handleAllFontFamilyClick(event = null, context = null) {
-  const {
-    lastClickedElement,
-    selectedSingleTextType,
-    addPendingModification,
-    showNotification,
-  } = context;
+  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
+    context;
 
   if (!event) {
     event = { target: document.getElementById("squareCraftAllFontFamily") };
@@ -50,7 +46,12 @@ export function handleAllFontFamilyClick(event = null, context = null) {
     return;
   }
 
-  const block = lastClickedElement.closest('[id^="block-"]');
+  //   const block = lastClickedElement.closest('[id^="block-"]');
+
+  let block = lastClickedElement;
+  if (!block || !block.id || !block.id.startsWith("block-")) {
+    block = lastClickedElement?.closest('[id^="block-"]');
+  }
   if (!block) {
     showNotification("Block not found", "error");
     return;
