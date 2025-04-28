@@ -371,36 +371,83 @@ export function handleAllBlockClick(event, context) {
   //   });
   // }
 
-  visibleParts.forEach((partId) => {
-    const typeId = partId.replace("Part", "");
-    const tab = document.getElementById(typeId);
-    if (!tab) return;
+  // visibleParts.forEach((partId) => {
+  //   const typeId = partId.replace("Part", "");
+  //   const tab = document.getElementById(typeId);
+  //   if (!tab) return;
 
-    tab.onclick = () => {
-      // const clickedTag = typeId.startsWith("heading")
-      //   ? `h${typeId.replace("heading", "")}`
-      //   : typeId;
-      // setSelectedSingleTextType(clickedTag);
-      // console.log("✅ Now selected text type:", clickedTag);
+  //   tab.onclick = () => {
+  //     // const clickedTag = typeId.startsWith("heading")
+  //     //   ? `h${typeId.replace("heading", "")}`
+  //     //   : typeId;
+  //     // setSelectedSingleTextType(clickedTag);
+  //     // console.log("✅ Now selected text type:", clickedTag);
 
-      tab.onclick = () => {
-        const clickedTag = typeId;
-        setSelectedSingleTextType(clickedTag);
-        console.log("✅ Now selected text type:", clickedTag);
-      };
+  //     tab.onclick = () => {
+  //       const clickedTag = typeId;
+  //       setSelectedSingleTextType(clickedTag);
+  //       console.log("✅ Now selected text type:", clickedTag);
+  //     };
 
-      const fontFamilyInput = document.getElementById(
-        `squareCraftAllFontFamily-${typeId}`
-      );
+  //     const fontFamilyInput = document.getElementById(
+  //       `squareCraftAllFontFamily-${typeId}`
+  //     );
 
-      console.log("🔍 fontFamilyInput:", fontFamilyInput);
-      if (fontFamilyInput) {
-        fontFamilyInput.focus();
-      }
-    };
-  });
+  //     console.log("🔍 fontFamilyInput:", fontFamilyInput);
+  //     if (fontFamilyInput) {
+  //       fontFamilyInput.focus();
+  //     }
+  //   };
+  // });
 
   // console.log(`🖋️ Selected Text Type for Font Family ➔ ${clickedTag}`);
+
+  // Initialize the font family dropdown once
+  const fontFamilyDropdown = document.getElementById(
+    "squareCraftAllFontFamily"
+  );
+  if (fontFamilyDropdown) {
+    // Load fonts into dropdown
+    loadFontFamiliesIntoDropdown();
+
+    // Add change event listener
+    fontFamilyDropdown.addEventListener("change", (event) => {
+      const selectedFont = event.target.value;
+      if (selectedSingleTextType) {
+        // Apply font to currently selected text type
+        handleAllFontFamilyClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+      }
+    });
+  }
+
+  // In the tab click handler
+  tab.onclick = () => {
+    const clickedTag = typeId.startsWith("heading")
+      ? `h${typeId.replace("heading", "")}`
+      : typeId;
+    setSelectedSingleTextType(clickedTag);
+
+    // Update font family dropdown value to match current selection
+    if (fontFamilyDropdown) {
+      const currentFont = getComputedStyle(
+        block.querySelector(
+          clickedTag === "p1"
+            ? "p.sqsrte-large"
+            : clickedTag === "p2"
+            ? "p:not(.sqsrte-large):not(.sqsrte-small)"
+            : clickedTag === "p3"
+            ? "p.sqsrte-small"
+            : clickedTag
+        )
+      ).fontFamily;
+      fontFamilyDropdown.value = currentFont;
+    }
+  };
 
   //all section code end here
 }
