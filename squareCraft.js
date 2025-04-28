@@ -745,6 +745,16 @@ let selectedElement = null;
 
     loadFontFamiliesIntoDropdown();
 
+    // Make the selected font-family name color black after choosing
+    const fontFamilyDropdown = document.getElementById(
+      "squareCraftAllFontFamily"
+    );
+    if (fontFamilyDropdown) {
+      fontFamilyDropdown.addEventListener("change", (event) => {
+        fontFamilyDropdown.style.color = "black";
+      });
+    }
+
     typoTabSelect(event);
   });
 
