@@ -376,6 +376,8 @@ export function handleAllBlockClick(event, context) {
     const tab = document.getElementById(typeId);
     if (!tab) return;
 
+    console.log("🔍 tab:", tab);
+
     tab.onclick = () => {
       // const clickedTag = typeId.startsWith("heading")
       //   ? `h${typeId.replace("heading", "")}`
