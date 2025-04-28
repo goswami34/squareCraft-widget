@@ -731,6 +731,7 @@ let selectedElement = null;
 
         data.items.forEach((font) => {
           const option = document.createElement("option");
+          console.log("✅ Font family:", option);
           option.value = font.family;
           option.textContent = font.family;
           fontFamilyDropdown.appendChild(option);
