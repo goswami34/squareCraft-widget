@@ -107,8 +107,9 @@ export function handleAllFontFamilyClick(event = null, context = null) {
   const selectedElements = block.querySelectorAll(paragraphSelector);
   console.log("🔍 selectedElements:", selectedElements);
   if (selectedElements.length > 0) {
-    const currentFontFamily =
-      window.getComputedStyle(selectedElements).fontFamily;
+    const currentFontFamily = window.getComputedStyle(
+      selectedElements[0]
+    ).fontFamily;
     console.log("🔍 currentFontFamily:", currentFontFamily);
     // Update dropdown to show current font family
     const fontFamilyDropdown = document.getElementById(
