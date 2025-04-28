@@ -113,7 +113,7 @@ export function handleAllTextColorClick(event = null, context = null) {
   });
 
   showNotification(
-    `Text color applied to: ${selectedSingleTextType}`,
+    // `Text color applied to: ${selectedSingleTextType}`,
     "success"
   ); // 🎯
 }
