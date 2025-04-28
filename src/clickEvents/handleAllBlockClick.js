@@ -427,10 +427,13 @@ export function handleAllBlockClick(event, context) {
 
   // In the tab click handler
   tab.onclick = () => {
-    const clickedTag = typeId.startsWith("heading")
-      ? `h${typeId.replace("heading", "")}`
-      : typeId;
+    // const clickedTag = typeId.startsWith("heading")
+    //   ? `h${typeId.replace("heading", "")}`
+    //   : typeId;
+    // setSelectedSingleTextType(clickedTag);
+    const clickedTag = typeId; // ✅ No conversion
     setSelectedSingleTextType(clickedTag);
+    console.log("✅ Now selected text type:", clickedTag);
 
     // Update font family dropdown value to match current selection
     if (fontFamilyDropdown) {
