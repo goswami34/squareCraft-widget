@@ -56,17 +56,40 @@ export function handleAllFontFamilyClick(event = null, context = null) {
     return;
   }
 
-  const selectorMap = {
-    paragraph1: "p.sqsrte-large",
-    paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
-    paragraph3: "p.sqsrte-small",
-    heading1: "h1",
-    heading2: "h2",
-    heading3: "h3",
-    heading4: "h4",
-  };
+  //   const selectorMap = {
+  //     paragraph1: "p.sqsrte-large",
+  //     paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
+  //     paragraph3: "p.sqsrte-small",
+  //     heading1: "h1",
+  //     heading2: "h2",
+  //     heading3: "h3",
+  //     heading4: "h4",
+  //   };
 
-  const paragraphSelector = selectorMap[selectedSingleTextType] || "";
+  //   const paragraphSelector = selectorMap[selectedSingleTextType] || "";
+
+  let paragraphSelector = "";
+
+  if (selectedSingleTextType === "paragraph1") {
+    paragraphSelector = "p.sqsrte-large";
+  } else if (selectedSingleTextType === "paragraph2") {
+    paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+  } else if (selectedSingleTextType === "paragraph3") {
+    paragraphSelector = "p.sqsrte-small";
+  } else if (selectedSingleTextType === "heading1") {
+    paragraphSelector = "h1";
+  } else if (selectedSingleTextType === "heading2") {
+    paragraphSelector = "h2";
+  } else if (selectedSingleTextType === "heading3") {
+    paragraphSelector = "h3";
+  } else if (selectedSingleTextType === "heading4") {
+    paragraphSelector = "h4";
+  } else {
+    paragraphSelector = selectedSingleTextType; // headings like h1, h2, h3, h4
+  }
+  ``;
+
+  console.log("🔍 paragraphSelector:", paragraphSelector);
 
   if (!paragraphSelector) {
     showNotification("Selector not found", "error");
