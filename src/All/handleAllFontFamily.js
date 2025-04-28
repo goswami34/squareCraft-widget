@@ -85,9 +85,10 @@ export function handleAllFontFamilyClick(event = null, context = null) {
   } else if (selectedSingleTextType === "heading4") {
     paragraphSelector = "h4";
   } else {
-    paragraphSelector = selectedSingleTextType; // headings like h1, h2, h3, h4
+    showNotification("Unknown text type", "error");
+    return;
   }
-  ``;
+  d;
 
   console.log("🔍 paragraphSelector:", paragraphSelector);
 
