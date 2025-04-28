@@ -176,6 +176,10 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextHighlightColorClick.js"
   );
 
+  const { handleAllFontFamilyClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontFamily.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -698,6 +702,45 @@ let selectedElement = null;
         showNotification,
       }
     );
+
+    handleAllFontFamilyClick(event, {
+      lastClickedElement,
+      selectedSingleTextType,
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification,
+    });
+
+    async function loadFontFamiliesIntoDropdown() {
+      const fontFamilyDropdown = document.getElementById(
+        "squareCraftAllFontFamily"
+      );
+      if (!fontFamilyDropdown) return;
+
+      try {
+        const response = await fetch(
+          "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk"
+        );
+        const data = await response.json();
+
+        data.items.forEach((font) => {
+          const option = document.createElement("option");
+          option.value = font.family;
+          option.textContent = font.family;
+          fontFamilyDropdown.appendChild(option);
+        });
+
+        console.log("✅ Loaded font families into dropdown.");
+      } catch (error) {
+        console.error("Error loading font families:", error);
+      }
+    }
+
+    loadFontFamiliesIntoDropdown();
 
     typoTabSelect(event);
   });
@@ -1311,6 +1354,32 @@ let selectedElement = null;
         }
       });
     }
+
+    //All text highlight color code end here
+
+    //All font family code start here
+    const allFontFamilySelect = document.getElementById(
+      "squareCraftAllFontFamily"
+    );
+    if (allFontFamilySelect && !allFontFamilySelect.dataset.initialized) {
+      allFontFamilySelect.dataset.initialized = "true";
+
+      allFontFamilySelect.addEventListener("change", (event) => {
+        handleAllFontFamilyClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      });
+    }
+
+    //All font family code end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
