@@ -392,5 +392,7 @@ export function handleAllBlockClick(event, context) {
     };
   });
 
+  console.log(`🖋️ Selected Text Type for Font Family ➔ ${clickedTag}`);
+
   //all section code end here
 }
