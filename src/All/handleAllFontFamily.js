@@ -72,8 +72,6 @@ export function handleAllFontFamilyClick(event = null, context = null) {
     paragraphSelector = "h3";
   } else if (selectedSingleTextType === "heading4") {
     paragraphSelector = "h4";
-  } else {
-    return;
   }
 
   if (!paragraphSelector) {
