@@ -88,7 +88,6 @@ export function handleAllFontFamilyClick(event = null, context = null) {
     showNotification("Unknown text type", "error");
     return;
   }
-  d;
 
   console.log("🔍 paragraphSelector:", paragraphSelector);
 
