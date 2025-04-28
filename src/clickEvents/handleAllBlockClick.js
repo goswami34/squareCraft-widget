@@ -377,11 +377,17 @@ export function handleAllBlockClick(event, context) {
     if (!tab) return;
 
     tab.onclick = () => {
-      const clickedTag = typeId.startsWith("heading")
-        ? `h${typeId.replace("heading", "")}`
-        : typeId;
-      setSelectedSingleTextType(clickedTag);
-      console.log("✅ Now selected text type:", clickedTag);
+      // const clickedTag = typeId.startsWith("heading")
+      //   ? `h${typeId.replace("heading", "")}`
+      //   : typeId;
+      // setSelectedSingleTextType(clickedTag);
+      // console.log("✅ Now selected text type:", clickedTag);
+
+      tab.onclick = () => {
+        const clickedTag = typeId;
+        setSelectedSingleTextType(clickedTag);
+        console.log("✅ Now selected text type:", clickedTag);
+      };
 
       const fontFamilyInput = document.getElementById(
         `squareCraftAllFontFamily-${typeId}`
