@@ -819,7 +819,9 @@ let selectedElement = null;
       });
     }
 
-    loadFontFamiliesIntoDropdown();
+    document.addEventListener("DOMContentLoaded", () => {
+      loadFontFamiliesIntoDropdown();
+    });
 
     // Load font families into dropdown for all font family end here
 
