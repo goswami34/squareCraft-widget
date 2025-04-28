@@ -371,31 +371,89 @@ export function handleAllBlockClick(event, context) {
   //   });
   // }
 
+  // visibleParts.forEach((partId) => {
+  //   const typeId = partId.replace("Part", "");
+  //   const tab = document.getElementById(typeId);
+  //   if (!tab) return;
+
+  //   console.log("🔍 tab:", tab);
+
+  //   tab.onclick = () => {
+  //     // const clickedTag = typeId.startsWith("heading")
+  //     //   ? `h${typeId.replace("heading", "")}`
+  //     //   : typeId;
+  //     // setSelectedSingleTextType(clickedTag);
+  //     // console.log("✅ Now selected text type:", clickedTag);
+
+  //     tab.onclick = () => {
+  //       const clickedTag = typeId;
+  //       setSelectedSingleTextType(clickedTag);
+  //       console.log("✅ Now selected text type:", clickedTag);
+  //     };
+
+  //     const fontFamilyInput = document.getElementById(
+  //       `squareCraftAllFontFamily-${typeId}`
+  //     );
+  //     if (fontFamilyInput) {
+  //       fontFamilyInput.focus();
+  //     }
+  //   };
+  // });
+
   visibleParts.forEach((partId) => {
     const typeId = partId.replace("Part", "");
     const tab = document.getElementById(typeId);
     if (!tab) return;
 
-    console.log("🔍 tab:", tab);
-
     tab.onclick = () => {
-      // const clickedTag = typeId.startsWith("heading")
-      //   ? `h${typeId.replace("heading", "")}`
-      //   : typeId;
-      // setSelectedSingleTextType(clickedTag);
-      // console.log("✅ Now selected text type:", clickedTag);
+      const clickedType = typeId; // 🔥 Don't modify heading1/2/3, paragraph1/2/3
+      setSelectedSingleTextType(clickedType);
+      console.log("✅ Now selected text type for font-family:", clickedType);
 
-      tab.onclick = () => {
-        const clickedTag = typeId;
-        setSelectedSingleTextType(clickedTag);
-        console.log("✅ Now selected text type:", clickedTag);
-      };
+      // ✅ Update font dropdown to match selected text type
+      const block = document.getElementById(lastClickedBlockId);
+      if (!block) return;
 
-      const fontFamilyInput = document.getElementById(
-        `squareCraftAllFontFamily-${typeId}`
-      );
-      if (fontFamilyInput) {
-        fontFamilyInput.focus();
+      let selector = "";
+
+      if (clickedType === "paragraph1") {
+        selector = "p.sqsrte-large";
+      } else if (clickedType === "paragraph2") {
+        selector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+      } else if (clickedType === "paragraph3") {
+        selector = "p.sqsrte-small";
+      } else if (clickedType === "heading1") {
+        selector = "h1";
+      } else if (clickedType === "heading2") {
+        selector = "h2";
+      } else if (clickedType === "heading3") {
+        selector = "h3";
+      } else if (clickedType === "heading4") {
+        selector = "h4";
+      }
+
+      if (selector) {
+        const element = block.querySelector(selector);
+        const fontFamilyDropdown = document.getElementById(
+          "squareCraftAllFontFamily"
+        );
+        if (element && fontFamilyDropdown) {
+          const currentFontFamily = window.getComputedStyle(element).fontFamily;
+          console.log(
+            "🔍 Detected font-family for",
+            clickedType,
+            ":",
+            currentFontFamily
+          );
+
+          // Set dropdown value if font found
+          for (let i = 0; i < fontFamilyDropdown.options.length; i++) {
+            if (fontFamilyDropdown.options[i].value === currentFontFamily) {
+              fontFamilyDropdown.selectedIndex = i;
+              break;
+            }
+          }
+        }
       }
     };
   });
