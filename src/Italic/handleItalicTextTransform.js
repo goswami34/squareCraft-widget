@@ -26,21 +26,139 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// export function handleItalicTextTransformClick(event = null, context = null) {
+//   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
+//     context;
+
+//   if (!event) {
+//     const activeButton = document.querySelector(
+//       '[id^="squareCraftItalicTextTransform"].sc-activeTab-border'
+//     );
+//     if (!activeButton) return;
+//     event = { target: activeButton };
+//   }
+
+//   const clickedElement = event.target.closest(
+//     '[id^="squareCraftItalicTextTransform"]'
+//   );
+//   if (!clickedElement) return;
+
+//   const textTransform = clickedElement.dataset.textTransform;
+
+//   if (!lastClickedElement) {
+//     showNotification("Please select a block first", "error");
+//     return;
+//   }
+
+//   if (!selectedSingleTextType) {
+//     showNotification("Please select a text type first", "error");
+//     return;
+//   }
+
+//   const block = lastClickedElement.closest('[id^="block-"]');
+//   if (!block) {
+//     showNotification("Block not found", "error");
+//     return;
+//   }
+
+//   let paragraphSelector = "";
+
+//   // 🎯 Correct mapping here
+//   if (selectedSingleTextType === "paragraph1") {
+//     paragraphSelector = "p.sqsrte-large";
+//   } else if (selectedSingleTextType === "paragraph2") {
+//     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+//   } else if (selectedSingleTextType === "paragraph3") {
+//     paragraphSelector = "p.sqsrte-small";
+//   } else if (selectedSingleTextType === "heading1") {
+//     paragraphSelector = "h1";
+//   } else if (selectedSingleTextType === "heading2") {
+//     paragraphSelector = "h2";
+//   } else if (selectedSingleTextType === "heading3") {
+//     paragraphSelector = "h3";
+//   } else if (selectedSingleTextType === "heading4") {
+//     paragraphSelector = "h4";
+//   } else {
+//     showNotification(
+//       "Unknown selected type: " + selectedSingleTextType,
+//       "error"
+//     );
+//     return;
+//   }
+
+//   console.log("✅ Applying text-transform for selector:", paragraphSelector);
+
+//   // Find target paragraphs or headings
+//   const targetElements = block.querySelectorAll(paragraphSelector);
+//   if (!targetElements.length) {
+//     showNotification(`No text found for ${selectedSingleTextType}`, "error");
+//     return;
+//   }
+
+//   let linkFound = false;
+
+//   targetElements.forEach((el) => {
+//     const links = el.querySelectorAll("em");
+//     if (links.length > 0) {
+//       linkFound = true;
+//       links.forEach((link) => {
+//         link.style.textTransform = textTransform;
+//       });
+//     }
+//   });
+
+//   if (!linkFound) {
+//     showNotification(`No link (<em>) inside ${selectedSingleTextType}`, "info");
+//     return;
+//   }
+
+//   const styleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
+//   let styleTag = document.getElementById(styleId);
+
+//   if (!styleTag) {
+//     styleTag = document.createElement("style");
+//     styleTag.id = styleId;
+//     document.head.appendChild(styleTag);
+//   }
+
+//   styleTag.innerHTML = `
+//           #${block.id} ${paragraphSelector} em {
+//             text-transform: ${textTransform} !important;
+//           }
+//         `;
+
+//   addPendingModification(block.id, {
+//     "text-transform": textTransform,
+//     target: selectedSingleTextType,
+//   });
+
+//   // Update active button
+//   document.querySelectorAll('[id^="scTextTransform"]').forEach((el) => {
+//     el.classList.remove("sc-activeTab-border");
+//     el.classList.add("sc-inActiveTab-border");
+//   });
+//   clickedElement.classList.remove("sc-inActiveTab-border");
+//   clickedElement.classList.add("sc-activeTab-border");
+
+//   showNotification(
+//     `Text-transform applied to italic words in: ${selectedSingleTextType}`,
+//     "success"
+//   );
+// }
+
 export function handleItalicTextTransformClick(event = null, context = null) {
   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
     context;
 
   if (!event) {
     const activeButton = document.querySelector(
-      '[id^="squareCraftItalicTextTransform"].sc-activeTab-border'
+      '[id^="scTextTransform"].sc-activeTab-border'
     );
     if (!activeButton) return;
     event = { target: activeButton };
   }
 
-  const clickedElement = event.target.closest(
-    '[id^="squareCraftItalicTextTransform"]'
-  );
+  const clickedElement = event.target.closest('[id^="scTextTransform"]');
   if (!clickedElement) return;
 
   const textTransform = clickedElement.dataset.textTransform;
@@ -63,7 +181,6 @@ export function handleItalicTextTransformClick(event = null, context = null) {
 
   let paragraphSelector = "";
 
-  // 🎯 Correct mapping here
   if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = "p.sqsrte-large";
   } else if (selectedSingleTextType === "paragraph2") {
@@ -86,53 +203,53 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     return;
   }
 
-  console.log("✅ Applying text-transform for selector:", paragraphSelector);
+  console.log("✅ Target selector:", paragraphSelector);
 
-  // Find target paragraphs or headings
   const targetElements = block.querySelectorAll(paragraphSelector);
   if (!targetElements.length) {
     showNotification(`No text found for ${selectedSingleTextType}`, "error");
     return;
   }
 
-  let linkFound = false;
+  let italicFound = false;
 
-  targetElements.forEach((el) => {
-    const links = el.querySelectorAll("em");
-    if (links.length > 0) {
-      linkFound = true;
-      links.forEach((link) => {
-        link.style.textTransform = textTransform;
+  targetElements.forEach((tag) => {
+    const ems = tag.querySelectorAll("em");
+    if (ems.length > 0) {
+      italicFound = true;
+      ems.forEach((em, index) => {
+        const uniqueClass = `sc-italic-${block.id}-${selectedSingleTextType}-${index}`;
+
+        em.classList.add(uniqueClass);
+
+        let styleTag = document.getElementById(`style-${uniqueClass}`);
+        if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = `style-${uniqueClass}`;
+          document.head.appendChild(styleTag);
+        }
+        styleTag.innerHTML = `
+            #${block.id} .${uniqueClass} {
+              text-transform: ${textTransform} !important;
+            }
+          `;
       });
     }
   });
 
-  if (!linkFound) {
-    showNotification(`No link (<em>) inside ${selectedSingleTextType}`, "info");
+  if (!italicFound) {
+    showNotification(
+      `No italic (<em>) inside ${selectedSingleTextType}`,
+      "info"
+    );
     return;
   }
-
-  const styleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
-  let styleTag = document.getElementById(styleId);
-
-  if (!styleTag) {
-    styleTag = document.createElement("style");
-    styleTag.id = styleId;
-    document.head.appendChild(styleTag);
-  }
-
-  styleTag.innerHTML = `
-          #${block.id} ${paragraphSelector} em {
-            text-transform: ${textTransform} !important;
-          }
-        `;
 
   addPendingModification(block.id, {
     "text-transform": textTransform,
     target: selectedSingleTextType,
   });
 
-  // Update active button
   document.querySelectorAll('[id^="scTextTransform"]').forEach((el) => {
     el.classList.remove("sc-activeTab-border");
     el.classList.add("sc-inActiveTab-border");
@@ -141,7 +258,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   clickedElement.classList.add("sc-activeTab-border");
 
   showNotification(
-    `Text-transform applied to italic words in: ${selectedSingleTextType}`,
+    `✅ Text-transform applied only to italic words in: ${selectedSingleTextType}`,
     "success"
   );
 }
