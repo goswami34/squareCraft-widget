@@ -229,7 +229,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
           document.head.appendChild(styleTag);
         }
         styleTag.innerHTML = `
-            #${block.id} .${uniqueClass} {
+            #${block.id} .${uniqueClass} em{
               text-transform: ${textTransform} !important;
             }
           `;
