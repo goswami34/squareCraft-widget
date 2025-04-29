@@ -114,20 +114,24 @@ export function typoItalicSelect(fontSizes) {
     <div
         class="sc-flex sc-items-center  ">
         
-        <div id="scTextAlignLeft" data-align="left" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
+        <div id="scTextTransformUppercase" 
+                  data-text-transform="uppercase"  class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
 
-           <p class="sc-universal sc-poppins sc-text-sm">AG</p>
+           <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
         </div>
-         <div id="scTextAlignCenter" data-align="center" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer ">
+         <div id="scTextTransformLowercase" 
+                  data-text-transform="lowercase"  data-align="center" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer ">
 
-          <p class="sc-universal sc-poppins sc-text-sm">ag</p>
+          <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">ag</p>
         </div>
-         <div id="scTextAlignRight" data-align="right" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer">
+         <div id="scTextTransformCapitalize" 
+                  data-text-transform="capitalize"  data-align="right" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer">
 
-          <p class="sc-universal sc-poppins sc-text-sm">Ag</p>
+          <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">Ag</p>
         </div>
-        <div id="scTextAlignJustify" data-align="justify" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
-          <p class="sc-universal sc-poppins sc-text-sm">AG</p>
+        <div id="scTextTransformNone" 
+                  data-text-transform="small-caps"  class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
+          <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
         </div>
         
        
