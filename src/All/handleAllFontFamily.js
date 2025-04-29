@@ -124,7 +124,7 @@ export function handleAllFontFamilyClick(event = null, context = null) {
   });
 
   showNotification(
-    `✅ Font family "${selectedFontFamily}" applied to ${selectedSingleTextType}`,
+    // `✅ Font family "${selectedFontFamily}" applied to ${selectedSingleTextType}`,
     "success"
   );
 }
