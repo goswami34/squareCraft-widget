@@ -95,8 +95,8 @@ export function handleItalicTextTransformClick(event = null, context = null) {
 
   let linkFound = false;
 
-  targetElements.forEach((tag) => {
-    const links = tag.querySelectorAll("em");
+  targetElements.forEach((el) => {
+    const links = el.querySelectorAll("em");
     if (links.length > 0) {
       linkFound = true;
       links.forEach((link) => {
