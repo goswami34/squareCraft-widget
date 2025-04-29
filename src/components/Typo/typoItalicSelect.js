@@ -112,7 +112,7 @@ export function typoItalicSelect(fontSizes) {
    <div
      class="sc-flex sc-col-span-5 sc-justify-between  sc-items-center ">
     <div
-        class="sc-flex sc-items-center  ">
+        class="sc-flex sc-items-center" id="squareCraftItalicTextTransform">
         
         <div id="scTextTransformUppercase" 
                   data-text-transform="uppercase"  class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
@@ -134,8 +134,6 @@ export function typoItalicSelect(fontSizes) {
           <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
         </div>
         
-       
-       
         </div>
      </div>
 

@@ -94,7 +94,7 @@ export function handleAllTextTransformClick(event = null, context = null) {
   }
 
   // ✅ Dynamic CSS injection
-  const styleId = `style-${block.id}-${selectedSingleTextType}-all-texttransform`;
+  const styleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
   let styleTag = document.getElementById(styleId);
 
   if (!styleTag) {
@@ -123,7 +123,7 @@ export function handleAllTextTransformClick(event = null, context = null) {
   clickedElement.classList.add("sc-activeTab-border");
 
   showNotification(
-    `Text-transform applied to bold words in: ${selectedSingleTextType}`,
+    `Text-transform applied to italic words in: ${selectedSingleTextType}`,
     "success"
   );
 }

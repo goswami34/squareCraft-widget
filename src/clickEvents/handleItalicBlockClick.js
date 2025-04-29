@@ -178,7 +178,7 @@ export function handleItalicBlockClick(event, context) {
 
   //Link section font size code end here
 
-  //italic section text transform code start here
+  //italic section font-weight code start here
   visibleParts.forEach((partId) => {
     const typeId = partId.replace("Part", "");
     const tab = document.getElementById(typeId);
@@ -198,6 +198,35 @@ export function handleItalicBlockClick(event, context) {
 
       const fontSizeInput = document.getElementById(
         `squareCraftItalicFontWeight-${typeId}`
+      );
+      if (fontSizeInput) {
+        fontSizeInput.focus();
+      }
+    };
+  });
+
+  // italic section font-weight code end here
+
+  //italic section text transform code start here
+  visibleParts.forEach((partId) => {
+    const typeId = partId.replace("Part", "");
+    const tab = document.getElementById(typeId);
+    if (!tab) return;
+
+    tab.onclick = () => {
+      let clickedTag = "";
+
+      if (typeId.startsWith("heading")) {
+        clickedTag = `heading${typeId.replace("heading", "")}`;
+      } else if (typeId.startsWith("paragraph")) {
+        clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
+      }
+
+      console.log("✅ Clicked tab detected:", clickedTag);
+      setSelectedSingleTextType(clickedTag);
+
+      const fontSizeInput = document.getElementById(
+        `squareCraftItalicTextTransform-${typeId}`
       );
       if (fontSizeInput) {
         fontSizeInput.focus();
