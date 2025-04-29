@@ -1,5 +1,5 @@
 export function typoItalicSelect(fontSizes) {
-   return `
+  return `
        <div
    class="sc-mt-2 sc-relative sc-grid  sc-grid-cols-12 sc-gap-2 ">
 
@@ -26,33 +26,36 @@ export function typoItalicSelect(fontSizes) {
             <div class="sc-font-size-container sc-poppins sc-universal sc-flex sc-justify-between sc-items-center sc-flex sc-items-center  
                   sc-rounded-6px 
                   ">
-               <input type="text" id="scFontSizeInput" value="16" class="sc-font-size-input sc-font-light sc-z-99999 sc-text-sm sc-text-color-white 
+               <input type="number" id="scFontSizeItalicInput" value="16" class="sc-font-size-input sc-font-light sc-z-99999 sc-text-sm sc-text-color-white 
                      sc-bg-transparent  sc-universal sc-font-light">
                <div class="sc-v-line"></div>
+
                <div
                   class="sc-flex sc-items-center  sc-justify-center  sc-items-center">
                   <p
                      class=" sc-font-light sc-text-sm sc-px-1  ">
                      px
                </div>
+
                <div class="sc-bg-3f3f3f sc-px-1_5 sc-ml-2"
                   style="height: 27px; padding: 0 8px; border-radius: 0px 5px 5px 0px;">
                   <img class=" sc-rotate-180 sc-mt-3 " width="12px"
                      src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
                </div>
             </div>
+
             <div id="scFontSizeOptions" class="sc-hidden  sc-h-44 sc-font-sm sc-bg-3f3f3f sc-w-20
                   sc-rounded-6px sc-border sc-border-585858 sc-absolute 
                   sc-mt-1">
                ${fontSizes
-         ?.map(
-            (size) => `
+                 ?.map(
+                   (size) => `
                <div
                   class="sc-dropdown-item sc-py-1px sc-text-center  sc-text-sm"
                   data-value="${size}">${size}</div>
                `
-         )
-         .join("")}
+                 )
+                 .join("")}
             </div>
          </div>
       </div>
@@ -116,5 +119,5 @@ export function typoItalicSelect(fontSizes) {
          <div class="sc-square-6 sc-border-colors sc-cursor-pointer"></div>
       </div>
    </div> 
-    `
+    `;
 }

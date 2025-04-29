@@ -180,6 +180,14 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontFamily.js"
   );
 
+  const { handleItalicBlockClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicBlockClick.js"
+  );
+
+  const { handleItalicFontSizeClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicFontSize.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -197,6 +205,22 @@ let selectedElement = null;
     });
 
     handleAllBlockClick(event, {
+      getTextType,
+      selectedElement,
+      setSelectedElement: (val) => (selectedElement = val),
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+      lastClickedBlockId,
+    });
+
+    handleItalicBlockClick(event, {
       getTextType,
       selectedElement,
       setSelectedElement: (val) => (selectedElement = val),
@@ -802,6 +826,50 @@ let selectedElement = null;
         fontFamilyDropdown.style.color = "black";
       });
     }
+
+    //italic code start here
+
+    //italic font size code start here
+
+    handleItalicFontSizeClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    //italic font size code end here
+
+    //italic code end here
 
     typoTabSelect(event);
   });
