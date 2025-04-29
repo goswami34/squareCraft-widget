@@ -213,27 +213,25 @@ export function handleItalicTextColorClick(
       };
 
       const paragraphSelector = selectorMap[selectedTextType] || "";
-
       const targetElements = block.querySelectorAll(paragraphSelector);
 
-      targetElements.forEach((el) => {
-        el.style.color = selectedColor;
-      });
-
-      let linkFound = false;
+      let italicFound = false;
 
       targetElements.forEach((tag) => {
-        const links = tag.querySelectorAll("em");
-        if (links.length > 0) {
-          linkFound = true;
-          links.forEach((link) => {
-            link.style.fontSize = fontSize;
+        const italicElements = tag.querySelectorAll("em");
+        if (italicElements.length > 0) {
+          italicFound = true;
+          italicElements.forEach((em) => {
+            em.style.color = selectedColor;
           });
         }
       });
 
-      if (!linkFound) {
-        showNotification(`No link (<em>) inside ${selectedTextType}`, "info");
+      if (!italicFound) {
+        showNotification(
+          `No italic (<em>) text found in ${selectedTextType}`,
+          "info"
+        );
         return;
       }
 
