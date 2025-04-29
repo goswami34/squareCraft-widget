@@ -160,7 +160,10 @@ export function handleItalicTextColorClick(
     colorPalette.addEventListener("input", function (event) {
       const selectedColor = event.target.value;
 
-      if (!colorPickerContext?.lastClickedElement) return;
+      if (!colorPickerContext?.lastClickedElement) {
+        showNotification("Please select a block first", "error");
+        return;
+      }
 
       const textColorPalate = document.getElementById("textColorPalate");
       if (textColorPalate) {
@@ -191,14 +194,14 @@ export function handleItalicTextColorClick(
       }
 
       if (!selectedTextType) {
-        console.error("❌ No selected text type found");
+        showNotification("Please select a text type first", "error");
         return;
       }
 
       const block =
         colorPickerContext.lastClickedElement.closest('[id^="block-"]');
       if (!block) {
-        console.error("❌ Block not found");
+        showNotification("Block not found", "error");
         return;
       }
 
@@ -215,12 +218,19 @@ export function handleItalicTextColorClick(
       const paragraphSelector = selectorMap[selectedTextType] || "";
       const targetElements = block.querySelectorAll(paragraphSelector);
 
+      if (!targetElements.length) {
+        showNotification(`No ${selectedTextType} found in the block`, "error");
+        return;
+      }
+
       let italicFound = false;
+      let italicCount = 0;
 
       targetElements.forEach((tag) => {
         const italicElements = tag.querySelectorAll("em");
         if (italicElements.length > 0) {
           italicFound = true;
+          italicCount += italicElements.length;
           italicElements.forEach((em) => {
             em.style.color = selectedColor;
           });
@@ -229,12 +239,13 @@ export function handleItalicTextColorClick(
 
       if (!italicFound) {
         showNotification(
-          `No italic (<em>) text found in ${selectedTextType}`,
+          `No italic (<em>) text found in ${selectedTextType}. Please add some italic text first.`,
           "info"
         );
         return;
       }
 
+      // Create or update style tag for this block's em tags
       let styleTag = document.getElementById(`style-${block.id}-em`);
       if (!styleTag) {
         styleTag = document.createElement("style");
@@ -244,10 +255,11 @@ export function handleItalicTextColorClick(
 
       const cssRule = `#${block.id} ${paragraphSelector} em { 
         color: ${selectedColor} !important; 
-    }`;
+      }`;
 
       styleTag.innerHTML = cssRule;
 
+      // Save to backend
       colorPickerContext.handleAllTextColorClick(
         { selectedColor },
         {
@@ -255,6 +267,11 @@ export function handleItalicTextColorClick(
           selectedSingleTextType: selectedTextType,
           lastClickedElement: colorPickerContext.lastClickedElement,
         }
+      );
+
+      showNotification(
+        `✅ Text color applied to ${italicCount} italic word(s) in ${selectedTextType}`,
+        "success"
       );
     });
   }
