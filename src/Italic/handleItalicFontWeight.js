@@ -89,7 +89,7 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     if (links.length > 0) {
       linkFound = true;
       links.forEach((link) => {
-        link.style.fontSize = fontSize;
+        link.style.fontWeight = fontWeight;
       });
     }
   });
