@@ -192,6 +192,10 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicFontWeight.js"
   );
 
+  const { handleItalicTextTransformClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextTransform.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -911,6 +915,45 @@ let selectedElement = null;
     });
     //italic font weight code end here
 
+    //italic text transform code start here
+    handleItalicTextTransformClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    //italic text transform code end here
+
     //italic code end here
 
     typoTabSelect(event);
@@ -1578,6 +1621,39 @@ let selectedElement = null;
     }
 
     //italic font weight code end here
+
+    //Italic text transform code start here
+    const ItalicTextTransformSelect = document.getElementById(
+      "squareCraftItalicTextTransform"
+    );
+    if (
+      ItalicTextTransformSelect &&
+      !ItalicTextTransformSelect.dataset.initialized
+    ) {
+      ItalicTextTransformSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleItalicTextTransformClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //Italic text transform code end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });

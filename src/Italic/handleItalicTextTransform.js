@@ -26,7 +26,7 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
-export function handleAllTextTransformClick(event = null, context = null) {
+export function handleItalicTextTransformClick(event = null, context = null) {
   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
     context;
 
@@ -93,6 +93,23 @@ export function handleAllTextTransformClick(event = null, context = null) {
     return;
   }
 
+  let linkFound = false;
+
+  targetElements.forEach((tag) => {
+    const links = tag.querySelectorAll("em");
+    if (links.length > 0) {
+      linkFound = true;
+      links.forEach((link) => {
+        link.style.fontWeight = fontWeight;
+      });
+    }
+  });
+
+  if (!linkFound) {
+    showNotification(`No link (<em>) inside ${selectedSingleTextType}`, "info");
+    return;
+  }
+
   // ✅ Dynamic CSS injection
   const styleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
   let styleTag = document.getElementById(styleId);
@@ -104,7 +121,7 @@ export function handleAllTextTransformClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-        #${block.id} ${paragraphSelector} {
+        #${block.id} ${paragraphSelector} em {
           text-transform: ${textTransform} !important;
         }
       `;
