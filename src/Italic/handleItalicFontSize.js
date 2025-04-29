@@ -106,7 +106,7 @@ export function handleItalicFontSizeClick(event = null, context = null) {
   }
 
   // Dynamic CSS Inject
-  const styleId = `style-${block.id}-${selectedSingleTextType}-link-fontsize`;
+  const styleId = `style-${block.id}-${selectedSingleTextType}-italic-fontsize`;
   let styleTag = document.getElementById(styleId);
 
   if (!styleTag) {
@@ -116,7 +116,7 @@ export function handleItalicFontSizeClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-        #${block.id} ${paragraphSelector} a {
+        #${block.id} ${paragraphSelector} em {
           font-size: ${fontSize} !important;
         }
       `;

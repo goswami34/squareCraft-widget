@@ -31,7 +31,7 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     context;
 
   if (!event) {
-    event = { target: document.getElementById("squareCraftAllFontWeight") };
+    event = { target: document.getElementById("squareCraftItalicFontWeight") };
   }
 
   const fontWeight = event.target.value;
@@ -82,6 +82,23 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     return;
   }
 
+  let linkFound = false;
+
+  targetElements.forEach((tag) => {
+    const links = tag.querySelectorAll("em");
+    if (links.length > 0) {
+      linkFound = true;
+      links.forEach((link) => {
+        link.style.fontSize = fontSize;
+      });
+    }
+  });
+
+  if (!linkFound) {
+    showNotification(`No link (<em>) inside ${selectedSingleTextType}`, "info");
+    return;
+  }
+
   // ✅ Dynamic CSS injection
   const styleId = `style-${block.id}-${selectedSingleTextType}-all-fontWeight`;
   let styleTag = document.getElementById(styleId);
@@ -93,7 +110,7 @@ export function handleItalicFontWeightClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-                #${block.id} ${paragraphSelector} {
+                #${block.id} ${paragraphSelector} em{
                   font-weight: ${fontWeight} !important;
                 }
               `;

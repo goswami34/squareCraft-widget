@@ -188,6 +188,10 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicFontSize.js"
   );
 
+  const { handleItalicFontWeightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicFontWeight.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -869,6 +873,44 @@ let selectedElement = null;
 
     //italic font size code end here
 
+    //italic font weight code start here
+    handleItalicFontWeightClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+    //italic font weight code end here
+
     //italic code end here
 
     typoTabSelect(event);
@@ -1509,6 +1551,33 @@ let selectedElement = null;
     }
 
     //All font family code end here
+
+    //italic font weight code start here
+
+    const ItalicFontWeightSelect = document.getElementById(
+      "squareCraftItalicFontWeight"
+    );
+    if (ItalicFontWeightSelect && !ItalicFontWeightSelect.dataset.initialized) {
+      ItalicFontWeightSelect.dataset.initialized = "true";
+
+      ItalicFontWeightSelect.addEventListener("change", (event) => {
+        handleItalicFontWeightClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Font weight applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //italic font weight code end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });

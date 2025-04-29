@@ -65,7 +65,7 @@ export function typoItalicSelect(fontSizes) {
          <div >
                <div class="sc-px-2">
                   <select 
-                        id="squareCraftAllFontWeight"
+                        id="squareCraftItalicFontWeight"
                         class="sc-font-weight-select"
                         data-font-weight-select
                         style="
