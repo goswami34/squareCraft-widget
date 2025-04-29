@@ -110,21 +110,20 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     return;
   }
 
-  // ✅ Dynamic CSS injection
-  //   const styleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
-  //   let styleTag = document.getElementById(styleId);
+  const styleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
+  let styleTag = document.getElementById(styleId);
 
-  //   if (!styleTag) {
-  //     styleTag = document.createElement("style");
-  //     styleTag.id = styleId;
-  //     document.head.appendChild(styleTag);
-  //   }
+  if (!styleTag) {
+    styleTag = document.createElement("style");
+    styleTag.id = styleId;
+    document.head.appendChild(styleTag);
+  }
 
-  //   styleTag.innerHTML = `
-  //         #${block.id} ${paragraphSelector} em {
-  //           text-transform: ${textTransform} !important;
-  //         }
-  //       `;
+  styleTag.innerHTML = `
+          #${block.id} ${paragraphSelector} em {
+            text-transform: ${textTransform} !important;
+          }
+        `;
 
   addPendingModification(block.id, {
     "text-transform": textTransform,
