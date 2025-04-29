@@ -215,25 +215,25 @@ export function handleItalicTextColorClick(
       const paragraphSelector = selectorMap[selectedTextType] || "";
       const targetElements = block.querySelectorAll(paragraphSelector);
 
-      //   let italicFound = false;
+      let italicFound = false;
 
-      //   targetElements.forEach((tag) => {
-      //     const italicElements = tag.querySelectorAll("em");
-      //     if (italicElements.length > 0) {
-      //       italicFound = true;
-      //       italicElements.forEach((em) => {
-      //         em.style.color = selectedColor;
-      //       });
-      //     }
-      //   });
+      targetElements.forEach((tag) => {
+        const italicElements = tag.querySelectorAll("em");
+        if (italicElements.length > 0) {
+          italicFound = true;
+          italicElements.forEach((em) => {
+            em.style.color = selectedColor;
+          });
+        }
+      });
 
-      //   if (!italicFound) {
-      //     showNotification(
-      //       `No italic (<em>) text found in ${selectedTextType}`,
-      //       "info"
-      //     );
-      //     return;
-      //   }
+      if (!italicFound) {
+        showNotification(
+          `No italic (<em>) text found in ${selectedTextType}`,
+          "info"
+        );
+        return;
+      }
 
       let styleTag = document.getElementById(`style-${block.id}-em`);
       if (!styleTag) {
