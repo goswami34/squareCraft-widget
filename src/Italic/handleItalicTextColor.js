@@ -127,7 +127,8 @@ export function handleItalicTextColorClick(
   event,
   lastClickedElement,
   applyStylesToElement,
-  context
+  context,
+  selectedSingleTextType
 ) {
   const textColorPalate = event.target.closest("#textColorPalate");
   if (!textColorPalate) return;
