@@ -152,13 +152,15 @@ export function handleItalicTextTransformClick(event = null, context = null) {
 
   if (!event) {
     const activeButton = document.querySelector(
-      '[id^="scTextTransform"].sc-activeTab-border'
+      '[id^="squareCraftItalicTextTransform"].sc-activeTab-border'
     );
     if (!activeButton) return;
     event = { target: activeButton };
   }
 
-  const clickedElement = event.target.closest('[id^="scTextTransform"]');
+  const clickedElement = event.target.closest(
+    '[id^="squareCraftItalicTextTransform"]'
+  );
   if (!clickedElement) return;
 
   const textTransform = clickedElement.dataset.textTransform;
@@ -217,22 +219,9 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     const ems = tag.querySelectorAll("em");
     if (ems.length > 0) {
       italicFound = true;
-      ems.forEach((em, index) => {
-        const uniqueClass = `sc-italic-${block.id}-${selectedSingleTextType}-${index}`;
-
-        em.classList.add(uniqueClass);
-
-        let styleTag = document.getElementById(`style-${uniqueClass}`);
-        if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = `style-${uniqueClass}`;
-          document.head.appendChild(styleTag);
-        }
-        styleTag.innerHTML = `
-            #${block.id} .${uniqueClass} em{
-              text-transform: ${textTransform} !important;
-            }
-          `;
+      ems.forEach((em) => {
+        // Directly apply inline style to em
+        em.style.textTransform = textTransform;
       });
     }
   });
