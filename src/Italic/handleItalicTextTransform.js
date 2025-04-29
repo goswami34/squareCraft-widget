@@ -32,13 +32,15 @@ export function handleItalicTextTransformClick(event = null, context = null) {
 
   if (!event) {
     const activeButton = document.querySelector(
-      '[id^="scTextTransform"].sc-activeTab-border'
+      '[id^="squareCraftItalicTextTransform"].sc-activeTab-border'
     );
     if (!activeButton) return;
     event = { target: activeButton };
   }
 
-  const clickedElement = event.target.closest('[id^="scTextTransform"]');
+  const clickedElement = event.target.closest(
+    '[id^="squareCraftItalicTextTransform"]'
+  );
   if (!clickedElement) return;
 
   const textTransform = clickedElement.dataset.textTransform;
