@@ -168,7 +168,7 @@ export function handleLinkBlockClick(event, context) {
       console.log("✅ Now selected text type:", clickedTag);
 
       const linkFontSizeInput = document.getElementById(
-        `scFontSizeInputLink-${typeId}`
+        `scFontSizeItalicInput-${typeId}`
       );
       if (linkFontSizeInput) {
         linkFontSizeInput.focus(); // 👈 Focus Link font size input separately
