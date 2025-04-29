@@ -26,7 +26,7 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
-export function handleFontSizeLink(event = null, context = null) {
+export function handleItalicFontSizeClick(event = null, context = null) {
   const {
     lastClickedElement,
     selectedSingleTextType,
