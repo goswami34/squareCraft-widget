@@ -26,6 +26,7 @@ export function typoItalicSelect(fontSizes) {
             <div class="sc-font-size-container sc-poppins sc-universal sc-flex sc-justify-between sc-items-center sc-flex sc-items-center  
                   sc-rounded-6px 
                   ">
+
                <input type="number" id="scFontSizeItalicInput" value="16" class="sc-font-size-input sc-font-light sc-z-99999 sc-text-sm sc-text-color-white 
                      sc-bg-transparent  sc-universal sc-font-light">
                <div class="sc-v-line"></div>
@@ -35,12 +36,6 @@ export function typoItalicSelect(fontSizes) {
                   <p
                      class=" sc-font-light sc-text-sm sc-px-1  ">
                      px
-               </div>
-
-               <div class="sc-bg-3f3f3f sc-px-1_5 sc-ml-2"
-                  style="height: 27px; padding: 0 8px; border-radius: 0px 5px 5px 0px;">
-                  <img class=" sc-rotate-180 sc-mt-3 " width="12px"
-                     src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
                </div>
             </div>
 
@@ -67,11 +62,39 @@ export function typoItalicSelect(fontSizes) {
       class="sc-mt-2  sc-grid   sc-grid-cols-12 sc-gap-2 ">
       <div
          class="sc-flex sc-bg-494949  sc-col-span-7  sc-justify-between sc-border sc-border-solid sc-border-585858 sc-rounded-6px sc-items-center ">
-         <div class="  sc-px-2   ">
-            <p
-               class="sc-text-sm sc-universal sc-poppins sc-font-light">
-               Regular</p>
-         </div>
+         <div >
+               <div class="sc-px-2">
+                  <select 
+                        id="squareCraftAllFontWeight"
+                        class="sc-font-weight-select"
+                        data-font-weight-select
+                        style="
+                           background: transparent;
+                           border: none;
+                           color: white;
+                           padding: 5px;
+                           width: 100%;
+                           cursor: pointer;
+                           outline: none;
+                           -webkit-appearance: none;
+                           -moz-appearance: none;
+                           appearance: none;
+                           position: relative;
+                           z-index: 1;
+                        "
+                  >
+                        <option value="100">Thin (100)</option>
+                        <option value="200">Extra Light (200)</option>
+                        <option value="300">Light (300)</option>
+                        <option value="400" selected>Regular (400)</option>
+                        <option value="500">Medium (500)</option>
+                        <option value="600">Semi Bold (600)</option>
+                        <option value="700">Bold (700)</option>
+                        <option value="800">Extra Bold (800)</option>
+                        <option value="900">Black (900)</option>
+                  </select>
+               </div>
+            </div>
          <div class="sc-bg-3f3f3f sc-px-2" style="height: 27px; padding: 0 8px;">
             <img class="sc-mx-auto sc-rotate-180 sc-mt-3" width="10px"
                src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
