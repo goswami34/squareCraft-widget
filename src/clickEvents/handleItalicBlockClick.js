@@ -1,4 +1,4 @@
-export function handleLinkBlockClick(event, context) {
+export function handleItalicBlockClick(event, context) {
   const {
     getTextType,
     setSelectedElement,
