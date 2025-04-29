@@ -100,7 +100,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     if (links.length > 0) {
       linkFound = true;
       links.forEach((link) => {
-        link.style.fontWeight = fontWeight;
+        link.style.textTransform = textTransform;
       });
     }
   });
