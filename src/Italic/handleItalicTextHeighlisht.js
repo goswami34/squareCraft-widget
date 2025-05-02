@@ -77,6 +77,24 @@ function showNotification(message, type = "info") {
       return;
     }
   
+
+    let italicFound = false;
+  
+    targetElements.forEach(el => {
+      const strongs = el.querySelectorAll('em');
+      if (strongs.length > 0) {
+        strongFound = true;
+        strongs.forEach(strong => {
+          strong.style.textTransform = textTransform;
+        });
+      }
+    });
+  
+    if (!italicFound) {
+      showNotification(`No bold text found inside ${selectedSingleTextType}`, "info");
+      return;
+    }
+
     console.log("✅ Applying highlight for selector:", paragraphSelector);
   
     const styleId = `style-${block.id}-${selectedSingleTextType}-highlight`;
@@ -89,7 +107,7 @@ function showNotification(message, type = "info") {
     }
   
     styleTag.innerHTML = `
-        #${block.id} ${paragraphSelector} {
+        #${block.id} ${paragraphSelector} em {
           background-image: linear-gradient(to top, ${selectedHighlightColor} 50%, transparent 0%);
           display: inline;
         }
