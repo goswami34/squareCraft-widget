@@ -213,26 +213,19 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     return;
   }
 
-  let linkFound = false;
-  
-  targetElements.forEach((tag) => {
-    const links = tag.querySelectorAll("em");
-    if (links.length > 0) {
-      linkFound = true;
-      links.forEach((link) => {
-        link.style.textTransform = textTransform;
-      });
+  let hasEmTags = false;
+  targetElements.forEach(element => {
+    if (element.querySelector('em')) {
+      hasEmTags = true;
     }
   });
 
-  console.log("🔎 Has em tags:", linkFound);
-
-  if (!linkFound) {
+  if (!hasEmTags) {
     showNotification(`No italic text (<em>) found in ${selectedSingleTextType}`, "info");
     return;
   }
 
-  // Dynamic CSS Inject with correct selector
+  // Dynamic CSS Inject
   const styleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
   let styleTag = document.getElementById(styleId);
 
@@ -242,7 +235,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     document.head.appendChild(styleTag);
   }
 
-  // Correct CSS selector to target only em tags within the paragraph
+  // Apply text-transform only to em tags within the selected elements
   styleTag.innerHTML = `
     #${block.id} ${paragraphSelector} em {
       text-transform: ${textTransform} !important;
