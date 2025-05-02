@@ -134,9 +134,10 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     console.log("✅ Created new style tag");
   }
 
-  // Apply text-transform only to em tags within the selected elements
+  // Apply text-transform to em tags and their child elements with text color classes
   const cssRule = `
-    #${block.id} ${paragraphSelector} em {
+    #${block.id} ${paragraphSelector} em,
+    #${block.id} ${paragraphSelector} em span[class^='sqsrte-text-color'] {
       text-transform: ${textTransform} !important;
       display: inline !important;
     }
