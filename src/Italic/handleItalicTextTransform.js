@@ -127,6 +127,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   const styleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
   console.log("🔍 Using style ID:", styleId);
   let styleTag = document.getElementById(styleId);
+  console.log("🔍 Style tag:", styleTag);
 
   if (!styleTag) {
     styleTag = document.createElement("style");
