@@ -107,6 +107,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     return;
   }
 
+  // Check for <em> tags in the selected tag
   let hasEmTags = false;
   targetElements.forEach(element => {
     const emTags = element.querySelectorAll('em');
@@ -117,7 +118,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   });
 
   if (!hasEmTags) {
-    console.log("❌ No em tags found");
+    console.log("❌ No em tags found in selected tag");
     showNotification(`No italic text (<em>) found in ${selectedSingleTextType}`, "info");
     return;
   }

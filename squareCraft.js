@@ -200,6 +200,10 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextColor.js"
   );
 
+  const { handleItalicTextHeighlightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextHeighlisht.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -751,6 +755,21 @@ let selectedElement = null;
       },
       showNotification,
     });
+
+    //Italic text highlight code start here
+    handleItalicTextHeighlightClick(event, {
+      lastClickedElement,
+      applyStylesToElement,
+      selectedSingleTextType,
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) { 
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification,
+    }); 
+    //Italic text highlight code end here
 
     // Predefined font list for faster dropdown
     const predefinedFonts = [
@@ -1694,6 +1713,42 @@ let selectedElement = null;
       }, 100);
     }
     //Italic text transform code end here
+
+    //Italic text highlight code start here
+    const ItalictextHighlightColorDiv = document.getElementById(
+      "texHeightlistPalate"
+    );
+    if (ItalictextHighlightColorDiv && !ItalictextHighlightColorDiv.dataset.initialized) {
+      ItalictextHighlightColorDiv.dataset.initialized = "true";
+
+      ItalictextHighlightColorDiv.addEventListener("click", (event) => {
+        handleItalicTextHeighlightClick(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextHighlightClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+
+    //Italic text highlight code end here
+
+
+
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });

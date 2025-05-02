@@ -140,9 +140,10 @@ export function typoItalicSelect(fontSizes) {
 
    <div class="sc-mt-4 ">
       <p class="sc-text-xs sc-font-thin sc-mt-4 sc-universal sc-text-gray-300 sc-poppins">Text Highlight</p>
+
       <div class="sc-py-1 sc-mt-2 sc-bg-3f3f3f sc-inActiveTab-border sc-w-50 sc-flex sc-justify-between sc-items-center sc-px-2 sc-rounded-6px">
-         <p class="sc-text-sm sc-poppins sc-universal c-font-light">#363544</p>
-         <div class="sc-square-6 sc-border-colors sc-cursor-pointer"></div>
+         <p id="texHeightlistHtml" class="sc-text-sm sc-poppins sc-universal c-font-light">#363544</p>
+         <div id="texHeightlistPalate" class="sc-square-6 sc-border-colors sc-cursor-pointer"></div>
       </div>
    </div> 
     `;
