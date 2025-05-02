@@ -225,11 +225,11 @@ export function handleItalicBlockClick(event, context) {
       console.log("✅ Clicked tab detected:", clickedTag);
       setSelectedSingleTextType(clickedTag);
 
-      const fontSizeInput = document.getElementById(
-        `squareCraftItalicTextTransform-${typeId}`
+      const textTransformInput = document.getElementById(
+        `squareCraft-text-transform-${typeId}`
       );
-      if (fontSizeInput) {
-        fontSizeInput.focus();
+      if (textTransformInput) {
+        textTransformInput.focus();
       }
     };
   });
