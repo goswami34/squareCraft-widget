@@ -26,135 +26,15 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
-// export function handleItalicFontWeightClick(event = null, context = null) {
-//   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
-//     context;
-
-//   if (!event) {
-//     event = { target: document.getElementById("squareCraftItalicFontWeight") };
-//   }
-
-//   const fontWeight = event.target.value;
-
-//   if (!lastClickedElement) {
-//     showNotification("Please select a block first", "error");
-//     return;
-//   }
-
-//   if (!selectedSingleTextType) {
-//     showNotification("Please select a text type first", "error");
-//     return;
-//   }
-
-//   const block = lastClickedElement.closest('[id^="block-"]');
-//   if (!block) {
-//     showNotification("Block not found", "error");
-//     return;
-//   }
-
-//   let paragraphSelector = "";
-
-//   // 🎯 Correct mapping here
-//   if (selectedSingleTextType === "paragraph1") {
-//     paragraphSelector = "p.sqsrte-large";
-//   } else if (selectedSingleTextType === "paragraph2") {
-//     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
-//   } else if (selectedSingleTextType === "paragraph3") {
-//     paragraphSelector = "p.sqsrte-small";
-//   } else if (selectedSingleTextType === "heading1") {
-//     paragraphSelector = "h1";
-//   } else if (selectedSingleTextType === "heading2") {
-//     paragraphSelector = "h2";
-//   } else if (selectedSingleTextType === "heading3") {
-//     paragraphSelector = "h3";
-//   } else if (selectedSingleTextType === "heading4") {
-//     paragraphSelector = "h4";
-//   } else {
-//     return;
-//   }
-
-//   console.log("✅ Applying font-weight for selector:", paragraphSelector);
-
-//   // Find target paragraphs or headings
-//   const targetElements = block.querySelectorAll(paragraphSelector);
-//   if (!targetElements.length) {
-//     showNotification(`No text found for ${selectedSingleTextType}`, "error");
-//     return;
-//   }
-
-//   let linkFound = false;
-
-//   targetElements.forEach((tag) => {
-//     const links = tag.querySelectorAll("em");
-//     if (links.length > 0) {
-//       linkFound = true;
-//       links.forEach((link) => {
-//         link.style.fontWeight = fontWeight;
-//       });
-//     }
-//   });
-
-//   if (!linkFound) {
-//     showNotification(`No link (<em>) inside ${selectedSingleTextType}`, "info");
-//     return;
-//   }
-
-//   // ✅ Dynamic CSS injection
-//   const styleId = `style-${block.id}-${selectedSingleTextType}-all-fontWeight`;
-//   let styleTag = document.getElementById(styleId);
-
-//   if (!styleTag) {
-//     styleTag = document.createElement("style");
-//     styleTag.id = styleId;
-//     document.head.appendChild(styleTag);
-//   }
-
-//   styleTag.innerHTML = `
-//                 #${block.id} ${paragraphSelector} em{
-//                   font-weight: ${fontWeight} !important;
-//                 }
-//               `;
-
-//   addPendingModification(block.id, {
-//     "font-weight": fontWeight,
-//     target: selectedSingleTextType,
-//   });
-
-//   // Update active button
-//   document.querySelectorAll('[id^="scFontWeight"]').forEach((el) => {
-//     el.classList.remove("sc-activeTab-border");
-//     el.classList.add("sc-inActiveTab-border");
-//   });
-//   //   clickedElement.classList.remove("sc-inActiveTab-border");
-//   //   clickedElement.classList.add("sc-activeTab-border");
-
-//   //   showNotification(
-//   //     `Font-weight applied to bold words in: ${selectedSingleTextType}`,
-//   //     "success"
-//   //   );
-// }
-
-
 export function handleItalicFontWeightClick(event = null, context = null) {
-  const {
-    lastClickedElement,
-    selectedSingleTextType,
-    addPendingModification,
-    saveModifications,
-  } = context;
+  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
+    context;
 
   if (!event) {
-    const activeButton = document.querySelector(
-      '[id^="squareCraft-text-transform"].sc-activeTab-border'
-    );
-    if (!activeButton) return;
-    event = { target: activeButton };
+    event = { target: document.getElementById("squareCraftItalicFontWeight") };
   }
 
-  const clickedInput = event.target.closest('[id^="squareCraft-text-transform"]');
-  if (!clickedInput) return;
-
-  const fontWeight = clickedInput.value + "px";
+  const fontWeight = event.target.value;
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
@@ -172,28 +52,33 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     return;
   }
 
-  // Correct Paragraph Selector Setup
   let paragraphSelector = "";
+
+  // 🎯 Correct mapping here
   if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = "p.sqsrte-large";
   } else if (selectedSingleTextType === "paragraph2") {
     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
   } else if (selectedSingleTextType === "paragraph3") {
     paragraphSelector = "p.sqsrte-small";
-  } else if (selectedSingleTextType.startsWith("heading")) {
-    paragraphSelector = `h${selectedSingleTextType.replace("heading", "")}`;
+  } else if (selectedSingleTextType === "heading1") {
+    paragraphSelector = "h1";
+  } else if (selectedSingleTextType === "heading2") {
+    paragraphSelector = "h2";
+  } else if (selectedSingleTextType === "heading3") {
+    paragraphSelector = "h3";
+  } else if (selectedSingleTextType === "heading4") {
+    paragraphSelector = "h4";
   } else {
-    paragraphSelector = selectedSingleTextType;
+    return;
   }
 
-  console.log("🔎 Applying font-size to links inside:", paragraphSelector);
+  console.log("✅ Applying font-weight for selector:", paragraphSelector);
 
+  // Find target paragraphs or headings
   const targetElements = block.querySelectorAll(paragraphSelector);
   if (!targetElements.length) {
-    showNotification(
-      `No ${selectedSingleTextType} found inside block`,
-      "error"
-    );
+    showNotification(`No text found for ${selectedSingleTextType}`, "error");
     return;
   }
 
@@ -204,7 +89,7 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     if (links.length > 0) {
       linkFound = true;
       links.forEach((link) => {
-        link.style.fontSize = fontSize;
+        link.style.fontWeight = fontWeight;
       });
     }
   });
@@ -214,8 +99,8 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     return;
   }
 
-  // Dynamic CSS Inject
-  const styleId = `style-${block.id}-${selectedSingleTextType}-italic-fontweight`;
+  // ✅ Dynamic CSS injection
+  const styleId = `style-${block.id}-${selectedSingleTextType}-all-fontWeight`;
   let styleTag = document.getElementById(styleId);
 
   if (!styleTag) {
@@ -225,31 +110,29 @@ export function handleItalicFontWeightClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-        #${block.id} ${paragraphSelector} em {
-          font-weight: ${fontWeight} !important;
-        }
-      `;
+                #${block.id} ${paragraphSelector} em{
+                  font-weight: ${fontWeight} !important;
+                }
+              `;
 
-  // Save Modification (for API persistence)
-  addPendingModification(
-    block.id,
-    {
-      "font-weight": fontWeight,
-      target: selectedSingleTextType,
-    },
-    "em"
-  );
+  addPendingModification(block.id, {
+    "font-weight": fontWeight,
+    target: selectedSingleTextType,
+  });
 
-  // Update Active Tab UI
-  document.querySelectorAll('[id^="squareCraft-text-transform"]').forEach((el) => {
+  // Update active button
+  document.querySelectorAll('[id^="scFontWeight"]').forEach((el) => {
     el.classList.remove("sc-activeTab-border");
     el.classList.add("sc-inActiveTab-border");
   });
-  clickedInput.classList.remove("sc-inActiveTab-border");
-  clickedInput.classList.add("sc-activeTab-border");
+  //   clickedElement.classList.remove("sc-inActiveTab-border");
+  //   clickedElement.classList.add("sc-activeTab-border");
 
-  showNotification(
-    `✅ Font-size applied to Links inside ${selectedSingleTextType}`,
-    "success"
-  );
+  //   showNotification(
+  //     `Font-weight applied to bold words in: ${selectedSingleTextType}`,
+  //     "success"
+  //   );
 }
+
+
+
