@@ -27,42 +27,55 @@ function showNotification(message, type = "info") {
 }
 
 export function handleItalicTextTransformClick(event = null, context = null) {
+  console.log("🚀 handleItalicTextTransformClick called with:", { event, context });
+
   const {
     lastClickedElement,
     selectedSingleTextType,
     addPendingModification,
     saveModifications,
-  } = context;
+  } = context || {};
 
   if (!event) {
     const activeButton = document.querySelector(
       '[id^="scTextTransform"].sc-activeTab-border'
     );
-    if (!activeButton) return;
+    console.log("🔍 Active button found:", activeButton);
+    if (!activeButton) {
+      console.log("❌ No active button found");
+      return;
+    }
     event = { target: activeButton };
   }
 
   // Get the clicked transform button
   const clickedTransform = event.target.closest('[data-text-transform]');
-  console.log("🔎 Clicked transform:", clickedTransform);
-  if (!clickedTransform) return;
+  console.log("🔎 Clicked transform button:", clickedTransform);
+  if (!clickedTransform) {
+    console.log("❌ No transform button found");
+    return;
+  }
 
   // Get the text transform value from the data attribute
   const textTransform = clickedTransform.getAttribute('data-text-transform');
-  console.log("🔎 Text transform:", textTransform);
+  console.log("🔎 Text transform value:", textTransform);
 
   if (!lastClickedElement) {
+    console.log("❌ No last clicked element");
     showNotification("Please select a block first", "error");
     return;
   }
 
   if (!selectedSingleTextType) {
+    console.log("❌ No selected text type");
     showNotification("Please select a text type first", "error");
     return;
   }
 
   const block = lastClickedElement.closest('[id^="block-"]');
+  console.log("🔍 Found block:", block);
   if (!block) {
+    console.log("❌ No block found");
     showNotification("Block not found", "error");
     return;
   }
@@ -80,10 +93,13 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   } else {
     paragraphSelector = selectedSingleTextType;
   }
+  console.log("🔍 Using paragraph selector:", paragraphSelector);
 
   // Check if there are any em tags in the selected elements
   const targetElements = block.querySelectorAll(paragraphSelector);
+  console.log("🔍 Found target elements:", targetElements.length);
   if (!targetElements.length) {
+    console.log("❌ No target elements found");
     showNotification(
       `No ${selectedSingleTextType} found inside block`,
       "error"
@@ -93,32 +109,39 @@ export function handleItalicTextTransformClick(event = null, context = null) {
 
   let hasEmTags = false;
   targetElements.forEach(element => {
-    if (element.querySelector('em')) {
+    const emTags = element.querySelectorAll('em');
+    console.log("🔍 Found em tags in element:", emTags.length);
+    if (emTags.length > 0) {
       hasEmTags = true;
     }
   });
 
   if (!hasEmTags) {
+    console.log("❌ No em tags found");
     showNotification(`No italic text (<em>) found in ${selectedSingleTextType}`, "info");
     return;
   }
 
   // Dynamic CSS Inject
   const styleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
+  console.log("🔍 Using style ID:", styleId);
   let styleTag = document.getElementById(styleId);
 
   if (!styleTag) {
     styleTag = document.createElement("style");
     styleTag.id = styleId;
     document.head.appendChild(styleTag);
+    console.log("✅ Created new style tag");
   }
 
   // Apply text-transform only to em tags within the selected elements
-  styleTag.innerHTML = `
+  const cssRule = `
     #${block.id} ${paragraphSelector} em {
       text-transform: ${textTransform} !important;
     }
   `;
+  console.log("🔍 Applying CSS rule:", cssRule);
+  styleTag.innerHTML = cssRule;
 
   // Save Modification (for API persistence)
   addPendingModification(
@@ -129,6 +152,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     },
     "em"
   );
+  console.log("✅ Saved modification");
 
   // Update Active Tab UI
   document.querySelectorAll('[data-text-transform]').forEach((el) => {
@@ -137,6 +161,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   });
   clickedTransform.classList.remove("sc-inActiveTab-border");
   clickedTransform.classList.add("sc-activeTab-border");
+  console.log("✅ Updated UI");
 
   showNotification(
     `✅ Text transform applied to italic text in ${selectedSingleTextType}`,
