@@ -28,6 +28,7 @@ function showNotification(message, type = "info") {
 
 
 
+
 // export function handleItalicTextTransformClick(event = null, context = null) {
 //   const {
 //     lastClickedElement,
@@ -38,16 +39,20 @@ function showNotification(message, type = "info") {
 
 //   if (!event) {
 //     const activeButton = document.querySelector(
-//       '[id^="squareCraft-text-transform"].sc-activeTab-border'
+//       '[id^="scTextTransform"].sc-activeTab-border'
 //     );
 //     if (!activeButton) return;
 //     event = { target: activeButton };
 //   }
 
-//   const clickedInput = event.target.closest('[id^="squareCraft-text-transform"]');
-//   if (!clickedInput) return;
+//   // Get the clicked transform button
+//   const clickedTransform = event.target.closest('[data-text-transform]');
+//   console.log("🔎 Clicked transform:", clickedTransform);
+//   if (!clickedTransform) return;
 
-//   const textTransform = clickedInput.dataset.textTransform;
+//   // Get the text transform value from the data attribute
+//   const textTransform = clickedTransform.getAttribute('data-text-transform');
+//   console.log("🔎 Text transform:", textTransform);
 
 //   if (!lastClickedElement) {
 //     showNotification("Please select a block first", "error");
@@ -79,8 +84,7 @@ function showNotification(message, type = "info") {
 //     paragraphSelector = selectedSingleTextType;
 //   }
 
-//   console.log("🔎 Applying font-size to links inside:", paragraphSelector);
-
+//   // Check if there are any em tags in the selected elements
 //   const targetElements = block.querySelectorAll(paragraphSelector);
 //   if (!targetElements.length) {
 //     showNotification(
@@ -90,20 +94,15 @@ function showNotification(message, type = "info") {
 //     return;
 //   }
 
-//   let linkFound = false;
-
-//   targetElements.forEach((tag) => {
-//     const links = tag.querySelectorAll("em");
-//     if (links.length > 0) {
-//       linkFound = true;
-//       links.forEach((link) => {
-//         link.style.fontSize = fontSize;
-//       });
+//   let hasEmTags = false;
+//   targetElements.forEach(element => {
+//     if (element.querySelector('em')) {
+//       hasEmTags = true;
 //     }
 //   });
 
-//   if (!linkFound) {
-//     showNotification(`No link (<em>) inside ${selectedSingleTextType}`, "info");
+//   if (!hasEmTags) {
+//     showNotification(`No italic text (<em>) found in ${selectedSingleTextType}`, "info");
 //     return;
 //   }
 
@@ -117,11 +116,12 @@ function showNotification(message, type = "info") {
 //     document.head.appendChild(styleTag);
 //   }
 
+//   // Apply text-transform only to em tags within the selected elements
 //   styleTag.innerHTML = `
-//         #${block.id} ${paragraphSelector} em {
-//           text-transform: ${textTransform} !important;
-//         }
-//       `;
+//     #${block.id} ${paragraphSelector} em {
+//       text-transform: ${textTransform} !important;
+//     }
+//   `;
 
 //   // Save Modification (for API persistence)
 //   addPendingModification(
@@ -134,15 +134,15 @@ function showNotification(message, type = "info") {
 //   );
 
 //   // Update Active Tab UI
-//   document.querySelectorAll('[id^="squareCraft-text-transform"]').forEach((el) => {
+//   document.querySelectorAll('[data-text-transform]').forEach((el) => {
 //     el.classList.remove("sc-activeTab-border");
 //     el.classList.add("sc-inActiveTab-border");
 //   });
-//   clickedInput.classList.remove("sc-inActiveTab-border");
-//   clickedInput.classList.add("sc-activeTab-border");
+//   clickedTransform.classList.remove("sc-inActiveTab-border");
+//   clickedTransform.classList.add("sc-activeTab-border");
 
 //   showNotification(
-//     `✅ Text-transform applied to Links inside ${selectedSingleTextType}`,
+//     `✅ Text transform applied to italic text in ${selectedSingleTextType}`,
 //     "success"
 //   );
 // }
@@ -166,12 +166,10 @@ export function handleItalicTextTransformClick(event = null, context = null) {
 
   // Get the clicked transform button
   const clickedTransform = event.target.closest('[data-text-transform]');
-  console.log("🔎 Clicked transform:", clickedTransform);
   if (!clickedTransform) return;
 
   // Get the text transform value from the data attribute
   const textTransform = clickedTransform.getAttribute('data-text-transform');
-  console.log("🔎 Text transform:", textTransform);
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
@@ -225,7 +223,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     return;
   }
 
-  // Dynamic CSS Inject
+  // Dynamic CSS Inject with correct selector
   const styleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
   let styleTag = document.getElementById(styleId);
 
@@ -235,7 +233,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     document.head.appendChild(styleTag);
   }
 
-  // Apply text-transform only to em tags within the selected elements
+  // Correct CSS selector to target only em tags within the paragraph
   styleTag.innerHTML = `
     #${block.id} ${paragraphSelector} em {
       text-transform: ${textTransform} !important;
