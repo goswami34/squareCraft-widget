@@ -757,18 +757,18 @@ let selectedElement = null;
     });
 
     //Italic text highlight code start here
-    handleItalicTextHeighlightClick(event, {
-      lastClickedElement,
-      applyStylesToElement,
-      selectedSingleTextType,
-      addPendingModification: (blockId, css, tagType) => {
-        if (!pendingModifications.has(blockId)) { 
-          pendingModifications.set(blockId, []);
-        }
-        pendingModifications.get(blockId).push({ css, tagType });
-      },
-      showNotification,
-    }); 
+    // handleItalicTextHeighlightClick(event, {
+    //   lastClickedElement,
+    //   applyStylesToElement,
+    //   selectedSingleTextType,
+    //   addPendingModification: (blockId, css, tagType) => {
+    //     if (!pendingModifications.has(blockId)) { 
+    //       pendingModifications.set(blockId, []);
+    //     }
+    //     pendingModifications.get(blockId).push({ css, tagType });
+    //   },
+    //   showNotification,
+    // }); 
     //Italic text highlight code end here
 
     // Predefined font list for faster dropdown
