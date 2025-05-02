@@ -166,10 +166,12 @@ export function handleItalicTextTransformClick(event = null, context = null) {
 
   // Get the clicked transform button
   const clickedTransform = event.target.closest('[data-text-transform]');
+  console.log("🔎 Clicked transform:", clickedTransform);
   if (!clickedTransform) return;
 
   // Get the text transform value from the data attribute
   const textTransform = clickedTransform.getAttribute('data-text-transform');
+  console.log("🔎 Text transform:", textTransform);
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
@@ -217,6 +219,8 @@ export function handleItalicTextTransformClick(event = null, context = null) {
       hasEmTags = true;
     }
   });
+
+  console.log("🔎 Has em tags:", hasEmTags);
 
   if (!hasEmTags) {
     showNotification(`No italic text (<em>) found in ${selectedSingleTextType}`, "info");
