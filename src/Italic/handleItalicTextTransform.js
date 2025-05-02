@@ -219,7 +219,8 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   //     hasEmTags = true;
   //   }
   // });
-
+  let linkFound = false;
+  
   targetElements.forEach((tag) => {
     const links = tag.querySelectorAll("em");
     if (links.length > 0) {
