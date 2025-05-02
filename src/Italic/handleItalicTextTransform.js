@@ -213,10 +213,20 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     return;
   }
 
-  let hasEmTags = false;
-  targetElements.forEach(element => {
-    if (element.querySelector('em')) {
-      hasEmTags = true;
+  // let hasEmTags = false;
+  // targetElements.forEach(element => {
+  //   if (element.querySelector('em')) {
+  //     hasEmTags = true;
+  //   }
+  // });
+
+  targetElements.forEach((tag) => {
+    const links = tag.querySelectorAll("em");
+    if (links.length > 0) {
+      linkFound = true;
+      links.forEach((link) => {
+        link.style.textTransform = textTransform;
+      });
     }
   });
 
