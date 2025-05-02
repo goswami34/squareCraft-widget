@@ -125,33 +125,20 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   // Dynamic CSS Inject
   const styleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
   console.log("🔍 Using style ID:", styleId);
-  let styleTag = document.getElementById(styleId);
 
-  if (!styleTag) {
-    styleTag = document.createElement("style");
-    styleTag.id = styleId;
-    document.head.appendChild(styleTag);
-    console.log("✅ Created new style tag");
-  }
+  // Remove any old style tag for this block/tag
+  let oldStyleTag = document.getElementById(styleId);
+  if (oldStyleTag) oldStyleTag.remove();
 
-  // Apply text-transform to em tags and their child elements with text color classes
-  // const cssRule = `
-  //   #${block.id} ${paragraphSelector} em,
-  //   #${block.id} ${paragraphSelector} em span[class^='sqsrte-text-color'] {
-  //     text-transform: ${textTransform} !important;
-  //     display: inline !important;
-  //   }
-  // `;
+  // Build the selector for em and colored em
+  const cssRule = `\n    #${block.id} ${paragraphSelector} em,\n    #${block.id} ${paragraphSelector} em span[class^='sqsrte-text-color'] {\n      text-transform: ${textTransform} !important;\n    }\n  `;
 
-  const cssRule = `
-  #${block.id} ${paragraphSelector} em,
-  #${block.id} ${paragraphSelector} em span[class^='sqsrte-text-color'] {
-    text-transform: ${textTransform} !important;
-  }
-`;
-styleTag.innerHTML = cssRule;
-  console.log("🔍 Applying CSS rule:", cssRule);
+  // Inject the new style tag
+  let styleTag = document.createElement("style");
+  styleTag.id = styleId;
   styleTag.innerHTML = cssRule;
+  document.head.appendChild(styleTag);
+  console.log("🔍 Applying CSS rule:", cssRule);
 
   // Save Modification (for API persistence)
   addPendingModification(
