@@ -138,6 +138,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   const cssRule = `
     #${block.id} ${paragraphSelector} em {
       text-transform: ${textTransform} !important;
+      display: inline !important;
     }
   `;
   console.log("🔍 Applying CSS rule:", cssRule);
