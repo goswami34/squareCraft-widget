@@ -239,7 +239,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
 
   // Correct CSS selector to target only em tags within the paragraph
   styleTag.innerHTML = `
-    #${block.id} ${paragraphSelector} em {
+    #${block.id} ${paragraphSelector} ${hasEmTags} {
       text-transform: ${textTransform} !important;
     }
   `;
