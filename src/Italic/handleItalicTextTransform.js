@@ -147,7 +147,6 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   #${block.id} ${paragraphSelector} em,
   #${block.id} ${paragraphSelector} em span[class^='sqsrte-text-color'] {
     text-transform: ${textTransform} !important;
-    display: inline !important;
   }
 `;
 styleTag.innerHTML = cssRule;
