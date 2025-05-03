@@ -205,7 +205,7 @@ let selectedElement = null;
   );
 
   const { handleItalicTextColorClickEvent } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicTextColorClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicTextColorClickEvent.js"
   );
 
   document.body.addEventListener("click", (event) => {
