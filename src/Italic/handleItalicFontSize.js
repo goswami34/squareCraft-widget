@@ -103,6 +103,9 @@ export function handleItalicFontSizeClick(event = null, context = null) {
   // ✅ Clean up invalid inline font-weight from <em> elements
   targetElements.forEach((tag) => {
     const italicElements = tag.querySelectorAll("em");
+    if (italicElements.length > 0) {
+      italicFound = true;
+    }
     italicElements.forEach((em) => {
       const fw = em.style.fontWeight;
       const fwNum = parseInt(fw);
