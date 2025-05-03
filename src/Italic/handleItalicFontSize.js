@@ -110,6 +110,7 @@ export function handleItalicFontSizeClick(event = null, context = null) {
 
   // Create or update external CSS
   const styleId = `style-${block.id}-${selectedSingleTextType}-italic-fontsize`;
+  console.log("🔎 styleId:", styleId);
   let styleTag = document.getElementById(styleId);
 
   if (!styleTag) {
