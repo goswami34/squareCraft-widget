@@ -193,7 +193,18 @@ function showNotification(message, type = "info") {
 //   }, 50);
 // }
 
-export function handleItalicTextColorClick(color) {
+export function handleItalicTextColorClick(
+  color,
+  event = null,
+  context = null
+) {
+  const {
+    lastClickedElement,
+    selectedSingleTextType,
+    addPendingModification,
+    saveModifications,
+  } = context;
+
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
     return;
