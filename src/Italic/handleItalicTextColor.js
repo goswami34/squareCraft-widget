@@ -204,9 +204,6 @@ export function handleItalicTextColorClick(event, context) {
     })
     .catch((error) => {
       console.error("Failed to load italic text color click handler:", error);
-      context.showNotification(
-        "Failed to load text color functionality",
-        "error"
-      );
+      showNotification("Failed to load text color functionality", "error");
     });
 }
