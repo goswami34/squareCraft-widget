@@ -1,7 +1,7 @@
 let colorPalette = null;
 let colorPickerContext = null;
 
-export function handleTextColorClick(
+export function handleItalicTextColorClickEvent(
   event,
   lastClickedElement,
   applyStylesToElement,
