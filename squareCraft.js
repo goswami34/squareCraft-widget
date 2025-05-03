@@ -978,40 +978,61 @@ let selectedElement = null;
     //italic text transform code end here
 
     //italic text color code start here
-    handleItalicTextColorClick(event, {
-      handleAllTextColorClick,
-      lastClickedElement,
-      getTextType,
-      getTextTypeBold,
-      applyStylesToElement,
-      lastAppliedAlignment,
-      selectedSingleTextType,
-      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
-      selectedTextElement,
-      setSelectedTextElement: (clickedTag) =>
-        (selectedTextElement = clickedTag),
+    // handleItalicTextColorClick(event, {
+    //   handleAllTextColorClick,
+    //   lastClickedElement,
+    //   getTextType,
+    //   getTextTypeBold,
+    //   applyStylesToElement,
+    //   lastAppliedAlignment,
+    //   selectedSingleTextType,
+    //   setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+    //   selectedTextElement,
+    //   setSelectedTextElement: (clickedTag) =>
+    //     (selectedTextElement = clickedTag),
 
-      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
-      lastActiveAlignmentElement,
-      setLastActiveAlignmentElement: (val) =>
-        (lastActiveAlignmentElement = val),
-      lastClickedBlockId,
-      setLastClickedElement: (val) => (lastClickedElement = val),
-      userId,
-      saveModifications,
-      handleBlockClick,
-      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-      token,
-      widgetId,
-      setSelectedElement: (val) => (selectedElement = val), // Add this line
-      addPendingModification: (blockId, css, tagType) => {
-        if (!pendingModifications.has(blockId)) {
-          pendingModifications.set(blockId, []);
+    //   setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+    //   lastActiveAlignmentElement,
+    //   setLastActiveAlignmentElement: (val) =>
+    //     (lastActiveAlignmentElement = val),
+    //   lastClickedBlockId,
+    //   setLastClickedElement: (val) => (lastClickedElement = val),
+    //   userId,
+    //   saveModifications,
+    //   handleBlockClick,
+    //   setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+    //   token,
+    //   widgetId,
+    //   setSelectedElement: (val) => (selectedElement = val), // Add this line
+    //   addPendingModification: (blockId, css, tagType) => {
+    //     if (!pendingModifications.has(blockId)) {
+    //       pendingModifications.set(blockId, []);
+    //     }
+    //     pendingModifications.get(blockId).push({ css, tagType });
+    //   },
+    //   showNotification: showNotification,
+    // });
+
+    const activeTab = document.querySelector(".sc-selected-tab");
+    if (!activeTab || !activeTab.id.includes("italic")) {
+      handleItalicTextColorClick(
+        event,
+        lastClickedElement,
+        applyStylesToElement,
+        {
+          handleAllTextColorClick,
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
         }
-        pendingModifications.get(blockId).push({ css, tagType });
-      },
-      showNotification: showNotification,
-    });
+      );
+    }
 
     //italic text color code end here
 
