@@ -30,6 +30,7 @@ export function typoItalicSelect(fontSizes) {
                <input type="number" id="scFontSizeItalicInput" value="16" class="sc-font-size-input sc-font-light sc-z-99999 sc-text-sm sc-text-color-white 
                      sc-bg-transparent  sc-universal sc-font-light">
                <div class="sc-v-line"></div>
+               
 
                <div
                   class="sc-flex sc-items-center  sc-justify-center  sc-items-center">

@@ -762,13 +762,13 @@ let selectedElement = null;
     //   applyStylesToElement,
     //   selectedSingleTextType,
     //   addPendingModification: (blockId, css, tagType) => {
-    //     if (!pendingModifications.has(blockId)) { 
+    //     if (!pendingModifications.has(blockId)) {
     //       pendingModifications.set(blockId, []);
     //     }
     //     pendingModifications.get(blockId).push({ css, tagType });
     //   },
     //   showNotification,
-    // }); 
+    // });
     //Italic text highlight code end here
 
     // Predefined font list for faster dropdown
@@ -1654,6 +1654,31 @@ let selectedElement = null;
 
     //All font family code end here
 
+    //italic font size code start here
+
+    const ItalicFontSizeSelect = document.getElementById(
+      "scFontSizeItalicInput"
+    );
+    if (ItalicFontSizeSelect && !ItalicFontSizeSelect.dataset.initialized) {
+      ItalicFontSizeSelect.dataset.initialized = "true";
+
+      ItalicFontSizeSelect.addEventListener("change", (event) => {
+        handleItalicFontWeightClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Font Size applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
     //italic font weight code start here
 
     const ItalicFontWeightSelect = document.getElementById(
@@ -1718,7 +1743,10 @@ let selectedElement = null;
     const ItalictextHighlightColorDiv = document.getElementById(
       "texHeightlistPalate"
     );
-    if (ItalictextHighlightColorDiv && !ItalictextHighlightColorDiv.dataset.initialized) {
+    if (
+      ItalictextHighlightColorDiv &&
+      !ItalictextHighlightColorDiv.dataset.initialized
+    ) {
       ItalictextHighlightColorDiv.dataset.initialized = "true";
 
       ItalictextHighlightColorDiv.addEventListener("click", (event) => {
@@ -1744,11 +1772,7 @@ let selectedElement = null;
       });
     }
 
-
     //Italic text highlight code end here
-
-
-
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
