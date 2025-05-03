@@ -193,17 +193,16 @@ function showNotification(message, type = "info") {
 //   }, 50);
 // }
 
-export function handleItalicTextColorClick(
-  color,
-  event = null,
-  context = null
-) {
-  const {
-    lastClickedElement,
-    selectedSingleTextType,
-    addPendingModification,
-    saveModifications,
-  } = context;
+export function handleItalicTextColorClick(event = null, context = null) {
+  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
+    context;
+
+  if (!event) {
+    event = { target: document.getElementById("ItalictextColorPalate") };
+  }
+
+  const textColorDiv = document.getElementById("ItalictextColorPalate");
+  //   const textColor = window.getComputedStyle(textColorDiv).backgroundColor; // 🛠
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
@@ -211,7 +210,7 @@ export function handleItalicTextColorClick(
   }
 
   if (!selectedSingleTextType) {
-    showNotification("Please select a text type", "error");
+    showNotification("Please select a text type first", "error");
     return;
   }
 
@@ -221,46 +220,46 @@ export function handleItalicTextColorClick(
     return;
   }
 
+  let textColor = null;
+
+  if (event?.selectedColor) {
+    // ✅ If manually passed selectedColor (from color picker)
+    textColor = event.selectedColor;
+  } else {
+    // ✅ Otherwise get background color from div
+    const textColorDiv = document.getElementById("ItalictextColorPalate");
+    textColor = window.getComputedStyle(textColorDiv).backgroundColor;
+  }
+
   let paragraphSelector = "";
+
   if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = "p.sqsrte-large";
   } else if (selectedSingleTextType === "paragraph2") {
     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
   } else if (selectedSingleTextType === "paragraph3") {
     paragraphSelector = "p.sqsrte-small";
-  } else if (selectedSingleTextType.startsWith("heading")) {
-    paragraphSelector = "h" + selectedSingleTextType.replace("heading", "");
+  } else if (selectedSingleTextType === "heading1") {
+    paragraphSelector = "h1";
+  } else if (selectedSingleTextType === "heading2") {
+    paragraphSelector = "h2";
+  } else if (selectedSingleTextType === "heading3") {
+    paragraphSelector = "h3";
+  } else if (selectedSingleTextType === "heading4") {
+    paragraphSelector = "h4";
   } else {
-    showNotification("Unknown text type: " + selectedSingleTextType, "error");
     return;
   }
+
+  console.log("✅ Applying text color for selector:", paragraphSelector);
 
   const targetElements = block.querySelectorAll(paragraphSelector);
   if (!targetElements.length) {
-    showNotification(`No element found for ${selectedSingleTextType}`, "error");
+    showNotification(`No text found for ${selectedSingleTextType}`, "error");
     return;
   }
 
-  let strongFound = false;
-  targetElements.forEach((el) => {
-    const italics = el.querySelectorAll("em");
-    if (italics.length > 0) {
-      strongFound = true;
-      italics.forEach((italic) => {
-        italic.style.color = color;
-      });
-    }
-  });
-
-  if (!strongFound) {
-    showNotification(
-      `No bold (<strong>) text found inside ${selectedSingleTextType}`,
-      "info"
-    );
-    return;
-  }
-
-  const styleId = `style-${block.id}-${selectedSingleTextType}-strong-textcolor`;
+  const styleId = `style-${block.id}-${selectedSingleTextType}-all-textColor`;
   let styleTag = document.getElementById(styleId);
 
   if (!styleTag) {
@@ -270,22 +269,18 @@ export function handleItalicTextColorClick(
   }
 
   styleTag.innerHTML = `
-    #${block.id} ${paragraphSelector} em {
-      color: ${color} !important;
-    }
-  `;
+      #${block.id} ${paragraphSelector} em {
+        color: ${textColor} !important;
+      }
+    `;
 
-  addPendingModification(
-    block.id,
-    {
-      color: color,
-      target: selectedSingleTextType,
-    },
-    "em"
-  );
+  addPendingModification(block.id, {
+    color: textColor,
+    target: selectedSingleTextType,
+  });
 
   showNotification(
-    `✅ Text color applied to bold text inside: ${selectedSingleTextType}`,
+    // `Text color applied to: ${selectedSingleTextType}`,
     "success"
-  );
+  ); // 🎯
 }

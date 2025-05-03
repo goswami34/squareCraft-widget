@@ -104,9 +104,9 @@ export function typoItalicSelect(fontSizes) {
 
       <div class="sc-col-span-5 sc-px-2 sc-bg-3f3f3f sc-inActiveTab-border sc-flex sc-justify-between sc-items-center  sc-rounded-6px">
 
-            <p id="textcolorHtml" class="sc-text-sm sc-poppins sc-universal">Select</p>
-            <div id="textColorPalate" class="sc-square-6 sc-border-colors sc-cursor-pointer"></div>
-            
+            <p id="ItalictextcolorHtml" class="sc-text-sm sc-poppins sc-universal">Select</p>
+            <div id="ItalictextColorPalate" class="sc-square-6 sc-border-colors sc-cursor-pointer"></div>
+
       </div>
 
      <div>

@@ -204,6 +204,10 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextHeighlisht.js"
   );
 
+  const { handleItalicTextColorClickEvent } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicTextColorClick.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -1013,6 +1017,24 @@ let selectedElement = null;
     //   showNotification: showNotification,
     // });
 
+    handleItalicTextColorClickEvent(
+      event,
+      lastClickedElement,
+      applyStylesToElement,
+      {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      }
+    );
+
     const activeTab = document.querySelector(".sc-selected-tab");
     if (!activeTab || !activeTab.id.includes("italic")) {
       handleItalicTextColorClick(
@@ -1674,6 +1696,36 @@ let selectedElement = null;
     }
 
     //All font family code end here
+
+    //italic text color code start here
+    const ItalictextColorDiv = document.getElementById("textColorPalate");
+    if (ItalictextColorDiv && !ItalictextColorDiv.dataset.initialized) {
+      ItalictextColorDiv.dataset.initialized = "true";
+
+      ItalictextColorDiv.addEventListener("click", (event) => {
+        handleItalicTextColorClickEvent(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextColorClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //italic text color code end here
 
     //italic font size code start here
 
