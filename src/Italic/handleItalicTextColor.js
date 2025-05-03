@@ -232,11 +232,11 @@ export function handleItalicTextColorClick(color) {
 
   let strongFound = false;
   targetElements.forEach((el) => {
-    const strongs = el.querySelectorAll("strong");
-    if (strongs.length > 0) {
+    const italics = el.querySelectorAll("em");
+    if (italics.length > 0) {
       strongFound = true;
-      strongs.forEach((strong) => {
-        strong.style.color = color;
+      italics.forEach((italic) => {
+        italic.style.color = color;
       });
     }
   });
