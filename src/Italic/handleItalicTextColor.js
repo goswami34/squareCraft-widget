@@ -159,6 +159,11 @@ export function handleItalicTextColorClick(
         document.head.appendChild(styleTag);
       }
 
+      // Remove any inline styles from parent elements
+      targetElements.forEach((tag) => {
+        tag.style.color = "";
+      });
+
       const cssRule = `#${block.id} ${paragraphSelector} em { 
         color: ${selectedColor} !important; 
       }`;
