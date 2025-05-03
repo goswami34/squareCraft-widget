@@ -30,7 +30,7 @@ export function typoItalicSelect(fontSizes) {
                <input type="number" id="scFontSizeItalicInput" value="16" class="sc-font-size-input sc-font-light sc-z-99999 sc-text-sm sc-text-color-white 
                      sc-bg-transparent  sc-universal sc-font-light">
                <div class="sc-v-line"></div>
-               
+
 
                <div
                   class="sc-flex sc-items-center  sc-justify-center  sc-items-center">
@@ -117,27 +117,27 @@ export function typoItalicSelect(fontSizes) {
         class="sc-flex sc-items-center" id="squareCraftItalicTextTransform">
         
         <div id="scTextTransformUppercase" 
-                  data-text-transform="uppercase"  class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
+                    class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
 
-           <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
+           <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform" data-text-transform="uppercase">AG</p>
         </div>
          <div id="scTextTransformLowercase" 
-                  data-text-transform="lowercase"  data-align="center" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer ">
+                    data-align="center" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer ">
 
-          <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">ag</p>
+          <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform" data-text-transform="lowercase">ag</p>
         </div>
          <div id="scTextTransformCapitalize" 
-                  data-text-transform="capitalize"  data-align="right" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer">
+                    data-align="right" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer">
 
-          <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">Ag</p>
+          <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform" data-text-transform="capitalize">Ag</p>
         </div>
         <div id="scTextTransformNone" 
-                  data-text-transform="small-caps"  class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
-          <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
+                    class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
+          <p class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform" data-text-transform="small-caps">AG</p>
         </div>
         
-        </div>
-     </div>
+      </div>
+   </div>
 
    <div class="sc-mt-4 ">
       <p class="sc-text-xs sc-font-thin sc-mt-4 sc-universal sc-text-gray-300 sc-poppins">Text Highlight</p>
