@@ -7,10 +7,16 @@ export function handleItalicTextColorClickEvent(
   applyStylesToElement,
   context
 ) {
-  const italicTextColorPalate = event.target.closest("#italicTextColorPalate");
+  // Check if we have a valid lastClickedElement
+  if (!lastClickedElement) {
+    context.showNotification("Please select a block first", "error");
+    return;
+  }
+
+  const italicTextColorPalate = event.target.closest("#ItalictextColorPalate");
   if (!italicTextColorPalate) return;
 
-  // ✅ Fresh context every time
+  // Create fresh context
   colorPickerContext = {
     ...context,
     lastClickedElement,
@@ -37,13 +43,15 @@ export function handleItalicTextColorClickEvent(
     colorPalette.addEventListener("input", function (event) {
       const selectedColor = event.target.value;
 
-      if (!colorPickerContext?.lastClickedElement) return;
+      if (!colorPickerContext?.lastClickedElement) {
+        context.showNotification("Please select a block first", "error");
+        return;
+      }
 
-      const italicTextColorPalate = document.getElementById(
-        "italicTextColorPalate"
-      );
-      if (italicTextColorPalate) {
-        italicTextColorPalate.style.backgroundColor = selectedColor;
+      // Update color palette display
+      const textColorPalate = document.getElementById("ItalictextColorPalate");
+      if (textColorPalate) {
+        textColorPalate.style.backgroundColor = selectedColor;
       }
 
       const textColorHtml = document.getElementById("ItalictextcolorHtml");
@@ -51,6 +59,7 @@ export function handleItalicTextColorClickEvent(
         textColorHtml.textContent = selectedColor;
       }
 
+      // Get selected text type
       const selectedTab = document.querySelector(".sc-selected-tab");
       let selectedTextType = null;
 
@@ -70,17 +79,19 @@ export function handleItalicTextColorClickEvent(
       }
 
       if (!selectedTextType) {
-        console.error("❌ No selected text type found");
+        context.showNotification("Please select a text type first", "error");
         return;
       }
 
+      // Find the block element
       const block =
         colorPickerContext.lastClickedElement.closest('[id^="block-"]');
       if (!block) {
-        console.error("❌ Block not found");
+        context.showNotification("Block not found", "error");
         return;
       }
 
+      // Define selectors for different text types
       const selectorMap = {
         paragraph1: "p.sqsrte-large",
         paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
@@ -92,25 +103,68 @@ export function handleItalicTextColorClickEvent(
       };
 
       const paragraphSelector = selectorMap[selectedTextType] || "";
-
       const targetElements = block.querySelectorAll(paragraphSelector);
 
-      targetElements.forEach((el) => {
-        el.style.color = selectedColor;
+      if (!targetElements.length) {
+        context.showNotification(
+          `No ${selectedTextType} found in the block`,
+          "error"
+        );
+        return;
+      }
+
+      let italicFound = false;
+      let italicCount = 0;
+
+      // Find and color all italic text
+      targetElements.forEach((tag) => {
+        const italicElements = tag.querySelectorAll("em");
+        if (italicElements.length > 0) {
+          italicFound = true;
+          italicCount += italicElements.length;
+
+          // Create or update style tag for this block's em tags
+          let styleTag = document.getElementById(`style-${block.id}-em`);
+          if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = `style-${block.id}-em`;
+            document.head.appendChild(styleTag);
+          }
+
+          // Remove any inline styles from parent elements
+          tag.style.color = "";
+
+          // Apply color to em tags
+          const cssRule = `#${block.id} ${paragraphSelector} em {
+            color: ${selectedColor} !important;
+          }`;
+
+          styleTag.innerHTML = cssRule;
+        }
       });
 
-      colorPickerContext.handleAllTextColorClick(
-        { selectedColor },
-        {
-          ...colorPickerContext,
-          selectedSingleTextType: selectedTextType,
-          lastClickedElement: colorPickerContext.lastClickedElement,
-        }
+      if (!italicFound) {
+        context.showNotification(
+          `No italic (<em>) text found in ${selectedTextType}. Please add some italic text first.`,
+          "info"
+        );
+        return;
+      }
+
+      // Save to backend
+      context.addPendingModification(block.id, {
+        color: selectedColor,
+        target: selectedTextType,
+      });
+
+      context.showNotification(
+        `✅ Text color applied to ${italicCount} italic word(s) in ${selectedTextType}`,
+        "success"
       );
     });
   }
 
-  // ✅ Only open colorPalette manually after setting context
+  // Open color picker
   setTimeout(() => {
     colorPalette.click();
   }, 50);

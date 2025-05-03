@@ -29,164 +29,184 @@ function showNotification(message, type = "info") {
 let colorPalette = null;
 let colorPickerContext = null;
 
-export function handleItalicTextColorClick(event = null, context = null) {
-  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
-    context;
+// export function handleItalicTextColorClick(event = null, context = null) {
+//   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
+//     context;
 
-  if (!event) {
-    event = { target: document.getElementById("ItalictextColorPalate") };
-  }
+//   if (!event) {
+//     event = { target: document.getElementById("ItalictextColorPalate") };
+//   }
 
-  const textColorPalate = event.target.closest("#ItalictextColorPalate");
-  if (!textColorPalate) return;
+//   const textColorPalate = event.target.closest("#ItalictextColorPalate");
+//   if (!textColorPalate) return;
 
-  // Create fresh context
-  colorPickerContext = {
-    ...context,
-    lastClickedElement,
-    selectedSingleTextType: context.selectedSingleTextType,
-  };
+//   // Create fresh context
+//   colorPickerContext = {
+//     ...context,
+//     lastClickedElement,
+//     selectedSingleTextType: context.selectedSingleTextType,
+//   };
 
-  // Create hidden color input if not already created
-  if (!colorPalette) {
-    colorPalette = document.createElement("input");
-    colorPalette.type = "color";
-    colorPalette.id = "scColorPalette";
-    colorPalette.style.opacity = "0";
-    colorPalette.style.width = "0px";
-    colorPalette.style.height = "0px";
-    colorPalette.style.marginTop = "14px";
+//   // Create hidden color input if not already created
+//   if (!colorPalette) {
+//     colorPalette = document.createElement("input");
+//     colorPalette.type = "color";
+//     colorPalette.id = "scColorPalette";
+//     colorPalette.style.opacity = "0";
+//     colorPalette.style.width = "0px";
+//     colorPalette.style.height = "0px";
+//     colorPalette.style.marginTop = "14px";
 
-    const widgetContainer = document.getElementById("sc-widget-container");
-    if (widgetContainer) {
-      widgetContainer.appendChild(colorPalette);
-    } else {
-      document.body.appendChild(colorPalette);
-    }
+//     const widgetContainer = document.getElementById("sc-widget-container");
+//     if (widgetContainer) {
+//       widgetContainer.appendChild(colorPalette);
+//     } else {
+//       document.body.appendChild(colorPalette);
+//     }
 
-    colorPalette.addEventListener("input", function (event) {
-      const selectedColor = event.target.value;
+//     colorPalette.addEventListener("input", function (event) {
+//       const selectedColor = event.target.value;
 
-      if (!colorPickerContext?.lastClickedElement) {
-        showNotification("Please select a block first", "error");
-        return;
-      }
+//       if (!colorPickerContext?.lastClickedElement) {
+//         showNotification("Please select a block first", "error");
+//         return;
+//       }
 
-      // Update color palette display
-      const textColorPalate = document.getElementById("ItalictextColorPalate");
-      if (textColorPalate) {
-        textColorPalate.style.backgroundColor = selectedColor;
-      }
+//       // Update color palette display
+//       const textColorPalate = document.getElementById("ItalictextColorPalate");
+//       if (textColorPalate) {
+//         textColorPalate.style.backgroundColor = selectedColor;
+//       }
 
-      const textColorHtml = document.getElementById("ItalictextcolorHtml");
-      if (textColorHtml) {
-        textColorHtml.textContent = selectedColor;
-      }
+//       const textColorHtml = document.getElementById("ItalictextcolorHtml");
+//       if (textColorHtml) {
+//         textColorHtml.textContent = selectedColor;
+//       }
 
-      // Get selected text type
-      const selectedTab = document.querySelector(".sc-selected-tab");
-      let selectedTextType = null;
+//       // Get selected text type
+//       const selectedTab = document.querySelector(".sc-selected-tab");
+//       let selectedTextType = null;
 
-      if (selectedTab) {
-        if (selectedTab.id.startsWith("heading")) {
-          selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
-        } else if (selectedTab.id.startsWith("paragraph")) {
-          selectedTextType = `paragraph${selectedTab.id.replace(
-            "paragraph",
-            ""
-          )}`;
-        }
-      }
+//       if (selectedTab) {
+//         if (selectedTab.id.startsWith("heading")) {
+//           selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
+//         } else if (selectedTab.id.startsWith("paragraph")) {
+//           selectedTextType = `paragraph${selectedTab.id.replace(
+//             "paragraph",
+//             ""
+//           )}`;
+//         }
+//       }
 
-      if (!selectedTextType && colorPickerContext?.selectedSingleTextType) {
-        selectedTextType = colorPickerContext.selectedSingleTextType;
-      }
+//       if (!selectedTextType && colorPickerContext?.selectedSingleTextType) {
+//         selectedTextType = colorPickerContext.selectedSingleTextType;
+//       }
 
-      if (!selectedTextType) {
-        showNotification("Please select a text type first", "error");
-        return;
-      }
+//       if (!selectedTextType) {
+//         showNotification("Please select a text type first", "error");
+//         return;
+//       }
 
-      // Find the block element
-      const block =
-        colorPickerContext.lastClickedElement.closest('[id^="block-"]');
-      if (!block) {
-        showNotification("Block not found", "error");
-        return;
-      }
+//       // Find the block element
+//       const block =
+//         colorPickerContext.lastClickedElement.closest('[id^="block-"]');
+//       if (!block) {
+//         showNotification("Block not found", "error");
+//         return;
+//       }
 
-      // Define selectors for different text types
-      const selectorMap = {
-        paragraph1: "p.sqsrte-large",
-        paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
-        paragraph3: "p.sqsrte-small",
-        heading1: "h1",
-        heading2: "h2",
-        heading3: "h3",
-        heading4: "h4",
-      };
+//       // Define selectors for different text types
+//       const selectorMap = {
+//         paragraph1: "p.sqsrte-large",
+//         paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
+//         paragraph3: "p.sqsrte-small",
+//         heading1: "h1",
+//         heading2: "h2",
+//         heading3: "h3",
+//         heading4: "h4",
+//       };
 
-      const paragraphSelector = selectorMap[selectedTextType] || "";
-      const targetElements = block.querySelectorAll(paragraphSelector);
+//       const paragraphSelector = selectorMap[selectedTextType] || "";
+//       const targetElements = block.querySelectorAll(paragraphSelector);
 
-      if (!targetElements.length) {
-        showNotification(`No ${selectedTextType} found in the block`, "error");
-        return;
-      }
+//       if (!targetElements.length) {
+//         showNotification(`No ${selectedTextType} found in the block`, "error");
+//         return;
+//       }
 
-      let italicFound = false;
-      let italicCount = 0;
+//       let italicFound = false;
+//       let italicCount = 0;
 
-      // Find and color all italic text
-      targetElements.forEach((tag) => {
-        const italicElements = tag.querySelectorAll("em");
-        if (italicElements.length > 0) {
-          italicFound = true;
-          italicCount += italicElements.length;
+//       // Find and color all italic text
+//       targetElements.forEach((tag) => {
+//         const italicElements = tag.querySelectorAll("em");
+//         if (italicElements.length > 0) {
+//           italicFound = true;
+//           italicCount += italicElements.length;
 
-          // Create or update style tag for this block's em tags
-          let styleTag = document.getElementById(`style-${block.id}-em`);
-          if (!styleTag) {
-            styleTag = document.createElement("style");
-            styleTag.id = `style-${block.id}-em`;
-            document.head.appendChild(styleTag);
-          }
+//           // Create or update style tag for this block's em tags
+//           let styleTag = document.getElementById(`style-${block.id}-em`);
+//           if (!styleTag) {
+//             styleTag = document.createElement("style");
+//             styleTag.id = `style-${block.id}-em`;
+//             document.head.appendChild(styleTag);
+//           }
 
-          // Remove any inline styles from parent elements
-          tag.style.color = "";
+//           // Remove any inline styles from parent elements
+//           tag.style.color = "";
 
-          // Apply color to em tags
-          const cssRule = `#${block.id} ${paragraphSelector} em {
-            color: ${selectedColor} !important;
-          }`;
+//           // Apply color to em tags
+//           const cssRule = `#${block.id} ${paragraphSelector} em {
+//             color: ${selectedColor} !important;
+//           }`;
 
-          styleTag.innerHTML = cssRule;
-        }
-      });
+//           styleTag.innerHTML = cssRule;
+//         }
+//       });
 
-      if (!italicFound) {
-        showNotification(
-          `No italic (<em>) text found in ${selectedTextType}. Please add some italic text first.`,
-          "info"
-        );
-        return;
-      }
+//       if (!italicFound) {
+//         showNotification(
+//           `No italic (<em>) text found in ${selectedTextType}. Please add some italic text first.`,
+//           "info"
+//         );
+//         return;
+//       }
 
-      // Save to backend
-      addPendingModification(block.id, {
-        color: selectedColor,
-        target: selectedTextType,
-      });
+//       // Save to backend
+//       addPendingModification(block.id, {
+//         color: selectedColor,
+//         target: selectedTextType,
+//       });
 
-      showNotification(
-        `✅ Text color applied to ${italicCount} italic word(s) in ${selectedTextType}`,
-        "success"
+//       showNotification(
+//         `✅ Text color applied to ${italicCount} italic word(s) in ${selectedTextType}`,
+//         "success"
+//       );
+//     });
+//   }
+
+//   // Open color picker
+//   setTimeout(() => {
+//     colorPalette.click();
+//   }, 50);
+// }
+
+export function handleItalicTextColorClick(event, context) {
+  // Import and call the click event handler
+  import("./clickEvents/handleItalicTextColorClickEvent.js")
+    .then((module) => {
+      module.handleItalicTextColorClickEvent(
+        event,
+        context.lastClickedElement,
+        context.applyStylesToElement,
+        context
+      );
+    })
+    .catch((error) => {
+      console.error("Failed to load italic text color click handler:", error);
+      context.showNotification(
+        "Failed to load text color functionality",
+        "error"
       );
     });
-  }
-
-  // Open color picker
-  setTimeout(() => {
-    colorPalette.click();
-  }, 50);
 }
