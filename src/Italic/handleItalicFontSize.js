@@ -93,11 +93,23 @@ export function handleItalicFontSizeClick(event = null, context = null) {
 
   let italicFound = false;
 
+  // targetElements.forEach((tag) => {
+  //   const italicElements = tag.querySelectorAll("em");
+  //   if (italicElements.length > 0) {
+  //     italicFound = true;
+  //   }
+  // });
+
+  // ✅ Clean up invalid inline font-weight from <em> elements
   targetElements.forEach((tag) => {
     const italicElements = tag.querySelectorAll("em");
-    if (italicElements.length > 0) {
-      italicFound = true;
-    }
+    italicElements.forEach((em) => {
+      const fw = em.style.fontWeight;
+      const fwNum = parseInt(fw);
+      if (!isNaN(fwNum) && (fwNum < 100 || fwNum > 900 || fwNum % 100 !== 0)) {
+        em.style.removeProperty("font-weight");
+      }
+    });
   });
 
   if (!italicFound) {
