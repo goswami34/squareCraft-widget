@@ -27,7 +27,10 @@ function showNotification(message, type = "info") {
 }
 
 export function handleItalicTextTransformClick(event = null, context = null) {
-  console.log("🚀 handleItalicTextTransformClick called with:", { event, context });
+  console.log("🚀 handleItalicTextTransformClick called with:", {
+    event,
+    context,
+  });
 
   const {
     lastClickedElement,
@@ -49,7 +52,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   }
 
   // Get the clicked transform button
-  const clickedTransform = event.target.closest('[data-text-transform]');
+  const clickedTransform = event.target.closest("[data-text-transform]");
   console.log("🔎 Clicked transform button:", clickedTransform);
   if (!clickedTransform) {
     console.log("❌ No transform button found");
@@ -57,7 +60,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   }
 
   // Get the text transform value from the data attribute
-  const textTransform = clickedTransform.getAttribute('data-text-transform');
+  const textTransform = clickedTransform.getAttribute("data-text-transform");
   console.log("🔎 Text transform value:", textTransform);
 
   if (!lastClickedElement) {
@@ -109,8 +112,8 @@ export function handleItalicTextTransformClick(event = null, context = null) {
 
   // Check for <em> tags in the selected tag
   let hasEmTags = false;
-  targetElements.forEach(element => {
-    const emTags = element.querySelectorAll('em');
+  targetElements.forEach((element) => {
+    const emTags = element.querySelectorAll("em");
     console.log("🔍 Found em tags in element:", emTags.length);
     if (emTags.length > 0) {
       hasEmTags = true;
@@ -119,29 +122,33 @@ export function handleItalicTextTransformClick(event = null, context = null) {
 
   if (!hasEmTags) {
     console.log("❌ No em tags found in selected tag");
-    showNotification(`No italic text (<em>) found in ${selectedSingleTextType}`, "info");
+    showNotification(
+      `No italic text (<em>) found in ${selectedSingleTextType}`,
+      "info"
+    );
     return;
   }
 
   // Dynamic CSS Inject
   const italicStyleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
-  const generalStyleId = `style-${block.id}-${selectedSingleTextType}-texttransform`;
   console.log("🔍 Using style ID:", italicStyleId);
 
-  // Remove any old style tag for this block/tag (italic)
-  let oldItalicStyleTag = document.getElementById(italicStyleId);
-  if (oldItalicStyleTag) oldItalicStyleTag.remove();
+  // Remove any old style tag for this block/tag
+  let oldStyleTag = document.getElementById(italicStyleId);
+  if (oldStyleTag) oldStyleTag.remove();
 
-  // Remove any general style tag for this block/tag (non-italic)
-  let oldGeneralStyleTag = document.getElementById(generalStyleId);
-  if (oldGeneralStyleTag) oldGeneralStyleTag.remove();
-
-  // Build the selector for em and colored em
-  const cssRule = `\n    #${block.id} ${paragraphSelector} em,\n    #${block.id} ${paragraphSelector} em span[class^='sqsrte-text-color'] {\n      text-transform: ${textTransform} !important;\n    }\n  `;
-
-  // Inject the new style tag for em only
+  // Create new style tag that only targets em tags
   let styleTag = document.createElement("style");
   styleTag.id = italicStyleId;
+
+  // Only apply text-transform to em tags and their colored spans
+  const cssRule = `
+    #${block.id} ${paragraphSelector} em,
+    #${block.id} ${paragraphSelector} em span[class^='sqsrte-text-color'] {
+      text-transform: ${textTransform} !important;
+    }
+  `;
+
   styleTag.innerHTML = cssRule;
   document.head.appendChild(styleTag);
   console.log("🔍 Applying CSS rule:", cssRule);
@@ -158,7 +165,7 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   console.log("✅ Saved modification");
 
   // Update Active Tab UI
-  document.querySelectorAll('[data-text-transform]').forEach((el) => {
+  document.querySelectorAll("[data-text-transform]").forEach((el) => {
     el.classList.remove("sc-activeTab-border");
     el.classList.add("sc-inActiveTab-border");
   });
@@ -171,7 +178,3 @@ export function handleItalicTextTransformClick(event = null, context = null) {
     "success"
   );
 }
-
-
-
-
