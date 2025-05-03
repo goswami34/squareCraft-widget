@@ -1663,7 +1663,7 @@ let selectedElement = null;
       ItalicFontSizeSelect.dataset.initialized = "true";
 
       ItalicFontSizeSelect.addEventListener("change", (event) => {
-        handleItalicFontWeightClick(event, {
+        handleItalicFontSizeClick(event, {
           lastClickedElement,
           selectedSingleTextType,
           addPendingModification,
