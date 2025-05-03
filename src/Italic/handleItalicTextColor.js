@@ -40,7 +40,7 @@ export function handleItalicTextColorClick(event = null, context = null) {
   const textColorPalate = event.target.closest("#ItalictextColorPalate");
   if (!textColorPalate) return;
 
-  // ✅ Fresh context every time
+  // Create fresh context
   colorPickerContext = {
     ...context,
     lastClickedElement,
@@ -72,6 +72,7 @@ export function handleItalicTextColorClick(event = null, context = null) {
         return;
       }
 
+      // Update color palette display
       const textColorPalate = document.getElementById("ItalictextColorPalate");
       if (textColorPalate) {
         textColorPalate.style.backgroundColor = selectedColor;
@@ -82,6 +83,7 @@ export function handleItalicTextColorClick(event = null, context = null) {
         textColorHtml.textContent = selectedColor;
       }
 
+      // Get selected text type
       const selectedTab = document.querySelector(".sc-selected-tab");
       let selectedTextType = null;
 
@@ -105,6 +107,7 @@ export function handleItalicTextColorClick(event = null, context = null) {
         return;
       }
 
+      // Find the block element
       const block =
         colorPickerContext.lastClickedElement.closest('[id^="block-"]');
       if (!block) {
@@ -112,6 +115,7 @@ export function handleItalicTextColorClick(event = null, context = null) {
         return;
       }
 
+      // Define selectors for different text types
       const selectorMap = {
         paragraph1: "p.sqsrte-large",
         paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
@@ -133,14 +137,30 @@ export function handleItalicTextColorClick(event = null, context = null) {
       let italicFound = false;
       let italicCount = 0;
 
+      // Find and color all italic text
       targetElements.forEach((tag) => {
         const italicElements = tag.querySelectorAll("em");
         if (italicElements.length > 0) {
           italicFound = true;
           italicCount += italicElements.length;
-          italicElements.forEach((em) => {
-            em.style.color = selectedColor;
-          });
+
+          // Create or update style tag for this block's em tags
+          let styleTag = document.getElementById(`style-${block.id}-em`);
+          if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = `style-${block.id}-em`;
+            document.head.appendChild(styleTag);
+          }
+
+          // Remove any inline styles from parent elements
+          tag.style.color = "";
+
+          // Apply color to em tags
+          const cssRule = `#${block.id} ${paragraphSelector} em {
+            color: ${selectedColor} !important;
+          }`;
+
+          styleTag.innerHTML = cssRule;
         }
       });
 
@@ -151,25 +171,6 @@ export function handleItalicTextColorClick(event = null, context = null) {
         );
         return;
       }
-
-      // Create or update style tag for this block's em tags
-      let styleTag = document.getElementById(`style-${block.id}-em`);
-      if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = `style-${block.id}-em`;
-        document.head.appendChild(styleTag);
-      }
-
-      // Remove any inline styles from parent elements
-      targetElements.forEach((tag) => {
-        tag.style.color = "";
-      });
-
-      const cssRule = `#${block.id} ${paragraphSelector} em {
-        color: ${selectedColor} !important;
-      }`;
-
-      styleTag.innerHTML = cssRule;
 
       // Save to backend
       addPendingModification(block.id, {
@@ -184,7 +185,7 @@ export function handleItalicTextColorClick(event = null, context = null) {
     });
   }
 
-  // ✅ Only open colorPalette manually after setting context
+  // Open color picker
   setTimeout(() => {
     colorPalette.click();
   }, 50);
