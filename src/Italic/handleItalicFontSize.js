@@ -109,22 +109,41 @@ export function handleItalicFontSizeClick(event = null, context = null) {
   }
 
   // Create or update external CSS
-  const styleId = `style-${block.id}-${selectedSingleTextType}-italic-fontsize`;
-  console.log("🔎 styleId:", styleId);
-  let styleTag = document.getElementById(styleId);
+  // const styleId = `style-${block.id}-${selectedSingleTextType}-italic-fontsize`;
+  // console.log("🔎 styleId:", styleId);
+  // let styleTag = document.getElementById(styleId);
+
+  // if (!styleTag) {
+  //   styleTag = document.createElement("style");
+  //   styleTag.id = styleId;
+  //   document.head.appendChild(styleTag);
+  // }
+
+  // // Apply CSS using external stylesheet
+  // styleTag.innerHTML = `
+  //   #${block.id} ${paragraphSelector} em {
+  //     font-size: ${fontSize} !important;
+  //   }
+  // `;
+
+  // Apply CSS using external stylesheet
+  const cssClassId = `${block.id}-${selectedSingleTextType}-italic-fontsize-style`;
+  let styleTag = document.getElementById(cssClassId);
 
   if (!styleTag) {
     styleTag = document.createElement("style");
-    styleTag.id = styleId;
+    styleTag.id = cssClassId;
     document.head.appendChild(styleTag);
   }
 
-  // Apply CSS using external stylesheet
-  styleTag.innerHTML = `
-    #${block.id} ${paragraphSelector} em {
-      font-size: ${fontSize} !important;
-    }
-  `;
+  // Build the CSS rule: #block-id h2 em { font-size: 18px !important; }
+  const rule = `
+  #${block.id} ${paragraphSelector} em {
+    font-size: ${fontSize} !important;
+  }
+`;
+
+  styleTag.innerHTML = rule;
 
   // Save Modification (for API persistence)
   addPendingModification(
