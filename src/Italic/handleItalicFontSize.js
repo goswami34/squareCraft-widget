@@ -77,7 +77,10 @@ export function handleItalicFontSizeClick(event = null, context = null) {
     paragraphSelector = selectedSingleTextType;
   }
 
-  console.log("🔎 Applying font-size to links inside:", paragraphSelector);
+  console.log(
+    "🔎 Applying font-size to italic text inside:",
+    paragraphSelector
+  );
 
   const targetElements = block.querySelectorAll(paragraphSelector);
   if (!targetElements.length) {
@@ -88,24 +91,24 @@ export function handleItalicFontSizeClick(event = null, context = null) {
     return;
   }
 
-  let linkFound = false;
+  let italicFound = false;
 
   targetElements.forEach((tag) => {
-    const links = tag.querySelectorAll("em");
-    if (links.length > 0) {
-      linkFound = true;
-      links.forEach((link) => {
-        link.style.fontSize = fontSize;
-      });
+    const italicElements = tag.querySelectorAll("em");
+    if (italicElements.length > 0) {
+      italicFound = true;
     }
   });
 
-  if (!linkFound) {
-    showNotification(`No link (<em>) inside ${selectedSingleTextType}`, "info");
+  if (!italicFound) {
+    showNotification(
+      `No italic text (<em>) inside ${selectedSingleTextType}`,
+      "info"
+    );
     return;
   }
 
-  // Dynamic CSS Inject
+  // Create or update external CSS
   const styleId = `style-${block.id}-${selectedSingleTextType}-italic-fontsize`;
   let styleTag = document.getElementById(styleId);
 
@@ -115,11 +118,12 @@ export function handleItalicFontSizeClick(event = null, context = null) {
     document.head.appendChild(styleTag);
   }
 
+  // Apply CSS using external stylesheet
   styleTag.innerHTML = `
-        #${block.id} ${paragraphSelector} em {
-          font-size: ${fontSize} !important;
-        }
-      `;
+    #${block.id} ${paragraphSelector} em {
+      font-size: ${fontSize} !important;
+    }
+  `;
 
   // Save Modification (for API persistence)
   addPendingModification(
@@ -140,7 +144,7 @@ export function handleItalicFontSizeClick(event = null, context = null) {
   clickedInput.classList.add("sc-activeTab-border");
 
   showNotification(
-    `✅ Font-size applied to Links inside ${selectedSingleTextType}`,
+    `✅ Font-size applied to italic text inside ${selectedSingleTextType}`,
     "success"
   );
 }
