@@ -113,11 +113,11 @@ export function handleItalicFontSizeClick(event = null, context = null) {
   console.log("🔎 styleId:", styleId);
   let styleTag = document.getElementById(styleId);
 
-  // if (!styleTag) {
-  //   styleTag = document.createElement("style");
-  //   styleTag.id = styleId;
-  //   document.head.appendChild(styleTag);
-  // }
+  if (!styleTag) {
+    styleTag = document.createElement("style");
+    styleTag.id = styleId;
+    document.head.appendChild(styleTag);
+  }
 
   // Apply CSS using external stylesheet
   styleTag.innerHTML = `
