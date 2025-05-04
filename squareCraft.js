@@ -117,7 +117,9 @@ let selectedElement = null;
   const { handleFontWeightClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontWeight.js"
   );
-
+  // const { handleTextColorclicked } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/Bold/handleTextColor.js"
+  // );
   const { handleFontSizeLink } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontSizeLink.js"
   );
@@ -283,7 +285,6 @@ let selectedElement = null;
       handleFontWeightClick,
       addPendingModification,
       showNotification,
-      handleTextColorclicked,
       setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
       setLastActiveAlignmentElement: (val) =>
         (lastActiveAlignmentElement = val),
@@ -1311,25 +1312,25 @@ let selectedElement = null;
         });
     }
 
-    const textColorContainer = document.getElementById("scTextColor");
-    if (textColorContainer && !textColorContainer.dataset.initialized) {
-      textColorContainer.dataset.initialized = "true";
+    // const textColorContainer = document.getElementById("scTextColor");
+    // if (textColorContainer && !textColorContainer.dataset.initialized) {
+    //   textColorContainer.dataset.initialized = "true";
 
-      // Add click event listeners to all text colro buttons
-      textColorContainer
-        .querySelectorAll('[id^="scTextColor"]')
-        .forEach((button) => {
-          button.addEventListener("click", (event) => {
-            const lastClickedElement = document.querySelector(".sc-selected");
-            if (lastClickedElement) {
-              handleTextColorclicked(event, {
-                lastClickedElement,
-                lastClickedBlockId: lastClickedElement.id,
-              });
-            }
-          });
-        });
-    }
+    //   // Add click event listeners to all text colro buttons
+    //   textColorContainer
+    //     .querySelectorAll('[id^="scTextColor"]')
+    //     .forEach((button) => {
+    //       button.addEventListener("click", (event) => {
+    //         const lastClickedElement = document.querySelector(".sc-selected");
+    //         if (lastClickedElement) {
+    //           handleTextColorclicked(event, {
+    //             lastClickedElement,
+    //             lastClickedBlockId: lastClickedElement.id,
+    //           });
+    //         }
+    //       });
+    //     });
+    // }
 
     //Link code start here
 
