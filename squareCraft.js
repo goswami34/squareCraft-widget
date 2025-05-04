@@ -117,9 +117,7 @@ let selectedElement = null;
   const { handleFontWeightClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontWeight.js"
   );
-  const { handleTextColorclicked } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleTextColor.js"
-  );
+
   const { handleFontSizeLink } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontSizeLink.js"
   );
