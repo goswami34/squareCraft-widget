@@ -1255,6 +1255,11 @@ let selectedElement = null;
               handleBoldElementTextTransformClick(event, {
                 lastClickedElement,
                 lastClickedBlockId: lastClickedElement.id,
+                selectedSingleTextType,
+                addPendingModification,
+                showNotification,
+                getTextType,
+                applyStylesToElement,
               });
             }
           });
