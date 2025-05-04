@@ -32,7 +32,7 @@ let colorPickerContext = null;
 export function handleBoldTextColor(event, context) {
   const { lastClickedElement, applyStylesToElement } = context;
   // Import and call the click event handler
-  import("../clickEvents/handleItalicTextColorClickEvent.js")
+  import("../clickEvents/handleBoldTextColorClick.js")
     .then((module) => {
       module.handleItalicTextColorClickEvent(
         event,
