@@ -102,7 +102,7 @@ let selectedElement = null;
   const { typoTabSelect } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/typoTabSelect.js"
   );
-  const { handleTextTransformClick } = await import(
+  const { handleBoldElementTextTransformClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/Bold/handleTextTransform.js"
   );
   const { handleFontSize } = await import(
@@ -325,7 +325,7 @@ let selectedElement = null;
       showNotification: showNotification,
     });
 
-    handleTextTransformClick(event, {
+    handleBoldElementTextTransformClick(event, {
       lastClickedElement,
       getTextType,
       applyStylesToElement,
@@ -1252,7 +1252,7 @@ let selectedElement = null;
           button.addEventListener("click", (event) => {
             const lastClickedElement = document.querySelector(".sc-selected");
             if (lastClickedElement) {
-              handleTextTransformClick(event, {
+              handleBoldElementTextTransformClick(event, {
                 lastClickedElement,
                 lastClickedBlockId: lastClickedElement.id,
               });
@@ -1272,7 +1272,7 @@ let selectedElement = null;
           button.addEventListener("click", (event) => {
             const lastClickedElement = document.querySelector(".sc-selected");
             if (lastClickedElement) {
-              handleTextTransformClick(event, {
+              handleTextColorclicked(event, {
                 lastClickedElement,
                 lastClickedBlockId: lastClickedElement.id,
               });
