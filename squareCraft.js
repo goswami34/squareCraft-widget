@@ -224,6 +224,14 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/Bold/handleBoldTextHighlight.js"
   );
 
+  const { handleItalicTextHeighlight } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextHeighlisht.js"
+  );
+
+  const { handleItalicTextHeighlightClickEvent } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicTextHeighlightClickEvent.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
