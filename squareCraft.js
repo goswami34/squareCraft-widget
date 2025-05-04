@@ -1112,6 +1112,45 @@ let selectedElement = null;
 
     //bold text color code start here
 
+    //bold text highlight code start here
+    handleBoldTextHighlightClick(
+      event,
+      lastClickedElement,
+      applyStylesToElement,
+      {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      }
+    );
+
+    const activeBoldHighlightTab = document.querySelector(".sc-selected-tab");
+    if (
+      !activeBoldHighlightTab ||
+      !activeBoldHighlightTab.id.includes("italic")
+    ) {
+      handleBoldTextHighlight(event, lastClickedElement, applyStylesToElement, {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      });
+    }
+    //bold text highlight code end here
+
     typoTabSelect(event);
   });
 
@@ -1936,6 +1975,37 @@ let selectedElement = null;
     }
 
     //bold text color code end here
+
+    //bold text highlight code start here
+    const BoldtextHighlightDiv = document.getElementById(
+      "BoldtextHighlightPalate"
+    );
+    if (BoldtextHighlightDiv && !BoldtextHighlightDiv.dataset.initialized) {
+      BoldtextHighlightDiv.dataset.initialized = "true";
+
+      BoldtextHighlightDiv.addEventListener("click", (event) => {
+        handleBoldTextHighlightClick(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextColorClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Bold Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+    //bold text highlight code end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
