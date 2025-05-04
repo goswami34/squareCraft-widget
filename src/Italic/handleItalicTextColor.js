@@ -197,8 +197,8 @@ export function handleItalicTextColorClick(event, context) {
     .then((module) => {
       module.handleItalicTextColorClickEvent(
         event,
-        context.lastClickedElement,
-        context.applyStylesToElement,
+        lastClickedElement,
+        applyStylesToElement,
         context
       );
     })
