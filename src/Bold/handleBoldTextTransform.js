@@ -30,12 +30,8 @@ export function handleBoldElementTextTransformClick(
   event = null,
   context = null
 ) {
-  const {
-    lastClickedElement,
-    selectedSingleTextType,
-    addPendingModification,
-    showNotification,
-  } = context;
+  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
+    context;
 
   if (!event) {
     const activeButton = document.querySelector(

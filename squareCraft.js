@@ -103,7 +103,7 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/typoTabSelect.js"
   );
   const { handleBoldElementTextTransformClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleTextTransform.js"
+    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleBoldTextTransform.js"
   );
   const { handleFontSize } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontSize.js"
