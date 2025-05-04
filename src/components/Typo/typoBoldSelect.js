@@ -59,8 +59,8 @@ export function typoBoldSelect(fontSizes) {
 
    <div class="sc-col-span-5 sc-px-2 sc-bg-3f3f3f sc-inActiveTab-border sc-flex sc-justify-between sc-items-center  sc-rounded-6px" style="margin-bottom: 10px;">
 
-            <p id="ItalictextcolorHtml" class="sc-text-sm sc-poppins sc-universal">Select</p>
-            <div id="ItalictextColorPalate" class="sc-square-6 sc-border-colors sc-cursor-pointer"></div>
+            <p id="BoldtextcolorHtml" class="sc-text-sm sc-poppins sc-universal">Select</p>
+            <div id="BoldtextColorPalate" class="sc-square-6 sc-border-colors sc-cursor-pointer"></div>
 
       </div>
 </div>
