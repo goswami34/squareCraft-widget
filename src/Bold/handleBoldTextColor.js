@@ -42,7 +42,7 @@ export function handleBoldTextColor(event, context) {
       );
     })
     .catch((error) => {
-      console.error("Failed to load italic text color click handler:", error);
+      console.error("Failed to load Bold text color click handler:", error);
       // showNotification("Failed to load text color functionality", "error");
     });
 }

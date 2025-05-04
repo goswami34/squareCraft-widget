@@ -1,16 +1,22 @@
 let colorPalette = null;
 let colorPickerContext = null;
 
-export function handleBoldTextColorClick(
+export function handleItalicTextColorClickEvent(
   event,
   lastClickedElement,
   applyStylesToElement,
   context
 ) {
-  const textColorPalate = event.target.closest("#BoldtextColorPalate");
-  if (!textColorPalate) return;
+  // Check if we have a valid lastClickedElement
+  if (!lastClickedElement) {
+    context.showNotification("Please select a block first", "error");
+    return;
+  }
 
-  // ✅ Fresh context every time
+  const BoldtextColorPalate = event.target.closest("#BoldtextColorPalate");
+  if (!BoldtextColorPalate) return;
+
+  // Create fresh context
   colorPickerContext = {
     ...context,
     lastClickedElement,
@@ -37,20 +43,23 @@ export function handleBoldTextColorClick(
     colorPalette.addEventListener("input", function (event) {
       const selectedColor = event.target.value;
 
-      if (!colorPickerContext?.lastClickedElement) return;
-
-      const BoldtextColorPalate = document.getElementById(
-        "BoldtextColorPalate"
-      );
-      if (BoldtextColorPalate) {
-        BoldtextColorPalate.style.backgroundColor = selectedColor;
+      if (!colorPickerContext?.lastClickedElement) {
+        context.showNotification("Please select a block first", "error");
+        return;
       }
 
-      const BoldtextcolorHtml = document.getElementById("BoldtextcolorHtml");
-      if (BoldtextcolorHtml) {
-        BoldtextcolorHtml.textContent = selectedColor;
+      // Update color palette display
+      const textColorPalate = document.getElementById("BoldtextColorPalate");
+      if (textColorPalate) {
+        textColorPalate.style.backgroundColor = selectedColor;
       }
 
+      const textColorHtml = document.getElementById("BoldtextcolorHtml");
+      if (textColorHtml) {
+        textColorHtml.textContent = selectedColor;
+      }
+
+      // Get selected text type
       const selectedTab = document.querySelector(".sc-selected-tab");
       let selectedTextType = null;
 
@@ -70,17 +79,19 @@ export function handleBoldTextColorClick(
       }
 
       if (!selectedTextType) {
-        console.error("❌ No selected text type found");
+        context.showNotification("Please select a text type first", "error");
         return;
       }
 
+      // Find the block element
       const block =
         colorPickerContext.lastClickedElement.closest('[id^="block-"]');
       if (!block) {
-        console.error("❌ Block not found");
+        context.showNotification("Block not found", "error");
         return;
       }
 
+      // Define selectors for different text types
       const selectorMap = {
         paragraph1: "p.sqsrte-large",
         paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
@@ -92,25 +103,68 @@ export function handleBoldTextColorClick(
       };
 
       const paragraphSelector = selectorMap[selectedTextType] || "";
-
       const targetElements = block.querySelectorAll(paragraphSelector);
 
-      targetElements.forEach((el) => {
-        el.style.color = selectedColor;
+      if (!targetElements.length) {
+        context.showNotification(
+          `No ${selectedTextType} found in the block`,
+          "error"
+        );
+        return;
+      }
+
+      let italicFound = false;
+      let italicCount = 0;
+
+      // Find and color all italic text
+      targetElements.forEach((tag) => {
+        const italicElements = tag.querySelectorAll("strong");
+        if (italicElements.length > 0) {
+          italicFound = true;
+          italicCount += italicElements.length;
+
+          // Create or update style tag for this block's em tags
+          let styleTag = document.getElementById(`style-${block.id}-strong`);
+          if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = `style-${block.id}-strong`;
+            document.head.appendChild(styleTag);
+          }
+
+          // Remove any inline styles from parent elements
+          tag.style.color = "";
+
+          // Apply color to em tags
+          const cssRule = `#${block.id} ${paragraphSelector} strong {
+            color: ${selectedColor} !important;
+          }`;
+
+          styleTag.innerHTML = cssRule;
+        }
       });
 
-      colorPickerContext.handleAllTextColorClick(
-        { selectedColor },
-        {
-          ...colorPickerContext,
-          selectedSingleTextType: selectedTextType,
-          lastClickedElement: colorPickerContext.lastClickedElement,
-        }
+      if (!BoldFound) {
+        context.showNotification(
+          `No Bold (<strong>) text found in ${selectedTextType}. Please add some Bold text first.`,
+          "info"
+        );
+        return;
+      }
+
+      // Save to backend
+      context.addPendingModification(block.id, {
+        color: selectedColor,
+        target: selectedTextType,
+      });
+
+      context.showNotification(
+        `✅ Text color applied to ${italicCount} Bold word(s) in ${selectedTextType}`,
+        "success"
       );
     });
   }
 
-  // ✅ Only open colorPalette manually after setting context
+  // Open color picker
   setTimeout(() => {
     colorPalette.click();
   }, 50);
