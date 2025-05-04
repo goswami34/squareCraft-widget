@@ -193,7 +193,7 @@ let colorPickerContext = null;
 
 export function handleItalicTextColorClick(event, context) {
   // Import and call the click event handler
-  import("./clickEvents/handleItalicTextColorClickEvent.js")
+  import("../clickEvents/handleItalicTextColorClickEvent.js")
     .then((module) => {
       module.handleItalicTextColorClickEvent(
         event,
