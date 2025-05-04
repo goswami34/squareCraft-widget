@@ -216,6 +216,10 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextColorClick.js"
   );
 
+  const { handleBoldTextHighlightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextHighlightClick.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
