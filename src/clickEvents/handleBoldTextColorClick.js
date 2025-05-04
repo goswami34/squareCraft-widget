@@ -1,7 +1,7 @@
 let colorPalette = null;
 let colorPickerContext = null;
 
-export function handleItalicTextColorClickEvent(
+export function handleBoldTextColorClick(
   event,
   lastClickedElement,
   applyStylesToElement,
@@ -113,17 +113,17 @@ export function handleItalicTextColorClickEvent(
         return;
       }
 
-      let italicFound = false;
-      let italicCount = 0;
+      let boldFound = false;
+      let boldCount = 0;
 
-      // Find and color all italic text
+      // Find and color all bold text
       targetElements.forEach((tag) => {
-        const italicElements = tag.querySelectorAll("strong");
-        if (italicElements.length > 0) {
-          italicFound = true;
-          italicCount += italicElements.length;
+        const boldElements = tag.querySelectorAll("strong");
+        if (boldElements.length > 0) {
+          boldFound = true;
+          boldCount += boldElements.length;
 
-          // Create or update style tag for this block's em tags
+          // Create or update style tag for this block's strong tags
           let styleTag = document.getElementById(`style-${block.id}-strong`);
           if (!styleTag) {
             styleTag = document.createElement("style");
@@ -134,7 +134,7 @@ export function handleItalicTextColorClickEvent(
           // Remove any inline styles from parent elements
           tag.style.color = "";
 
-          // Apply color to em tags
+          // Apply color to strong tags
           const cssRule = `#${block.id} ${paragraphSelector} strong {
             color: ${selectedColor} !important;
           }`;
@@ -143,7 +143,7 @@ export function handleItalicTextColorClickEvent(
         }
       });
 
-      if (!BoldFound) {
+      if (!boldFound) {
         context.showNotification(
           `No Bold (<strong>) text found in ${selectedTextType}. Please add some Bold text first.`,
           "info"
@@ -158,7 +158,7 @@ export function handleItalicTextColorClickEvent(
       });
 
       context.showNotification(
-        `✅ Text color applied to ${italicCount} Bold word(s) in ${selectedTextType}`,
+        `✅ Text color applied to ${boldCount} Bold word(s) in ${selectedTextType}`,
         "success"
       );
     });
