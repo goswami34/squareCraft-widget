@@ -1068,10 +1068,10 @@ let selectedElement = null;
 
     // bold text color code start here
 
-    handleBoldTextColorClick(event, {
-      lastClickedElement,
-      applyStylesToElement,
-    });
+    // handleBoldTextColorClick(event, {
+    //   lastClickedElement,
+    //   applyStylesToElement,
+    // });
 
     // bold text color code end here
     handleBoldTextColorClick(event, lastClickedElement, applyStylesToElement, {
@@ -1086,6 +1086,22 @@ let selectedElement = null;
       },
       showNotification,
     });
+
+    const activeBoldTab = document.querySelector(".sc-selected-tab");
+    if (!activeBoldTab || !activeBoldTab.id.includes("italic")) {
+      handleBoldTextColor(event, lastClickedElement, applyStylesToElement, {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      });
+    }
 
     //bold text color code start here
 
