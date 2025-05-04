@@ -148,7 +148,7 @@ export function typoBoldSelect(fontSizes) {
 
 
     <div class="sc-flex sc-col-span-5 sc-justify-between sc-items-center">
-         <div class="sc-flex sc-items-center" id="squareCraftBoldTextTransform">
+         <div class="sc-flex sc-items-center" id="squareCraftBoldElementTextTransform">
                <div id="scTextTransformUppercase" 
                    
                   class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">

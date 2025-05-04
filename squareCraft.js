@@ -1240,7 +1240,7 @@ let selectedElement = null;
     }
 
     const textTransformContainer = document.getElementById(
-      "squareCraftBoldTextTransform"
+      "squareCraftBoldElementTextTransform"
     );
     if (textTransformContainer && !textTransformContainer.dataset.initialized) {
       textTransformContainer.dataset.initialized = "true";

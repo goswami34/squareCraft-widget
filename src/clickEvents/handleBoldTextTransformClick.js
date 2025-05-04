@@ -145,7 +145,7 @@ export function handleBoldTextTransformClick(event, context) {
       setSelectedSingleTextType(clickedTag);
 
       const fontSizeInput = document.getElementById(
-        `squareCraftBoldTextTransform-${typeId}`
+        `squareCraftBoldElementTextTransform-${typeId}`
       );
       if (fontSizeInput) {
         fontSizeInput.focus(); // auto focus
