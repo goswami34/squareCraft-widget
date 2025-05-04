@@ -1081,12 +1081,53 @@ let selectedElement = null;
 
     //italic text color code end here
 
-    // bold text color code start here
+    //italic text highlight code start here
 
-    // handleBoldTextColorClick(event, {
-    //   lastClickedElement,
-    //   applyStylesToElement,
-    // });
+    handleItalicTextHeighlightClickEvent(
+      event,
+      lastClickedElement,
+      applyStylesToElement,
+      {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      }
+    );
+
+    const activeItalicHighlightTab = document.querySelector(".sc-selected-tab");
+    if (
+      !activeItalicHighlightTab ||
+      !activeItalicHighlightTab.id.includes("italic")
+    ) {
+      handleItalicTextHeighlight(
+        event,
+        lastClickedElement,
+        applyStylesToElement,
+        {
+          handleAllTextColorClick,
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        }
+      );
+    }
+
+    //italic text highlight code end here
+
+    // bold text color code start here
 
     // bold text color code end here
     handleBoldTextColorClick(event, lastClickedElement, applyStylesToElement, {
@@ -1920,7 +1961,7 @@ let selectedElement = null;
 
     //Italic text highlight code start here
     const ItalictextHighlightColorDiv = document.getElementById(
-      "texHeightlistPalate"
+      "ItalictextHighlightColorPalate"
     );
     if (
       ItalictextHighlightColorDiv &&
@@ -1929,7 +1970,7 @@ let selectedElement = null;
       ItalictextHighlightColorDiv.dataset.initialized = "true";
 
       ItalictextHighlightColorDiv.addEventListener("click", (event) => {
-        handleItalicTextHeighlightClick(
+        handleItalicTextHeighlightClickEvent(
           event,
           lastClickedElement,
           applyStylesToElement,
