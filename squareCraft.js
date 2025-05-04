@@ -208,6 +208,14 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicTextColorClickEvent.js"
   );
 
+  const { handleBoldTextColor } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleBoldTextColor.js"
+  );
+
+  const { handleBoldTextColorClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextColorClick.js"
+  );
+
   document.body.addEventListener("click", (event) => {
     handleBlockClick(event, {
       getTextType,
@@ -1058,6 +1066,29 @@ let selectedElement = null;
 
     //italic text color code end here
 
+    // bold text color code start here
+
+    handleBoldTextColorClick(event, {
+      lastClickedElement,
+      applyStylesToElement,
+    });
+
+    // bold text color code end here
+    handleBoldTextColorClick(event, lastClickedElement, applyStylesToElement, {
+      handleAllTextColorClick,
+      lastClickedElement,
+      selectedSingleTextType,
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification,
+    });
+
+    //bold text color code start here
+
     typoTabSelect(event);
   });
 
@@ -1851,6 +1882,37 @@ let selectedElement = null;
     }
 
     //Italic text highlight code end here
+
+    //bold text color code start here
+
+    const BoldtextColorDiv = document.getElementById("BoldtextColorPalate");
+    if (BoldtextColorDiv && !BoldtextColorDiv.dataset.initialized) {
+      BoldtextColorDiv.dataset.initialized = "true";
+
+      BoldtextColorDiv.addEventListener("click", (event) => {
+        handleBoldTextColorClick(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextColorClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Bold Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //bold text color code end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
