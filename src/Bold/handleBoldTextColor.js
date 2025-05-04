@@ -34,7 +34,7 @@ export function handleBoldTextColor(event, context) {
   // Import and call the click event handler
   import("../clickEvents/handleBoldTextColorClick.js")
     .then((module) => {
-      module.handleItalicTextColorClickEvent(
+      module.handleBoldTextColorClick(
         event,
         lastClickedElement,
         applyStylesToElement,
