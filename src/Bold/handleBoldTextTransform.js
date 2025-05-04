@@ -30,108 +30,135 @@ export function handleBoldElementTextTransformClick(
   event = null,
   context = null
 ) {
-  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
-    context;
+  console.log("🚀 handleBoldElementTextTransformClick called with:", {
+    event,
+    context,
+  });
+
+  const {
+    lastClickedElement,
+    selectedSingleTextType,
+    addPendingModification,
+    saveModifications,
+  } = context || {};
 
   if (!event) {
     const activeButton = document.querySelector(
       '[id^="scTextTransform"].sc-activeTab-border'
     );
-    if (!activeButton) return;
+    console.log("🔍 Active button found:", activeButton);
+    if (!activeButton) {
+      console.log("❌ No active button found");
+      return;
+    }
     event = { target: activeButton };
   }
 
-  const clickedElement = event.target.closest('[id^="scTextTransform"]');
-  if (!clickedElement) return;
+  // Get the clicked transform button
+  const clickedTransform = event.target.closest("[data-bold-text-transform]");
+  console.log("🔎 Clicked transform button:", clickedTransform);
+  if (!clickedTransform) {
+    console.log("❌ No transform button found");
+    return;
+  }
 
-  const textTransform = clickedElement.dataset.textTransform;
+  // Get the text transform value from the data attribute
+  const textTransform = clickedTransform.getAttribute(
+    "data-bold-text-transform"
+  );
+  console.log("🔎 Text transform value:", textTransform);
 
   if (!lastClickedElement) {
+    console.log("❌ No last clicked element");
     showNotification("Please select a block first", "error");
     return;
   }
 
   if (!selectedSingleTextType) {
+    console.log("❌ No selected text type");
     showNotification("Please select a text type first", "error");
     return;
   }
 
   const block = lastClickedElement.closest('[id^="block-"]');
+  console.log("🔍 Found block:", block);
   if (!block) {
+    console.log("❌ No block found");
     showNotification("Block not found", "error");
     return;
   }
 
+  // Correct Paragraph Selector Setup
   let paragraphSelector = "";
-
-  // 🎯 Correct mapping here
   if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = "p.sqsrte-large";
   } else if (selectedSingleTextType === "paragraph2") {
     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
   } else if (selectedSingleTextType === "paragraph3") {
     paragraphSelector = "p.sqsrte-small";
-  } else if (selectedSingleTextType === "heading1") {
-    paragraphSelector = "h1";
-  } else if (selectedSingleTextType === "heading2") {
-    paragraphSelector = "h2";
-  } else if (selectedSingleTextType === "heading3") {
-    paragraphSelector = "h3";
-  } else if (selectedSingleTextType === "heading4") {
-    paragraphSelector = "h4";
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    paragraphSelector = `h${selectedSingleTextType.replace("heading", "")}`;
   } else {
+    paragraphSelector = selectedSingleTextType;
+  }
+  console.log("🔍 Using paragraph selector:", paragraphSelector);
+
+  // Check if there are any em tags in the selected elements
+  const targetElements = block.querySelectorAll(paragraphSelector);
+  console.log("🔍 Found target elements:", targetElements.length);
+  if (!targetElements.length) {
+    console.log("❌ No target elements found");
     showNotification(
-      "Unknown selected type: " + selectedSingleTextType,
+      `No ${selectedSingleTextType} found inside block`,
       "error"
     );
     return;
   }
 
-  console.log("✅ Applying text-transform for selector:", paragraphSelector);
-
-  // Find target paragraphs or headings
-  const targetElements = block.querySelectorAll(paragraphSelector);
-  if (!targetElements.length) {
-    showNotification(`No text found for ${selectedSingleTextType}`, "error");
-    return;
-  }
-
-  let strongFound = false;
-
-  targetElements.forEach((el) => {
-    const strongs = el.querySelectorAll("strong");
-    if (strongs.length > 0) {
-      strongFound = true;
-      strongs.forEach((strong) => {
-        strong.style.textTransform = textTransform;
-      });
+  // Check for <em> tags in the selected tag
+  let hasEmTags = false;
+  targetElements.forEach((element) => {
+    const strongTags = element.querySelectorAll("strong");
+    console.log("🔍 Found strong tags in element:", strongTags.length);
+    if (strongTags.length > 0) {
+      hasEmTags = true;
     }
   });
 
-  if (!strongFound) {
+  if (!hasEmTags) {
+    console.log("❌ No strong tags found in selected tag");
     showNotification(
-      `No bold text found inside ${selectedSingleTextType}`,
+      `No italic text (<strong>) found in ${selectedSingleTextType}`,
       "info"
     );
     return;
   }
 
-  // ✅ Dynamic CSS injection
-  const styleId = `style-${block.id}-${selectedSingleTextType}-strong-texttransform`;
-  let styleTag = document.getElementById(styleId);
+  // Dynamic CSS Inject
+  const italicStyleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
+  console.log("🔍 Using style ID:", italicStyleId);
 
-  if (!styleTag) {
-    styleTag = document.createElement("style");
-    styleTag.id = styleId;
-    document.head.appendChild(styleTag);
-  }
+  // Remove any old style tag for this block/tag
+  let oldStyleTag = document.getElementById(italicStyleId);
+  if (oldStyleTag) oldStyleTag.remove();
 
-  styleTag.innerHTML = `
-      #${block.id} ${paragraphSelector} strong {
-        text-transform: ${textTransform} !important;
-      }
-    `;
+  // Create new style tag that only targets em tags
+  let styleTag = document.createElement("style");
+  styleTag.id = italicStyleId;
 
+  // Only apply text-transform to em tags and their colored spans
+  const cssRule = `
+    #${block.id} ${paragraphSelector} strong,
+    #${block.id} ${paragraphSelector} strong span[class^='sqsrte-text-color'] {
+      text-transform: ${textTransform} !important;
+    }
+  `;
+
+  styleTag.innerHTML = cssRule;
+  document.head.appendChild(styleTag);
+  console.log("🔍 Applying CSS rule:", cssRule);
+
+  // Save Modification (for API persistence)
   addPendingModification(
     block.id,
     {
@@ -140,17 +167,19 @@ export function handleBoldElementTextTransformClick(
     },
     "strong"
   );
+  console.log("✅ Saved modification");
 
-  // Update active button
-  document.querySelectorAll('[id^="scTextTransform"]').forEach((el) => {
+  // Update Active Tab UI
+  document.querySelectorAll("[data-bold-text-transform]").forEach((el) => {
     el.classList.remove("sc-activeTab-border");
     el.classList.add("sc-inActiveTab-border");
   });
-  clickedElement.classList.remove("sc-inActiveTab-border");
-  clickedElement.classList.add("sc-activeTab-border");
+  clickedTransform.classList.remove("sc-inActiveTab-border");
+  clickedTransform.classList.add("sc-activeTab-border");
+  console.log("✅ Updated UI");
 
   showNotification(
-    `Text-transform applied to bold words in: ${selectedSingleTextType}`,
+    `✅ Text transform applied to Bold text in ${selectedSingleTextType}`,
     "success"
   );
 }

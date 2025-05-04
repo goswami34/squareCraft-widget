@@ -152,22 +152,22 @@ export function typoBoldSelect(fontSizes) {
                <div id="scTextTransformUppercase" 
                    
                   class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
-                  <p data-text-transform="uppercase" class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
+                  <p data-bold-text-transform="uppercase" class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
                </div>
                <div id="scTextTransformLowercase" 
                     
                   class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer">
-                  <p data-text-transform="lowercase" class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">ag</p>
+                  <p data-bold-text-transform="lowercase" class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">ag</p>
                </div>
                <div id="scTextTransformCapitalize" 
                    
                   class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer">
-                  <p data-text-transform="capitalize" class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">Ag</p>
+                  <p data-bold-text-transform="capitalize" class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">Ag</p>
                </div>
                <div id="scTextTransformNone" 
                    
                   class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
-                  <p data-text-transform="small-caps" class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
+                  <p data-bold-text-transform="small-caps" class="sc-universal sc-poppins sc-text-sm squareCraft-text-transform">AG</p>
                </div>
          </div>
       </div>
