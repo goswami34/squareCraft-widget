@@ -106,6 +106,118 @@
   //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonStyles/initButtonStyles.js"
   // );
 
+  // Typography all functionality code
+  const { handleFontSizeLink } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontSizeLink.js"
+  );
+  const { handleLinkBlockClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleLinkBlockClick.js"
+  );
+  const { handleTextTransformLinkClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextTransformLinkClick.js"
+  );
+  const { handleFontWeightLink } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontWeightLink.js"
+  );
+  const { handleTextHighLinghtClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextHighLinght.js"
+  );
+  const { handleAllFontSizeClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontSize.js"
+  );
+
+  const { handleAllTextTransformClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextTransform.js"
+  );
+  const { handleAllTextAlignClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextAlign.js"
+  );
+  const { handleAllLetterSpacingClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleLetterSpeacing.js"
+  );
+
+  const { handleAllLineHeightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllLineHeight.js"
+  );
+
+  const { handleAllFontWeightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontWeight.js"
+  );
+
+  const { handleAllTextColorClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextColor.js"
+  );
+
+  const { handleAllBlockClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleAllBlockClick.js"
+  );
+
+  const { handleAllTextHighlightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextHighlight.js"
+  );
+
+  const { handleTextHighlightColorClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextHighlightColorClick.js"
+  );
+
+  const { handleAllFontFamilyClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontFamily.js"
+  );
+
+  const { handleItalicBlockClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicBlockClick.js"
+  );
+
+  const { handleItalicFontSizeClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicFontSize.js"
+  );
+
+  const { handleItalicFontWeightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicFontWeight.js"
+  );
+
+  const { handleItalicTextTransformClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextTransform.js"
+  );
+
+  const { handleItalicTextColorClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextColor.js"
+  );
+
+  const { handleItalicTextHeighlightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextHeighlisht.js"
+  );
+
+  const { handleItalicTextColorClickEvent } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicTextColorClickEvent.js"
+  );
+
+  const { handleBoldTextColor } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleBoldTextColor.js"
+  );
+
+  const { handleBoldTextColorClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextColorClick.js"
+  );
+
+  const { handleBoldTextHighlightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextHighlightClick.js"
+  );
+
+  const { handleBoldTextHighlight } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleBoldTextHighlight.js"
+  );
+
+  const { handleItalicTextHeighlight } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextHeighlisht.js"
+  );
+
+  const { handleItalicTextHeighlightClickEvent } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicTextHeighlightClickEvent.js"
+  );
+
+  // Typography all functionality code end here
+
   const themeColors = await getSquarespaceThemeStyles();
 
   document.body.addEventListener("click", (event) => {
@@ -122,9 +234,9 @@
       return;
     }
 
-    setTimeout(() => {
-      initButtonFontColorPaletteToggle(themeColors, selectedElement);
-    }, 100);
+    // setTimeout(() => {
+    //   initButtonFontColorPaletteToggle(themeColors, selectedElement);
+    // }, 100);
 
     setTimeout(initImageSectionControls, 100);
     const clickedBlock = event.target.closest('[id^="block-"]');
@@ -162,6 +274,961 @@
       token,
       widgetId,
     });
+
+    // Typography all functionality code start here
+    handleAllBlockClick(event, {
+      getTextType,
+      selectedElement,
+      setSelectedElement: (val) => (selectedElement = val),
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+      lastClickedBlockId,
+    });
+
+    handleItalicBlockClick(event, {
+      getTextType,
+      selectedElement,
+      setSelectedElement: (val) => (selectedElement = val),
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+      lastClickedBlockId,
+    });
+
+    handleLinkBlockClick(event, {
+      getTextType,
+      selectedElement,
+      setSelectedElement: (val) => (selectedElement = val),
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+    });
+
+    handleBoldTextTransformClick(event, {
+      getTextType,
+      selectedElement,
+      handleFontWeightClick,
+      addPendingModification,
+      showNotification,
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      setSelectedElement: (val) => (selectedElement = val),
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+    });
+
+    handleFontSize(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    handleBoldElementTextTransformClick(event, {
+      lastClickedElement,
+      getTextType,
+      applyStylesToElement,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+      lastAppliedAlignment,
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+
+      showNotification: showNotification,
+    });
+
+    handleFontWeightClick(event, {
+      lastClickedElement,
+      getTextType,
+      applyStylesToElement,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+      lastAppliedAlignment,
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      selectedElement,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+
+      showNotification: showNotification,
+    });
+
+    //Link code start here
+
+    handleFontSizeLink(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    handleTextTransformLinkClick(event, {
+      lastClickedElement,
+      getTextType,
+      applyStylesToElement,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+      lastAppliedAlignment,
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+
+      showNotification: showNotification,
+    });
+
+    //Link code end here
+
+    //All font size code start here
+
+    handleAllFontSizeClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    handleAllTextTransformClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    handleAllTextAlignClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    handleAllLetterSpacingClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    handleAllLineHeightClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    handleAllFontWeightClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    handleAllTextColorClick(event, {
+      handleAllTextColorClick,
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    //All font size code end here
+
+    handleTextColorClick(event, lastClickedElement, applyStylesToElement, {
+      handleAllTextColorClick,
+      lastClickedElement,
+      selectedSingleTextType,
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification,
+    });
+
+    handleTextHighlightColorClick(
+      event,
+      lastClickedElement,
+      applyStylesToElement,
+      {
+        handleAllTextHighlightClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      }
+    );
+
+    handleAllFontFamilyClick(event, {
+      lastClickedElement,
+      selectedSingleTextType,
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification,
+    });
+
+    //Italic text highlight code start here
+    // handleItalicTextHeighlightClick(event, {
+    //   lastClickedElement,
+    //   applyStylesToElement,
+    //   selectedSingleTextType,
+    //   addPendingModification: (blockId, css, tagType) => {
+    //     if (!pendingModifications.has(blockId)) {
+    //       pendingModifications.set(blockId, []);
+    //     }
+    //     pendingModifications.get(blockId).push({ css, tagType });
+    //   },
+    //   showNotification,
+    // });
+    //Italic text highlight code end here
+
+    // Predefined font list for faster dropdown
+    const predefinedFonts = [
+      "Roboto",
+      "Open Sans",
+      "Lato",
+      "Montserrat",
+      "Oswald",
+      "Poppins",
+      "Raleway",
+      "Playfair Display",
+      "Merriweather",
+      "Ubuntu",
+      "Rubik",
+      "Inter",
+      "Nunito",
+      "Muli",
+      "PT Sans",
+      "Work Sans",
+      "Fira Sans",
+      "Manrope",
+      "Mulish",
+      "Josefin Sans",
+    ];
+
+    // Function to inject Google Fonts link dynamically
+    function loadSelectedFont(fontFamily) {
+      const fontName = fontFamily.replace(/\s+/g, "+"); // Replace spaces with '+'
+      const linkId = `font-${fontName}`;
+
+      if (!document.getElementById(linkId)) {
+        const link = document.createElement("link");
+        link.id = linkId;
+        link.rel = "stylesheet";
+        link.href = `https://fonts.googleapis.com/css2?family=${fontName}&display=swap`;
+        document.head.appendChild(link);
+        console.log(`✅ Font loaded: ${fontFamily}`);
+      }
+    }
+
+    // Main function to load fonts into the dropdown
+    function loadFontFamiliesIntoDropdown() {
+      const fontFamilyDropdown = document.getElementById(
+        "squareCraftAllFontFamily"
+      );
+
+      if (!fontFamilyDropdown) {
+        console.error("❌ Font family dropdown not found.");
+        return;
+      }
+
+      // First add default option
+      fontFamilyDropdown.innerHTML = `
+    <option value="" selected disabled hidden>Select Font</option>
+  `;
+
+      // Add predefined fonts
+      predefinedFonts.forEach((font) => {
+        const option = document.createElement("option");
+        option.value = font;
+        option.textContent = font;
+        fontFamilyDropdown.appendChild(option);
+      });
+
+      console.log("✅ Predefined fonts loaded into dropdown.");
+
+      // Add change event
+      fontFamilyDropdown.addEventListener("change", (event) => {
+        const selectedFont = event.target.value;
+        fontFamilyDropdown.style.color = "black"; // Make selected font name black
+        loadSelectedFont(selectedFont); // Inject font link
+      });
+    }
+
+    loadFontFamiliesIntoDropdown();
+
+    // Load font families into dropdown for all font family end here
+
+    // Make the selected font-family name color black after choosing
+    const fontFamilyDropdown = document.getElementById(
+      "squareCraftAllFontFamily"
+    );
+    if (fontFamilyDropdown) {
+      fontFamilyDropdown.addEventListener("change", (event) => {
+        fontFamilyDropdown.style.color = "black";
+      });
+    }
+
+    //italic code start here
+
+    //italic font size code start here
+
+    handleItalicFontSizeClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    //italic font size code end here
+
+    //italic font weight code start here
+    handleItalicFontWeightClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+    //italic font weight code end here
+
+    //italic text transform code start here
+    handleItalicTextTransformClick(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+
+    //italic text transform code end here
+
+    //italic text color code start here
+    // handleItalicTextColorClick(event, {
+    //   handleAllTextColorClick,
+    //   lastClickedElement,
+    //   getTextType,
+    //   getTextTypeBold,
+    //   applyStylesToElement,
+    //   lastAppliedAlignment,
+    //   selectedSingleTextType,
+    //   setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+    //   selectedTextElement,
+    //   setSelectedTextElement: (clickedTag) =>
+    //     (selectedTextElement = clickedTag),
+
+    //   setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+    //   lastActiveAlignmentElement,
+    //   setLastActiveAlignmentElement: (val) =>
+    //     (lastActiveAlignmentElement = val),
+    //   lastClickedBlockId,
+    //   setLastClickedElement: (val) => (lastClickedElement = val),
+    //   userId,
+    //   saveModifications,
+    //   handleBlockClick,
+    //   setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+    //   token,
+    //   widgetId,
+    //   setSelectedElement: (val) => (selectedElement = val), // Add this line
+    //   addPendingModification: (blockId, css, tagType) => {
+    //     if (!pendingModifications.has(blockId)) {
+    //       pendingModifications.set(blockId, []);
+    //     }
+    //     pendingModifications.get(blockId).push({ css, tagType });
+    //   },
+    //   showNotification: showNotification,
+    // });
+
+    handleItalicTextColorClickEvent(
+      event,
+      lastClickedElement,
+      applyStylesToElement,
+      {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      }
+    );
+
+    const activeTab = document.querySelector(".sc-selected-tab");
+    if (!activeTab || !activeTab.id.includes("italic")) {
+      handleItalicTextColorClick(
+        event,
+        lastClickedElement,
+        applyStylesToElement,
+        {
+          handleAllTextColorClick,
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        }
+      );
+    }
+
+    //italic text color code end here
+
+    //italic text highlight code start here
+
+    handleItalicTextHeighlightClickEvent(
+      event,
+      lastClickedElement,
+      applyStylesToElement,
+      {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      }
+    );
+
+    const activeItalicHighlightTab = document.querySelector(".sc-selected-tab");
+    if (
+      !activeItalicHighlightTab ||
+      !activeItalicHighlightTab.id.includes("italic")
+    ) {
+      handleItalicTextHeighlight(
+        event,
+        lastClickedElement,
+        applyStylesToElement,
+        {
+          handleAllTextColorClick,
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        }
+      );
+    }
+
+    //italic text highlight code end here
+
+    // bold text color code start here
+
+    // bold text color code end here
+    handleBoldTextColorClick(event, lastClickedElement, applyStylesToElement, {
+      handleAllTextColorClick,
+      lastClickedElement,
+      selectedSingleTextType,
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification,
+    });
+
+    const activeBoldTab = document.querySelector(".sc-selected-tab");
+    if (!activeBoldTab || !activeBoldTab.id.includes("italic")) {
+      handleBoldTextColor(event, lastClickedElement, applyStylesToElement, {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      });
+    }
+
+    //bold text color code start here
+
+    //bold text highlight code start here
+    handleBoldTextHighlightClick(
+      event,
+      lastClickedElement,
+      applyStylesToElement,
+      {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      }
+    );
+
+    const activeBoldHighlightTab = document.querySelector(".sc-selected-tab");
+    if (
+      !activeBoldHighlightTab ||
+      !activeBoldHighlightTab.id.includes("italic")
+    ) {
+      handleBoldTextHighlight(event, lastClickedElement, applyStylesToElement, {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      });
+    }
+    //bold text highlight code end here
+
+    // Typography all functionality code end here
 
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
     // handleFontWeightDropdownClick(event);
@@ -323,6 +1390,701 @@
   const observer = new MutationObserver(() => {
     addHeadingEventListeners();
     fetchModifications();
+
+    const fontWeightSelect = document.getElementById("squareCraftFontWeight");
+    if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
+      console.log("Initializing font weight select");
+      fontWeightSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleFontWeightClick(null, {
+          lastClickedElement,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification,
+          getTextType,
+        });
+      }, 100);
+    }
+
+    const textTransformContainer = document.getElementById(
+      "squareCraftBoldElementTextTransform"
+    );
+    if (textTransformContainer && !textTransformContainer.dataset.initialized) {
+      textTransformContainer.dataset.initialized = "true";
+
+      // Add click event listeners to all text transform buttons
+      textTransformContainer
+        .querySelectorAll('[id^="scTextTransform"]')
+        .forEach((button) => {
+          button.addEventListener("click", (event) => {
+            const lastClickedElement = document.querySelector(".sc-selected");
+            if (lastClickedElement) {
+              handleBoldElementTextTransformClick(event, {
+                lastClickedElement,
+                lastClickedBlockId: lastClickedElement.id,
+                selectedSingleTextType,
+                addPendingModification,
+                showNotification,
+                getTextType,
+                applyStylesToElement,
+              });
+            }
+          });
+        });
+    }
+
+    // const textColorContainer = document.getElementById("scTextColor");
+    // if (textColorContainer && !textColorContainer.dataset.initialized) {
+    //   textColorContainer.dataset.initialized = "true";
+
+    //   // Add click event listeners to all text colro buttons
+    //   textColorContainer
+    //     .querySelectorAll('[id^="scTextColor"]')
+    //     .forEach((button) => {
+    //       button.addEventListener("click", (event) => {
+    //         const lastClickedElement = document.querySelector(".sc-selected");
+    //         if (lastClickedElement) {
+    //           handleTextColorclicked(event, {
+    //             lastClickedElement,
+    //             lastClickedBlockId: lastClickedElement.id,
+    //           });
+    //         }
+    //       });
+    //     });
+    // }
+
+    //Link code start here
+
+    const LinkfontsizeSelect = document.getElementById("scFontSizeInputLink");
+    if (LinkfontsizeSelect && !LinkfontsizeSelect.dataset.initialized) {
+      LinkfontsizeSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleFontSizeLink(null, {
+          lastClickedElement,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+
+    const textTransformLinkContainer = document.getElementById(
+      "squareCraftLink-text-transform"
+    );
+    if (
+      textTransformLinkContainer &&
+      !textTransformLinkContainer.dataset.initialized
+    ) {
+      textTransformLinkContainer.dataset.initialized = "true";
+
+      textTransformLinkContainer
+        .querySelectorAll('[id^="scTextTransform"]')
+        .forEach((button) => {
+          button.addEventListener("click", (event) => {
+            const lastClickedElement = document.querySelector(".sc-selected");
+            if (lastClickedElement) {
+              handleTextTransformLinkClick(event, {
+                lastClickedElement,
+                selectedSingleTextType,
+                addPendingModification,
+                showNotification,
+              });
+            }
+          });
+        });
+    }
+
+    // In squareCraft.js
+    const fontWeightLinkSelect = document.getElementById(
+      "squareCraftLinkFontWeight"
+    );
+    if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
+      console.log("Initializing font weight select for links");
+      fontWeightLinkSelect.dataset.initialized = "true";
+
+      fontWeightLinkSelect.addEventListener("change", function (event) {
+        event.preventDefault();
+        console.log("Font weight select changed");
+
+        const currentlySelectedBlock = document.querySelector(".sc-selected");
+        const selectedFontWeight = this.value;
+        console.log("Selected font weight:", selectedFontWeight);
+
+        if (!currentlySelectedBlock) {
+          showNotification(
+            "❌ Please select a block first fsfgsfgsfgsgfsgsg.",
+            "error"
+          );
+          this.value = "400";
+          return;
+        }
+
+        const selectedTab = document.querySelector(".sc-selected-tab");
+        if (!selectedTab) {
+          showNotification(
+            "❌ Please select a text type (h1, h2, p1 etc) first.",
+            "error"
+          );
+          this.value = "400";
+          return;
+        }
+
+        handleFontWeightLink(event, {
+          lastClickedElement: currentlySelectedBlock,
+          selectedSingleTextType: selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+      });
+    }
+
+    const textHighlightInput = document.getElementById("scTextHighLight");
+    if (textHighlightInput && !textHighlightInput.dataset.initialized) {
+      console.log("Initializing text highlight input");
+      textHighlightInput.dataset.initialized = "true";
+
+      textHighlightInput.addEventListener("change", function (event) {
+        event.preventDefault();
+        console.log("Text highlight color changed");
+
+        // Check for selected block
+        const currentlySelectedBlock = document.querySelector(".sc-selected");
+        if (!currentlySelectedBlock) {
+          showNotification("❌ Please select a block first.", "error");
+          return;
+        }
+
+        // Check for selected text type
+        const selectedTab = document.querySelector(".sc-selected-tab");
+        if (!selectedTab) {
+          showNotification(
+            "❌ Please select a text type (h1, h2, p1 etc) first.",
+            "error"
+          );
+          return;
+        }
+
+        // Get the selected text type from the tab
+        let selectedTextType;
+        if (selectedTab.id.startsWith("heading")) {
+          selectedTextType = `h${selectedTab.id.replace("heading", "")}`;
+        } else if (selectedTab.id.startsWith("paragraph")) {
+          selectedTextType = `p${selectedTab.id.replace("paragraph", "")}`;
+        } else {
+          showNotification("❌ Invalid text type selected.", "error");
+          return;
+        }
+
+        console.log("Selected text type:", selectedTextType);
+
+        handleTextHighLinghtClick(event, {
+          lastClickedElement: currentlySelectedBlock,
+          selectedSingleTextType: selectedTextType,
+          addPendingModification,
+          showNotification,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+        });
+      });
+    }
+
+    // In squareCraft.js
+    const colorInput = document.getElementById("scTextHighLight");
+    const hexInput = document.getElementById("scTextHeighlightHex");
+
+    if (colorInput && hexInput) {
+      // Sync color input with hex input
+      colorInput.addEventListener("input", function () {
+        hexInput.value = this.value;
+      });
+
+      // Sync hex input with color input
+      hexInput.addEventListener("input", function () {
+        if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+          colorInput.value = this.value;
+        }
+      });
+    }
+
+    //Link code end here
+
+    //All font size code start here
+    const AllfontsizeSelect = document.getElementById("scAllFontSizeInput");
+    if (AllfontsizeSelect && !AllfontsizeSelect.dataset.initialized) {
+      AllfontsizeSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleAllFontSizeClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //All font size code end here
+
+    //All text transform code start here
+    const AllTextTransformSelect = document.getElementById(
+      "squareCraftAllTextTransform"
+    );
+    if (AllTextTransformSelect && !AllTextTransformSelect.dataset.initialized) {
+      AllTextTransformSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleAllTextTransformClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //All text transform code end here
+
+    //All text align code start here
+
+    const AlltextAlignContainer = document.getElementById(
+      "squareCraftAllTextAlign"
+    );
+    if (AlltextAlignContainer && !AlltextAlignContainer.dataset.initialized) {
+      AlltextAlignContainer.dataset.initialized = "true";
+
+      AlltextAlignContainer.querySelectorAll('[id^="scTextAlign"]').forEach(
+        (button) => {
+          button.addEventListener("click", (event) => {
+            handleAllTextAlignClick(event, {
+              lastClickedElement,
+              selectedSingleTextType,
+              addPendingModification,
+              showNotification,
+            });
+          });
+        }
+      );
+    }
+
+    //All text align code end here
+
+    //All letter spacing code start here
+    const AllLetterSpacingSelect = document.getElementById(
+      "scLetterSpacingInput"
+    );
+    if (AllLetterSpacingSelect && !AllLetterSpacingSelect.dataset.initialized) {
+      AllLetterSpacingSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleAllLetterSpacingClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //All letter spacing code end here
+
+    //All line height code start here
+    const AllLineHeightSelect = document.getElementById("scLineHeightInput");
+    if (AllLineHeightSelect && !AllLineHeightSelect.dataset.initialized) {
+      AllLineHeightSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleAllLineHeightClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //All line height code end here
+
+    //All font weight code start here
+
+    const AllFontWeightSelect = document.getElementById(
+      "squareCraftAllFontWeight"
+    );
+    if (AllFontWeightSelect && !AllFontWeightSelect.dataset.initialized) {
+      AllFontWeightSelect.dataset.initialized = "true";
+
+      AllFontWeightSelect.addEventListener("change", (event) => {
+        handleAllFontWeightClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Font weight applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //All font weight code end here
+
+    //All text color code start here
+    const textColorDiv = document.getElementById("textColorPalate");
+    if (textColorDiv && !textColorDiv.dataset.initialized) {
+      textColorDiv.dataset.initialized = "true";
+
+      textColorDiv.addEventListener("click", (event) => {
+        handleTextColorClick(event, lastClickedElement, applyStylesToElement, {
+          handleAllTextColorClick,
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //All text color code end here
+
+    //All text highlight color code start here
+    const textHighlightColorDiv = document.getElementById(
+      "texHeightlistPalate"
+    );
+    if (textHighlightColorDiv && !textHighlightColorDiv.dataset.initialized) {
+      textHighlightColorDiv.dataset.initialized = "true";
+
+      textHighlightColorDiv.addEventListener("click", (event) => {
+        handleTextHighlightColorClick(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextHighlightClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //All text highlight color code end here
+
+    //All font family code start here
+    const allFontFamilySelect = document.getElementById(
+      "squareCraftAllFontFamily"
+    );
+    if (allFontFamilySelect && !allFontFamilySelect.dataset.initialized) {
+      allFontFamilySelect.dataset.initialized = "true";
+
+      allFontFamilySelect.addEventListener("change", (event) => {
+        handleAllFontFamilyClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      });
+    }
+
+    //All font family code end here
+
+    //italic text color code start here
+    const ItalictextColorDiv = document.getElementById("textColorPalate");
+    if (ItalictextColorDiv && !ItalictextColorDiv.dataset.initialized) {
+      ItalictextColorDiv.dataset.initialized = "true";
+
+      ItalictextColorDiv.addEventListener("click", (event) => {
+        handleItalicTextColorClickEvent(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextColorClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //italic text color code end here
+
+    //italic font size code start here
+
+    const ItalicFontSizeSelect = document.getElementById(
+      "scFontSizeItalicInput"
+    );
+    if (ItalicFontSizeSelect && !ItalicFontSizeSelect.dataset.initialized) {
+      ItalicFontSizeSelect.dataset.initialized = "true";
+
+      ItalicFontSizeSelect.addEventListener("change", (event) => {
+        handleItalicFontSizeClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Font Size applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //italic font weight code start here
+
+    const ItalicFontWeightSelect = document.getElementById(
+      "squareCraftItalicFontWeight"
+    );
+    if (ItalicFontWeightSelect && !ItalicFontWeightSelect.dataset.initialized) {
+      ItalicFontWeightSelect.dataset.initialized = "true";
+
+      ItalicFontWeightSelect.addEventListener("change", (event) => {
+        handleItalicFontWeightClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Font weight applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //italic font weight code end here
+
+    //Italic text transform code start here
+    const ItalicTextTransformSelect = document.getElementById(
+      "squareCraftItalicTextTransform"
+    );
+    if (
+      ItalicTextTransformSelect &&
+      !ItalicTextTransformSelect.dataset.initialized
+    ) {
+      ItalicTextTransformSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleItalicTextTransformClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //Italic text transform code end here
+
+    //Italic text highlight code start here
+    const ItalictextHighlightColorDiv = document.getElementById(
+      "ItalictextHighlightColorPalate"
+    );
+    if (
+      ItalictextHighlightColorDiv &&
+      !ItalictextHighlightColorDiv.dataset.initialized
+    ) {
+      ItalictextHighlightColorDiv.dataset.initialized = "true";
+
+      ItalictextHighlightColorDiv.addEventListener("click", (event) => {
+        handleItalicTextHeighlightClickEvent(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextHighlightClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //Italic text highlight code end here
+
+    //bold text color code start here
+
+    const BoldtextColorDiv = document.getElementById("BoldtextColorPalate");
+    if (BoldtextColorDiv && !BoldtextColorDiv.dataset.initialized) {
+      BoldtextColorDiv.dataset.initialized = "true";
+
+      BoldtextColorDiv.addEventListener("click", (event) => {
+        handleBoldTextColorClick(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextColorClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Bold Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //bold text color code end here
+
+    //bold text highlight code start here
+    const BoldtextHighlightDiv = document.getElementById(
+      "BoldtextHighlightPalate"
+    );
+    if (BoldtextHighlightDiv && !BoldtextHighlightDiv.dataset.initialized) {
+      BoldtextHighlightDiv.dataset.initialized = "true";
+
+      BoldtextHighlightDiv.addEventListener("click", (event) => {
+        handleBoldTextHighlightClick(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextColorClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Bold Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+    //bold text highlight code end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
