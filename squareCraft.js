@@ -1136,7 +1136,7 @@
           }
           pendingModifications.get(blockId).push({ css, tagType });
         },
-        showNotification,
+        showNotification: showNotification,
       }
     );
 

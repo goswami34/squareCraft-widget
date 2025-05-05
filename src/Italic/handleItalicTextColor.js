@@ -200,7 +200,10 @@ export function handleItalicTextColorClick(event, context) {
         event,
         lastClickedElement,
         applyStylesToElement,
-        context
+        {
+          ...context,
+          showNotification: context.showNotification,
+        }
       );
     })
     .catch((error) => {
