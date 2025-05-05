@@ -198,6 +198,10 @@
     "https://goswami34.github.io/squareCraft-widget/src/Bold/handleBoldTextColor.js"
   );
 
+  const { handleBoldTextTransformClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextTransformClick.js"
+  );
+
   const { handleBoldTextColorClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextColorClick.js"
   );
