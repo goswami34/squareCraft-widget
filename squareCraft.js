@@ -1294,7 +1294,51 @@ let selectedElement = null;
     }
     //bold text highlight code end here
 
-    // Typography all functionality code end here
+    // Typography all functionality code end
+
+    //link text highlight code start here
+    handleLinkTextTransformClick(
+      event,
+      lastClickedElement,
+      applyStylesToElement,
+      {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      }
+    );
+
+    const activeLinkHighlightTab = document.querySelector(".sc-selected-tab");
+    if (
+      !activeLinkHighlightTab ||
+      !activeLinkHighlightTab.id.includes("link")
+    ) {
+      handleTextHighLinghtLink(
+        event,
+        lastClickedElement,
+        applyStylesToElement,
+        {
+          handleAllTextColorClick,
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        }
+      );
+    }
+    //link text highlight code end here
 
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
     // handleFontWeightDropdownClick(event);
@@ -1621,56 +1665,23 @@ let selectedElement = null;
       });
     }
 
-    const textHighlightInput = document.getElementById("scTextHighLight");
-    if (textHighlightInput && !textHighlightInput.dataset.initialized) {
-      console.log("Initializing text highlight input");
-      textHighlightInput.dataset.initialized = "true";
-
-      textHighlightInput.addEventListener("change", function (event) {
-        event.preventDefault();
-        console.log("Text highlight color changed");
-
-        // Check for selected block
-        const currentlySelectedBlock = document.querySelector(".sc-selected");
-        if (!currentlySelectedBlock) {
-          showNotification("❌ Please select a block first.", "error");
-          return;
-        }
-
-        // Check for selected text type
-        const selectedTab = document.querySelector(".sc-selected-tab");
-        if (!selectedTab) {
-          showNotification(
-            "❌ Please select a text type (h1, h2, p1 etc) first.",
-            "error"
-          );
-          return;
-        }
-
-        // Get the selected text type from the tab
-        let selectedTextType;
-        if (selectedTab.id.startsWith("heading")) {
-          selectedTextType = `h${selectedTab.id.replace("heading", "")}`;
-        } else if (selectedTab.id.startsWith("paragraph")) {
-          selectedTextType = `p${selectedTab.id.replace("paragraph", "")}`;
-        } else {
-          showNotification("❌ Invalid text type selected.", "error");
-          return;
-        }
-
-        console.log("Selected text type:", selectedTextType);
-
-        handleTextHighLinghtClick(event, {
-          lastClickedElement: currentlySelectedBlock,
-          selectedSingleTextType: selectedTextType,
-          addPendingModification,
-          showNotification,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-        });
-      });
-    }
+    handleLinkTextTransformClick(
+      event,
+      lastClickedElement,
+      applyStylesToElement,
+      {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      }
+    );
 
     // In squareCraft.js
     const colorInput = document.getElementById("scTextHighLight");
@@ -2151,6 +2162,40 @@ let selectedElement = null;
       });
     }
     //bold text highlight code end here
+
+    //link text highlight code start here
+    const LinktextHighlightColorDiv = document.getElementById(
+      "LinktextHighlightColorPalate"
+    );
+    if (
+      LinktextHighlightColorDiv &&
+      !LinktextHighlightColorDiv.dataset.initialized
+    ) {
+      LinktextHighlightColorDiv.dataset.initialized = "true";
+
+      LinktextHighlightColorDiv.addEventListener("click", (event) => {
+        handleLinkTextTransformClick(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextHighlightClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+    //link text highlight code end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
