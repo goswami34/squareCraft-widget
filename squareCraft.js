@@ -306,7 +306,7 @@
     handleBlockClick(event, {
       getTextType,
       selectedElement,
-      setSelectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
       setSelectedElement: (val) => (selectedElement = val),
       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
       setLastClickedElement: (val) => (lastClickedElement = val),
