@@ -273,8 +273,8 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicTextHeighlightClickEvent.js"
   );
 
-  const { handleLinkTextTransformClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleLinkTextTransformClick.js"
+  const { handleLinkTextHighlightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleLinkTextHighlightClick.js"
   );
 
   const { handleTextHighLinghtLink } = await import(
@@ -1297,7 +1297,7 @@ let selectedElement = null;
     // Typography all functionality code end
 
     //link text highlight code start here
-    handleLinkTextTransformClick(
+    handleLinkTextHighlightClick(
       event,
       lastClickedElement,
       applyStylesToElement,
@@ -1665,7 +1665,7 @@ let selectedElement = null;
       });
     }
 
-    handleLinkTextTransformClick(
+    handleLinkTextHighlightClick(
       event,
       lastClickedElement,
       applyStylesToElement,
@@ -2174,7 +2174,7 @@ let selectedElement = null;
       LinktextHighlightColorDiv.dataset.initialized = "true";
 
       LinktextHighlightColorDiv.addEventListener("click", (event) => {
-        handleLinkTextTransformClick(
+        handleLinkTextHighlightClick(
           event,
           lastClickedElement,
           applyStylesToElement,
