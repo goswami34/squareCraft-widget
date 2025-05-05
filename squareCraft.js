@@ -101,6 +101,9 @@
   const { initBorderColorPaletteToggle } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/utils/initBorderColorPaletteToggle.js"
   );
+  const { saveModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
   // const { initButtonFontColorPaletteToggle } = await import(
   //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js"
   // );
@@ -196,6 +199,10 @@
 
   const { handleBoldTextColor } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/Bold/handleBoldTextColor.js"
+  );
+
+  const { handleFontWeightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontWeight.js"
   );
 
   const { handleBoldTextTransformClick } = await import(
