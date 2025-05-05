@@ -109,9 +109,9 @@
   const themeColors = await getSquarespaceThemeStyles();
 
   document.body.addEventListener("click", (event) => {
-    if (selectedElement) {
-      initButtonStyles(selectedElement);
-    }
+    // if (selectedElement) {
+    //   initButtonStyles(selectedElement);
+    // }
     const trigger = event.target.closest("#border-color-select");
 
     if (trigger) {
