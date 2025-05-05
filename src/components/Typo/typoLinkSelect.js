@@ -140,10 +140,5 @@ export function typoLinkSelect(fontSizes) {
       </div>
    </div> 
                  
-
-
-
-
-</div>
     `;
 }
