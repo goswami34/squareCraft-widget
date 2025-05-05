@@ -112,3 +112,207 @@ export function initToggleSwitch() {
     updateToggleUI();
   });
 }
+
+let pageId = document
+  .querySelector("article[data-page-sections]")
+  ?.getAttribute("data-page-sections");
+
+export async function saveModifications(blockId, css, tagType) {
+  if (!pageId || !blockId || !css) {
+    console.warn("⚠️ Missing required data to save modifications.");
+    return {
+      success: false,
+      error: "Missing required data",
+    };
+  }
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  if (!userId || !token || !widgetId) {
+    console.warn("⚠️ Missing authentication data");
+    return {
+      success: false,
+      error: "Missing authentication data",
+    };
+  }
+
+  const modificationData = {
+    userId,
+    token,
+    widgetId,
+    modifications: [
+      {
+        pageId,
+        elements: [
+          {
+            elementId: blockId,
+            css: {
+              strong: {
+                id: blockId,
+                ...css,
+              },
+            },
+            elementStructure: {
+              type: "strong",
+              content: document.getElementById(blockId)?.textContent || "",
+              parentId:
+                document.getElementById(blockId)?.parentElement?.id || null,
+            },
+          },
+        ],
+      },
+    ],
+  };
+
+  try {
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(modificationData),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    const result = await response.json();
+    console.log("✅ Changes Saved Successfully!", result);
+
+    showNotification("Changes saved successfully!", "success");
+
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (error) {
+    console.error("❌ Error saving modifications:", error);
+    showNotification(`Failed to save changes: ${error.message}`, "error");
+
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
+
+function showNotification(message, type = "info") {
+  const notification = document.createElement("div");
+  notification.className = `sc-notification sc-notification-${type}`;
+  notification.textContent = message;
+
+  // Add styles
+  Object.assign(notification.style, {
+    position: "fixed",
+    top: "20px",
+    right: "20px",
+    padding: "10px 20px",
+    borderRadius: "4px",
+    color: "white",
+    zIndex: "9999",
+    animation: "fadeIn 0.3s ease-in-out",
+    backgroundColor:
+      type === "success" ? "#4CAF50" : type === "error" ? "#f44336" : "#2196F3",
+  });
+
+  document.body.appendChild(notification);
+
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.style.animation = "fadeOut 0.3s ease-in-out";
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+export function initToggleSwitch() {
+  const toggleSwitch = document.getElementById("toggleSwitch");
+  const toggleText = document.getElementById("toggleText");
+  const toggleBullet = toggleSwitch?.querySelector(".toggle-bullet");
+  if (!toggleSwitch || !toggleText || !toggleBullet) {
+    console.log(":hourglass_flowing_sand: Waiting for toggle elements...");
+    return;
+  }
+  let isEnabled = getToggleState();
+  const updateToggleUI = () => {
+    if (!toggleSwitch || !toggleBullet || !toggleText) return;
+    if (isEnabled) {
+      toggleSwitch.style.backgroundColor = "#EF7C2F";
+      toggleBullet.style.left = "auto";
+      toggleBullet.style.right = "1.5px";
+      toggleText.textContent = "Enable";
+    } else {
+      toggleSwitch.style.backgroundColor = "#747372";
+      toggleBullet.style.left = "2px";
+      toggleBullet.style.right = "auto";
+      toggleText.textContent = "Disable";
+    }
+  };
+  updateToggleUI();
+  toggleSwitch.addEventListener("click", () => {
+    isEnabled = !isEnabled;
+    setToggleState(isEnabled);
+    updateToggleUI();
+  });
+}
+
+// Add this new function to handle publish button click
+
+// In html.js
+async function handlePublish() {
+  if (pendingModifications.size === 0) {
+    showNotification("No changes to publish", "info");
+    return;
+  }
+
+  try {
+    // Save each pending modification
+    for (const [blockId, modifications] of pendingModifications.entries()) {
+      for (const mod of modifications) {
+        const result = await saveModifications(blockId, mod.css, mod.tagType);
+        if (!result.success) {
+          throw new Error(`Failed to save changes for block ${blockId}`);
+        }
+      }
+    }
+
+    // Clear pending modifications after successful save
+    pendingModifications.clear();
+    showNotification("All changes published successfully!", "success");
+  } catch (error) {
+    showNotification(error.message, "error");
+  }
+}
+
+export function initPublishButton() {
+  const publishButton = document.getElementById("publish");
+  if (!publishButton) {
+    console.warn("Publish button not found");
+    return;
+  }
+
+  publishButton.addEventListener("click", async () => {
+    try {
+      // Show loading state
+      publishButton.disabled = true;
+      publishButton.textContent = "Publishing...";
+
+      await handlePublish();
+    } catch (error) {
+      showNotification(error.message, "error");
+    } finally {
+      // Reset button state
+      publishButton.disabled = false;
+      publishButton.textContent = "Publish";
+    }
+  });
+}
