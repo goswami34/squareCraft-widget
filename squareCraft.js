@@ -37,6 +37,7 @@
   let lastAppliedAlignment = null;
   let lastActiveAlignmentElement = null;
   let selectedTextElement = null;
+  let selectedSingleTextType = null;
 
   function applyStylesToElement(element, css) {
     if (!element || !css) return;
