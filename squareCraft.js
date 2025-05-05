@@ -232,7 +232,47 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicTextHeighlightClickEvent.js"
   );
 
+  // image code start here
+  const { initImageSectionControls } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initImageSectionControls.js"
+  );
+
+  const { initImageMaskControls } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/initImageMaskControls.js"
+  );
+
+  const { initBorderColorPaletteToggle } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initBorderColorPaletteToggle.js"
+  );
+
+  const { initImageSectionToggleControls } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initImageSectionToggleControls.js"
+  );
+
+  const { getSquarespaceThemeStyles } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/getSquarespaceThemeStyles.js"
+  );
+
+  const themeColors = await getSquarespaceThemeStyles();
+
+  // image code end here
+
   document.body.addEventListener("click", (event) => {
+    if (selectedElement) {
+      initButtonStyles(selectedElement);
+    }
+    const trigger = event.target.closest("#border-color-select");
+
+    if (trigger) {
+      console.log("✅ border-color-select clicked");
+      setTimeout(() => {
+        initBorderColorPaletteToggle(themeColors);
+      }, 100);
+      return;
+    }
+
+    setTimeout(initImageSectionControls, 100);
+
     handleBlockClick(event, {
       getTextType,
       selectedElement,
@@ -2103,7 +2143,7 @@ let selectedElement = null;
     }
   }
 
-  function loadWidgetFromString(htmlString) {
+  function loadWidgetFromString(htmlString, clickedBlock) {
     if (!widgetContainer) {
       widgetContainer = document.createElement("div");
       widgetContainer.id = "sc-widget-container";
@@ -2117,7 +2157,11 @@ let selectedElement = null;
       widgetContainer.style.display = "none";
       document.body.appendChild(widgetContainer);
       makeWidgetDraggable();
+
+      initImageMaskControls(() => selectedElement);
       widgetLoaded = true;
+
+      initImageSectionToggleControls();
 
       setTimeout(() => {
         widgetContainer = document.getElementById("sc-widget-container");
