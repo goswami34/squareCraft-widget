@@ -93,6 +93,9 @@
   const { getTextType } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/utils/getTextType.js"
   );
+  const { getTextTypeBold } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/getTexttypeBold.js"
+  );
   // const { handleFontWeightDropdownClick } = await import(
   //   "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleFontWeightDropdownClick.js"
   // );
