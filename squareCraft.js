@@ -1,3 +1,6 @@
+let pendingModifications = new Map();
+let selectedElement = null;
+
 (async function squareCraft() {
   const Url = parent.document.location.href;
   console.log("parent", Url);
