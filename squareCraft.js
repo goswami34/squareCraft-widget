@@ -273,6 +273,14 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicTextHeighlightClickEvent.js"
   );
 
+  const { handleLinkTextTransformClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleLinkTextTransformClick.js"
+  );
+
+  const { handleTextHighLinghtLink } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextHighLinghtLink.js"
+  );
+
   // Typography all functionality code end here
 
   const themeColors = await getSquarespaceThemeStyles();
