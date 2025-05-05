@@ -60,9 +60,9 @@
   const { getTextType } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/utils/getTextType.js"
   );
-  const { handleFontWeightDropdownClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleFontWeightDropdownClick.js"
-  );
+  // const { handleFontWeightDropdownClick } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleFontWeightDropdownClick.js"
+  // );
   const { handleBlockClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBlockClick.js"
   );
@@ -84,12 +84,12 @@
   const { initImageSectionToggleControls } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/utils/initImageSectionToggleControls.js"
   );
-  const { initButtonSectionToggleControls } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonSectionToggleControls/initButtonSectionToggleControls.js"
-  );
-  const { initImageUploadPreview } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonSectionToggleControls/initImageUploadPreview.js"
-  );
+  // const { initButtonSectionToggleControls } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonSectionToggleControls/initButtonSectionToggleControls.js"
+  // );
+  // const { initImageUploadPreview } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonSectionToggleControls/initImageUploadPreview.js"
+  // );
   const { initImageMaskControls } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/initImageMaskControls.js"
   );
@@ -164,7 +164,7 @@
     });
 
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
-    handleFontWeightDropdownClick(event);
+    // handleFontWeightDropdownClick(event);
     typoTabSelect(event);
   });
 
@@ -460,8 +460,8 @@
       makeWidgetDraggable();
       widgetLoaded = true;
       initImageSectionToggleControls();
-      initButtonSectionToggleControls();
-      initImageUploadPreview(() => selectedElement);
+      // initButtonSectionToggleControls();
+      // initImageUploadPreview(() => selectedElement);
 
       if (clickedBlock) {
         waitForElement("#typoSection, #imageSection, #buttonSection")
