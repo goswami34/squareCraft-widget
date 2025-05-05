@@ -58,53 +58,53 @@
     styleTag.innerHTML = cssText;
   }
   const { getTextType } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/getTextType.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/getTextType.js"
   );
   const { handleFontWeightDropdownClick } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleFontWeightDropdownClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleFontWeightDropdownClick.js"
   );
   const { handleBlockClick } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleBlockClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBlockClick.js"
   );
   const { handleAlignmentClick } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleAlignmentClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleAlignmentClick.js"
   );
   const { handleTextColorClick } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleTextColorClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextColorClick.js"
   );
   const { typoTabSelect } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/typoTabSelect.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/typoTabSelect.js"
   );
   const { detectBlockElementTypes } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/components/BlockType/detectBlockElementTypes.js"
+    "https://goswami34.github.io/squareCraft-widget/src/components/BlockType/detectBlockElementTypes.js"
   );
   const { initImageSectionControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initImageSectionControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initImageSectionControls.js"
   );
   const { initImageSectionToggleControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initImageSectionToggleControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initImageSectionToggleControls.js"
   );
   const { initButtonSectionToggleControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initButtonSectionToggleControls/initButtonSectionToggleControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonSectionToggleControls/initButtonSectionToggleControls.js"
   );
   const { initImageUploadPreview } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initButtonSectionToggleControls/initImageUploadPreview.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonSectionToggleControls/initImageUploadPreview.js"
   );
   const { initImageMaskControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/initImageMaskControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/initImageMaskControls.js"
   );
   const { getSquarespaceThemeStyles } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/getSquarespaceThemeStyles.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/getSquarespaceThemeStyles.js"
   );
   const { initBorderColorPaletteToggle } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initBorderColorPaletteToggle.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initBorderColorPaletteToggle.js"
   );
-  const { initButtonFontColorPaletteToggle } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js"
-  );
-  const { initButtonStyles } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initButtonStyles/initButtonStyles.js"
-  );
+  // const { initButtonFontColorPaletteToggle } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js"
+  // );
+  // const { initButtonStyles } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonStyles/initButtonStyles.js"
+  // );
 
   const themeColors = await getSquarespaceThemeStyles();
 
@@ -185,7 +185,7 @@
 
   async function fetchModifications(retries = 3) {
     const module = await import(
-      "https://fatin-webefo.github.io/squareCraft-plugin/html.js"
+      "https://goswami34.github.io/squareCraft-widget/html.js"
     );
     const htmlString = module.html();
 
@@ -331,7 +331,7 @@
 
   try {
     const { injectNavbarIcon } = await import(
-      "https://fatin-webefo.github.io/squareCraft-plugin/injectNavbarIcon.js"
+      "https://goswami34.github.io/squareCraft-widget/injectNavbarIcon.js"
     );
     injectNavbarIcon();
   } catch (error) {
@@ -387,7 +387,7 @@
   async function createWidget(clickedBlock) {
     try {
       const module = await import(
-        "https://fatin-webefo.github.io/squareCraft-plugin/html.js"
+        "https://goswami34.github.io/squareCraft-widget/html.js"
       );
       const htmlString = module.html();
 
@@ -445,7 +445,7 @@
       styleLink.rel = "stylesheet";
       styleLink.type = "text/css";
       styleLink.href =
-        "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
+        "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
       widgetContainer.appendChild(styleLink);
 
       // ✅ Then set HTML content
@@ -703,7 +703,7 @@
 
     if (mobileContainer) {
       const existingLink = parent.document.querySelector(
-        'link[href="https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css"]'
+        'link[href="https://goswami34.github.io/squareCraft-widget/src/styles/parent.css"]'
       );
 
       if (!existingLink) {
@@ -711,7 +711,7 @@
         link.rel = "stylesheet";
         link.type = "text/css";
         link.href =
-          "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
+          "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
         parent.document.head.appendChild(link);
       }
 
