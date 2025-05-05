@@ -26,7 +26,7 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
-export function handleTextHighLinght(event, context) {
+export function handleTextHighLinghtLink(event, context) {
   const { lastClickedElement, applyStylesToElement } = context;
   // Import and call the click event handler
   import("../clickEvents/handleLinkTextHighlightClick.js")
