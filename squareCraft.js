@@ -164,9 +164,9 @@ let selectedElement = null;
   const { handleFontWeightLink } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontWeightLink.js"
   );
-  const { handleTextHighLinghtClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextHighLinght.js"
-  );
+  // const { handleTextHighLinghtClick } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextHighLinght.js"
+  // );
   const { handleAllFontSizeClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontSize.js"
   );
