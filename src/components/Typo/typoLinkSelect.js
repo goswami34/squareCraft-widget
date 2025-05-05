@@ -107,22 +107,22 @@ export function typoLinkSelect(fontSizes) {
         class="sc-flex sc-items-center  ">
         
         <div id="scTextTransformUppercaseLink" 
-                  data-text-transform="uppercase" data-align="left" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
+                  datalink-text-transform="uppercase" data-align="left" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l">
 
            <p id="squareCraftLink-text-transform" class="sc-universal sc-poppins sc-text-sm">AG</p>
         </div>
          <div id="scTextTransformLowercaseLink" 
-                  data-text-transform="lowercase"  class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer ">
+                  datalink-text-transform="lowercase"  class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer ">
 
           <p id="squareCraftLink-text-transform" class="sc-universal sc-poppins sc-text-sm">ag</p>
         </div>
          <div id="scTextTransformCapitalizeLink" 
-                  data-text-transform="capitalize" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer">
+                  datalink-text-transform="capitalize" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer">
 
           <p id="squareCraftLink-text-transform" class="sc-universal sc-poppins sc-text-sm">Ag</p>
         </div>
         <div id="scTextTransformNoneLink" 
-                  data-text-transform="small-caps" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
+                  datalink-text-transform="small-caps" class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r">
           <p id="squareCraftLink-text-transform" class="sc-universal sc-poppins sc-text-sm">AG</p>
         </div>
         

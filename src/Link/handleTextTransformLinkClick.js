@@ -27,134 +27,152 @@ function showNotification(message, type = "info") {
 }
 
 export function handleTextTransformLinkClick(event = null, context = null) {
-  const {
-    lastClickedElement,
-    selectedSingleTextType,
-    addPendingModification,
-    showNotification,
-  } = context;
+  console.log("🚀 handleTextTransformLinkClick called with:", {
+    event,
+    context,
+  });
+
+  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
+    context || {};
 
   if (!event) {
     const activeButton = document.querySelector(
       '[id^="scTextTransform"].sc-activeTab-border'
     );
-    if (!activeButton) return;
+    console.log("🔍 Active button found:", activeButton);
+    if (!activeButton) {
+      console.log("❌ No active button found");
+      return;
+    }
     event = { target: activeButton };
   }
 
-  const clickedElement = event.target.closest('[id^="scTextTransform"]');
-  if (!clickedElement) return;
+  // Get the clicked transform button
+  const clickedTransform = event.target.closest("[datalink-text-transform]");
+  console.log("🔎 Clicked transform button:", clickedTransform);
+  if (!clickedTransform) {
+    console.log("❌ No transform button found");
+    return;
+  }
 
-  const textTransform = clickedElement.dataset.textTransform;
+  // Get the text transform value from the data attribute
+  const textTransform = clickedTransform.getAttribute(
+    "datalink-text-transform"
+  );
+  console.log("🔎 Text transform value:", textTransform);
 
   if (!lastClickedElement) {
+    console.log("❌ No last clicked element");
     showNotification("Please select a block first", "error");
     return;
   }
 
   if (!selectedSingleTextType) {
+    console.log("❌ No selected text type");
     showNotification("Please select a text type first", "error");
     return;
   }
 
   const block = lastClickedElement.closest('[id^="block-"]');
+  console.log("🔍 Found block:", block);
   if (!block) {
+    console.log("❌ No block found");
     showNotification("Block not found", "error");
     return;
   }
 
+  // Correct Paragraph Selector Setup
   let paragraphSelector = "";
-
   if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = "p.sqsrte-large";
   } else if (selectedSingleTextType === "paragraph2") {
     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
   } else if (selectedSingleTextType === "paragraph3") {
     paragraphSelector = "p.sqsrte-small";
-  } else if (selectedSingleTextType === "heading1") {
-    paragraphSelector = "h1";
-  } else if (selectedSingleTextType === "heading2") {
-    paragraphSelector = "h2";
-  } else if (selectedSingleTextType === "heading3") {
-    paragraphSelector = "h3";
-  } else if (selectedSingleTextType === "heading4") {
-    paragraphSelector = "h4";
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    paragraphSelector = `h${selectedSingleTextType.replace("heading", "")}`;
   } else {
-    showNotification(
-      "Unknown selected type: " + selectedSingleTextType,
-      "error"
-    );
-    return;
+    paragraphSelector = selectedSingleTextType;
   }
+  console.log("🔍 Using paragraph selector:", paragraphSelector);
 
-  console.log(
-    "✅ Applying LINK text-transform for selector:",
-    paragraphSelector
-  );
-
+  // Check if there are any em tags in the selected elements
   const targetElements = block.querySelectorAll(paragraphSelector);
+  console.log("🔍 Found target elements:", targetElements.length);
   if (!targetElements.length) {
+    console.log("❌ No target elements found");
     showNotification(
-      `No matching elements found for ${selectedSingleTextType}`,
+      `No ${selectedSingleTextType} found inside block`,
       "error"
     );
     return;
   }
 
-  let linkFound = false;
-
-  targetElements.forEach((el) => {
-    const links = el.querySelectorAll("a");
-    if (links.length > 0) {
-      linkFound = true;
-      links.forEach((link) => {
-        link.style.textTransform = textTransform;
-      });
+  // Check for <em> tags in the selected tag
+  let hasEmTags = false;
+  targetElements.forEach((element) => {
+    const emTags = element.querySelectorAll("a");
+    console.log("🔍 Found a tags in element:", emTags.length);
+    if (emTags.length > 0) {
+      hasEmTags = true;
     }
   });
 
-  if (!linkFound) {
+  if (!hasEmTags) {
+    console.log("❌ No a tags found in selected tag");
     showNotification(
-      `No links (<a>) found inside ${selectedSingleTextType}`,
+      `No italic text (<a>) found in ${selectedSingleTextType}`,
       "info"
     );
     return;
   }
 
-  const styleId = `style-${block.id}-${selectedSingleTextType}-link-texttransform`;
-  let styleTag = document.getElementById(styleId);
+  // Dynamic CSS Inject
+  const italicStyleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
+  console.log("🔍 Using style ID:", italicStyleId);
 
-  if (!styleTag) {
-    styleTag = document.createElement("style");
-    styleTag.id = styleId;
-    document.head.appendChild(styleTag);
-  }
+  // Remove any old style tag for this block/tag
+  let oldStyleTag = document.getElementById(italicStyleId);
+  if (oldStyleTag) oldStyleTag.remove();
 
-  styleTag.innerHTML = `
-      #${block.id} ${paragraphSelector} a {
-        text-transform: ${textTransform} !important;
-      }
-    `;
+  // Create new style tag that only targets em tags
+  let styleTag = document.createElement("style");
+  styleTag.id = italicStyleId;
 
+  // Only apply text-transform to em tags and their colored spans
+  const cssRule = `
+    #${block.id} ${paragraphSelector} a,
+    #${block.id} ${paragraphSelector} a span[class^='sqsrte-text-color'] {
+      text-transform: ${textTransform} !important;
+    }
+  `;
+
+  styleTag.innerHTML = cssRule;
+  document.head.appendChild(styleTag);
+  console.log("🔍 Applying CSS rule:", cssRule);
+
+  // Save Modification (for API persistence)
   addPendingModification(
     block.id,
     {
       "text-transform": textTransform,
       target: selectedSingleTextType,
     },
-    "link"
+    "a"
   );
+  console.log("✅ Saved modification");
 
-  // Update active button visual
-  document.querySelectorAll('[id^="scTextTransform"]').forEach((el) => {
+  // Update Active Tab UI
+  document.querySelectorAll("[datalink-text-transform]").forEach((el) => {
     el.classList.remove("sc-activeTab-border");
     el.classList.add("sc-inActiveTab-border");
   });
-  clickedElement.classList.remove("sc-inActiveTab-border");
-  clickedElement.classList.add("sc-activeTab-border");
+  clickedTransform.classList.remove("sc-inActiveTab-border");
+  clickedTransform.classList.add("sc-activeTab-border");
+  console.log("✅ Updated UI");
 
   showNotification(
-    `Text-transform applied to link words inside: ${selectedSingleTextType}`,
+    `✅ Text transform applied to link text in ${selectedSingleTextType}`,
     "success"
   );
 }
