@@ -184,6 +184,10 @@
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextColor.js"
   );
 
+  const { handleFontSize } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontSize.js"
+  );
+
   const { handleAllBlockClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleAllBlockClick.js"
   );
@@ -285,7 +289,7 @@
     setTimeout(initImageSectionControls, 100);
     const clickedBlock = event.target.closest('[id^="block-"]');
     if (clickedBlock) {
-      waitForElement("#typoSection, #imageSection, #buttonSection")
+      waitForElement("#typoSection, #imageSection")
         .then(() => {
           detectBlockElementTypes(clickedBlock);
         })
