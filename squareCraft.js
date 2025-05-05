@@ -306,6 +306,7 @@
     handleBlockClick(event, {
       getTextType,
       selectedElement,
+      setSelectedSingleTextType,
       setSelectedElement: (val) => (selectedElement = val),
       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
       setLastClickedElement: (val) => (lastClickedElement = val),
@@ -2189,6 +2190,7 @@
       {
         getTextType,
         selectedElement,
+        setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
         setSelectedElement: (val) => (selectedElement = val),
         setLastClickedBlockId: (val) => (lastClickedBlockId = val),
         setLastClickedElement: (val) => (lastClickedElement = val),
@@ -2280,13 +2282,15 @@
       // initImageUploadPreview(() => selectedElement);
 
       if (clickedBlock) {
-        waitForElement("#typoSection, #imageSection, #buttonSection")
+        waitForElement("#typoSection, #imageSection")
           .then(() => {
             handleBlockClick(
               { target: clickedBlock },
               {
                 getTextType,
                 selectedElement,
+                setSelectedSingleTextType: (tag) =>
+                  (selectedSingleTextType = tag),
                 setSelectedElement: (val) => (selectedElement = val),
                 setLastClickedBlockId: (val) => (lastClickedBlockId = val),
                 setLastClickedElement: (val) => (lastClickedElement = val),
