@@ -146,6 +146,9 @@
   // );
 
   // Typography all functionality code
+  const { handleBoldElementTextTransformClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleBoldTextTransform.js"
+  );
   const { handleFontSizeLink } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontSizeLink.js"
   );
