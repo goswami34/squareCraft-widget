@@ -28,6 +28,7 @@ export function initImageBorderControls(selectedElement) {
         border-width: ${borderWidth}px;
         box-sizing: border-box;
         border-style: solid;
+        border-color: red;
       }
     `;
     styleElement.textContent = css;
