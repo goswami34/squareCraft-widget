@@ -2164,6 +2164,38 @@ let selectedElement = null;
     //bold text highlight code end here
 
     //link text highlight code start here
+    // const LinktextHighlightColorDiv = document.getElementById(
+    //   "LinktextHighlightColorPalate"
+    // );
+    // if (
+    //   LinktextHighlightColorDiv &&
+    //   !LinktextHighlightColorDiv.dataset.initialized
+    // ) {
+    //   LinktextHighlightColorDiv.dataset.initialized = "true";
+
+    //   LinktextHighlightColorDiv.addEventListener("click", (event) => {
+    //     handleLinkTextHighlightClick(
+    //       event,
+    //       lastClickedElement,
+    //       applyStylesToElement,
+    //       {
+    //         handleAllTextHighlightClick,
+    //         lastClickedElement,
+    //         selectedSingleTextType,
+    //         addPendingModification,
+    //         showNotification,
+    //       }
+    //     );
+
+    //     if (selectedSingleTextType) {
+    //       showNotification(
+    //         `Text color applied to: ${selectedSingleTextType}`,
+    //         "success"
+    //       );
+    //     }
+    //   });
+    // }
+
     const LinktextHighlightColorDiv = document.getElementById(
       "LinktextHighlightColorPalate"
     );
@@ -2173,7 +2205,14 @@ let selectedElement = null;
     ) {
       LinktextHighlightColorDiv.dataset.initialized = "true";
 
-      LinktextHighlightColorDiv.addEventListener("click", (event) => {
+      // Remove any existing listeners
+      const newDiv = LinktextHighlightColorDiv.cloneNode(true);
+      LinktextHighlightColorDiv.parentNode.replaceChild(
+        newDiv,
+        LinktextHighlightColorDiv
+      );
+
+      newDiv.addEventListener("click", (event) => {
         handleLinkTextHighlightClick(
           event,
           lastClickedElement,
@@ -2186,13 +2225,6 @@ let selectedElement = null;
             showNotification,
           }
         );
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `Text color applied to: ${selectedSingleTextType}`,
-            "success"
-          );
-        }
       });
     }
     //link text highlight code end here
