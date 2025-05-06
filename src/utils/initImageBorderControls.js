@@ -1,7 +1,5 @@
 export function initImageBorderControls(selectedElement) {
-  const allButton = document.querySelector(
-    ".sc-bg-3f3f3f .sc-flex .sc-bg-454545"
-  );
+  const allButton = document.getElementById("allRadious");
   const borderWidthSlider = document.getElementById("radiousField");
   const borderWidthBullet = document.getElementById("radiousBullet");
   const borderWidthFill = document.getElementById("radiousFill");
@@ -18,10 +16,16 @@ export function initImageBorderControls(selectedElement) {
 
   // Handle All button click
   allButton.addEventListener("click", () => {
-    if (!selectedElement) return;
+    if (!selectedElement) {
+      console.log("No element selected");
+      return;
+    }
 
     const imageContent = selectedElement.querySelector(".sqs-image-content");
-    if (!imageContent) return;
+    if (!imageContent) {
+      console.log("No image content found");
+      return;
+    }
 
     // Apply initial border
     imageContent.style.borderWidth = "5px";

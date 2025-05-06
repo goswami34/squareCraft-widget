@@ -2283,24 +2283,18 @@ let pendingModifications = new Map();
     if (ImageBorderAllControls && !ImageBorderAllControls.dataset.initialized) {
       ImageBorderAllControls.dataset.initialized = "true";
 
-      ImageBorderAllControls.addEventListener("change", (event) => {
-        initImageBorderControls(event, {
-          lastClickedElement,
-          selectedSingleTextType,
-          addPendingModification,
-          showNotification,
-          selectedElement,
-        });
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `border all applied to: ${selectedSingleTextType}`,
-            "success"
-          );
+      ImageBorderAllControls.addEventListener("click", (event) => {
+        const selectedBlock = document.querySelector(".sc-selected");
+        if (!selectedBlock) {
+          showNotification("Please select an image block first", "error");
+          return;
         }
+
+        initImageBorderControls(selectedBlock);
+
+        showNotification("Border applied to image", "success");
       });
     }
-    // initImageBorderControls(selectedElement);
     //Image border controls end here
   });
 
