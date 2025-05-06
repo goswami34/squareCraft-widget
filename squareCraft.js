@@ -284,6 +284,7 @@ let selectedElement = null;
   // Typography all functionality code end here
 
   //Image all functionality code start here
+  //Image border controls
   const { initImageBorderControls } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/utils/initImageBorderControls.js"
   );
