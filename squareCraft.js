@@ -2284,13 +2284,13 @@ let pendingModifications = new Map();
       ImageBorderAllControls.dataset.initialized = "true";
 
       ImageBorderAllControls.addEventListener("click", () => {
-        const selectedBlock = document.querySelector(".sc-selected");
-        if (!selectedBlock) {
-          showNotification("Please select an image block first", "error");
+        const selectedImage = document.querySelector(".sc-selected-image");
+        if (!selectedImage) {
+          showNotification("Please select an image first", "error");
           return;
         }
 
-        initImageBorderControls(selectedBlock);
+        initImageBorderControls(selectedImage);
         showNotification("Border applied to image", "success");
       });
     }

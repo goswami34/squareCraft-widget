@@ -17,15 +17,9 @@ export function initImageBorderControls(selectedElement) {
   // Handle All button click
   allButton.addEventListener("click", () => {
     console.log("allButton clicked");
-    if (
-      !selectedElement ||
-      typeof selectedElement.querySelector !== "function"
-    ) {
-      console.log("No valid element selected");
-      return;
-    }
 
-    const imageContent = selectedElement.querySelector(".sqs-image-content");
+    // Find the selected image content
+    const imageContent = document.querySelector(".sqs-image-content");
     if (!imageContent) {
       console.log("No image content found");
       return;
@@ -69,10 +63,7 @@ export function initImageBorderControls(selectedElement) {
   function handleDrag(e) {
     if (!isDragging) return;
 
-    if (!selectedElement || typeof selectedElement.querySelector !== "function")
-      return;
-
-    const imageContent = selectedElement.querySelector(".sqs-image-content");
+    const imageContent = document.querySelector(".sqs-image-content");
     if (!imageContent) return;
 
     const rect = borderWidthSlider.getBoundingClientRect();
@@ -109,4 +100,18 @@ export function initImageBorderControls(selectedElement) {
   // Add event listeners
   borderWidthBullet.addEventListener("mousedown", startDrag);
   borderWidthBullet.addEventListener("touchstart", startDrag);
+
+  // Add click event listener to handle image selection
+  document.addEventListener("click", (e) => {
+    const imageContent = e.target.closest(".sqs-image-content");
+    if (imageContent) {
+      console.log("Image selected:", imageContent);
+      // Remove selection from other images
+      document.querySelectorAll(".sqs-image-content").forEach((img) => {
+        img.classList.remove("sc-selected-image");
+      });
+      // Add selection to clicked image
+      imageContent.classList.add("sc-selected-image");
+    }
+  });
 }
