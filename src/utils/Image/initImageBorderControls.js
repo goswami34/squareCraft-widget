@@ -20,6 +20,7 @@ export function initImageBorderControls(selectedElement) {
     return;
 
   let activeBorderType = "all"; // Track which border type is active
+  let currentBorderWidth = 0; // Store current border width
 
   // Function to create or update style element
   function updateStyleElement(blockId, borderWidth) {
@@ -43,7 +44,7 @@ export function initImageBorderControls(selectedElement) {
     } else if (activeBorderType === "top") {
       css = `
         #${blockId} div.sqs-image-content {
-        border-width: ${borderWidth}px;
+          border-width: ${currentBorderWidth}px;
           box-sizing: border-box;
           border-style: solid;
           border-color: red;
@@ -88,6 +89,9 @@ export function initImageBorderControls(selectedElement) {
 
     const blockId = blockElement.id;
     const initialBorderWidth = 5;
+
+    // Store current border width
+    currentBorderWidth = initialBorderWidth;
 
     // Apply initial border using external CSS
     updateStyleElement(blockId, initialBorderWidth);
