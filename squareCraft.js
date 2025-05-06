@@ -290,6 +290,7 @@ let selectedElement = null;
   );
 
   //Image all functionality code end here
+  //Image border controls end here
 
   const themeColors = await getSquarespaceThemeStyles();
 
