@@ -1,4 +1,4 @@
-export function initImageBorderControls() {
+export function initImageBorderControls(selectedElement) {
   const allButton = document.querySelector(
     ".sc-bg-3f3f3f .sc-flex .sc-bg-454545"
   );
@@ -18,10 +18,9 @@ export function initImageBorderControls() {
 
   // Handle All button click
   allButton.addEventListener("click", () => {
-    const selectedBlock = document.querySelector(".sc-selected");
-    if (!selectedBlock) return;
+    if (!selectedElement) return;
 
-    const imageContent = selectedBlock.querySelector(".sqs-image-content");
+    const imageContent = selectedElement.querySelector(".sqs-image-content");
     if (!imageContent) return;
 
     // Apply initial border
@@ -62,10 +61,9 @@ export function initImageBorderControls() {
   function handleDrag(e) {
     if (!isDragging) return;
 
-    const selectedBlock = document.querySelector(".sc-selected");
-    if (!selectedBlock) return;
+    if (!selectedElement) return;
 
-    const imageContent = selectedBlock.querySelector(".sqs-image-content");
+    const imageContent = selectedElement.querySelector(".sqs-image-content");
     if (!imageContent) return;
 
     const rect = borderWidthSlider.getBoundingClientRect();

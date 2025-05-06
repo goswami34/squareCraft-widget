@@ -1,5 +1,5 @@
 let pendingModifications = new Map();
-let selectedElement = null;
+// let selectedElement = null;
 
 (async function squareCraft() {
   const Url = parent.document.location.href;
@@ -2242,7 +2242,7 @@ let selectedElement = null;
   observer.observe(parent.document.body, { childList: true, subtree: true });
 
   // Initialize border controls
-  initImageBorderControls();
+  initImageBorderControls(selectedElement);
 
   addHeadingEventListeners();
 
