@@ -16,6 +16,7 @@ export function initImageBorderControls(selectedElement) {
 
   // Handle All button click
   allButton.addEventListener("click", () => {
+    console.log("allButton clicked");
     if (
       !selectedElement ||
       typeof selectedElement.querySelector !== "function"
