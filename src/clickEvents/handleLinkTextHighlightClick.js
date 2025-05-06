@@ -13,13 +13,6 @@ export function handleLinkTextHighlightClick(
     return;
   }
 
-  // If event is undefined, create a synthetic event object
-  if (!event) {
-    event = {
-      target: document.getElementById("LinktextHighlightColorPalate"),
-    };
-  }
-
   const LinktextHighlightColorPalate = event.target.closest(
     "#LinktextHighlightColorPalate"
   );
