@@ -1,8 +1,9 @@
 export function initImageBorderControls(selectedElement) {
-  const allButton = document.getElementById("allRadious");
-  const topButton = document.querySelector(
-    'img[alt="top-radious"]'
-  ).parentElement;
+  const allButton = document.getElementById("allBorder");
+  // const topButton = document.querySelector(
+  //   'img[alt="top-radious"]'
+  // ).parentElement;
+  const topButton = document.getElementById("topBorder");
   const borderWidthSlider = document.getElementById("radiousField");
   const borderWidthBullet = document.getElementById("radiousBullet");
   const borderWidthFill = document.getElementById("radiousFill");
