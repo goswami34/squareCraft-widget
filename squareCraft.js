@@ -286,7 +286,7 @@ let pendingModifications = new Map();
   //Image all functionality code start here
   //Image border controls
   const { initImageBorderControls } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/utils/initImageBorderControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/Image/initImageBorderControls.js"
   );
 
   //Image all functionality code end here
