@@ -29,6 +29,7 @@ export function initImageBorderControls(selectedElement) {
     imageContent.style.borderWidth = "5px";
     imageContent.style.borderStyle = "solid";
     imageContent.style.boxSizing = "border-box";
+    imageContent.style.borderColor = "red";
 
     // Update slider to match current border width
     const currentWidth = parseInt(imageContent.style.borderWidth) || 5;
