@@ -43,10 +43,6 @@ export function initImageBorderControls(selectedElement) {
     } else if (activeBorderType === "top") {
       css = `
         #${blockId} div.sqs-image-content {
-          border-width: ${borderWidth}px;
-          box-sizing: border-box;
-          border-style: solid;
-          border-color: red;
           border-top-width: ${borderWidth}px !important;
         }
       `;
