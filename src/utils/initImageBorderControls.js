@@ -16,8 +16,11 @@ export function initImageBorderControls(selectedElement) {
 
   // Handle All button click
   allButton.addEventListener("click", () => {
-    if (!selectedElement) {
-      console.log("No element selected");
+    if (
+      !selectedElement ||
+      typeof selectedElement.querySelector !== "function"
+    ) {
+      console.log("No valid element selected");
       return;
     }
 
@@ -65,7 +68,8 @@ export function initImageBorderControls(selectedElement) {
   function handleDrag(e) {
     if (!isDragging) return;
 
-    if (!selectedElement) return;
+    if (!selectedElement || typeof selectedElement.querySelector !== "function")
+      return;
 
     const imageContent = selectedElement.querySelector(".sqs-image-content");
     if (!imageContent) return;

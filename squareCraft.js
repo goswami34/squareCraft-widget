@@ -2283,7 +2283,7 @@ let pendingModifications = new Map();
     if (ImageBorderAllControls && !ImageBorderAllControls.dataset.initialized) {
       ImageBorderAllControls.dataset.initialized = "true";
 
-      ImageBorderAllControls.addEventListener("click", (event) => {
+      ImageBorderAllControls.addEventListener("click", () => {
         const selectedBlock = document.querySelector(".sc-selected");
         if (!selectedBlock) {
           showNotification("Please select an image block first", "error");
@@ -2291,7 +2291,6 @@ let pendingModifications = new Map();
         }
 
         initImageBorderControls(selectedBlock);
-
         showNotification("Border applied to image", "success");
       });
     }
