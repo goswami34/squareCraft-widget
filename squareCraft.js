@@ -1349,6 +1349,45 @@ let pendingModifications = new Map();
     }
     //link text highlight code end here
 
+    //Image section code start here
+
+    initImageBorderControls(event, {
+      lastClickedElement,
+      getTextType,
+      getTextTypeBold,
+      applyStylesToElement,
+      lastAppliedAlignment,
+      // selectedTextType,
+      // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
+      selectedSingleTextType,
+      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      selectedTextElement,
+      setSelectedTextElement: (clickedTag) =>
+        (selectedTextElement = clickedTag),
+
+      setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+      lastActiveAlignmentElement,
+      setLastActiveAlignmentElement: (val) =>
+        (lastActiveAlignmentElement = val),
+      lastClickedBlockId,
+      setLastClickedElement: (val) => (lastClickedElement = val),
+      userId,
+      saveModifications,
+      handleBlockClick,
+      setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+      token,
+      widgetId,
+      setSelectedElement: (val) => (selectedElement = val), // Add this line
+      addPendingModification: (blockId, css, tagType) => {
+        if (!pendingModifications.has(blockId)) {
+          pendingModifications.set(blockId, []);
+        }
+        pendingModifications.get(blockId).push({ css, tagType });
+      },
+      showNotification: showNotification,
+    });
+    //Image section code end here
+
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
     // handleFontWeightDropdownClick(event);
     typoTabSelect(event);
@@ -2237,12 +2276,35 @@ let pendingModifications = new Map();
       });
     }
     //link text highlight code end here
+
+    //Image border controls
+    // Initialize border controls
+    const ImageBorderAllControls = document.getElementById("allRadious");
+    if (ImageBorderAllControls && !ImageBorderAllControls.dataset.initialized) {
+      ImageBorderAllControls.dataset.initialized = "true";
+
+      ImageBorderAllControls.addEventListener("change", (event) => {
+        initImageBorderControls(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+          selectedElement,
+        });
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `border all applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+    // initImageBorderControls(selectedElement);
+    //Image border controls end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
-
-  // Initialize border controls
-  initImageBorderControls(selectedElement);
 
   addHeadingEventListeners();
 
