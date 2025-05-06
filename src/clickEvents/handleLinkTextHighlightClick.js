@@ -143,7 +143,7 @@ export function handleLinkTextHighlightClick(
           tag.style.backgroundColor = "";
 
           // Apply highlight color to Link tags using linear gradient
-          const cssRule = `#${block.id} ${paragraphSelector} Link {
+          const cssRule = `#${block.id} ${paragraphSelector} a {
             background-image: linear-gradient(to top, ${selectedColor} 50%, transparent 50%) !important;
           }`;
 
