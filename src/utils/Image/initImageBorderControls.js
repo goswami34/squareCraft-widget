@@ -34,6 +34,19 @@ export function initImageBorderControls(selectedElement) {
     styleElement.textContent = css;
   }
 
+  // Function to update slider position based on border width
+  function updateSliderPosition(width) {
+    const maxWidth = 100; // Maximum border width
+    const percent = (width / maxWidth) * 100;
+    const sliderWidth = borderWidthSlider.offsetWidth;
+    const newPosition = (percent / 100) * sliderWidth;
+
+    borderWidthBullet.style.left = `${newPosition}px`;
+    borderWidthBullet.style.transform = "translateX(-50%)";
+    borderWidthFill.style.width = `${newPosition}px`;
+    borderWidthDisplay.textContent = `${width}px`;
+  }
+
   // Handle All button click
   allButton.addEventListener("click", () => {
     console.log("allButton clicked");
@@ -61,19 +74,6 @@ export function initImageBorderControls(selectedElement) {
     // Update slider to match current border width
     updateSliderPosition(initialBorderWidth);
   });
-
-  // Function to update slider position based on border width
-  function updateSliderPosition(width) {
-    const maxWidth = 100; // Maximum border width
-    const percent = (width / maxWidth) * 100;
-    const sliderWidth = borderWidthSlider.offsetWidth;
-    const newPosition = (percent / 100) * sliderWidth;
-
-    borderWidthBullet.style.left = `${newPosition}px`;
-    borderWidthBullet.style.transform = "translateX(-50%)";
-    borderWidthFill.style.width = `${newPosition}px`;
-    borderWidthDisplay.textContent = `${width}px`;
-  }
 
   // Handle slider movement
   let isDragging = false;
