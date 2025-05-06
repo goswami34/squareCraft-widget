@@ -14,26 +14,51 @@ export function initImageBorderControls(selectedElement) {
   )
     return;
 
+  // Function to create or update style element
+  function updateStyleElement(blockId, borderWidth) {
+    let styleElement = document.getElementById("sc-image-border-style");
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = "sc-image-border-style";
+      document.head.appendChild(styleElement);
+    }
+
+    const css = `
+      #${blockId} div.sqs-image-content {
+        border-width: ${borderWidth}px;
+        box-sizing: border-box;
+        border-style: solid;
+      }
+    `;
+    styleElement.textContent = css;
+  }
+
   // Handle All button click
   allButton.addEventListener("click", () => {
     console.log("allButton clicked");
 
     // Find the selected image content
-    const imageContent = document.querySelector(".sqs-image-content");
+    const imageContent = document.querySelector(".sc-selected-image");
     if (!imageContent) {
-      console.log("No image content found");
+      console.log("No image selected");
       return;
     }
 
-    // Apply initial border
-    imageContent.style.borderWidth = "5px";
-    imageContent.style.borderStyle = "solid";
-    imageContent.style.boxSizing = "border-box";
-    imageContent.style.borderColor = "red";
+    // Get the block ID
+    const blockElement = imageContent.closest('[id^="block-"]');
+    if (!blockElement) {
+      console.log("No block element found");
+      return;
+    }
+
+    const blockId = blockElement.id;
+    const initialBorderWidth = 5;
+
+    // Apply initial border using external CSS
+    updateStyleElement(blockId, initialBorderWidth);
 
     // Update slider to match current border width
-    const currentWidth = parseInt(imageContent.style.borderWidth) || 5;
-    updateSliderPosition(currentWidth);
+    updateSliderPosition(initialBorderWidth);
   });
 
   // Function to update slider position based on border width
@@ -64,8 +89,13 @@ export function initImageBorderControls(selectedElement) {
   function handleDrag(e) {
     if (!isDragging) return;
 
-    const imageContent = document.querySelector(".sqs-image-content");
+    const imageContent = document.querySelector(".sc-selected-image");
     if (!imageContent) return;
+
+    const blockElement = imageContent.closest('[id^="block-"]');
+    if (!blockElement) return;
+
+    const blockId = blockElement.id;
 
     const rect = borderWidthSlider.getBoundingClientRect();
     const clientX = e.clientX || e.touches?.[0]?.clientX;
@@ -86,8 +116,8 @@ export function initImageBorderControls(selectedElement) {
     borderWidthFill.style.width = `${offsetX}px`;
     borderWidthDisplay.textContent = `${borderWidth}px`;
 
-    // Update image border
-    imageContent.style.borderWidth = `${borderWidth}px`;
+    // Update image border using external CSS
+    updateStyleElement(blockId, borderWidth);
   }
 
   function stopDrag() {
