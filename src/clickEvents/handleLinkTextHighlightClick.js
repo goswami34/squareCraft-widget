@@ -13,6 +13,12 @@ export function handleLinkTextHighlightClick(
     return;
   }
 
+  if (!event) {
+    event = {
+      target: document.getElementById("LinktextHighlightColorPalate"),
+    };
+  }
+
   const LinktextHighlightColorPalate = event.target.closest(
     "#LinktextHighlightColorPalate"
   );

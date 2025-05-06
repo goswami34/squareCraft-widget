@@ -1,11 +1,6 @@
-
-
-
-   export function WidgetImageSection(id) {
-
-      return `
-
-   <div id="imageSection">
+export function WidgetImageSection(id) {
+  return `
+      <div id="imageSection">
                <div class="sc-flex sc-p-2 sc-items-center sc-justify-between">
                   <div class="sc-flex sc-gap-2 sc-items-center">
                      <img loading="lazy" src="https://fatin-webefo.github.io/squareCraft-plugin/public/iamgeicon.png"
@@ -55,6 +50,8 @@
                </div>
                <div id="borderSection" class="sc-px-2 sc-mt-3">
                   <div class=" sc-px-2 sc-flex sc-items-center sc-justify-between">
+
+
                      <div class="sc-flex sc-gap-2 sc-items-center">
                         <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300"> Border
                         </p>
@@ -65,6 +62,7 @@
                               alt="reset">
                         </div>
                      </div>
+
                      <div
                         class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-2 sc-px-2 sc-py-0_5 sc-bg sc-bg-454545">
                         <p id="radiousCount" class="sc-font-thin sc-roboto sc-universal sc-text-xs">0px</p>
@@ -74,7 +72,10 @@
                               class="sc-rotate-180" alt="">
                         </div>
                      </div>
+
+                     
                   </div>
+
 
                   <div id="radiousField" class="sc-rounded-15px sc-relative sc-mt-3 sc-w-full sc-h-2 sc-bg-F6F6F6">
                      <div id="radiousFill" class="sc-absolute sc-bg-color-EF7C2F sc-h-2 sc-rounded-l-full"></div>
@@ -82,40 +83,58 @@
                         class="sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
                      </div>
                   </div>
+
+
                   <div class="sc-grid sc-grid-cols-12 sc-mt-3">
                      <div></div>
+
+
                      <div style="padding: 2px 0px;"
                         class="sc-bg-3f3f3f sc-flex sc-col-span-11 sc-text-sm sc-font-thin   sc-border sc-border-solid sc-border-3f3f3f   sc-justify-center  sc-px-1 sc-rounded-6px">
+
+
+
                         <div
                            class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px sc-bg-454545 sc-items-center sc-gap-1">
                            <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/all.svg" loading="lazy"
                               alt="all-radious">
                            <p class="sc-font-thin sc-roboto sc-universal ">All</p>
                         </div>
+
+
                         <div
                            class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1">
                            <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/top.svg" loading="lazy"
                               alt="top-radious">
                            <p class="sc-font-thin sc-roboto sc-universal ">Top</p>
                         </div>
+
+
+
                         <div
                            class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1">
                            <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/bottom.svg" loading="lazy"
                               alt="bottom-radious">
                            <p class="sc-font-thin sc-roboto sc-universal ">Bottom</p>
                         </div>
+
+
                         <div
                            class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1">
                            <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/left.svg" loading="lazy"
                               alt="left-radious">
                            <p class="sc-font-thin sc-roboto sc-universal ">Left</p>
                         </div>
+
+
                         <div
                            class="sc-flex sc-px-1_5 sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1">
                            <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/right.svg" loading="lazy"
                               alt="right-radious">
                            <p class="sc-font-thin sc-roboto sc-universal ">Right</p>
                         </div>
+
+
                      </div>
                   </div>
                
@@ -561,9 +580,10 @@
                      </div>
                   </div>
                   <div class="sc-mt-3 sc-grid sc-grid-cols-12 sc-gap-2">
-                     ${[...Array(16)].map((_, i) => {
-         const num = i + 1;
-         return `
+                     ${[...Array(16)]
+                       .map((_, i) => {
+                         const num = i + 1;
+                         return `
                      <div
                         class="sc-col-span-3 sc-bg-3f3f3f sc-rounded-6px sc-cursor-pointer sc-border-EF7C2F-hover sc-p-4 sc-flex sc-items-center sc-justify-center">
                         <img data-mask="https://fatin-webefo.github.io/squareCraft-plugin/public/imageMask%20(${num}).svg"
@@ -572,10 +592,11 @@
                            alt="Mask ${num}">
                      </div>
                      `;
-      }).join('')}
+                       })
+                       .join("")}
                   </div>
                </div>
                <div class="sc-mt-4"> </div>
             </div>
-         `
-   }
+         `;
+}

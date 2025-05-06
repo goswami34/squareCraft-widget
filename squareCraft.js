@@ -283,6 +283,13 @@ let selectedElement = null;
 
   // Typography all functionality code end here
 
+  //Image all functionality code start here
+  const { initImageBorderControls } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initImageBorderControls.js"
+  );
+
+  //Image all functionality code end here
+
   const themeColors = await getSquarespaceThemeStyles();
 
   document.body.addEventListener("click", (event) => {
@@ -2164,6 +2171,38 @@ let selectedElement = null;
     //bold text highlight code end here
 
     //link text highlight code start here
+    // const LinktextHighlightColorDiv = document.getElementById(
+    //   "LinktextHighlightColorPalate"
+    // );
+    // if (
+    //   LinktextHighlightColorDiv &&
+    //   !LinktextHighlightColorDiv.dataset.initialized
+    // ) {
+    //   LinktextHighlightColorDiv.dataset.initialized = "true";
+
+    //   LinktextHighlightColorDiv.addEventListener("click", (event) => {
+    //     handleLinkTextHighlightClick(
+    //       event,
+    //       lastClickedElement,
+    //       applyStylesToElement,
+    //       {
+    //         handleAllTextHighlightClick,
+    //         lastClickedElement,
+    //         selectedSingleTextType,
+    //         addPendingModification,
+    //         showNotification,
+    //       }
+    //     );
+
+    //     if (selectedSingleTextType) {
+    //       showNotification(
+    //         `Text color applied to: ${selectedSingleTextType}`,
+    //         "success"
+    //       );
+    //     }
+    //   });
+    // }
+
     const LinktextHighlightColorDiv = document.getElementById(
       "LinktextHighlightColorPalate"
     );
@@ -2173,7 +2212,14 @@ let selectedElement = null;
     ) {
       LinktextHighlightColorDiv.dataset.initialized = "true";
 
-      LinktextHighlightColorDiv.addEventListener("click", (event) => {
+      // Remove any existing listeners
+      const newDiv = LinktextHighlightColorDiv.cloneNode(true);
+      LinktextHighlightColorDiv.parentNode.replaceChild(
+        newDiv,
+        LinktextHighlightColorDiv
+      );
+
+      newDiv.addEventListener("click", (event) => {
         handleLinkTextHighlightClick(
           event,
           lastClickedElement,
@@ -2186,19 +2232,15 @@ let selectedElement = null;
             showNotification,
           }
         );
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `Text color applied to: ${selectedSingleTextType}`,
-            "success"
-          );
-        }
       });
     }
     //link text highlight code end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
+
+  // Initialize border controls
+  initImageBorderControls();
 
   addHeadingEventListeners();
 
