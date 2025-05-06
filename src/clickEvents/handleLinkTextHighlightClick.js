@@ -13,6 +13,13 @@ export function handleLinkTextHighlightClick(
     return;
   }
 
+  // If event is undefined, create a synthetic event object
+  if (!event) {
+    event = {
+      target: document.getElementById("LinktextHighlightColorPalate"),
+    };
+  }
+
   const LinktextHighlightColorPalate = event.target.closest(
     "#LinktextHighlightColorPalate"
   );
@@ -119,15 +126,15 @@ export function handleLinkTextHighlightClick(
         return;
       }
 
-      let boldFound = false;
-      let boldCount = 0;
+      let LinkFound = false;
+      let LinkCount = 0;
 
       // Find and highlight all bold text
       targetElements.forEach((tag) => {
         const boldElements = tag.querySelectorAll("a");
         if (boldElements.length > 0) {
-          boldFound = true;
-          boldCount += boldElements.length;
+          LinkFound = true;
+          LinkCount += boldElements.length;
 
           // Create or update style tag for this block's Link tags
           let styleTag = document.getElementById(
@@ -166,7 +173,7 @@ export function handleLinkTextHighlightClick(
       });
 
       context.showNotification(
-        `✅ Text highlight applied to ${boldCount} link word(s) in ${selectedTextType}`,
+        `✅ Text highlight applied to ${LinkCount} link word(s) in ${selectedTextType}`,
         "success"
       );
     });
