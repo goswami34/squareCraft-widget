@@ -1,5 +1,8 @@
 export function initImageBorderControls(selectedElement) {
   const allButton = document.getElementById("allRadious");
+  const topButton = document.querySelector(
+    'img[alt="top-radious"]'
+  ).parentElement;
   const borderWidthSlider = document.getElementById("radiousField");
   const borderWidthBullet = document.getElementById("radiousBullet");
   const borderWidthFill = document.getElementById("radiousFill");
@@ -7,12 +10,15 @@ export function initImageBorderControls(selectedElement) {
 
   if (
     !allButton ||
+    !topButton ||
     !borderWidthSlider ||
     !borderWidthBullet ||
     !borderWidthFill ||
     !borderWidthDisplay
   )
     return;
+
+  let activeBorderType = "all"; // Track which border type is active
 
   // Function to create or update style element
   function updateStyleElement(blockId, borderWidth) {
@@ -23,14 +29,27 @@ export function initImageBorderControls(selectedElement) {
       document.head.appendChild(styleElement);
     }
 
-    const css = `
-      #${blockId} div.sqs-image-content {
-        border-width: ${borderWidth}px;
-        box-sizing: border-box;
-        border-style: solid;
-        border-color: red;
-      }
-    `;
+    let css = "";
+    if (activeBorderType === "all") {
+      css = `
+        #${blockId} div.sqs-image-content {
+          border-width: ${borderWidth}px;
+          box-sizing: border-box;
+          border-style: solid;
+          border-color: red;
+        }
+      `;
+    } else if (activeBorderType === "top") {
+      css = `
+        #${blockId} div.sqs-image-content {
+          border-width: ${borderWidth}px;
+          box-sizing: border-box;
+          border-style: solid;
+          border-color: red;
+          border-top-width: ${borderWidth}px !important;
+        }
+      `;
+    }
     styleElement.textContent = css;
   }
 
@@ -50,6 +69,36 @@ export function initImageBorderControls(selectedElement) {
   // Handle All button click
   allButton.addEventListener("click", () => {
     console.log("allButton clicked");
+    activeBorderType = "all";
+
+    // Find the selected image content
+    const imageContent = document.querySelector(".sc-selected-image");
+    if (!imageContent) {
+      console.log("No image selected");
+      return;
+    }
+
+    // Get the block ID
+    const blockElement = imageContent.closest('[id^="block-"]');
+    if (!blockElement) {
+      console.log("No block element found");
+      return;
+    }
+
+    const blockId = blockElement.id;
+    const initialBorderWidth = 5;
+
+    // Apply initial border using external CSS
+    updateStyleElement(blockId, initialBorderWidth);
+
+    // Update slider to match current border width
+    updateSliderPosition(initialBorderWidth);
+  });
+
+  // Handle Top button click
+  topButton.addEventListener("click", () => {
+    console.log("topButton clicked");
+    activeBorderType = "top";
 
     // Find the selected image content
     const imageContent = document.querySelector(".sc-selected-image");
