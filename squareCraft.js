@@ -1665,23 +1665,23 @@ let selectedElement = null;
       });
     }
 
-    handleLinkTextHighlightClick(
-      event,
-      lastClickedElement,
-      applyStylesToElement,
-      {
-        handleAllTextColorClick,
-        lastClickedElement,
-        selectedSingleTextType,
-        addPendingModification: (blockId, css, tagType) => {
-          if (!pendingModifications.has(blockId)) {
-            pendingModifications.set(blockId, []);
-          }
-          pendingModifications.get(blockId).push({ css, tagType });
-        },
-        showNotification,
-      }
-    );
+    // handleLinkTextHighlightClick(
+    //   event,
+    //   lastClickedElement,
+    //   applyStylesToElement,
+    //   {
+    //     handleAllTextColorClick,
+    //     lastClickedElement,
+    //     selectedSingleTextType,
+    //     addPendingModification: (blockId, css, tagType) => {
+    //       if (!pendingModifications.has(blockId)) {
+    //         pendingModifications.set(blockId, []);
+    //       }
+    //       pendingModifications.get(blockId).push({ css, tagType });
+    //     },
+    //     showNotification,
+    //   }
+    // );
 
     // In squareCraft.js
     const colorInput = document.getElementById("scTextHighLight");
