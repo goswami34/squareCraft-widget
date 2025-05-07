@@ -222,8 +222,8 @@ export function initImageBorderControls(selectedElement) {
     return;
 
   let activeBorderType = "all"; // Track which border type is active
-  let baseBorderWidth = 0; // Store base border width for all sides
-  let topBorderWidth = 0;  // Store top border width
+  let allBorderWidth = 0; // Store the "all" border width
+  let topBorderWidth = 0; // Store the top border width
 
   // Function to create or update style element
   function updateStyleElement(blockId, borderWidth) {
@@ -236,21 +236,20 @@ export function initImageBorderControls(selectedElement) {
 
     let css = "";
     if (activeBorderType === "all") {
-      baseBorderWidth = borderWidth; // Update base border width
+      allBorderWidth = borderWidth; // Update the "all" border width
       css = `
         #${blockId} div.sqs-image-content {
           border-width: ${borderWidth}px;
           box-sizing: border-box;
           border-style: solid;
           border-color: red;
-          ${topBorderWidth > 0 ? `border-top-width: ${topBorderWidth}px !important;` : ''}
         }
       `;
     } else if (activeBorderType === "top") {
-      topBorderWidth = borderWidth; // Update top border width
+      topBorderWidth = borderWidth; // Update only the top border width
       css = `
         #${blockId} div.sqs-image-content {
-          border-width: ${baseBorderWidth}px;
+          border-width: ${allBorderWidth}px;
           box-sizing: border-box;
           border-style: solid;
           border-color: red;
@@ -294,8 +293,8 @@ export function initImageBorderControls(selectedElement) {
     const blockId = blockElement.id;
     const initialBorderWidth = 5;
 
-    // Update base border width
-    baseBorderWidth = initialBorderWidth;
+    // Update the "all" border width
+    allBorderWidth = initialBorderWidth;
 
     // Apply initial border using external CSS
     updateStyleElement(blockId, initialBorderWidth);
@@ -322,16 +321,16 @@ export function initImageBorderControls(selectedElement) {
     }
 
     const blockId = blockElement.id;
-    const initialBorderWidth = 5;
+    const initialTopBorderWidth = 5;
 
-    // Update top border width
-    topBorderWidth = initialBorderWidth;
+    // Update only the top border width
+    topBorderWidth = initialTopBorderWidth;
 
-    // Apply initial border using external CSS
-    updateStyleElement(blockId, initialBorderWidth);
+    // Apply border using external CSS, keeping the "all" border width
+    updateStyleElement(blockId, initialTopBorderWidth);
 
-    // Update slider to match current border width
-    updateSliderPosition(initialBorderWidth);
+    // Update slider to match current top border width
+    updateSliderPosition(initialTopBorderWidth);
   });
 
   // Handle slider movement
