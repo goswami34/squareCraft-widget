@@ -197,6 +197,7 @@ export function initImageBorderControls(selectedElement) {
         }
       `;
     } else if (activeBorderType === "top") {
+      // In top mode, only update topBorderWidth and keep allBorderWidth unchanged
       topBorderWidth = borderWidth;
       styleElement.textContent = `
         #${blockId} div.sqs-image-content {
@@ -204,7 +205,7 @@ export function initImageBorderControls(selectedElement) {
           box-sizing: border-box;
           border-style: solid;
           border-color: red;
-          border-top-width: ${borderWidth}px !important;
+          border-top-width: ${topBorderWidth}px !important;
         }
       `;
     }
