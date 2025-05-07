@@ -181,10 +181,25 @@ export function initImageBorderControls(selectedElement) {
     // Update image border using external CSS
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
-      // updateStyleElement(blockId, borderWidth);
-    } else if (activeBorderType === "top") {
-      topBorderWidth = borderWidth;
       updateStyleElement(blockId, borderWidth);
+    } else if (activeBorderType === "top") {
+      // Only update top border width, keep the base border width unchanged
+      topBorderWidth = borderWidth;
+      let styleElement = document.getElementById("sc-image-border-style");
+      if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "sc-image-border-style";
+        document.head.appendChild(styleElement);
+      }
+      styleElement.textContent = `
+        #${blockId} div.sqs-image-content {
+          border-width: ${allBorderWidth}px;
+          box-sizing: border-box;
+          border-style: solid;
+          border-color: red;
+          border-top-width: ${borderWidth}px !important;
+        }
+      `;
     }
   }
 
