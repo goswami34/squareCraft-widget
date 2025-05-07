@@ -127,6 +127,11 @@ export function initImageBorderControls(selectedElement) {
       topBorderWidth = currentWidth;
     }
 
+    // If we don't have a previous all border width, use the current width
+    if (allBorderWidth === 0) {
+      allBorderWidth = currentWidth;
+    }
+
     // Apply border using external CSS, keeping the previous "all" border width
     updateStyleElement(blockId, topBorderWidth);
   });
