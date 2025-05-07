@@ -19,6 +19,7 @@ export function initImageBorderControls(selectedElement) {
   let activeBorderType = "all"; // Track which border type is active
   let allBorderWidth = 0; // Store the "all" border width
   let topBorderWidth = 0; // Store the top border width
+  let initialTopBorderWidth = 0; // Store the initial top border width when top button is clicked
 
   // Function to create or update style element
   function updateStyleElement(blockId, borderWidth) {
@@ -48,7 +49,7 @@ export function initImageBorderControls(selectedElement) {
           box-sizing: border-box;
           border-style: solid;
           border-color: red;
-          border-top-width: ${borderWidth}px !important;
+          border-top-width: ${initialTopBorderWidth + borderWidth}px !important;
         }
       `;
     }
@@ -122,18 +123,16 @@ export function initImageBorderControls(selectedElement) {
     const max = borderWidthSlider.offsetWidth;
     const currentWidth = Math.round((currentPosition / max) * 100);
     
-    // If we don't have a previous top border width, use the current width
-    if (topBorderWidth === 0) {
-      topBorderWidth = currentWidth;
-    }
-
+    // Store the initial top border width
+    initialTopBorderWidth = currentWidth;
+    
     // If we don't have a previous all border width, use the current width
     if (allBorderWidth === 0) {
       allBorderWidth = currentWidth;
     }
 
     // Apply border using external CSS, keeping the previous "all" border width
-    updateStyleElement(blockId, topBorderWidth);
+    updateStyleElement(blockId, 0); // Start with 0 as we'll add to initialTopBorderWidth
   });
 
   // Handle slider movement
@@ -197,7 +196,7 @@ export function initImageBorderControls(selectedElement) {
         }
       `;
     } else if (activeBorderType === "top") {
-      // In top mode, only update topBorderWidth and keep allBorderWidth unchanged
+      // In top mode, add the slider value to the initial top border width
       topBorderWidth = borderWidth;
       styleElement.textContent = `
         #${blockId} div.sqs-image-content {
@@ -205,7 +204,7 @@ export function initImageBorderControls(selectedElement) {
           box-sizing: border-box;
           border-style: solid;
           border-color: red;
-          border-top-width: ${topBorderWidth}px !important;
+          border-top-width: ${initialTopBorderWidth + borderWidth}px !important;
         }
       `;
     }
