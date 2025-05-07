@@ -181,7 +181,7 @@ export function initImageBorderControls(selectedElement) {
     // Update image border using external CSS
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
-      updateStyleElement(blockId, borderWidth);
+      // updateStyleElement(blockId, borderWidth);
     } else if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
       updateStyleElement(blockId, borderWidth);
