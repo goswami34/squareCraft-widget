@@ -45,7 +45,7 @@ export function initImageBorderControls(selectedElement) {
       topBorderWidth = borderWidth; // Update only the top border width
       css = `
         #${blockId} div.sqs-image-content {
-          border-width: ${allBorderWidth}px;
+          border-width: ${borderWidth}px;
           box-sizing: border-box;
           border-style: solid;
           border-color: red;
