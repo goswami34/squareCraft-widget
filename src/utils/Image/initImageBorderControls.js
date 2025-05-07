@@ -45,7 +45,7 @@ export function initImageBorderControls(selectedElement) {
       topBorderWidth = borderWidth; // Update only the top border width
       css = `
         #${blockId} div.sqs-image-content {
-          border-width: ${borderWidth}px;
+          border-width: ${allBorderWidth}px;
           box-sizing: border-box;
           border-style: solid;
           border-color: red;
@@ -198,13 +198,14 @@ export function initImageBorderControls(selectedElement) {
     } else if (activeBorderType === "top") {
       // In top mode, add the slider value to the initial top border width
       topBorderWidth = borderWidth;
+      const totalTopWidth = initialTopBorderWidth + borderWidth;
       styleElement.textContent = `
         #${blockId} div.sqs-image-content {
           border-width: ${allBorderWidth}px;
           box-sizing: border-box;
           border-style: solid;
           border-color: red;
-          border-top-width: ${initialTopBorderWidth + borderWidth}px !important;
+          border-top-width: ${totalTopWidth}px !important;
         }
       `;
     }
