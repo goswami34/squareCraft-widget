@@ -179,7 +179,13 @@ export function initImageBorderControls(selectedElement) {
     borderWidthDisplay.textContent = `${borderWidth}px`;
 
     // Update image border using external CSS
-    updateStyleElement(blockId, borderWidth);
+    if (activeBorderType === "all") {
+      allBorderWidth = borderWidth;
+      updateStyleElement(blockId, borderWidth);
+    } else if (activeBorderType === "top") {
+      topBorderWidth = borderWidth;
+      updateStyleElement(blockId, borderWidth);
+    }
   }
 
   function stopDrag() {
