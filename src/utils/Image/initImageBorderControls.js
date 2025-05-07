@@ -116,16 +116,17 @@ export function initImageBorderControls(selectedElement) {
     }
 
     const blockId = blockElement.id;
-    const initialTopBorderWidth = 5;
+    
+    // If we don't have a previous top border width, set it to 5
+    if (topBorderWidth === 0) {
+      topBorderWidth = 5;
+    }
 
-    // Update only the top border width
-    topBorderWidth = initialTopBorderWidth;
-
-    // Apply border using external CSS, keeping the "all" border width
-    updateStyleElement(blockId, initialTopBorderWidth);
+    // Apply border using external CSS, keeping the previous "all" border width
+    updateStyleElement(blockId, topBorderWidth);
 
     // Update slider to match current top border width
-    updateSliderPosition(initialTopBorderWidth);
+    updateSliderPosition(topBorderWidth);
   });
 
   // Handle slider movement
