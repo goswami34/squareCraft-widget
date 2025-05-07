@@ -122,11 +122,13 @@ export function initImageBorderControls(selectedElement) {
     const max = borderWidthSlider.offsetWidth;
     const currentWidth = Math.round((currentPosition / max) * 100);
     
-    // Update top border width with current slider value
-    topBorderWidth = currentWidth;
+    // If we don't have a previous top border width, use the current width
+    if (topBorderWidth === 0) {
+      topBorderWidth = currentWidth;
+    }
 
     // Apply border using external CSS, keeping the previous "all" border width
-    updateStyleElement(blockId, currentWidth);
+    updateStyleElement(blockId, topBorderWidth);
   });
 
   // Handle slider movement
