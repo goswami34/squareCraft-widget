@@ -200,11 +200,10 @@ export function initImageBorderControls(selectedElement) {
       topBorderWidth = borderWidth;
       styleElement.textContent = `
         #${blockId} div.sqs-image-content {
-          border-width: ${allBorderWidth}px;
+          border-top-width: ${topBorderWidth}px !important;
           box-sizing: border-box;
           border-style: solid;
           border-color: red;
-          border-top-width: ${topBorderWidth}px !important;
         }
       `;
     }
