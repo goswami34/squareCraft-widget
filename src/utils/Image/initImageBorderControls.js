@@ -178,8 +178,34 @@ export function initImageBorderControls(selectedElement) {
     } else if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      // If no rule exists for this block yet, create one
-      if (!updatedCSS.includes(`#${blockId} div.sqs-image-content`)) {
+      // Get the existing rule for this block
+      const blockRuleRegex = new RegExp(
+        `#${blockId} div\\.sqs-image-content\\s*{[^}]*}`,
+        "g"
+      );
+      const existingRule = currentCSS.match(blockRuleRegex)?.[0] || "";
+
+      if (existingRule) {
+        // Extract the existing border-width value
+        const borderWidthMatch = existingRule.match(/border-width:\s*(\d+)px/);
+        const existingBorderWidth = borderWidthMatch
+          ? borderWidthMatch[1]
+          : allBorderWidth;
+
+        // Create new rule with updated border-top-width
+        updatedCSS = currentCSS.replace(
+          blockRuleRegex,
+          `
+  #${blockId} div.sqs-image-content {
+    border-width: ${existingBorderWidth}px;
+    border-top-width: ${topBorderWidth}px !important;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }`
+        );
+      } else {
+        // If no existing rule, create new one
         updatedCSS += `
   #${blockId} div.sqs-image-content {
     border-width: ${allBorderWidth}px;
@@ -189,31 +215,6 @@ export function initImageBorderControls(selectedElement) {
     border-color: red;
   }
   `;
-      } else {
-        // Update existing rule
-        const blockRuleRegex = new RegExp(
-          `(#${blockId} div\\.sqs-image-content\\s*{[^}]*})`,
-          "g"
-        );
-        const match = blockRuleRegex.exec(updatedCSS);
-
-        if (match) {
-          let blockRule = match[1];
-          // Update border-top-width if it exists
-          if (blockRule.includes("border-top-width")) {
-            blockRule = blockRule.replace(
-              /border-top-width:\s*[^;]+;/,
-              `border-top-width: ${topBorderWidth}px !important;`
-            );
-          } else {
-            // Add border-top-width if it doesn't exist
-            blockRule = blockRule.replace(
-              /{/,
-              `{\n    border-top-width: ${topBorderWidth}px !important;`
-            );
-          }
-          updatedCSS = updatedCSS.replace(blockRuleRegex, blockRule);
-        }
       }
     }
 
