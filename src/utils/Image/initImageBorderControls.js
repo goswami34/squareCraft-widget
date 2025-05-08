@@ -73,12 +73,12 @@ export function initImageBorderControls(selectedElement) {
       allBorderWidth = borderWidth;
 
       const newRule = `
-  ${blockSelector} {
-    border-width: ${allBorderWidth}px;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`;
+        ${blockSelector} {
+          border-width: ${allBorderWidth}px;
+          box-sizing: border-box;
+          border-style: solid;
+          border-color: red;
+        }`;
 
       if (currentCSS.includes(blockSelector)) {
         currentCSS = currentCSS.replace(
