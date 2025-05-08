@@ -160,15 +160,36 @@ export function initImageBorderControls(selectedElement) {
     const blockSelector = `#${blockId} div.sqs-image-content`;
 
     // Ensure the block rule exists
+    //   if (!currentCSS.includes(blockSelector)) {
+    //     currentCSS += `
+    // ${blockSelector} {
+    //   border-width: ${allBorderWidth}px;
+    //   border-top-width: ${topBorderWidth}px !important;
+    //   box-sizing: border-box;
+    //   border-style: solid;
+    //   border-color: red;
+    // }`;
+    //   }
+
     if (!currentCSS.includes(blockSelector)) {
-      currentCSS += `
-  ${blockSelector} {
-    border-width: ${allBorderWidth}px;
-    border-top-width: ${topBorderWidth}px !important;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`;
+      // Create a base rule without border-width if in "top" mode
+      if (activeBorderType === "top") {
+        currentCSS += `
+        ${blockSelector} {
+          border-top-width: ${topBorderWidth}px !important;
+          box-sizing: border-box;
+          border-style: solid;
+          border-color: red;
+        }`;
+      } else if (activeBorderType === "all") {
+        currentCSS += `
+        ${blockSelector} {
+          border-width: ${allBorderWidth}px;
+          box-sizing: border-box;
+          border-style: solid;
+          border-color: red;
+        }`;
+      }
     }
 
     // UPDATE: Apply based on active type
