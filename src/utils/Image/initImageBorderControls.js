@@ -157,70 +157,52 @@ export function initImageBorderControls(selectedElement) {
     }
 
     let currentCSS = styleElement.textContent;
-
     const blockSelector = `#${blockId} div.sqs-image-content`;
 
-    if (activeBorderType === "all") {
-      allBorderWidth = borderWidth;
-
-      const allRule = `
+    // Ensure the block rule exists
+    if (!currentCSS.includes(blockSelector)) {
+      currentCSS += `
   ${blockSelector} {
     border-width: ${allBorderWidth}px;
+    border-top-width: ${topBorderWidth}px !important;
     box-sizing: border-box;
     border-style: solid;
     border-color: red;
-  }
-  `;
+  }`;
+    }
 
-      // Replace or add the all-border rule
-      if (currentCSS.includes(blockSelector)) {
-        currentCSS = currentCSS.replace(
-          new RegExp(`${blockSelector}\\s*{[^}]*}`, "g"),
-          allRule.trim()
-        );
-      } else {
-        currentCSS += allRule;
-      }
+    // UPDATE: Apply based on active type
+    if (activeBorderType === "all") {
+      allBorderWidth = borderWidth;
 
-      styleElement.textContent = currentCSS;
+      // Replace only the border-width line inside block
+      currentCSS = currentCSS.replace(
+        new RegExp(`(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`, "g"),
+        `$1border-width: ${allBorderWidth}px;`
+      );
     }
 
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      const topLine = `border-top-width: ${topBorderWidth}px !important;`;
-
-      if (currentCSS.includes(blockSelector)) {
-        // Replace border-top-width line only (or add it if missing)
-        if (currentCSS.includes("border-top-width")) {
-          currentCSS = currentCSS.replace(
-            new RegExp(
-              `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
-              "g"
-            ),
-            `$1${topLine}`
-          );
-        } else {
-          currentCSS = currentCSS.replace(
-            new RegExp(`${blockSelector}\\s*{`),
-            `${blockSelector} {\n  ${topLine}`
-          );
-        }
+      // Replace or add border-top-width inside existing rule
+      if (currentCSS.includes("border-top-width")) {
+        currentCSS = currentCSS.replace(
+          new RegExp(
+            `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
+            "g"
+          ),
+          `$1border-top-width: ${topBorderWidth}px !important;`
+        );
       } else {
-        // No existing rule: create new
-        currentCSS += `
-  ${blockSelector} {
-    border-width: ${allBorderWidth}px;
-    ${topLine}
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }
-  `;
+        currentCSS = currentCSS.replace(
+          new RegExp(`${blockSelector}\\s*{`),
+          `${blockSelector} {\n  border-top-width: ${topBorderWidth}px !important;`
+        );
       }
-
-      styleElement.textContent = currentCSS;
     }
+
+    styleElement.textContent = currentCSS;
   }
 
   function stopDrag() {
