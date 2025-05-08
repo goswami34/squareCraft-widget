@@ -68,19 +68,17 @@ export function initImageBorderControls(selectedElement) {
     const blockSelector = `#${blockId} div.sqs-image-content`;
     let currentCSS = styleElement.textContent;
 
-    // All mode: full border
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
 
       const newRule = `
-      ${blockSelector} {
-        border-width: ${allBorderWidth}px;
-        box-sizing: border-box;
-        border-style: solid;
-        border-color: red;
-      }`;
+  ${blockSelector} {
+    border-width: ${allBorderWidth}px;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }`;
 
-      // Replace or append the rule
       if (currentCSS.includes(blockSelector)) {
         currentCSS = currentCSS.replace(
           new RegExp(`${blockSelector}\\s*{[^}]*}`, "g"),
@@ -93,12 +91,11 @@ export function initImageBorderControls(selectedElement) {
       styleElement.textContent = currentCSS;
     }
 
-    // Top mode: update ONLY border-top-width
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      if (currentCSS.includes(`${blockSelector}`)) {
-        // Replace or add border-top-width
+      // ✅ Only update or insert border-top-width — do NOT touch border-width
+      if (currentCSS.includes(blockSelector)) {
         if (currentCSS.includes("border-top-width")) {
           currentCSS = currentCSS.replace(
             new RegExp(
@@ -114,14 +111,14 @@ export function initImageBorderControls(selectedElement) {
           );
         }
       } else {
-        // No rule yet, create new with top only
+        // If no rule exists yet, create new rule with only top width (no full border-width)
         currentCSS += `
-        ${blockSelector} {
-          border-top-width: ${topBorderWidth}px !important;
-          box-sizing: border-box;
-          border-style: solid;
-          border-color: red;
-        }`;
+  ${blockSelector} {
+    border-top-width: ${topBorderWidth}px !important;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }`;
       }
 
       styleElement.textContent = currentCSS;
