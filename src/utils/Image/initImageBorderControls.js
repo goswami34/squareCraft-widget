@@ -49,7 +49,7 @@ export function initImageBorderControls(selectedElement) {
           box-sizing: border-box;
           border-style: solid;
           border-color: red;
-          border-top-width: ${initialTopBorderWidth + borderWidth}px !important;
+          border-top-width: ${borderWidth}px !important;
         }
       `;
     }
@@ -178,36 +178,7 @@ export function initImageBorderControls(selectedElement) {
     borderWidthDisplay.textContent = `${borderWidth}px`;
 
     // Update image border using external CSS
-    let styleElement = document.getElementById("sc-image-border-style");
-    if (!styleElement) {
-      styleElement = document.createElement("style");
-      styleElement.id = "sc-image-border-style";
-      document.head.appendChild(styleElement);
-    }
-
-    if (activeBorderType === "all") {
-      allBorderWidth = borderWidth;
-      styleElement.textContent = `
-        #${blockId} div.sqs-image-content {
-          border-width: ${borderWidth}px;
-          box-sizing: border-box;
-          border-style: solid;
-          border-color: red;
-        }
-      `;
-    } else if (activeBorderType === "top") {
-      // In top mode, only update border-top-width
-      topBorderWidth = borderWidth;
-      styleElement.textContent = `
-        #${blockId} div.sqs-image-content {
-          border-width: ${allBorderWidth}px;
-          box-sizing: border-box;
-          border-style: solid;
-          border-color: red;
-          border-top-width: ${borderWidth}px !important;
-        }
-      `;
-    }
+    updateStyleElement(blockId, borderWidth);
   }
 
   function stopDrag() {
