@@ -46,6 +46,7 @@ ${blockSelector} {
       topBorderWidth = borderWidth;
       css = `
 ${blockSelector} {
+ border-width: ${allBorderWidth}px;
   border-top-width: ${topBorderWidth}px !important;
   box-sizing: border-box;
   border-style: solid;
