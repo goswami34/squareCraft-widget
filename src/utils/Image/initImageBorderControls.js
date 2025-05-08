@@ -156,47 +156,40 @@ export function initImageBorderControls(selectedElement) {
       document.head.appendChild(styleElement);
     }
 
-    let currentCSS = styleElement.textContent;
     const blockSelector = `#${blockId} div.sqs-image-content`;
-
-    // Ensure the block rule exists
-    //   if (!currentCSS.includes(blockSelector)) {
-    //     currentCSS += `
-    // ${blockSelector} {
-    //   border-width: ${allBorderWidth}px;
-    //   border-top-width: ${topBorderWidth}px !important;
-    //   box-sizing: border-box;
-    //   border-style: solid;
-    //   border-color: red;
-    // }`;
-    //   }
+    let currentCSS = styleElement.textContent;
 
     if (!currentCSS.includes(blockSelector)) {
-      // Create a base rule without border-width if in "top" mode
+      // Create initial rule based on current mode
       if (activeBorderType === "top") {
+        topBorderWidth = borderWidth;
         currentCSS += `
-        ${blockSelector} {
-          border-top-width: ${topBorderWidth}px !important;
-          box-sizing: border-box;
-          border-style: solid;
-          border-color: red;
-        }`;
+  ${blockSelector} {
+    border-top-width: ${topBorderWidth}px !important;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }`;
       } else if (activeBorderType === "all") {
+        allBorderWidth = borderWidth;
         currentCSS += `
-        ${blockSelector} {
-          border-width: ${allBorderWidth}px;
-          box-sizing: border-box;
-          border-style: solid;
-          border-color: red;
-        }`;
+  ${blockSelector} {
+    border-width: ${allBorderWidth}px;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }`;
       }
+
+      styleElement.textContent = currentCSS;
+      return; // return early to avoid double processing
     }
 
-    // UPDATE: Apply based on active type
+    // ✅ Handle updates (without overwriting anything)
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
 
-      // Replace only the border-width line inside block
+      // ONLY update border-width
       currentCSS = currentCSS.replace(
         new RegExp(`(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`, "g"),
         `$1border-width: ${allBorderWidth}px;`
@@ -206,12 +199,9 @@ export function initImageBorderControls(selectedElement) {
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      // Replace or add border-top-width inside existing rule
-      // if (currentCSS.includes("border-top-width")) {
-      if (
-        currentCSS.includes(`${blockSelector}`) &&
-        currentCSS.includes("border-top-width")
-      ) {
+      // ✅ Do NOT touch or overwrite `border-width`
+
+      if (currentCSS.includes("border-top-width")) {
         currentCSS = currentCSS.replace(
           new RegExp(
             `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
