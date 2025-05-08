@@ -181,15 +181,14 @@ export function initImageBorderControls(selectedElement) {
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      // Keep previously applied allBorderWidth, only override top
       newRule = `
-  #${blockId} div.sqs-image-content {
-    border-width: ${allBorderWidth}px;
-    border-top-width: ${topBorderWidth}px !important;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`;
+        #${blockId} div.sqs-image-content {
+          border-width: ${allBorderWidth}px;
+          border-top-width: ${topBorderWidth}px !important;
+          box-sizing: border-box;
+          border-style: solid;
+          border-color: red;
+        }`;
     }
 
     styleElement.textContent = currentCSS + newRule;
