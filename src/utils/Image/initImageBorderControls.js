@@ -117,15 +117,15 @@ export function initImageBorderControls(selectedElement) {
     }
 
     const blockId = blockElement.id;
-    
+
     // Get current slider position
     const currentPosition = parseFloat(borderWidthBullet.style.left) || 0;
     const max = borderWidthSlider.offsetWidth;
     const currentWidth = Math.round((currentPosition / max) * 100);
-    
+
     // Store the initial top border width
     initialTopBorderWidth = currentWidth;
-    
+
     // If we don't have a previous all border width, use the current width
     if (allBorderWidth === 0) {
       allBorderWidth = currentWidth;
@@ -196,16 +196,15 @@ export function initImageBorderControls(selectedElement) {
         }
       `;
     } else if (activeBorderType === "top") {
-      // In top mode, add the slider value to the initial top border width
+      // In top mode, only update border-top-width
       topBorderWidth = borderWidth;
-      const totalTopWidth = initialTopBorderWidth + borderWidth;
       styleElement.textContent = `
         #${blockId} div.sqs-image-content {
           border-width: ${allBorderWidth}px;
           box-sizing: border-box;
           border-style: solid;
           border-color: red;
-          border-top-width: ${totalTopWidth}px !important;
+          border-top-width: ${borderWidth}px !important;
         }
       `;
     }
