@@ -214,37 +214,65 @@ export function initImageBorderControls(selectedElement) {
       document.head.appendChild(styleElement);
     }
 
+    const currentCSS = styleElement.textContent;
+    let updatedCSS = currentCSS;
+
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
-      styleElement.textContent = `
-        #${blockId} div.sqs-image-content {
-          border-width: ${allBorderWidth}px;
-          box-sizing: border-box;
-          border-style: solid;
-          border-color: red;
-        }
-      `;
+
+      // Remove any old rule for this block
+      updatedCSS = currentCSS.replace(
+        new RegExp(`#${blockId} div\\.sqs-image-content\\s*{[^}]*}`, "g"),
+        ""
+      );
+
+      // Add new all-border rule
+      updatedCSS += `
+  #${blockId} div.sqs-image-content {
+    border-width: ${allBorderWidth}px;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }
+  `;
     }
 
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      // 🛠 Extract existing style (if any)
-      const existingCSS = styleElement.textContent;
+      const topRuleRegex = new RegExp(
+        `(#${blockId} div\\.sqs-image-content\\s*{[^}]*?)border-top-width:\\s*[^;]+;?`,
+        "g"
+      );
 
-      // 🧠 Keep existing block style and replace only the top width line
-      const updatedCSS = existingCSS
-        .replace(
-          /(#${blockId} div\.sqs-image-content\s*{[^}]*?)\s*border-top-width:\s*[^;]+;?/,
-          `$1`
-        )
-        .replace(
-          /(#${blockId} div\.sqs-image-content\s*{[^}]*})/,
-          `$1\n  border-top-width: ${topBorderWidth}px !important;`
-        );
-
-      styleElement.textContent = updatedCSS;
+      // If block rule already exists
+      if (updatedCSS.includes(`#${blockId} div.sqs-image-content`)) {
+        if (topRuleRegex.test(updatedCSS)) {
+          updatedCSS = updatedCSS.replace(
+            topRuleRegex,
+            `$1border-top-width: ${topBorderWidth}px !important;`
+          );
+        } else {
+          updatedCSS = updatedCSS.replace(
+            new RegExp(`#${blockId} div\\.sqs-image-content\\s*{`),
+            `#${blockId} div.sqs-image-content {\n  border-top-width: ${topBorderWidth}px !important;`
+          );
+        }
+      } else {
+        // If no block rule yet, add new one
+        updatedCSS += `
+  #${blockId} div.sqs-image-content {
+    border-width: ${allBorderWidth}px;
+    border-top-width: ${topBorderWidth}px !important;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }
+  `;
+      }
     }
+
+    styleElement.textContent = updatedCSS;
   }
 
   function stopDrag() {
