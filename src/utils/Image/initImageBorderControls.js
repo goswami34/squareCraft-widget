@@ -156,19 +156,19 @@ export function initImageBorderControls(selectedElement) {
       document.head.appendChild(styleElement);
     }
 
-    // Get current CSS content
     let currentCSS = styleElement.textContent;
 
-    // Remove any existing rules for this block
+    // Remove existing block rule if present
     currentCSS = currentCSS.replace(
       new RegExp(`#${blockId} div\\.sqs-image-content\\s*{[^}]*}`, "g"),
       ""
     );
 
-    // Create new CSS rule based on active border type
     let newRule = "";
+
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
+
       newRule = `
   #${blockId} div.sqs-image-content {
     border-width: ${allBorderWidth}px;
@@ -176,8 +176,12 @@ export function initImageBorderControls(selectedElement) {
     border-style: solid;
     border-color: red;
   }`;
-    } else if (activeBorderType === "top") {
+    }
+
+    if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
+
+      // Keep previously applied allBorderWidth, only override top
       newRule = `
   #${blockId} div.sqs-image-content {
     border-width: ${allBorderWidth}px;
@@ -188,7 +192,6 @@ export function initImageBorderControls(selectedElement) {
   }`;
     }
 
-    // Add the new rule to the CSS
     styleElement.textContent = currentCSS + newRule;
   }
 
