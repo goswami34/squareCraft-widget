@@ -181,7 +181,7 @@ export function initImageBorderControls(selectedElement) {
       newRule = `
   #${blockId} div.sqs-image-content {
     border-width: ${allBorderWidth}px;
-    border-top-width: ${topBorderWidth}px !important;
+    border-top-width: ${allBorderWidth}px !important;
     box-sizing: border-box;
     border-style: solid;
     border-color: red;
