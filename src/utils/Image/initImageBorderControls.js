@@ -74,12 +74,12 @@ export function initImageBorderControls(selectedElement) {
 
       // Fully update the full block with border-width
       const fullRule = `
-  ${blockSelector} {
-    border-width: ${allBorderWidth}px;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`;
+        ${blockSelector} {
+          border-width: ${allBorderWidth}px;
+          box-sizing: border-box;
+          border-style: solid;
+          border-color: red;
+        }`;
 
       // Replace entire block rule
       if (currentCSS.includes(blockSelector)) {
@@ -120,12 +120,12 @@ export function initImageBorderControls(selectedElement) {
       } else {
         // No rule exists — create one with top only
         currentCSS += `
-  ${blockSelector} {
-    border-top-width: ${topBorderWidth}px !important;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`;
+        ${blockSelector} {
+          border-top-width: ${topBorderWidth}px !important;
+          box-sizing: border-box;
+          border-style: solid;
+          border-color: red;
+        }`;
       }
 
       styleElement.textContent = currentCSS;
