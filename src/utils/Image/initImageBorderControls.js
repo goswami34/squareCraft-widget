@@ -207,7 +207,11 @@ export function initImageBorderControls(selectedElement) {
       topBorderWidth = borderWidth;
 
       // Replace or add border-top-width inside existing rule
-      if (currentCSS.includes("border-top-width")) {
+      // if (currentCSS.includes("border-top-width")) {
+      if (
+        currentCSS.includes(`${blockSelector}`) &&
+        currentCSS.includes("border-top-width")
+      ) {
         currentCSS = currentCSS.replace(
           new RegExp(
             `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
