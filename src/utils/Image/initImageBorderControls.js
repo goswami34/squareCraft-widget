@@ -196,17 +196,40 @@ export function initImageBorderControls(selectedElement) {
       );
     }
 
+    // if (activeBorderType === "top") {
+    //   topBorderWidth = borderWidth;
+
+    //   // REMOVE border-width if exists
+    //   // currentCSS = currentCSS.replace(
+    //   //   new RegExp(`(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`, "g"),
+    //   //   `$1`
+    //   // );
+
+    //   // Update or add border-top-width
+    //   if (currentCSS.includes("border-top-width")) {
+    //     currentCSS = currentCSS.replace(
+    //       new RegExp(
+    //         `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
+    //         "g"
+    //       ),
+    //       `$1border-top-width: ${topBorderWidth}px !important;`
+    //     );
+    //   } else {
+    //     currentCSS = currentCSS.replace(
+    //       new RegExp(`${blockSelector}\\s*{`),
+    //       `${blockSelector} {\n  border-top-width: ${topBorderWidth}px !important;`
+    //     );
+    //   }
+    // }
+
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      // REMOVE border-width if exists
-      currentCSS = currentCSS.replace(
-        new RegExp(`(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`, "g"),
-        `$1`
-      );
-
-      // Update or add border-top-width
-      if (currentCSS.includes("border-top-width")) {
+      // ✅ Do NOT remove border-width. Just update/add border-top-width
+      if (
+        currentCSS.includes(`${blockSelector}`) &&
+        currentCSS.includes("border-top-width")
+      ) {
         currentCSS = currentCSS.replace(
           new RegExp(
             `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
@@ -214,11 +237,22 @@ export function initImageBorderControls(selectedElement) {
           ),
           `$1border-top-width: ${topBorderWidth}px !important;`
         );
-      } else {
+      } else if (currentCSS.includes(blockSelector)) {
+        // Append new border-top-width
         currentCSS = currentCSS.replace(
           new RegExp(`${blockSelector}\\s*{`),
           `${blockSelector} {\n  border-top-width: ${topBorderWidth}px !important;`
         );
+      } else {
+        // No rule yet for this block — create new
+        currentCSS += `
+    ${blockSelector} {
+      border-width: ${allBorderWidth}px;
+      border-top-width: ${topBorderWidth}px !important;
+      box-sizing: border-box;
+      border-style: solid;
+      border-color: red;
+    }`;
       }
     }
 
