@@ -199,8 +199,13 @@ export function initImageBorderControls(selectedElement) {
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      // ✅ Do NOT touch or overwrite `border-width`
+      // REMOVE border-width if exists
+      currentCSS = currentCSS.replace(
+        new RegExp(`(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`, "g"),
+        `$1`
+      );
 
+      // Update or add border-top-width
       if (currentCSS.includes("border-top-width")) {
         currentCSS = currentCSS.replace(
           new RegExp(
