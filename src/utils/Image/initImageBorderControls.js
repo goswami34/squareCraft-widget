@@ -156,69 +156,40 @@ export function initImageBorderControls(selectedElement) {
       document.head.appendChild(styleElement);
     }
 
-    const currentCSS = styleElement.textContent;
-    let updatedCSS = currentCSS;
+    // Get current CSS content
+    let currentCSS = styleElement.textContent;
 
+    // Remove any existing rules for this block
+    currentCSS = currentCSS.replace(
+      new RegExp(`#${blockId} div\\.sqs-image-content\\s*{[^}]*}`, "g"),
+      ""
+    );
+
+    // Create new CSS rule based on active border type
+    let newRule = "";
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
-      // Remove any old rule for this block
-      updatedCSS = currentCSS.replace(
-        new RegExp(`#${blockId} div\\.sqs-image-content\\s*{[^}]*}`, "g"),
-        ""
-      );
-      // Add new all-border rule
-      updatedCSS += `
+      newRule = `
   #${blockId} div.sqs-image-content {
     border-width: ${allBorderWidth}px;
     box-sizing: border-box;
     border-style: solid;
     border-color: red;
-  }
-  `;
+  }`;
     } else if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
-
-      // Get the existing rule for this block
-      const blockRuleRegex = new RegExp(
-        `#${blockId} div\\.sqs-image-content\\s*{[^}]*}`,
-        "g"
-      );
-      const existingRule = currentCSS.match(blockRuleRegex)?.[0] || "";
-
-      if (existingRule) {
-        // Extract the existing border-width value
-        const borderWidthMatch = existingRule.match(/border-width:\s*(\d+)px/);
-        const existingBorderWidth = borderWidthMatch
-          ? borderWidthMatch[1]
-          : allBorderWidth;
-
-        // Create new rule with updated border-top-width
-        updatedCSS = currentCSS.replace(
-          blockRuleRegex,
-          `
-  #${blockId} div.sqs-image-content {
-    border-width: ${existingBorderWidth}px;
-    border-top-width: ${topBorderWidth}px !important;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`
-        );
-      } else {
-        // If no existing rule, create new one
-        updatedCSS += `
+      newRule = `
   #${blockId} div.sqs-image-content {
     border-width: ${allBorderWidth}px;
     border-top-width: ${topBorderWidth}px !important;
     box-sizing: border-box;
     border-style: solid;
     border-color: red;
-  }
-  `;
-      }
+  }`;
     }
 
-    styleElement.textContent = updatedCSS;
+    // Add the new rule to the CSS
+    styleElement.textContent = currentCSS + newRule;
   }
 
   function stopDrag() {
