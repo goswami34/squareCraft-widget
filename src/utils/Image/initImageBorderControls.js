@@ -158,40 +158,69 @@ export function initImageBorderControls(selectedElement) {
 
     let currentCSS = styleElement.textContent;
 
-    // Remove existing block rule if present
-    currentCSS = currentCSS.replace(
-      new RegExp(`#${blockId} div\\.sqs-image-content\\s*{[^}]*}`, "g"),
-      ""
-    );
-
-    let newRule = "";
+    const blockSelector = `#${blockId} div.sqs-image-content`;
 
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
 
-      newRule = `
-  #${blockId} div.sqs-image-content {
+      const allRule = `
+  ${blockSelector} {
     border-width: ${allBorderWidth}px;
     box-sizing: border-box;
     border-style: solid;
     border-color: red;
-  }`;
+  }
+  `;
+
+      // Replace or add the all-border rule
+      if (currentCSS.includes(blockSelector)) {
+        currentCSS = currentCSS.replace(
+          new RegExp(`${blockSelector}\\s*{[^}]*}`, "g"),
+          allRule.trim()
+        );
+      } else {
+        currentCSS += allRule;
+      }
+
+      styleElement.textContent = currentCSS;
     }
 
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      newRule = `
-        #${blockId} div.sqs-image-content {
-          border-width: ${allBorderWidth}px;
-          border-top-width: ${topBorderWidth}px !important;
-          box-sizing: border-box;
-          border-style: solid;
-          border-color: red;
-        }`;
-    }
+      const topLine = `border-top-width: ${topBorderWidth}px !important;`;
 
-    styleElement.textContent = currentCSS + newRule;
+      if (currentCSS.includes(blockSelector)) {
+        // Replace border-top-width line only (or add it if missing)
+        if (currentCSS.includes("border-top-width")) {
+          currentCSS = currentCSS.replace(
+            new RegExp(
+              `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
+              "g"
+            ),
+            `$1${topLine}`
+          );
+        } else {
+          currentCSS = currentCSS.replace(
+            new RegExp(`${blockSelector}\\s*{`),
+            `${blockSelector} {\n  ${topLine}`
+          );
+        }
+      } else {
+        // No existing rule: create new
+        currentCSS += `
+  ${blockSelector} {
+    border-width: ${allBorderWidth}px;
+    ${topLine}
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }
+  `;
+      }
+
+      styleElement.textContent = currentCSS;
+    }
   }
 
   function stopDrag() {
