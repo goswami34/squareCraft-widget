@@ -234,6 +234,7 @@ export function initImageBorderControls(selectedElement) {
       if (activeBorderType === "top") {
         currentCSS += `
 ${blockSelector} {
+  border-width: ${allBorderWidth}px;
   border-top-width: ${borderWidth}px !important;
   box-sizing: border-box;
   border-style: solid;
