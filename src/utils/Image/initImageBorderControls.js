@@ -17,7 +17,7 @@ export function initImageBorderControls(selectedElement) {
     return;
 
   // let activeBorderType = "all";
-  window.__scActiveBorderType = "all";
+  // window.__scActiveBorderType = "all";
   let allBorderWidth = 0;
   let topBorderWidth = 0;
 
