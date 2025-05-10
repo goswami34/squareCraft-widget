@@ -100,7 +100,8 @@ export function initImageBorderControls(selectedElement) {
     border-width: ${allBorderWidth}px;
     box-sizing: border-box;
     border-style: solid;
-    border-color: ${selectedBorderColor};
+    ${selectedBorderColor ? `border-color: ${selectedBorderColor};` : ""}
+
   }`;
       } else {
         currentCSS = currentCSS.replace(
@@ -262,6 +263,8 @@ export function initImageBorderControls(selectedElement) {
   if (colorCode) {
     const observer = new MutationObserver(() => {
       const newColor = colorCode.textContent.trim();
+      if (!newColor || newColor.toLowerCase() === "select") return;
+
       selectedBorderColor = newColor;
 
       const selected = document.querySelector(".sc-selected-image");
