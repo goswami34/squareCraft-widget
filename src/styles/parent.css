@@ -385,8 +385,8 @@
 }
 
 .sc-blur-sm {
-  filter: blur(1px);
-  opacity: 0.4;
+  filter: blur(0.5px);
+  opacity: 0.6;
 }
 
 .sc-pointer-events-none {
