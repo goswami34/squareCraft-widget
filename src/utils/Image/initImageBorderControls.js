@@ -92,12 +92,12 @@ export function initImageBorderControls(selectedElement) {
 
       if (!currentCSS.includes(blockSelector)) {
         currentCSS += `
-  ${blockSelector} {
-    border-top-width: ${topBorderWidth}px !important;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`;
+        ${blockSelector} {
+          border-top-width: ${topBorderWidth}px !important;
+          box-sizing: border-box;
+          border-style: solid;
+          border-color: red;
+        }`;
       } else if (currentCSS.includes("border-top-width")) {
         currentCSS = currentCSS.replace(
           new RegExp(
