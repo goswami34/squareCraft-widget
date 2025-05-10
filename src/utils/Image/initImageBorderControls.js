@@ -19,7 +19,104 @@ export function initImageBorderControls(selectedElement) {
   let activeBorderType = "all";
   let allBorderWidth = 0;
   let topBorderWidth = 0;
-  let isDragging = false;
+
+  // function updateStyleElement(blockId, borderWidth) {
+  //   let styleElement = document.getElementById("sc-image-border-style");
+  //   if (!styleElement) {
+  //     styleElement = document.createElement("style");
+  //     styleElement.id = "sc-image-border-style";
+  //     document.head.appendChild(styleElement);
+  //   }
+
+  //   let css = "";
+  //   if (activeBorderType === "all") {
+  //     allBorderWidth = borderWidth;
+  //     css = `
+  //       #${blockId} div.sqs-image-content {
+  //         border-width: ${borderWidth}px;
+  //         box-sizing: border-box;
+  //         border-style: solid;
+  //         border-color: red;
+  //       }
+  //     `;
+  //   } else if (activeBorderType === "top") {
+  //     topBorderWidth = borderWidth;
+  //     css = `
+  //       #${blockId} div.sqs-image-content {
+  //         border-width: ${allBorderWidth}px;
+  //         border-top-width: ${topBorderWidth}px !important;
+  //         box-sizing: border-box;
+  //         border-style: solid;
+  //         border-color: red;
+  //       }
+  //     `;
+  //   }
+
+  //   styleElement.textContent = css;
+  // }
+
+  function updateStyleElement(blockId, borderWidth) {
+    let styleElement = document.getElementById("sc-image-border-style");
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = "sc-image-border-style";
+      document.head.appendChild(styleElement);
+    }
+
+    const blockSelector = `#${blockId} div.sqs-image-content`;
+    let currentCSS = styleElement.textContent;
+
+    if (activeBorderType === "all") {
+      allBorderWidth = borderWidth;
+
+      if (!currentCSS.includes(blockSelector)) {
+        currentCSS += `
+    ${blockSelector} {
+      border-width: ${allBorderWidth}px;
+      box-sizing: border-box;
+      border-style: solid;
+      border-color: red;
+    }`;
+      } else {
+        currentCSS = currentCSS.replace(
+          new RegExp(`${blockSelector}\\s*{[^}]*?border-width:\\s*[^;]+;`, "g"),
+          `${blockSelector} {\n  border-width: ${allBorderWidth}px;`
+        );
+      }
+
+      styleElement.textContent = currentCSS;
+    }
+
+    if (activeBorderType === "top") {
+      topBorderWidth = borderWidth;
+
+      if (!currentCSS.includes(blockSelector)) {
+        currentCSS += `
+        ${blockSelector} {
+          border-top-width: ${topBorderWidth}px !important;
+          box-sizing: border-box;
+          border-style: solid;
+          border-color: red;
+        }`;
+      } else if (currentCSS.includes("border-top-width")) {
+        currentCSS = currentCSS.replace(
+          new RegExp(
+            `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
+            "g"
+          ),
+          `$1border-top-width: ${topBorderWidth}px !important;`
+        );
+      } else {
+        currentCSS = currentCSS.replace(
+          new RegExp(`${blockSelector}\\s*{`),
+          `${blockSelector} {\n  border-top-width: ${topBorderWidth}px !important;`
+        );
+      }
+
+      // ❗ DO NOT modify or re-render border-width here
+      styleElement.textContent = currentCSS;
+    }
+  }
 
   function updateSliderPosition(width) {
     const maxWidth = 100;
@@ -33,8 +130,9 @@ export function initImageBorderControls(selectedElement) {
     borderWidthDisplay.textContent = `${width}px`;
   }
 
-  function handleDrag(e) {
-    if (!isDragging && e.type !== "click") return;
+  allButton.addEventListener("click", () => {
+    console.log("allButton clicked");
+    activeBorderType = "all";
 
     const imageContent = document.querySelector(".sc-selected-image");
     if (!imageContent) return;
@@ -43,7 +141,185 @@ export function initImageBorderControls(selectedElement) {
     if (!blockElement) return;
 
     const blockId = blockElement.id;
-    const selector = `#${blockId} div.sqs-image-content`;
+    const initialBorderWidth = 5;
+
+    allBorderWidth = initialBorderWidth;
+    updateStyleElement(blockId, initialBorderWidth);
+    updateSliderPosition(initialBorderWidth);
+  });
+
+  topButton.addEventListener("click", () => {
+    console.log("topButton clicked");
+    activeBorderType = "top";
+
+    const imageContent = document.querySelector(".sc-selected-image");
+    if (!imageContent) return;
+
+    const blockElement = imageContent.closest('[id^="block-"]');
+    if (!blockElement) return;
+
+    const blockId = blockElement.id;
+
+    const currentPosition = parseFloat(borderWidthBullet.style.left) || 0;
+    const max = borderWidthSlider.offsetWidth;
+    const currentWidth = Math.round((currentPosition / max) * 100);
+
+    topBorderWidth = currentWidth;
+
+    if (allBorderWidth === 0) {
+      allBorderWidth = currentWidth;
+    }
+
+    updateStyleElement(blockId, topBorderWidth);
+    updateSliderPosition(topBorderWidth);
+  });
+
+  let isDragging = false;
+
+  function startDrag(e) {
+    e.preventDefault();
+    isDragging = true;
+    document.addEventListener("mousemove", handleDrag);
+    document.addEventListener("mouseup", stopDrag);
+    document.addEventListener("touchmove", handleDrag);
+    document.addEventListener("touchend", stopDrag);
+  }
+
+  // function handleDrag(e) {
+  //   if (!isDragging) return;
+
+  //   const imageContent = document.querySelector(".sc-selected-image");
+  //   if (!imageContent) return;
+
+  //   const blockElement = imageContent.closest('[id^="block-"]');
+  //   if (!blockElement) return;
+
+  //   const blockId = blockElement.id;
+
+  //   const rect = borderWidthSlider.getBoundingClientRect();
+  //   const clientX = e.clientX || e.touches?.[0]?.clientX;
+  //   let offsetX = clientX - rect.left;
+
+  //   const max = borderWidthSlider.offsetWidth;
+  //   const bulletRadius = borderWidthBullet.offsetWidth / 2;
+  //   offsetX = Math.max(bulletRadius, Math.min(offsetX, max - bulletRadius));
+
+  //   const percent = offsetX / max;
+  //   const borderWidth = Math.round(percent * 100);
+
+  //   borderWidthBullet.style.left = `${offsetX}px`;
+  //   borderWidthBullet.style.transform = "translateX(-50%)";
+  //   borderWidthFill.style.width = `${offsetX}px`;
+  //   borderWidthDisplay.textContent = `${borderWidth}px`;
+
+  //   let styleElement = document.getElementById("sc-image-border-style");
+  //   if (!styleElement) {
+  //     styleElement = document.createElement("style");
+  //     styleElement.id = "sc-image-border-style";
+  //     document.head.appendChild(styleElement);
+  //   }
+
+  //   let currentCSS = styleElement.textContent;
+  //   const blockSelector = `#${blockId} div.sqs-image-content`;
+
+  //   // Ensure the block rule exists
+  //   //   if (!currentCSS.includes(blockSelector)) {
+  //   //     currentCSS += `
+  //   // ${blockSelector} {
+  //   //   border-width: ${allBorderWidth}px;
+  //   //   border-top-width: ${topBorderWidth}px !important;
+  //   //   box-sizing: border-box;
+  //   //   border-style: solid;
+  //   //   border-color: red;
+  //   // }`;
+  //   //   }
+
+  //   // if (activeBorderType === "all") {
+  //   //   allBorderWidth = borderWidth;
+  //   //   currentCSS = currentCSS.replace(
+  //   //     new RegExp(`(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`, "g"),
+  //   //     `$1border-width: ${allBorderWidth}px;`
+  //   //   );
+  //   // }
+
+  //   if (activeBorderType === "all") {
+  //     allBorderWidth = borderWidth;
+
+  //     if (!currentCSS.includes(blockSelector)) {
+  //       currentCSS += `
+  //   ${blockSelector} {
+  //     border-width: ${allBorderWidth}px;
+  //     box-sizing: border-box;
+  //     border-style: solid;
+  //     border-color: red;
+  //   }`;
+  //     } else {
+  //       currentCSS = currentCSS.replace(
+  //         new RegExp(
+  //           `(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`,
+  //           "g"
+  //         ),
+  //         `$1border-width: ${allBorderWidth}px;`
+  //       );
+  //     }
+  //   }
+
+  //   if (activeBorderType === "top") {
+  //     topBorderWidth = borderWidth;
+  //     // Only update border-top-width, keep the original border-width
+  //     // if (currentCSS.includes("border-top-width")) {
+  //     //   currentCSS = currentCSS.replace(
+  //     //     new RegExp(
+  //     //       `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
+  //     //       "g"
+  //     //     ),
+  //     //     `$1border-top-width: ${topBorderWidth}px !important;`
+  //     //   );
+  //     // } else {
+  //     //   currentCSS = currentCSS.replace(
+  //     //     new RegExp(`${blockSelector}\\s*{`),
+  //     //     `${blockSelector} {\n  border-top-width: ${topBorderWidth}px !important;`
+  //     //   );
+  //     // }
+
+  //     if (!currentCSS.includes(blockSelector)) {
+  //       currentCSS += `
+  //       ${blockSelector} {
+  //         border-top-width: ${topBorderWidth}px !important;
+  //         border-width: ${allBorderWidth}px;
+  //         box-sizing: border-box;
+  //         border-style: solid;
+  //         border-color: red;
+  //       }`;
+  //     } else if (currentCSS.includes("border-top-width")) {
+  //       currentCSS = currentCSS.replace(
+  //         new RegExp(
+  //           `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
+  //           "g"
+  //         ),
+  //         `$1border-top-width: ${topBorderWidth}px !important;`
+  //       );
+  //     } else {
+  //       currentCSS = currentCSS.replace(
+  //         new RegExp(`${blockSelector}\\s*{`),
+  //         `${blockSelector} {\n  border-top-width: ${topBorderWidth}px !important;`
+  //       );
+  //     }
+  //   }
+
+  //   styleElement.textContent = currentCSS;
+  // }
+
+  function handleDrag(e) {
+    if (!isDragging) return;
+
+    const imageContent = document.querySelector(".sc-selected-image");
+    if (!imageContent) return;
+
+    const blockElement = imageContent.closest('[id^="block-"]');
+    if (!blockElement) return;
+
+    const blockId = blockElement.id;
 
     const rect = borderWidthSlider.getBoundingClientRect();
     const clientX = e.clientX || e.touches?.[0]?.clientX;
@@ -56,79 +332,80 @@ export function initImageBorderControls(selectedElement) {
     const percent = offsetX / max;
     const borderWidth = Math.round(percent * 100);
 
-    updateSliderPosition(borderWidth);
+    // Update bullet UI
+    borderWidthBullet.style.left = `${offsetX}px`;
+    borderWidthBullet.style.transform = "translateX(-50%)";
+    borderWidthFill.style.width = `${offsetX}px`;
+    borderWidthDisplay.textContent = `${borderWidth}px`;
 
-    let styleElement = document.getElementById("sc-image-border-style");
-    if (!styleElement) {
-      styleElement = document.createElement("style");
-      styleElement.id = "sc-image-border-style";
-      document.head.appendChild(styleElement);
-    }
+    const styleElement =
+      document.getElementById("sc-image-border-style") ||
+      (() => {
+        const el = document.createElement("style");
+        el.id = "sc-image-border-style";
+        document.head.appendChild(el);
+        return el;
+      })();
 
+    const blockSelector = `#${blockId} div.sqs-image-content`;
+    let currentCSS = styleElement.textContent;
+
+    // === ALL BORDER ===
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
-      styleElement.textContent = `
-  ${selector} {
+
+      if (!currentCSS.includes(blockSelector)) {
+        currentCSS += `
+  ${blockSelector} {
     border-width: ${allBorderWidth}px;
     box-sizing: border-box;
     border-style: solid;
     border-color: red;
   }`;
-      return;
+      } else {
+        currentCSS = currentCSS.replace(
+          new RegExp(
+            `(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`,
+            "g"
+          ),
+          `$1border-width: ${allBorderWidth}px;`
+        );
+      }
+
+      styleElement.textContent = currentCSS;
+      return; // ⛔️ Stop here for "all"
     }
 
+    // === TOP BORDER ===
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      // Get current CSS
-      let currentCSS = styleElement.textContent;
-
-      // If no CSS exists yet, create new block
-      if (!currentCSS.includes(selector)) {
-        styleElement.textContent = `
-  ${selector} {
-    border-width: ${allBorderWidth}px;
-    border-top-width: ${topBorderWidth}px !important;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`;
-        return;
+      if (!currentCSS.includes(blockSelector)) {
+        currentCSS += `
+    ${blockSelector} {
+      border-top-width: ${topBorderWidth}px !important;
+      box-sizing: border-box;
+      border-style: solid;
+      border-color: red;
+    }`;
+      } else if (currentCSS.includes("border-top-width")) {
+        currentCSS = currentCSS.replace(
+          new RegExp(
+            `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
+            "g"
+          ),
+          `$1border-top-width: ${topBorderWidth}px !important;`
+        );
+      } else {
+        currentCSS = currentCSS.replace(
+          new RegExp(`${blockSelector}\\s*{`),
+          `${blockSelector} {\n  border-top-width: ${topBorderWidth}px !important;`
+        );
       }
 
-      // Extract existing border-width
-      const borderWidthMatch = currentCSS.match(
-        new RegExp(`${selector}\\s*{[^}]*?border-width:\\s*(\\d+)px`)
-      );
-      const currentBorderWidth = borderWidthMatch
-        ? borderWidthMatch[1]
-        : allBorderWidth;
-
-      // Create new CSS block
-      const newCSS = `
-  ${selector} {
-    border-width: ${currentBorderWidth}px;
-    border-top-width: ${topBorderWidth}px !important;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`;
-
-      // Replace the entire block
-      styleElement.textContent = currentCSS.replace(
-        new RegExp(`${selector}\\s*{[^}]*}`, "s"),
-        newCSS.trim()
-      );
+      // ❌ DO NOT touch or include border-width here
+      styleElement.textContent = currentCSS;
     }
-  }
-
-  function startDrag(e) {
-    e.preventDefault();
-    isDragging = true;
-    document.addEventListener("mousemove", handleDrag);
-    document.addEventListener("mouseup", stopDrag);
-    document.addEventListener("touchmove", handleDrag);
-    document.addEventListener("touchend", stopDrag);
   }
 
   function stopDrag() {
@@ -138,41 +415,6 @@ export function initImageBorderControls(selectedElement) {
     document.removeEventListener("touchmove", handleDrag);
     document.removeEventListener("touchend", stopDrag);
   }
-
-  allButton.addEventListener("click", () => {
-    activeBorderType = "all";
-
-    const initial = 5;
-    allBorderWidth = initial;
-    updateSliderPosition(initial);
-
-    const fakeEvent = {
-      type: "click",
-      clientX:
-        borderWidthSlider.getBoundingClientRect().left +
-        (initial / 100) * borderWidthSlider.offsetWidth,
-    };
-    handleDrag(fakeEvent);
-  });
-
-  topButton.addEventListener("click", () => {
-    activeBorderType = "top";
-
-    const sliderWidth = borderWidthSlider.offsetWidth;
-    const currentLeft = parseFloat(borderWidthBullet.style.left) || 0;
-    const width = Math.round((currentLeft / sliderWidth) * 100);
-
-    topBorderWidth = width;
-    updateSliderPosition(width);
-
-    const fakeEvent = {
-      type: "click",
-      clientX:
-        borderWidthSlider.getBoundingClientRect().left +
-        (width / 100) * sliderWidth,
-    };
-    handleDrag(fakeEvent);
-  });
 
   borderWidthBullet.addEventListener("mousedown", startDrag);
   borderWidthBullet.addEventListener("touchstart", startDrag);
