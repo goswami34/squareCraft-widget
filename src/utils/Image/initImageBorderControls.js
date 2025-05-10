@@ -323,7 +323,7 @@ export function initImageBorderControls(selectedElement) {
 
     let currentCSS = styleElement.textContent;
 
-    console.log(activeBorderType);
+    console.log(window.__scActiveBorderType);
 
     // === ALL BORDER ===
     if (window.__scActiveBorderType === "all") {
