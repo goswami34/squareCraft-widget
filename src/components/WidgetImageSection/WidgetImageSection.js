@@ -168,6 +168,9 @@ export function WidgetImageSection(id) {
                                  </div>
                               </div>
 
+
+                              
+
                               <div class="sc-h-1px sc-mt-2 sc-bg-color-gray"></div>
                               <div class="sc-flex color-h-selection sc-mt-2 sc-items-center sc-gap-2">
                                  <div id="color-selection-field" class="sc-relative">

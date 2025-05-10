@@ -10,7 +10,15 @@ export function initBorderColorPaletteToggle(themeColors) {
   const transparencyField = document.getElementById("color-transparency-field");
   const transparencyBullet = document.getElementById("color-transparency-bar");
 
-  if (!palette || !container || !selectorField || !bullet || !colorCode || !transparencyCount) return;
+  if (
+    !palette ||
+    !container ||
+    !selectorField ||
+    !bullet ||
+    !colorCode ||
+    !transparencyCount
+  )
+    return;
 
   let dynamicHue = 0;
 
@@ -33,13 +41,22 @@ export function initBorderColorPaletteToggle(themeColors) {
     )`;
   }
 
-  if (allColorField && allColorBullet && transparencyField && selectorField && bullet) {
+  if (
+    allColorField &&
+    allColorBullet &&
+    transparencyField &&
+    selectorField &&
+    bullet
+  ) {
     allColorBullet.onmousedown = function (e) {
       e.preventDefault();
       document.onmousemove = function (e) {
         const rect = allColorField.getBoundingClientRect();
         let offsetY = e.clientY - rect.top;
-        offsetY = Math.max(0, Math.min(rect.height - allColorBullet.offsetHeight, offsetY));
+        offsetY = Math.max(
+          0,
+          Math.min(rect.height - allColorBullet.offsetHeight, offsetY)
+        );
         allColorBullet.style.top = `${offsetY}px`;
 
         const percentage = offsetY / rect.height;
@@ -69,12 +86,13 @@ export function initBorderColorPaletteToggle(themeColors) {
           b = hueToRgb(p, q, h - 1 / 3);
         }
 
-        const finalColor = `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`;
+        const finalColor = `rgb(${Math.round(r * 255)}, ${Math.round(
+          g * 255
+        )}, ${Math.round(b * 255)})`;
 
         if (colorCode) {
           colorCode.textContent = finalColor;
         }
-
 
         if (transparencyField) {
           transparencyField.style.background = `linear-gradient(to bottom, 
@@ -119,8 +137,14 @@ export function initBorderColorPaletteToggle(themeColors) {
         let offsetX = e.clientX - rect.left;
         let offsetY = e.clientY - rect.top;
 
-        offsetX = Math.max(0, Math.min(rect.width - bullet.offsetWidth, offsetX));
-        offsetY = Math.max(0, Math.min(rect.height - bullet.offsetHeight, offsetY));
+        offsetX = Math.max(
+          0,
+          Math.min(rect.width - bullet.offsetWidth, offsetX)
+        );
+        offsetY = Math.max(
+          0,
+          Math.min(rect.height - bullet.offsetHeight, offsetY)
+        );
 
         bullet.style.left = `${offsetX}px`;
         bullet.style.top = `${offsetY}px`;
@@ -130,7 +154,10 @@ export function initBorderColorPaletteToggle(themeColors) {
 
         const lightness = 50 + percentX * 50;
         const darkness = 100 - percentY * 100;
-        const finalLightness = Math.max(0, Math.min(100, (lightness * darkness) / 100));
+        const finalLightness = Math.max(
+          0,
+          Math.min(100, (lightness * darkness) / 100)
+        );
 
         const h = dynamicHue / 360;
         const l = finalLightness / 100;
@@ -156,13 +183,13 @@ export function initBorderColorPaletteToggle(themeColors) {
           b = hueToRgb(p, q, h - 1 / 3);
         }
 
-        const finalColor = `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`;
+        const finalColor = `rgb(${Math.round(r * 255)}, ${Math.round(
+          g * 255
+        )}, ${Math.round(b * 255)})`;
 
         if (colorCode) {
           colorCode.textContent = finalColor;
         }
-
-
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -177,10 +204,14 @@ export function initBorderColorPaletteToggle(themeColors) {
       document.onmousemove = function (e) {
         const rect = transparencyField.getBoundingClientRect();
         let offsetY = e.clientY - rect.top;
-        offsetY = Math.max(0, Math.min(rect.height - transparencyBullet.offsetHeight, offsetY));
+        offsetY = Math.max(
+          0,
+          Math.min(rect.height - transparencyBullet.offsetHeight, offsetY)
+        );
         transparencyBullet.style.top = `${offsetY}px`;
 
-        const transparencyPercent = 100 - Math.round((offsetY / rect.height) * 100);
+        const transparencyPercent =
+          100 - Math.round((offsetY / rect.height) * 100);
 
         if (transparencyCount) {
           transparencyCount.textContent = `${transparencyPercent}%`;
@@ -197,7 +228,7 @@ export function initBorderColorPaletteToggle(themeColors) {
 
   if (container.innerHTML.trim() !== "") return;
 
-  Object.values(themeColors).forEach(color => {
+  Object.values(themeColors).forEach((color) => {
     const swatch = document.createElement("div");
     swatch.className = "sc-border-colors sc-cursor-pointer";
     swatch.style.backgroundColor = color;
@@ -242,8 +273,14 @@ export function initBorderColorPaletteToggle(themeColors) {
         let offsetX = e.clientX - rect.left;
         let offsetY = e.clientY - rect.top;
 
-        offsetX = Math.max(0, Math.min(rect.width - bullet.offsetWidth, offsetX));
-        offsetY = Math.max(0, Math.min(rect.height - bullet.offsetHeight, offsetY));
+        offsetX = Math.max(
+          0,
+          Math.min(rect.width - bullet.offsetWidth, offsetX)
+        );
+        offsetY = Math.max(
+          0,
+          Math.min(rect.height - bullet.offsetHeight, offsetY)
+        );
 
         bullet.style.left = `${offsetX}px`;
         bullet.style.top = `${offsetY}px`;
@@ -253,34 +290,38 @@ export function initBorderColorPaletteToggle(themeColors) {
 
         const lightness = 50 + percentX * 50;
         const darkness = 100 - percentY * 100;
-        const finalLightness = Math.max(0, Math.min(100, (lightness * darkness) / 100));
+        const finalLightness = Math.max(
+          0,
+          Math.min(100, (lightness * darkness) / 100)
+        );
 
         const h = dynamicHue / 360;
         const s = 1;
         const l = finalLightness / 100;
-        
+
         function hueToRgb(p, q, t) {
           if (t < 0) t += 1;
           if (t > 1) t -= 1;
-          if (t < 1/6) return p + (q - p) * 6 * t;
-          if (t < 1/2) return q;
-          if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          if (t < 1 / 6) return p + (q - p) * 6 * t;
+          if (t < 1 / 2) return q;
+          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
           return p;
         }
-        
+
         let r, g, b;
         if (s === 0) {
           r = g = b = l;
         } else {
           const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
           const p = 2 * l - q;
-          r = hueToRgb(p, q, h + 1/3);
+          r = hueToRgb(p, q, h + 1 / 3);
           g = hueToRgb(p, q, h);
-          b = hueToRgb(p, q, h - 1/3);
+          b = hueToRgb(p, q, h - 1 / 3);
         }
-        
-        const finalColor = `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`;
-        
+
+        const finalColor = `rgb(${Math.round(r * 255)}, ${Math.round(
+          g * 255
+        )}, ${Math.round(b * 255)})`;
 
         if (colorCode) {
           colorCode.textContent = finalColor;
