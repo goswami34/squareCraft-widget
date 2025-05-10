@@ -179,27 +179,27 @@ export function initImageBorderControls(selectedElement) {
     //   );
     // }
 
-    if (activeBorderType === "all") {
-      allBorderWidth = borderWidth;
+    // if (activeBorderType === "all") {
+    //   allBorderWidth = borderWidth;
 
-      if (!currentCSS.includes(blockSelector)) {
-        currentCSS += `
-    ${blockSelector} {
-      border-width: ${allBorderWidth}px;
-      box-sizing: border-box;
-      border-style: solid;
-      border-color: red;
-    }`;
-      } else {
-        currentCSS = currentCSS.replace(
-          new RegExp(
-            `(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`,
-            "g"
-          ),
-          `$1border-width: ${allBorderWidth}px;`
-        );
-      }
-    }
+    //   if (!currentCSS.includes(blockSelector)) {
+    //     currentCSS += `
+    // ${blockSelector} {
+    //   border-width: ${allBorderWidth}px;
+    //   box-sizing: border-box;
+    //   border-style: solid;
+    //   border-color: red;
+    // }`;
+    //   } else {
+    //     currentCSS = currentCSS.replace(
+    //       new RegExp(
+    //         `(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`,
+    //         "g"
+    //       ),
+    //       `$1border-width: ${allBorderWidth}px;`
+    //     );
+    //   }
+    // }
 
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
