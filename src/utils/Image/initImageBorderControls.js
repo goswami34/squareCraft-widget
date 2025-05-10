@@ -325,9 +325,9 @@ export function initImageBorderControls(selectedElement) {
 
   function setActiveBorderButton(activeBtn) {
     borderButtons.forEach((btn) => {
-      btn.classList.remove(".sc-bg-454545");
+      btn.classList.remove("sc-bg-color-#454545");
     });
-    activeBtn.classList.add(".sc-bg-454545");
+    activeBtn.classList.add("sc-bg-color-#454545");
   }
 
   //end of use for highlight active border button
