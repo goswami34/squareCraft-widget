@@ -20,6 +20,41 @@ export function initImageBorderControls(selectedElement) {
   let allBorderWidth = 0;
   let topBorderWidth = 0;
 
+  // function updateStyleElement(blockId, borderWidth) {
+  //   let styleElement = document.getElementById("sc-image-border-style");
+  //   if (!styleElement) {
+  //     styleElement = document.createElement("style");
+  //     styleElement.id = "sc-image-border-style";
+  //     document.head.appendChild(styleElement);
+  //   }
+
+  //   let css = "";
+  //   if (activeBorderType === "all") {
+  //     allBorderWidth = borderWidth;
+  //     css = `
+  //       #${blockId} div.sqs-image-content {
+  //         border-width: ${borderWidth}px;
+  //         box-sizing: border-box;
+  //         border-style: solid;
+  //         border-color: red;
+  //       }
+  //     `;
+  //   } else if (activeBorderType === "top") {
+  //     topBorderWidth = borderWidth;
+  //     css = `
+  //       #${blockId} div.sqs-image-content {
+  //         border-width: ${allBorderWidth}px;
+  //         border-top-width: ${topBorderWidth}px !important;
+  //         box-sizing: border-box;
+  //         border-style: solid;
+  //         border-color: red;
+  //       }
+  //     `;
+  //   }
+
+  //   styleElement.textContent = css;
+  // }
+
   function updateStyleElement(blockId, borderWidth) {
     let styleElement = document.getElementById("sc-image-border-style");
     if (!styleElement) {
@@ -28,30 +63,59 @@ export function initImageBorderControls(selectedElement) {
       document.head.appendChild(styleElement);
     }
 
-    let css = "";
+    const blockSelector = `#${blockId} div.sqs-image-content`;
+    let currentCSS = styleElement.textContent;
+
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
-      css = `
-        #${blockId} div.sqs-image-content {
-          border-width: ${borderWidth}px;
-          box-sizing: border-box;
-          border-style: solid;
-          border-color: red;
-        }
-      `;
-    } else if (activeBorderType === "top") {
-      topBorderWidth = borderWidth;
-      css = `
-        #${blockId} div.sqs-image-content {
-          border-top-width: ${topBorderWidth}px !important;
-          box-sizing: border-box;
-          border-style: solid;
-          border-color: red;
-        }
-      `;
+
+      if (!currentCSS.includes(blockSelector)) {
+        currentCSS += `
+  ${blockSelector} {
+    border-width: ${allBorderWidth}px;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }`;
+      } else {
+        currentCSS = currentCSS.replace(
+          new RegExp(`${blockSelector}\\s*{[^}]*?border-width:\\s*[^;]+;`, "g"),
+          `${blockSelector} {\n  border-width: ${allBorderWidth}px;`
+        );
+      }
+
+      styleElement.textContent = currentCSS;
     }
 
-    styleElement.textContent = css;
+    if (activeBorderType === "top") {
+      topBorderWidth = borderWidth;
+
+      if (!currentCSS.includes(blockSelector)) {
+        currentCSS += `
+  ${blockSelector} {
+    border-top-width: ${topBorderWidth}px !important;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }`;
+      } else if (currentCSS.includes("border-top-width")) {
+        currentCSS = currentCSS.replace(
+          new RegExp(
+            `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
+            "g"
+          ),
+          `$1border-top-width: ${topBorderWidth}px !important;`
+        );
+      } else {
+        currentCSS = currentCSS.replace(
+          new RegExp(`${blockSelector}\\s*{`),
+          `${blockSelector} {\n  border-top-width: ${topBorderWidth}px !important;`
+        );
+      }
+
+      // ❗ DO NOT modify or re-render border-width here
+      styleElement.textContent = currentCSS;
+    }
   }
 
   function updateSliderPosition(width) {
