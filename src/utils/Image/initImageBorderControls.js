@@ -16,7 +16,8 @@ export function initImageBorderControls(selectedElement) {
   )
     return;
 
-  let activeBorderType = "all";
+  // let activeBorderType = "all";
+  window.__scActiveBorderType = "all";
   let allBorderWidth = 0;
   let topBorderWidth = 0;
 
@@ -132,7 +133,7 @@ export function initImageBorderControls(selectedElement) {
 
   allButton.addEventListener("click", () => {
     console.log("allButton clicked");
-    activeBorderType = "all";
+    window.__scActiveBorderType = "all";
 
     const imageContent = document.querySelector(".sc-selected-image");
     if (!imageContent) return;
@@ -150,7 +151,7 @@ export function initImageBorderControls(selectedElement) {
 
   topButton.addEventListener("click", () => {
     console.log("topButton clicked");
-    activeBorderType = "top";
+    window.__scActiveBorderType = "top";
 
     const imageContent = document.querySelector(".sc-selected-image");
     if (!imageContent) return;
@@ -325,7 +326,7 @@ export function initImageBorderControls(selectedElement) {
     console.log(activeBorderType);
 
     // === ALL BORDER ===
-    if (activeBorderType === "all") {
+    if (window.__scActiveBorderType === "all") {
       allBorderWidth = borderWidth;
 
       // Replace or insert full block with border-width
@@ -352,7 +353,7 @@ export function initImageBorderControls(selectedElement) {
     }
 
     // === TOP BORDER ONLY ===
-    if (activeBorderType === "top") {
+    if (window.__scActiveBorderType === "top") {
       topBorderWidth = borderWidth;
 
       // Match the existing block
