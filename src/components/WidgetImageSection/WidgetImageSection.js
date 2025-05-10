@@ -95,43 +95,43 @@ export function WidgetImageSection(id) {
 
 
                         <div
-                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px sc-items-center sc-gap-1">
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px sc-items-center sc-gap-1"  id="allBorder">
                            <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/all.svg" loading="lazy"
                               alt="all-radious">
-                           <p class="sc-font-thin sc-roboto sc-universal" id="allBorder">All</p>
+                           <p class="sc-font-thin sc-roboto sc-universal">All</p>
                         </div>
 
 
                         <div
-                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1">
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="topBorder">
                            <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/top.svg" loading="lazy"
                               alt="top-radious">
-                           <p class="sc-font-thin sc-roboto sc-universal" id="topBorder">Top</p>
+                           <p class="sc-font-thin sc-roboto sc-universal" >Top</p>
                         </div>
 
 
 
                         <div
-                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1">
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomBorder">
                            <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/bottom.svg" loading="lazy"
                               alt="bottom-radious">
-                           <p class="sc-font-thin sc-roboto sc-universal " id="bottomBorder">Bottom</p>
+                           <p class="sc-font-thin sc-roboto sc-universal " >Bottom</p>
                         </div>
 
 
                         <div
-                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1">
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="leftBorder">
                            <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/left.svg" loading="lazy"
                               alt="left-radious">
-                           <p class="sc-font-thin sc-roboto sc-universal " id="leftBorder">Left</p>
+                           <p class="sc-font-thin sc-roboto sc-universal " >Left</p>
                         </div>
 
 
                         <div
-                           class="sc-flex sc-px-1_5 sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1">
+                           class="sc-flex sc-px-1_5 sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="rightBorder">
                            <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/right.svg" loading="lazy"
                               alt="right-radious">
-                           <p class="sc-font-thin sc-roboto sc-universal " id="rightBorder">Right</p>
+                           <p class="sc-font-thin sc-roboto sc-universal ">Right</p>
                         </div>
 
 

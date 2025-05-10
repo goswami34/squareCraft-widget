@@ -332,30 +332,6 @@ export function initImageBorderControls(selectedElement) {
 
   //end of use for highlight active border button
 
-  // function setupButton(button, type) {
-  //   button.addEventListener("click", () => {
-  //     console.log(`${type} button clicked`);
-  //     window.__scActiveBorderType = type;
-
-  //     setActiveBorderButton(button); // highlight active
-
-  //     const imageContent = document.querySelector(".sc-selected-image");
-  //     if (!imageContent) return;
-
-  //     const blockElement = imageContent.closest('[id^="block-"]');
-  //     if (!blockElement) return;
-
-  //     const blockId = blockElement.id;
-
-  //     const currentPosition = parseFloat(borderWidthBullet.style.left) || 0;
-  //     const max = borderWidthSlider.offsetWidth;
-  //     const currentWidth = Math.round((currentPosition / max) * 100);
-
-  //     updateStyleElement(blockId, currentWidth);
-  //     updateSliderPosition(currentWidth);
-  //   });
-  // }
-
   function updateStyleElement(blockId, borderWidth) {
     let styleElement = document.getElementById("sc-image-border-style");
     if (!styleElement) {
