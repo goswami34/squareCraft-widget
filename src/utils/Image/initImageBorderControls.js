@@ -18,7 +18,7 @@ export function initImageBorderControls(selectedElement) {
     palette?.classList.toggle("sc-hidden");
   });
 
-  let selectedBorderColor = "red"; // default
+  let selectedBorderColor = null; // default
 
   //color selection end here
 
