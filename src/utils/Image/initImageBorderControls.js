@@ -498,57 +498,55 @@ export function initImageBorderControls(selectedElement) {
       styleElement.textContent = "";
     }
 
-    let currentCSS = styleElement.textContent;
+    const currentCSS = styleElement.textContent;
+    const blockRegex = new RegExp(`${selector}\\s*{([\\s\\S]*?)}`, "g");
+    const match = blockRegex.exec(currentCSS);
 
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
-      styleElement.textContent = `
+      const css = `
   ${selector} {
     border-width: ${allBorderWidth}px;
     box-sizing: border-box;
     border-style: solid;
     border-color: red;
   }`;
+      styleElement.textContent = css;
       return;
     }
 
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      // Check if the block exists in the CSS
-      const blockRegex = new RegExp(`${selector}\\s*{([\\s\\S]*?)}`, "g");
-      const match = blockRegex.exec(currentCSS);
+      let newBlockContent = `
+    border-top-width: ${topBorderWidth}px !important;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;`;
 
-      let newCSS = "";
+      let newCSS;
 
       if (match) {
-        // Block exists, update only border-top-width
+        // Extract existing styles
         let existingBlock = match[1];
 
-        // Remove existing border-top-width if exists
+        // Remove any previous border-top-width
         existingBlock = existingBlock
           .replace(/border-top-width\s*:\s*[^;]+;?/g, "")
           .trim();
 
-        // Append new top width
-        existingBlock += `\n  border-top-width: ${topBorderWidth}px !important;`;
+        // Combine existing + new border-top-width
+        const combined = `${existingBlock}\n${newBlockContent}`.trim();
 
-        // Rebuild block
         newCSS = currentCSS.replace(
           blockRegex,
-          `${selector} {\n  ${existingBlock.trim()}\n}`
+          `${selector} {\n  ${combined}\n}`
         );
       } else {
-        // Block doesn't exist, create it
+        // Create new block
         newCSS =
           currentCSS +
-          `
-  ${selector} {
-    border-top-width: ${topBorderWidth}px !important;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`;
+          `\n${selector} {\n  border-top-width: ${topBorderWidth}px !important;\n  box-sizing: border-box;\n  border-style: solid;\n  border-color: red;\n}`;
       }
 
       styleElement.textContent = newCSS;
