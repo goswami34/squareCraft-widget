@@ -314,6 +314,45 @@ export function initImageBorderControls(selectedElement) {
   let leftBorderWidth = 0;
   let rightBorderWidth = 0;
 
+  const borderButtons = [
+    allButton,
+    topButton,
+    bottomButton,
+    leftButton,
+    rightButton,
+  ];
+
+  function setActiveBorderButton(activeBtn) {
+    borderButtons.forEach((btn) => {
+      btn.classList.remove("sc-bg-color-EF7C2F");
+    });
+    activeBtn.classList.add("sc-bg-color-EF7C2F");
+  }
+
+  // function setupButton(button, type) {
+  //   button.addEventListener("click", () => {
+  //     console.log(`${type} button clicked`);
+  //     window.__scActiveBorderType = type;
+
+  //     setActiveBorderButton(button); // highlight active
+
+  //     const imageContent = document.querySelector(".sc-selected-image");
+  //     if (!imageContent) return;
+
+  //     const blockElement = imageContent.closest('[id^="block-"]');
+  //     if (!blockElement) return;
+
+  //     const blockId = blockElement.id;
+
+  //     const currentPosition = parseFloat(borderWidthBullet.style.left) || 0;
+  //     const max = borderWidthSlider.offsetWidth;
+  //     const currentWidth = Math.round((currentPosition / max) * 100);
+
+  //     updateStyleElement(blockId, currentWidth);
+  //     updateSliderPosition(currentWidth);
+  //   });
+  // }
+
   function updateStyleElement(blockId, borderWidth) {
     let styleElement = document.getElementById("sc-image-border-style");
     if (!styleElement) {
@@ -409,6 +448,8 @@ export function initImageBorderControls(selectedElement) {
     button.addEventListener("click", () => {
       console.log(`${type} button clicked`);
       window.__scActiveBorderType = type;
+
+      setActiveBorderButton(button);
 
       const imageContent = document.querySelector(".sc-selected-image");
       if (!imageContent) return;
