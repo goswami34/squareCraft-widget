@@ -63,68 +63,62 @@ export function initImageBorderControls(selectedElement) {
       styleElement = document.createElement("style");
       styleElement.id = "sc-image-border-style";
       document.head.appendChild(styleElement);
-      styleElement.textContent = "";
     }
-
-    const currentCSS = styleElement.textContent;
-    const blockRegex = new RegExp(`${selector}\\s*{([\\s\\S]*?)}`, "g");
-    const match = blockRegex.exec(currentCSS);
 
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
-      const css = `
+      styleElement.textContent = `
   ${selector} {
     border-width: ${allBorderWidth}px;
     box-sizing: border-box;
     border-style: solid;
     border-color: red;
   }`;
-      styleElement.textContent = css;
       return;
     }
 
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      let newCSS;
-      if (match) {
-        // Extract existing styles
-        let existingBlock = match[1];
+      // Get current CSS
+      let currentCSS = styleElement.textContent;
 
-        // Keep the original border-width if it exists
-        const borderWidthMatch = existingBlock.match(/border-width:\s*(\d+)px/);
-        const originalBorderWidth = borderWidthMatch
-          ? borderWidthMatch[1]
-          : allBorderWidth;
-
-        // Create new block content with preserved border-width and updated border-top-width
-        const newBlockContent = `
-    border-width: ${originalBorderWidth}px;
+      // If no CSS exists yet, create new block
+      if (!currentCSS.includes(selector)) {
+        styleElement.textContent = `
+  ${selector} {
+    border-width: ${allBorderWidth}px;
     border-top-width: ${topBorderWidth}px !important;
     box-sizing: border-box;
     border-style: solid;
-    border-color: red;`;
-
-        // Replace the entire block with new content
-        newCSS = currentCSS.replace(
-          blockRegex,
-          `${selector} {\n  ${newBlockContent}\n}`
-        );
-      } else {
-        // Create new block with both border-width and border-top-width
-        newCSS =
-          currentCSS +
-          `
-${selector} {
-  border-width: ${allBorderWidth}px;
-  border-top-width: ${topBorderWidth}px !important;
-  box-sizing: border-box;
-  border-style: solid;
-  border-color: red;
-}`;
+    border-color: red;
+  }`;
+        return;
       }
 
-      styleElement.textContent = newCSS;
+      // Extract existing border-width
+      const borderWidthMatch = currentCSS.match(
+        new RegExp(`${selector}\\s*{[^}]*?border-width:\\s*(\\d+)px`)
+      );
+      const currentBorderWidth = borderWidthMatch
+        ? borderWidthMatch[1]
+        : allBorderWidth;
+
+      // Create new CSS block
+      const newCSS = `
+  ${selector} {
+    border-width: ${currentBorderWidth}px;
+    border-top-width: ${topBorderWidth}px !important;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }`;
+
+      // Replace the entire block
+      styleElement.textContent = currentCSS.replace(
+        new RegExp(`${selector}\\s*{[^}]*}`, "s"),
+        newCSS.trim()
+      );
     }
   }
 
