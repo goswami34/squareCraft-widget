@@ -334,8 +334,11 @@ export function initImageBorderControls(selectedElement) {
     activeBtn.classList.add("sc-bg-454545");
 
     //all button bloor
+
     if (activeBtn !== allButton) {
-      allButton.classList.add("sc-blur-sm");
+      allButton.classList.add("sc-blur-sm", "sc-pointer-events-none");
+    } else {
+      allButton.classList.remove("sc-blur-sm", "sc-pointer-events-none");
     }
   }
 
