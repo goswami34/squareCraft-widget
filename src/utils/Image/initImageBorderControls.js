@@ -67,7 +67,7 @@ export function initImageBorderControls(selectedElement) {
     const blockSelector = `#${blockId} div.sqs-image-content`;
     let currentCSS = styleElement.textContent;
 
-    if (activeBorderType === "all") {
+    if (window.__scActiveBorderType === "all") {
       allBorderWidth = borderWidth;
 
       if (!currentCSS.includes(blockSelector)) {
@@ -88,7 +88,7 @@ export function initImageBorderControls(selectedElement) {
       styleElement.textContent = currentCSS;
     }
 
-    if (activeBorderType === "top") {
+    if (window.__scActiveBorderType === "top") {
       topBorderWidth = borderWidth;
 
       if (!currentCSS.includes(blockSelector)) {
