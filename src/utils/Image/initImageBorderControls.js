@@ -293,6 +293,7 @@ export function initImageBorderControls(selectedElement) {
     if (!blockElement) return;
 
     const blockId = blockElement.id;
+    const blockSelector = `#${blockId} div.sqs-image-content`;
 
     const rect = borderWidthSlider.getBoundingClientRect();
     const clientX = e.clientX || e.touches?.[0]?.clientX;
@@ -311,21 +312,21 @@ export function initImageBorderControls(selectedElement) {
     borderWidthFill.style.width = `${offsetX}px`;
     borderWidthDisplay.textContent = `${borderWidth}px`;
 
-    const styleElement =
-      document.getElementById("sc-image-border-style") ||
-      (() => {
-        const el = document.createElement("style");
-        el.id = "sc-image-border-style";
-        document.head.appendChild(el);
-        return el;
-      })();
+    let styleElement = document.getElementById("sc-image-border-style");
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = "sc-image-border-style";
+      document.head.appendChild(styleElement);
+      styleElement.textContent = "";
+    }
 
-    const blockSelector = `#${blockId} div.sqs-image-content`;
     let currentCSS = styleElement.textContent;
 
+    // === ALL BORDER ===
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
 
+      // Replace or insert full block with border-width
       if (!currentCSS.includes(blockSelector)) {
         currentCSS += `
   ${blockSelector} {
@@ -348,33 +349,32 @@ export function initImageBorderControls(selectedElement) {
       return;
     }
 
+    // === TOP BORDER ONLY ===
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      // Extract existing block
+      // Match the existing block
       const blockRegex = new RegExp(
         `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
         "g"
       );
-      let match = blockRegex.exec(currentCSS);
-      let newBlock = "";
+      const match = blockRegex.exec(currentCSS);
 
       if (match) {
+        // Update inside existing block
         let declarations = match[2];
 
-        // Remove any existing border-top-width
-        declarations = declarations.replace(
-          /border-top-width\s*:\s*[^;]+;?/g,
-          ""
-        );
+        // Remove existing border-top-width
+        declarations = declarations
+          .replace(/border-top-width\s*:\s*[^;]+;?/g, "")
+          .trim();
 
-        // Add new top border
-        declarations += `  border-top-width: ${topBorderWidth}px !important;\n`;
+        // Keep other properties (including border-width) intact
+        const updatedBlock = `${match[1]}\n  ${declarations}\n  border-top-width: ${topBorderWidth}px !important;\n${match[3]}`;
 
-        newBlock = `${match[1]}\n${declarations.trim()}\n${match[3]}`;
-        currentCSS = currentCSS.replace(blockRegex, newBlock);
+        currentCSS = currentCSS.replace(blockRegex, updatedBlock);
       } else {
-        // First time block
+        // If block doesn't exist, create a new one with only border-top-width
         currentCSS += `
   ${blockSelector} {
     border-top-width: ${topBorderWidth}px !important;
