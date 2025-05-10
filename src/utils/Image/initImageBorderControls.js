@@ -177,19 +177,11 @@ export function initImageBorderControls(selectedElement) {
         new RegExp(`(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`, "g"),
         `$1border-width: ${allBorderWidth}px;`
       );
-      // Remove border-top-width if it exists
-      currentCSS = currentCSS.replace(
-        new RegExp(
-          `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
-          "g"
-        ),
-        ""
-      );
     }
 
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
-      // Keep the original border-width and only update border-top-width
+      // Only update border-top-width, keep the original border-width
       if (currentCSS.includes("border-top-width")) {
         currentCSS = currentCSS.replace(
           new RegExp(
