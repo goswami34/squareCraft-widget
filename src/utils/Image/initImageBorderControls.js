@@ -325,7 +325,11 @@ export function initImageBorderControls(selectedElement) {
 
   function setActiveBorderButton(activeBtn) {
     borderButtons.forEach((btn) => {
-      btn.classList.remove("sc-bg-454545");
+      btn.classList.remove(
+        "sc-bg-454545",
+        "sc-blur-sm",
+        "sc-pointer-events-none"
+      );
     });
     activeBtn.classList.add("sc-bg-454545");
 
