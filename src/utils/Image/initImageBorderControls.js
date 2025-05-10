@@ -234,14 +234,15 @@ export function initImageBorderControls(selectedElement) {
       styleElement = document.createElement("style");
       styleElement.id = "sc-image-border-style";
       document.head.appendChild(styleElement);
+      styleElement.textContent = ""; // Initialize
     }
 
     const blockSelector = `#${blockId} div.sqs-image-content`;
+    let currentCSS = styleElement.textContent;
 
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
-
-      styleElement.textContent = `
+      currentCSS = `
         ${blockSelector} {
           border-width: ${allBorderWidth}px;
           box-sizing: border-box;
@@ -254,17 +255,40 @@ export function initImageBorderControls(selectedElement) {
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      // Rebuild style string from scratch, preserving allBorderWidth
-      styleElement.textContent = `
-        ${blockSelector} {
-          border-width: ${allBorderWidth}px;
-          border-top-width: ${topBorderWidth}px !important;
-          box-sizing: border-box;
-          border-style: solid;
-          border-color: red;
+      // Only update border-top-width inside the existing rule
+      if (!currentCSS.includes(blockSelector)) {
+        // Add rule if it doesn't exist
+        currentCSS += `
+          ${blockSelector} {
+            border-width: ${allBorderWidth}px;
+            border-top-width: ${topBorderWidth}px !important;
+            box-sizing: border-box;
+            border-style: solid;
+            border-color: red;
+          }
+        `;
+      } else {
+        // Update or insert border-top-width
+        const regex = new RegExp(
+          `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
+          "g"
+        );
+
+        if (regex.test(currentCSS)) {
+          currentCSS = currentCSS.replace(
+            regex,
+            `$1border-top-width: ${topBorderWidth}px !important;`
+          );
+        } else {
+          currentCSS = currentCSS.replace(
+            new RegExp(`${blockSelector}\\s*{`),
+            `${blockSelector} {\nborder-top-width: ${topBorderWidth}px !important;`
+          );
         }
-      `;
+      }
     }
+
+    styleElement.textContent = currentCSS;
   }
 
   function stopDrag() {
