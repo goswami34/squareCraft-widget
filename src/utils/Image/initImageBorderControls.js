@@ -171,21 +171,25 @@ export function initImageBorderControls(selectedElement) {
   }`;
     }
 
-    // UPDATE: Apply based on active type
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
-
-      // Replace only the border-width line inside block
       currentCSS = currentCSS.replace(
         new RegExp(`(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`, "g"),
         `$1border-width: ${allBorderWidth}px;`
+      );
+      // Remove border-top-width if it exists
+      currentCSS = currentCSS.replace(
+        new RegExp(
+          `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
+          "g"
+        ),
+        ""
       );
     }
 
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
-
-      // Replace or add border-top-width inside existing rule
+      // Keep the original border-width and only update border-top-width
       if (currentCSS.includes("border-top-width")) {
         currentCSS = currentCSS.replace(
           new RegExp(
