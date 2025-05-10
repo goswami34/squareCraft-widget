@@ -319,13 +319,12 @@ export function initImageBorderControls(selectedElement) {
 
       if (!currentCSS.includes(blockSelector)) {
         currentCSS += `
-  ${blockSelector} {
-    border-width: ${allBorderWidth}px;
-    border-top-width: ${topBorderWidth}px !important;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`;
+    ${blockSelector} {
+      border-top-width: ${topBorderWidth}px !important;
+      box-sizing: border-box;
+      border-style: solid;
+      border-color: red;
+    }`;
       } else if (currentCSS.includes("border-top-width")) {
         currentCSS = currentCSS.replace(
           new RegExp(
@@ -341,7 +340,7 @@ export function initImageBorderControls(selectedElement) {
         );
       }
 
-      // DO NOT update border-width here again
+      // ❌ DO NOT touch or include border-width here
       styleElement.textContent = currentCSS;
     }
   }
