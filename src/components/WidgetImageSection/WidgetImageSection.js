@@ -95,7 +95,7 @@ export function WidgetImageSection(id) {
 
 
                         <div
-                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px sc-bg-454545 sc-items-center sc-gap-1">
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px sc-items-center sc-gap-1">
                            <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/all.svg" loading="lazy"
                               alt="all-radious">
                            <p class="sc-font-thin sc-roboto sc-universal" id="allBorder">All</p>
