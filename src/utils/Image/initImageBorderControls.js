@@ -430,8 +430,6 @@
 //   });
 // }
 
-
-
 export function initImageBorderControls(selectedElement) {
   const allButton = document.getElementById("allBorder");
   const topButton = document.getElementById("topBorder");
@@ -440,7 +438,15 @@ export function initImageBorderControls(selectedElement) {
   const borderWidthFill = document.getElementById("radiousFill");
   const borderWidthDisplay = document.getElementById("radiousCount");
 
-  if (!allButton || !topButton || !borderWidthSlider || !borderWidthBullet || !borderWidthFill || !borderWidthDisplay) return;
+  if (
+    !allButton ||
+    !topButton ||
+    !borderWidthSlider ||
+    !borderWidthBullet ||
+    !borderWidthFill ||
+    !borderWidthDisplay
+  )
+    return;
 
   let activeBorderType = "all";
   let allBorderWidth = 0;
@@ -454,7 +460,7 @@ export function initImageBorderControls(selectedElement) {
     const newPosition = (percent / 100) * sliderWidth;
 
     borderWidthBullet.style.left = `${newPosition}px`;
-    borderWidthBullet.style.transform = "translateX(-50%)`;
+    borderWidthBullet.style.transform = "translateX(-50%)";
     borderWidthFill.style.width = `${newPosition}px`;
     borderWidthDisplay.textContent = `${width}px`;
   }
@@ -520,7 +526,10 @@ ${selector} {
 }`;
       } else if (currentCSS.includes("border-top-width")) {
         currentCSS = currentCSS.replace(
-          new RegExp(`(${selector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`, "g"),
+          new RegExp(
+            `(${selector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
+            "g"
+          ),
           `$1border-top-width: ${topBorderWidth}px !important;`
         );
       } else {
@@ -560,7 +569,9 @@ ${selector} {
 
     const fakeEvent = {
       type: "click",
-      clientX: borderWidthSlider.getBoundingClientRect().left + (initial / 100) * borderWidthSlider.offsetWidth
+      clientX:
+        borderWidthSlider.getBoundingClientRect().left +
+        (initial / 100) * borderWidthSlider.offsetWidth,
     };
     handleDrag(fakeEvent);
   });
@@ -577,7 +588,9 @@ ${selector} {
 
     const fakeEvent = {
       type: "click",
-      clientX: borderWidthSlider.getBoundingClientRect().left + (width / 100) * sliderWidth
+      clientX:
+        borderWidthSlider.getBoundingClientRect().left +
+        (width / 100) * sliderWidth,
     };
     handleDrag(fakeEvent);
   });
