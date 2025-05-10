@@ -66,26 +66,26 @@ export function initImageBorderControls(selectedElement) {
     const blockSelector = `#${blockId} div.sqs-image-content`;
     let currentCSS = styleElement.textContent;
 
-    if (activeBorderType === "all") {
-      allBorderWidth = borderWidth;
+    //   if (activeBorderType === "all") {
+    //     allBorderWidth = borderWidth;
 
-      if (!currentCSS.includes(blockSelector)) {
-        currentCSS += `
-  ${blockSelector} {
-    border-width: ${allBorderWidth}px;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`;
-      } else {
-        currentCSS = currentCSS.replace(
-          new RegExp(`${blockSelector}\\s*{[^}]*?border-width:\\s*[^;]+;`, "g"),
-          `${blockSelector} {\n  border-width: ${allBorderWidth}px;`
-        );
-      }
+    //     if (!currentCSS.includes(blockSelector)) {
+    //       currentCSS += `
+    // ${blockSelector} {
+    //   border-width: ${allBorderWidth}px;
+    //   box-sizing: border-box;
+    //   border-style: solid;
+    //   border-color: red;
+    // }`;
+    //     } else {
+    //       currentCSS = currentCSS.replace(
+    //         new RegExp(`${blockSelector}\\s*{[^}]*?border-width:\\s*[^;]+;`, "g"),
+    //         `${blockSelector} {\n  border-width: ${allBorderWidth}px;`
+    //       );
+    //     }
 
-      styleElement.textContent = currentCSS;
-    }
+    //     styleElement.textContent = currentCSS;
+    //   }
 
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
