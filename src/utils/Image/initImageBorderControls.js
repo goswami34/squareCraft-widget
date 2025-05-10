@@ -160,23 +160,45 @@ export function initImageBorderControls(selectedElement) {
     const blockSelector = `#${blockId} div.sqs-image-content`;
 
     // Ensure the block rule exists
-    if (!currentCSS.includes(blockSelector)) {
-      currentCSS += `
-  ${blockSelector} {
-    border-width: ${allBorderWidth}px;
-    border-top-width: ${topBorderWidth}px !important;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: red;
-  }`;
-    }
+    //   if (!currentCSS.includes(blockSelector)) {
+    //     currentCSS += `
+    // ${blockSelector} {
+    //   border-width: ${allBorderWidth}px;
+    //   border-top-width: ${topBorderWidth}px !important;
+    //   box-sizing: border-box;
+    //   border-style: solid;
+    //   border-color: red;
+    // }`;
+    //   }
+
+    // if (activeBorderType === "all") {
+    //   allBorderWidth = borderWidth;
+    //   currentCSS = currentCSS.replace(
+    //     new RegExp(`(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`, "g"),
+    //     `$1border-width: ${allBorderWidth}px;`
+    //   );
+    // }
 
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
-      currentCSS = currentCSS.replace(
-        new RegExp(`(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`, "g"),
-        `$1border-width: ${allBorderWidth}px;`
-      );
+
+      if (!currentCSS.includes(blockSelector)) {
+        currentCSS += `
+    ${blockSelector} {
+      border-width: ${allBorderWidth}px;
+      box-sizing: border-box;
+      border-style: solid;
+      border-color: red;
+    }`;
+      } else {
+        currentCSS = currentCSS.replace(
+          new RegExp(
+            `(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`,
+            "g"
+          ),
+          `$1border-width: ${allBorderWidth}px;`
+        );
+      }
     }
 
     if (activeBorderType === "top") {
