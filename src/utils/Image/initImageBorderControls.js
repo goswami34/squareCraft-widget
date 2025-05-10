@@ -328,6 +328,11 @@ export function initImageBorderControls(selectedElement) {
       btn.classList.remove("sc-bg-454545");
     });
     activeBtn.classList.add("sc-bg-454545");
+
+    //all button bloor
+    if (activeBtn !== allButton) {
+      allButton.classList.add("sc-blur-sm");
+    }
   }
 
   //end of use for highlight active border button
