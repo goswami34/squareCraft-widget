@@ -502,44 +502,56 @@ export function initImageBorderControls(selectedElement) {
 
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
-      const css = `
-${selector} {
-  border-width: ${allBorderWidth}px;
-  box-sizing: border-box;
-  border-style: solid;
-  border-color: red;
-}`;
-      styleElement.textContent = css;
+      styleElement.textContent = `
+  ${selector} {
+    border-width: ${allBorderWidth}px;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }`;
       return;
     }
 
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      if (!currentCSS.includes(selector)) {
-        currentCSS += `
-${selector} {
-  border-top-width: ${topBorderWidth}px !important;
-  box-sizing: border-box;
-  border-style: solid;
-  border-color: red;
-}`;
-      } else if (currentCSS.includes("border-top-width")) {
-        currentCSS = currentCSS.replace(
-          new RegExp(
-            `(${selector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
-            "g"
-          ),
-          `$1border-top-width: ${topBorderWidth}px !important;`
+      // Check if the block exists in the CSS
+      const blockRegex = new RegExp(`${selector}\\s*{([\\s\\S]*?)}`, "g");
+      const match = blockRegex.exec(currentCSS);
+
+      let newCSS = "";
+
+      if (match) {
+        // Block exists, update only border-top-width
+        let existingBlock = match[1];
+
+        // Remove existing border-top-width if exists
+        existingBlock = existingBlock
+          .replace(/border-top-width\s*:\s*[^;]+;?/g, "")
+          .trim();
+
+        // Append new top width
+        existingBlock += `\n  border-top-width: ${topBorderWidth}px !important;`;
+
+        // Rebuild block
+        newCSS = currentCSS.replace(
+          blockRegex,
+          `${selector} {\n  ${existingBlock.trim()}\n}`
         );
       } else {
-        currentCSS = currentCSS.replace(
-          new RegExp(`${selector}\\s*{`),
-          `${selector} {\n  border-top-width: ${topBorderWidth}px !important;`
-        );
+        // Block doesn't exist, create it
+        newCSS =
+          currentCSS +
+          `
+  ${selector} {
+    border-top-width: ${topBorderWidth}px !important;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }`;
       }
 
-      styleElement.textContent = currentCSS;
+      styleElement.textContent = newCSS;
     }
   }
 
