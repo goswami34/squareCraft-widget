@@ -97,12 +97,7 @@ export function initImageBorderControls(selectedElement) {
           ? borderWidthMatch[1]
           : allBorderWidth;
 
-        // Remove any previous border-top-width
-        existingBlock = existingBlock
-          .replace(/border-top-width\s*:\s*[^;]+;?/g, "")
-          .trim();
-
-        // Create new block content with preserved border-width
+        // Create new block content with preserved border-width and updated border-top-width
         const newBlockContent = `
     border-width: ${originalBorderWidth}px;
     border-top-width: ${topBorderWidth}px !important;
@@ -110,7 +105,7 @@ export function initImageBorderControls(selectedElement) {
     border-style: solid;
     border-color: red;`;
 
-        // Combine existing + new styles
+        // Replace the entire block with new content
         newCSS = currentCSS.replace(
           blockRegex,
           `${selector} {\n  ${newBlockContent}\n}`
