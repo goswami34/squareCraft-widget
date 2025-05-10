@@ -43,7 +43,6 @@ export function initImageBorderControls(selectedElement) {
       topBorderWidth = borderWidth;
       css = `
         #${blockId} div.sqs-image-content {
-          border-width: ${allBorderWidth}px;
           border-top-width: ${topBorderWidth}px !important;
           box-sizing: border-box;
           border-style: solid;
