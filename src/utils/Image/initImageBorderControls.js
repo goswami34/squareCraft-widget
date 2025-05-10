@@ -322,6 +322,8 @@ export function initImageBorderControls(selectedElement) {
 
     let currentCSS = styleElement.textContent;
 
+    console.log(activeBorderType);
+
     // === ALL BORDER ===
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
