@@ -314,6 +314,7 @@ export function initImageBorderControls(selectedElement) {
   let leftBorderWidth = 0;
   let rightBorderWidth = 0;
 
+  //use for highlight active border button
   const borderButtons = [
     allButton,
     topButton,
@@ -324,10 +325,12 @@ export function initImageBorderControls(selectedElement) {
 
   function setActiveBorderButton(activeBtn) {
     borderButtons.forEach((btn) => {
-      btn.classList.remove("sc-bg-color-EF7C2F");
+      btn.classList.remove("sc-bg-454545 ");
     });
-    activeBtn.classList.add("sc-bg-color-EF7C2F");
+    activeBtn.classList.add("sc-bg-454545");
   }
+
+  //end of use for highlight active border button
 
   // function setupButton(button, type) {
   //   button.addEventListener("click", () => {
