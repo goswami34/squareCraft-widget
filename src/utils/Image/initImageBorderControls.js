@@ -207,52 +207,36 @@ export function initImageBorderControls(selectedElement) {
   //   const percent = offsetX / max;
   //   const borderWidth = Math.round(percent * 100);
 
+  //   // Update bullet UI
   //   borderWidthBullet.style.left = `${offsetX}px`;
   //   borderWidthBullet.style.transform = "translateX(-50%)";
   //   borderWidthFill.style.width = `${offsetX}px`;
   //   borderWidthDisplay.textContent = `${borderWidth}px`;
 
-  //   let styleElement = document.getElementById("sc-image-border-style");
-  //   if (!styleElement) {
-  //     styleElement = document.createElement("style");
-  //     styleElement.id = "sc-image-border-style";
-  //     document.head.appendChild(styleElement);
-  //   }
+  //   const styleElement =
+  //     document.getElementById("sc-image-border-style") ||
+  //     (() => {
+  //       const el = document.createElement("style");
+  //       el.id = "sc-image-border-style";
+  //       document.head.appendChild(el);
+  //       return el;
+  //     })();
 
-  //   let currentCSS = styleElement.textContent;
   //   const blockSelector = `#${blockId} div.sqs-image-content`;
+  //   let currentCSS = styleElement.textContent;
 
-  //   // Ensure the block rule exists
-  //   //   if (!currentCSS.includes(blockSelector)) {
-  //   //     currentCSS += `
-  //   // ${blockSelector} {
-  //   //   border-width: ${allBorderWidth}px;
-  //   //   border-top-width: ${topBorderWidth}px !important;
-  //   //   box-sizing: border-box;
-  //   //   border-style: solid;
-  //   //   border-color: red;
-  //   // }`;
-  //   //   }
-
-  //   // if (activeBorderType === "all") {
-  //   //   allBorderWidth = borderWidth;
-  //   //   currentCSS = currentCSS.replace(
-  //   //     new RegExp(`(${blockSelector}\\s*{[^}]*?)border-width:\\s*[^;]+;`, "g"),
-  //   //     `$1border-width: ${allBorderWidth}px;`
-  //   //   );
-  //   // }
-
+  //   // === ALL BORDER ===
   //   if (activeBorderType === "all") {
   //     allBorderWidth = borderWidth;
 
   //     if (!currentCSS.includes(blockSelector)) {
   //       currentCSS += `
-  //   ${blockSelector} {
-  //     border-width: ${allBorderWidth}px;
-  //     box-sizing: border-box;
-  //     border-style: solid;
-  //     border-color: red;
-  //   }`;
+  // ${blockSelector} {
+  //   border-width: ${allBorderWidth}px;
+  //   box-sizing: border-box;
+  //   border-style: solid;
+  //   border-color: red;
+  // }`;
   //     } else {
   //       currentCSS = currentCSS.replace(
   //         new RegExp(
@@ -262,35 +246,23 @@ export function initImageBorderControls(selectedElement) {
   //         `$1border-width: ${allBorderWidth}px;`
   //       );
   //     }
+
+  //     styleElement.textContent = currentCSS;
+  //     return; // ⛔️ Stop here for "all"
   //   }
 
+  //   // === TOP BORDER ===
   //   if (activeBorderType === "top") {
   //     topBorderWidth = borderWidth;
-  //     // Only update border-top-width, keep the original border-width
-  //     // if (currentCSS.includes("border-top-width")) {
-  //     //   currentCSS = currentCSS.replace(
-  //     //     new RegExp(
-  //     //       `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
-  //     //       "g"
-  //     //     ),
-  //     //     `$1border-top-width: ${topBorderWidth}px !important;`
-  //     //   );
-  //     // } else {
-  //     //   currentCSS = currentCSS.replace(
-  //     //     new RegExp(`${blockSelector}\\s*{`),
-  //     //     `${blockSelector} {\n  border-top-width: ${topBorderWidth}px !important;`
-  //     //   );
-  //     // }
 
   //     if (!currentCSS.includes(blockSelector)) {
   //       currentCSS += `
-  //       ${blockSelector} {
-  //         border-top-width: ${topBorderWidth}px !important;
-  //         border-width: ${allBorderWidth}px;
-  //         box-sizing: border-box;
-  //         border-style: solid;
-  //         border-color: red;
-  //       }`;
+  //   ${blockSelector} {
+  //     border-top-width: ${topBorderWidth}px !important;
+  //     box-sizing: border-box;
+  //     border-style: solid;
+  //     border-color: red;
+  //   }`;
   //     } else if (currentCSS.includes("border-top-width")) {
   //       currentCSS = currentCSS.replace(
   //         new RegExp(
@@ -305,9 +277,10 @@ export function initImageBorderControls(selectedElement) {
   //         `${blockSelector} {\n  border-top-width: ${topBorderWidth}px !important;`
   //       );
   //     }
-  //   }
 
-  //   styleElement.textContent = currentCSS;
+  //     // ❌ DO NOT touch or include border-width here
+  //     styleElement.textContent = currentCSS;
+  //   }
   // }
 
   function handleDrag(e) {
@@ -332,7 +305,7 @@ export function initImageBorderControls(selectedElement) {
     const percent = offsetX / max;
     const borderWidth = Math.round(percent * 100);
 
-    // Update bullet UI
+    // Update UI
     borderWidthBullet.style.left = `${offsetX}px`;
     borderWidthBullet.style.transform = "translateX(-50%)";
     borderWidthFill.style.width = `${offsetX}px`;
@@ -350,7 +323,6 @@ export function initImageBorderControls(selectedElement) {
     const blockSelector = `#${blockId} div.sqs-image-content`;
     let currentCSS = styleElement.textContent;
 
-    // === ALL BORDER ===
     if (activeBorderType === "all") {
       allBorderWidth = borderWidth;
 
@@ -373,37 +345,45 @@ export function initImageBorderControls(selectedElement) {
       }
 
       styleElement.textContent = currentCSS;
-      return; // ⛔️ Stop here for "all"
+      return;
     }
 
-    // === TOP BORDER ===
     if (activeBorderType === "top") {
       topBorderWidth = borderWidth;
 
-      if (!currentCSS.includes(blockSelector)) {
-        currentCSS += `
-    ${blockSelector} {
-      border-top-width: ${topBorderWidth}px !important;
-      box-sizing: border-box;
-      border-style: solid;
-      border-color: red;
-    }`;
-      } else if (currentCSS.includes("border-top-width")) {
-        currentCSS = currentCSS.replace(
-          new RegExp(
-            `(${blockSelector}\\s*{[^}]*?)border-top-width:\\s*[^;]+;`,
-            "g"
-          ),
-          `$1border-top-width: ${topBorderWidth}px !important;`
+      // Extract existing block
+      const blockRegex = new RegExp(
+        `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+        "g"
+      );
+      let match = blockRegex.exec(currentCSS);
+      let newBlock = "";
+
+      if (match) {
+        let declarations = match[2];
+
+        // Remove any existing border-top-width
+        declarations = declarations.replace(
+          /border-top-width\s*:\s*[^;]+;?/g,
+          ""
         );
+
+        // Add new top border
+        declarations += `  border-top-width: ${topBorderWidth}px !important;\n`;
+
+        newBlock = `${match[1]}\n${declarations.trim()}\n${match[3]}`;
+        currentCSS = currentCSS.replace(blockRegex, newBlock);
       } else {
-        currentCSS = currentCSS.replace(
-          new RegExp(`${blockSelector}\\s*{`),
-          `${blockSelector} {\n  border-top-width: ${topBorderWidth}px !important;`
-        );
+        // First time block
+        currentCSS += `
+  ${blockSelector} {
+    border-top-width: ${topBorderWidth}px !important;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: red;
+  }`;
       }
 
-      // ❌ DO NOT touch or include border-width here
       styleElement.textContent = currentCSS;
     }
   }
