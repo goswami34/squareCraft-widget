@@ -381,4 +381,93 @@ ${blockSelector} {
   }
 
   //border style end here
+
+  // border radius start here
+  // 🔘 Border Radius Application
+  function applyBorderRadius(type, radius) {
+    const selected = document.querySelector(".sc-selected-image");
+    if (!selected) return;
+
+    const block = selected.closest('[id^="block-"]');
+    if (!block) return;
+
+    const blockSelector = `#${block.id} div.sqs-image-content`;
+    let styleTag = document.getElementById("sc-image-border-style");
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = "sc-image-border-style";
+      document.head.appendChild(styleTag);
+    }
+
+    let currentCSS = styleTag.textContent;
+
+    const radiusProps = {
+      all: `border-radius: ${radius}px !important;`,
+      topLeft: `border-top-left-radius: ${radius}px !important;`,
+      topRight: `border-top-right-radius: ${radius}px !important;`,
+      bottomLeft: `border-bottom-left-radius: ${radius}px !important;`,
+      bottomRight: `border-bottom-right-radius: ${radius}px !important;`,
+    };
+
+    const blockRegex = new RegExp(
+      `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+      "g"
+    );
+    const match = blockRegex.exec(currentCSS);
+
+    const radiusLine = radiusProps[type];
+
+    if (match) {
+      let declarations = match[2];
+      // Remove existing radius for that type
+      declarations = declarations
+        .replace(
+          new RegExp(`${radiusLine.split(":")[0]}\\s*:\\s*[^;]+;?`, "g"),
+          ""
+        )
+        .trim();
+      declarations += `\n  ${radiusLine}`;
+      const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
+      currentCSS = currentCSS.replace(blockRegex, updated);
+    } else {
+      currentCSS += `
+${blockSelector} {
+  ${radiusLine}
+}`;
+    }
+
+    styleTag.textContent = currentCSS;
+  }
+
+  const radiusValue = () => {
+    const countEl = document.getElementById("radiousCount");
+    const count = parseInt(countEl?.textContent) || 0;
+    return count;
+  };
+
+  document
+    .getElementById("allradiusBorder")
+    ?.addEventListener("click", () => applyBorderRadius("all", radiusValue()));
+  document
+    .getElementById("topLeftradiusBorder")
+    ?.addEventListener("click", () =>
+      applyBorderRadius("topLeft", radiusValue())
+    );
+  document
+    .getElementById("topRightradiusBorder")
+    ?.addEventListener("click", () =>
+      applyBorderRadius("topRight", radiusValue())
+    );
+  document
+    .getElementById("bottomLeftradiusBorder")
+    ?.addEventListener("click", () =>
+      applyBorderRadius("bottomLeft", radiusValue())
+    );
+  document
+    .getElementById("bottomRightradiusBorder")
+    ?.addEventListener("click", () =>
+      applyBorderRadius("bottomRight", radiusValue())
+    );
+
+  // border radius end here
 }
