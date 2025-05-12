@@ -355,7 +355,7 @@ ${blockSelector} {
     } else {
       currentCSS += `
   ${blockSelector} {
-    border-style: ${style} !important;
+    border-style: ${style};
   }`;
     }
 
