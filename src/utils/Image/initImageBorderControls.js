@@ -349,14 +349,14 @@ ${blockSelector} {
       let declarations = match[2]
         .replace(/border-style\s*:\s*[^;]+;?/g, "")
         .trim();
-      declarations += `\n  border-style: ${style} !important;`;
+      declarations += `\n  border-style: ${style}`;
       const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
       currentCSS = currentCSS.replace(blockRegex, updated);
     } else {
       currentCSS += `
-  ${blockSelector} {
-    border-style: ${style};
-  }`;
+      ${blockSelector} {
+        border-style: ${style};
+      }`;
     }
 
     styleTag.textContent = currentCSS;
