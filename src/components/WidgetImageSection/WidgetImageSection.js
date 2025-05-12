@@ -311,6 +311,19 @@ export function WidgetImageSection(id) {
                   </div>
                </div>
 
+
+
+
+
+
+
+
+
+
+
+
+               
+
                <div class="sc-h-1px sc-mt-4 sc-bg-3f3f3f"></div>
 
 
