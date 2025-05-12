@@ -399,8 +399,6 @@ ${blockSelector} {
   //     document.head.appendChild(styleTag);
   //   }
 
-  //   let currentCSS = styleTag.textContent;
-
   //   const props = {
   //     all: "border-radius",
   //     topLeft: "border-top-left-radius",
@@ -412,6 +410,8 @@ ${blockSelector} {
   //   const valueToApply = `${radius}px !important`;
   //   const resetValue = `0px !important`;
 
+  //   let currentCSS = styleTag.textContent;
+
   //   const blockRegex = new RegExp(
   //     `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
   //     "g"
@@ -421,7 +421,7 @@ ${blockSelector} {
   //   if (match) {
   //     let declarations = match[2];
 
-  //     // Remove any existing radius declarations
+  //     // Remove any previous radius styles
   //     Object.values(props).forEach((prop) => {
   //       declarations = declarations.replace(
   //         new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
@@ -432,12 +432,18 @@ ${blockSelector} {
   //     if (type === "all") {
   //       declarations += `\n  ${props.all}: ${valueToApply};`;
   //     } else {
+  //       // Keep global border-radius
+  //       if (!declarations.includes("border-radius")) {
+  //         declarations += `\n  border-radius: ${valueToApply};`;
+  //       }
   //       declarations += Object.entries(props)
   //         .filter(([key]) => key !== "all")
   //         .map(([key, prop]) =>
   //           key === type
-  //             ? `\n  ${prop}: ${valueToApply};`
-  //             : `\n  ${prop}: ${resetValue};`
+  //             ? `\n  ${prop}: ${resetValue};`
+  //             : declarations.includes(prop)
+  //             ? ""
+  //             : ""
   //         )
   //         .join("");
   //     }
@@ -449,12 +455,11 @@ ${blockSelector} {
   //     if (type === "all") {
   //       newRule += `  ${props.all}: ${valueToApply};\n`;
   //     } else {
+  //       newRule += `  ${props.all}: ${valueToApply};\n`;
   //       Object.entries(props)
   //         .filter(([key]) => key !== "all")
   //         .forEach(([key, prop]) => {
-  //           newRule += `  ${prop}: ${
-  //             key === type ? valueToApply : resetValue
-  //           };\n`;
+  //           newRule += `  ${prop}: ${key === type ? resetValue : ""};\n`;
   //         });
   //     }
   //     newRule += `}`;
@@ -501,47 +506,34 @@ ${blockSelector} {
     if (match) {
       let declarations = match[2];
 
-      // Remove any previous radius styles
-      Object.values(props).forEach((prop) => {
+      // 1. Ensure global border-radius is added if not present
+      if (!declarations.includes(props.all)) {
+        declarations += `\n  ${props.all}: ${valueToApply};`;
+      }
+
+      // 2. Remove existing corner rule for this `type` if already exists
+      if (type !== "all") {
+        const cornerProp = props[type];
         declarations = declarations.replace(
-          new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+          new RegExp(`${cornerProp}\\s*:\\s*[^;]+;?`, "g"),
           ""
         );
-      });
-
-      if (type === "all") {
-        declarations += `\n  ${props.all}: ${valueToApply};`;
-      } else {
-        // Keep global border-radius
-        if (!declarations.includes("border-radius")) {
-          declarations += `\n  border-radius: ${valueToApply};`;
-        }
-        declarations += Object.entries(props)
-          .filter(([key]) => key !== "all")
-          .map(([key, prop]) =>
-            key === type
-              ? `\n  ${prop}: ${resetValue};`
-              : declarations.includes(prop)
-              ? ""
-              : ""
-          )
-          .join("");
+        declarations += `\n  ${cornerProp}: ${resetValue};`;
       }
 
       const updated = `${match[1]}${declarations}\n${match[3]}`;
       currentCSS = currentCSS.replace(blockRegex, updated);
     } else {
+      // New CSS rule
       let newRule = `${blockSelector} {\n`;
+
       if (type === "all") {
         newRule += `  ${props.all}: ${valueToApply};\n`;
       } else {
         newRule += `  ${props.all}: ${valueToApply};\n`;
-        Object.entries(props)
-          .filter(([key]) => key !== "all")
-          .forEach(([key, prop]) => {
-            newRule += `  ${prop}: ${key === type ? resetValue : ""};\n`;
-          });
+        newRule += `  ${props[type]}: ${resetValue};\n`;
       }
+
       newRule += `}`;
       currentCSS += `\n${newRule}`;
     }
