@@ -394,29 +394,27 @@ ${blockSelector} {
 
     let isDragging = false;
 
-    const getRadiusValue = () => {
-      const width = radiusSlider.offsetWidth;
-      const pos = parseFloat(radiusBullet.style.left) || 0;
-      return Math.round((pos / width) * 100);
-    };
-
-    const updateUI = (position) => {
+    const updateUI = (offsetX) => {
       const max = radiusSlider.offsetWidth;
-      const percent = Math.max(0, Math.min(position, max));
-      const pxValue = Math.round((percent / max) * 100);
+      const bulletRadius = radiusBullet.offsetWidth / 2;
+      offsetX = Math.max(bulletRadius, Math.min(offsetX, max - bulletRadius));
 
-      radiusBullet.style.left = `${percent}px`;
+      const percent = offsetX / max;
+      const pxValue = Math.round(percent * 100);
+
+      // Update UI
+      radiusBullet.style.left = `${offsetX}px`;
       radiusBullet.style.transform = "translateX(-50%)";
-      radiusFill.style.width = `${percent}px`;
+      radiusFill.style.width = `${offsetX}px`;
       radiusDisplay.textContent = `${pxValue}px`;
 
+      // Update CSS
       const selected = document.querySelector(".sc-selected-image");
       if (!selected) return;
 
       const block = selected.closest('[id^="block-"]');
       if (!block) return;
 
-      // Default to applying global radius
       const blockSelector = `#${block.id} div.sqs-image-content`;
       let styleTag = document.getElementById("sc-image-border-style");
       if (!styleTag) {
@@ -433,18 +431,14 @@ ${blockSelector} {
       const match = blockRegex.exec(currentCSS);
 
       if (match) {
-        let declarations = match[2];
-        declarations = declarations
+        let declarations = match[2]
           .replace(/border-radius\s*:\s*[^;]+;?/g, "")
           .trim();
         declarations += `\n  border-radius: ${pxValue}px !important;`;
         const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
         currentCSS = currentCSS.replace(blockRegex, updated);
       } else {
-        currentCSS += `
-    ${blockSelector} {
-      border-radius: ${pxValue}px !important;
-    }`;
+        currentCSS += `\n${blockSelector} {\n  border-radius: ${pxValue}px !important;\n}`;
       }
 
       styleTag.textContent = currentCSS.trim();
@@ -452,13 +446,9 @@ ${blockSelector} {
 
     const handleDrag = (e) => {
       if (!isDragging) return;
-
       const clientX = e.clientX || (e.touches?.[0]?.clientX ?? 0);
       const rect = radiusSlider.getBoundingClientRect();
-      const offsetX = Math.max(
-        0,
-        Math.min(clientX - rect.left, radiusSlider.offsetWidth)
-      );
+      const offsetX = clientX - rect.left;
       updateUI(offsetX);
     };
 
@@ -482,6 +472,9 @@ ${blockSelector} {
     radiusBullet.addEventListener("mousedown", startDrag);
     radiusBullet.addEventListener("touchstart", startDrag);
   }
+
+  // ✅ Call this at the end
+  initRadiusProgressbarControls();
 
   initRadiusProgressbarControls();
 
