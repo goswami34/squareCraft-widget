@@ -310,4 +310,57 @@ ${blockSelector} {
   }
 
   //color selection end here
+
+  //border style start here
+  document
+    .getElementById("borderStyleSolid")
+    ?.addEventListener("click", () => applyBorderStyle("solid"));
+  document
+    .getElementById("borderStyleDashed")
+    ?.addEventListener("click", () => applyBorderStyle("dashed"));
+  document
+    .getElementById("borderStyleDotted")
+    ?.addEventListener("click", () => applyBorderStyle("dotted"));
+
+  function applyBorderStyle(style) {
+    const selected = document.querySelector(".sc-selected-image");
+    if (!selected) return;
+
+    const block = selected.closest('[id^="block-"]');
+    if (!block) return;
+
+    const blockSelector = `#${block.id} div.sqs-image-content`;
+    let styleTag = document.getElementById("sc-image-border-style");
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = "sc-image-border-style";
+      document.head.appendChild(styleTag);
+    }
+
+    let currentCSS = styleTag.textContent;
+
+    const blockRegex = new RegExp(
+      `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+      "g"
+    );
+    const match = blockRegex.exec(currentCSS);
+
+    if (match) {
+      let declarations = match[2]
+        .replace(/border-style\s*:\s*[^;]+;?/g, "")
+        .trim();
+      declarations += `\n  border-style: ${style} !important;`;
+      const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
+      currentCSS = currentCSS.replace(blockRegex, updated);
+    } else {
+      currentCSS += `
+  ${blockSelector} {
+    border-style: ${style} !important;
+  }`;
+    }
+
+    styleTag.textContent = currentCSS;
+  }
+
+  //border style end here
 }
