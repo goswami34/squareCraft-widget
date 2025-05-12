@@ -456,49 +456,47 @@ ${blockSelector} {
 
     let currentCSS = styleTag.textContent;
 
-    // Reset all corner radius
-    const resetCorners = `
-    border-top-left-radius: 0px !important;
-    border-top-right-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
-    border-bottom-right-radius: 0px !important;`;
-
-    const allRadius = `border-radius: ${radius}px !important;`;
-
-    const radiusMap = {
-      topLeft: `border-top-left-radius: ${radius}px !important;`,
-      topRight: `border-top-right-radius: ${radius}px !important;`,
-      bottomLeft: `border-bottom-left-radius: ${radius}px !important;`,
-      bottomRight: `border-bottom-right-radius: ${radius}px !important;`,
+    const props = {
+      all: "border-radius",
+      topLeft: "border-top-left-radius",
+      topRight: "border-top-right-radius",
+      bottomLeft: "border-bottom-left-radius",
+      bottomRight: "border-bottom-right-radius",
     };
 
+    const propToApply = props[type];
+    const valueToApply = `${radius}px !important`;
+
+    // When "all", remove all 4 corners to avoid conflict
+    if (type === "all") {
+      Object.values(props).forEach((prop) => {
+        const regex = new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g");
+        currentCSS = currentCSS.replace(regex, "");
+      });
+    }
+
+    // Build regex to find block selector
     const blockRegex = new RegExp(
       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
       "g"
     );
     const match = blockRegex.exec(currentCSS);
 
-    let updatedBlock = "";
-
-    if (type === "all") {
-      // Reset all specific corners when applying global radius
-      updatedBlock = `${blockSelector} {
-  ${allRadius}
-  ${resetCorners}
-}`;
-    } else {
-      // Replace or inject only one corner radius and reset all others
-      const cornerLine = radiusMap[type];
-      updatedBlock = `${blockSelector} {
-  ${cornerLine}
-}`;
-    }
-
-    // Replace existing block or add new
     if (match) {
-      currentCSS = currentCSS.replace(blockRegex, updatedBlock);
+      let declarations = match[2];
+
+      // Remove existing same property
+      const propRegex = new RegExp(`${propToApply}\\s*:\\s*[^;]+;?`, "g");
+      declarations = declarations.replace(propRegex, "").trim();
+
+      // Add the new property
+      declarations += `\n  ${propToApply}: ${valueToApply}`;
+
+      const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
+      currentCSS = currentCSS.replace(blockRegex, updated);
     } else {
-      currentCSS += `\n${updatedBlock}`;
+      // New CSS rule
+      currentCSS += `\n${blockSelector} {\n  ${propToApply}: ${valueToApply};\n}`;
     }
 
     styleTag.textContent = currentCSS;
