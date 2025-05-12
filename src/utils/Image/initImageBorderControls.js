@@ -464,36 +464,54 @@ ${blockSelector} {
       bottomRight: "border-bottom-right-radius",
     };
 
-    const propToApply = props[type];
-    const valueToApply = `${radius}px !important`;
-
-    if (type === "all") {
-      // Remove all corner-specific radius styles
-      Object.values(props).forEach((prop) => {
-        const regex = new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g");
-        currentCSS = currentCSS.replace(regex, "");
-      });
-    }
-
     const blockRegex = new RegExp(
       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
       "g"
     );
     const match = blockRegex.exec(currentCSS);
 
-    if (match) {
-      let declarations = match[2];
-      const propRegex = new RegExp(`${propToApply}\\s*:\\s*[^;]+;?`, "g");
-      declarations = declarations.replace(propRegex, "").trim();
-      declarations += `\n  ${propToApply}: ${valueToApply};`;
+    const valueToApply = `${radius}px !important`;
+    const resetValue = "0px !important";
 
-      const updatedBlock = `${match[1]}\n  ${declarations}\n${match[3]}`;
-      currentCSS = currentCSS.replace(blockRegex, updatedBlock);
+    let newDeclarations = "";
+
+    if (type === "all") {
+      // Apply global radius and clear all corner-specific ones
+      Object.values(props).forEach((prop) => {
+        currentCSS = currentCSS.replace(
+          new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+          ""
+        );
+      });
+      newDeclarations = `  ${props.all}: ${valueToApply};`;
     } else {
-      currentCSS += `\n${blockSelector} {\n  ${propToApply}: ${valueToApply};\n}`;
+      // Reset all 4 corners
+      Object.values(props).forEach((prop) => {
+        currentCSS = currentCSS.replace(
+          new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+          ""
+        );
+      });
+      newDeclarations = Object.entries(props)
+        .filter(([key]) => key !== "all")
+        .map(([key, prop]) => {
+          return key === type
+            ? `  ${prop}: ${valueToApply};`
+            : `  ${prop}: ${resetValue};`;
+        })
+        .join("\n");
     }
 
-    styleTag.textContent = currentCSS;
+    // Final block injection
+    const updatedBlock = `${blockSelector} {\n${newDeclarations}\n}`;
+
+    if (match) {
+      currentCSS = currentCSS.replace(blockRegex, updatedBlock);
+    } else {
+      currentCSS += `\n${updatedBlock}`;
+    }
+
+    styleTag.textContent = currentCSS.trim();
   }
 
   const radiusValue = () => {
