@@ -194,6 +194,9 @@ export function WidgetImageSection(id) {
 
                         </div>
                      </div>
+
+
+
                      <div class="sc-col-span-7">
                         <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300"> Border
                            Style
@@ -247,9 +250,61 @@ export function WidgetImageSection(id) {
                            </div>
                         </div>
                      </div>
+                     
                      <div class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
                         <div
                            class="sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
+                        </div>
+                     </div>
+
+
+
+                     <div style="padding: 2px 0px;"
+                        class="sc-bg-3f3f3f sc-flex sc-col-span-11 sc-text-sm sc-font-thin   sc-border sc-border-solid sc-border-3f3f3f   sc-justify-center  sc-px-1 sc-rounded-6px">
+
+
+
+                        <div
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px sc-items-center sc-gap-1"  id="allradiusBorder">
+                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/all.svg" loading="lazy"
+                              alt="all-radious">
+                           <p class="sc-font-thin sc-roboto sc-universal">All</p>
+                        </div>
+
+
+                        <div
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="topLeftradiusBorder">
+                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/top.svg" loading="lazy"
+                              alt="top-radious">
+                           <p class="sc-font-thin sc-roboto sc-universal" >Top Left</p>
+                        </div>
+
+
+
+                        <div
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="topRightradiusBorder">
+                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/bottom.svg" loading="lazy"
+                              alt="bottom-radious">
+                           <p class="sc-font-thin sc-roboto sc-universal " >Top Right</p>
+                        </div>
+
+
+                        <div
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomLeftradiusBorder">
+                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/left.svg" loading="lazy"
+                              alt="left-radious">
+                           <p class="sc-font-thin sc-roboto sc-universal " >Bottom Left</p>
+                        </div>
+
+
+                        <div
+                           class="sc-flex sc-px-1_5 sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomRightradiusBorder">
+                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/right.svg" loading="lazy"
+                              alt="right-radious">
+                           <p class="sc-font-thin sc-roboto sc-universal ">Bottom Right</p>
+                        </div>
+
+
                         </div>
                      </div>
 
