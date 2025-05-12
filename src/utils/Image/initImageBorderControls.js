@@ -467,15 +467,14 @@ ${blockSelector} {
     const propToApply = props[type];
     const valueToApply = `${radius}px !important`;
 
-    // When "all", remove all 4 corners to avoid conflict
     if (type === "all") {
+      // Remove all corner-specific radius styles
       Object.values(props).forEach((prop) => {
         const regex = new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g");
         currentCSS = currentCSS.replace(regex, "");
       });
     }
 
-    // Build regex to find block selector
     const blockRegex = new RegExp(
       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
       "g"
@@ -484,18 +483,13 @@ ${blockSelector} {
 
     if (match) {
       let declarations = match[2];
-
-      // Remove existing same property
       const propRegex = new RegExp(`${propToApply}\\s*:\\s*[^;]+;?`, "g");
       declarations = declarations.replace(propRegex, "").trim();
+      declarations += `\n  ${propToApply}: ${valueToApply};`;
 
-      // Add the new property
-      declarations += `\n  ${propToApply}: ${valueToApply}`;
-
-      const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
-      currentCSS = currentCSS.replace(blockRegex, updated);
+      const updatedBlock = `${match[1]}\n  ${declarations}\n${match[3]}`;
+      currentCSS = currentCSS.replace(blockRegex, updatedBlock);
     } else {
-      // New CSS rule
       currentCSS += `\n${blockSelector} {\n  ${propToApply}: ${valueToApply};\n}`;
     }
 
