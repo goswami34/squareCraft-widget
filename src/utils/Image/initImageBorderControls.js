@@ -439,6 +439,81 @@ ${blockSelector} {
   //     styleTag.textContent = currentCSS;
   //   }
 
+  // function applyBorderRadius(type, radius) {
+  //   const selected = document.querySelector(".sc-selected-image");
+  //   if (!selected) return;
+
+  //   const block = selected.closest('[id^="block-"]');
+  //   if (!block) return;
+
+  //   const blockSelector = `#${block.id} div.sqs-image-content`;
+  //   let styleTag = document.getElementById("sc-image-border-style");
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = "sc-image-border-style";
+  //     document.head.appendChild(styleTag);
+  //   }
+
+  //   let currentCSS = styleTag.textContent;
+
+  //   const props = {
+  //     all: "border-radius",
+  //     topLeft: "border-top-left-radius",
+  //     topRight: "border-top-right-radius",
+  //     bottomLeft: "border-bottom-left-radius",
+  //     bottomRight: "border-bottom-right-radius",
+  //   };
+
+  //   const blockRegex = new RegExp(
+  //     `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+  //     "g"
+  //   );
+  //   const match = blockRegex.exec(currentCSS);
+
+  //   const valueToApply = `${radius}px !important`;
+  //   const resetValue = "0px !important";
+
+  //   let newDeclarations = "";
+
+  //   if (type === "all") {
+  //     // Apply global radius and clear all corner-specific ones
+  //     Object.values(props).forEach((prop) => {
+  //       currentCSS = currentCSS.replace(
+  //         new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+  //         ""
+  //       );
+  //     });
+  //     newDeclarations = `  ${props.all}: ${valueToApply};`;
+  //   } else {
+  //     // Reset all 4 corners
+  //     Object.values(props).forEach((prop) => {
+  //       currentCSS = currentCSS.replace(
+  //         new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+  //         ""
+  //       );
+  //     });
+  //     newDeclarations = Object.entries(props)
+  //       .filter(([key]) => key !== "all")
+  //       .map(([key, prop]) => {
+  //         return key === type
+  //           ? `  ${prop}: ${valueToApply};`
+  //           : `  ${prop}: ${resetValue};`;
+  //       })
+  //       .join("\n");
+  //   }
+
+  //   // Final block injection
+  //   const updatedBlock = `${blockSelector} {\n${newDeclarations}\n}`;
+
+  //   if (match) {
+  //     currentCSS = currentCSS.replace(blockRegex, updatedBlock);
+  //   } else {
+  //     currentCSS += `\n${updatedBlock}`;
+  //   }
+
+  //   styleTag.textContent = currentCSS.trim();
+  // }
+
   function applyBorderRadius(type, radius) {
     const selected = document.querySelector(".sc-selected-image");
     if (!selected) return;
@@ -464,51 +539,56 @@ ${blockSelector} {
       bottomRight: "border-bottom-right-radius",
     };
 
+    const valueToApply = `${radius}px !important`;
+    const resetValue = `0px !important`;
+
     const blockRegex = new RegExp(
       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
       "g"
     );
     const match = blockRegex.exec(currentCSS);
 
-    const valueToApply = `${radius}px !important`;
-    const resetValue = "0px !important";
-
-    let newDeclarations = "";
-
-    if (type === "all") {
-      // Apply global radius and clear all corner-specific ones
-      Object.values(props).forEach((prop) => {
-        currentCSS = currentCSS.replace(
-          new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-          ""
-        );
-      });
-      newDeclarations = `  ${props.all}: ${valueToApply};`;
-    } else {
-      // Reset all 4 corners
-      Object.values(props).forEach((prop) => {
-        currentCSS = currentCSS.replace(
-          new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-          ""
-        );
-      });
-      newDeclarations = Object.entries(props)
-        .filter(([key]) => key !== "all")
-        .map(([key, prop]) => {
-          return key === type
-            ? `  ${prop}: ${valueToApply};`
-            : `  ${prop}: ${resetValue};`;
-        })
-        .join("\n");
-    }
-
-    // Final block injection
-    const updatedBlock = `${blockSelector} {\n${newDeclarations}\n}`;
-
     if (match) {
-      currentCSS = currentCSS.replace(blockRegex, updatedBlock);
+      let declarations = match[2];
+
+      // Remove any existing radius declarations
+      Object.values(props).forEach((prop) => {
+        declarations = declarations.replace(
+          new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+          ""
+        );
+      });
+
+      if (type === "all") {
+        declarations += `\n  ${props.all}: ${valueToApply};`;
+      } else {
+        declarations += Object.entries(props)
+          .filter(([key]) => key !== "all")
+          .map(([key, prop]) =>
+            key === type
+              ? `\n  ${prop}: ${valueToApply};`
+              : `\n  ${prop}: ${resetValue};`
+          )
+          .join("");
+      }
+
+      const updated = `${match[1]}${declarations}\n${match[3]}`;
+      currentCSS = currentCSS.replace(blockRegex, updated);
     } else {
-      currentCSS += `\n${updatedBlock}`;
+      let newRule = `${blockSelector} {\n`;
+      if (type === "all") {
+        newRule += `  ${props.all}: ${valueToApply};\n`;
+      } else {
+        Object.entries(props)
+          .filter(([key]) => key !== "all")
+          .forEach(([key, prop]) => {
+            newRule += `  ${prop}: ${
+              key === type ? valueToApply : resetValue
+            };\n`;
+          });
+      }
+      newRule += `}`;
+      currentCSS += `\n${newRule}`;
     }
 
     styleTag.textContent = currentCSS.trim();
