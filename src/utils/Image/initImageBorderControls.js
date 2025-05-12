@@ -384,6 +384,61 @@ ${blockSelector} {
 
   // border radius start here
   // 🔘 Border Radius Application
+  //   function applyBorderRadius(type, radius) {
+  //     const selected = document.querySelector(".sc-selected-image");
+  //     if (!selected) return;
+
+  //     const block = selected.closest('[id^="block-"]');
+  //     if (!block) return;
+
+  //     const blockSelector = `#${block.id} div.sqs-image-content`;
+  //     let styleTag = document.getElementById("sc-image-border-style");
+  //     if (!styleTag) {
+  //       styleTag = document.createElement("style");
+  //       styleTag.id = "sc-image-border-style";
+  //       document.head.appendChild(styleTag);
+  //     }
+
+  //     let currentCSS = styleTag.textContent;
+
+  //     const radiusProps = {
+  //       all: `border-radius: ${radius}px !important;`,
+  //       topLeft: `border-top-left-radius: ${radius}px !important;`,
+  //       topRight: `border-top-right-radius: ${radius}px !important;`,
+  //       bottomLeft: `border-bottom-left-radius: ${radius}px !important;`,
+  //       bottomRight: `border-bottom-right-radius: ${radius}px !important;`,
+  //     };
+
+  //     const blockRegex = new RegExp(
+  //       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+  //       "g"
+  //     );
+  //     const match = blockRegex.exec(currentCSS);
+
+  //     const radiusLine = radiusProps[type];
+
+  //     if (match) {
+  //       let declarations = match[2];
+  //       // Remove existing radius for that type
+  //       declarations = declarations
+  //         .replace(
+  //           new RegExp(`${radiusLine.split(":")[0]}\\s*:\\s*[^;]+;?`, "g"),
+  //           ""
+  //         )
+  //         .trim();
+  //       declarations += `\n  ${radiusLine}`;
+  //       const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
+  //       currentCSS = currentCSS.replace(blockRegex, updated);
+  //     } else {
+  //       currentCSS += `
+  // ${blockSelector} {
+  //   ${radiusLine}
+  // }`;
+  //     }
+
+  //     styleTag.textContent = currentCSS;
+  //   }
+
   function applyBorderRadius(type, radius) {
     const selected = document.querySelector(".sc-selected-image");
     if (!selected) return;
@@ -401,8 +456,16 @@ ${blockSelector} {
 
     let currentCSS = styleTag.textContent;
 
-    const radiusProps = {
-      all: `border-radius: ${radius}px !important;`,
+    // Reset all corner radius
+    const resetCorners = `
+    border-top-left-radius: 0px !important;
+    border-top-right-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;`;
+
+    const allRadius = `border-radius: ${radius}px !important;`;
+
+    const radiusMap = {
       topLeft: `border-top-left-radius: ${radius}px !important;`,
       topRight: `border-top-right-radius: ${radius}px !important;`,
       bottomLeft: `border-bottom-left-radius: ${radius}px !important;`,
@@ -415,25 +478,27 @@ ${blockSelector} {
     );
     const match = blockRegex.exec(currentCSS);
 
-    const radiusLine = radiusProps[type];
+    let updatedBlock = "";
 
-    if (match) {
-      let declarations = match[2];
-      // Remove existing radius for that type
-      declarations = declarations
-        .replace(
-          new RegExp(`${radiusLine.split(":")[0]}\\s*:\\s*[^;]+;?`, "g"),
-          ""
-        )
-        .trim();
-      declarations += `\n  ${radiusLine}`;
-      const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
-      currentCSS = currentCSS.replace(blockRegex, updated);
-    } else {
-      currentCSS += `
-${blockSelector} {
-  ${radiusLine}
+    if (type === "all") {
+      // Reset all specific corners when applying global radius
+      updatedBlock = `${blockSelector} {
+  ${allRadius}
+  ${resetCorners}
 }`;
+    } else {
+      // Replace or inject only one corner radius and reset all others
+      const cornerLine = radiusMap[type];
+      updatedBlock = `${blockSelector} {
+  ${cornerLine}
+}`;
+    }
+
+    // Replace existing block or add new
+    if (match) {
+      currentCSS = currentCSS.replace(blockRegex, updatedBlock);
+    } else {
+      currentCSS += `\n${updatedBlock}`;
     }
 
     styleTag.textContent = currentCSS;
