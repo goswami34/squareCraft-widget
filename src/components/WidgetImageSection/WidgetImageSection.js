@@ -271,34 +271,30 @@ export function WidgetImageSection(id) {
 
                         <div
                            class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="topLeftradiusBorder">
-                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/top.svg" loading="lazy"
-                              alt="top-radious">
-                           <p class="sc-font-thin sc-roboto sc-universal" >Top Left</p>
+                           <img src="https://goswami34.github.io/squareCraft-widget/public/Vector.svg" loading="lazy"
+                              alt="top-left-radius">
                         </div>
 
 
 
                         <div
                            class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="topRightradiusBorder">
-                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/bottom.svg" loading="lazy"
-                              alt="bottom-radious">
-                           <p class="sc-font-thin sc-roboto sc-universal " >Top Right</p>
+                           <img src="https://goswami34.github.io/squareCraft-widget/public/TopRight.svg" loading="lazy"
+                              alt="top-right-radius">
                         </div>
 
 
                         <div
                            class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomLeftradiusBorder">
-                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/left.svg" loading="lazy"
-                              alt="left-radious">
-                           <p class="sc-font-thin sc-roboto sc-universal " >Bottom Left</p>
+                           <img src="https://goswami34.github.io/squareCraft-widget/public/left-bottom.svg" loading="lazy"
+                              alt="left-bottom-radius">
                         </div>
 
 
                         <div
                            class="sc-flex sc-px-1_5 sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomRightradiusBorder">
-                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/right.svg" loading="lazy"
-                              alt="right-radious">
-                           <p class="sc-font-thin sc-roboto sc-universal ">Bottom Right</p>
+                           <img src="https://goswami34.github.io/squareCraft-widget/public/Bottom Right.svg" loading="lazy"
+                              alt="bottom-right-radius">
                         </div>
 
 
