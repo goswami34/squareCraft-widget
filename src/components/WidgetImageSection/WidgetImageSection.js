@@ -227,33 +227,29 @@ export function WidgetImageSection(id) {
                   </div>
 
                   <div class="sc-mt-4">
-                     <div class="  sc-flex sc-items-center sc-justify-between">
+                     <div class="sc-flex sc-items-center sc-justify-between">
                         <div class="sc-flex sc-gap-2 sc-items-center">
-                           <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300">
-                              Border Radious
+                           <p class="sc-roboto sc-font-thin sc-universal sc-text-sm sc-text-gray-300">
+                           Border Radious
                            </p>
                            <div
-                              class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-1 sc-p-1_5  sc-bg sc-bg-454545">
-
-                              <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/reset.svg" width="10"
-                                 alt="reset">
+                           class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-1 sc-p-1_5 sc-bg sc-bg-454545">
+                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/reset.svg" width="10" alt="reset" />
                            </div>
                         </div>
                         <div
                            class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-2 sc-px-2 sc-py-0_5 sc-bg sc-bg-454545">
                            <p class="sc-font-thin sc-roboto sc-universal sc-text-xs" id="radiusCountAnother">0px</p>
-                           
                            <div class="sc-flex sc-flex-col sc-items-center sc-gap-1">
-                              <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt=""
-                                 width="9">
-                              <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" width="9"
-                                 class="sc-rotate-180" alt="">
+                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt="" width="9" />
+                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" width="9" class="sc-rotate-180" alt="" />
                            </div>
                         </div>
                      </div>
-                     
-                     <div class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
-                        <div
+
+                     <div id="radiusField" class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
+                        <div id="radiusFill" class="sc-absolute sc-bg-color-EF7C2F sc-h-2 sc-rounded-l-full"></div>
+                        <div id="radiusBullet"
                            class="sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
                         </div>
                      </div>
