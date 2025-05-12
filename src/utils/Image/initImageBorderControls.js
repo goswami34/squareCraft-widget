@@ -360,6 +360,24 @@ ${blockSelector} {
     }
 
     styleTag.textContent = currentCSS;
+
+    // 👉 Update active button UI state
+    const solidBtn = document.getElementById("borderStyleSolid");
+    const dashedBtn = document.getElementById("borderStyleDashed");
+    const dottedBtn = document.getElementById("borderStyleDotted");
+
+    [solidBtn, dashedBtn, dottedBtn].forEach((btn) =>
+      btn.classList.remove("sc-bg-454545")
+    );
+
+    const currentBtnId = {
+      solid: "borderStyleSolid",
+      dashed: "borderStyleDashed",
+      dotted: "borderStyleDotted",
+    }[style];
+
+    const activeBtn = document.getElementById(currentBtnId);
+    activeBtn?.classList.add("sc-bg-454545");
   }
 
   //border style end here
