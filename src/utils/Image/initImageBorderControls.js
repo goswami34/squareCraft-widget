@@ -543,7 +543,7 @@ ${blockSelector} {
 
   const radiusValue = () => {
     const countEl = document.getElementById("radiusCountAnother");
-    const count = parseInt(countEl?.textContent) || 10;
+    const count = parseInt(countEl?.textContent) || 0;
     return count;
   };
 
