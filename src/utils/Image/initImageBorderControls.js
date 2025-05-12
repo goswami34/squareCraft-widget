@@ -476,8 +476,6 @@ ${blockSelector} {
   // ✅ Call this at the end
   initRadiusProgressbarControls();
 
-  initRadiusProgressbarControls();
-
   function applyBorderRadius(type, radius) {
     const selected = document.querySelector(".sc-selected-image");
     if (!selected) return;
