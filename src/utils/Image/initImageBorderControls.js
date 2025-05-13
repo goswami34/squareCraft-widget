@@ -22,6 +22,37 @@ export function initImageBorderControls(selectedElement) {
 
   //color selection end here
 
+  // radius start here
+  const radiusButtons = [
+    "allradiusBorder",
+    "topLeftradiusBorder",
+    "topRightradiusBorder",
+    "bottomLeftradiusBorder",
+    "bottomRightradiusBorder",
+  ];
+
+  radiusButtons.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener("click", () => {
+        activeRadiusTarget = {
+          allradiusBorder: "all",
+          topLeftradiusBorder: "topLeft",
+          topRightradiusBorder: "topRight",
+          bottomLeftradiusBorder: "bottomLeft",
+          bottomRightradiusBorder: "bottomRight",
+        }[id];
+
+        const radius = parseInt(
+          document.getElementById("radiusCountAnother")?.textContent || "0"
+        );
+        applyBorderRadius(activeRadiusTarget, radius);
+      });
+    }
+  });
+
+  // radius end here
+
   if (
     !allButton ||
     !topButton ||
@@ -384,6 +415,97 @@ ${blockSelector} {
 
   // border radius start here
 
+  // function initRadiusProgressbarControls() {
+  //   const radiusSlider = document.getElementById("radiusField");
+  //   const radiusBullet = document.getElementById("radiusBullet");
+  //   const radiusFill = document.getElementById("radiusFill");
+  //   const radiusDisplay = document.getElementById("radiusCountAnother");
+
+  //   if (!radiusSlider || !radiusBullet || !radiusFill || !radiusDisplay) return;
+
+  //   let isDragging = false;
+
+  //   const updateUI = (offsetX) => {
+  //     const max = radiusSlider.offsetWidth;
+  //     const bulletRadius = radiusBullet.offsetWidth / 2;
+  //     offsetX = Math.max(bulletRadius, Math.min(offsetX, max - bulletRadius));
+
+  //     const percent = offsetX / max;
+  //     const pxValue = Math.round(percent * 100);
+
+  //     // Update UI
+  //     radiusBullet.style.left = `${offsetX}px`;
+  //     radiusBullet.style.transform = "translateX(-50%)";
+  //     radiusFill.style.width = `${offsetX}px`;
+  //     radiusDisplay.textContent = `${pxValue}px`;
+
+  //     // Update CSS
+  //     const selected = document.querySelector(".sc-selected-image");
+  //     if (!selected) return;
+
+  //     const block = selected.closest('[id^="block-"]');
+  //     if (!block) return;
+
+  //     const blockSelector = `#${block.id} div.sqs-image-content`;
+  //     let styleTag = document.getElementById("sc-image-border-style");
+  //     if (!styleTag) {
+  //       styleTag = document.createElement("style");
+  //       styleTag.id = "sc-image-border-style";
+  //       document.head.appendChild(styleTag);
+  //     }
+
+  //     let currentCSS = styleTag.textContent;
+  //     const blockRegex = new RegExp(
+  //       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+  //       "g"
+  //     );
+  //     const match = blockRegex.exec(currentCSS);
+
+  //     if (match) {
+  //       let declarations = match[2]
+  //         .replace(/border-radius\s*:\s*[^;]+;?/g, "")
+  //         .trim();
+  //       declarations += `\n  border-radius: ${pxValue}px !important;`;
+  //       const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
+  //       currentCSS = currentCSS.replace(blockRegex, updated);
+  //     } else {
+  //       currentCSS += `\n${blockSelector} {\n  border-radius: ${pxValue}px !important;\n}`;
+  //     }
+
+  //     styleTag.textContent = currentCSS.trim();
+  //   };
+
+  //   const handleDrag = (e) => {
+  //     if (!isDragging) return;
+  //     const clientX = e.clientX || (e.touches?.[0]?.clientX ?? 0);
+  //     const rect = radiusSlider.getBoundingClientRect();
+  //     const offsetX = clientX - rect.left;
+  //     updateUI(offsetX);
+  //   };
+
+  //   const startDrag = (e) => {
+  //     e.preventDefault();
+  //     isDragging = true;
+  //     document.addEventListener("mousemove", handleDrag);
+  //     document.addEventListener("mouseup", stopDrag);
+  //     document.addEventListener("touchmove", handleDrag);
+  //     document.addEventListener("touchend", stopDrag);
+  //   };
+
+  //   const stopDrag = () => {
+  //     isDragging = false;
+  //     document.removeEventListener("mousemove", handleDrag);
+  //     document.removeEventListener("mouseup", stopDrag);
+  //     document.removeEventListener("touchmove", handleDrag);
+  //     document.removeEventListener("touchend", stopDrag);
+  //   };
+
+  //   radiusBullet.addEventListener("mousedown", startDrag);
+  //   radiusBullet.addEventListener("touchstart", startDrag);
+  // }
+
+  let activeRadiusTarget = "all"; // default
+
   function initRadiusProgressbarControls() {
     const radiusSlider = document.getElementById("radiusField");
     const radiusBullet = document.getElementById("radiusBullet");
@@ -402,46 +524,13 @@ ${blockSelector} {
       const percent = offsetX / max;
       const pxValue = Math.round(percent * 100);
 
-      // Update UI
       radiusBullet.style.left = `${offsetX}px`;
       radiusBullet.style.transform = "translateX(-50%)";
       radiusFill.style.width = `${offsetX}px`;
       radiusDisplay.textContent = `${pxValue}px`;
 
-      // Update CSS
-      const selected = document.querySelector(".sc-selected-image");
-      if (!selected) return;
-
-      const block = selected.closest('[id^="block-"]');
-      if (!block) return;
-
-      const blockSelector = `#${block.id} div.sqs-image-content`;
-      let styleTag = document.getElementById("sc-image-border-style");
-      if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = "sc-image-border-style";
-        document.head.appendChild(styleTag);
-      }
-
-      let currentCSS = styleTag.textContent;
-      const blockRegex = new RegExp(
-        `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
-        "g"
-      );
-      const match = blockRegex.exec(currentCSS);
-
-      if (match) {
-        let declarations = match[2]
-          .replace(/border-radius\s*:\s*[^;]+;?/g, "")
-          .trim();
-        declarations += `\n  border-radius: ${pxValue}px !important;`;
-        const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
-        currentCSS = currentCSS.replace(blockRegex, updated);
-      } else {
-        currentCSS += `\n${blockSelector} {\n  border-radius: ${pxValue}px !important;\n}`;
-      }
-
-      styleTag.textContent = currentCSS.trim();
+      // Update only the correct border radius target
+      applyBorderRadius(activeRadiusTarget, pxValue);
     };
 
     const handleDrag = (e) => {
