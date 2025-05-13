@@ -499,11 +499,7 @@ ${blockSelector} {
       bottomRight: "border-bottom-right-radius",
     };
 
-    const valueToApply = `${radius}px !important`;
-    const resetValue = `0px !important`;
-
     let currentCSS = styleTag.textContent;
-
     const blockRegex = new RegExp(
       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
       "g"
@@ -513,26 +509,32 @@ ${blockSelector} {
     if (match) {
       let declarations = match[2];
 
-      // Ensure global border-radius is present
-      if (!declarations.includes(props.all)) {
-        declarations += `\n  ${props.all}: ${valueToApply};`;
-      }
-
-      // If not "all", apply that corner reset without removing other corner styles
-      if (type !== "all") {
+      if (type === "all") {
+        // For "all" button, set the global border-radius
+        declarations = declarations.replace(/border-radius\s*:\s*[^;]+;?/g, "");
+        declarations = declarations.replace(
+          /border-[a-z-]+-radius\s*:\s*[^;]+;?/g,
+          ""
+        );
+        declarations += `\n  border-radius: ${radius}px !important;`;
+      } else {
+        // For individual corners, set that specific corner's radius
         const prop = props[type];
-        const cornerRegex = new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g");
-        declarations = declarations.replace(cornerRegex, ""); // remove existing if exists
-        declarations += `\n  ${prop}: ${resetValue};`;
+        declarations = declarations.replace(
+          new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+          ""
+        );
+        declarations += `\n  ${prop}: ${radius}px !important;`;
       }
 
       const updated = `${match[1]}${declarations}\n${match[3]}`;
       currentCSS = currentCSS.replace(blockRegex, updated);
     } else {
       let newRule = `${blockSelector} {\n`;
-      newRule += `  ${props.all}: ${valueToApply};\n`;
-      if (type !== "all") {
-        newRule += `  ${props[type]}: ${resetValue};\n`;
+      if (type === "all") {
+        newRule += `  border-radius: ${radius}px !important;\n`;
+      } else {
+        newRule += `  ${props[type]}: ${radius}px !important;\n`;
       }
       newRule += `}`;
       currentCSS += `\n${newRule}`;
@@ -547,29 +549,38 @@ ${blockSelector} {
     return count;
   };
 
-  document
-    .getElementById("allradiusBorder")
-    ?.addEventListener("click", () => applyBorderRadius("all", radiusValue()));
+  document.getElementById("allradiusBorder")?.addEventListener("click", () => {
+    const radius = radiusValue();
+    applyBorderRadius("all", radius);
+  });
+
   document
     .getElementById("topLeftradiusBorder")
-    ?.addEventListener("click", () =>
-      applyBorderRadius("topLeft", radiusValue())
-    );
+    ?.addEventListener("click", () => {
+      const radius = radiusValue();
+      applyBorderRadius("topLeft", radius);
+    });
+
   document
     .getElementById("topRightradiusBorder")
-    ?.addEventListener("click", () =>
-      applyBorderRadius("topRight", radiusValue())
-    );
+    ?.addEventListener("click", () => {
+      const radius = radiusValue();
+      applyBorderRadius("topRight", radius);
+    });
+
   document
     .getElementById("bottomLeftradiusBorder")
-    ?.addEventListener("click", () =>
-      applyBorderRadius("bottomLeft", radiusValue())
-    );
+    ?.addEventListener("click", () => {
+      const radius = radiusValue();
+      applyBorderRadius("bottomLeft", radius);
+    });
+
   document
     .getElementById("bottomRightradiusBorder")
-    ?.addEventListener("click", () =>
-      applyBorderRadius("bottomRight", radiusValue())
-    );
+    ?.addEventListener("click", () => {
+      const radius = radiusValue();
+      applyBorderRadius("bottomRight", radius);
+    });
 
   // border radius end here
 }
