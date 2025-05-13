@@ -459,7 +459,10 @@ ${blockSelector} {
       radiusFill.style.width = `${offsetX}px`;
       radiusDisplay.textContent = `${pxValue}px`;
 
-      applyBorderRadius(activeRadiusTarget, pxValue); // Respect the target
+      // Apply radius to active type ONLY
+      if (activeRadiusTarget) {
+        applyBorderRadius(activeRadiusTarget, pxValue);
+      }
     }
 
     const handleDrag = (e) => {
@@ -665,18 +668,15 @@ ${blockSelector} {
     if (match) {
       let declarations = match[2];
 
-      // ✅ Only remove the current prop (don't touch others!)
+      // Remove ONLY the active prop
       declarations = declarations.replace(
         new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
         ""
       );
 
-      // ❌ Only remove border-radius if it's the active type
+      // ✅ If updating corner only, do NOT touch `border-radius`
       if (type !== "all") {
-        declarations = declarations.replace(
-          new RegExp(`border-radius\\s*:\\s*[^;]+;?`, "g"),
-          ""
-        );
+        declarations = declarations.replace(/border-radius\s*:\s*[^;]+;?/g, "");
       }
 
       declarations += `\n  ${currentProp}: ${radius}px !important;`;
@@ -697,48 +697,36 @@ ${blockSelector} {
   };
 
   document.getElementById("allradiusBorder")?.addEventListener("click", () => {
-    const radius = radiusValue();
-    applyBorderRadius("all", radius);
+    activeRadiusTarget = "all";
+    applyBorderRadius("all", radiusValue());
   });
-
-  // document
-  //   .getElementById("topLeftradiusBorder")
-  //   ?.addEventListener("click", () => {
-  //     const radius = radiusValue();
-  //     applyBorderRadius("topLeft", radius);
-  //   });
 
   document
     .getElementById("topLeftradiusBorder")
     ?.addEventListener("click", () => {
       activeRadiusTarget = "topLeft";
-      const radius = radiusValue();
-      // applyBorderRadius(activeRadiusTarget, radius);
-      applyBorderRadius("topLeft", radius);
+      applyBorderRadius("topLeft", radiusValue());
     });
 
   document
     .getElementById("topRightradiusBorder")
     ?.addEventListener("click", () => {
       activeRadiusTarget = "topRight";
-      const radius = radiusValue();
-      applyBorderRadius("topRight", radius);
+      applyBorderRadius("topRight", radiusValue());
     });
 
   document
     .getElementById("bottomLeftradiusBorder")
     ?.addEventListener("click", () => {
       activeRadiusTarget = "bottomLeft";
-      const radius = radiusValue();
-      applyBorderRadius("bottomLeft", radius);
+      applyBorderRadius("bottomLeft", radiusValue());
     });
 
   document
     .getElementById("bottomRightradiusBorder")
     ?.addEventListener("click", () => {
       activeRadiusTarget = "bottomRight";
-      const radius = radiusValue();
-      applyBorderRadius("bottomRight", radius);
+      applyBorderRadius("bottomRight", radiusValue());
     });
 
   // const radiusValue = () => {
