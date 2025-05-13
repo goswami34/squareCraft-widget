@@ -9,6 +9,11 @@ export function initImageBorderControls(selectedElement) {
   const borderWidthFill = document.getElementById("radiousFill");
   const borderWidthDisplay = document.getElementById("radiousCount");
 
+  const radiusSlider = document.getElementById("radiusField");
+  const radiusBullet = document.getElementById("radiusBullet");
+  const radiusFill = document.getElementById("radiusFill");
+  const radiusDisplay = document.getElementById("radiusCountAnother");
+
   // color selection start here
   const colorCodeEl = document.getElementById("color-code");
   const palette = document.getElementById("color-palette");
