@@ -636,9 +636,6 @@ ${blockSelector} {
       bottomRight: "border-bottom-right-radius",
     };
 
-    const currentProp = props[type] || props.all;
-    const valueToApply = `${radius}px !important`;
-
     let currentCSS = styleTag.textContent;
     const blockRegex = new RegExp(
       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
@@ -649,24 +646,39 @@ ${blockSelector} {
     if (match) {
       let declarations = match[2];
 
-      // ✅ Remove only the targeted prop
-      Object.values(props).forEach((prop) => {
-        if (prop === currentProp) {
-          declarations = declarations.replace(
-            new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-            ""
-          );
-        }
-      });
+      if (type === "all") {
+        // Remove all corner props
+        Object.values(props).forEach((prop) => {
+          if (prop !== props.all) {
+            declarations = declarations.replace(
+              new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+              ""
+            );
+          }
+        });
 
-      // ✅ Only apply selected radius type
-      declarations += `\n  ${currentProp}: ${valueToApply};`;
+        // Remove existing border-radius
+        declarations = declarations.replace(
+          new RegExp(`${props.all}\\s*:\\s*[^;]+;?`, "g"),
+          ""
+        );
 
-      const updated = `${match[1]}${declarations}\n${match[3]}`;
-      currentCSS = currentCSS.replace(blockRegex, updated);
+        declarations += `\n  ${props.all}: ${radius}px !important;`;
+      } else {
+        // Remove only the active corner prop
+        const currentProp = props[type];
+        declarations = declarations.replace(
+          new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
+          ""
+        );
+        declarations += `\n  ${currentProp}: ${radius}px !important;`;
+      }
+
+      const updatedBlock = `${match[1]}${declarations}\n${match[3]}`;
+      currentCSS = currentCSS.replace(blockRegex, updatedBlock);
     } else {
-      // Add fresh rule
-      currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${valueToApply};\n}`;
+      const currentProp = props[type] || props.all;
+      currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${radius}px !important;\n}`;
     }
 
     styleTag.textContent = currentCSS.trim();
