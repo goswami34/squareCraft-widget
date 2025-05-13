@@ -485,7 +485,6 @@ ${blockSelector} {
       if (!currentProp) return;
 
       let currentCSS = styleTag.textContent;
-
       const blockRegex = new RegExp(
         `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
         "g"
@@ -495,15 +494,27 @@ ${blockSelector} {
       if (match) {
         let declarations = match[2];
 
-        // Remove ALL border-radius declarations if NOT activeRadiusTarget === "all"
-        Object.values(props).forEach((prop) => {
-          declarations = declarations.replace(
-            new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-            ""
-          );
-        });
+        // ✅ Remove ONLY the currently active property
+        declarations = declarations.replace(
+          new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
+          ""
+        );
 
-        // ✅ Only insert the active property now
+        // ❌ DO NOT REMOVE border-radius unless it's active
+        if (activeRadiusTarget === "all") {
+          // If we're updating border-radius, remove the fallback corners
+          ["topLeft", "topRight", "bottomLeft", "bottomRight"].forEach(
+            (key) => {
+              const cornerProp = props[key];
+              declarations = declarations.replace(
+                new RegExp(`${cornerProp}\\s*:\\s*[^;]+;?`, "g"),
+                ""
+              );
+            }
+          );
+        }
+
+        // ✅ Add the new value
         declarations += `\n  ${currentProp}: ${pxValue}px !important;`;
 
         const updated = `${match[1]}${declarations}\n${match[3]}`;
