@@ -454,11 +454,13 @@ ${blockSelector} {
       const percent = offsetX / max;
       const pxValue = Math.round(percent * 100);
 
+      // UI update
       radiusBullet.style.left = `${offsetX}px`;
       radiusBullet.style.transform = "translateX(-50%)";
       radiusFill.style.width = `${offsetX}px`;
       radiusDisplay.textContent = `${pxValue}px`;
 
+      // Apply the correct border-* value
       const selected = document.querySelector(".sc-selected-image");
       if (!selected) return;
 
@@ -474,11 +476,6 @@ ${blockSelector} {
       }
 
       let currentCSS = styleTag.textContent;
-      const blockRegex = new RegExp(
-        `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
-        "g"
-      );
-      const match = blockRegex.exec(currentCSS);
 
       const props = {
         all: "border-radius",
@@ -488,20 +485,26 @@ ${blockSelector} {
         bottomRight: "border-bottom-right-radius",
       };
 
+      const blockRegex = new RegExp(
+        `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+        "g"
+      );
+      const match = blockRegex.exec(currentCSS);
+
       if (match) {
         let declarations = match[2];
-        // Clean all border-radius declarations
-        Object.values(props).forEach((prop) => {
-          declarations = declarations.replace(
-            new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-            ""
-          );
-        });
 
+        // Remove only the activeRadiusTarget line
         const currentProp = props[activeRadiusTarget];
-        if (currentProp) {
-          declarations += `\n  ${currentProp}: ${pxValue}px !important;`;
-        }
+        if (!currentProp) return;
+
+        declarations = declarations.replace(
+          new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
+          ""
+        );
+
+        // Add the new value
+        declarations += `\n  ${currentProp}: ${pxValue}px !important;`;
 
         const updated = `${match[1]}${declarations}\n${match[3]}`;
         currentCSS = currentCSS.replace(blockRegex, updated);
