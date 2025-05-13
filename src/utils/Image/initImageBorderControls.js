@@ -408,40 +408,23 @@ ${blockSelector} {
       radiusFill.style.width = `${offsetX}px`;
       radiusDisplay.textContent = `${pxValue}px`;
 
-      // Update CSS
-      const selected = document.querySelector(".sc-selected-image");
-      if (!selected) return;
+      // Get the active corner type
+      const activeCorner = document.querySelector(".sc-bg-454545")?.id;
+      if (!activeCorner) return;
 
-      const block = selected.closest('[id^="block-"]');
-      if (!block) return;
+      // Map button IDs to corner types
+      const cornerMap = {
+        allradiusBorder: "all",
+        topLeftradiusBorder: "topLeft",
+        topRightradiusBorder: "topRight",
+        bottomLeftradiusBorder: "bottomLeft",
+        bottomRightradiusBorder: "bottomRight",
+      };
 
-      const blockSelector = `#${block.id} div.sqs-image-content`;
-      let styleTag = document.getElementById("sc-image-border-style");
-      if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = "sc-image-border-style";
-        document.head.appendChild(styleTag);
+      const cornerType = cornerMap[activeCorner];
+      if (cornerType) {
+        applyBorderRadius(cornerType, pxValue);
       }
-
-      let currentCSS = styleTag.textContent;
-      const blockRegex = new RegExp(
-        `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
-        "g"
-      );
-      const match = blockRegex.exec(currentCSS);
-
-      if (match) {
-        let declarations = match[2]
-          .replace(/border-radius\s*:\s*[^;]+;?/g, "")
-          .trim();
-        declarations += `\n  border-radius: ${pxValue}px !important;`;
-        const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
-        currentCSS = currentCSS.replace(blockRegex, updated);
-      } else {
-        currentCSS += `\n${blockSelector} {\n  border-radius: ${pxValue}px !important;\n}`;
-      }
-
-      styleTag.textContent = currentCSS.trim();
     };
 
     const handleDrag = (e) => {
@@ -510,7 +493,7 @@ ${blockSelector} {
       let declarations = match[2];
 
       if (type === "all") {
-        // For "all" button, set the global border-radius
+        // For "all" button, set the global border-radius and remove individual corners
         declarations = declarations.replace(/border-radius\s*:\s*[^;]+;?/g, "");
         declarations = declarations.replace(
           /border-[a-z-]+-radius\s*:\s*[^;]+;?/g,
@@ -518,7 +501,8 @@ ${blockSelector} {
         );
         declarations += `\n  border-radius: ${radius}px !important;`;
       } else {
-        // For individual corners, set that specific corner's radius
+        // For individual corners, remove global border-radius and set specific corner
+        declarations = declarations.replace(/border-radius\s*:\s*[^;]+;?/g, "");
         const prop = props[type];
         declarations = declarations.replace(
           new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
