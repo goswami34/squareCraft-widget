@@ -9,11 +9,6 @@ export function initImageBorderControls(selectedElement) {
   const borderWidthFill = document.getElementById("radiousFill");
   const borderWidthDisplay = document.getElementById("radiousCount");
 
-  const radiusSlider = document.getElementById("radiusField");
-  const radiusBullet = document.getElementById("radiusBullet");
-  const radiusFill = document.getElementById("radiusFill");
-  const radiusDisplay = document.getElementById("radiusCountAnother");
-
   // color selection start here
   const colorCodeEl = document.getElementById("color-code");
   const palette = document.getElementById("color-palette");
@@ -626,32 +621,6 @@ ${blockSelector} {
   //   styleTag.textContent = currentCSS.trim();
   // }
 
-  if (!radiusSlider || !radiusBullet || !radiusFill || !radiusDisplay) return;
-
-  let activeRadiusTarget = "all";
-
-  const radiusButtons = {
-    allradiusBorder: "all",
-    topLeftradiusBorder: "topLeft",
-    topRightradiusBorder: "topRight",
-    bottomLeftradiusBorder: "bottomLeft",
-    bottomRightradiusBorder: "bottomRight",
-  };
-
-  Object.entries(radiusButtons).forEach(([id, value]) => {
-    const btn = document.getElementById(id);
-    if (btn) {
-      btn.addEventListener("click", () => {
-        activeRadiusTarget = value;
-        applyBorderRadius(activeRadiusTarget, getRadiusValue());
-      });
-    }
-  });
-
-  function getRadiusValue() {
-    return parseInt(radiusDisplay?.textContent) || 0;
-  }
-
   function applyBorderRadius(type, radius) {
     const selected = document.querySelector(".sc-selected-image");
     if (!selected) return;
@@ -688,12 +657,14 @@ ${blockSelector} {
         declarations += `\n  border-radius: ${radius}px !important;`;
       }
       if (type !== "all") {
+        const cornerProp = props[type];
         declarations = declarations.replace(
-          new RegExp(`${props[type]}\\s*:\\s*[^;]+;?`, "g"),
+          new RegExp(`${cornerProp}\\s*:\\s*[^;]+;?`, "g"),
           ""
         );
-        declarations += `\n  ${props[type]}: ${valueToApply};`;
+        declarations += `\n  ${cornerProp}: ${valueToApply};`;
       } else {
+        // Remove all individual corner declarations
         Object.values(props).forEach((prop) => {
           if (prop !== props.all) {
             declarations = declarations.replace(
@@ -703,10 +674,11 @@ ${blockSelector} {
           }
         });
         declarations = declarations.replace(
-          /border-radius\\s*:\\s*[^;]+;?/,
+          /border-radius\s*:\s*[^;]+;?/,
           `border-radius: ${radius}px !important;`
         );
       }
+
       const updated = `${match[1]}${declarations}\n${match[3]}`;
       currentCSS = currentCSS.replace(blockRegex, updated);
     } else {
@@ -723,6 +695,8 @@ ${blockSelector} {
   }
 
   function initRadiusProgressbarControls() {
+    if (!radiusSlider || !radiusBullet || !radiusFill || !radiusDisplay) return;
+
     let isDragging = false;
 
     const updateUI = (offsetX) => {
@@ -770,7 +744,44 @@ ${blockSelector} {
     radiusBullet.addEventListener("touchstart", startDrag);
   }
 
-  initRadiusProgressbarControls();
+  const radiusValue = () => {
+    const countEl = document.getElementById("radiusCountAnother");
+    const count = parseInt(countEl?.textContent) || 0;
+    return count;
+  };
+
+  document.getElementById("allradiusBorder")?.addEventListener("click", () => {
+    const radius = radiusValue();
+    applyBorderRadius("all", radius);
+  });
+
+  document
+    .getElementById("topLeftradiusBorder")
+    ?.addEventListener("click", () => {
+      const radius = radiusValue();
+      applyBorderRadius("topLeft", radius);
+    });
+
+  document
+    .getElementById("topRightradiusBorder")
+    ?.addEventListener("click", () => {
+      const radius = radiusValue();
+      applyBorderRadius("topRight", radius);
+    });
+
+  document
+    .getElementById("bottomLeftradiusBorder")
+    ?.addEventListener("click", () => {
+      const radius = radiusValue();
+      applyBorderRadius("bottomLeft", radius);
+    });
+
+  document
+    .getElementById("bottomRightradiusBorder")
+    ?.addEventListener("click", () => {
+      const radius = radiusValue();
+      applyBorderRadius("bottomRight", radius);
+    });
 
   // const radiusValue = () => {
   //   const countEl = document.getElementById("radiusCountAnother");
