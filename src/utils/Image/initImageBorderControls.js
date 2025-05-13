@@ -459,8 +459,7 @@ ${blockSelector} {
       radiusFill.style.width = `${offsetX}px`;
       radiusDisplay.textContent = `${pxValue}px`;
 
-      // ✅ This only updates the active prop (e.g. top-left), not border-radius
-      applyBorderRadius(activeRadiusTarget, pxValue);
+      applyBorderRadius(activeRadiusTarget, pxValue); // Respect the target
     }
 
     const handleDrag = (e) => {
@@ -666,16 +665,24 @@ ${blockSelector} {
     if (match) {
       let declarations = match[2];
 
-      // ✅ Only remove the active one (not border-radius unless it's selected)
+      // ✅ Only remove the current prop (don't touch others!)
       declarations = declarations.replace(
         new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
         ""
       );
 
+      // ❌ Only remove border-radius if it's the active type
+      if (type !== "all") {
+        declarations = declarations.replace(
+          new RegExp(`border-radius\\s*:\\s*[^;]+;?`, "g"),
+          ""
+        );
+      }
+
       declarations += `\n  ${currentProp}: ${radius}px !important;`;
 
-      const updatedBlock = `${match[1]}${declarations}\n${match[3]}`;
-      currentCSS = currentCSS.replace(blockRegex, updatedBlock);
+      const updated = `${match[1]}${declarations}\n${match[3]}`;
+      currentCSS = currentCSS.replace(blockRegex, updated);
     } else {
       currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${radius}px !important;\n}`;
     }
