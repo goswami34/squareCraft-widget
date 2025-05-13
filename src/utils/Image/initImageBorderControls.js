@@ -621,6 +621,11 @@ ${blockSelector} {
   //   styleTag.textContent = currentCSS.trim();
   // }
 
+  const radiusSlider = document.getElementById("radiusField");
+  const radiusBullet = document.getElementById("radiusBullet");
+  const radiusFill = document.getElementById("radiusFill");
+  const radiusDisplay = document.getElementById("radiusCountAnother");
+
   const radiusButtons = [
     "allradiusBorder",
     "topLeftradiusBorder",
