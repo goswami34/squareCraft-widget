@@ -636,10 +636,10 @@ ${blockSelector} {
       bottomRight: "border-bottom-right-radius",
     };
 
+    const currentProp = props[type] || props.all;
     const valueToApply = `${radius}px !important`;
 
     let currentCSS = styleTag.textContent;
-
     const blockRegex = new RegExp(
       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
       "g"
@@ -649,68 +649,24 @@ ${blockSelector} {
     if (match) {
       let declarations = match[2];
 
-      // Always ensure the global border-radius is there
-      if (!declarations.includes(props.all)) {
-        declarations += `\n  ${props.all}: ${radius}px !important;`;
-      }
+      // ✅ Remove only the targeted prop
+      Object.values(props).forEach((prop) => {
+        if (prop === currentProp) {
+          declarations = declarations.replace(
+            new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+            ""
+          );
+        }
+      });
 
-      // Apply or update the individual corner
-      // if (type !== "all") {
-      //   const prop = props[type];
-      //   declarations = declarations.replace(
-      //     new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-      //     ""
-      //   );
-      //   declarations += `\n  ${prop}: ${valueToApply};`;
-      // } else {
-      //   // If type is all, remove all corners
-      //   Object.values(props).forEach((prop) => {
-      //     if (prop !== props.all) {
-      //       declarations = declarations.replace(
-      //         new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-      //         ""
-      //       );
-      //     }
-      //   });
-      //   declarations = declarations.replace(
-      //     /border-radius\\s*:\\s*[^;]+;?/,
-      //     `border-radius: ${radius}px !important;`
-      //   );
-      // }
+      // ✅ Only apply selected radius type
+      declarations += `\n  ${currentProp}: ${valueToApply};`;
 
-      if (type === "all") {
-        // Only then set border-radius
-        declarations += `\n  ${props.all}: ${radius}px !important;`;
-
-        // And remove corner props
-        Object.values(props).forEach((prop) => {
-          if (prop !== props.all) {
-            declarations = declarations.replace(
-              new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-              ""
-            );
-          }
-        });
-      } else {
-        // Set only the clicked corner
-        const prop = props[type];
-        declarations = declarations.replace(
-          new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-          ""
-        );
-        declarations += `\n  ${prop}: ${valueToApply};`;
-      }
-
-      const updatedBlock = `${match[1]}${declarations}\n${match[3]}`;
-      currentCSS = currentCSS.replace(blockRegex, updatedBlock);
+      const updated = `${match[1]}${declarations}\n${match[3]}`;
+      currentCSS = currentCSS.replace(blockRegex, updated);
     } else {
-      let newRule = `${blockSelector} {\n`;
-      newRule += `  ${props.all}: ${radius}px !important;\n`;
-      if (type !== "all") {
-        newRule += `  ${props[type]}: ${valueToApply};\n`;
-      }
-      newRule += `}`;
-      currentCSS += `\n${newRule}`;
+      // Add fresh rule
+      currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${valueToApply};\n}`;
     }
 
     styleTag.textContent = currentCSS.trim();
