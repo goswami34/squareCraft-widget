@@ -384,7 +384,9 @@ ${blockSelector} {
 
   // border radius start here
 
-  let activeRadiusTarget = "all";
+  // let activeRadiusTarget = "all";
+
+  let activeRadiusTarget = null;
 
   function initRadiusProgressbarControls() {
     const radiusSlider = document.getElementById("radiusField");
@@ -459,9 +461,11 @@ ${blockSelector} {
       radiusFill.style.width = `${offsetX}px`;
       radiusDisplay.textContent = `${pxValue}px`;
 
-      // Apply radius to active type ONLY
-      if (activeRadiusTarget) {
+      // ✅ Prevent fallback to 'all' if null
+      if (activeRadiusTarget && activeRadiusTarget !== "all") {
         applyBorderRadius(activeRadiusTarget, pxValue);
+      } else if (activeRadiusTarget === "all") {
+        applyBorderRadius("all", pxValue);
       }
     }
 
