@@ -446,7 +446,87 @@ ${blockSelector} {
     //   styleTag.textContent = currentCSS.trim();
     // };
 
-    const updateUI = (offsetX) => {
+    // const updateUI = (offsetX) => {
+    //   const max = radiusSlider.offsetWidth;
+    //   const bulletRadius = radiusBullet.offsetWidth / 2;
+    //   offsetX = Math.max(bulletRadius, Math.min(offsetX, max - bulletRadius));
+
+    //   const percent = offsetX / max;
+    //   const pxValue = Math.round(percent * 100);
+
+    //   radiusBullet.style.left = `${offsetX}px`;
+    //   radiusBullet.style.transform = "translateX(-50%)";
+    //   radiusFill.style.width = `${offsetX}px`;
+    //   radiusDisplay.textContent = `${pxValue}px`;
+
+    //   const selected = document.querySelector(".sc-selected-image");
+    //   if (!selected) return;
+
+    //   const block = selected.closest('[id^="block-"]');
+    //   if (!block) return;
+
+    //   const blockSelector = `#${block.id} div.sqs-image-content`;
+    //   let styleTag = document.getElementById("sc-image-border-style");
+    //   if (!styleTag) {
+    //     styleTag = document.createElement("style");
+    //     styleTag.id = "sc-image-border-style";
+    //     document.head.appendChild(styleTag);
+    //   }
+
+    //   const props = {
+    //     all: "border-radius",
+    //     topLeft: "border-top-left-radius",
+    //     topRight: "border-top-right-radius",
+    //     bottomLeft: "border-bottom-left-radius",
+    //     bottomRight: "border-bottom-right-radius",
+    //   };
+
+    //   const currentProp = props[activeRadiusTarget];
+    //   if (!currentProp) return;
+
+    //   let currentCSS = styleTag.textContent;
+    //   const blockRegex = new RegExp(
+    //     `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+    //     "g"
+    //   );
+    //   const match = blockRegex.exec(currentCSS);
+
+    //   if (match) {
+    //     let declarations = match[2];
+
+    //     // ✅ Remove ONLY the currently active property
+    //     declarations = declarations.replace(
+    //       new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
+    //       ""
+    //     );
+
+    //     // ❌ DO NOT REMOVE border-radius unless it's active
+    //     if (activeRadiusTarget === "all") {
+    //       // If we're updating border-radius, remove the fallback corners
+    //       ["topLeft", "topRight", "bottomLeft", "bottomRight"].forEach(
+    //         (key) => {
+    //           const cornerProp = props[key];
+    //           declarations = declarations.replace(
+    //             new RegExp(`${cornerProp}\\s*:\\s*[^;]+;?`, "g"),
+    //             ""
+    //           );
+    //         }
+    //       );
+    //     }
+
+    //     // ✅ Add the new value
+    //     declarations += `\n  ${currentProp}: ${pxValue}px !important;`;
+
+    //     const updated = `${match[1]}${declarations}\n${match[3]}`;
+    //     currentCSS = currentCSS.replace(blockRegex, updated);
+    //   } else {
+    //     currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${pxValue}px !important;\n}`;
+    //   }
+
+    //   styleTag.textContent = currentCSS.trim();
+    // };
+
+    function updateUI(offsetX) {
       const max = radiusSlider.offsetWidth;
       const bulletRadius = radiusBullet.offsetWidth / 2;
       offsetX = Math.max(bulletRadius, Math.min(offsetX, max - bulletRadius));
@@ -459,72 +539,8 @@ ${blockSelector} {
       radiusFill.style.width = `${offsetX}px`;
       radiusDisplay.textContent = `${pxValue}px`;
 
-      const selected = document.querySelector(".sc-selected-image");
-      if (!selected) return;
-
-      const block = selected.closest('[id^="block-"]');
-      if (!block) return;
-
-      const blockSelector = `#${block.id} div.sqs-image-content`;
-      let styleTag = document.getElementById("sc-image-border-style");
-      if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = "sc-image-border-style";
-        document.head.appendChild(styleTag);
-      }
-
-      const props = {
-        all: "border-radius",
-        topLeft: "border-top-left-radius",
-        topRight: "border-top-right-radius",
-        bottomLeft: "border-bottom-left-radius",
-        bottomRight: "border-bottom-right-radius",
-      };
-
-      const currentProp = props[activeRadiusTarget];
-      if (!currentProp) return;
-
-      let currentCSS = styleTag.textContent;
-      const blockRegex = new RegExp(
-        `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
-        "g"
-      );
-      const match = blockRegex.exec(currentCSS);
-
-      if (match) {
-        let declarations = match[2];
-
-        // ✅ Remove ONLY the currently active property
-        declarations = declarations.replace(
-          new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
-          ""
-        );
-
-        // ❌ DO NOT REMOVE border-radius unless it's active
-        if (activeRadiusTarget === "all") {
-          // If we're updating border-radius, remove the fallback corners
-          ["topLeft", "topRight", "bottomLeft", "bottomRight"].forEach(
-            (key) => {
-              const cornerProp = props[key];
-              declarations = declarations.replace(
-                new RegExp(`${cornerProp}\\s*:\\s*[^;]+;?`, "g"),
-                ""
-              );
-            }
-          );
-        }
-
-        // ✅ Add the new value
-        declarations += `\n  ${currentProp}: ${pxValue}px !important;`;
-
-        const updated = `${match[1]}${declarations}\n${match[3]}`;
-        currentCSS = currentCSS.replace(blockRegex, updated);
-      } else {
-        currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${pxValue}px !important;\n}`;
-      }
-
-      styleTag.textContent = currentCSS.trim();
-    };
+      applyBorderRadius(activeRadiusTarget, pxValue); // Use correct target
+    }
 
     const handleDrag = (e) => {
       if (!isDragging) return;
@@ -623,6 +639,76 @@ ${blockSelector} {
   //   styleTag.textContent = currentCSS.trim();
   // }
 
+  // function applyBorderRadius(type, radius) {
+  //   const selected = document.querySelector(".sc-selected-image");
+  //   if (!selected) return;
+
+  //   const block = selected.closest('[id^="block-"]');
+  //   if (!block) return;
+
+  //   const blockSelector = `#${block.id} div.sqs-image-content`;
+  //   let styleTag = document.getElementById("sc-image-border-style");
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = "sc-image-border-style";
+  //     document.head.appendChild(styleTag);
+  //   }
+
+  //   const props = {
+  //     all: "border-radius",
+  //     topLeft: "border-top-left-radius",
+  //     topRight: "border-top-right-radius",
+  //     bottomLeft: "border-bottom-left-radius",
+  //     bottomRight: "border-bottom-right-radius",
+  //   };
+
+  //   let currentCSS = styleTag.textContent;
+  //   const blockRegex = new RegExp(
+  //     `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+  //     "g"
+  //   );
+  //   const match = blockRegex.exec(currentCSS);
+
+  //   if (match) {
+  //     let declarations = match[2];
+
+  //     if (type === "all") {
+  //       // Remove all corner props
+  //       Object.values(props).forEach((prop) => {
+  //         if (prop !== props.all) {
+  //           declarations = declarations.replace(
+  //             new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+  //             ""
+  //           );
+  //         }
+  //       });
+
+  //       // Remove existing border-radius
+  //       declarations = declarations.replace(
+  //         new RegExp(`${props.all}\\s*:\\s*[^;]+;?`, "g"),
+  //         ""
+  //       );
+
+  //       declarations += `\n  ${props.all}: ${radius}px !important;`;
+  //     } else {
+  //       // Remove only the active corner prop
+  //       const currentProp = props[type];
+  //       declarations = declarations.replace(
+  //         new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
+  //         ""
+  //       );
+  //       declarations += `\n  ${currentProp}: ${radius}px !important;`;
+  //     }
+
+  //     const updatedBlock = `${match[1]}${declarations}\n${match[3]}`;
+  //     currentCSS = currentCSS.replace(blockRegex, updatedBlock);
+  //   } else {
+  //     const currentProp = props[type] || props.all;
+  //     currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${radius}px !important;\n}`;
+  //   }
+
+  // }
+
   function applyBorderRadius(type, radius) {
     const selected = document.querySelector(".sc-selected-image");
     if (!selected) return;
@@ -646,70 +732,30 @@ ${blockSelector} {
       bottomRight: "border-bottom-right-radius",
     };
 
+    const currentProp = props[type] || props.all;
     let currentCSS = styleTag.textContent;
+
     const blockRegex = new RegExp(
       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
       "g"
     );
     const match = blockRegex.exec(currentCSS);
 
-    // if (match) {
-    //   let declarations = match[2];
-
-    //   if (type === "all") {
-    //     // Remove all corner props
-    //     Object.values(props).forEach((prop) => {
-    //       if (prop !== props.all) {
-    //         declarations = declarations.replace(
-    //           new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-    //           ""
-    //         );
-    //       }
-    //     });
-
-    //     // Remove existing border-radius
-    //     declarations = declarations.replace(
-    //       new RegExp(`${props.all}\\s*:\\s*[^;]+;?`, "g"),
-    //       ""
-    //     );
-
-    //     declarations += `\n  ${props.all}: ${radius}px !important;`;
-    //   } else {
-    //     // Remove only the active corner prop
-    //     const currentProp = props[type];
-    //     declarations = declarations.replace(
-    //       new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
-    //       ""
-    //     );
-    //     declarations += `\n  ${currentProp}: ${radius}px !important;`;
-    //   }
-
-    //   const updatedBlock = `${match[1]}${declarations}\n${match[3]}`;
-    //   currentCSS = currentCSS.replace(blockRegex, updatedBlock);
-    // } else {
-    //   const currentProp = props[type] || props.all;
-    //   currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${radius}px !important;\n}`;
-    // }
-
     if (match) {
       let declarations = match[2];
 
-      // ❌ Don't remove all props here blindly
-      // ✅ Only remove the active one
-      const currentProp = props[activeRadiusTarget];
+      // ✅ Only remove the currently active property (no others touched)
       declarations = declarations.replace(
         new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
         ""
       );
 
-      // ✅ Only add the current prop
-      declarations += `\n  ${currentProp}: ${pxValue}px !important;`;
+      declarations += `\n  ${currentProp}: ${radius}px !important;`;
 
       const updated = `${match[1]}${declarations}\n${match[3]}`;
       currentCSS = currentCSS.replace(blockRegex, updated);
     } else {
-      const currentProp = props[activeRadiusTarget];
-      currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${pxValue}px !important;\n}`;
+      currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${radius}px !important;\n}`;
     }
 
     styleTag.textContent = currentCSS.trim();
