@@ -653,64 +653,7 @@ ${blockSelector} {
     );
     const match = blockRegex.exec(currentCSS);
 
-    // if (match) {
-    //   let declarations = match[2];
-
-    //   if (type === "all") {
-    //     // Remove all corner props
-    //     Object.values(props).forEach((prop) => {
-    //       if (prop !== props.all) {
-    //         declarations = declarations.replace(
-    //           new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-    //           ""
-    //         );
-    //       }
-    //     });
-
-    //     // Remove existing border-radius
-    //     declarations = declarations.replace(
-    //       new RegExp(`${props.all}\\s*:\\s*[^;]+;?`, "g"),
-    //       ""
-    //     );
-
-    //     declarations += `\n  ${props.all}: ${radius}px !important;`;
-    //   } else {
-    //     // Remove only the active corner prop
-    //     const currentProp = props[type];
-    //     declarations = declarations.replace(
-    //       new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
-    //       ""
-    //     );
-    //     declarations += `\n  ${currentProp}: ${radius}px !important;`;
-    //   }
-
-    //   const updatedBlock = `${match[1]}${declarations}\n${match[3]}`;
-    //   currentCSS = currentCSS.replace(blockRegex, updatedBlock);
-    // } else {
-    //   const currentProp = props[type] || props.all;
-    //   currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${radius}px !important;\n}`;
-    // }
-
-    if (match) {
-      let declarations = match[2];
-
-      // ❌ Don't remove all props here blindly
-      // ✅ Only remove the active one
-      const currentProp = props[activeRadiusTarget];
-      declarations = declarations.replace(
-        new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
-        ""
-      );
-
-      // ✅ Only add the current prop
-      declarations += `\n  ${currentProp}: ${pxValue}px !important;`;
-
-      const updated = `${match[1]}${declarations}\n${match[3]}`;
-      currentCSS = currentCSS.replace(blockRegex, updated);
-    } else {
-      const currentProp = props[activeRadiusTarget];
-      currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${pxValue}px !important;\n}`;
-    }
+    s;
 
     styleTag.textContent = currentCSS.trim();
   }
