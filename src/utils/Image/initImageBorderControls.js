@@ -454,7 +454,6 @@ ${blockSelector} {
       const percent = offsetX / max;
       const pxValue = Math.round(percent * 100);
 
-      // UI update
       radiusBullet.style.left = `${offsetX}px`;
       radiusBullet.style.transform = "translateX(-50%)";
       radiusFill.style.width = `${offsetX}px`;
@@ -486,6 +485,7 @@ ${blockSelector} {
       if (!currentProp) return;
 
       let currentCSS = styleTag.textContent;
+
       const blockRegex = new RegExp(
         `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
         "g"
@@ -495,21 +495,15 @@ ${blockSelector} {
       if (match) {
         let declarations = match[2];
 
-        // ✅ Remove ONLY the current active radius
-        declarations = declarations.replace(
-          new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
-          ""
-        );
-
-        // ❌ ALSO remove fallback global border-radius if NOT in 'all'
-        if (activeRadiusTarget !== "all") {
+        // Remove ALL border-radius declarations if NOT activeRadiusTarget === "all"
+        Object.values(props).forEach((prop) => {
           declarations = declarations.replace(
-            new RegExp(`border-radius\\s*:\\s*[^;]+;?`, "g"),
+            new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
             ""
           );
-        }
+        });
 
-        // ✅ Add updated value for current radius target
+        // ✅ Only insert the active property now
         declarations += `\n  ${currentProp}: ${pxValue}px !important;`;
 
         const updated = `${match[1]}${declarations}\n${match[3]}`;
