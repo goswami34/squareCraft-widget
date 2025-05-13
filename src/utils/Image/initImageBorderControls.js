@@ -384,6 +384,8 @@ ${blockSelector} {
 
   // border radius start here
 
+  let activeRadiusTarget = "all";
+
   function initRadiusProgressbarControls() {
     const radiusSlider = document.getElementById("radiusField");
     const radiusBullet = document.getElementById("radiusBullet");
@@ -394,56 +396,6 @@ ${blockSelector} {
 
     let isDragging = false;
 
-    const updateUI = (offsetX) => {
-      const max = radiusSlider.offsetWidth;
-      const bulletRadius = radiusBullet.offsetWidth / 2;
-      offsetX = Math.max(bulletRadius, Math.min(offsetX, max - bulletRadius));
-
-      const percent = offsetX / max;
-      const pxValue = Math.round(percent * 100);
-
-      // Update UI
-      radiusBullet.style.left = `${offsetX}px`;
-      radiusBullet.style.transform = "translateX(-50%)";
-      radiusFill.style.width = `${offsetX}px`;
-      radiusDisplay.textContent = `${pxValue}px`;
-
-      // Update CSS
-      const selected = document.querySelector(".sc-selected-image");
-      if (!selected) return;
-
-      const block = selected.closest('[id^="block-"]');
-      if (!block) return;
-
-      const blockSelector = `#${block.id} div.sqs-image-content`;
-      let styleTag = document.getElementById("sc-image-border-style");
-      if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = "sc-image-border-style";
-        document.head.appendChild(styleTag);
-      }
-
-      let currentCSS = styleTag.textContent;
-      const blockRegex = new RegExp(
-        `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
-        "g"
-      );
-      const match = blockRegex.exec(currentCSS);
-
-      if (match) {
-        let declarations = match[2]
-          .replace(/border-radius\s*:\s*[^;]+;?/g, "")
-          .trim();
-        declarations += `\n  border-radius: ${pxValue}px !important;`;
-        const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
-        currentCSS = currentCSS.replace(blockRegex, updated);
-      } else {
-        currentCSS += `\n${blockSelector} {\n  border-radius: ${pxValue}px !important;\n}`;
-      }
-
-      styleTag.textContent = currentCSS.trim();
-    };
-
     // const updateUI = (offsetX) => {
     //   const max = radiusSlider.offsetWidth;
     //   const bulletRadius = radiusBullet.offsetWidth / 2;
@@ -452,14 +404,64 @@ ${blockSelector} {
     //   const percent = offsetX / max;
     //   const pxValue = Math.round(percent * 100);
 
+    //   // Update UI
     //   radiusBullet.style.left = `${offsetX}px`;
     //   radiusBullet.style.transform = "translateX(-50%)";
     //   radiusFill.style.width = `${offsetX}px`;
     //   radiusDisplay.textContent = `${pxValue}px`;
 
-    //   // 🛠️ FIX: Only update the corner we clicked (like topLeft)
-    //   applyBorderRadius(activeRadiusTarget, pxValue);
+    //   // Update CSS
+    //   const selected = document.querySelector(".sc-selected-image");
+    //   if (!selected) return;
+
+    //   const block = selected.closest('[id^="block-"]');
+    //   if (!block) return;
+
+    //   const blockSelector = `#${block.id} div.sqs-image-content`;
+    //   let styleTag = document.getElementById("sc-image-border-style");
+    //   if (!styleTag) {
+    //     styleTag = document.createElement("style");
+    //     styleTag.id = "sc-image-border-style";
+    //     document.head.appendChild(styleTag);
+    //   }
+
+    //   let currentCSS = styleTag.textContent;
+    //   const blockRegex = new RegExp(
+    //     `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+    //     "g"
+    //   );
+    //   const match = blockRegex.exec(currentCSS);
+
+    //   if (match) {
+    //     let declarations = match[2]
+    //       .replace(/border-radius\s*:\s*[^;]+;?/g, "")
+    //       .trim();
+    //     declarations += `\n  border-radius: ${pxValue}px !important;`;
+    //     const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
+    //     currentCSS = currentCSS.replace(blockRegex, updated);
+    //   } else {
+    //     currentCSS += `\n${blockSelector} {\n  border-radius: ${pxValue}px !important;\n}`;
+    //   }
+
+    //   styleTag.textContent = currentCSS.trim();
     // };
+
+    const updateUI = (offsetX) => {
+      const max = radiusSlider.offsetWidth;
+      const bulletRadius = radiusBullet.offsetWidth / 2;
+      offsetX = Math.max(bulletRadius, Math.min(offsetX, max - bulletRadius));
+
+      const percent = offsetX / max;
+      const pxValue = Math.round(percent * 100);
+
+      radiusBullet.style.left = `${offsetX}px`;
+      radiusBullet.style.transform = "translateX(-50%)";
+      radiusFill.style.width = `${offsetX}px`;
+      radiusDisplay.textContent = `${pxValue}px`;
+
+      // ✅ Only update the corner that's currently active
+      applyBorderRadius(activeRadiusTarget, pxValue);
+    };
 
     const handleDrag = (e) => {
       if (!isDragging) return;
@@ -672,16 +674,25 @@ ${blockSelector} {
     applyBorderRadius("all", radius);
   });
 
+  // document
+  //   .getElementById("topLeftradiusBorder")
+  //   ?.addEventListener("click", () => {
+  //     const radius = radiusValue();
+  //     applyBorderRadius("topLeft", radius);
+  //   });
+
   document
     .getElementById("topLeftradiusBorder")
     ?.addEventListener("click", () => {
+      activeRadiusTarget = "topLeft";
       const radius = radiusValue();
-      applyBorderRadius("topLeft", radius);
+      applyBorderRadius(activeRadiusTarget, radius);
     });
 
   document
     .getElementById("topRightradiusBorder")
     ?.addEventListener("click", () => {
+      activeRadiusTarget = "topRight";
       const radius = radiusValue();
       applyBorderRadius("topRight", radius);
     });
@@ -689,6 +700,7 @@ ${blockSelector} {
   document
     .getElementById("bottomLeftradiusBorder")
     ?.addEventListener("click", () => {
+      activeRadiusTarget = "bottomLeft";
       const radius = radiusValue();
       applyBorderRadius("bottomLeft", radius);
     });
@@ -696,6 +708,7 @@ ${blockSelector} {
   document
     .getElementById("bottomRightradiusBorder")
     ?.addEventListener("click", () => {
+      activeRadiusTarget = "bottomRight";
       const radius = radiusValue();
       applyBorderRadius("bottomRight", radius);
     });
