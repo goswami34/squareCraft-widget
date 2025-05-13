@@ -653,8 +653,6 @@ ${blockSelector} {
     );
     const match = blockRegex.exec(currentCSS);
 
-    s;
-
     styleTag.textContent = currentCSS.trim();
   }
 
