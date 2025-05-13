@@ -541,89 +541,10 @@ ${blockSelector} {
   //   styleTag.textContent = currentCSS.trim();
   // }
 
-  // function applyBorderRadius(type, radius) {
-  //   const selected = document.querySelector(".sc-selected-image");
-  //   if (!selected) return;
-
-  //   const block = selected.closest('[id^="block-"]');
-  //   if (!block) return;
-
-  //   const blockSelector = `#${block.id} div.sqs-image-content`;
-  //   let styleTag = document.getElementById("sc-image-border-style");
-  //   if (!styleTag) {
-  //     styleTag = document.createElement("style");
-  //     styleTag.id = "sc-image-border-style";
-  //     document.head.appendChild(styleTag);
-  //   }
-
-  //   const props = {
-  //     all: "border-radius",
-  //     topLeft: "border-top-left-radius",
-  //     topRight: "border-top-right-radius",
-  //     bottomLeft: "border-bottom-left-radius",
-  //     bottomRight: "border-bottom-right-radius",
-  //   };
-
-  //   const valueToApply = `${radius}px !important`;
-
-  //   let currentCSS = styleTag.textContent;
-
-  //   const blockRegex = new RegExp(
-  //     `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
-  //     "g"
-  //   );
-  //   const match = blockRegex.exec(currentCSS);
-
-  //   if (match) {
-  //     let declarations = match[2];
-
-  //     // Always ensure the global border-radius is there
-  //     if (!declarations.includes(props.all)) {
-  //       declarations += `\n  ${props.all}: ${radius}px !important;`;
-  //     }
-
-  //     // Apply or update the individual corner
-  //     if (type !== "all") {
-  //       const prop = props[type];
-  //       declarations = declarations.replace(
-  //         new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-  //         ""
-  //       );
-  //       declarations += `\n  ${prop}: ${valueToApply};`;
-  //     } else {
-  //       // If type is all, remove all corners
-  //       Object.values(props).forEach((prop) => {
-  //         if (prop !== props.all) {
-  //           declarations = declarations.replace(
-  //             new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-  //             ""
-  //           );
-  //         }
-  //       });
-  //       declarations = declarations.replace(
-  //         /border-radius\\s*:\\s*[^;]+;?/,
-  //         `border-radius: ${radius}px !important;`
-  //       );
-  //     }
-
-  //     const updatedBlock = `${match[1]}${declarations}\n${match[3]}`;
-  //     currentCSS = currentCSS.replace(blockRegex, updatedBlock);
-  //   } else {
-  //     let newRule = `${blockSelector} {\n`;
-  //     newRule += `  ${props.all}: ${radius}px !important;\n`;
-  //     if (type !== "all") {
-  //       newRule += `  ${props[type]}: ${valueToApply};\n`;
-  //     }
-  //     newRule += `}`;
-  //     currentCSS += `\n${newRule}`;
-  //   }
-
-  //   styleTag.textContent = currentCSS.trim();
-  // }
-
   function applyBorderRadius(type, radius) {
     const selected = document.querySelector(".sc-selected-image");
     if (!selected) return;
+
     const block = selected.closest('[id^="block-"]');
     if (!block) return;
 
@@ -643,28 +564,34 @@ ${blockSelector} {
       bottomRight: "border-bottom-right-radius",
     };
 
+    const valueToApply = `${radius}px !important`;
+
     let currentCSS = styleTag.textContent;
+
     const blockRegex = new RegExp(
       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
       "g"
     );
     const match = blockRegex.exec(currentCSS);
-    const valueToApply = `${radius}px !important`;
 
     if (match) {
       let declarations = match[2];
-      if (!declarations.includes("border-radius")) {
-        declarations += `\n  border-radius: ${radius}px !important;`;
+
+      // Always ensure the global border-radius is there
+      if (!declarations.includes(props.all)) {
+        declarations += `\n  ${props.all}: ${radius}px !important;`;
       }
+
+      // Apply or update the individual corner
       if (type !== "all") {
-        const cornerProp = props[type];
+        const prop = props[type];
         declarations = declarations.replace(
-          new RegExp(`${cornerProp}\\s*:\\s*[^;]+;?`, "g"),
+          new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
           ""
         );
-        declarations += `\n  ${cornerProp}: ${valueToApply};`;
+        declarations += `\n  ${prop}: ${valueToApply};`;
       } else {
-        // Remove all individual corner declarations
+        // If type is all, remove all corners
         Object.values(props).forEach((prop) => {
           if (prop !== props.all) {
             declarations = declarations.replace(
@@ -674,13 +601,13 @@ ${blockSelector} {
           }
         });
         declarations = declarations.replace(
-          /border-radius\s*:\s*[^;]+;?/,
+          /border-radius\\s*:\\s*[^;]+;?/,
           `border-radius: ${radius}px !important;`
         );
       }
 
-      const updated = `${match[1]}${declarations}\n${match[3]}`;
-      currentCSS = currentCSS.replace(blockRegex, updated);
+      const updatedBlock = `${match[1]}${declarations}\n${match[3]}`;
+      currentCSS = currentCSS.replace(blockRegex, updatedBlock);
     } else {
       let newRule = `${blockSelector} {\n`;
       newRule += `  ${props.all}: ${radius}px !important;\n`;
@@ -692,56 +619,6 @@ ${blockSelector} {
     }
 
     styleTag.textContent = currentCSS.trim();
-  }
-
-  function initRadiusProgressbarControls() {
-    if (!radiusSlider || !radiusBullet || !radiusFill || !radiusDisplay) return;
-
-    let isDragging = false;
-
-    const updateUI = (offsetX) => {
-      const max = radiusSlider.offsetWidth;
-      const bulletRadius = radiusBullet.offsetWidth / 2;
-      offsetX = Math.max(bulletRadius, Math.min(offsetX, max - bulletRadius));
-
-      const percent = offsetX / max;
-      const pxValue = Math.round(percent * 100);
-
-      radiusBullet.style.left = `${offsetX}px`;
-      radiusBullet.style.transform = "translateX(-50%)";
-      radiusFill.style.width = `${offsetX}px`;
-      radiusDisplay.textContent = `${pxValue}px`;
-
-      applyBorderRadius(activeRadiusTarget, pxValue);
-    };
-
-    const handleDrag = (e) => {
-      if (!isDragging) return;
-      const clientX = e.clientX || (e.touches?.[0]?.clientX ?? 0);
-      const rect = radiusSlider.getBoundingClientRect();
-      const offsetX = clientX - rect.left;
-      updateUI(offsetX);
-    };
-
-    const startDrag = (e) => {
-      e.preventDefault();
-      isDragging = true;
-      document.addEventListener("mousemove", handleDrag);
-      document.addEventListener("mouseup", stopDrag);
-      document.addEventListener("touchmove", handleDrag);
-      document.addEventListener("touchend", stopDrag);
-    };
-
-    const stopDrag = () => {
-      isDragging = false;
-      document.removeEventListener("mousemove", handleDrag);
-      document.removeEventListener("mouseup", stopDrag);
-      document.removeEventListener("touchmove", handleDrag);
-      document.removeEventListener("touchend", stopDrag);
-    };
-
-    radiusBullet.addEventListener("mousedown", startDrag);
-    radiusBullet.addEventListener("touchstart", startDrag);
   }
 
   const radiusValue = () => {
