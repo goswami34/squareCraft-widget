@@ -489,39 +489,46 @@ ${blockSelector} {
     );
     const match = blockRegex.exec(currentCSS);
 
+    const cornerProp = props[type];
+    const valueToApply = `${radius}px !important`;
+
     if (match) {
       let declarations = match[2];
 
-      if (type === "all") {
-        // For "all" button, set the global border-radius and remove individual corners
-        declarations = declarations.replace(/border-radius\s*:\s*[^;]+;?/g, "");
-        declarations = declarations.replace(
-          /border-[a-z-]+-radius\s*:\s*[^;]+;?/g,
-          ""
-        );
-        declarations += `\n  border-radius: ${radius}px !important;`;
-      } else {
-        // For individual corners, remove global border-radius and set specific corner
-        declarations = declarations.replace(/border-radius\s*:\s*[^;]+;?/g, "");
-        const prop = props[type];
-        declarations = declarations.replace(
-          new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-          ""
-        );
-        declarations += `\n  ${prop}: ${radius}px !important;`;
+      // ✅ Always ensure global border-radius is kept
+      if (!declarations.includes(props.all)) {
+        declarations += `\n  ${props.all}: ${radius}px !important;`;
       }
 
-      const updated = `${match[1]}${declarations}\n${match[3]}`;
-      currentCSS = currentCSS.replace(blockRegex, updated);
-    } else {
-      let newRule = `${blockSelector} {\n`;
-      if (type === "all") {
-        newRule += `  border-radius: ${radius}px !important;\n`;
+      if (type !== "all") {
+        // Update or add only the current corner value
+        declarations = declarations.replace(
+          new RegExp(`${cornerProp}\\s*:\\s*[^;]+;?`, "g"),
+          ""
+        );
+        declarations += `\n  ${cornerProp}: ${valueToApply};`;
       } else {
-        newRule += `  ${props[type]}: ${radius}px !important;\n`;
+        // If "all", update the global radius and remove corner-specific
+        declarations = declarations.replace(
+          new RegExp(`border-[a-z-]+-radius\\s*:\\s*[^;]+;?`, "g"),
+          ""
+        );
+        declarations = declarations.replace(
+          /border-radius\s*:\s*[^;]+;?/,
+          `border-radius: ${radius}px !important;`
+        );
       }
-      newRule += `}`;
-      currentCSS += `\n${newRule}`;
+
+      const updatedBlock = `${match[1]}${declarations}\n${match[3]}`;
+      currentCSS = currentCSS.replace(blockRegex, updatedBlock);
+    } else {
+      // Create new rule
+      currentCSS += `\n${blockSelector} {\n`;
+      currentCSS += `  ${props.all}: ${radius}px !important;\n`;
+      if (type !== "all") {
+        currentCSS += `  ${cornerProp}: ${valueToApply};\n`;
+      }
+      currentCSS += `}`;
     }
 
     styleTag.textContent = currentCSS.trim();
