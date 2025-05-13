@@ -460,7 +460,6 @@ ${blockSelector} {
       radiusFill.style.width = `${offsetX}px`;
       radiusDisplay.textContent = `${pxValue}px`;
 
-      // Apply the correct border-* value
       const selected = document.querySelector(".sc-selected-image");
       if (!selected) return;
 
@@ -475,8 +474,6 @@ ${blockSelector} {
         document.head.appendChild(styleTag);
       }
 
-      let currentCSS = styleTag.textContent;
-
       const props = {
         all: "border-radius",
         topLeft: "border-top-left-radius",
@@ -485,6 +482,10 @@ ${blockSelector} {
         bottomRight: "border-bottom-right-radius",
       };
 
+      const currentProp = props[activeRadiusTarget];
+      if (!currentProp) return;
+
+      let currentCSS = styleTag.textContent;
       const blockRegex = new RegExp(
         `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
         "g"
@@ -494,22 +495,26 @@ ${blockSelector} {
       if (match) {
         let declarations = match[2];
 
-        // Remove only the activeRadiusTarget line
-        const currentProp = props[activeRadiusTarget];
-        if (!currentProp) return;
-
+        // ✅ Remove ONLY the current active radius
         declarations = declarations.replace(
           new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
           ""
         );
 
-        // Add the new value
+        // ❌ ALSO remove fallback global border-radius if NOT in 'all'
+        if (activeRadiusTarget !== "all") {
+          declarations = declarations.replace(
+            new RegExp(`border-radius\\s*:\\s*[^;]+;?`, "g"),
+            ""
+          );
+        }
+
+        // ✅ Add updated value for current radius target
         declarations += `\n  ${currentProp}: ${pxValue}px !important;`;
 
         const updated = `${match[1]}${declarations}\n${match[3]}`;
         currentCSS = currentCSS.replace(blockRegex, updated);
       } else {
-        const currentProp = props[activeRadiusTarget] || "border-radius";
         currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${pxValue}px !important;\n}`;
       }
 
