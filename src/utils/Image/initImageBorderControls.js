@@ -346,10 +346,18 @@ ${blockSelector} {
     const match = blockRegex.exec(currentCSS);
 
     if (match) {
+      // let declarations = match[2]
+      //   .replace(/border-style\s*:\s*[^;]+;?/g, "")
+      //   .trim();
+      // declarations += `\n  border-style: ${style}`;
+
       let declarations = match[2]
-        .replace(/border-style\s*:\s*[^;]+;?/g, "")
+        .replace(/border-radius\s*:\s*[^;]+;?/g, "")
+        .replace(/[\r\n]+/g, "\n")
         .trim();
-      declarations += `\n  border-style: ${style}`;
+
+      declarations += `\n  border-radius: ${pxValue}px !important;`;
+
       const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
       currentCSS = currentCSS.replace(blockRegex, updated);
     } else {
