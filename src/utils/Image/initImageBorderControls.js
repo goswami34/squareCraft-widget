@@ -583,15 +583,34 @@ ${blockSelector} {
       }
 
       // Apply or update the individual corner
-      if (type !== "all") {
-        const prop = props[type];
-        declarations = declarations.replace(
-          new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
-          ""
-        );
-        declarations += `\n  ${prop}: ${valueToApply};`;
-      } else {
-        // If type is all, remove all corners
+      // if (type !== "all") {
+      //   const prop = props[type];
+      //   declarations = declarations.replace(
+      //     new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+      //     ""
+      //   );
+      //   declarations += `\n  ${prop}: ${valueToApply};`;
+      // } else {
+      //   // If type is all, remove all corners
+      //   Object.values(props).forEach((prop) => {
+      //     if (prop !== props.all) {
+      //       declarations = declarations.replace(
+      //         new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+      //         ""
+      //       );
+      //     }
+      //   });
+      //   declarations = declarations.replace(
+      //     /border-radius\\s*:\\s*[^;]+;?/,
+      //     `border-radius: ${radius}px !important;`
+      //   );
+      // }
+
+      if (type === "all") {
+        // Only then set border-radius
+        declarations += `\n  ${props.all}: ${radius}px !important;`;
+
+        // And remove corner props
         Object.values(props).forEach((prop) => {
           if (prop !== props.all) {
             declarations = declarations.replace(
@@ -600,10 +619,14 @@ ${blockSelector} {
             );
           }
         });
+      } else {
+        // Set only the clicked corner
+        const prop = props[type];
         declarations = declarations.replace(
-          /border-radius\\s*:\\s*[^;]+;?/,
-          `border-radius: ${radius}px !important;`
+          new RegExp(`${prop}\\s*:\\s*[^;]+;?`, "g"),
+          ""
         );
+        declarations += `\n  ${prop}: ${valueToApply};`;
       }
 
       const updatedBlock = `${match[1]}${declarations}\n${match[3]}`;
