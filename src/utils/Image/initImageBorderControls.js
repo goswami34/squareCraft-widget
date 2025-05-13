@@ -446,24 +446,6 @@ ${blockSelector} {
       styleTag.textContent = currentCSS.trim();
     };
 
-    // const updateUI = (offsetX) => {
-    //   const max = radiusSlider.offsetWidth;
-    //   const bulletRadius = radiusBullet.offsetWidth / 2;
-    //   offsetX = Math.max(bulletRadius, Math.min(offsetX, max - bulletRadius));
-
-    //   const percent = offsetX / max;
-    //   const pxValue = Math.round(percent * 100);
-
-    //   // Update UI visuals
-    //   radiusBullet.style.left = `${offsetX}px`;
-    //   radiusBullet.style.transform = "translateX(-50%)";
-    //   radiusFill.style.width = `${offsetX}px`;
-    //   radiusDisplay.textContent = `${pxValue}px`;
-
-    //   // ✅ Apply correct radius based on selected tab
-    //   applyBorderRadius(activeRadiusTarget, pxValue);
-    // };
-
     const handleDrag = (e) => {
       if (!isDragging) return;
       const clientX = e.clientX || (e.touches?.[0]?.clientX ?? 0);
