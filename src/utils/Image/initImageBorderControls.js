@@ -531,10 +531,15 @@ export function initImageBorderControls(selectedElement, context = {}) {
     addPendingModification(
       block.id,
       {
-        [props[type]]: `${radius}px !important`,
+        "border-width": `${allBorderWidth}px`,
+        "border-style": "solid",
+        ...(selectedBorderColor && { "border-color": selectedBorderColor }),
       },
       "image"
     );
+
+    // ✅ Save to database
+    saveModifications(pendingModifications, token, userId, widgetId);
   }
 
   const radiusValue = () => {
@@ -575,19 +580,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
       activeRadiusTarget = "bottomRight";
       applyBorderRadius("bottomRight", radiusValue());
     });
-
-  addPendingModification(
-    block.id,
-    {
-      "border-width": `${allBorderWidth}px`,
-      "border-style": "solid",
-      ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-    },
-    "image"
-  );
-
-  // ✅ Save to database
-  saveModifications(pendingModifications, token, userId, widgetId);
 
   // border radius end here
 }
