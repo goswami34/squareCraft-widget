@@ -1,6 +1,11 @@
 export function initImageBorderControls(selectedElement, context = {}) {
-  const { addPendingModification, saveModifications, token, userId, widgetId } =
-    context;
+  const {
+    addPendingModification,
+    saveModificationsforImage,
+    token,
+    userId,
+    widgetId,
+  } = context;
 
   if (typeof addPendingModification !== "function") {
     console.warn(
@@ -539,7 +544,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
     );
 
     // ✅ Save to database
-    saveModifications(pendingModifications, token, userId, widgetId);
+    saveModificationsforImage(pendingModifications, token, userId, widgetId);
   }
 
   const radiusValue = () => {
