@@ -96,11 +96,11 @@ export function initImageBorderControls(selectedElement) {
 
       if (!currentCSS.includes(blockSelector)) {
         currentCSS += `
-  ${blockSelector} {
-    border-width: ${allBorderWidth}px;
-    box-sizing: border-box;
-    border-style: solid;
-    ${selectedBorderColor ? `border-color: ${selectedBorderColor};` : ""}
+        ${blockSelector} {
+          border-width: ${allBorderWidth}px;
+          box-sizing: border-box;
+          border-style: solid;
+          ${selectedBorderColor ? `border-color: ${selectedBorderColor};` : ""}
 
   }`;
       } else {
@@ -142,12 +142,12 @@ export function initImageBorderControls(selectedElement) {
       currentCSS = currentCSS.replace(blockRegex, updatedBlock);
     } else {
       currentCSS += `
-  ${blockSelector} {
-    ${property}: ${widthVar}px !important;
-    box-sizing: border-box;
-    border-style: solid;
-    border-color: ${newColor} !important;
-  }`;
+        ${blockSelector} {
+          ${property}: ${widthVar}px !important;
+          box-sizing: border-box;
+          border-style: solid;
+          border-color: ${newColor} !important;
+        }`;
     }
 
     styleElement.textContent = currentCSS;
@@ -298,9 +298,9 @@ export function initImageBorderControls(selectedElement) {
         currentCSS = currentCSS.replace(blockRegex, updated);
       } else {
         currentCSS += `
-${blockSelector} {
-  border-color: ${newColor} !important;
-}`;
+          ${blockSelector} {
+            border-color: ${newColor} !important;
+          }`;
       }
 
       styleTag.textContent = currentCSS;
