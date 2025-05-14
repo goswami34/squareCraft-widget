@@ -1,7 +1,12 @@
-export function initImageBorderControls(
-  selectedElement,
-  { addPendingModification }
-) {
+export function initImageBorderControls(selectedElement, context = {}) {
+  const { addPendingModification } = context;
+
+  if (typeof addPendingModification !== "function") {
+    console.warn(
+      "❌ addPendingModification is not provided or not a function."
+    );
+    return;
+  }
   console.log(addPendingModification);
   const allButton = document.getElementById("allBorder");
   const topButton = document.getElementById("topBorder");
