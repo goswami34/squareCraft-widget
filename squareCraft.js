@@ -289,6 +289,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/utils/Image/initImageBorderControls.js"
   );
 
+  const { handleImageBorderControlsClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleImageBorderControlsClick.js"
+  );
+
   //Image all functionality code end here
   //Image border controls end here
 
@@ -2279,21 +2283,44 @@ let pendingModifications = new Map();
 
     //Image border controls
     // Initialize border controls
-    const ImageBorderAllControls = document.getElementById("allRadious");
+    const ImageBorderAllControls = document.getElementById("imageSection");
     if (ImageBorderAllControls && !ImageBorderAllControls.dataset.initialized) {
       ImageBorderAllControls.dataset.initialized = "true";
 
       ImageBorderAllControls.addEventListener("click", () => {
         const selectedImage = document.querySelector(".sc-selected-image");
+
         if (!selectedImage) {
           showNotification("Please select an image first", "error");
           return;
         }
 
+        setTimeout(() => {
+          handleImageBorderControlsClick(null, {
+            getTextType,
+            selectedElement,
+            setSelectedElement: (val) => (selectedElement = val),
+            lastClickedElement,
+            setLastClickedElement: (val) => (lastClickedElement = val),
+            setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+            selectedSingleTextType,
+            setSelectedSingleTextType: (val) => (selectedSingleTextType = val),
+            showNotification,
+            saveModifications,
+            addPendingModification: (blockId, css, tagType) => {
+              if (!pendingModifications.has(blockId)) {
+                pendingModifications.set(blockId, []);
+              }
+              pendingModifications.get(blockId).push({ css, tagType });
+            },
+          });
+        }, 100);
+
         initImageBorderControls(selectedImage);
         showNotification("Border applied to image", "success");
       });
     }
+
     //Image border controls end here
   });
 
