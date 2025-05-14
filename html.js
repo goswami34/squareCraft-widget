@@ -77,41 +77,6 @@ export function html() {
 
   return htmlString;
 }
-// export function initToggleSwitch() {
-//   const toggleSwitch = document.getElementById("toggleSwitch");
-//   const toggleText = document.getElementById("toggleText");
-//   const toggleBullet = toggleSwitch?.querySelector(".toggle-bullet");
-
-//   if (!toggleSwitch || !toggleText || !toggleBullet) {
-//     return;
-//   }
-
-//   let isEnabled = getToggleState();
-
-//   const updateToggleUI = () => {
-//     if (!toggleSwitch || !toggleBullet || !toggleText) return;
-
-//     if (isEnabled) {
-//       toggleSwitch.style.backgroundColor = "#EF7C2F";
-//       toggleBullet.style.left = "auto";
-//       toggleBullet.style.right = "1.5px";
-//       toggleText.textContent = "Enable";
-//     } else {
-//       toggleSwitch.style.backgroundColor = "#747372";
-//       toggleBullet.style.left = "2px";
-//       toggleBullet.style.right = "auto";
-//       toggleText.textContent = "Disable";
-//     }
-//   };
-
-//   updateToggleUI();
-
-//   toggleSwitch.addEventListener("click", () => {
-//     isEnabled = !isEnabled;
-//     setToggleState(isEnabled);
-//     updateToggleUI();
-//   });
-// }
 
 let pageId = document
   .querySelector("article[data-page-sections]")
