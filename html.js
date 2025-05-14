@@ -308,17 +308,32 @@ export async function saveModificationsforImage(
     mods.forEach(({ css, tagType }) => {
       elements.push({
         elementId: blockId,
-        css,
-        tagType,
-        pageId,
+        css: {
+          [tagType]: {
+            id: blockId,
+            ...css,
+          },
+        },
+        elementStructure: {
+          type: tagType,
+          content: document.getElementById(blockId)?.textContent || "",
+          parentId: document.getElementById(blockId)?.parentElement?.id || null,
+        },
       });
     });
   });
 
-  if (elements.length === 0) {
-    console.log("✅ No modifications to save.");
-    return;
-  }
+  const requestBody = {
+    userId,
+    token,
+    widgetId,
+    modifications: [
+      {
+        pageId,
+        elements,
+      },
+    ],
+  };
 
   try {
     const response = await fetch(
@@ -329,16 +344,13 @@ export async function saveModificationsforImage(
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          userId,
-          widgetId,
-          modifications: elements,
-        }),
+        body: JSON.stringify(requestBody),
       }
     );
 
     if (!response.ok) {
-      throw new Error("Failed to save modifications.");
+      const err = await response.json();
+      throw new Error(err.message || "Failed to save modifications.");
     }
 
     console.log("✅ Modifications saved successfully!");
