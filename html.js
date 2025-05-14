@@ -281,3 +281,68 @@ export function initPublishButton() {
     }
   });
 }
+
+export async function saveModificationsforImage(
+  modificationsMap,
+  token,
+  userId,
+  widgetId
+) {
+  if (!token || !userId || !widgetId) {
+    console.warn("Missing required data to save modifications");
+    return;
+  }
+
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  if (!pageId) {
+    console.warn("No pageId found to associate modifications with.");
+    return;
+  }
+
+  const elements = [];
+
+  modificationsMap.forEach((mods, blockId) => {
+    mods.forEach(({ css, tagType }) => {
+      elements.push({
+        elementId: blockId,
+        css,
+        tagType,
+        pageId,
+      });
+    });
+  });
+
+  if (elements.length === 0) {
+    console.log("✅ No modifications to save.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          userId,
+          widgetId,
+          modifications: elements,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to save modifications.");
+    }
+
+    console.log("✅ Modifications saved successfully!");
+  } catch (error) {
+    console.error("❌ Error saving modifications:", error);
+  }
+}

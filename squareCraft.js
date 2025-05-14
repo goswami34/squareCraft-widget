@@ -1376,7 +1376,7 @@ let pendingModifications = new Map();
       lastClickedBlockId,
       setLastClickedElement: (val) => (lastClickedElement = val),
       userId,
-      saveModifications,
+      saveModificationsforImage,
       handleBlockClick,
       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
       token,
