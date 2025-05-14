@@ -293,6 +293,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleImageBorderControlsClick.js"
   );
 
+  const { saveModificationsforImage } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   //Image all functionality code end here
   //Image border controls end here
 
