@@ -1,5 +1,6 @@
 export function initImageBorderControls(selectedElement, context = {}) {
-  const { addPendingModification } = context;
+  const { addPendingModification, saveModifications, token, userId, widgetId } =
+    context;
 
   if (typeof addPendingModification !== "function") {
     console.warn(
@@ -574,6 +575,19 @@ export function initImageBorderControls(selectedElement, context = {}) {
       activeRadiusTarget = "bottomRight";
       applyBorderRadius("bottomRight", radiusValue());
     });
+
+  addPendingModification(
+    block.id,
+    {
+      "border-width": `${allBorderWidth}px`,
+      "border-style": "solid",
+      ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+    },
+    "image"
+  );
+
+  // ✅ Save to database
+  saveModifications(pendingModifications, token, userId, widgetId);
 
   // border radius end here
 }
