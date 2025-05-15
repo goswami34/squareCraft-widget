@@ -354,13 +354,13 @@ export function initImageBorderControls(selectedElement, context = {}) {
       styleTag.textContent = currentCSS;
 
       mergeAndSaveImageStyles(
-        block.id,
+        blockElement.id,
         {
           "border-width": `${allBorderWidth}px`,
           "border-style": currentActiveBorderStyle,
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
           ...(currentRadiusAll > 0 && {
-            "border-radius": `${radiusProps}px !important`,
+            "border-radius": `${currentRadiusAll}px !important`,
           }),
         },
         saveModificationsforImage
@@ -454,7 +454,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
           "border-style": currentActiveBorderStyle,
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
           ...(currentRadiusAll > 0 && {
-            "border-radius": `${radiusProps}px !important`,
+            "border-radius": `${currentRadiusAll}px !important`,
           }),
         },
         saveModificationsforImage
@@ -613,7 +613,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
         "border-style": currentActiveBorderStyle,
         ...(selectedBorderColor && { "border-color": selectedBorderColor }),
         ...(currentRadiusAll > 0 && {
-          "border-radius": `${radiusProps}px !important`,
+          "border-radius": `${currentRadiusAll}px !important`,
         }),
       },
       saveModificationsforImage
