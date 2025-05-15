@@ -338,7 +338,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
       styleTag.textContent = currentCSS;
 
-      addPendingModification(
+      saveModificationsforImage(
         block.id,
         {
           "border-width": `${allBorderWidth}px`,
@@ -432,11 +432,11 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
     // Add pending modification for the style change itself
     if (block) {
-      addPendingModification(
+      saveModificationsforImage(
         block.id,
         {
-          "border-style": currentActiveBorderStyle,
           "border-width": `${allBorderWidth}px`,
+          "border-style": currentActiveBorderStyle,
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
           ...(currentRadiusAll > 0 && {
             "border-radius": `${currentRadiusAll}px !important`,
@@ -591,13 +591,15 @@ export function initImageBorderControls(selectedElement, context = {}) {
       bottomRight: { "border-bottom-right-radius": `${radius}px !important` },
     };
 
-    addPendingModification(
+    saveModificationsforImage(
       block.id,
       {
         "border-width": `${allBorderWidth}px`,
         "border-style": currentActiveBorderStyle,
         ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-        ...radiusProps[type],
+        ...(currentRadiusAll > 0 && {
+          "border-radius": `${currentRadiusAll}px !important`,
+        }),
       },
       "image"
     );
