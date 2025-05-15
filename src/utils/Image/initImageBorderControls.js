@@ -449,6 +449,14 @@ export function initImageBorderControls(selectedElement, context = {}) {
         },
         "image"
       );
+
+      //save to database
+      saveModificationsforImage(
+        addPendingModification,
+        token,
+        userId,
+        widgetId
+      );
     }
   }
 
@@ -603,6 +611,9 @@ export function initImageBorderControls(selectedElement, context = {}) {
       },
       "image"
     );
+
+    //save to database
+    saveModificationsforImage(addPendingModification, token, userId, widgetId);
   }
 
   const radiusValue = () => {
