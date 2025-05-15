@@ -533,12 +533,31 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
     styleTag.textContent = currentCSS.trim();
 
+    // addPendingModification(
+    //   block.id,
+    //   {
+    //     "border-width": `${allBorderWidth}px`,
+    //     "border-style": "solid",
+    //     ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+    //   },
+    //   "image"
+    // );
+
+    const radiusProps = {
+      all: { "border-radius": `${radius}px !important` },
+      topLeft: { "border-top-left-radius": `${radius}px !important` },
+      topRight: { "border-top-right-radius": `${radius}px !important` },
+      bottomLeft: { "border-bottom-left-radius": `${radius}px !important` },
+      bottomRight: { "border-bottom-right-radius": `${radius}px !important` },
+    };
+
     addPendingModification(
       block.id,
       {
         "border-width": `${allBorderWidth}px`,
         "border-style": "solid",
         ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+        ...radiusProps[type],
       },
       "image"
     );
