@@ -352,7 +352,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
       );
 
       //save to database
-      saveModificationsforImage(block, addPendingModification, tagType);
+      saveModificationsforImage(block, addPendingModification, "image");
     });
 
     observer.observe(colorCode, { childList: true });
@@ -446,7 +446,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
       );
 
       //save to database
-      saveModificationsforImage(block, addPendingModification, tagType);
+      saveModificationsforImage(block, addPendingModification, "image");
     }
   }
 
@@ -603,7 +603,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
     );
 
     //save to database
-    saveModificationsforImage(block, addPendingModification, tagType);
+    saveModificationsforImage(block, addPendingModification, "image");
   }
 
   const radiusValue = () => {
