@@ -37,6 +37,18 @@ export function initImageBorderControls(selectedElement, context = {}) {
   let currentActiveBorderStyle = "solid"; // To track the active border style
   let currentRadiusAll = 0; // Track general border-radius
 
+  // ✅ Declare global style cache map
+  const imageStyleMap = new Map();
+
+  // ✅ Utility function to merge and save styles
+  function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
+    const prevStyles = imageStyleMap.get(blockId) || {};
+    const mergedStyles = { ...prevStyles, ...newStyles };
+
+    imageStyleMap.set(blockId, mergedStyles);
+    saveFn(blockId, mergedStyles, "image");
+  }
+
   //color selection end here
 
   if (
@@ -337,7 +349,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
       styleTag.textContent = currentCSS;
 
-      saveModificationsforImage(
+      mergeAndSaveImageStyles(
         block.id,
         {
           "border-width": `${allBorderWidth}px`,
@@ -347,7 +359,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
             "border-radius": `${currentRadiusAll}px !important`,
           }),
         },
-        "image"
+        saveModificationsforImage
       );
 
       //save to database
@@ -431,7 +443,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
     // Add pending modification for the style change itself
     if (block) {
-      saveModificationsforImage(
+      mergeAndSaveImageStyles(
         block.id,
         {
           "border-width": `${allBorderWidth}px`,
@@ -441,7 +453,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
             "border-radius": `${currentRadiusAll}px !important`,
           }),
         },
-        "image"
+        saveModificationsforImage
       );
 
       //save to database
@@ -590,7 +602,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
       bottomRight: { "border-bottom-right-radius": `${radius}px !important` },
     };
 
-    saveModificationsforImage(
+    mergeAndSaveImageStyles(
       block.id,
       {
         "border-width": `${allBorderWidth}px`,
@@ -600,7 +612,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
           "border-radius": `${currentRadiusAll}px !important`,
         }),
       },
-      "image"
+      saveModificationsforImage
     );
 
     //save to database
