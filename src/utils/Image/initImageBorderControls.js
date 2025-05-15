@@ -332,7 +332,12 @@ export function initImageBorderControls(selectedElement, context = {}) {
       );
 
       //save to database
-      saveModificationsforImage(pendingModifications, token, userId, widgetId);
+      saveModificationsforImage(
+        addPendingModification,
+        token,
+        userId,
+        widgetId
+      );
     });
 
     observer.observe(colorCode, { childList: true });
