@@ -354,7 +354,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
       styleTag.textContent = currentCSS;
 
       mergeAndSaveImageStyles(
-        block.id,
+        blockElement.id,
         {
           "border-width": `${allBorderWidth}px`,
           "border-style": currentActiveBorderStyle,
