@@ -34,6 +34,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
   });
 
   let selectedBorderColor = null; // default
+  let currentActiveBorderStyle = "solid"; // To track the active border style
 
   //color selection end here
 
@@ -321,10 +322,10 @@ export function initImageBorderControls(selectedElement, context = {}) {
       styleTag.textContent = currentCSS;
 
       addPendingModification(
-        block,
+        block.id,
         {
           "border-width": `${allBorderWidth}px`,
-          "border-style": "solid",
+          "border-style": currentActiveBorderStyle,
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
         },
         "image"
@@ -348,6 +349,8 @@ export function initImageBorderControls(selectedElement, context = {}) {
     ?.addEventListener("click", () => applyBorderStyle("dotted"));
 
   function applyBorderStyle(style) {
+    currentActiveBorderStyle = style; // Update the active border style
+
     const selected = document.querySelector(".sc-selected-image");
     if (!selected) return;
 
@@ -403,6 +406,19 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
     const activeBtn = document.getElementById(currentBtnId);
     activeBtn?.classList.add("sc-bg-454545");
+
+    // Add pending modification for the style change itself
+    if (block) {
+      addPendingModification(
+        block.id,
+        {
+          "border-style": currentActiveBorderStyle,
+          "border-width": `${allBorderWidth}px`,
+          ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+        },
+        "image"
+      );
+    }
   }
 
   //border style end here
