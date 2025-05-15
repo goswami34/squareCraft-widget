@@ -37,6 +37,8 @@ export function initImageBorderControls(selectedElement, context = {}) {
   let currentActiveBorderStyle = "solid"; // To track the active border style
   let currentRadiusAll = 0; // Track general border-radius
 
+  //for saving  the whole modification into database
+
   // ✅ Declare global style cache map
   const imageStyleMap = new Map();
 
@@ -48,6 +50,8 @@ export function initImageBorderControls(selectedElement, context = {}) {
     imageStyleMap.set(blockId, mergedStyles);
     saveFn(blockId, mergedStyles, "image");
   }
+
+  //for saving  the whole modification into database end here
 
   //color selection end here
 
