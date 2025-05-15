@@ -162,7 +162,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
         ${blockSelector} {
           ${property}: ${widthVar}px !important;
           box-sizing: border-box;
-          border-style: solid;
           border-color: ${newColor} !important;
         }`;
     }
