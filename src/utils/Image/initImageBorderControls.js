@@ -360,7 +360,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
           "border-style": currentActiveBorderStyle,
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
           ...(currentRadiusAll > 0 && {
-            "border-radius": `${currentRadiusAll}px !important`,
+            "border-radius": `${radiusProps}px !important`,
           }),
         },
         saveModificationsforImage
@@ -454,7 +454,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
           "border-style": currentActiveBorderStyle,
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
           ...(currentRadiusAll > 0 && {
-            "border-radius": `${currentRadiusAll}px !important`,
+            "border-radius": `${radiusProps}px !important`,
           }),
         },
         saveModificationsforImage
@@ -613,7 +613,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
         "border-style": currentActiveBorderStyle,
         ...(selectedBorderColor && { "border-color": selectedBorderColor }),
         ...(currentRadiusAll > 0 && {
-          "border-radius": `${currentRadiusAll}px !important`,
+          "border-radius": `${radiusProps}px !important`,
         }),
       },
       saveModificationsforImage
