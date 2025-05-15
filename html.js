@@ -282,69 +282,142 @@ export function initPublishButton() {
   });
 }
 
-export async function saveModificationsforImage(
-  modificationsMap,
-  token,
-  userId,
-  widgetId
-) {
-  if (!token || !userId || !widgetId) {
-    console.warn("Missing required data to save modifications");
-    return;
+// export async function saveModificationsforImage(
+//   modificationsMap,
+//   token,
+//   userId,
+//   widgetId
+// ) {
+//   if (!token || !userId || !widgetId) {
+//     console.warn("Missing required data to save modifications");
+//     return;
+//   }
+
+//   const pageId = document
+//     .querySelector("article[data-page-sections]")
+//     ?.getAttribute("data-page-sections");
+
+//   if (!pageId) {
+//     console.warn("No pageId found to associate modifications with.");
+//     return;
+//   }
+
+//   const elements = [];
+
+//   modificationsMap.forEach((mods, blockId) => {
+//     mods.forEach(({ css, tagType }) => {
+//       // elements.push({
+//       //   elementId: blockId,
+//       //   css: {
+//       //     [tagType]: {
+//       //       id: blockId,
+//       //       ...css,
+//       //     },
+//       //   },
+//       //   elementStructure: {
+//       //     type: tagType,
+//       //     content: document.getElementById(blockId)?.textContent || "",
+//       //     parentId: document.getElementById(blockId)?.parentElement?.id || null,
+//       //   },
+//       // });
+
+//       elements.push({
+//         elementId: blockId,
+//         css: {
+//           image: {
+//             ...(css || {}),
+//           },
+//         },
+//         elementStructure: {
+//           type: tagType,
+//           content: "Image",
+//           parentId: document.getElementById(blockId)?.parentElement?.id || null,
+//         },
+//       });
+//     });
+//   });
+
+//   const requestBody = {
+//     userId,
+//     token,
+//     widgetId,
+//     modifications: [
+//       {
+//         pageId,
+//         elements,
+//       },
+//     ],
+//   };
+
+//   try {
+//     const response = await fetch(
+//       "https://admin.squareplugin.com/api/v1/modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(requestBody),
+//       }
+//     );
+
+//     if (!response.ok) {
+//       const err = await response.json();
+//       throw new Error(err.message || "Failed to save modifications.");
+//     }
+
+//     console.log("✅ Modifications saved successfully!");
+//   } catch (error) {
+//     console.error("❌ Error saving modifications:", error);
+//   }
+// }
+
+export async function saveModificationsforImage(blockId, css, tagType) {
+  if (!pageId || !blockId || !css) {
+    console.warn("⚠️ Missing required data to save modifications.");
+    return {
+      success: false,
+      error: "Missing required data",
+    };
   }
 
-  const pageId = document
-    .querySelector("article[data-page-sections]")
-    ?.getAttribute("data-page-sections");
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
 
-  if (!pageId) {
-    console.warn("No pageId found to associate modifications with.");
-    return;
+  if (!userId || !token || !widgetId) {
+    console.warn("⚠️ Missing authentication data");
+    return {
+      success: false,
+      error: "Missing authentication data",
+    };
   }
 
-  const elements = [];
-
-  modificationsMap.forEach((mods, blockId) => {
-    mods.forEach(({ css, tagType }) => {
-      // elements.push({
-      //   elementId: blockId,
-      //   css: {
-      //     [tagType]: {
-      //       id: blockId,
-      //       ...css,
-      //     },
-      //   },
-      //   elementStructure: {
-      //     type: tagType,
-      //     content: document.getElementById(blockId)?.textContent || "",
-      //     parentId: document.getElementById(blockId)?.parentElement?.id || null,
-      //   },
-      // });
-
-      elements.push({
-        elementId: blockId,
-        css: {
-          image: {
-            ...(css || {}),
-          },
-        },
-        elementStructure: {
-          type: tagType,
-          content: "Image",
-          parentId: document.getElementById(blockId)?.parentElement?.id || null,
-        },
-      });
-    });
-  });
-
-  const requestBody = {
+  const modificationData = {
     userId,
     token,
     widgetId,
     modifications: [
       {
         pageId,
-        elements,
+        elements: [
+          {
+            elementId: blockId,
+            css: {
+              strong: {
+                id: blockId,
+                ...css,
+              },
+            },
+            elementStructure: {
+              type: "strong",
+              content: document.getElementById(blockId)?.textContent || "",
+              parentId:
+                document.getElementById(blockId)?.parentElement?.id || null,
+            },
+          },
+        ],
       },
     ],
   };
@@ -358,17 +431,33 @@ export async function saveModificationsforImage(
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify(modificationData),
       }
     );
 
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.message || "Failed to save modifications.");
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`
+      );
     }
 
-    console.log("✅ Modifications saved successfully!");
+    const result = await response.json();
+    console.log("✅ Changes Saved Successfully!", result);
+
+    showNotification("Changes saved successfully!", "success");
+
+    return {
+      success: true,
+      data: result,
+    };
   } catch (error) {
     console.error("❌ Error saving modifications:", error);
+    showNotification(`Failed to save changes: ${error.message}`, "error");
+
+    return {
+      success: false,
+      error: error.message,
+    };
   }
 }
