@@ -35,6 +35,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
   let selectedBorderColor = null; // default
   let currentActiveBorderStyle = "solid"; // To track the active border style
+  let currentRadiusAll = 0; // Track general border-radius
 
   //color selection end here
 
@@ -250,6 +251,22 @@ export function initImageBorderControls(selectedElement, context = {}) {
     borderWidthDisplay.textContent = `${borderWidth}px`;
 
     updateStyleElement(blockElement.id, borderWidth);
+    allBorderWidth = borderWidth; // Update global state
+
+    // Add to pending modifications
+    if (blockElement && blockElement.id) {
+      const cssProps = {
+        "border-width": `${allBorderWidth}px`,
+        "border-style": currentActiveBorderStyle,
+      };
+      if (selectedBorderColor) {
+        cssProps["border-color"] = selectedBorderColor;
+      }
+      if (currentRadiusAll > 0) {
+        cssProps["border-radius"] = `${currentRadiusAll}px !important`;
+      }
+      addPendingModification(blockElement.id, cssProps, "image");
+    }
   }
 
   function stopDrag() {
@@ -327,6 +344,9 @@ export function initImageBorderControls(selectedElement, context = {}) {
           "border-width": `${allBorderWidth}px`,
           "border-style": currentActiveBorderStyle,
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+          ...(currentRadiusAll > 0 && {
+            "border-radius": `${currentRadiusAll}px !important`,
+          }),
         },
         "image"
       );
@@ -423,6 +443,9 @@ export function initImageBorderControls(selectedElement, context = {}) {
           "border-style": currentActiveBorderStyle,
           "border-width": `${allBorderWidth}px`,
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+          ...(currentRadiusAll > 0 && {
+            "border-radius": `${currentRadiusAll}px !important`,
+          }),
         },
         "image"
       );
@@ -465,6 +488,11 @@ export function initImageBorderControls(selectedElement, context = {}) {
         applyBorderRadius(activeRadiusTarget, pxValue);
       } else if (activeRadiusTarget === "all") {
         applyBorderRadius("all", pxValue);
+        currentRadiusAll = pxValue; // Update global state for 'all'
+      } else if (!activeRadiusTarget && isDragging) {
+        // Default to 'all' on drag if no specific target
+        applyBorderRadius("all", pxValue);
+        currentRadiusAll = pxValue; // Update global state for 'all'
       }
     }
 
@@ -557,16 +585,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
     styleTag.textContent = currentCSS.trim();
 
-    // addPendingModification(
-    //   block.id,
-    //   {
-    //     "border-width": `${allBorderWidth}px`,
-    //     "border-style": "solid",
-    //     ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-    //   },
-    //   "image"
-    // );
-
     const radiusProps = {
       all: { "border-radius": `${radius}px !important` },
       topLeft: { "border-top-left-radius": `${radius}px !important` },
@@ -579,15 +597,12 @@ export function initImageBorderControls(selectedElement, context = {}) {
       block.id,
       {
         "border-width": `${allBorderWidth}px`,
-        "border-style": "solid",
+        "border-style": currentActiveBorderStyle,
         ...(selectedBorderColor && { "border-color": selectedBorderColor }),
         ...radiusProps[type],
       },
       "image"
     );
-
-    // ✅ Save to database
-    saveModificationsforImage(pendingModifications, token, userId, widgetId);
   }
 
   const radiusValue = () => {
