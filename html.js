@@ -306,17 +306,31 @@ export async function saveModificationsforImage(
 
   modificationsMap.forEach((mods, blockId) => {
     mods.forEach(({ css, tagType }) => {
+      // elements.push({
+      //   elementId: blockId,
+      //   css: {
+      //     [tagType]: {
+      //       id: blockId,
+      //       ...css,
+      //     },
+      //   },
+      //   elementStructure: {
+      //     type: tagType,
+      //     content: document.getElementById(blockId)?.textContent || "",
+      //     parentId: document.getElementById(blockId)?.parentElement?.id || null,
+      //   },
+      // });
+
       elements.push({
         elementId: blockId,
         css: {
-          [tagType]: {
-            id: blockId,
-            ...css,
+          image: {
+            ...(css || {}),
           },
         },
         elementStructure: {
           type: tagType,
-          content: document.getElementById(blockId)?.textContent || "",
+          content: "Image",
           parentId: document.getElementById(blockId)?.parentElement?.id || null,
         },
       });
