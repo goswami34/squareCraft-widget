@@ -374,12 +374,30 @@ export function initPublishButton() {
 // }
 
 export async function saveModificationsforImage(blockId, css, tagType) {
-  if (!pageId || !blockId || !css) {
-    console.warn("⚠️ Missing required data to save modifications.");
+  const currentPpageId =
+    pageId ||
+    document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+  if (!currentPpageId || !blockId || !css) {
+    console.warn("⚠️ Missing required data to save image modifications.", {
+      pageId: currentPpageId,
+      blockId,
+      css,
+    });
     return {
       success: false,
-      error: "Missing required data",
+      error: "Missing required data for image modification",
     };
+  }
+
+  if (tagType !== "image") {
+    console.warn(
+      `⚠️ saveModificationsforImage called with incorrect tagType: ${tagType}. Expected 'image'.`
+    );
+    // Optionally, you could redirect to the generic saveModifications or return an error.
+    // For now, let's proceed but be aware this might indicate a logic error elsewhere.
   }
 
   const userId = localStorage.getItem("sc_u_id");
@@ -387,7 +405,7 @@ export async function saveModificationsforImage(blockId, css, tagType) {
   const widgetId = localStorage.getItem("sc_w_id");
 
   if (!userId || !token || !widgetId) {
-    console.warn("⚠️ Missing authentication data");
+    console.warn("⚠️ Missing authentication data for image modification save.");
     return {
       success: false,
       error: "Missing authentication data",
@@ -400,19 +418,18 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     widgetId,
     modifications: [
       {
-        pageId,
+        pageId: currentPpageId,
         elements: [
           {
             elementId: blockId,
             css: {
-              strong: {
-                id: blockId,
+              image: {
                 ...css,
               },
             },
             elementStructure: {
-              type: "strong",
-              content: document.getElementById(blockId)?.textContent || "",
+              type: "image",
+              content: "Image",
               parentId:
                 document.getElementById(blockId)?.parentElement?.id || null,
             },
@@ -421,6 +438,11 @@ export async function saveModificationsforImage(blockId, css, tagType) {
       },
     ],
   };
+
+  console.log(
+    "💾 Attempting to save image modification with payload:",
+    JSON.stringify(modificationData, null, 2)
+  );
 
   try {
     const response = await fetch(
