@@ -2,12 +2,29 @@
 const imageStyleMap = new Map();
 
 // ✅ Utility function to merge and save styles
+// function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
+//   const prevStyles = imageStyleMap.get(blockId) || {};
+//   const mergedStyles = { ...prevStyles, ...newStyles };
+
+//   imageStyleMap.set(blockId, mergedStyles);
+//   saveFn(blockId, mergedStyles, "image");
+// }
+
 function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
   const prevStyles = imageStyleMap.get(blockId) || {};
-  const mergedStyles = { ...prevStyles, ...newStyles };
 
-  imageStyleMap.set(blockId, mergedStyles);
-  saveFn(blockId, mergedStyles, "image");
+  // Fix: fallback to previous saved values if current state is missing/invalid
+  const safeStyles = {
+    ...prevStyles,
+    ...Object.fromEntries(
+      Object.entries(newStyles).filter(
+        ([_, value]) => value !== null && value !== undefined && value !== "0px"
+      )
+    ),
+  };
+
+  imageStyleMap.set(blockId, safeStyles);
+  saveFn(blockId, safeStyles, "image");
 }
 
 export function initImageBorderControls(selectedElement, context = {}) {
