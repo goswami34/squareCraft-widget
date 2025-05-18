@@ -369,7 +369,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
       mergeAndSaveImageStyles(
         block.id,
         {
-          "border-width": `${borderWidth}px`,
+          "border-width": `${allBorderWidth}px`,
           "border-style": currentActiveBorderStyle,
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
           ...(currentRadiusAll > 0 && {
