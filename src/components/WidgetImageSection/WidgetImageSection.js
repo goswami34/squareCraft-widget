@@ -285,16 +285,16 @@ export function WidgetImageSection(id) {
 
 
                         <div
-                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomLeftradiusBorder">
-                           <img src="https://goswami34.github.io/squareCraft-widget/public/left-bottom.svg" loading="lazy"
-                              alt="left-bottom-radius">
+                           class="sc-flex sc-px-1_5 sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomRightradiusBorder">
+                           <img src="https://goswami34.github.io/squareCraft-widget/public/Bottom Right.svg" loading="lazy"
+                              alt="bottom-right-radius">
                         </div>
 
 
                         <div
-                           class="sc-flex sc-px-1_5 sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomRightradiusBorder">
-                           <img src="https://goswami34.github.io/squareCraft-widget/public/Bottom Right.svg" loading="lazy"
-                              alt="bottom-right-radius">
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomLeftradiusBorder">
+                           <img src="https://goswami34.github.io/squareCraft-widget/public/left-bottom.svg" loading="lazy"
+                              alt="left-bottom-radius">
                         </div>
 
 
