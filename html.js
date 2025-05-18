@@ -393,6 +393,19 @@ export function initPublishButton() {
 //   }
 // }
 
+// ✅ Utility to remove null/undefined/empty-string properties
+function cleanCssObject(css = {}) {
+  return Object.fromEntries(
+    Object.entries(css).filter(
+      ([_, value]) =>
+        value !== null &&
+        value !== undefined &&
+        value !== "" &&
+        value !== "null"
+    )
+  );
+}
+
 export async function saveModificationsforImage(blockId, css, tagType) {
   const currentPageId =
     pageId ||
@@ -430,20 +443,25 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     };
   }
 
+  // ✅ Clean CSS before sending
+  const cleanedCss = cleanCssObject(css);
+
   const flatPayload = {
     userId,
     token,
     widgetId,
     pageId: currentPageId,
     elementId: blockId,
-    css: { ...css },
+    css: {
+      image: cleanedCss,
+    },
   };
 
   console.log("📤 Sending image style data:", flatPayload);
 
   try {
     const response = await fetch(
-      "http://localhost:8001/api/v1/Image-modifications", // ✅ lowercase route
+      "http://localhost:8001/api/v1/image-modifications", // ✅ lowercase
       {
         method: "POST",
         headers: {
