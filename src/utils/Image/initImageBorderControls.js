@@ -272,6 +272,11 @@ export function initImageBorderControls(selectedElement, context = {}) {
       blockElement.id,
       {
         "border-width": `${allBorderWidth}px`,
+        "border-style": currentActiveBorderStyle,
+        ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+        ...(currentRadiusAll > 0 && {
+          "border-radius": `${currentRadiusAll}px !important`,
+        }),
       },
       saveModificationsforImage
     );
@@ -364,9 +369,12 @@ export function initImageBorderControls(selectedElement, context = {}) {
       mergeAndSaveImageStyles(
         block.id,
         {
-          // "border-width": `${allBorderWidth}px`,
-          // "border-style": currentActiveBorderStyle,
+          "border-width": `${allBorderWidth}px`,
+          "border-style": currentActiveBorderStyle,
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+          ...(currentRadiusAll > 0 && {
+            "border-radius": `${currentRadiusAll}px !important`,
+          }),
         },
         saveModificationsforImage
       );
@@ -455,12 +463,12 @@ export function initImageBorderControls(selectedElement, context = {}) {
       mergeAndSaveImageStyles(
         block.id,
         {
-          // "border-width": `${allBorderWidth}px`,
+          "border-width": `${allBorderWidth}px`,
+          ...(selectedBorderColor && { "border-color": selectedBorderColor }),
           "border-style": currentActiveBorderStyle,
-          //   ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-          //   ...(currentRadiusAll > 0 && {
-          //     "border-radius": `${currentRadiusAll}px !important`,
-          //   }),
+          ...(currentRadiusAll > 0 && {
+            "border-radius": `${currentRadiusAll}px !important`,
+          }),
         },
         saveModificationsforImage
       );
@@ -614,9 +622,9 @@ export function initImageBorderControls(selectedElement, context = {}) {
     mergeAndSaveImageStyles(
       block.id,
       {
-        // "border-width": `${allBorderWidth}px`,
-        // "border-style": currentActiveBorderStyle,
-        // ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+        "border-width": `${allBorderWidth}px`,
+        ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+        "border-style": currentActiveBorderStyle,
         ...(currentRadiusAll > 0 && {
           "border-radius": `${currentRadiusAll}px !important`,
         }),
