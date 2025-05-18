@@ -268,6 +268,10 @@ export function initImageBorderControls(selectedElement, context = {}) {
     updateStyleElement(blockElement.id, borderWidth);
     allBorderWidth = borderWidth; // Update global state
 
+    mergeAndSaveImageStyles(blockElement.id, {
+      "border-width": `${allBorderWidth}px`,
+    });
+
     // Add to pending modifications
     if (blockElement && blockElement.id) {
       const cssProps = {
