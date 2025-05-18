@@ -364,12 +364,9 @@ export function initImageBorderControls(selectedElement, context = {}) {
       mergeAndSaveImageStyles(
         block.id,
         {
-          "border-width": `${allBorderWidth}px`,
-          "border-style": currentActiveBorderStyle,
+          // "border-width": `${allBorderWidth}px`,
+          // "border-style": currentActiveBorderStyle,
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-          ...(currentRadiusAll > 0 && {
-            "border-radius": `${currentRadiusAll}px !important`,
-          }),
         },
         saveModificationsforImage
       );
@@ -458,12 +455,12 @@ export function initImageBorderControls(selectedElement, context = {}) {
       mergeAndSaveImageStyles(
         block.id,
         {
-          "border-width": `${allBorderWidth}px`,
+          // "border-width": `${allBorderWidth}px`,
           "border-style": currentActiveBorderStyle,
-          ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-          ...(currentRadiusAll > 0 && {
-            "border-radius": `${currentRadiusAll}px !important`,
-          }),
+          //   ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+          //   ...(currentRadiusAll > 0 && {
+          //     "border-radius": `${currentRadiusAll}px !important`,
+          //   }),
         },
         saveModificationsforImage
       );
@@ -617,9 +614,9 @@ export function initImageBorderControls(selectedElement, context = {}) {
     mergeAndSaveImageStyles(
       block.id,
       {
-        "border-width": `${allBorderWidth}px`,
-        "border-style": currentActiveBorderStyle,
-        ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+        // "border-width": `${allBorderWidth}px`,
+        // "border-style": currentActiveBorderStyle,
+        // ...(selectedBorderColor && { "border-color": selectedBorderColor }),
         ...(currentRadiusAll > 0 && {
           "border-radius": `${currentRadiusAll}px !important`,
         }),
