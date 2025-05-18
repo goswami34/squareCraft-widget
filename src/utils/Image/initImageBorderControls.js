@@ -701,15 +701,28 @@ export function initImageBorderControls(selectedElement, context = {}) {
       bottomRight: { "border-bottom-right-radius": `${radius}px !important` },
     };
 
+    // mergeAndSaveImageStyles(
+    //   block.id,
+    //   {
+    //     "border-width": `${allBorderWidth}px`,
+    //     ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+    //     "border-style": currentActiveBorderStyle,
+    //     ...(currentRadiusAll > 0 && {
+    //       "border-radius": `${currentRadiusAll}px !important`,
+    //     }),
+    //   },
+    //   saveModificationsforImage
+    // );
+
     mergeAndSaveImageStyles(
       block.id,
       {
         "border-width": `${allBorderWidth}px`,
         ...(selectedBorderColor && { "border-color": selectedBorderColor }),
         "border-style": currentActiveBorderStyle,
-        ...(currentRadiusAll > 0 && {
-          "border-radius": `${currentRadiusAll}px !important`,
-        }),
+        ...(type === "all"
+          ? { "border-radius": `${radius}px !important` }
+          : { [currentProp]: `${radius}px !important` }),
       },
       saveModificationsforImage
     );
