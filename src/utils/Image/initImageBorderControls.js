@@ -1,3 +1,15 @@
+// ✅ Declare global style cache map
+const imageStyleMap = new Map();
+
+// ✅ Utility function to merge and save styles
+function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
+  const prevStyles = imageStyleMap.get(blockId) || {};
+  const mergedStyles = { ...prevStyles, ...newStyles };
+
+  imageStyleMap.set(blockId, mergedStyles);
+  saveFn(blockId, mergedStyles, "image");
+}
+
 export function initImageBorderControls(selectedElement, context = {}) {
   const {
     addPendingModification,
@@ -38,18 +50,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
   let currentRadiusAll = 0; // Track general border-radius
 
   //for saving  the whole modification into database
-
-  // ✅ Declare global style cache map
-  const imageStyleMap = new Map();
-
-  // ✅ Utility function to merge and save styles
-  function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
-    const prevStyles = imageStyleMap.get(blockId) || {};
-    const mergedStyles = { ...prevStyles, ...newStyles };
-
-    imageStyleMap.set(blockId, mergedStyles);
-    saveFn(blockId, mergedStyles, "image");
-  }
 
   //for saving  the whole modification into database end here
 
