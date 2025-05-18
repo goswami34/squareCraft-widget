@@ -560,8 +560,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
   // border radius start here
 
-  // let activeRadiusTarget = "all";
-
   let activeRadiusTarget = null;
 
   function initRadiusProgressbarControls() {
@@ -588,15 +586,21 @@ export function initImageBorderControls(selectedElement, context = {}) {
       radiusDisplay.textContent = `${pxValue}px`;
 
       // ✅ Prevent fallback to 'all' if null
+      // if (activeRadiusTarget && activeRadiusTarget !== "all") {
+      //   applyBorderRadius(activeRadiusTarget, pxValue);
+      // } else if (activeRadiusTarget === "all") {
+      //   applyBorderRadius("all", pxValue);
+      //   currentRadiusAll = pxValue; // Update global state for 'all'
+      // } else if (!activeRadiusTarget && isDragging) {
+      //   // Default to 'all' on drag if no specific target
+      //   applyBorderRadius("all", pxValue);
+      //   currentRadiusAll = pxValue; // Update global state for 'all'
+      // }
+
       if (activeRadiusTarget && activeRadiusTarget !== "all") {
         applyBorderRadius(activeRadiusTarget, pxValue);
       } else if (activeRadiusTarget === "all") {
         applyBorderRadius("all", pxValue);
-        currentRadiusAll = pxValue; // Update global state for 'all'
-      } else if (!activeRadiusTarget && isDragging) {
-        // Default to 'all' on drag if no specific target
-        applyBorderRadius("all", pxValue);
-        currentRadiusAll = pxValue; // Update global state for 'all'
       }
     }
 
