@@ -1627,7 +1627,8 @@ let pendingModifications = new Map();
 
       // const css = result?.image;
 
-      const css = result?.image?.css || result?.data?.css;
+      const css =
+        result?.image?.css || result?.data?.css || result?.css || null;
       console.log("✅ Fetched image styles:", css);
 
       if (!css || typeof css !== "object") {
