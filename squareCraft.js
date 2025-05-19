@@ -1597,6 +1597,11 @@ let pendingModifications = new Map();
   // }
 
   async function fetchImageModifications(elementId) {
+    if (!elementId || typeof elementId !== "string") {
+      console.warn("❌ Invalid or missing elementId for image style fetch.");
+      return null;
+    }
+
     console.log("🎯 Fetching image modifications for elementId:", elementId);
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
@@ -1665,6 +1670,20 @@ let pendingModifications = new Map();
   window.addEventListener("load", async () => {
     await fetchModifications();
     // await fetchImageModifications(lastClickedBlockId);
+
+    // if (lastClickedBlockId) {
+    //   await fetchImageModifications(lastClickedBlockId);
+    // }
+
+    // Fallback: Auto-detect first image block on page load
+    if (!lastClickedBlockId) {
+      const fallbackBlock = document
+        .querySelector('[id^="block-"] img')
+        ?.closest('[id^="block-"]');
+      if (fallbackBlock) {
+        lastClickedBlockId = fallbackBlock.id;
+      }
+    }
 
     if (lastClickedBlockId) {
       await fetchImageModifications(lastClickedBlockId);
