@@ -1625,9 +1625,9 @@ let pendingModifications = new Map();
 
       if (!res.ok) throw new Error(result.message || "Failed to fetch styles");
 
+      const css = result?.image;
       console.log("✅ Fetched image styles:", css);
 
-      const css = result?.image;
       if (!css || typeof css !== "object") {
         console.warn("⚠️ No valid image styles returned.");
         return null;
