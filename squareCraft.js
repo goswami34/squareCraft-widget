@@ -1573,7 +1573,7 @@ let pendingModifications = new Map();
 
     try {
       const res = await fetch(
-        `http://localhost:8001/api/v1/image-modifications/by-element?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
+        `http://localhost:8001/api/v1/get-image-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
