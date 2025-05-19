@@ -1718,7 +1718,13 @@ let pendingModifications = new Map();
   const observer = new MutationObserver(() => {
     addHeadingEventListeners();
     fetchModifications();
-    fetchImageModifications(lastClickedBlockId);
+    // fetchImageModifications(lastClickedBlockId);
+    const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
+    const elementId = selectedBlock?.id || null;
+
+    if (elementId) {
+      fetchImageModifications(elementId);
+    }
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
