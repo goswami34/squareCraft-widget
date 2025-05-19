@@ -1655,11 +1655,30 @@ let pendingModifications = new Map();
       }
 
       // ✅ Apply valid non-null styles to the <img> only
-      Object.entries(css).forEach(([prop, value]) => {
-        if (value && typeof value === "string") {
-          nestedImg.style.setProperty(prop, value, "important");
-        }
+      // Object.entries(css).forEach(([prop, value]) => {
+      //   if (value && typeof value === "string") {
+      //     nestedImg.style.setProperty(prop, value, "important");
+      //   }
+      // });
+
+      const selector = css.selector || `#${elementId} div.sqs-image-content`;
+      const styleBlock = css.styles || css;
+
+      const styleTagId = `sc-style-${elementId}`;
+      let styleTag = document.getElementById(styleTagId);
+      if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = styleTagId;
+        document.head.appendChild(styleTag);
+      }
+
+      let cssText = `${selector} {`;
+      Object.entries(styleBlock).forEach(([prop, value]) => {
+        if (value) cssText += `${prop}: ${value} !important; `;
       });
+      cssText += "}";
+
+      styleTag.textContent = cssText;
 
       imageBlock.classList.add("sc-image-styled");
       return css;

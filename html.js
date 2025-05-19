@@ -453,7 +453,11 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     pageId: currentPageId,
     elementId: blockId,
     css: {
-      image: cleanedCss,
+      // image: cleanedCss,
+      image: {
+        selector: `#${blockId} div.sqs-image-content`,
+        styles: cleanedCss,
+      },
     },
   };
 
