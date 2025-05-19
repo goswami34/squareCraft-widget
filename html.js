@@ -393,7 +393,6 @@ export function initPublishButton() {
 //   }
 // }
 
-// ✅ Utility to remove null/undefined/empty-string properties
 function cleanCssObject(css = {}) {
   return Object.fromEntries(
     Object.entries(css).filter(
@@ -413,8 +412,8 @@ export async function saveModificationsforImage(blockId, css, tagType) {
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-  if (!currentPageId || !blockId || !css) {
-    console.warn("⚠️ Missing required data to save image modifications.", {
+  if (!currentPageId || !blockId || !css || typeof css !== "object") {
+    console.warn("⚠️ Missing or invalid data to save image modifications.", {
       pageId: currentPageId,
       blockId,
       css,
@@ -443,8 +442,18 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     };
   }
 
-  // ✅ Clean CSS before sending
-  const cleanedCss = cleanCssObject(css);
+  // ✅ Deep clean css.image.styles if full object was passed
+  const rawCss = css?.image?.styles || css;
+  const cleanedCss = cleanCssObject(rawCss);
+
+  // ❗ Make sure we don't send empty object
+  if (Object.keys(cleanedCss).length === 0) {
+    console.warn("⚠️ Nothing to save — all CSS properties are empty or null.");
+    return {
+      success: false,
+      error: "No valid styles to save",
+    };
+  }
 
   const flatPayload = {
     userId,
@@ -453,7 +462,6 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     pageId: currentPageId,
     elementId: blockId,
     css: {
-      // image: cleanedCss,
       image: {
         selector: `#${blockId} div.sqs-image-content`,
         styles: cleanedCss,
@@ -461,11 +469,11 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     },
   };
 
-  console.log("📤 Sending image style data:", flatPayload);
+  console.log("📤 Final Payload being sent:", flatPayload);
 
   try {
     const response = await fetch(
-      "http://localhost:8001/api/v1/image-modifications", // ✅ lowercase
+      "http://localhost:8001/api/v1/image-modifications",
       {
         method: "POST",
         headers: {
