@@ -406,6 +406,112 @@ function cleanCssObject(css = {}) {
   );
 }
 
+// export async function saveModificationsforImage(blockId, css, tagType) {
+//   const currentPageId =
+//     pageId ||
+//     document
+//       .querySelector("article[data-page-sections]")
+//       ?.getAttribute("data-page-sections");
+
+//   if (!currentPageId || !blockId || !css) {
+//     console.warn("⚠️ Missing required data to save image modifications.", {
+//       pageId: currentPageId,
+//       blockId,
+//       css,
+//     });
+//     return {
+//       success: false,
+//       error: "Missing required data for image modification",
+//     };
+//   }
+
+//   if (tagType !== "image") {
+//     console.warn(
+//       `⚠️ saveModificationsforImage called with incorrect tagType: ${tagType}. Expected 'image'.`
+//     );
+//   }
+
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
+
+//   if (!userId || !token || !widgetId) {
+//     console.warn("⚠️ Missing authentication data for image modification save.");
+//     return {
+//       success: false,
+//       error: "Missing authentication data",
+//     };
+//   }
+
+//   // ✅ Clean CSS before sending
+//   const cleanedCss = cleanCssObject(css);
+
+//   const flatPayload = {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId: currentPageId,
+//     elementId: blockId,
+//     css: {
+//       // image: cleanedCss,
+//       image: {
+//         selector: `#${blockId} div.sqs-image-content`,
+//         styles: cleanedCss,
+//       },
+//     },
+//   };
+
+//   console.log("📤 Sending image style data:", flatPayload);
+
+//   try {
+//     const response = await fetch(
+//       "http://localhost:8001/api/v1/image-modifications", // ✅ lowercase
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(flatPayload),
+//       }
+//     );
+
+//     const result = await response.json();
+
+//     if (!response.ok) {
+//       throw new Error(result.message || `Error: ${response.status}`);
+//     }
+
+//     console.log("✅ Image modification saved:", result);
+//     showNotification("Image styles saved successfully!", "success");
+
+//     return {
+//       success: true,
+//       data: result,
+//     };
+//   } catch (error) {
+//     console.error("❌ Image modification save failed:", error);
+//     showNotification(`Save failed: ${error.message}`, "error");
+
+//     return {
+//       success: false,
+//       error: error.message,
+//     };
+//   }
+// }
+
+// Utility to clean CSS object by removing null/undefined/empty values
+function cleanCssObject(css) {
+  const cleaned = {};
+  for (const key in css) {
+    const value = css[key];
+    if (value !== null && value !== undefined && value !== "") {
+      cleaned[key] = value;
+    }
+  }
+  return cleaned;
+}
+
 export async function saveModificationsforImage(blockId, css, tagType) {
   const currentPageId =
     pageId ||
@@ -443,8 +549,14 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     };
   }
 
+  // 🧪 Debug: Show raw CSS before cleaning
+  console.log("🧪 Raw CSS before cleaning:", css);
+
   // ✅ Clean CSS before sending
   const cleanedCss = cleanCssObject(css);
+
+  // 🧪 Debug: Show cleaned CSS
+  console.log("🧪 Cleaned CSS to be sent:", cleanedCss);
 
   const flatPayload = {
     userId,
@@ -453,7 +565,6 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     pageId: currentPageId,
     elementId: blockId,
     css: {
-      // image: cleanedCss,
       image: {
         selector: `#${blockId} div.sqs-image-content`,
         styles: cleanedCss,
@@ -461,11 +572,11 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     },
   };
 
-  console.log("📤 Sending image style data:", flatPayload);
+  console.log("📤 Sending image style data to API:", flatPayload);
 
   try {
     const response = await fetch(
-      "http://localhost:8001/api/v1/image-modifications", // ✅ lowercase
+      "http://localhost:8001/api/v1/image-modifications",
       {
         method: "POST",
         headers: {
@@ -482,7 +593,7 @@ export async function saveModificationsforImage(blockId, css, tagType) {
       throw new Error(result.message || `Error: ${response.status}`);
     }
 
-    console.log("✅ Image modification saved:", result);
+    console.log("✅ Image modification saved to DB:", result);
     showNotification("Image styles saved successfully!", "success");
 
     return {
