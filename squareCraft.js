@@ -1597,12 +1597,8 @@ let pendingModifications = new Map();
   // }
 
   async function fetchImageModifications(elementId) {
-    if (!elementId || typeof elementId !== "string") {
-      console.warn("❌ Invalid or missing elementId for image style fetch.");
-      return null;
-    }
-
     console.log("🎯 Fetching image modifications for elementId:", elementId);
+
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -1611,7 +1607,7 @@ let pendingModifications = new Map();
       ?.getAttribute("data-page-sections");
 
     if (!userId || !token || !widgetId || !pageId || !elementId) {
-      console.warn("⚠️ Missing required values for fetching styles.");
+      console.warn("❌ Invalid or missing elementId for image style fetch.");
       return null;
     }
 
@@ -1629,35 +1625,35 @@ let pendingModifications = new Map();
 
       if (!res.ok) throw new Error(result.message || "Failed to fetch styles");
 
-      console.log("🎯 Styles for element:", result.css);
-
-      // ✅ Apply the fetched styles immediately
-      const imageBlock = document.getElementById(elementId);
-      if (imageBlock && result.css) {
-        const css = result.css;
-
-        // Apply to main element
-        Object.entries(css).forEach(([prop, value]) => {
-          if (value) {
-            imageBlock.style.setProperty(prop, value, "important");
-          }
-        });
-
-        // If image exists inside block
-        const nestedImg = imageBlock.querySelector("img");
-        if (nestedImg) {
-          Object.entries(css).forEach(([prop, value]) => {
-            if (value) {
-              nestedImg.style.setProperty(prop, value, "important");
-            }
-          });
-        }
-
-        // Optional: add helper class
-        imageBlock.classList.add("sc-image-styled");
+      const css = result?.image;
+      if (!css || typeof css !== "object") {
+        console.warn("⚠️ No valid image styles returned.");
+        return null;
       }
 
-      return result.css;
+      console.log("✅ Fetched image styles:", css);
+
+      const imageBlock = document.getElementById(elementId);
+      if (!imageBlock) {
+        console.warn(`❌ Block with ID ${elementId} not found in DOM.`);
+        return null;
+      }
+
+      const nestedImg = imageBlock.querySelector("img");
+      if (!nestedImg) {
+        console.warn(`❌ No <img> found inside block: ${elementId}`);
+        return null;
+      }
+
+      // ✅ Apply valid non-null styles to the <img> only
+      Object.entries(css).forEach(([prop, value]) => {
+        if (value && typeof value === "string") {
+          nestedImg.style.setProperty(prop, value, "important");
+        }
+      });
+
+      imageBlock.classList.add("sc-image-styled");
+      return css;
     } catch (error) {
       console.error(
         "❌ Failed to load image styles by elementId:",
