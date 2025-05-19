@@ -1520,7 +1520,44 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageModifications() {
+  // async function fetchImageModifications() {
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
+
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn("⚠️ Missing query data for fetch.");
+  //     return null;
+  //   }
+
+  //   try {
+  //     const res = await fetch(
+  //       `http://localhost:8001/api/v1/get-image-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     const result = await res.json();
+
+  //     if (!res.ok) {
+  //       throw new Error(result.message || "Error fetching image modifications");
+  //     }
+
+  //     console.log("✅ Image Modifications:", result.data);
+  //     return result.data; // array of { elementId, css }
+  //   } catch (err) {
+  //     console.error("❌ Failed to fetch image modifications:", err.message);
+  //     return null;
+  //   }
+  // }
+
+  async function fetchImageModifications(elementId) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -1528,14 +1565,14 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing query data for fetch.");
+    if (!userId || !token || !widgetId || !pageId || !elementId) {
+      console.warn("⚠️ Missing required values for fetching styles.");
       return null;
     }
 
     try {
       const res = await fetch(
-        `http://localhost:8001/api/v1/get-image-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
+        `http://localhost:8001/api/v1/image-modifications/by-element?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -1545,14 +1582,15 @@ let pendingModifications = new Map();
 
       const result = await res.json();
 
-      if (!res.ok) {
-        throw new Error(result.message || "Error fetching image modifications");
-      }
+      if (!res.ok) throw new Error(result.message || "Failed to fetch styles");
 
-      console.log("✅ Image Modifications:", result.data);
-      return result.data; // array of { elementId, css }
-    } catch (err) {
-      console.error("❌ Failed to fetch image modifications:", err.message);
+      console.log("🎯 Styles for element:", result.css);
+      return result.css;
+    } catch (error) {
+      console.error(
+        "❌ Failed to load image styles by elementId:",
+        error.message
+      );
       return null;
     }
   }
