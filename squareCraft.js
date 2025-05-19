@@ -1598,7 +1598,7 @@ let pendingModifications = new Map();
 
   window.addEventListener("load", async () => {
     await fetchModifications();
-    await fetchImageModifications();
+    await fetchImageModifications(lastClickedBlockId);
   });
 
   async function addHeadingEventListeners() {
@@ -1633,7 +1633,7 @@ let pendingModifications = new Map();
   const observer = new MutationObserver(() => {
     addHeadingEventListeners();
     fetchModifications();
-    fetchImageModifications();
+    fetchImageModifications(lastClickedBlockId);
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
@@ -2815,7 +2815,7 @@ let pendingModifications = new Map();
   }
 
   fetchModifications();
-  fetchImageModifications();
+  fetchImageModifications(lastClickedBlockId);
 
   function addPendingModification(blockId, css, tagType) {
     if (!pendingModifications.has(blockId)) {
