@@ -721,8 +721,8 @@ export function initImageBorderControls(selectedElement, context = {}) {
         ...(selectedBorderColor && { "border-color": selectedBorderColor }),
         "border-style": currentActiveBorderStyle,
         ...(type === "all"
-          ? { "border-radius": `${radius}px !important` }
-          : { [currentProp]: `${radius}px !important` }),
+          ? { "border-radius": `${radius}px` }
+          : { [currentProp]: `${radius}px` }),
       },
       saveModificationsforImage
     );
