@@ -1598,7 +1598,11 @@ let pendingModifications = new Map();
 
   window.addEventListener("load", async () => {
     await fetchModifications();
-    await fetchImageModifications(lastClickedBlockId);
+    // await fetchImageModifications(lastClickedBlockId);
+
+    if (lastClickedBlockId) {
+      await fetchImageModifications(lastClickedBlockId);
+    }
   });
 
   async function addHeadingEventListeners() {
