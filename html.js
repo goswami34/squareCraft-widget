@@ -394,17 +394,17 @@ export function initPublishButton() {
 // }
 
 // ✅ Utility to remove null/undefined/empty-string properties
-function cleanCssObject(css = {}) {
-  return Object.fromEntries(
-    Object.entries(css).filter(
-      ([_, value]) =>
-        value !== null &&
-        value !== undefined &&
-        value !== "" &&
-        value !== "null"
-    )
-  );
-}
+// function cleanCssObject(css = {}) {
+//   return Object.fromEntries(
+//     Object.entries(css).filter(
+//       ([_, value]) =>
+//         value !== null &&
+//         value !== undefined &&
+//         value !== "" &&
+//         value !== "null"
+//     )
+//   );
+// }
 
 // export async function saveModificationsforImage(blockId, css, tagType) {
 //   const currentPageId =
