@@ -2819,7 +2819,20 @@ let pendingModifications = new Map();
   }
 
   fetchModifications();
-  fetchImageModifications(lastClickedBlockId);
+  // fetchImageModifications(lastClickedBlockId);
+  if (lastClickedBlockId) {
+    fetchImageModifications(lastClickedBlockId);
+  } else {
+    // Retry after a short delay until it gets set
+    let retries = 5;
+    const retryInterval = setInterval(() => {
+      if (lastClickedBlockId) {
+        fetchImageModifications(lastClickedBlockId);
+        clearInterval(retryInterval);
+      }
+      if (--retries <= 0) clearInterval(retryInterval);
+    }, 300);
+  }
 
   function addPendingModification(blockId, css, tagType) {
     if (!pendingModifications.has(blockId)) {
