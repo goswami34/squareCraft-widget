@@ -1596,9 +1596,102 @@ let pendingModifications = new Map();
   //   }
   // }
 
-  async function fetchImageModifications(elementId) {
-    console.log("🎯 Fetching image modifications for elementId:", elementId);
+  // async function fetchImageModifications(elementId) {
+  //   console.log("🎯 Fetching image modifications for elementId:", elementId);
 
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
+
+  //   if (!userId || !token || !widgetId || !pageId || !elementId) {
+  //     console.warn("❌ Invalid or missing elementId for image style fetch.");
+  //     return null;
+  //   }
+
+  //   try {
+  //     const res = await fetch(
+  //       `http://localhost:8001/api/v1/get-image-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     const result = await res.json();
+
+  //     if (!res.ok) throw new Error(result.message || "Failed to fetch styles");
+
+  //     // const css = result?.image;
+
+  //     const css =
+  //       result?.image?.css || result?.data?.css || result?.css?.image || null;
+  //     console.log("✅ Fetched image styles:", css);
+
+  //     if (!css || typeof css !== "object") {
+  //       console.warn("⚠️ No valid image styles returned.");
+  //       return null;
+  //     }
+  //     console.log("✅ Fetched image styles:", css);
+
+  //     if (!css || typeof css !== "object") {
+  //       console.warn("⚠️ No valid image styles returned.");
+  //       return null;
+  //     }
+
+  //     const imageBlock = document.getElementById(elementId);
+  //     if (!imageBlock) {
+  //       console.warn(`❌ Block with ID ${elementId} not found in DOM.`);
+  //       return null;
+  //     }
+
+  //     const nestedImg = imageBlock.querySelector("img");
+  //     if (!nestedImg) {
+  //       console.warn(`❌ No <img> found inside block: ${elementId}`);
+  //       return null;
+  //     }
+
+  //     // ✅ Apply valid non-null styles to the <img> only
+  //     // Object.entries(css).forEach(([prop, value]) => {
+  //     //   if (value && typeof value === "string") {
+  //     //     nestedImg.style.setProperty(prop, value, "important");
+  //     //   }
+  //     // });
+
+  //     const selector = css.selector || `#${elementId} div.sqs-image-content`;
+  //     const styleBlock = css.styles || css;
+
+  //     const styleTagId = `sc-style-${elementId}`;
+  //     let styleTag = document.getElementById(styleTagId);
+  //     if (!styleTag) {
+  //       styleTag = document.createElement("style");
+  //       styleTag.id = styleTagId;
+  //       document.head.appendChild(styleTag);
+  //     }
+
+  //     let cssText = `${selector} {`;
+  //     Object.entries(styleBlock).forEach(([prop, value]) => {
+  //       if (value) cssText += `${prop}: ${value} !important; `;
+  //     });
+  //     cssText += "}";
+
+  //     styleTag.textContent = cssText;
+
+  //     imageBlock.classList.add("sc-image-styled");
+  //     return css;
+  //   } catch (error) {
+  //     console.error(
+  //       "❌ Failed to load image styles by elementId:",
+  //       error.message
+  //     );
+  //     return null;
+  //   }
+  // }
+
+  async function fetchImageModifications() {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -1606,14 +1699,14 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    if (!userId || !token || !widgetId || !pageId || !elementId) {
-      console.warn("❌ Invalid or missing elementId for image style fetch.");
-      return null;
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
+      return;
     }
 
     try {
       const res = await fetch(
-        `http://localhost:8001/api/v1/get-image-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
+        `http://localhost:8001/api/v1/get-image-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -1622,72 +1715,42 @@ let pendingModifications = new Map();
       );
 
       const result = await res.json();
+      if (!res.ok) throw new Error(result.message);
 
-      if (!res.ok) throw new Error(result.message || "Failed to fetch styles");
+      const elements = result.elements || [];
 
-      // const css = result?.image;
+      elements.forEach(({ elementId, css }) => {
+        const styleBlock = css?.image;
+        const selector = `#${elementId} div.sqs-image-content`;
 
-      const css =
-        result?.image?.css || result?.data?.css || result?.css?.image || null;
-      console.log("✅ Fetched image styles:", css);
+        if (!styleBlock || typeof styleBlock !== "object") return;
 
-      if (!css || typeof css !== "object") {
-        console.warn("⚠️ No valid image styles returned.");
-        return null;
-      }
-      console.log("✅ Fetched image styles:", css);
+        const styleTagId = `sc-style-${elementId}`;
+        let styleTag = document.getElementById(styleTagId);
+        if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = styleTagId;
+          document.head.appendChild(styleTag);
+        }
 
-      if (!css || typeof css !== "object") {
-        console.warn("⚠️ No valid image styles returned.");
-        return null;
-      }
+        let cssText = `${selector} {`;
+        Object.entries(styleBlock).forEach(([prop, value]) => {
+          if (value) cssText += `${prop}: ${value} !important; `;
+        });
+        cssText += "}";
 
-      const imageBlock = document.getElementById(elementId);
-      if (!imageBlock) {
-        console.warn(`❌ Block with ID ${elementId} not found in DOM.`);
-        return null;
-      }
+        styleTag.textContent = cssText;
 
-      const nestedImg = imageBlock.querySelector("img");
-      if (!nestedImg) {
-        console.warn(`❌ No <img> found inside block: ${elementId}`);
-        return null;
-      }
-
-      // ✅ Apply valid non-null styles to the <img> only
-      // Object.entries(css).forEach(([prop, value]) => {
-      //   if (value && typeof value === "string") {
-      //     nestedImg.style.setProperty(prop, value, "important");
-      //   }
-      // });
-
-      const selector = css.selector || `#${elementId} div.sqs-image-content`;
-      const styleBlock = css.styles || css;
-
-      const styleTagId = `sc-style-${elementId}`;
-      let styleTag = document.getElementById(styleTagId);
-      if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = styleTagId;
-        document.head.appendChild(styleTag);
-      }
-
-      let cssText = `${selector} {`;
-      Object.entries(styleBlock).forEach(([prop, value]) => {
-        if (value) cssText += `${prop}: ${value} !important; `;
+        const block = document.getElementById(elementId);
+        if (block) block.classList.add("sc-image-styled");
       });
-      cssText += "}";
 
-      styleTag.textContent = cssText;
-
-      imageBlock.classList.add("sc-image-styled");
-      return css;
+      console.log("✅ Applied styles to all image elements");
     } catch (error) {
       console.error(
-        "❌ Failed to load image styles by elementId:",
+        "❌ Failed to fetch all image modifications:",
         error.message
       );
-      return null;
     }
   }
 
