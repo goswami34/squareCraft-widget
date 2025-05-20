@@ -283,30 +283,17 @@ export function initPublishButton() {
 }
 
 export async function saveModificationsforImage(blockId, css, tagType) {
-  const currentPpageId =
-    pageId ||
-    document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
 
-  if (!currentPpageId || !blockId || !css) {
-    console.warn("⚠️ Missing required data to save image modifications.", {
-      pageId: currentPpageId,
+  if (!pageId || !blockId || !css || typeof css !== "object") {
+    console.warn("⚠️ Missing required data for image modifications", {
+      pageId,
       blockId,
       css,
     });
-    return {
-      success: false,
-      error: "Missing required data for image modification",
-    };
-  }
-
-  if (tagType !== "image") {
-    console.warn(
-      `⚠️ saveModificationsforImage called with incorrect tagType: ${tagType}. Expected 'image'.`
-    );
-    // Optionally, you could redirect to the generic saveModifications or return an error.
-    // For now, let's proceed but be aware this might indicate a logic error elsewhere.
+    return { success: false, error: "Missing required data" };
   }
 
   const userId = localStorage.getItem("sc_u_id");
@@ -314,82 +301,68 @@ export async function saveModificationsforImage(blockId, css, tagType) {
   const widgetId = localStorage.getItem("sc_w_id");
 
   if (!userId || !token || !widgetId) {
-    console.warn("⚠️ Missing authentication data for image modification save.");
-    return {
-      success: false,
-      error: "Missing authentication data",
-    };
+    console.warn("⚠️ Missing authentication data");
+    return { success: false, error: "Missing authentication data" };
   }
 
-  const modificationData = {
+  const cleanedCss = Object.fromEntries(
+    Object.entries(css).filter(
+      ([_, value]) =>
+        value !== null &&
+        value !== undefined &&
+        value !== "" &&
+        value !== "null"
+    )
+  );
+
+  if (Object.keys(cleanedCss).length === 0) {
+    console.warn("⚠️ No valid styles to save");
+    return { success: false, error: "No valid styles to save" };
+  }
+
+  const payload = {
     userId,
     token,
     widgetId,
-    modifications: [
-      {
-        pageId: currentPpageId,
-        elements: [
-          {
-            elementId: blockId,
-            css: {
-              image: {
-                ...css,
-              },
-            },
-            elementStructure: {
-              type: "image",
-              content: "Image",
-              parentId:
-                document.getElementById(blockId)?.parentElement?.id || null,
-            },
-          },
-        ],
+    pageId,
+    elementId: blockId,
+    css: {
+      image: {
+        selector: `#${blockId} div.sqs-image-content`,
+        styles: cleanedCss,
       },
-    ],
+    },
   };
 
-  console.log(
-    "💾 Attempting to save image modification with payload:",
-    JSON.stringify(modificationData, null, 2)
-  );
+  console.log("📤 Final image payload:", payload);
 
   try {
     const response = await fetch(
-      "http://localhost:8001/api/v1/Image-modifications",
+      "http://localhost:8001/api/v1/image-modifications",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(modificationData),
+        body: JSON.stringify(payload),
       }
     );
 
+    const result = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+      throw new Error(result.message || `HTTP ${response.status}`);
     }
 
-    const result = await response.json();
-    console.log("✅ Changes Saved Successfully!", result);
+    console.log("✅ Image modifications saved:", result);
+    showNotification("Image styles saved successfully!", "success");
 
-    showNotification("Changes saved successfully!", "success");
-
-    return {
-      success: true,
-      data: result,
-    };
-  } catch (error) {
-    console.error("❌ Error saving modifications:", error);
-    showNotification(`Failed to save changes: ${error.message}`, "error");
-
-    return {
-      success: false,
-      error: error.message,
-    };
+    return { success: true, data: result };
+  } catch (err) {
+    console.error("❌ Error saving modifications:", err);
+    showNotification(`Failed to save changes: ${err.message}`, "error");
+    return { success: false, error: err.message };
   }
 }
 
