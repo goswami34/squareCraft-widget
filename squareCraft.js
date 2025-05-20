@@ -1643,9 +1643,41 @@ let pendingModifications = new Map();
 
       const elements = result.elements || [];
 
+      // elements.forEach(({ elementId, css }) => {
+      //   const styleBlock = css?.image;
+      //   const selector = `#${elementId} div.sqs-image-content`;
+
+      //   if (!styleBlock || typeof styleBlock !== "object") return;
+
+      //   const styleTagId = `sc-style-${elementId}`;
+      //   let styleTag = document.getElementById(styleTagId);
+      //   if (!styleTag) {
+      //     styleTag = document.createElement("style");
+      //     styleTag.id = styleTagId;
+      //     document.head.appendChild(styleTag);
+      //   }
+
+      //   let cssText = `${selector} {`;
+      //   Object.entries(styleBlock).forEach(([prop, value]) => {
+      //     if (value) cssText += `${prop}: ${value} !important; `;
+      //   });
+      //   cssText += "}";
+
+      //   styleTag.textContent = cssText;
+
+      //   const block = document.getElementById(elementId);
+      //   if (block) block.classList.add("sc-image-styled");
+      // });
+
       elements.forEach(({ elementId, css }) => {
-        const styleBlock = css?.image;
-        const selector = `#${elementId} div.sqs-image-content`;
+        let styleBlock = css?.image;
+        let selector = `#${elementId} div.sqs-image-content`;
+
+        // 🔁 Normalize format if it's wrapped inside `styles`
+        if (styleBlock?.styles) {
+          selector = styleBlock.selector || selector;
+          styleBlock = styleBlock.styles;
+        }
 
         if (!styleBlock || typeof styleBlock !== "object") return;
 
