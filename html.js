@@ -282,14 +282,14 @@ export function initPublishButton() {
   });
 }
 
-function toKebabCaseStyleObject(obj) {
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => {
-      const kebabKey = key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
-      return [kebabKey, value];
-    })
-  );
-}
+// function toKebabCaseStyleObject(obj) {
+//   return Object.fromEntries(
+//     Object.entries(obj).map(([key, value]) => {
+//       const kebabKey = key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+//       return [kebabKey, value];
+//     })
+//   );
+// }
 
 export async function saveModificationsforImage(blockId, css, tagType) {
   const pageId = document
