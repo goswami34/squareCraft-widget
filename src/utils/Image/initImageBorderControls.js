@@ -316,6 +316,39 @@ export function initImageBorderControls(selectedElement, context = {}) {
     }
 
     mergeAndSaveImageStyles(blockId, cssProps, saveModificationsforImage);
+
+    // ✅ Also inject image-level styles like object-fit into database
+    const imageTagSelector = `#siteWrapper #${blockId} .sqs-image-content img`;
+    const imageStyleTagId = `sc-img-style-${blockId}`;
+    let imgTag = document.getElementById(imageStyleTagId);
+    if (!imgTag) {
+      imgTag = document.createElement("style");
+      imgTag.id = imageStyleTagId;
+      document.head.appendChild(imgTag);
+    }
+    imgTag.textContent = `
+    ${imageTagSelector} {
+      box-sizing: border-box;
+      object-fit: cover !important;
+    }`;
+
+    // ✅ Save imageTag styles to DB along with main styles
+    mergeAndSaveImageStyles(
+      blockId,
+      {
+        ...cssProps,
+        imageTag: {
+          selector: imageTagSelector,
+          styles: {
+            "box-sizing": "border-box",
+            "object-fit": "cover",
+          },
+        },
+      },
+      saveModificationsforImage
+    );
+
+    // image modify code end here
   }
 
   function stopDrag() {
@@ -338,37 +371,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
       imageContent.classList.add("sc-selected-image");
     }
   });
-
-  // ✅ Also inject image-level styles like object-fit into database
-  const imageTagSelector = `#siteWrapper #${blockId} .sqs-image-content img`;
-  const imageStyleTagId = `sc-img-style-${blockId}`;
-  let imgTag = document.getElementById(imageStyleTagId);
-  if (!imgTag) {
-    imgTag = document.createElement("style");
-    imgTag.id = imageStyleTagId;
-    document.head.appendChild(imgTag);
-  }
-  imgTag.textContent = `
-${imageTagSelector} {
-  box-sizing: border-box;
-  object-fit: cover !important;
-}`;
-
-  // ✅ Save imageTag styles to DB along with main styles
-  mergeAndSaveImageStyles(
-    blockId,
-    {
-      ...cssProps,
-      imageTag: {
-        selector: imageTagSelector,
-        styles: {
-          "box-sizing": "border-box",
-          "object-fit": "cover",
-        },
-      },
-    },
-    saveModificationsforImage
-  );
 
   //color selection start here
 
