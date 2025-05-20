@@ -287,6 +287,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
     const cssProps = {
       "border-style": currentActiveBorderStyle,
       "box-sizing": "border-box",
+      "object-fit": "cover",
       ...(selectedBorderColor && { "border-color": selectedBorderColor }),
       ...(currentRadiusAll > 0 && {
         "border-radius": `${currentRadiusAll}px !important`,
@@ -714,4 +715,24 @@ export function initImageBorderControls(selectedElement, context = {}) {
     });
 
   // border radius end here
+
+  //image border controls end here
+  // ✅ Inject object-fit and box-sizing to the image inside the block
+  const imageSelector = `#siteWrapper #${blockId} .sqs-image-content img`;
+  const imageStyleTagId = `sc-img-style-${blockId}`;
+
+  let imgStyleTag = document.getElementById(imageStyleTagId);
+  if (!imgStyleTag) {
+    imgStyleTag = document.createElement("style");
+    imgStyleTag.id = imageStyleTagId;
+    document.head.appendChild(imgStyleTag);
+  }
+
+  imgStyleTag.textContent = `
+  ${imageSelector} {
+    box-sizing: border-box;
+    object-fit: cover !important;
+  }`;
+
+  //image border controls end here
 }
