@@ -1548,32 +1548,6 @@ let pendingModifications = new Map();
 
       const elements = result.elements || [];
 
-      // elements.forEach(({ elementId, css }) => {
-      //   const styleBlock = css?.image;
-      //   const selector = `#${elementId} div.sqs-image-content`;
-
-      //   if (!styleBlock || typeof styleBlock !== "object") return;
-
-      //   const styleTagId = `sc-style-${elementId}`;
-      //   let styleTag = document.getElementById(styleTagId);
-      //   if (!styleTag) {
-      //     styleTag = document.createElement("style");
-      //     styleTag.id = styleTagId;
-      //     document.head.appendChild(styleTag);
-      //   }
-
-      //   let cssText = `${selector} {`;
-      //   Object.entries(styleBlock).forEach(([prop, value]) => {
-      //     if (value) cssText += `${prop}: ${value} !important; `;
-      //   });
-      //   cssText += "}";
-
-      //   styleTag.textContent = cssText;
-
-      //   const block = document.getElementById(elementId);
-      //   if (block) block.classList.add("sc-image-styled");
-      // });
-
       elements.forEach(({ elementId, css }) => {
         let styleBlock = css?.image;
         let selector = `#${elementId} div.sqs-image-content`;
@@ -1602,18 +1576,40 @@ let pendingModifications = new Map();
           delete styleBlock["border-right-width"];
         }
 
-        let cssText = `${selector} {`;
-        Object.entries(styleBlock).forEach(([prop, value]) => {
-          if (value !== null && value !== undefined && value !== "null") {
-            cssText += `${prop}: ${value} !important; `;
+        // let cssText = `${selector} {`;
+        // Object.entries(styleBlock).forEach(([prop, value]) => {
+        //   if (value !== null && value !== undefined && value !== "null") {
+        //     cssText += `${prop}: ${value} !important; `;
+        //   }
+        // });
+        // cssText += "}";
+
+        // styleTag.textContent = cssText;
+
+        // const block = document.getElementById(elementId);
+        // if (block) block.classList.add("sc-image-styled");
+
+        // ✅ Apply optional imageTag styles (img-level styles)
+        const imageTagBlock = css?.imageTag;
+        if (imageTagBlock?.selector && imageTagBlock?.styles) {
+          const imgTagId = `sc-img-style-${elementId}`;
+          let imgTag = document.getElementById(imgTagId);
+          if (!imgTag) {
+            imgTag = document.createElement("style");
+            imgTag.id = imgTagId;
+            document.head.appendChild(imgTag);
           }
-        });
-        cssText += "}";
 
-        styleTag.textContent = cssText;
+          let imgCSS = `${imageTagBlock.selector} {`;
+          Object.entries(imageTagBlock.styles).forEach(([prop, val]) => {
+            if (val !== null && val !== undefined && val !== "null") {
+              imgCSS += `${prop}: ${val} !important; `;
+            }
+          });
+          imgCSS += "}";
 
-        const block = document.getElementById(elementId);
-        if (block) block.classList.add("sc-image-styled");
+          imgTag.textContent = imgCSS;
+        }
       });
 
       console.log("✅ Applied styles to all image elements");
