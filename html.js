@@ -314,8 +314,11 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     return { success: false, error: "Missing authentication data" };
   }
 
+  // 🟡 FIX HERE: if css.image.styles exists, use it, otherwise use raw css
+  const rawCss = css?.image?.styles || css;
+
   const cleanedCss = Object.fromEntries(
-    Object.entries(css).filter(
+    Object.entries(rawCss).filter(
       ([_, value]) =>
         value !== null &&
         value !== undefined &&
@@ -329,7 +332,6 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     return { success: false, error: "No valid styles to save" };
   }
 
-  // ✅ Convert camelCase to kebab-case
   const kebabCss = toKebabCaseStyleObject(cleanedCss);
 
   const payload = {
