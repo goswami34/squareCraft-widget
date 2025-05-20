@@ -405,6 +405,109 @@ function cleanCssObject(css = {}) {
   );
 }
 
+// export async function saveModificationsforImage(blockId, css, tagType) {
+//   const currentPageId =
+//     pageId ||
+//     document
+//       .querySelector("article[data-page-sections]")
+//       ?.getAttribute("data-page-sections");
+
+//   if (!currentPageId || !blockId || !css || typeof css !== "object") {
+//     console.warn("⚠️ Missing or invalid data to save image modifications.", {
+//       pageId: currentPageId,
+//       blockId,
+//       css,
+//     });
+//     return {
+//       success: false,
+//       error: "Missing required data for image modification",
+//     };
+//   }
+
+//   if (tagType !== "image") {
+//     console.warn(
+//       `⚠️ saveModificationsforImage called with incorrect tagType: ${tagType}. Expected 'image'.`
+//     );
+//   }
+
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
+
+//   if (!userId || !token || !widgetId) {
+//     console.warn("⚠️ Missing authentication data for image modification save.");
+//     return {
+//       success: false,
+//       error: "Missing authentication data",
+//     };
+//   }
+
+//   // ✅ Deep clean css.image.styles if full object was passed
+//   const rawCss = css?.image?.styles || css;
+//   const cleanedCss = cleanCssObject(rawCss);
+
+//   // ❗ Make sure we don't send empty object
+//   if (Object.keys(cleanedCss).length === 0) {
+//     console.warn("⚠️ Nothing to save — all CSS properties are empty or null.");
+//     return {
+//       success: false,
+//       error: "No valid styles to save",
+//     };
+//   }
+
+//   const flatPayload = {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId: currentPageId,
+//     elementId: blockId,
+//     css: {
+//       image: {
+//         selector: `#${blockId} div.sqs-image-content`,
+//         styles: cleanedCss,
+//       },
+//     },
+//   };
+
+//   console.log("📤 Final Payload being sent:", flatPayload);
+
+//   try {
+//     const response = await fetch(
+//       "http://localhost:8001/api/v1/image-modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(flatPayload),
+//       }
+//     );
+
+//     const result = await response.json();
+
+//     if (!response.ok) {
+//       throw new Error(result.message || `Error: ${response.status}`);
+//     }
+
+//     console.log("✅ Image modification saved:", result);
+//     showNotification("Image styles saved successfully!", "success");
+
+//     return {
+//       success: true,
+//       data: result,
+//     };
+//   } catch (error) {
+//     console.error("❌ Image modification save failed:", error);
+//     showNotification(`Save failed: ${error.message}`, "error");
+
+//     return {
+//       success: false,
+//       error: error.message,
+//     };
+//   }
+// }
+
 export async function saveModificationsforImage(blockId, css, tagType) {
   const currentPageId =
     pageId ||
@@ -424,38 +527,23 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     };
   }
 
-  if (tagType !== "image") {
-    console.warn(
-      `⚠️ saveModificationsforImage called with incorrect tagType: ${tagType}. Expected 'image'.`
-    );
-  }
-
   const userId = localStorage.getItem("sc_u_id");
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
   if (!userId || !token || !widgetId) {
-    console.warn("⚠️ Missing authentication data for image modification save.");
-    return {
-      success: false,
-      error: "Missing authentication data",
-    };
+    console.warn("⚠️ Missing authentication data.");
+    return { success: false, error: "Missing authentication data" };
   }
 
-  // ✅ Deep clean css.image.styles if full object was passed
-  const rawCss = css?.image?.styles || css;
-  const cleanedCss = cleanCssObject(rawCss);
+  const cleanedCss = cleanCssObject(css); // assumes cleaned already
 
-  // ❗ Make sure we don't send empty object
   if (Object.keys(cleanedCss).length === 0) {
-    console.warn("⚠️ Nothing to save — all CSS properties are empty or null.");
-    return {
-      success: false,
-      error: "No valid styles to save",
-    };
+    console.warn("⚠️ No valid styles to save.");
+    return { success: false, error: "No valid styles to save" };
   }
 
-  const flatPayload = {
+  const payload = {
     userId,
     token,
     widgetId,
@@ -469,10 +557,8 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     },
   };
 
-  console.log("📤 Final Payload being sent:", flatPayload);
-
   try {
-    const response = await fetch(
+    const res = await fetch(
       "http://localhost:8001/api/v1/image-modifications",
       {
         method: "POST",
@@ -480,30 +566,21 @@ export async function saveModificationsforImage(blockId, css, tagType) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(flatPayload),
+        body: JSON.stringify(payload),
       }
     );
 
-    const result = await response.json();
+    const result = await res.json();
 
-    if (!response.ok) {
-      throw new Error(result.message || `Error: ${response.status}`);
+    if (!res.ok) {
+      throw new Error(result.message || `HTTP ${res.status}`);
     }
 
-    console.log("✅ Image modification saved:", result);
-    showNotification("Image styles saved successfully!", "success");
-
-    return {
-      success: true,
-      data: result,
-    };
-  } catch (error) {
-    console.error("❌ Image modification save failed:", error);
-    showNotification(`Save failed: ${error.message}`, "error");
-
-    return {
-      success: false,
-      error: error.message,
-    };
+    showNotification("✅ Image styles saved!", "success");
+    return { success: true, data: result };
+  } catch (err) {
+    console.error("❌ Failed to save image styles:", err);
+    showNotification(`Save failed: ${err.message}`, "error");
+    return { success: false, error: err.message };
   }
 }
