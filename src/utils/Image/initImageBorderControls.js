@@ -339,6 +339,37 @@ export function initImageBorderControls(selectedElement, context = {}) {
     }
   });
 
+  // ✅ Also inject image-level styles like object-fit into database
+  const imageTagSelector = `#siteWrapper #${blockId} .sqs-image-content img`;
+  const imageStyleTagId = `sc-img-style-${blockId}`;
+  let imgTag = document.getElementById(imageStyleTagId);
+  if (!imgTag) {
+    imgTag = document.createElement("style");
+    imgTag.id = imageStyleTagId;
+    document.head.appendChild(imgTag);
+  }
+  imgTag.textContent = `
+${imageTagSelector} {
+  box-sizing: border-box;
+  object-fit: cover !important;
+}`;
+
+  // ✅ Save imageTag styles to DB along with main styles
+  mergeAndSaveImageStyles(
+    blockId,
+    {
+      ...cssProps,
+      imageTag: {
+        selector: imageTagSelector,
+        styles: {
+          "box-sizing": "border-box",
+          "object-fit": "cover",
+        },
+      },
+    },
+    saveModificationsforImage
+  );
+
   //color selection start here
 
   const colorCode = document.getElementById("color-code");
@@ -715,24 +746,4 @@ export function initImageBorderControls(selectedElement, context = {}) {
     });
 
   // border radius end here
-
-  //image border controls end here
-  // ✅ Inject object-fit and box-sizing to the image inside the block
-  const imageSelector = `#siteWrapper #${block.id} .sqs-image-content img`;
-  const imageStyleTagId = `sc-img-style-${block.id}`;
-
-  let imgStyleTag = document.getElementById(imageStyleTagId);
-  if (!imgStyleTag) {
-    imgStyleTag = document.createElement("style");
-    imgStyleTag.id = imageStyleTagId;
-    document.head.appendChild(imgStyleTag);
-  }
-
-  imgStyleTag.textContent = `
-  ${imageSelector} {
-    box-sizing: border-box;
-    object-fit: cover !important;
-  }`;
-
-  //image border controls end here
 }
