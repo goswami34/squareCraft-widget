@@ -718,8 +718,8 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
   //image border controls end here
   // ✅ Inject object-fit and box-sizing to the image inside the block
-  const imageSelector = `#siteWrapper #${blockId} .sqs-image-content img`;
-  const imageStyleTagId = `sc-img-style-${blockId}`;
+  const imageSelector = `#siteWrapper #${block.id} .sqs-image-content img`;
+  const imageStyleTagId = `sc-img-style-${block.id}`;
 
   let imgStyleTag = document.getElementById(imageStyleTagId);
   if (!imgStyleTag) {
