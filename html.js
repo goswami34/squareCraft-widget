@@ -290,6 +290,26 @@ export function initPublishButton() {
 //     })
 //   );
 // }
+function toKebabCaseStyleObject(obj) {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => {
+      const kebabKey = key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+      return [kebabKey, value];
+    })
+  );
+}
+
+function cleanCssObject(css = {}) {
+  return Object.fromEntries(
+    Object.entries(css).filter(
+      ([_, value]) =>
+        value !== null &&
+        value !== undefined &&
+        value !== "" &&
+        value !== "null"
+    )
+  );
+}
 
 export async function saveModificationsforImage(blockId, css, tagType) {
   const pageId = document
@@ -314,24 +334,19 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     return { success: false, error: "Missing authentication data" };
   }
 
-  // 🟡 FIX HERE: if css.image.styles exists, use it, otherwise use raw css
+  // ✅ Check if css has nested `image.styles` or is raw styles directly
   const rawCss = css?.image?.styles || css;
+  const selector = css?.image?.selector || `#${blockId} div.sqs-image-content`;
 
-  const cleanedCss = Object.fromEntries(
-    Object.entries(rawCss).filter(
-      ([_, value]) =>
-        value !== null &&
-        value !== undefined &&
-        value !== "" &&
-        value !== "null"
-    )
-  );
+  // ✅ Clean invalid values
+  const cleanedCss = cleanCssObject(rawCss);
 
   if (Object.keys(cleanedCss).length === 0) {
     console.warn("⚠️ No valid styles to save");
     return { success: false, error: "No valid styles to save" };
   }
 
+  // ✅ Convert camelCase → kebab-case
   const kebabCss = toKebabCaseStyleObject(cleanedCss);
 
   const payload = {
@@ -342,17 +357,17 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     elementId: blockId,
     css: {
       image: {
-        selector: `#${blockId} div.sqs-image-content`,
+        selector,
         styles: kebabCss,
       },
     },
   };
 
-  console.log("📤 Final image payload:", payload);
+  console.log("📤 Final image payload being sent:", payload);
 
   try {
     const response = await fetch(
-      "http://localhost:8001/api/v1/image-modifications",
+      "https://admin.squareplugin.com/api/v1/image-modifications",
       {
         method: "POST",
         headers: {
@@ -374,7 +389,7 @@ export async function saveModificationsforImage(blockId, css, tagType) {
 
     return { success: true, data: result };
   } catch (err) {
-    console.error("❌ Error saving modifications:", err);
+    console.error("❌ Error saving image modifications:", err);
     showNotification(`Failed to save changes: ${err.message}`, "error");
     return { success: false, error: err.message };
   }
