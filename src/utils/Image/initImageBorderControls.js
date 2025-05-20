@@ -255,65 +255,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
     document.addEventListener("touchend", stopDrag);
   }
 
-  // function handleDrag(e) {
-  //   if (!isDragging) return;
-
-  //   const imageContent = document.querySelector(".sc-selected-image");
-  //   if (!imageContent) return;
-
-  //   const blockElement = imageContent.closest('[id^="block-"]');
-  //   if (!blockElement) return;
-
-  //   const blockId = blockElement.id;
-
-  //   const rect = borderWidthSlider.getBoundingClientRect();
-  //   const clientX = e.clientX || e.touches?.[0]?.clientX;
-  //   let offsetX = clientX - rect.left;
-
-  //   const max = borderWidthSlider.offsetWidth;
-  //   const bulletRadius = borderWidthBullet.offsetWidth / 2;
-  //   offsetX = Math.max(bulletRadius, Math.min(offsetX, max - bulletRadius));
-
-  //   const percent = offsetX / max;
-  //   const borderWidth = Math.round(percent * 100);
-
-  //   borderWidthBullet.style.left = `${offsetX}px`;
-  //   borderWidthBullet.style.transform = "translateX(-50%)";
-  //   borderWidthFill.style.width = `${offsetX}px`;
-  //   borderWidthDisplay.textContent = `${borderWidth}px`;
-
-  //   updateStyleElement(blockElement.id, borderWidth);
-  //   allBorderWidth = borderWidth; // Update global state
-
-  //   mergeAndSaveImageStyles(
-  //     blockElement.id,
-  //     {
-  //       "border-width": `${borderWidth}px`,
-  //       "border-style": currentActiveBorderStyle,
-  //       ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-  //       ...(currentRadiusAll > 0 && {
-  //         "border-radius": `${currentRadiusAll}px !important`,
-  //       }),
-  //     },
-  //     saveModificationsforImage
-  //   );
-
-  //   // Add to pending modifications
-  //   if (blockElement && blockElement.id) {
-  //     const cssProps = {
-  //       "border-width": `${allBorderWidth}px`,
-  //       "border-style": currentActiveBorderStyle,
-  //     };
-  //     if (selectedBorderColor) {
-  //       cssProps["border-color"] = selectedBorderColor;
-  //     }
-  //     if (currentRadiusAll > 0) {
-  //       cssProps["border-radius"] = `${currentRadiusAll}px !important`;
-  //     }
-  //     addPendingModification(blockElement.id, cssProps, "image");
-  //   }
-  // }
-
   function handleDrag(e) {
     if (!isDragging) return;
 
