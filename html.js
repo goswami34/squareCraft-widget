@@ -282,128 +282,128 @@ export function initPublishButton() {
   });
 }
 
-// export async function saveModificationsforImage(blockId, css, tagType) {
-//   const currentPpageId =
-//     pageId ||
-//     document
-//       .querySelector("article[data-page-sections]")
-//       ?.getAttribute("data-page-sections");
+export async function saveModificationsforImage(blockId, css, tagType) {
+  const currentPpageId =
+    pageId ||
+    document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
 
-//   if (!currentPpageId || !blockId || !css) {
-//     console.warn("⚠️ Missing required data to save image modifications.", {
-//       pageId: currentPpageId,
-//       blockId,
-//       css,
-//     });
-//     return {
-//       success: false,
-//       error: "Missing required data for image modification",
-//     };
-//   }
+  if (!currentPpageId || !blockId || !css) {
+    console.warn("⚠️ Missing required data to save image modifications.", {
+      pageId: currentPpageId,
+      blockId,
+      css,
+    });
+    return {
+      success: false,
+      error: "Missing required data for image modification",
+    };
+  }
 
-//   if (tagType !== "image") {
-//     console.warn(
-//       `⚠️ saveModificationsforImage called with incorrect tagType: ${tagType}. Expected 'image'.`
-//     );
-//     // Optionally, you could redirect to the generic saveModifications or return an error.
-//     // For now, let's proceed but be aware this might indicate a logic error elsewhere.
-//   }
+  if (tagType !== "image") {
+    console.warn(
+      `⚠️ saveModificationsforImage called with incorrect tagType: ${tagType}. Expected 'image'.`
+    );
+    // Optionally, you could redirect to the generic saveModifications or return an error.
+    // For now, let's proceed but be aware this might indicate a logic error elsewhere.
+  }
 
-//   const userId = localStorage.getItem("sc_u_id");
-//   const token = localStorage.getItem("sc_auth_token");
-//   const widgetId = localStorage.getItem("sc_w_id");
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
 
-//   if (!userId || !token || !widgetId) {
-//     console.warn("⚠️ Missing authentication data for image modification save.");
-//     return {
-//       success: false,
-//       error: "Missing authentication data",
-//     };
-//   }
+  if (!userId || !token || !widgetId) {
+    console.warn("⚠️ Missing authentication data for image modification save.");
+    return {
+      success: false,
+      error: "Missing authentication data",
+    };
+  }
 
-//   const modificationData = {
-//     userId,
-//     token,
-//     widgetId,
-//     modifications: [
-//       {
-//         pageId: currentPpageId,
-//         elements: [
-//           {
-//             elementId: blockId,
-//             css: {
-//               image: {
-//                 ...css,
-//               },
-//             },
-//             elementStructure: {
-//               type: "image",
-//               content: "Image",
-//               parentId:
-//                 document.getElementById(blockId)?.parentElement?.id || null,
-//             },
-//           },
-//         ],
-//       },
-//     ],
-//   };
+  const modificationData = {
+    userId,
+    token,
+    widgetId,
+    modifications: [
+      {
+        pageId: currentPpageId,
+        elements: [
+          {
+            elementId: blockId,
+            css: {
+              image: {
+                ...css,
+              },
+            },
+            elementStructure: {
+              type: "image",
+              content: "Image",
+              parentId:
+                document.getElementById(blockId)?.parentElement?.id || null,
+            },
+          },
+        ],
+      },
+    ],
+  };
 
-//   console.log(
-//     "💾 Attempting to save image modification with payload:",
-//     JSON.stringify(modificationData, null, 2)
-//   );
-
-//   try {
-//     const response = await fetch(
-//       "http://localhost:8001/api/v1/Image-modifications",
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify(modificationData),
-//       }
-//     );
-
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       throw new Error(
-//         errorData.message || `HTTP error! status: ${response.status}`
-//       );
-//     }
-
-//     const result = await response.json();
-//     console.log("✅ Changes Saved Successfully!", result);
-
-//     showNotification("Changes saved successfully!", "success");
-
-//     return {
-//       success: true,
-//       data: result,
-//     };
-//   } catch (error) {
-//     console.error("❌ Error saving modifications:", error);
-//     showNotification(`Failed to save changes: ${error.message}`, "error");
-
-//     return {
-//       success: false,
-//       error: error.message,
-//     };
-//   }
-// }
-
-function cleanCssObject(css = {}) {
-  return Object.fromEntries(
-    Object.entries(css).filter(
-      ([_, value]) =>
-        value !== null &&
-        value !== undefined &&
-        value !== "" &&
-        value !== "null"
-    )
+  console.log(
+    "💾 Attempting to save image modification with payload:",
+    JSON.stringify(modificationData, null, 2)
   );
+
+  try {
+    const response = await fetch(
+      "http://localhost:8001/api/v1/Image-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(modificationData),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    const result = await response.json();
+    console.log("✅ Changes Saved Successfully!", result);
+
+    showNotification("Changes saved successfully!", "success");
+
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (error) {
+    console.error("❌ Error saving modifications:", error);
+    showNotification(`Failed to save changes: ${error.message}`, "error");
+
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
 }
+
+// function cleanCssObject(css = {}) {
+//   return Object.fromEntries(
+//     Object.entries(css).filter(
+//       ([_, value]) =>
+//         value !== null &&
+//         value !== undefined &&
+//         value !== "" &&
+//         value !== "null"
+//     )
+//   );
+// }
 
 // export async function saveModificationsforImage(blockId, css, tagType) {
 //   const currentPageId =
@@ -508,79 +508,79 @@ function cleanCssObject(css = {}) {
 //   }
 // }
 
-export async function saveModificationsforImage(blockId, css, tagType) {
-  const currentPageId =
-    pageId ||
-    document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
+// export async function saveModificationsforImage(blockId, css, tagType) {
+//   const currentPageId =
+//     pageId ||
+//     document
+//       .querySelector("article[data-page-sections]")
+//       ?.getAttribute("data-page-sections");
 
-  if (!currentPageId || !blockId || !css || typeof css !== "object") {
-    console.warn("⚠️ Missing or invalid data to save image modifications.", {
-      pageId: currentPageId,
-      blockId,
-      css,
-    });
-    return {
-      success: false,
-      error: "Missing required data for image modification",
-    };
-  }
+//   if (!currentPageId || !blockId || !css || typeof css !== "object") {
+//     console.warn("⚠️ Missing or invalid data to save image modifications.", {
+//       pageId: currentPageId,
+//       blockId,
+//       css,
+//     });
+//     return {
+//       success: false,
+//       error: "Missing required data for image modification",
+//     };
+//   }
 
-  const userId = localStorage.getItem("sc_u_id");
-  const token = localStorage.getItem("sc_auth_token");
-  const widgetId = localStorage.getItem("sc_w_id");
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
 
-  if (!userId || !token || !widgetId) {
-    console.warn("⚠️ Missing authentication data.");
-    return { success: false, error: "Missing authentication data" };
-  }
+//   if (!userId || !token || !widgetId) {
+//     console.warn("⚠️ Missing authentication data.");
+//     return { success: false, error: "Missing authentication data" };
+//   }
 
-  const cleanedCss = cleanCssObject(css); // assumes cleaned already
+//   const cleanedCss = cleanCssObject(css); // assumes cleaned already
 
-  if (Object.keys(cleanedCss).length === 0) {
-    console.warn("⚠️ No valid styles to save.");
-    return { success: false, error: "No valid styles to save" };
-  }
+//   if (Object.keys(cleanedCss).length === 0) {
+//     console.warn("⚠️ No valid styles to save.");
+//     return { success: false, error: "No valid styles to save" };
+//   }
 
-  const payload = {
-    userId,
-    token,
-    widgetId,
-    pageId: currentPageId,
-    elementId: blockId,
-    css: {
-      image: {
-        selector: `#${blockId} div.sqs-image-content`,
-        styles: cleanedCss,
-      },
-    },
-  };
+//   const payload = {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId: currentPageId,
+//     elementId: blockId,
+//     css: {
+//       image: {
+//         selector: `#${blockId} div.sqs-image-content`,
+//         styles: cleanedCss,
+//       },
+//     },
+//   };
 
-  try {
-    const res = await fetch(
-      "http://localhost:8001/api/v1/image-modifications",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      }
-    );
+//   try {
+//     const res = await fetch(
+//       "http://localhost:8001/api/v1/image-modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
 
-    const result = await res.json();
+//     const result = await res.json();
 
-    if (!res.ok) {
-      throw new Error(result.message || `HTTP ${res.status}`);
-    }
+//     if (!res.ok) {
+//       throw new Error(result.message || `HTTP ${res.status}`);
+//     }
 
-    showNotification("✅ Image styles saved!", "success");
-    return { success: true, data: result };
-  } catch (err) {
-    console.error("❌ Failed to save image styles:", err);
-    showNotification(`Save failed: ${err.message}`, "error");
-    return { success: false, error: err.message };
-  }
-}
+//     showNotification("✅ Image styles saved!", "success");
+//     return { success: true, data: result };
+//   } catch (err) {
+//     console.error("❌ Failed to save image styles:", err);
+//     showNotification(`Save failed: ${err.message}`, "error");
+//     return { success: false, error: err.message };
+//   }
+// }
