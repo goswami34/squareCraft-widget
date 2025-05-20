@@ -345,6 +345,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
     const cssProps = {
       "border-style": currentActiveBorderStyle,
+      "box-sizing": "border-box",
       ...(selectedBorderColor && { "border-color": selectedBorderColor }),
       ...(currentRadiusAll > 0 && {
         "border-radius": `${currentRadiusAll}px !important`,
@@ -542,6 +543,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
         block.id,
         {
           "border-width": `${allBorderWidth}px`,
+          "box-sizing": "border-box",
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
           "border-style": currentActiveBorderStyle,
           ...(currentRadiusAll > 0 && {
