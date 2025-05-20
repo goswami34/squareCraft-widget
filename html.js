@@ -320,6 +320,9 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     return { success: false, error: "No valid styles to save" };
   }
 
+  // ✅ Convert camelCase to kebab-case
+  const kebabCss = toKebabCaseStyleObject(cleanedCss);
+
   const payload = {
     userId,
     token,
@@ -329,7 +332,7 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     css: {
       image: {
         selector: `#${blockId} div.sqs-image-content`,
-        styles: cleanedCss,
+        styles: kebabCss,
       },
     },
   };
