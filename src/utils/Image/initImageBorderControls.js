@@ -795,15 +795,32 @@ export function initImageBorderControls(selectedElement, context = {}) {
       currentRadiusAll = radius; // ✅ Important!
     }
 
+    // mergeAndSaveImageStyles(
+    //   block.id,
+    //   {
+    //     "border-width": `${allBorderWidth}px`,
+    //     ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+    //     "border-style": currentActiveBorderStyle,
+    //     ...(type === "all"
+    //       ? { "border-radius": `${radius}px` }
+    //       : { [currentProp]: `${radius}px` }),
+    //   },
+    //   saveModificationsforImage
+    // );
+
     mergeAndSaveImageStyles(
       block.id,
       {
-        "border-width": `${allBorderWidth}px`,
-        ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-        "border-style": currentActiveBorderStyle,
-        ...(type === "all"
-          ? { "border-radius": `${radius}px` }
-          : { [currentProp]: `${radius}px` }),
+        image: {
+          styles: {
+            "border-width": `${allBorderWidth}px`,
+            ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+            "border-style": currentActiveBorderStyle,
+            ...(type === "all"
+              ? { "border-radius": `${radius}px` }
+              : { [currentProp]: `${radius}px` }),
+          },
+        },
       },
       saveModificationsforImage
     );
