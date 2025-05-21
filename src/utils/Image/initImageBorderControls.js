@@ -18,7 +18,12 @@ function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
     ...prevStyles,
     ...Object.fromEntries(
       Object.entries(newStyles).filter(
-        ([_, value]) => value !== null && value !== undefined && value !== "0px"
+        // ([_, value]) => value !== null && value !== undefined && value !== "0px"
+        ([_, value]) =>
+          value !== null &&
+          value !== undefined &&
+          value !== "" &&
+          value !== "null"
       )
     ),
   };
@@ -62,7 +67,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
     palette?.classList.toggle("sc-hidden");
   });
 
-  let selectedBorderColor = newColor; // default
+  let selectedBorderColor = null; // default
   let currentActiveBorderStyle = "solid"; // To track the active border style
   let currentRadiusAll = 0; // Track general border-radius
 
