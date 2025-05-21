@@ -469,15 +469,41 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
       styleTag.textContent = currentCSS;
 
+      // mergeAndSaveImageStyles(
+      //   block.id,
+      //   {
+      //     "border-width": `${allBorderWidth}px`,
+      //     "border-style": currentActiveBorderStyle,
+      //     ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+      //     ...(currentRadiusAll > 0 && {
+      //       "border-radius": `${currentRadiusAll}px !important`,
+      //     }),
+      //   },
+      //   saveModificationsforImage
+      // );
+
       mergeAndSaveImageStyles(
         block.id,
         {
-          "border-width": `${allBorderWidth}px`,
-          "border-style": currentActiveBorderStyle,
-          ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-          ...(currentRadiusAll > 0 && {
-            "border-radius": `${currentRadiusAll}px !important`,
-          }),
+          image: {
+            selector: `#${blockId} div.sqs-image-content`,
+            styles: {
+              ...cssProps,
+              ...(selectedBorderColor
+                ? { "border-color": selectedBorderColor }
+                : {}),
+              ...(currentRadiusAll > 0
+                ? { "border-radius": `${currentRadiusAll}px !important` }
+                : {}),
+            },
+          },
+          imageTag: {
+            selector: `#${blockId} .sqs-image-content img`,
+            styles: {
+              "box-sizing": "border-box",
+              "object-fit": "cover",
+            },
+          },
         },
         saveModificationsforImage
       );
