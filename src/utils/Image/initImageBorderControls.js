@@ -14,16 +14,25 @@ function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
   const prevStyles = imageStyleMap.get(blockId) || {};
 
   // Fix: fallback to previous saved values if current state is missing/invalid
+  // const safeStyles = {
+  //   ...prevStyles,
+  //   ...Object.fromEntries(
+  //     Object.entries(newStyles).filter(
+  //       // ([_, value]) => value !== null && value !== undefined && value !== "0px"
+  //       ([_, value]) =>
+  //         value !== null &&
+  //         value !== undefined &&
+  //         value !== "" &&
+  //         value !== "null"
+  //     )
+  //   ),
+  // };
+
   const safeStyles = {
     ...prevStyles,
     ...Object.fromEntries(
       Object.entries(newStyles).filter(
-        // ([_, value]) => value !== null && value !== undefined && value !== "0px"
-        ([_, value]) =>
-          value !== null &&
-          value !== undefined &&
-          value !== "" &&
-          value !== "null"
+        ([_, value]) => value !== null && value !== undefined
       )
     ),
   };
@@ -469,41 +478,15 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
       styleTag.textContent = currentCSS;
 
-      // mergeAndSaveImageStyles(
-      //   block.id,
-      //   {
-      //     "border-width": `${allBorderWidth}px`,
-      //     "border-style": currentActiveBorderStyle,
-      //     ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-      //     ...(currentRadiusAll > 0 && {
-      //       "border-radius": `${currentRadiusAll}px !important`,
-      //     }),
-      //   },
-      //   saveModificationsforImage
-      // );
-
       mergeAndSaveImageStyles(
         block.id,
         {
-          image: {
-            selector: `#${block.id} div.sqs-image-content`,
-            styles: {
-              ...cssProps,
-              ...(selectedBorderColor
-                ? { "border-color": selectedBorderColor }
-                : {}),
-              ...(currentRadiusAll > 0
-                ? { "border-radius": `${currentRadiusAll}px !important` }
-                : {}),
-            },
-          },
-          imageTag: {
-            selector: `#${block.id} .sqs-image-content img`,
-            styles: {
-              "box-sizing": "border-box",
-              "object-fit": "cover",
-            },
-          },
+          "border-width": `${allBorderWidth}px`,
+          "border-style": currentActiveBorderStyle,
+          ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+          ...(currentRadiusAll > 0 && {
+            "border-radius": `${currentRadiusAll}px !important`,
+          }),
         },
         saveModificationsforImage
       );
