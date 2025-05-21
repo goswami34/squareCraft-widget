@@ -1613,16 +1613,12 @@ let pendingModifications = new Map();
       // });
 
       elements.forEach(({ elementId, css }) => {
-        // --------- MAIN image block styles ---------
-        let styleBlock = css?.image;
-        let selector = `#${elementId} div.sqs-image-content`;
+        // --- Apply main block styles ---
+        const imageStyles = css?.image?.styles || css?.image || {};
+        const selector =
+          css?.image?.selector || `#${elementId} div.sqs-image-content`;
 
-        if (styleBlock?.styles) {
-          selector = styleBlock.selector || selector;
-          styleBlock = styleBlock.styles;
-        }
-
-        if (styleBlock && typeof styleBlock === "object") {
+        if (Object.keys(imageStyles).length > 0) {
           const styleTagId = `sc-style-${elementId}`;
           let styleTag = document.getElementById(styleTagId);
           if (!styleTag) {
@@ -1631,16 +1627,8 @@ let pendingModifications = new Map();
             document.head.appendChild(styleTag);
           }
 
-          const hasShorthandWidth = styleBlock["border-width"];
-          if (hasShorthandWidth) {
-            delete styleBlock["border-top-width"];
-            delete styleBlock["border-bottom-width"];
-            delete styleBlock["border-left-width"];
-            delete styleBlock["border-right-width"];
-          }
-
           let cssText = `${selector} {`;
-          Object.entries(styleBlock).forEach(([prop, value]) => {
+          Object.entries(imageStyles).forEach(([prop, value]) => {
             if (value !== null && value !== undefined && value !== "null") {
               cssText += `${prop}: ${value} !important; `;
             }
@@ -1649,7 +1637,7 @@ let pendingModifications = new Map();
           styleTag.textContent = cssText;
         }
 
-        // --------- IMAGE TAG styles ---------
+        // --- Apply img tag styles ---
         const imageTagBlock = css?.imageTag;
         if (imageTagBlock?.selector && imageTagBlock?.styles) {
           const imgTagId = `sc-img-style-${elementId}`;
@@ -1667,7 +1655,6 @@ let pendingModifications = new Map();
             }
           });
           imgCSS += "}";
-
           imgTag.textContent = imgCSS;
         }
 
