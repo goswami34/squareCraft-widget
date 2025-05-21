@@ -1613,6 +1613,7 @@ let pendingModifications = new Map();
       // });
 
       elements.forEach(({ elementId, css }) => {
+        // --------- MAIN image block styles ---------
         let styleBlock = css?.image;
         let selector = `#${elementId} div.sqs-image-content`;
 
@@ -1621,36 +1622,34 @@ let pendingModifications = new Map();
           styleBlock = styleBlock.styles;
         }
 
-        if (!styleBlock || typeof styleBlock !== "object") return;
-
-        const styleTagId = `sc-style-${elementId}`;
-        let styleTag = document.getElementById(styleTagId);
-        if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = styleTagId;
-          document.head.appendChild(styleTag);
-        }
-
-        // 🧼 Optional cleanup for shorthand border-width
-        const hasShorthandWidth = styleBlock["border-width"];
-        if (hasShorthandWidth) {
-          delete styleBlock["border-top-width"];
-          delete styleBlock["border-bottom-width"];
-          delete styleBlock["border-left-width"];
-          delete styleBlock["border-right-width"];
-        }
-
-        // ✅ Re-add the block styles
-        let cssText = `${selector} {`;
-        Object.entries(styleBlock).forEach(([prop, value]) => {
-          if (value !== null && value !== undefined && value !== "null") {
-            cssText += `${prop}: ${value} !important; `;
+        if (styleBlock && typeof styleBlock === "object") {
+          const styleTagId = `sc-style-${elementId}`;
+          let styleTag = document.getElementById(styleTagId);
+          if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = styleTagId;
+            document.head.appendChild(styleTag);
           }
-        });
-        cssText += "}";
-        styleTag.textContent = cssText;
 
-        // ✅ Apply optional imageTag styles (img-level styles)
+          const hasShorthandWidth = styleBlock["border-width"];
+          if (hasShorthandWidth) {
+            delete styleBlock["border-top-width"];
+            delete styleBlock["border-bottom-width"];
+            delete styleBlock["border-left-width"];
+            delete styleBlock["border-right-width"];
+          }
+
+          let cssText = `${selector} {`;
+          Object.entries(styleBlock).forEach(([prop, value]) => {
+            if (value !== null && value !== undefined && value !== "null") {
+              cssText += `${prop}: ${value} !important; `;
+            }
+          });
+          cssText += "}";
+          styleTag.textContent = cssText;
+        }
+
+        // --------- IMAGE TAG styles ---------
         const imageTagBlock = css?.imageTag;
         if (imageTagBlock?.selector && imageTagBlock?.styles) {
           const imgTagId = `sc-img-style-${elementId}`;
