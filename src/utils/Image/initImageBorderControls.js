@@ -353,12 +353,38 @@ export function initImageBorderControls(selectedElement, context = {}) {
     //   saveModificationsforImage
     // );
 
+    // mergeAndSaveImageStyles(
+    //   blockId,
+    //   {
+    //     image: {
+    //       selector: `#${blockId} div.sqs-image-content`,
+    //       styles: cssProps,
+    //     },
+    //     imageTag: {
+    //       selector: `#${blockId} .sqs-image-content img`,
+    //       styles: {
+    //         "box-sizing": "border-box",
+    //         "object-fit": "cover",
+    //       },
+    //     },
+    //   },
+    //   saveModificationsforImage
+    // );
+
     mergeAndSaveImageStyles(
       blockId,
       {
         image: {
           selector: `#${blockId} div.sqs-image-content`,
-          styles: cssProps,
+          styles: {
+            ...cssProps,
+            ...(selectedBorderColor
+              ? { "border-color": selectedBorderColor }
+              : {}),
+            ...(currentRadiusAll > 0
+              ? { "border-radius": `${currentRadiusAll}px !important` }
+              : {}),
+          },
         },
         imageTag: {
           selector: `#${blockId} .sqs-image-content img`,
