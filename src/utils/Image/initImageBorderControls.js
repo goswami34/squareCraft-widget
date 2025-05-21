@@ -714,6 +714,121 @@ export function initImageBorderControls(selectedElement, context = {}) {
   // ✅ Call this at the end
   initRadiusProgressbarControls();
 
+  // function applyBorderRadius(type, radius) {
+  //   const selected = document.querySelector(".sc-selected-image");
+  //   if (!selected) return;
+
+  //   const block = selected.closest('[id^="block-"]');
+  //   if (!block) return;
+
+  //   const blockSelector = `#${block.id} div.sqs-image-content`;
+  //   let styleTag = document.getElementById("sc-image-border-style");
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = "sc-image-border-style";
+  //     document.head.appendChild(styleTag);
+  //   }
+
+  //   const props = {
+  //     all: "border-radius",
+  //     topLeft: "border-top-left-radius",
+  //     topRight: "border-top-right-radius",
+  //     bottomLeft: "border-bottom-left-radius",
+  //     bottomRight: "border-bottom-right-radius",
+  //   };
+
+  //   const currentProp = props[type];
+  //   if (!currentProp) return;
+
+  //   let currentCSS = styleTag.textContent;
+  //   const blockRegex = new RegExp(
+  //     `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+  //     "g"
+  //   );
+  //   const match = blockRegex.exec(currentCSS);
+
+  //   if (match) {
+  //     let declarations = match[2];
+
+  //     // Remove ONLY the active prop
+  //     declarations = declarations.replace(
+  //       new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
+  //       ""
+  //     );
+
+  //     // ✅ If updating corner only, do NOT touch `border-radius`
+  //     if (type !== "all") {
+  //       declarations = declarations.replace(/border-radius\s*:\s*[^;]+;?/g, "");
+  //     }
+
+  //     declarations += `\n  ${currentProp}: ${radius}px !important;`;
+
+  //     const updated = `${match[1]}${declarations}\n${match[3]}`;
+  //     currentCSS = currentCSS.replace(blockRegex, updated);
+  //   } else {
+  //     currentCSS += `\n${blockSelector} {\n  ${currentProp}: ${radius}px !important;\n}`;
+  //   }
+
+  //   styleTag.textContent = currentCSS.trim();
+
+  //   const radiusProps = {
+  //     all: { "border-radius": `${radius}px !important` },
+  //     topLeft: { "border-top-left-radius": `${radius}px !important` },
+  //     topRight: { "border-top-right-radius": `${radius}px !important` },
+  //     bottomLeft: { "border-bottom-left-radius": `${radius}px !important` },
+  //     bottomRight: { "border-bottom-right-radius": `${radius}px !important` },
+  //   };
+
+  //   // mergeAndSaveImageStyles(
+  //   //   block.id,
+  //   //   {
+  //   //     "border-width": `${allBorderWidth}px`,
+  //   //     ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+  //   //     "border-style": currentActiveBorderStyle,
+  //   //     ...(type === "all"
+  //   //       ? { "border-radius": `${radius}px` }
+  //   //       : { [currentProp]: `${radius}px` }),
+  //   //   },
+  //   //   saveModificationsforImage
+  //   // );
+  //   if (type === "all") {
+  //     currentRadiusAll = radius; // ✅ Important!
+  //   }
+
+  //   // mergeAndSaveImageStyles(
+  //   //   block.id,
+  //   //   {
+  //   //     "border-width": `${allBorderWidth}px`,
+  //   //     ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+  //   //     "border-style": currentActiveBorderStyle,
+  //   //     ...(type === "all"
+  //   //       ? { "border-radius": `${radius}px` }
+  //   //       : { [currentProp]: `${radius}px` }),
+  //   //   },
+  //   //   saveModificationsforImage
+  //   // );
+
+  //   mergeAndSaveImageStyles(
+  //     block.id,
+  //     {
+  //       image: {
+  //         styles: {
+  //           "border-width": `${allBorderWidth}px`,
+  //           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+  //           "border-style": currentActiveBorderStyle,
+  //           ...(type === "all"
+  //             ? { "border-radius": `${radius}px` }
+  //             : { [currentProp]: `${radius}px` }),
+  //         },
+  //       },
+  //     },
+  //     saveModificationsforImage
+  //   );
+
+  //   //save to database
+  //   // saveModificationsforImage(block, addPendingModification, "image");
+  // }
+
   function applyBorderRadius(type, radius) {
     const selected = document.querySelector(".sc-selected-image");
     if (!selected) return;
@@ -721,7 +836,8 @@ export function initImageBorderControls(selectedElement, context = {}) {
     const block = selected.closest('[id^="block-"]');
     if (!block) return;
 
-    const blockSelector = `#${block.id} div.sqs-image-content`;
+    const blockId = block.id;
+    const blockSelector = `#${blockId} div.sqs-image-content`;
     let styleTag = document.getElementById("sc-image-border-style");
     if (!styleTag) {
       styleTag = document.createElement("style");
@@ -729,6 +845,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
       document.head.appendChild(styleTag);
     }
 
+    // ✅ Map of radius types to CSS property names
     const props = {
       all: "border-radius",
       topLeft: "border-top-left-radius",
@@ -736,10 +853,10 @@ export function initImageBorderControls(selectedElement, context = {}) {
       bottomLeft: "border-bottom-left-radius",
       bottomRight: "border-bottom-right-radius",
     };
-
     const currentProp = props[type];
     if (!currentProp) return;
 
+    // ✅ Update live style in <style> tag
     let currentCSS = styleTag.textContent;
     const blockRegex = new RegExp(
       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
@@ -749,20 +866,16 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
     if (match) {
       let declarations = match[2];
-
-      // Remove ONLY the active prop
       declarations = declarations.replace(
         new RegExp(`${currentProp}\\s*:\\s*[^;]+;?`, "g"),
         ""
       );
 
-      // ✅ If updating corner only, do NOT touch `border-radius`
       if (type !== "all") {
         declarations = declarations.replace(/border-radius\s*:\s*[^;]+;?/g, "");
       }
 
       declarations += `\n  ${currentProp}: ${radius}px !important;`;
-
       const updated = `${match[1]}${declarations}\n${match[3]}`;
       currentCSS = currentCSS.replace(blockRegex, updated);
     } else {
@@ -771,49 +884,22 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
     styleTag.textContent = currentCSS.trim();
 
-    const radiusProps = {
-      all: { "border-radius": `${radius}px !important` },
-      topLeft: { "border-top-left-radius": `${radius}px !important` },
-      topRight: { "border-top-right-radius": `${radius}px !important` },
-      bottomLeft: { "border-bottom-left-radius": `${radius}px !important` },
-      bottomRight: { "border-bottom-right-radius": `${radius}px !important` },
-    };
-
-    // mergeAndSaveImageStyles(
-    //   block.id,
-    //   {
-    //     "border-width": `${allBorderWidth}px`,
-    //     ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-    //     "border-style": currentActiveBorderStyle,
-    //     ...(type === "all"
-    //       ? { "border-radius": `${radius}px` }
-    //       : { [currentProp]: `${radius}px` }),
-    //   },
-    //   saveModificationsforImage
-    // );
+    // ✅ Store currentRadiusAll if "all"
     if (type === "all") {
-      currentRadiusAll = radius; // ✅ Important!
+      currentRadiusAll = radius;
     }
 
-    // mergeAndSaveImageStyles(
-    //   block.id,
-    //   {
-    //     "border-width": `${allBorderWidth}px`,
-    //     ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-    //     "border-style": currentActiveBorderStyle,
-    //     ...(type === "all"
-    //       ? { "border-radius": `${radius}px` }
-    //       : { [currentProp]: `${radius}px` }),
-    //   },
-    //   saveModificationsforImage
-    // );
+    // ✅ Get previously saved border-width
+    const prevStyles = imageStyleMap.get(blockId)?.image?.styles || {};
+    const savedBorderWidth = prevStyles["border-width"] || "1px"; // fallback
 
+    // ✅ Save to database with correct border-width
     mergeAndSaveImageStyles(
-      block.id,
+      blockId,
       {
         image: {
           styles: {
-            "border-width": `${allBorderWidth}px`,
+            "border-width": savedBorderWidth,
             ...(selectedBorderColor && { "border-color": selectedBorderColor }),
             "border-style": currentActiveBorderStyle,
             ...(type === "all"
@@ -824,9 +910,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
       },
       saveModificationsforImage
     );
-
-    //save to database
-    // saveModificationsforImage(block, addPendingModification, "image");
   }
 
   const radiusValue = () => {
