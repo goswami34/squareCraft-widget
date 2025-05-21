@@ -62,7 +62,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
     palette?.classList.toggle("sc-hidden");
   });
 
-  let selectedBorderColor = null; // default
+  let selectedBorderColor = newColor; // default
   let currentActiveBorderStyle = "solid"; // To track the active border style
   let currentRadiusAll = 0; // Track general border-radius
 
@@ -702,12 +702,15 @@ export function initImageBorderControls(selectedElement, context = {}) {
     //     "border-width": `${allBorderWidth}px`,
     //     ...(selectedBorderColor && { "border-color": selectedBorderColor }),
     //     "border-style": currentActiveBorderStyle,
-    //     ...(currentRadiusAll > 0 && {
-    //       "border-radius": `${currentRadiusAll}px !important`,
-    //     }),
+    //     ...(type === "all"
+    //       ? { "border-radius": `${radius}px` }
+    //       : { [currentProp]: `${radius}px` }),
     //   },
     //   saveModificationsforImage
     // );
+    if (type === "all") {
+      currentRadiusAll = radius; // ✅ Important!
+    }
 
     mergeAndSaveImageStyles(
       block.id,
