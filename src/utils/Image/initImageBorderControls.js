@@ -486,7 +486,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
         block.id,
         {
           image: {
-            selector: `#${blockId} div.sqs-image-content`,
+            selector: `#${block.id} div.sqs-image-content`,
             styles: {
               ...cssProps,
               ...(selectedBorderColor
@@ -498,7 +498,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
             },
           },
           imageTag: {
-            selector: `#${blockId} .sqs-image-content img`,
+            selector: `#${block.id} .sqs-image-content img`,
             styles: {
               "box-sizing": "border-box",
               "object-fit": "cover",
