@@ -1661,6 +1661,8 @@ let pendingModifications = new Map();
         const block = document.getElementById(elementId);
         if (block) block.classList.add("sc-image-styled");
 
+        ///////// this is new code
+
         // ✅ Sync UI controls with restored styles
         const styleValues = css?.image?.styles || {};
         const blockElement = document.getElementById(elementId);
