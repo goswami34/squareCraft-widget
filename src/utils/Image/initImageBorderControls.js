@@ -10,37 +10,6 @@ const imageStyleMap = new Map();
 //   saveFn(blockId, mergedStyles, "image");
 // }
 
-// function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
-//   const prevStyles = imageStyleMap.get(blockId) || {};
-
-//   // Fix: fallback to previous saved values if current state is missing/invalid
-//   // const safeStyles = {
-//   //   ...prevStyles,
-//   //   ...Object.fromEntries(
-//   //     Object.entries(newStyles).filter(
-//   //       // ([_, value]) => value !== null && value !== undefined && value !== "0px"
-//   //       ([_, value]) =>
-//   //         value !== null &&
-//   //         value !== undefined &&
-//   //         value !== "" &&
-//   //         value !== "null"
-//   //     )
-//   //   ),
-//   // };
-
-//   const safeStyles = {
-//     ...prevStyles,
-//     ...Object.fromEntries(
-//       Object.entries(newStyles).filter(
-//         ([_, value]) => value !== null && value !== undefined
-//       )
-//     ),
-//   };
-
-//   imageStyleMap.set(blockId, safeStyles);
-//   saveFn(blockId, safeStyles, "image");
-// }
-
 function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
   const prevStyles = imageStyleMap.get(blockId) || {
     image: { selector: `#${blockId} div.sqs-image-content`, styles: {} },
@@ -389,40 +358,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
       object-fit: cover !important;
     }`;
 
-    // ✅ Save imageTag styles to DB along with main styles
-    // mergeAndSaveImageStyles(
-    //   blockId,
-    //   {
-    //     ...cssProps,
-    //     imageTag: {
-    //       selector: imageTagSelector,
-    //       styles: {
-    //         "box-sizing": "border-box",
-    //         "object-fit": "cover",
-    //       },
-    //     },
-    //   },
-    //   saveModificationsforImage
-    // );
-
-    // mergeAndSaveImageStyles(
-    //   blockId,
-    //   {
-    //     image: {
-    //       selector: `#${blockId} div.sqs-image-content`,
-    //       styles: cssProps,
-    //     },
-    //     imageTag: {
-    //       selector: `#${blockId} .sqs-image-content img`,
-    //       styles: {
-    //         "box-sizing": "border-box",
-    //         "object-fit": "cover",
-    //       },
-    //     },
-    //   },
-    //   saveModificationsforImage
-    // );
-
     mergeAndSaveImageStyles(
       blockId,
       {
@@ -477,67 +412,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
   const colorCode = document.getElementById("color-code");
   if (colorCode) {
-    // const observer = new MutationObserver(() => {
-    //   const newColor = colorCode.textContent.trim();
-    //   if (!newColor || newColor.toLowerCase() === "select") return;
-
-    //   selectedBorderColor = newColor;
-
-    //   const selected = document.querySelector(".sc-selected-image");
-    //   if (!selected) return;
-
-    //   const block = selected.closest('[id^="block-"]');
-    //   if (!block) return;
-
-    //   const blockSelector = `#${block.id} div.sqs-image-content`;
-    //   let styleTag = document.getElementById("sc-image-border-style");
-    //   if (!styleTag) {
-    //     styleTag = document.createElement("style");
-    //     styleTag.id = "sc-image-border-style";
-    //     document.head.appendChild(styleTag);
-    //   }
-
-    //   let currentCSS = styleTag.textContent;
-
-    //   // Replace or append `border-color`
-    //   const blockRegex = new RegExp(
-    //     `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
-    //     "g"
-    //   );
-    //   const match = blockRegex.exec(currentCSS);
-    //   if (match) {
-    //     let declarations = match[2]
-    //       .replace(/border-color\s*:\s*[^;]+;?/g, "")
-    //       .trim();
-    //     declarations += `\n  border-color: ${newColor} !important;`;
-    //     const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
-    //     currentCSS = currentCSS.replace(blockRegex, updated);
-    //   } else {
-    //     currentCSS += `
-    //       ${blockSelector} {
-    //         border-color: ${newColor} !important;
-    //       }`;
-    //   }
-
-    //   styleTag.textContent = currentCSS;
-
-    //   mergeAndSaveImageStyles(
-    //     block.id,
-    //     {
-    //       "border-width": `${allBorderWidth}px`,
-    //       "border-style": currentActiveBorderStyle,
-    //       ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-    //       ...(currentRadiusAll > 0 && {
-    //         "border-radius": `${currentRadiusAll}px !important`,
-    //       }),
-    //     },
-    //     saveModificationsforImage
-    //   );
-
-    //   //save to database
-    //   // saveModificationsforImage(block, addPendingModification, "image");
-    // });
-
     const observer = new MutationObserver(() => {
       const newColor = colorCode.textContent.trim();
       if (!newColor || newColor.toLowerCase() === "select") return;
