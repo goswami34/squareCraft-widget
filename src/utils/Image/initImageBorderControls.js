@@ -347,7 +347,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
       "object-fit": "cover",
       ...(selectedBorderColor && { "border-color": selectedBorderColor }),
       ...(currentRadiusAll > 0 && {
-        "border-radius": `${currentRadiusAll}px !important`,
+        "border-radius": `${currentRadiusAll}px`,
       }),
     };
 
@@ -434,7 +434,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
               ? { "border-color": selectedBorderColor }
               : {}),
             ...(currentRadiusAll > 0
-              ? { "border-radius": `${currentRadiusAll}px !important` }
+              ? { "border-radius": `${currentRadiusAll}px` }
               : {}),
           },
         },
@@ -596,7 +596,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
               "border-style": currentActiveBorderStyle,
               "border-color": newColor,
               ...(currentRadiusAll > 0 && {
-                "border-radius": `${currentRadiusAll}px !important`,
+                "border-radius": `${currentRadiusAll}px`,
               }),
             },
           },
@@ -690,7 +690,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
           ...(selectedBorderColor && { "border-color": selectedBorderColor }),
           "border-style": currentActiveBorderStyle,
           ...(currentRadiusAll > 0 && {
-            "border-radius": `${currentRadiusAll}px !important`,
+            "border-radius": `${currentRadiusAll}px`,
           }),
         },
         saveModificationsforImage
