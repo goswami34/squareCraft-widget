@@ -318,7 +318,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
     mergeAndSaveImageStyles(blockId, cssProps, saveModificationsforImage);
 
     // ✅ Also inject image-level styles like object-fit into database
-    const imageTagSelector = `#siteWrapper #${blockId} .sqs-image-content img`;
+    const imageTagSelector = `#${blockId} .sqs-image-content img`;
     const imageStyleTagId = `sc-img-style-${blockId}`;
     let imgTag = document.getElementById(imageStyleTagId);
     if (!imgTag) {

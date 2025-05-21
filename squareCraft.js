@@ -1548,6 +1548,70 @@ let pendingModifications = new Map();
 
       const elements = result.elements || [];
 
+      // elements.forEach(({ elementId, css }) => {
+      //   let styleBlock = css?.image;
+      //   let selector = `#${elementId} div.sqs-image-content`;
+
+      //   if (styleBlock?.styles) {
+      //     selector = styleBlock.selector || selector;
+      //     styleBlock = styleBlock.styles;
+      //   }
+
+      //   if (!styleBlock || typeof styleBlock !== "object") return;
+
+      //   const styleTagId = `sc-style-${elementId}`;
+      //   let styleTag = document.getElementById(styleTagId);
+      //   if (!styleTag) {
+      //     styleTag = document.createElement("style");
+      //     styleTag.id = styleTagId;
+      //     document.head.appendChild(styleTag);
+      //   }
+
+      //   // 🧼 Optional: Clear all sides if main border-width is used
+      //   const hasShorthandWidth = styleBlock["border-width"];
+      //   if (hasShorthandWidth) {
+      //     delete styleBlock["border-top-width"];
+      //     delete styleBlock["border-bottom-width"];
+      //     delete styleBlock["border-left-width"];
+      //     delete styleBlock["border-right-width"];
+      //   }
+
+      //   // let cssText = `${selector} {`;
+      //   // Object.entries(styleBlock).forEach(([prop, value]) => {
+      //   //   if (value !== null && value !== undefined && value !== "null") {
+      //   //     cssText += `${prop}: ${value} !important; `;
+      //   //   }
+      //   // });
+      //   // cssText += "}";
+
+      //   // styleTag.textContent = cssText;
+
+      //   // const block = document.getElementById(elementId);
+      //   // if (block) block.classList.add("sc-image-styled");
+
+      //   // ✅ Apply optional imageTag styles (img-level styles)
+      //   const imageTagBlock = css?.imageTag;
+      //   if (imageTagBlock?.selector && imageTagBlock?.styles) {
+      //     const imgTagId = `sc-img-style-${elementId}`;
+      //     let imgTag = document.getElementById(imgTagId);
+      //     if (!imgTag) {
+      //       imgTag = document.createElement("style");
+      //       imgTag.id = imgTagId;
+      //       document.head.appendChild(imgTag);
+      //     }
+
+      //     let imgCSS = `${imageTagBlock.selector} {`;
+      //     Object.entries(imageTagBlock.styles).forEach(([prop, val]) => {
+      //       if (val !== null && val !== undefined && val !== "null") {
+      //         imgCSS += `${prop}: ${val} !important; `;
+      //       }
+      //     });
+      //     imgCSS += "}";
+
+      //     imgTag.textContent = imgCSS;
+      //   }
+      // });
+
       elements.forEach(({ elementId, css }) => {
         let styleBlock = css?.image;
         let selector = `#${elementId} div.sqs-image-content`;
@@ -1567,7 +1631,7 @@ let pendingModifications = new Map();
           document.head.appendChild(styleTag);
         }
 
-        // 🧼 Optional: Clear all sides if main border-width is used
+        // 🧼 Optional cleanup for shorthand border-width
         const hasShorthandWidth = styleBlock["border-width"];
         if (hasShorthandWidth) {
           delete styleBlock["border-top-width"];
@@ -1576,18 +1640,15 @@ let pendingModifications = new Map();
           delete styleBlock["border-right-width"];
         }
 
-        // let cssText = `${selector} {`;
-        // Object.entries(styleBlock).forEach(([prop, value]) => {
-        //   if (value !== null && value !== undefined && value !== "null") {
-        //     cssText += `${prop}: ${value} !important; `;
-        //   }
-        // });
-        // cssText += "}";
-
-        // styleTag.textContent = cssText;
-
-        // const block = document.getElementById(elementId);
-        // if (block) block.classList.add("sc-image-styled");
+        // ✅ Re-add the block styles
+        let cssText = `${selector} {`;
+        Object.entries(styleBlock).forEach(([prop, value]) => {
+          if (value !== null && value !== undefined && value !== "null") {
+            cssText += `${prop}: ${value} !important; `;
+          }
+        });
+        cssText += "}";
+        styleTag.textContent = cssText;
 
         // ✅ Apply optional imageTag styles (img-level styles)
         const imageTagBlock = css?.imageTag;
@@ -1610,6 +1671,9 @@ let pendingModifications = new Map();
 
           imgTag.textContent = imgCSS;
         }
+
+        const block = document.getElementById(elementId);
+        if (block) block.classList.add("sc-image-styled");
       });
 
       console.log("✅ Applied styles to all image elements");
