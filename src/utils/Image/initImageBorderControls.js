@@ -333,10 +333,28 @@ export function initImageBorderControls(selectedElement, context = {}) {
     }`;
 
     // ✅ Save imageTag styles to DB along with main styles
+    // mergeAndSaveImageStyles(
+    //   blockId,
+    //   {
+    //     ...cssProps,
+    //     imageTag: {
+    //       selector: imageTagSelector,
+    //       styles: {
+    //         "box-sizing": "border-box",
+    //         "object-fit": "cover",
+    //       },
+    //     },
+    //   },
+    //   saveModificationsforImage
+    // );
+
     mergeAndSaveImageStyles(
       blockId,
       {
-        ...cssProps,
+        image: {
+          selector: `#${blockId} div.sqs-image-content`,
+          styles: cssProps,
+        },
         imageTag: {
           selector: imageTagSelector,
           styles: {
