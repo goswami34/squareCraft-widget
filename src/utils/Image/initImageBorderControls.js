@@ -10,35 +10,78 @@ const imageStyleMap = new Map();
 //   saveFn(blockId, mergedStyles, "image");
 // }
 
+// function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
+//   const prevStyles = imageStyleMap.get(blockId) || {};
+
+//   // Fix: fallback to previous saved values if current state is missing/invalid
+//   // const safeStyles = {
+//   //   ...prevStyles,
+//   //   ...Object.fromEntries(
+//   //     Object.entries(newStyles).filter(
+//   //       // ([_, value]) => value !== null && value !== undefined && value !== "0px"
+//   //       ([_, value]) =>
+//   //         value !== null &&
+//   //         value !== undefined &&
+//   //         value !== "" &&
+//   //         value !== "null"
+//   //     )
+//   //   ),
+//   // };
+
+//   const safeStyles = {
+//     ...prevStyles,
+//     ...Object.fromEntries(
+//       Object.entries(newStyles).filter(
+//         ([_, value]) => value !== null && value !== undefined
+//       )
+//     ),
+//   };
+
+//   imageStyleMap.set(blockId, safeStyles);
+//   saveFn(blockId, safeStyles, "image");
+// }
+
 function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
-  const prevStyles = imageStyleMap.get(blockId) || {};
+  const prevStyles = imageStyleMap.get(blockId) || {
+    image: { selector: `#${blockId} div.sqs-image-content`, styles: {} },
+    imageTag: {
+      selector: `#${blockId} .sqs-image-content img`,
+      styles: {
+        "box-sizing": "border-box",
+        "object-fit": "cover",
+      },
+    },
+  };
 
-  // Fix: fallback to previous saved values if current state is missing/invalid
-  // const safeStyles = {
-  //   ...prevStyles,
-  //   ...Object.fromEntries(
-  //     Object.entries(newStyles).filter(
-  //       // ([_, value]) => value !== null && value !== undefined && value !== "0px"
-  //       ([_, value]) =>
-  //         value !== null &&
-  //         value !== undefined &&
-  //         value !== "" &&
-  //         value !== "null"
-  //     )
-  //   ),
-  // };
-
-  const safeStyles = {
-    ...prevStyles,
+  const mergedImageStyles = {
+    ...prevStyles.image.styles,
+    ...(newStyles.image?.styles || {}),
     ...Object.fromEntries(
       Object.entries(newStyles).filter(
-        ([_, value]) => value !== null && value !== undefined
+        ([key, val]) =>
+          typeof key === "string" &&
+          typeof val === "string" &&
+          !["image", "imageTag"].includes(key)
       )
     ),
   };
 
-  imageStyleMap.set(blockId, safeStyles);
-  saveFn(blockId, safeStyles, "image");
+  const finalData = {
+    image: {
+      selector: prevStyles.image.selector,
+      styles: mergedImageStyles,
+    },
+    imageTag: {
+      selector: prevStyles.imageTag.selector,
+      styles: {
+        ...prevStyles.imageTag.styles,
+        ...(newStyles.imageTag?.styles || {}),
+      },
+    },
+  };
+
+  imageStyleMap.set(blockId, finalData);
+  saveFn(blockId, finalData, "image");
 }
 
 export function initImageBorderControls(selectedElement, context = {}) {
