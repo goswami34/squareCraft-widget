@@ -113,8 +113,8 @@
 const shadowState = {
   x: 50,
   y: 50,
-  blur: 50,
-  spread: 50,
+  blur: 10,
+  spread: 2,
   color: "rgba(0,0,0,0.5)",
 };
 
