@@ -1,5 +1,6 @@
-//shadow start here
+// ✅ initImageShadowControls.js
 
+// Declare internal state for shadow controls
 const shadowState = {
   x: 0,
   y: 0,
@@ -8,7 +9,7 @@ const shadowState = {
   color: "rgba(0,0,0,0.5)",
 };
 
-function updateShadowCSS(blockId) {
+function updateShadowCSS(blockId, saveFn) {
   const { x, y, blur, spread, color } = shadowState;
   const selector = `#${blockId} div.sqs-image-content`;
   const styleId = `sc-shadow-style-${blockId}`;
@@ -18,36 +19,34 @@ function updateShadowCSS(blockId) {
     styleTag.id = styleId;
     document.head.appendChild(styleTag);
   }
+
   styleTag.textContent = `
       ${selector} {
         box-shadow: ${x}px ${y}px ${blur}px ${spread}px ${color};
       }`;
 
-  mergeAndSaveImageStyles(
-    blockId,
-    {
-      image: {
-        styles: {
-          "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${color}`,
+  if (typeof saveFn === "function") {
+    saveFn(
+      blockId,
+      {
+        image: {
+          styles: {
+            "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${color}`,
+          },
         },
       },
-    },
-    saveModificationsforImage
-  );
+      "image"
+    );
+  }
 }
 
-function initShadowSlider(controlId, key) {
+function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
   const field = document.getElementById(controlId);
   const bullet = field?.querySelector("div");
 
   if (!field || !bullet) return;
 
-  bullet.addEventListener("mousedown", (e) => startDrag(e, key, field, bullet));
-  bullet.addEventListener("touchstart", (e) =>
-    startDrag(e, key, field, bullet)
-  );
-
-  function startDrag(e, key, field, bullet) {
+  const startDrag = (e) => {
     e.preventDefault();
     const moveHandler = (ev) => {
       const clientX = ev.clientX || ev.touches?.[0]?.clientX;
@@ -57,27 +56,54 @@ function initShadowSlider(controlId, key) {
       bullet.style.left = `${offsetX}px`;
       shadowState[key] = value;
 
-      const imageContent = document.querySelector(".sc-selected-image");
-      if (!imageContent) return;
-      const blockId = imageContent.closest('[id^="block-"]')?.id;
-      if (blockId) updateShadowCSS(blockId);
+      const selected = getSelectedElement?.();
+      const blockId = selected?.closest('[id^="block-"]')?.id;
+      if (blockId) updateShadowCSS(blockId, saveFn);
     };
-    const endHandler = () => {
+
+    const stopDrag = () => {
       document.removeEventListener("mousemove", moveHandler);
+      document.removeEventListener("mouseup", stopDrag);
       document.removeEventListener("touchmove", moveHandler);
-      document.removeEventListener("mouseup", endHandler);
-      document.removeEventListener("touchend", endHandler);
+      document.removeEventListener("touchend", stopDrag);
     };
+
     document.addEventListener("mousemove", moveHandler);
+    document.addEventListener("mouseup", stopDrag);
     document.addEventListener("touchmove", moveHandler);
-    document.addEventListener("mouseup", endHandler);
-    document.addEventListener("touchend", endHandler);
-  }
+    document.addEventListener("touchend", stopDrag);
+  };
+
+  bullet.addEventListener("mousedown", startDrag);
+  bullet.addEventListener("touchstart", startDrag);
 }
 
-initShadowSlider("shadowXSlider", "x");
-initShadowSlider("shadowYSlider", "y");
-initShadowSlider("shadowBlurSlider", "blur");
-initShadowSlider("shadowSpreadSlider", "spread");
-
-//shadow end here
+export function initImageShadowControls(
+  getSelectedElement,
+  saveModificationsforImage
+) {
+  initShadowSlider(
+    "shadowXSlider",
+    "x",
+    getSelectedElement,
+    saveModificationsforImage
+  );
+  initShadowSlider(
+    "shadowYSlider",
+    "y",
+    getSelectedElement,
+    saveModificationsforImage
+  );
+  initShadowSlider(
+    "shadowBlurSlider",
+    "blur",
+    getSelectedElement,
+    saveModificationsforImage
+  );
+  initShadowSlider(
+    "shadowSpreadSlider",
+    "spread",
+    getSelectedElement,
+    saveModificationsforImage
+  );
+}

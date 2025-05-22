@@ -53,11 +53,7 @@ function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
   saveFn(blockId, finalData, "image");
 }
 
-export function initImageBorderControls(
-  selectedElement,
-  getSelectedElement,
-  context = {}
-) {
+export function initImageBorderControls(selectedElement, context = {}) {
   const {
     addPendingModification,
     saveModificationsforImage,
