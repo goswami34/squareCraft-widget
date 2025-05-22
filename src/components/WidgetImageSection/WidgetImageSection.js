@@ -595,7 +595,7 @@ export function WidgetImageSection(id) {
                            </div>
                         </div>
 
-                     </div>
+                     </div> 
 
 
 
