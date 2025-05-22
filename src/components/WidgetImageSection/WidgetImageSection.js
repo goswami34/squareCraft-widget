@@ -501,7 +501,7 @@ export function WidgetImageSection(id) {
                      </div>
                      <div class="mt-3 sc-flex sc-mt-4 sc-items-center sc-gap-3">
 
-                        <div class="sc-w-full" id="shadowXSlider">
+                        <div class="sc-w-full">
                            <div class="sc-flex sc-gap-2 sc-items-center sc-justify-between" >
                               <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300">
                                  (X Axis)
@@ -520,14 +520,14 @@ export function WidgetImageSection(id) {
 
                            </div>
 
-                           <div class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
+                           <div id="shadowXSlider" class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
                               <div
-                                 class="sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
+                                 class="shadow-bullet sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
                               </div>
                            </div>
                         </div>
 
-                        <div class="sc-w-full" id="shadowYSlider">
+                        <div class="sc-w-full">
                            <div class="sc-flex sc-gap-2 sc-items-center sc-justify-between">
                               <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300">
                                  (Y Axis)
@@ -545,9 +545,9 @@ export function WidgetImageSection(id) {
                               </div>
 
                            </div>
-                           <div class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
+                           <div id="shadowYSlider" class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
                               <div
-                                 class="sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
+                                 class="shadow-bullet sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
                               </div>
                            </div>
                         </div>
@@ -565,7 +565,7 @@ export function WidgetImageSection(id) {
                            </div>
                         </div>
                      </div>
-                     <div class="sc-mt-4" id="shadowBlurSlider">
+                     <div class="sc-mt-4">
                         <div class="  sc-flex sc-items-center sc-justify-between">
                            <div class="sc-flex sc-gap-2 sc-items-center">
                               <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300">
@@ -589,9 +589,9 @@ export function WidgetImageSection(id) {
                               </div>
                            </div>
                         </div>
-                        <div class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
+                        <div id="shadowBlurSlider" class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
                            <div
-                              class="sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
+                              class="shadow-bullet sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
                            </div>
                         </div>
 
@@ -599,7 +599,7 @@ export function WidgetImageSection(id) {
 
 
 
-                     <div class="sc-mt-4" id="shadowSpreadSlider">
+                     <div class="sc-mt-4">
                         <div class="  sc-flex sc-items-center sc-justify-between">
                            <div class="sc-flex sc-gap-2 sc-items-center">
                               <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300">
@@ -623,9 +623,9 @@ export function WidgetImageSection(id) {
                               </div>
                            </div>
                         </div>
-                        <div class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
+                        <div class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6" id="shadowSpreadSlider">
                            <div
-                              class="sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
+                              class="shadow-bullet sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
                            </div>
                         </div>
 
