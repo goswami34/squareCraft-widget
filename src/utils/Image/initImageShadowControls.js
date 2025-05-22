@@ -106,6 +106,24 @@ function updateShadowCSS(blockId, saveFn) {
 //   bullet.addEventListener("touchstart", startDrag);
 // }
 
+function applyOverflowVisible(blockId) {
+  const styleId = `sc-overflow-style-${blockId}`;
+  const selector = `#siteWrapper #${blockId} .intrinsic, #siteWrapper #${blockId} .sqs-image`;
+
+  let styleTag = document.getElementById(styleId);
+  if (!styleTag) {
+    styleTag = document.createElement("style");
+    styleTag.id = styleId;
+    document.head.appendChild(styleTag);
+  }
+
+  styleTag.textContent = `
+      ${selector} {
+        overflow: visible !important;
+      }
+    `;
+}
+
 function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
   const field = document.getElementById(controlId);
   const bullet = field?.querySelector(".shadow-bullet");
@@ -149,7 +167,14 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
 
       const selected = getSelectedElement?.();
       const blockId = selected?.closest('[id^="block-"]')?.id;
-      if (blockId) updateShadowCSS(blockId, saveFn);
+      //   if (blockId) updateShadowCSS(blockId, saveFn);
+      if (blockId) {
+        updateShadowCSS(blockId, saveFn);
+
+        if (key === "blur") {
+          applyOverflowVisible(blockId); // ✅ Add this
+        }
+      }
     };
 
     const stopDrag = () => {
