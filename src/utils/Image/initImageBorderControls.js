@@ -53,7 +53,11 @@ function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
   saveFn(blockId, finalData, "image");
 }
 
-export function initImageBorderControls(selectedElement, context = {}) {
+export function initImageBorderControls(
+  selectedElement,
+  getSelectedElement,
+  context = {}
+) {
   const {
     addPendingModification,
     saveModificationsforImage,
@@ -893,4 +897,58 @@ export function initImageBorderControls(selectedElement, context = {}) {
     });
 
   // border radius end here
+
+  //shadow start here
+
+  const shadowConfig = {
+    x: 11,
+    y: -17,
+    blur: 28,
+    spread: 26,
+    color: "hsl(var(--accent-hsl))",
+  };
+
+  const applyShadow = () => {
+    const selected = getSelectedElement?.();
+    if (!selected) return;
+
+    const block = selected.closest('[id^="block-"]');
+    if (!block) return;
+
+    const blockId = block.id;
+    const blockSelector = `#${blockId} div.sqs-image-content`;
+    const styleTagId = `sc-shadow-style-${blockId}`;
+    let styleTag = document.getElementById(styleTagId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleTagId;
+      document.head.appendChild(styleTag);
+    }
+
+    const shadowCSS = `${blockSelector} {
+      box-shadow: ${shadowConfig.x}px ${shadowConfig.y}px ${shadowConfig.blur}px ${shadowConfig.spread}px ${shadowConfig.color};
+      -webkit-mask-image: none !important;
+    }`;
+
+    styleTag.textContent = shadowCSS;
+
+    // Save to image style map + DB
+    mergeAndSaveImageStyles(
+      blockId,
+      {
+        image: {
+          styles: {
+            "box-shadow": `${shadowConfig.x}px ${shadowConfig.y}px ${shadowConfig.blur}px ${shadowConfig.spread}px ${shadowConfig.color}`,
+            "-webkit-mask-image": "none !important",
+          },
+        },
+      },
+      saveModificationsforImage
+    );
+  };
+
+  // Apply immediately for now
+  applyShadow();
+
+  //shadow end here
 }
