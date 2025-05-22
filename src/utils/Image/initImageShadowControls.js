@@ -111,10 +111,10 @@
 // ✅ initImageShadowControls.js
 
 const shadowState = {
-  x: 50,
-  y: 50,
-  blur: 10,
-  spread: 2,
+  x: 0, // centered
+  y: 0, // centered
+  blur: 10, // default blur
+  spread: 2, // default spread
   color: "rgba(0,0,0,0.5)",
 };
 
@@ -159,15 +159,29 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
 
   if (!field || !bullet || !label) return;
 
+  const isCentered = key === "x" || key === "y"; // only X and Y are centered range
+  const initial = shadowState[key];
+  const initialPercent = isCentered ? (initial + 100) / 2 : initial; // convert -100~+100 to 0~100
+
   const setUI = (percent) => {
     const sliderWidth = field.offsetWidth;
     const px = (percent / 100) * sliderWidth;
     bullet.style.left = `${px}px`;
     bullet.style.transform = "translateX(-50%)";
-    label.textContent = `${percent}px`;
+
+    // Convert slider value back to range
+    const displayVal = isCentered
+      ? Math.round((percent / 100) * 200 - 100)
+      : percent;
+    label.textContent = `${displayVal}px`;
+
+    shadowState[key] = displayVal;
   };
 
-  setUI(shadowState[key]);
+  // initialize UI
+  setTimeout(() => {
+    setUI(initialPercent);
+  }, 50); // small delay to ensure DOM is ready
 
   const startDrag = (e) => {
     e.preventDefault();
@@ -176,9 +190,9 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
       const clientX = ev.clientX || ev.touches?.[0]?.clientX;
       const rect = field.getBoundingClientRect();
       const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
-      const value = Math.round((offsetX / rect.width) * 100);
-      shadowState[key] = value;
-      setUI(value);
+      const percent = (offsetX / rect.width) * 100;
+
+      setUI(percent);
 
       const selected = getSelectedElement?.();
       const blockId = selected?.closest('[id^="block-"]')?.id;
@@ -203,8 +217,8 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
 }
 
 export function initImageShadowControls(getSelectedElement, saveFn) {
-  initShadowSlider("shadowXSlider", "x", getSelectedElement, saveFn);
-  initShadowSlider("shadowYSlider", "y", getSelectedElement, saveFn);
-  initShadowSlider("shadowBlurSlider", "blur", getSelectedElement, saveFn);
-  initShadowSlider("shadowSpreadSlider", "spread", getSelectedElement, saveFn);
+  initShadowSlider("shadowXSlider", "x", getSelectedElement, saveFn); // ✅ -100 to +100
+  initShadowSlider("shadowYSlider", "y", getSelectedElement, saveFn); // ✅ -100 to +100
+  initShadowSlider("shadowBlurSlider", "blur", getSelectedElement, saveFn); // ✅ 0 to 100
+  initShadowSlider("shadowSpreadSlider", "spread", getSelectedElement, saveFn); // ✅ 0 to 100
 }
