@@ -501,12 +501,12 @@ export function WidgetImageSection(id) {
                      </div>
                      <div class="mt-3 sc-flex sc-mt-4 sc-items-center sc-gap-3">
 
-                        <div class="sc-w-full">
-                           <div class="sc-flex sc-gap-2 sc-items-center sc-justify-between">
+                        <div class="sc-w-full" id="shadowXSlider">
+                           <div class="sc-flex sc-gap-2 sc-items-center sc-justify-between" >
                               <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300">
                                  (X Axis)
                               </p>
-                              <div id="shadowXSlider"
+                              <div 
                                  class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-2 sc-px-2 sc-py-0_5 sc-bg sc-bg-454545">
                                  <p class="sc-font-thin sc-roboto sc-universal sc-text-xs">50px</p>
                                  <div class="sc-flex sc-flex-col sc-items-center sc-gap-1">
@@ -527,12 +527,12 @@ export function WidgetImageSection(id) {
                            </div>
                         </div>
 
-                        <div class="sc-w-full">
+                        <div class="sc-w-full" id="shadowYSlider">
                            <div class="sc-flex sc-gap-2 sc-items-center sc-justify-between">
                               <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300">
                                  (Y Axis)
                               </p>
-                              <div id="shadowYSlider"
+                              <div 
                                  class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-2 sc-px-2 sc-py-0_5 sc-bg sc-bg-454545">
                                  <p class="sc-font-thin sc-roboto sc-universal sc-text-xs">50px</p>
                                  <div class="sc-flex sc-flex-col sc-items-center sc-gap-1">
@@ -553,7 +553,7 @@ export function WidgetImageSection(id) {
                         </div>
                      </div>
 
-                     <div class="sc-mt-4">
+                     <div class="sc-mt-4" id="shadowColor">
                         <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300">
                            Color
                         </p>
@@ -565,13 +565,13 @@ export function WidgetImageSection(id) {
                            </div>
                         </div>
                      </div>
-                     <div class="sc-mt-4">
+                     <div class="sc-mt-4" id="shadowBlurSlider">
                         <div class="  sc-flex sc-items-center sc-justify-between">
                            <div class="sc-flex sc-gap-2 sc-items-center">
                               <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300">
                                  Blur
                               </p>
-                              <div id="shadowBlurSlider"
+                              <div 
                                  class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-1 sc-p-1_5  sc-bg sc-bg-454545">
 
                                  <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/reset.svg" width="10"
@@ -599,13 +599,13 @@ export function WidgetImageSection(id) {
 
 
 
-                     <div class="sc-mt-4">
+                     <div class="sc-mt-4" id="shadowSpreadSlider">
                         <div class="  sc-flex sc-items-center sc-justify-between">
                            <div class="sc-flex sc-gap-2 sc-items-center">
                               <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300">
                                  Spread
                               </p>
-                              <div id="shadowSpreadSlider"
+                              <div 
                                  class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-1 sc-p-1_5  sc-bg sc-bg-454545">
 
                                  <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/reset.svg" width="10"
