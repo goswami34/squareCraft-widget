@@ -301,6 +301,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/utils/Image/initImageShadowControls.js"
   );
 
+  const { initShadowColorPalate } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/InitShadowColorPalateToggle/initShadowColorPalate.js"
+  );
+
   //Image all functionality code end here
   //Image border controls end here
 
@@ -316,6 +320,7 @@ let pendingModifications = new Map();
       console.log("✅ border-color-select clicked");
       setTimeout(() => {
         initBorderColorPaletteToggle(themeColors);
+        initShadowColorPalate(themeColors, selectedElement);
       }, 100);
       return;
     }
@@ -335,6 +340,7 @@ let pendingModifications = new Map();
           console.error(error.message);
         });
     }
+
     handleBlockClick(event, {
       getTextType,
       selectedElement,
