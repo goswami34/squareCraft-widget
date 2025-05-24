@@ -324,19 +324,35 @@ let pendingModifications = new Map();
       return;
     }
 
-    const hoverFontTrigger = event.target.closest(
-      "#hover-buttonFontColorPalate"
-    );
-    if (hoverFontTrigger) {
-      const panel = document.getElementById("hover-button-font-color-palette");
-      if (panel) {
-        panel.classList.toggle("sc-hidden");
-      }
+    // const hoverFontTrigger = event.target.closest(
+    //   "#hover-buttonFontColorPalate"
+    // );
+    // if (hoverFontTrigger) {
+    //   const panel = document.getElementById("hover-button-font-color-palette");
+    //   if (panel) {
+    //     panel.classList.toggle("sc-hidden");
+    //   }
 
+    //   setTimeout(() => {
+    //     initShadowColorPalate(themeColors, () => selectedElement, "hover-");
+    //   }, 100);
+    // }
+
+    // function initButtonColorPaletteToggle(themeColors, selectedElement) {
+    const triggerOne = document.getElementById("buttonFontColorPalate");
+    const palette = document.getElementById("button-font-color-palette");
+
+    if (!triggerOne || !palette) return;
+
+    triggerOne.addEventListener("click", () => {
+      palette.classList.toggle("sc-hidden");
+
+      // Load palette logic AFTER visibility toggle
       setTimeout(() => {
-        initShadowColorPalate(themeColors, () => selectedElement, "hover-");
-      }, 100);
-    }
+        initShadowColorPalate(themeColors, selectedElement);
+      }, 50);
+    });
+    // }
 
     // setTimeout(() => {
     //   initButtonFontColorPaletteToggle(themeColors, selectedElement);
