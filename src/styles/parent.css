@@ -442,6 +442,12 @@
   /* 12px */
 }
 
+#button-color-selection-field {
+  width: 100% !important;
+  height: 100px !important;
+  border-radius: 6px !important;
+}
+
 .sc-py-1 {
   padding-top: 0.25rem !important;
   /* 4px */
