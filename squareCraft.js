@@ -338,21 +338,24 @@ let pendingModifications = new Map();
     //   }, 100);
     // }
 
-    // function initButtonColorPaletteToggle(themeColors, selectedElement) {
-    const triggerOne = document.getElementById("buttonFontColorPalate");
-    const palette = document.getElementById("button-font-color-palette");
+    function initShadowOneColorPaletteToggle(themeColors, selectedElement) {
+      const trigger = document.getElementById("buttonFontColorPalate");
+      const palette = document.getElementById("button-font-color-palette");
 
-    if (!triggerOne || !palette) return;
+      if (!trigger || !palette) return;
 
-    triggerOne.addEventListener("click", () => {
-      palette.classList.toggle("sc-hidden");
+      trigger.addEventListener("click", () => {
+        palette.classList.toggle("sc-hidden");
 
-      // Load palette logic AFTER visibility toggle
-      setTimeout(() => {
-        initShadowColorPalate(themeColors, selectedElement);
-      }, 50);
-    });
-    // }
+        // Load palette after toggle
+        setTimeout(() => {
+          initShadowColorPalate(themeColors, () => selectedElement);
+        }, 50);
+      });
+    }
+
+    const themeColors = getSquarespaceThemeStyles();
+    initShadowOneColorPaletteToggle(themeColors, () => selectedElement);
 
     // setTimeout(() => {
     //   initButtonFontColorPaletteToggle(themeColors, selectedElement);
