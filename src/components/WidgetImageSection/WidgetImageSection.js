@@ -625,7 +625,7 @@ export function WidgetImageSection(id) {
                      <div id="shadowBlurSlider" class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
                         <div class="shadow-bullet sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half"></div>
                      </div>
-                     </div>
+                  </div>
 
 
 
