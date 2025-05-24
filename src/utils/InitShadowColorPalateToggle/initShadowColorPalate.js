@@ -1,23 +1,50 @@
-export function initShadowColorPalate(themeColors, selectedElement) {
-  const palette = document.getElementById("buttonFontColorPalate");
-  const container = document.getElementById("button-border-colors");
-  const selectorField = document.getElementById("button-color-selection-field");
-  const bullet = document.getElementById("button-color-selection-bar");
-  const colorCode = document.getElementById("button-color-code");
+export function initShadowColorPalate(
+  themeColors,
+  selectedElement,
+  prefix = ""
+) {
+  //   const palette = document.getElementById("buttonFontColorPalate");
+  //   const container = document.getElementById("button-border-colors");
+  //   const selectorField = document.getElementById("button-color-selection-field");
+  //   const bullet = document.getElementById("button-color-selection-bar");
+  //   const colorCode = document.getElementById("button-color-code");
+  //   const transparencyCount = document.getElementById(
+  //     "button-color-transparency-count"
+  //   );
+  //   const allColorField = document.getElementById(
+  //     "button-all-color-selection-field"
+  //   );
+  //   const allColorBullet = document.getElementById(
+  //     "button-all-color-selection-bar"
+  //   );
+  //   const transparencyField = document.getElementById(
+  //     "button-color-transparency-field"
+  //   );
+  //   const transparencyBullet = document.getElementById(
+  //     "button-color-transparency-bar"
+  //   );
+
+  const palette = document.getElementById(`${prefix}buttonFontColorPalate`);
+  const container = document.getElementById(`${prefix}button-border-colors`);
+  const selectorField = document.getElementById(
+    `${prefix}button-color-selection-field`
+  );
+  const bullet = document.getElementById(`${prefix}button-color-selection-bar`);
+  const colorCode = document.getElementById(`${prefix}button-color-code`);
   const transparencyCount = document.getElementById(
-    "button-color-transparency-count"
+    `${prefix}button-color-transparency-count`
   );
   const allColorField = document.getElementById(
-    "button-all-color-selection-field"
+    `${prefix}button-all-color-selection-field`
   );
   const allColorBullet = document.getElementById(
-    "button-all-color-selection-bar"
+    `${prefix}button-all-color-selection-bar`
   );
   const transparencyField = document.getElementById(
-    "button-color-transparency-field"
+    `${prefix}button-color-transparency-field`
   );
   const transparencyBullet = document.getElementById(
-    "button-color-transparency-bar"
+    `${prefix}button-color-transparency-bar`
   );
 
   function updateTransparencyField(hue) {

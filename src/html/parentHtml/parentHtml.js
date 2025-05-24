@@ -1,7 +1,6 @@
 /* html */
 export function parentHtml() {
-
-    return `
+  return `
 
 
             <div
@@ -157,4 +156,3 @@ export function parentHtml() {
 
     `;
 }
-

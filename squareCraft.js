@@ -320,9 +320,22 @@ let pendingModifications = new Map();
       console.log("✅ border-color-select clicked");
       setTimeout(() => {
         initBorderColorPaletteToggle(themeColors);
-        initShadowColorPalate(themeColors, selectedElement);
       }, 100);
       return;
+    }
+
+    const hoverFontTrigger = event.target.closest(
+      "#hover-buttonFontColorPalate"
+    );
+    if (hoverFontTrigger) {
+      const panel = document.getElementById("hover-button-font-color-palette");
+      if (panel) {
+        panel.classList.toggle("sc-hidden");
+      }
+
+      setTimeout(() => {
+        initShadowColorPalate(themeColors, () => selectedElement, "hover-");
+      }, 100);
     }
 
     // setTimeout(() => {
