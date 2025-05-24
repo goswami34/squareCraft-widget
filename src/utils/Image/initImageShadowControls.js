@@ -198,6 +198,9 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
   const field = document.getElementById(controlId);
   const bullet = field?.querySelector(".shadow-bullet");
   const label = field?.previousElementSibling?.querySelector("p.sc-text-xs");
+  const externalValueLabel = document.getElementById(
+    `shadow${key.charAt(0).toUpperCase() + key.slice(1)}Value`
+  );
   const fill = field?.querySelector(
     `#${controlId} > .sc-bg-color-EF7C2F:not(.shadow-bullet)`
   );
@@ -222,6 +225,7 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
     const displayVal = Math.round(rawVal);
 
     if (label) label.textContent = `${displayVal}px`;
+    if (externalValueLabel) externalValueLabel.textContent = `${displayVal}px`;
     shadowState[key] = displayVal;
   };
 
