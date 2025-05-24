@@ -310,20 +310,6 @@ let pendingModifications = new Map();
 
   const themeColors = await getSquarespaceThemeStyles();
 
-  const triggerOne = document.getElementById("buttonFontColorPalate");
-  const paletteOne = document.getElementById("button-font-color-palette");
-
-  if (!triggerOne || !paletteOne) return;
-
-  triggerOne.addEventListener("click", () => {
-    paletteOne.classList.toggle("sc-hidden");
-
-    // Load palette after toggle
-    setTimeout(() => {
-      initShadowColorPalate(themeColors, () => selectedElement);
-    }, 50);
-  });
-
   document.body.addEventListener("click", (event) => {
     // if (selectedElement) {
     //   initButtonStyles(selectedElement);
@@ -337,6 +323,20 @@ let pendingModifications = new Map();
       }, 100);
       return;
     }
+
+    const triggerOne = document.getElementById("buttonFontColorPalate");
+    const paletteOne = document.getElementById("button-font-color-palette");
+
+    if (!triggerOne || !paletteOne) return;
+
+    triggerOne.addEventListener("click", () => {
+      paletteOne.classList.toggle("sc-hidden");
+
+      // Load palette after toggle
+      setTimeout(() => {
+        initShadowColorPalate(themeColors, () => selectedElement);
+      }, 50);
+    });
 
     // const hoverFontTrigger = event.target.closest(
     //   "#hover-buttonFontColorPalate"
