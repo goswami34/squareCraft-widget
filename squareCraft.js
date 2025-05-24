@@ -1474,17 +1474,13 @@ let pendingModifications = new Map();
 
     // initImageShadowControls(() => selectedElement, saveModificationsforImage);
 
-    initImageShadowControls(
-      () => {
-        if (!selectedElement) {
-          console.warn("⚠️ selectedElement not defined yet.");
-          return null;
-        }
-        return selectedElement;
-      },
-      getSelectedElement,
-      saveModificationsforImage
-    );
+    initImageShadowControls(() => {
+      if (!selectedElement) {
+        console.warn("⚠️ selectedElement not defined yet.");
+        return null;
+      }
+      return selectedElement;
+    }, saveModificationsforImage);
 
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
     // handleFontWeightDropdownClick(event);
