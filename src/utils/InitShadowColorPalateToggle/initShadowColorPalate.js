@@ -3,27 +3,6 @@ export function initShadowColorPalate(
   selectedElement,
   prefix = ""
 ) {
-  //   const palette = document.getElementById("buttonFontColorPalate");
-  //   const container = document.getElementById("button-border-colors");
-  //   const selectorField = document.getElementById("button-color-selection-field");
-  //   const bullet = document.getElementById("button-color-selection-bar");
-  //   const colorCode = document.getElementById("button-color-code");
-  //   const transparencyCount = document.getElementById(
-  //     "button-color-transparency-count"
-  //   );
-  //   const allColorField = document.getElementById(
-  //     "button-all-color-selection-field"
-  //   );
-  //   const allColorBullet = document.getElementById(
-  //     "button-all-color-selection-bar"
-  //   );
-  //   const transparencyField = document.getElementById(
-  //     "button-color-transparency-field"
-  //   );
-  //   const transparencyBullet = document.getElementById(
-  //     "button-color-transparency-bar"
-  //   );
-
   const palette = document.getElementById(`${prefix}buttonFontColorPalate`);
   const container = document.getElementById(`${prefix}button-border-colors`);
   const selectorField = document.getElementById(
@@ -502,4 +481,43 @@ export function initShadowColorPalate(
       transparencyCount.textContent = `100%`;
     }
   }
+
+  //color pallete code start here
+  function applyImageOverlayColor(color, alpha = 1) {
+    const selected = selectedElement?.(); // from your context
+    if (!selected) return;
+
+    const blockId = selected.closest('[id^="block-"]')?.id;
+    const imageWrapper = selected.querySelector(".sqs-image-content");
+    if (!blockId || !imageWrapper) return;
+
+    const rgbaColor = color.startsWith("rgb(")
+      ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+      : color;
+
+    const overlayId = `sc-image-overlay-${blockId}`;
+    let overlay = document.getElementById(overlayId);
+
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = overlayId;
+      overlay.style.position = "absolute";
+      overlay.style.top = "0";
+      overlay.style.left = "0";
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.pointerEvents = "none";
+      overlay.style.zIndex = "1";
+      overlay.style.borderRadius = "inherit";
+
+      imageWrapper.style.position = "relative";
+      imageWrapper.appendChild(overlay);
+    }
+
+    overlay.style.backgroundColor = rgbaColor;
+  }
+
+  applyImageOverlayColor("rgba(0,0,0,0.5)");
+
+  //color pallete code end here
 }
