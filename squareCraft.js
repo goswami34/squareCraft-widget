@@ -2666,7 +2666,9 @@ let pendingModifications = new Map();
         }, 100);
 
         initImageBorderControls(selectedImage);
-        initImageShadowControls(selectedImage);
+        // initImageShadowControls(selectedImage);
+        initImageShadowControls(() => selectedImage);
+
         showNotification("Border applied to image", "success");
       });
     }
