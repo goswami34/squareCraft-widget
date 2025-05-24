@@ -124,12 +124,85 @@ function applyOverflowVisible(blockId) {
     `;
 }
 
+// function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
+//   const field = document.getElementById(controlId);
+//   const bullet = field?.querySelector(".shadow-bullet");
+//   const label = field?.previousElementSibling?.querySelector("p.sc-text-xs");
+
+//   if (!field || !bullet || !label) return;
+
+//   const isCentered = key === "x" || key === "y";
+//   const initial = shadowState[key];
+//   const initialPercent = isCentered ? (initial + 100) / 2 : initial;
+
+//   const setUI = (percent) => {
+//     const sliderWidth = field.offsetWidth;
+//     const px = (percent / 100) * sliderWidth;
+//     bullet.style.left = `${px}px`;
+//     bullet.style.transform = "translateX(-50%)";
+
+//     const rawVal = isCentered
+//       ? (percent / 100) * 200 - 100
+//       : (percent / 100) * 100;
+//     const displayVal = Math.round(rawVal);
+
+//     label.textContent = `${displayVal}px`;
+//     shadowState[key] = displayVal; // ✅ force integer values
+//   };
+
+//   setTimeout(() => {
+//     setUI(initialPercent);
+//   }, 50);
+
+//   const startDrag = (e) => {
+//     e.preventDefault();
+
+//     const moveHandler = (ev) => {
+//       const clientX = ev.clientX || ev.touches?.[0]?.clientX;
+//       const rect = field.getBoundingClientRect();
+//       const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+//       const percent = (offsetX / rect.width) * 100;
+
+//       setUI(percent);
+
+//       const selected = getSelectedElement?.();
+//       const blockId = selected?.closest('[id^="block-"]')?.id;
+//       //   if (blockId) updateShadowCSS(blockId, saveFn);
+//       if (blockId) {
+//         updateShadowCSS(blockId, saveFn);
+
+//         if (key === "blur") {
+//           applyOverflowVisible(blockId); // ✅ Add this
+//         }
+//       }
+//     };
+
+//     const stopDrag = () => {
+//       document.removeEventListener("mousemove", moveHandler);
+//       document.removeEventListener("mouseup", stopDrag);
+//       document.removeEventListener("touchmove", moveHandler);
+//       document.removeEventListener("touchend", stopDrag);
+//     };
+
+//     document.addEventListener("mousemove", moveHandler);
+//     document.addEventListener("mouseup", stopDrag);
+//     document.addEventListener("touchmove", moveHandler);
+//     document.addEventListener("touchend", stopDrag);
+//   };
+
+//   bullet.addEventListener("mousedown", startDrag);
+//   bullet.addEventListener("touchstart", startDrag);
+// }
+
 function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
   const field = document.getElementById(controlId);
   const bullet = field?.querySelector(".shadow-bullet");
   const label = field?.previousElementSibling?.querySelector("p.sc-text-xs");
+  const fill = field?.querySelector(
+    `#${controlId} > .sc-bg-color-EF7C2F:not(.shadow-bullet)`
+  );
 
-  if (!field || !bullet || !label) return;
+  if (!field || !bullet) return;
 
   const isCentered = key === "x" || key === "y";
   const initial = shadowState[key];
@@ -141,13 +214,15 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
     bullet.style.left = `${px}px`;
     bullet.style.transform = "translateX(-50%)";
 
+    if (fill) fill.style.width = `${px}px`;
+
     const rawVal = isCentered
       ? (percent / 100) * 200 - 100
       : (percent / 100) * 100;
     const displayVal = Math.round(rawVal);
 
-    label.textContent = `${displayVal}px`;
-    shadowState[key] = displayVal; // ✅ force integer values
+    if (label) label.textContent = `${displayVal}px`;
+    shadowState[key] = displayVal;
   };
 
   setTimeout(() => {
@@ -156,7 +231,6 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
 
   const startDrag = (e) => {
     e.preventDefault();
-
     const moveHandler = (ev) => {
       const clientX = ev.clientX || ev.touches?.[0]?.clientX;
       const rect = field.getBoundingClientRect();
@@ -167,13 +241,9 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
 
       const selected = getSelectedElement?.();
       const blockId = selected?.closest('[id^="block-"]')?.id;
-      //   if (blockId) updateShadowCSS(blockId, saveFn);
       if (blockId) {
         updateShadowCSS(blockId, saveFn);
-
-        if (key === "blur") {
-          applyOverflowVisible(blockId); // ✅ Add this
-        }
+        if (key === "blur") applyOverflowVisible(blockId);
       }
     };
 
