@@ -1472,7 +1472,15 @@ let pendingModifications = new Map();
 
     //Image section code end here
 
-    initImageShadowControls(() => selectedElement, saveModificationsforImage);
+    // initImageShadowControls(() => selectedElement, saveModificationsforImage);
+
+    initImageShadowControls(() => {
+      if (!selectedElement) {
+        console.warn("⚠️ selectedElement not defined yet.");
+        return null;
+      }
+      return selectedElement;
+    }, saveModificationsforImage);
 
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
     // handleFontWeightDropdownClick(event);
