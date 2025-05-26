@@ -539,6 +539,6 @@ export function initShadowColorPalate(
   }
 
   applyImageOverlayColor("rgba(0,0,0,0.5)");
-
-  //color pallete code end here
 }
+
+//color pallete code end here
