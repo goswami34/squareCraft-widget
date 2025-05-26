@@ -134,9 +134,33 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
   bullet.addEventListener("touchstart", startDrag);
 }
 
+// ✅ PATCH: Color palette integration for shadow box
+function applyShadowColorFromPalette(
+  color,
+  alpha = 1,
+  getSelectedElement,
+  saveFn
+) {
+  const selected = getSelectedElement?.();
+  if (!selected) return;
+
+  const blockId = selected.closest('[id^="block-"]')?.id;
+  if (!blockId) return;
+
+  // Convert rgb to rgba with alpha
+  const rgbaColor = color.startsWith("rgb(")
+    ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+    : color;
+
+  shadowState.color = rgbaColor;
+  updateShadowCSS(blockId, saveFn);
+}
+
 export function initImageShadowControls(getSelectedElement, saveFn) {
   initShadowSlider("shadowXSlider", "x", getSelectedElement, saveFn); // ✅ -100 to +100
   initShadowSlider("shadowYSlider", "y", getSelectedElement, saveFn); // ✅ -100 to +100
   initShadowSlider("shadowBlurSlider", "blur", getSelectedElement, saveFn); // ✅ 0 to 100
   initShadowSlider("shadowSpreadSlider", "spread", getSelectedElement, saveFn); // ✅ 0 to 100
 }
+
+export { applyShadowColorFromPalette };
