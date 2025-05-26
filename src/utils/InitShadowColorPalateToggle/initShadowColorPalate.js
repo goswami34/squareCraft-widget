@@ -343,7 +343,12 @@ export function initShadowColorPalate(
         }
         const currentColor = colorCode?.textContent;
         if (currentColor) {
-          applyButtonBackgroundColor(currentColor, currentTransparency / 100);
+          applyShadowColorFromPalette(
+            currentColor,
+            currentTransparency / 100,
+            selectedElement,
+            saveFn
+          );
         }
       };
       document.onmouseup = () => {
@@ -413,6 +418,11 @@ export function initShadowColorPalate(
         currentTransparency = 100;
         if (transparencyCount) {
           transparencyCount.textContent = `100%`;
+        }
+
+        // Update the color code display
+        if (colorCode) {
+          colorCode.textContent = color;
         }
       });
 
