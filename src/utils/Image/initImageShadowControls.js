@@ -385,4 +385,38 @@ export function initImageShadowControls(getSelectedElement, saveFn) {
   initShadowSlider("shadowSpreadSlider", "spread", getSelectedElement, saveFn);
 }
 
+function applyShadowColorFromPalette(
+  color,
+  alpha = 1,
+  getSelectedElement,
+  saveFn
+) {
+  const selected = getSelectedElement?.();
+  if (!selected) return;
+
+  const blockId = selected.closest('[id^="block-"]')?.id;
+  if (!blockId) return;
+
+  let rgbaColor;
+  if (color.startsWith("rgb(")) {
+    rgbaColor = color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+  } else if (color.startsWith("rgba(")) {
+    rgbaColor = color.replace(
+      /rgba\(([^,]+),([^,]+),([^,]+),([^)]+)\)/,
+      (_, r, g, b) => `rgba(${r},${g},${b},${alpha})`
+    );
+  } else {
+    const tempDiv = document.createElement("div");
+    tempDiv.style.color = color;
+    document.body.appendChild(tempDiv);
+    const rgb = getComputedStyle(tempDiv).color;
+    document.body.removeChild(tempDiv);
+    rgbaColor = rgb.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+  }
+
+  shadowState.color = rgbaColor;
+  updateShadowCSS(blockId, saveFn);
+  console.log("Applied shadow color:", rgbaColor);
+}
+
 export { applyShadowColorFromPalette };
