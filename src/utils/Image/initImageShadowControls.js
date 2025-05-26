@@ -196,6 +196,24 @@ function applyShadowColorFromPalette(
   // Update the shadow state with new color
   shadowState.color = rgbaColor;
 
+  const { x, y, blur, spread } = shadowState;
+
+  // Update the CSS and save to database
+  const selector = `#${blockId} div.sqs-image-content`;
+  mergeAndSaveImageStyles(
+    blockId,
+    {
+      image: {
+        selector: selector,
+        styles: {
+          "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${rgbaColor}`,
+          "-webkit-mask-image": "none",
+        },
+      },
+    },
+    saveFn
+  );
+
   // Update the CSS
   updateShadowCSS(blockId, saveFn);
 
