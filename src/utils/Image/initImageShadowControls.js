@@ -236,6 +236,62 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
   bullet.addEventListener("touchstart", startDrag);
 }
 
+// function applyShadowColorFromPalette(
+//   color,
+//   alpha = 1,
+//   getSelectedElement,
+//   saveFn
+// ) {
+//   const selected = getSelectedElement?.();
+//   if (!selected) return;
+
+//   const blockId = selected.closest('[id^="block-"]')?.id;
+//   if (!blockId) return;
+
+//   // Get existing styles
+//   const existingStyles = imageStyleMap.get(blockId)?.image?.styles || {};
+
+//   // Convert color to rgba
+//   let rgbaColor;
+//   if (color.startsWith("rgb(")) {
+//     rgbaColor = color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+//   } else if (color.startsWith("rgba(")) {
+//     rgbaColor = color.replace(
+//       /rgba\(([^,]+),([^,]+),([^,]+),([^)]+)\)/,
+//       (_, r, g, b) => `rgba(${r},${g},${b},${alpha})`
+//     );
+//   } else {
+//     const tempDiv = document.createElement("div");
+//     tempDiv.style.color = color;
+//     document.body.appendChild(tempDiv);
+//     const rgb = getComputedStyle(tempDiv).color;
+//     document.body.removeChild(tempDiv);
+//     rgbaColor = rgb.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+//   }
+
+//   // Update shadow state
+//   shadowState.color = rgbaColor;
+//   const { x, y, blur, spread } = shadowState;
+
+//   // Save to database while preserving existing styles
+//   mergeAndSaveImageStyles(
+//     blockId,
+//     {
+//       image: {
+//         styles: {
+//           ...existingStyles, // Preserve existing styles
+//           "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${rgbaColor}`,
+//           "-webkit-mask-image": "none",
+//         },
+//       },
+//     },
+//     saveFn
+//   );
+
+//   // Update live style
+//   updateShadowCSS(blockId, saveFn);
+// }
+
 function applyShadowColorFromPalette(
   color,
   alpha = 1,
@@ -248,8 +304,9 @@ function applyShadowColorFromPalette(
   const blockId = selected.closest('[id^="block-"]')?.id;
   if (!blockId) return;
 
-  // Get existing styles
-  const existingStyles = imageStyleMap.get(blockId)?.image?.styles || {};
+  // Get existing styles from border controls
+  const existingStyles =
+    window.__scImageStyleMap?.get(blockId)?.image?.styles || {};
 
   // Convert color to rgba
   let rgbaColor;
@@ -273,13 +330,13 @@ function applyShadowColorFromPalette(
   shadowState.color = rgbaColor;
   const { x, y, blur, spread } = shadowState;
 
-  // Save to database while preserving existing styles
+  // Save using border controls' mechanism
   mergeAndSaveImageStyles(
     blockId,
     {
       image: {
         styles: {
-          ...existingStyles, // Preserve existing styles
+          ...existingStyles,
           "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${rgbaColor}`,
           "-webkit-mask-image": "none",
         },
