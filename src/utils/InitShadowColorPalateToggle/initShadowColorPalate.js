@@ -1,7 +1,8 @@
 export function initShadowColorPalate(
   themeColors,
   selectedElement,
-  prefix = ""
+  prefix = "",
+  saveFn
 ) {
   const palette = document.getElementById(`${prefix}buttonFontColorPalate`);
   const container = document.getElementById(`${prefix}button-border-colors`);
@@ -414,6 +415,13 @@ export function initShadowColorPalate(
           transparencyCount.textContent = `100%`;
         }
       });
+
+      applyShadowColorFromPalette(
+        color,
+        currentTransparency / 100,
+        selectedElement,
+        saveFn
+      );
     };
 
     container.appendChild(swatch);
@@ -518,13 +526,6 @@ export function initShadowColorPalate(
   }
 
   applyImageOverlayColor("rgba(0,0,0,0.5)");
-
-  applyShadowColorFromPalette(
-    color,
-    currentTransparency / 100,
-    selectedElement,
-    saveFn
-  );
 
   //color pallete code end here
 }
