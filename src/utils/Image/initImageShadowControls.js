@@ -135,6 +135,29 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
 }
 
 // ✅ PATCH: Color palette integration for shadow box
+// function applyShadowColorFromPalette(
+//   color,
+//   alpha = 1,
+//   getSelectedElement,
+//   saveFn
+// ) {
+//   const selected = getSelectedElement?.();
+//   if (!selected) return;
+
+//   const blockId = selected.closest('[id^="block-"]')?.id;
+//   if (!blockId) return;
+
+//   // Convert rgb to rgba with alpha
+//   const rgbaColor = color.startsWith("rgb(")
+//     ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+//     : color;
+
+//   shadowState.color = rgbaColor;
+//   updateShadowCSS(blockId, saveFn);
+// }
+
+// In initImageShadowControls.js, modify the applyShadowColorFromPalette function:
+
 function applyShadowColorFromPalette(
   color,
   alpha = 1,
@@ -148,12 +171,34 @@ function applyShadowColorFromPalette(
   if (!blockId) return;
 
   // Convert rgb to rgba with alpha
-  const rgbaColor = color.startsWith("rgb(")
-    ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-    : color;
+  let rgbaColor;
+  if (color.startsWith("rgb(")) {
+    // Handle RGB color
+    rgbaColor = color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+  } else if (color.startsWith("rgba(")) {
+    // Handle RGBA color
+    rgbaColor = color.replace(
+      /rgba\(([^,]+),([^,]+),([^,]+),([^)]+)\)/,
+      (_, r, g, b) => `rgba(${r},${g},${b},${alpha})`
+    );
+  } else {
+    // Handle hex or other color formats
+    const tempDiv = document.createElement("div");
+    tempDiv.style.color = color;
+    document.body.appendChild(tempDiv);
+    const rgb = getComputedStyle(tempDiv).color;
+    document.body.removeChild(tempDiv);
+    rgbaColor = rgb.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+  }
 
+  // Update the shadow state with new color
   shadowState.color = rgbaColor;
+
+  // Update the CSS
   updateShadowCSS(blockId, saveFn);
+
+  // Log for debugging
+  console.log("Applied shadow color:", rgbaColor);
 }
 
 export function initImageShadowControls(getSelectedElement, saveFn) {
