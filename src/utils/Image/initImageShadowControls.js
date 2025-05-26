@@ -3,6 +3,11 @@ const imageStyleMap = new Map();
 // ✅ initImageShadowControls.js
 
 function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
+  if (typeof saveFn !== "function") {
+    console.warn("❌ saveFn is not a function in mergeAndSaveImageStyles()");
+    return;
+  }
+
   const prevStyles = imageStyleMap.get(blockId) || {
     image: { selector: `#${blockId} div.sqs-image-content`, styles: {} },
     imageTag: {
