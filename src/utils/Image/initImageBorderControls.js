@@ -1,9 +1,63 @@
 // ✅ Declare global style cache map
-const imageStyleMap = new Map();
+// const imageStyleMap = new Map();
 
-function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
-  const prevStyles = imageStyleMap.get(blockId) || {
-    image: { selector: `#${blockId} div.sqs-image-content`, styles: {} },
+// function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
+//   const prevStyles = imageStyleMap.get(blockId) || {
+//     image: { selector: `#${blockId} div.sqs-image-content`, styles: {} },
+//     imageTag: {
+//       selector: `#${blockId} .sqs-image-content img`,
+//       styles: {
+//         "box-sizing": "border-box",
+//         "object-fit": "cover",
+//       },
+//     },
+//   };
+
+//   const mergedImageStyles = {
+//     ...prevStyles.image.styles,
+//     ...(newStyles.image?.styles || {}),
+//     ...Object.fromEntries(
+//       Object.entries(newStyles).filter(
+//         ([key, val]) =>
+//           typeof key === "string" &&
+//           typeof val === "string" &&
+//           !["image", "imageTag"].includes(key)
+//       )
+//     ),
+//   };
+
+//   const finalData = {
+//     image: {
+//       selector: prevStyles.image.selector,
+//       styles: mergedImageStyles,
+//     },
+//     imageTag: {
+//       selector: prevStyles.imageTag.selector,
+//       styles: {
+//         ...prevStyles.imageTag.styles,
+//         ...(newStyles.imageTag?.styles || {}),
+//       },
+//     },
+//   };
+
+//   imageStyleMap.set(blockId, finalData);
+//   saveFn(blockId, finalData, "image");
+// }
+
+window.__scImageStyleMap = new Map();
+
+// Export the mergeAndSaveImageStyles function
+export function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
+  if (typeof saveFn !== "function") {
+    console.warn("❌ saveFn is not a function in mergeAndSaveImageStyles()");
+    return;
+  }
+
+  const prevStyles = window.__scImageStyleMap.get(blockId) || {
+    image: {
+      selector: `#${blockId} div.sqs-image-content`,
+      styles: {},
+    },
     imageTag: {
       selector: `#${blockId} .sqs-image-content img`,
       styles: {
@@ -16,14 +70,6 @@ function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
   const mergedImageStyles = {
     ...prevStyles.image.styles,
     ...(newStyles.image?.styles || {}),
-    ...Object.fromEntries(
-      Object.entries(newStyles).filter(
-        ([key, val]) =>
-          typeof key === "string" &&
-          typeof val === "string" &&
-          !["image", "imageTag"].includes(key)
-      )
-    ),
   };
 
   const finalData = {
@@ -40,7 +86,8 @@ function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
     },
   };
 
-  imageStyleMap.set(blockId, finalData);
+  // Save to map and database
+  window.__scImageStyleMap.set(blockId, finalData);
   saveFn(blockId, finalData, "image");
 }
 
