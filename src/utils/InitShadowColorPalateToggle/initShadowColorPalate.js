@@ -1,3 +1,6 @@
+// At the top of initShadowColorPalate.js
+import { applyShadowColorFromPalette } from "../Image/initImageShadowControls.js";
+
 export function initShadowColorPalate(
   themeColors,
   selectedElement,
