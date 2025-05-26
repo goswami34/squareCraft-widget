@@ -2,6 +2,46 @@ const imageStyleMap = new Map();
 
 // ✅ initImageShadowControls.js
 
+function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
+  const prevStyles = imageStyleMap.get(blockId) || {
+    image: { selector: `#${blockId} div.sqs-image-content`, styles: {} },
+    imageTag: {
+      selector: `#${blockId} .sqs-image-content img`,
+      styles: {},
+    },
+  };
+
+  const mergedImageStyles = {
+    ...prevStyles.image.styles,
+    ...(newStyles.image?.styles || {}),
+    ...Object.fromEntries(
+      Object.entries(newStyles).filter(
+        ([key, val]) =>
+          typeof key === "string" &&
+          typeof val === "string" &&
+          !["image", "imageTag"].includes(key)
+      )
+    ),
+  };
+
+  const finalData = {
+    image: {
+      selector: prevStyles.image.selector,
+      styles: mergedImageStyles,
+    },
+    imageTag: {
+      selector: prevStyles.imageTag.selector,
+      styles: {
+        ...prevStyles.imageTag.styles,
+        ...(newStyles.imageTag?.styles || {}),
+      },
+    },
+  };
+
+  imageStyleMap.set(blockId, finalData);
+  saveFn(blockId, finalData, "image");
+}
+
 const shadowState = {
   x: 0, // centered
   y: 0, // centered
