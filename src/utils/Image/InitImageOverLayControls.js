@@ -44,93 +44,105 @@ export const InitImageOverLayControls = () => {
     });
   };
 
+  // X axis slider: left = -100, center = 0, right = 100
   const initSlider = (selector, key) => {
     const field = document.querySelector(selector);
     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
-
     if (!field || !bullet) return;
-
-    // const updateUI = (px, axis = "x") => {
-    //   const dimension = axis === "x" ? field.offsetWidth : field.offsetHeight;
-    //   const percent = px / dimension;
-    //   const value = Math.round(percent * 200 - 100); // -100 to 100
-
-    //   overlayState[key] = value;
-
-    //   if (axis === "x") {
-    //     bullet.style.left = `${px}px`;
-    //     bullet.style.transform = "translateX(-50%)";
-    //   } else {
-    //     bullet.style.top = `${px}px`;
-    //     bullet.style.transform = "translateY(-50%)";
-    //   }
-
-    //   updateOverlayStyles();
-
-    //   // Optional: update display value
-    //   const valueDisplay = field
-    //     .closest(".sc-w-full")
-    //     ?.querySelector(".sc-text-xs");
-    //   if (valueDisplay) valueDisplay.textContent = `${value}px`;
-    // };
-
-    const updateUI = (px, axis = "x") => {
-      const dimension = axis === "x" ? field.offsetWidth : field.offsetHeight;
-      const percent = px / dimension;
-
-      let value = Math.round(percent * 200 - 100); // Default for X
-
-      if (axis === "y") {
-        value = Math.round((1 - percent) * 200 - 100); // Invert Y
-      }
-
+    let value = 0;
+    const updateUI = (px) => {
+      const dimension = field.offsetWidth;
+      value = Math.round((px / dimension) * 200 - 100);
       overlayState[key] = value;
-
-      if (axis === "x") {
-        bullet.style.left = `${px}px`;
-        bullet.style.transform = "translateX(-50%)";
-      } else {
-        bullet.style.top = `${px}px`;
-        bullet.style.transform = "translateY(-50%)";
-      }
-
+      bullet.style.left = `${px}px`;
+      bullet.style.transform = "translateX(-50%)";
       updateOverlayStyles();
-
-      // Optional: update UI text value
       const valueDisplay = field
         .closest(".sc-w-full")
         ?.querySelector(".sc-text-xs");
       if (valueDisplay) valueDisplay.textContent = `${value}px`;
     };
-
     const drag = (e) => {
-      const clientPos =
-        key === "x"
-          ? e.clientX || e.touches?.[0]?.clientX
-          : e.clientY || e.touches?.[0]?.clientY;
-
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const rect = field.getBoundingClientRect();
-      const offset =
-        key === "x"
-          ? Math.min(Math.max(clientPos - rect.left, 0), rect.width)
-          : Math.min(Math.max(clientPos - rect.top, 0), rect.height);
-
-      updateUI(offset, key);
+      let px = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+      updateUI(px);
     };
-
     bullet.addEventListener("mousedown", (e) => {
       e.preventDefault();
       document.addEventListener("mousemove", drag);
-      document.addEventListener("mouseup", () => {
-        document.removeEventListener("mousemove", drag);
-      });
+      document.addEventListener(
+        "mouseup",
+        () => {
+          document.removeEventListener("mousemove", drag);
+        },
+        { once: true }
+      );
     });
-
-    // Center bullet on init
+    bullet.addEventListener("touchstart", (e) => {
+      document.addEventListener("touchmove", drag);
+      document.addEventListener(
+        "touchend",
+        () => {
+          document.removeEventListener("touchmove", drag);
+        },
+        { once: true }
+      );
+    });
     setTimeout(() => {
-      const center =
-        key === "x" ? field.offsetWidth / 2 : field.offsetHeight / 2;
-      updateUI(center, key);
+      const center = field.offsetWidth / 2;
+      updateUI(center);
+    }, 50);
+  };
+
+  // Y axis slider: top = -100, center = 0, bottom = 100
+  const initSliderY = (selector, key) => {
+    const field = document.querySelector(selector);
+    const bullet = field?.querySelector(".sc-custom-overlay-bullet");
+    if (!field || !bullet) return;
+    let value = 0;
+    const updateUI = (py) => {
+      const dimension = field.offsetHeight;
+      value = Math.round((py / dimension) * 200 - 100);
+      overlayState[key] = value;
+      bullet.style.top = `${py}px`;
+      bullet.style.transform = "translateY(-50%)";
+      updateOverlayStyles();
+      const valueDisplay = field
+        .closest(".sc-w-full")
+        ?.querySelector(".sc-text-xs");
+      if (valueDisplay) valueDisplay.textContent = `${value}px`;
+    };
+    const drag = (e) => {
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const rect = field.getBoundingClientRect();
+      let py = Math.min(Math.max(clientY - rect.top, 0), rect.height);
+      updateUI(py);
+    };
+    bullet.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      document.addEventListener("mousemove", drag);
+      document.addEventListener(
+        "mouseup",
+        () => {
+          document.removeEventListener("mousemove", drag);
+        },
+        { once: true }
+      );
+    });
+    bullet.addEventListener("touchstart", (e) => {
+      document.addEventListener("touchmove", drag);
+      document.addEventListener(
+        "touchend",
+        () => {
+          document.removeEventListener("touchmove", drag);
+        },
+        { once: true }
+      );
+    });
+    setTimeout(() => {
+      const center = field.offsetHeight / 2;
+      updateUI(center);
     }, 50);
   };
 
@@ -155,8 +167,9 @@ export const InitImageOverLayControls = () => {
       });
     });
 
-    initSlider(".mt-3 .sc-w-full:nth-child(1)", "x", true); // X axis
-    initSlider(".mt-3 .sc-w-full:nth-child(2)", "y", true); // Y axis
+    // X and Y axis sliders
+    initSlider(".mt-3 .sc-w-full:nth-child(1)", "x"); // X axis
+    initSliderY(".mt-3 .sc-w-full:nth-child(2)", "y"); // Y axis
   };
 
   const setSelectedImage = (imageElement) => {
