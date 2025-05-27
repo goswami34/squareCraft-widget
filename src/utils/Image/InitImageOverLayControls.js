@@ -1,226 +1,53 @@
-export const InitImageOverLayControls = () => {
-  let selectedImage = null;
+const initOverlaySlider = (selector, key) => {
+  const field = document.querySelector(selector);
+  const bullet = field?.querySelector(".sc-custom-overlay-bullet");
+  const valueDisplay = field
+    ?.closest(".sc-w-full")
+    ?.querySelector(".sc-text-xs");
 
-  const overlayState = {
-    x: 0,
-    y: 0,
-    width: 100,
-    height: 100,
-    color: "#363544",
-  };
+  if (!field || !bullet) return;
 
-  const createOverlay = () => {
-    if (!selectedImage) return;
-    const content = selectedImage.querySelector(".sqs-image-content");
-    if (!content || content.querySelector(".sc-custom-overlay")) return;
+  // Set initial value
+  const setUI = (percent) => {
+    const sliderWidth = field.offsetWidth;
+    const px = (percent / 100) * sliderWidth;
+    bullet.style.left = `${px}px`;
+    bullet.style.transform = "translateX(-50%)";
 
-    const overlay = document.createElement("div");
-    overlay.className = "sc-custom-overlay";
-    overlay.style.cssText = `
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100px;
-        height: 100px;
-        background-color: ${overlayState.color};
-        z-index: 2;
-        pointer-events: none;
-        border-radius: inherit;
-      `;
-    content.style.position = "relative";
-    content.appendChild(overlay);
-  };
-
-  const updateOverlayStyles = () => {
-    if (!selectedImage) return;
-    const overlay = selectedImage.querySelector(".sc-custom-overlay");
-    if (!overlay) return;
-    Object.assign(overlay.style, {
-      top: `${overlayState.y}px`,
-      left: `${overlayState.x}px`,
-      width: `${overlayState.width}px`,
-      height: `${overlayState.height}px`,
-      backgroundColor: overlayState.color,
-    });
-  };
-
-  //   const initSlider = (selector, key) => {
-  //     const field = document.querySelector(selector);
-  //     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
-
-  //     if (!field || !bullet) return;
-
-  //     // const updateUI = (px, axis = "x") => {
-  //     //   const dimension = axis === "x" ? field.offsetWidth : field.offsetHeight;
-  //     //   const percent = px / dimension;
-  //     //   const value = Math.round(percent * 200 - 100); // -100 to 100
-
-  //     //   overlayState[key] = value;
-
-  //     //   if (axis === "x") {
-  //     //     bullet.style.left = `${px}px`;
-  //     //     bullet.style.transform = "translateX(-50%)";
-  //     //   } else {
-  //     //     bullet.style.top = `${px}px`;
-  //     //     bullet.style.transform = "translateY(-50%)";
-  //     //   }
-
-  //     //   updateOverlayStyles();
-
-  //     //   // Optional: update display value
-  //     //   const valueDisplay = field
-  //     //     .closest(".sc-w-full")
-  //     //     ?.querySelector(".sc-text-xs");
-  //     //   if (valueDisplay) valueDisplay.textContent = `${value}px`;
-  //     // };
-
-  //     const updateUI = (px, axis = "x") => {
-  //       const dimension = axis === "x" ? field.offsetWidth : field.offsetHeight;
-  //       const percent = px / dimension;
-
-  //       let value = Math.round(percent * 200 - 100); // Default for X
-
-  //       if (axis === "y") {
-  //         value = Math.round((1 - percent) * 200 - 100); // Invert Y
-  //       }
-
-  //       overlayState[key] = value;
-
-  //       if (axis === "x") {
-  //         bullet.style.left = `${px}px`;
-  //         bullet.style.transform = "translateX(-50%)";
-  //       } else {
-  //         bullet.style.top = `${px}px`;
-  //         bullet.style.transform = "translateY(-50%)";
-  //       }
-
-  //       updateOverlayStyles();
-
-  //       // Optional: update UI text value
-  //       const valueDisplay = field
-  //         .closest(".sc-w-full")
-  //         ?.querySelector(".sc-text-xs");
-  //       if (valueDisplay) valueDisplay.textContent = `${value}px`;
-  //     };
-
-  //     const drag = (e) => {
-  //       const clientPos =
-  //         key === "x"
-  //           ? e.clientX || e.touches?.[0]?.clientX
-  //           : e.clientY || e.touches?.[0]?.clientY;
-
-  //       const rect = field.getBoundingClientRect();
-  //       const offset =
-  //         key === "x"
-  //           ? Math.min(Math.max(clientPos - rect.left, 0), rect.width)
-  //           : Math.min(Math.max(clientPos - rect.top, 0), rect.height);
-
-  //       updateUI(offset, key);
-  //     };
-
-  //     bullet.addEventListener("mousedown", (e) => {
-  //       e.preventDefault();
-  //       document.addEventListener("mousemove", drag);
-  //       document.addEventListener("mouseup", () => {
-  //         document.removeEventListener("mousemove", drag);
-  //       });
-  //     });
-
-  //     // Center bullet on init
-  //     setTimeout(() => {
-  //       const center =
-  //         key === "x" ? field.offsetWidth / 2 : field.offsetHeight / 2;
-  //       updateUI(center, key);
-  //     }, 50);
-  //   };
-
-  const initSlider = (selector, key) => {
-    const field = document.querySelector(selector);
-    const bullet = field?.querySelector(".sc-custom-overlay-bullet");
-
-    if (!field || !bullet) return;
-
-    // Keep value between -100 and 100
-    const clamp = (val) => Math.max(-100, Math.min(100, val));
-
-    const updateUI = (px) => {
-      const width = field.offsetWidth;
-      const percent = px / width;
-      const value = clamp(Math.round(percent * 200 - 100)); // -100 to +100
-      overlayState[key] = value;
-
-      const bulletPos = ((value + 100) / 200) * width;
-      bullet.style.left = `${bulletPos}px`;
-      bullet.style.transform = "translateX(-50%)";
-
-      updateOverlayStyles();
-
-      const valueDisplay = field
-        .closest(".sc-w-full")
-        ?.querySelector(".sc-text-xs");
-      if (valueDisplay) valueDisplay.textContent = `${value}px`;
-    };
-
-    const drag = (e) => {
-      const clientX = e.clientX || e.touches?.[0]?.clientX;
-      const rect = field.getBoundingClientRect();
-      const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
-      updateUI(offsetX);
-    };
-
-    bullet.addEventListener("mousedown", (e) => {
-      e.preventDefault();
-      document.addEventListener("mousemove", drag);
-      document.addEventListener("mouseup", () => {
-        document.removeEventListener("mousemove", drag);
-      });
-    });
-
-    // Initialize to current overlay value
-    setTimeout(() => {
-      const px = ((overlayState[key] + 100) / 200) * field.offsetWidth;
-      updateUI(px);
-    }, 0);
-  };
-
-  const initEventListeners = () => {
-    document.querySelector("#overLayButton")?.addEventListener("click", () => {
-      document.querySelector("#overLaySection")?.classList.toggle("sc-hidden");
-    });
-
-    document.querySelector(".sc-square-6")?.addEventListener("click", () => {
-      const color = "#363544";
-      overlayState.color = color;
-      updateOverlayStyles();
-    });
-
-    // Handle Width / Height buttons
-    document.querySelectorAll(".sc-text-sm").forEach((el, idx) => {
-      el.addEventListener("click", () => {
-        const val = parseInt(el.textContent.replace("px", "")) || 100;
-        if (idx === 1) overlayState.width = val;
-        if (idx === 2) overlayState.height = val;
-        updateOverlayStyles();
-      });
-    });
-
-    initSlider(".mt-3 .sc-w-full:nth-child(1)", "x", true); // X axis
-    initSlider(".mt-3 .sc-w-full:nth-child(2)", "y", true); // Y axis
-  };
-
-  const setSelectedImage = (imageElement) => {
-    selectedImage = imageElement;
-    createOverlay();
+    // Map percent (0-100) to value (-100 to 100)
+    const value = Math.round((percent / 100) * 200 - 100);
+    overlayState[key] = value;
+    if (valueDisplay) valueDisplay.textContent = `${value}px`;
     updateOverlayStyles();
   };
 
-  const init = (imageElement) => {
-    setSelectedImage(imageElement);
-    initEventListeners();
+  // Initialize to current overlay value
+  setTimeout(() => {
+    const percent = ((overlayState[key] + 100) / 200) * 100;
+    setUI(percent);
+  }, 50);
+
+  const startDrag = (e) => {
+    e.preventDefault();
+    const moveHandler = (ev) => {
+      const clientX = ev.clientX || ev.touches?.[0]?.clientX;
+      const rect = field.getBoundingClientRect();
+      const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+      const percent = (offsetX / rect.width) * 100;
+      setUI(percent);
+    };
+    const stopDrag = () => {
+      document.removeEventListener("mousemove", moveHandler);
+      document.removeEventListener("mouseup", stopDrag);
+      document.removeEventListener("touchmove", moveHandler);
+      document.removeEventListener("touchend", stopDrag);
+    };
+    document.addEventListener("mousemove", moveHandler);
+    document.addEventListener("mouseup", stopDrag);
+    document.addEventListener("touchmove", moveHandler);
+    document.addEventListener("touchend", stopDrag);
   };
 
-  return {
-    init,
-    setSelectedImage,
-  };
+  bullet.addEventListener("mousedown", startDrag);
+  bullet.addEventListener("touchstart", startDrag);
 };
