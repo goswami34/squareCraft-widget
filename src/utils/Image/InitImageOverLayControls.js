@@ -44,59 +44,45 @@ export const InitImageOverLayControls = () => {
     });
   };
 
-  //   const initSlider = (selector, key) => {
-  //     const field = document.querySelector(selector);
-  //     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
-
-  //     if (!field || !bullet) return;
-
-  //     const updateUI = (px) => {
-  //       const percent = px / field.offsetWidth;
-  //       const value = Math.round(percent * 200 - 100); // -100 to +100
-  //       overlayState[key] = value;
-  //       bullet.style.left = `${px}px`;
-  //       bullet.style.transform = "translateX(-50%)";
-  //       updateOverlayStyles();
-
-  //       // Optional: update display value (if you have one)
-  //       const valueDisplay = field
-  //         .closest(".sc-w-full")
-  //         ?.querySelector(".sc-text-xs");
-  //       if (valueDisplay) valueDisplay.textContent = `${value}px`;
-  //     };
-
-  //     const drag = (e) => {
-  //       const clientX = e.clientX || e.touches?.[0]?.clientX;
-  //       const rect = field.getBoundingClientRect();
-  //       const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
-  //       updateUI(offsetX);
-  //     };
-
-  //     bullet.addEventListener("mousedown", (e) => {
-  //       e.preventDefault();
-  //       document.addEventListener("mousemove", drag);
-  //       document.addEventListener("mouseup", () => {
-  //         document.removeEventListener("mousemove", drag);
-  //       });
-  //     });
-
-  //     // Initialize bullet at center (0px)
-  //     setTimeout(() => {
-  //       const center = field.offsetWidth / 2;
-  //       updateUI(center);
-  //     }, 50);
-  //   };
-
   const initSlider = (selector, key) => {
     const field = document.querySelector(selector);
     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
 
     if (!field || !bullet) return;
 
+    // const updateUI = (px, axis = "x") => {
+    //   const dimension = axis === "x" ? field.offsetWidth : field.offsetHeight;
+    //   const percent = px / dimension;
+    //   const value = Math.round(percent * 200 - 100); // -100 to 100
+
+    //   overlayState[key] = value;
+
+    //   if (axis === "x") {
+    //     bullet.style.left = `${px}px`;
+    //     bullet.style.transform = "translateX(-50%)";
+    //   } else {
+    //     bullet.style.top = `${px}px`;
+    //     bullet.style.transform = "translateY(-50%)";
+    //   }
+
+    //   updateOverlayStyles();
+
+    //   // Optional: update display value
+    //   const valueDisplay = field
+    //     .closest(".sc-w-full")
+    //     ?.querySelector(".sc-text-xs");
+    //   if (valueDisplay) valueDisplay.textContent = `${value}px`;
+    // };
+
     const updateUI = (px, axis = "x") => {
       const dimension = axis === "x" ? field.offsetWidth : field.offsetHeight;
       const percent = px / dimension;
-      const value = Math.round(percent * 200 - 100); // -100 to 100
+
+      let value = Math.round(percent * 200 - 100); // Default for X
+
+      if (axis === "y") {
+        value = Math.round((1 - percent) * 200 - 100); // Invert Y
+      }
 
       overlayState[key] = value;
 
@@ -110,7 +96,7 @@ export const InitImageOverLayControls = () => {
 
       updateOverlayStyles();
 
-      // Optional: update display value
+      // Optional: update UI text value
       const valueDisplay = field
         .closest(".sc-w-full")
         ?.querySelector(".sc-text-xs");
