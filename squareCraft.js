@@ -2684,6 +2684,10 @@ let pendingModifications = new Map();
           return;
         }
 
+        // ✅ Initialize overlay controls properly
+        const overlayController = InitImageOverLayControls();
+        overlayController.init(selectedImage);
+
         setTimeout(() => {
           handleImageBorderControlsClick(null, {
             getTextType,
@@ -2708,7 +2712,6 @@ let pendingModifications = new Map();
         initImageBorderControls(selectedImage);
         // initImageShadowControls(selectedImage);
         initImageShadowControls(() => selectedImage);
-        InitImageOverLayControls(selectedImage);
 
         showNotification("Border applied to image", "success");
       });
