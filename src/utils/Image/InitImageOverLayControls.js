@@ -1,63 +1,90 @@
 export const InitImageOverLayControls = (fabric, canvas) => {
   // Initialize overlay object
   let overlay = null;
+  let selectedImage = null;
 
-  // Create overlay rectangle
+  // Create overlay element
   const createOverlay = () => {
-    overlay = new fabric.Rect({
-      width: 20,
-      height: 20,
-      fill: "#363544",
-      opacity: 0.5,
-      left: 50,
-      top: 50,
-      selectable: false,
-      evented: false,
+    if (!selectedImage) return;
+
+    // Create a pseudo-element style for the overlay
+    const styleId = `overlay-style-${selectedImage.id}`;
+    let styleElement = document.getElementById(styleId);
+
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = styleId;
+      document.head.appendChild(styleElement);
+    }
+
+    // Set initial overlay styles
+    updateOverlayStyles({
+      backgroundColor: "#E13C335E",
+      position: "absolute",
+      content: "''",
+      display: "block",
+      top: "0",
+      left: "0",
+      width: "100%",
+      height: "100%",
+      zIndex: "1",
     });
-    canvas.add(overlay);
-    canvas.renderAll();
+  };
+
+  // Update overlay styles
+  const updateOverlayStyles = (styles) => {
+    if (!selectedImage) return;
+
+    const styleId = `overlay-style-${selectedImage.id}`;
+    const styleElement = document.getElementById(styleId);
+
+    if (styleElement) {
+      const cssText =
+        `#${selectedImage.id} .sqs-image-content > :nth-child(-n+2)::before { ` +
+        Object.entries(styles)
+          .map(([key, value]) => `${key}: ${value};`)
+          .join(" ") +
+        " }";
+      styleElement.textContent = cssText;
+    }
   };
 
   // Toggle overlay visibility
   const toggleOverlayVisibility = (isVisible) => {
-    if (!overlay) {
-      createOverlay();
-    }
-    overlay.set("visible", isVisible);
-    canvas.renderAll();
+    if (!selectedImage) return;
+
+    updateOverlayStyles({
+      display: isVisible ? "block" : "none",
+    });
   };
 
   // Set overlay color
   const setOverlayColor = (color) => {
-    if (!overlay) {
-      createOverlay();
-    }
-    overlay.set("fill", color);
-    canvas.renderAll();
+    if (!selectedImage) return;
+
+    updateOverlayStyles({
+      backgroundColor: color,
+    });
   };
 
   // Set overlay dimensions
   const setOverlayDimensions = (width, height) => {
-    if (!overlay) {
-      createOverlay();
-    }
-    overlay.set({
-      width: parseInt(width),
-      height: parseInt(height),
+    if (!selectedImage) return;
+
+    updateOverlayStyles({
+      width: `${width}px`,
+      height: `${height}px`,
     });
-    canvas.renderAll();
   };
 
   // Set overlay position
   const setOverlayPosition = (x, y) => {
-    if (!overlay) {
-      createOverlay();
-    }
-    overlay.set({
-      left: parseInt(x),
-      top: parseInt(y),
+    if (!selectedImage) return;
+
+    updateOverlayStyles({
+      top: `${y}px`,
+      left: `${x}px`,
     });
-    canvas.renderAll();
   };
 
   // Initialize event listeners
@@ -76,7 +103,7 @@ export const InitImageOverLayControls = (fabric, canvas) => {
     if (colorPicker) {
       colorPicker.addEventListener("click", () => {
         // Implement color picker functionality
-        const color = "#363544"; // Default color
+        const color = "#E13C335E"; // Default color
         setOverlayColor(color);
       });
     }
@@ -91,11 +118,11 @@ export const InitImageOverLayControls = (fabric, canvas) => {
 
     if (widthInput && heightInput) {
       widthInput.addEventListener("change", (e) => {
-        setOverlayDimensions(e.target.value, overlay.height);
+        setOverlayDimensions(e.target.value, selectedImage.offsetHeight);
       });
 
       heightInput.addEventListener("change", (e) => {
-        setOverlayDimensions(overlay.width, e.target.value);
+        setOverlayDimensions(selectedImage.offsetWidth, e.target.value);
       });
     }
 
@@ -109,23 +136,30 @@ export const InitImageOverLayControls = (fabric, canvas) => {
 
     if (xAxisInput && yAxisInput) {
       xAxisInput.addEventListener("change", (e) => {
-        setOverlayPosition(e.target.value, overlay.top);
+        setOverlayPosition(e.target.value, 0);
       });
 
       yAxisInput.addEventListener("change", (e) => {
-        setOverlayPosition(overlay.left, e.target.value);
+        setOverlayPosition(0, e.target.value);
       });
     }
   };
 
-  // Initialize the overlay controls
-  const init = () => {
+  // Set selected image
+  const setSelectedImage = (imageElement) => {
+    selectedImage = imageElement;
     createOverlay();
+  };
+
+  // Initialize the overlay controls
+  const init = (imageElement) => {
+    setSelectedImage(imageElement);
     initEventListeners();
   };
 
   return {
     init,
+    setSelectedImage,
     toggleOverlayVisibility,
     setOverlayColor,
     setOverlayDimensions,
