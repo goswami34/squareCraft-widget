@@ -1,13 +1,18 @@
 export const InitImageOverLayControls = () => {
   let selectedImage = null;
 
+  const overlayState = {
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    color: "#363544",
+  };
+
   const createOverlay = () => {
     if (!selectedImage) return;
-
     const content = selectedImage.querySelector(".sqs-image-content");
-    if (!content) return;
-
-    if (content.querySelector(".sc-custom-overlay")) return;
+    if (!content || content.querySelector(".sc-custom-overlay")) return;
 
     const overlay = document.createElement("div");
     overlay.className = "sc-custom-overlay";
@@ -15,95 +20,96 @@ export const InitImageOverLayControls = () => {
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(225, 60, 51, 0.37);
+        width: 100px;
+        height: 100px;
+        background-color: ${overlayState.color};
         z-index: 2;
         pointer-events: none;
         border-radius: inherit;
       `;
-
     content.style.position = "relative";
     content.appendChild(overlay);
   };
 
-  const updateOverlayStyles = (styles) => {
+  const updateOverlayStyles = () => {
     if (!selectedImage) return;
     const overlay = selectedImage.querySelector(".sc-custom-overlay");
     if (!overlay) return;
-
-    Object.entries(styles).forEach(([key, value]) => {
-      overlay.style[key] = value;
+    Object.assign(overlay.style, {
+      top: `${overlayState.y}px`,
+      left: `${overlayState.x}px`,
+      width: `${overlayState.width}px`,
+      height: `${overlayState.height}px`,
+      backgroundColor: overlayState.color,
     });
   };
 
-  const getTextValue = (selector) => {
-    const el = document.querySelector(selector);
-    if (!el) return null;
-    const text = el.textContent.trim();
-    return text.replace("px", "").replace("#", "").trim();
-  };
+  const initSlider = (selector, key, isCentered = false) => {
+    const field = document.querySelector(selector);
+    const bullet = field?.querySelector(".sc-custom-overlay-bullet");
 
-  const applyOverlayFromUI = () => {
-    if (!selectedImage) return;
+    if (!field || !bullet) return;
 
-    const colorHex =
-      getTextValue(".sc-inActiveTab-border p.sc-text-xs") || "363544";
-    const color = `#${colorHex}`;
+    const setUI = (percent) => {
+      const px = (percent / 100) * field.offsetWidth;
+      bullet.style.left = `${px}px`;
 
-    const width =
-      parseInt(
-        getTextValue(
-          ".sc-flex.sc-mt-2.sc-items-center:nth-child(2) .sc-text-sm"
-        )
-      ) || 100;
+      const rawValue = isCentered
+        ? Math.round((percent / 100) * 200 - 100)
+        : Math.round((percent / 100) * 200);
+      overlayState[key] = rawValue;
+      updateOverlayStyles();
+    };
 
-    const height =
-      parseInt(
-        getTextValue(
-          ".sc-flex.sc-mt-2.sc-items-center:nth-child(3) .sc-text-sm"
-        )
-      ) || 100;
+    // Init to center
+    setTimeout(() => setUI(50), 100);
 
-    const x =
-      parseInt(getTextValue(".mt-3 .sc-w-full:nth-child(1) .sc-text-xs")) || 0;
+    const drag = (e) => {
+      const clientX = e.clientX || e.touches?.[0]?.clientX;
+      const rect = field.getBoundingClientRect();
+      const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+      const percent = (offsetX / rect.width) * 100;
+      setUI(percent);
+    };
 
-    const y =
-      parseInt(getTextValue(".mt-3 .sc-w-full:nth-child(2) .sc-text-xs")) || 0;
-
-    updateOverlayStyles({
-      backgroundColor: color,
-      width: `${width}px`,
-      height: `${height}px`,
-      left: `${x}px`,
-      top: `${y}px`,
+    bullet.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      document.addEventListener("mousemove", drag);
+      document.addEventListener("mouseup", () => {
+        document.removeEventListener("mousemove", drag);
+      });
     });
   };
 
   const initEventListeners = () => {
-    // Toggle visibility of the overlay panel
-    const toggleBtn = document.querySelector("#overLayButton");
-    toggleBtn?.addEventListener("click", () => {
+    document.querySelector("#overLayButton")?.addEventListener("click", () => {
       document.querySelector("#overLaySection")?.classList.toggle("sc-hidden");
     });
 
-    // Apply overlay when color swatch clicked
-    document
-      .querySelector(".sc-square-6")
-      ?.addEventListener("click", applyOverlayFromUI);
+    document.querySelector(".sc-square-6")?.addEventListener("click", () => {
+      const color = "#363544";
+      overlayState.color = color;
+      updateOverlayStyles();
+    });
 
-    // Also apply when width/height/position changed — you can improve this using MutationObserver if needed
-    document
-      .querySelectorAll("#overLaySection .sc-cursor-pointer")
-      .forEach((el) => {
-        el.addEventListener("click", applyOverlayFromUI);
+    // Handle Width / Height buttons
+    document.querySelectorAll(".sc-text-sm").forEach((el, idx) => {
+      el.addEventListener("click", () => {
+        const val = parseInt(el.textContent.replace("px", "")) || 100;
+        if (idx === 1) overlayState.width = val;
+        if (idx === 2) overlayState.height = val;
+        updateOverlayStyles();
       });
+    });
+
+    initSlider(".mt-3 .sc-w-full:nth-child(1)", "x", true); // X axis
+    initSlider(".mt-3 .sc-w-full:nth-child(2)", "y", true); // Y axis
   };
 
   const setSelectedImage = (imageElement) => {
     selectedImage = imageElement;
     createOverlay();
-    applyOverlayFromUI(); // Apply values on load
+    updateOverlayStyles();
   };
 
   const init = (imageElement) => {
@@ -114,12 +120,5 @@ export const InitImageOverLayControls = () => {
   return {
     init,
     setSelectedImage,
-    toggleOverlayVisibility: (isVisible) =>
-      updateOverlayStyles({ display: isVisible ? "block" : "none" }),
-    setOverlayColor: (color) => updateOverlayStyles({ backgroundColor: color }),
-    setOverlayDimensions: (w, h) =>
-      updateOverlayStyles({ width: `${w}px`, height: `${h}px` }),
-    setOverlayPosition: (x, y) =>
-      updateOverlayStyles({ top: `${y}px`, left: `${x}px` }),
   };
 };

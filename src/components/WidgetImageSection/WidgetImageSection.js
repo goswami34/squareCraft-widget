@@ -438,10 +438,8 @@ export function WidgetImageSection(id) {
                            </div>
 
                         </div>
-                        <div class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
-                           <div
-                              class="sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
-                           </div>
+                        <div class="sc-rounded-15px sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
+                           <div class="sc-custom-overlay-bullet sc-absolute sc-w-3 sc-h-3 sc-bg-color-EF7C2F sc-rounded-full sc-top-half sc-cursor-pointer"></div>
                         </div>
                      </div>
                      <div class="sc-w-full">
@@ -462,10 +460,8 @@ export function WidgetImageSection(id) {
                            </div>
 
                         </div>
-                        <div class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
-                           <div
-                              class="sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
-                           </div>
+                        <div class="sc-rounded-15px sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
+                           <div class="sc-custom-overlay-bullet sc-absolute sc-w-3 sc-h-3 sc-bg-color-EF7C2F sc-rounded-full sc-top-half sc-cursor-pointer"></div>
                         </div>
                      </div>
                   </div>
