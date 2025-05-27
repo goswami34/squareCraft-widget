@@ -414,10 +414,8 @@ export function WidgetImageSection(id) {
                      </div>
                      <div class="sc-flex sc-mt-2 sc-items-center">
                         <div class="sc-bg-3f3f3f sc-py-1 sc-w-40 sc-px-1_5 sc-rounded-l">
-                           <p class="sc-universal sc-roboto sc-text-sm ">Custom</p>
+                           <p class="sc-universal sc-roboto sc-text-sm ">Absolute</p>
                         </div>
-                        <img style="width: 30.5px;" loading="lazy"
-                           src="https://fatin-webefo.github.io/squareCraft-plugin/public/imageArrow.svg" alt="">
                      </div>
                   </div>
 
