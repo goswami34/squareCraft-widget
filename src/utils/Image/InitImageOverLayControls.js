@@ -119,8 +119,9 @@ export const InitImageOverLayControls = () => {
       });
     });
 
-    initSlider(".mt-3 .sc-w-full:nth-child(1)", "x", true); // X axis
-    initSlider(".mt-3 .sc-w-full:nth-child(2)", "y", true); // Y axis
+    // X and Y axis sliders (use the .sc-rounded-15px bar inside each .sc-w-full)
+    initOverlaySlider(".mt-3 .sc-w-full:nth-child(1) .sc-rounded-15px", "x"); // X axis
+    initOverlaySlider(".mt-3 .sc-w-full:nth-child(2) .sc-rounded-15px", "y"); // Y axis
   };
 
   const setSelectedImage = (imageElement) => {
