@@ -44,43 +44,6 @@ export const InitImageOverLayControls = () => {
     });
   };
 
-  //   const initSlider = (selector, key, isCentered = false) => {
-  //     const field = document.querySelector(selector);
-  //     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
-
-  //     if (!field || !bullet) return;
-
-  //     const setUI = (percent) => {
-  //       const px = (percent / 100) * field.offsetWidth;
-  //       bullet.style.left = `${px}px`;
-
-  //       const rawValue = isCentered
-  //         ? Math.round((percent / 100) * 200 - 100)
-  //         : Math.round((percent / 100) * 200);
-  //       overlayState[key] = rawValue;
-  //       updateOverlayStyles();
-  //     };
-
-  //     // Init to center
-  //     setTimeout(() => setUI(50), 100);
-
-  //     const drag = (e) => {
-  //       const clientX = e.clientX || e.touches?.[0]?.clientX;
-  //       const rect = field.getBoundingClientRect();
-  //       const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
-  //       const percent = (offsetX / rect.width) * 100;
-  //       setUI(percent);
-  //     };
-
-  //     bullet.addEventListener("mousedown", (e) => {
-  //       e.preventDefault();
-  //       document.addEventListener("mousemove", drag);
-  //       document.addEventListener("mouseup", () => {
-  //         document.removeEventListener("mousemove", drag);
-  //       });
-  //     });
-  //   };
-
   const initSlider = (selector, key) => {
     const field = document.querySelector(selector);
     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
