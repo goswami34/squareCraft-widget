@@ -44,59 +44,117 @@ export const InitImageOverLayControls = () => {
     });
   };
 
+  //   const initSlider = (selector, key) => {
+  //     const field = document.querySelector(selector);
+  //     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
+
+  //     if (!field || !bullet) return;
+
+  //     // const updateUI = (px, axis = "x") => {
+  //     //   const dimension = axis === "x" ? field.offsetWidth : field.offsetHeight;
+  //     //   const percent = px / dimension;
+  //     //   const value = Math.round(percent * 200 - 100); // -100 to 100
+
+  //     //   overlayState[key] = value;
+
+  //     //   if (axis === "x") {
+  //     //     bullet.style.left = `${px}px`;
+  //     //     bullet.style.transform = "translateX(-50%)";
+  //     //   } else {
+  //     //     bullet.style.top = `${px}px`;
+  //     //     bullet.style.transform = "translateY(-50%)";
+  //     //   }
+
+  //     //   updateOverlayStyles();
+
+  //     //   // Optional: update display value
+  //     //   const valueDisplay = field
+  //     //     .closest(".sc-w-full")
+  //     //     ?.querySelector(".sc-text-xs");
+  //     //   if (valueDisplay) valueDisplay.textContent = `${value}px`;
+  //     // };
+
+  //     const updateUI = (px, axis = "x") => {
+  //       const dimension = axis === "x" ? field.offsetWidth : field.offsetHeight;
+  //       const percent = px / dimension;
+
+  //       let value = Math.round(percent * 200 - 100); // Default for X
+
+  //       if (axis === "y") {
+  //         value = Math.round((1 - percent) * 200 - 100); // Invert Y
+  //       }
+
+  //       overlayState[key] = value;
+
+  //       if (axis === "x") {
+  //         bullet.style.left = `${px}px`;
+  //         bullet.style.transform = "translateX(-50%)";
+  //       } else {
+  //         bullet.style.top = `${px}px`;
+  //         bullet.style.transform = "translateY(-50%)";
+  //       }
+
+  //       updateOverlayStyles();
+
+  //       // Optional: update UI text value
+  //       const valueDisplay = field
+  //         .closest(".sc-w-full")
+  //         ?.querySelector(".sc-text-xs");
+  //       if (valueDisplay) valueDisplay.textContent = `${value}px`;
+  //     };
+
+  //     const drag = (e) => {
+  //       const clientPos =
+  //         key === "x"
+  //           ? e.clientX || e.touches?.[0]?.clientX
+  //           : e.clientY || e.touches?.[0]?.clientY;
+
+  //       const rect = field.getBoundingClientRect();
+  //       const offset =
+  //         key === "x"
+  //           ? Math.min(Math.max(clientPos - rect.left, 0), rect.width)
+  //           : Math.min(Math.max(clientPos - rect.top, 0), rect.height);
+
+  //       updateUI(offset, key);
+  //     };
+
+  //     bullet.addEventListener("mousedown", (e) => {
+  //       e.preventDefault();
+  //       document.addEventListener("mousemove", drag);
+  //       document.addEventListener("mouseup", () => {
+  //         document.removeEventListener("mousemove", drag);
+  //       });
+  //     });
+
+  //     // Center bullet on init
+  //     setTimeout(() => {
+  //       const center =
+  //         key === "x" ? field.offsetWidth / 2 : field.offsetHeight / 2;
+  //       updateUI(center, key);
+  //     }, 50);
+  //   };
+
   const initSlider = (selector, key) => {
     const field = document.querySelector(selector);
     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
 
     if (!field || !bullet) return;
 
-    // const updateUI = (px, axis = "x") => {
-    //   const dimension = axis === "x" ? field.offsetWidth : field.offsetHeight;
-    //   const percent = px / dimension;
-    //   const value = Math.round(percent * 200 - 100); // -100 to 100
+    // Keep value between -100 and 100
+    const clamp = (val) => Math.max(-100, Math.min(100, val));
 
-    //   overlayState[key] = value;
-
-    //   if (axis === "x") {
-    //     bullet.style.left = `${px}px`;
-    //     bullet.style.transform = "translateX(-50%)";
-    //   } else {
-    //     bullet.style.top = `${px}px`;
-    //     bullet.style.transform = "translateY(-50%)";
-    //   }
-
-    //   updateOverlayStyles();
-
-    //   // Optional: update display value
-    //   const valueDisplay = field
-    //     .closest(".sc-w-full")
-    //     ?.querySelector(".sc-text-xs");
-    //   if (valueDisplay) valueDisplay.textContent = `${value}px`;
-    // };
-
-    const updateUI = (px, axis = "x") => {
-      const dimension = axis === "x" ? field.offsetWidth : field.offsetHeight;
-      const percent = px / dimension;
-
-      let value = Math.round(percent * 200 - 100); // Default for X
-
-      if (axis === "y") {
-        value = Math.round((1 - percent) * 200 - 100); // Invert Y
-      }
-
+    const updateUI = (px) => {
+      const width = field.offsetWidth;
+      const percent = px / width;
+      const value = clamp(Math.round(percent * 200 - 100)); // -100 to +100
       overlayState[key] = value;
 
-      if (axis === "x") {
-        bullet.style.left = `${px}px`;
-        bullet.style.transform = "translateX(-50%)";
-      } else {
-        bullet.style.top = `${px}px`;
-        bullet.style.transform = "translateY(-50%)";
-      }
+      const bulletPos = ((value + 100) / 200) * width;
+      bullet.style.left = `${bulletPos}px`;
+      bullet.style.transform = "translateX(-50%)";
 
       updateOverlayStyles();
 
-      // Optional: update UI text value
       const valueDisplay = field
         .closest(".sc-w-full")
         ?.querySelector(".sc-text-xs");
@@ -104,18 +162,10 @@ export const InitImageOverLayControls = () => {
     };
 
     const drag = (e) => {
-      const clientPos =
-        key === "x"
-          ? e.clientX || e.touches?.[0]?.clientX
-          : e.clientY || e.touches?.[0]?.clientY;
-
+      const clientX = e.clientX || e.touches?.[0]?.clientX;
       const rect = field.getBoundingClientRect();
-      const offset =
-        key === "x"
-          ? Math.min(Math.max(clientPos - rect.left, 0), rect.width)
-          : Math.min(Math.max(clientPos - rect.top, 0), rect.height);
-
-      updateUI(offset, key);
+      const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+      updateUI(offsetX);
     };
 
     bullet.addEventListener("mousedown", (e) => {
@@ -126,12 +176,11 @@ export const InitImageOverLayControls = () => {
       });
     });
 
-    // Center bullet on init
+    // Initialize to current overlay value
     setTimeout(() => {
-      const center =
-        key === "x" ? field.offsetWidth / 2 : field.offsetHeight / 2;
-      updateUI(center, key);
-    }, 50);
+      const px = ((overlayState[key] + 100) / 200) * field.offsetWidth;
+      updateUI(px);
+    }, 0);
   };
 
   const initEventListeners = () => {
