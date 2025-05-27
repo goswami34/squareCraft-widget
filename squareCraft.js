@@ -2708,7 +2708,7 @@ let pendingModifications = new Map();
         initImageBorderControls(selectedImage);
         // initImageShadowControls(selectedImage);
         initImageShadowControls(() => selectedImage);
-        InitImageOverLayControls(fabric, canvas);
+        InitImageOverLayControls(null, null);
 
         showNotification("Border applied to image", "success");
       });

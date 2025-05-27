@@ -1,6 +1,5 @@
-export const InitImageOverLayControls = (fabric, canvas) => {
+export const InitImageOverLayControls = () => {
   // Initialize overlay object
-  let overlay = null;
   let selectedImage = null;
 
   // Create overlay element
