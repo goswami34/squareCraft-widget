@@ -75,10 +75,14 @@ export const InitImageOverLayControls = () => {
     // };
 
     const updateUI = (px, axis = "x") => {
-      const dimension = axis === "x" ? field.offsetWidth : field.offsetWidth; // both are horizontal sliders
+      const dimension = axis === "x" ? field.offsetWidth : field.offsetHeight;
       const percent = px / dimension;
 
-      const value = Math.round(percent * 200 - 100); // -100 to +100
+      let value = Math.round(percent * 200 - 100); // Default for X
+
+      if (axis === "y") {
+        value = Math.round((1 - percent) * 200 - 100); // Invert Y
+      }
 
       overlayState[key] = value;
 
@@ -86,13 +90,13 @@ export const InitImageOverLayControls = () => {
         bullet.style.left = `${px}px`;
         bullet.style.transform = "translateX(-50%)";
       } else {
-        bullet.style.left = `${px}px`; // Y axis uses horizontal progress bar too
-        bullet.style.transform = "translateX(-50%)";
+        bullet.style.top = `${px}px`;
+        bullet.style.transform = "translateY(-50%)";
       }
 
       updateOverlayStyles();
 
-      // Optional display
+      // Optional: update UI text value
       const valueDisplay = field
         .closest(".sc-w-full")
         ?.querySelector(".sc-text-xs");
