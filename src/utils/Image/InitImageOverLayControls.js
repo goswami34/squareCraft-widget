@@ -60,16 +60,16 @@ export const InitImageOverLayControls = () => {
       bullet.style.left = `${px}px`;
       bullet.style.transform = "translateX(-50%)";
 
-      // Map percent (0-100) to value (-100 to 100)
-      const value = Math.round((percent / 100) * 200 - 100);
+      // Map percent (0-100) to value (-100 to 100), 0 is center
+      const value = Math.round((percent - 50) * 2);
       overlayState[key] = value;
       if (valueDisplay) valueDisplay.textContent = `${value}px`;
       updateOverlayStyles();
     };
 
-    // Initialize to current overlay value
+    // Initialize to current overlay value (0 is center)
     setTimeout(() => {
-      const percent = ((overlayState[key] + 100) / 200) * 100;
+      const percent = overlayState[key] / 2 + 50;
       setUI(percent);
     }, 50);
 
