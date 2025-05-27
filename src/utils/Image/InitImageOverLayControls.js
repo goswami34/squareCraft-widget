@@ -1,156 +1,111 @@
 export const InitImageOverLayControls = () => {
-  // Initialize overlay object
   let selectedImage = null;
 
-  // Create overlay element
   const createOverlay = () => {
     if (!selectedImage) return;
 
-    // Create a pseudo-element style for the overlay
-    const styleId = `overlay-style-${selectedImage.id}`;
-    let styleElement = document.getElementById(styleId);
+    const content = selectedImage.querySelector(".sqs-image-content");
+    if (!content) return;
 
-    if (!styleElement) {
-      styleElement = document.createElement("style");
-      styleElement.id = styleId;
-      document.head.appendChild(styleElement);
-    }
+    if (content.querySelector(".sc-custom-overlay")) return;
 
-    // Set initial overlay styles
-    updateOverlayStyles({
-      backgroundColor: "#E13C335E",
-      position: "absolute",
-      content: "''",
-      display: "block",
-      top: "0",
-      left: "0",
-      width: "100%",
-      height: "100%",
-      zIndex: "1",
-    });
+    const overlay = document.createElement("div");
+    overlay.className = "sc-custom-overlay";
+    overlay.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(225, 60, 51, 0.37);
+        z-index: 2;
+        pointer-events: none;
+        border-radius: inherit;
+      `;
+
+    content.style.position = "relative";
+    content.appendChild(overlay);
   };
 
-  // Update overlay styles
   const updateOverlayStyles = (styles) => {
     if (!selectedImage) return;
+    const overlay = selectedImage.querySelector(".sc-custom-overlay");
+    if (!overlay) return;
 
-    const styleId = `overlay-style-${selectedImage.id}`;
-    const styleElement = document.getElementById(styleId);
-
-    if (styleElement) {
-      const cssText =
-        `#${selectedImage.id} .sqs-image-content > :nth-child(-n+2)::before { ` +
-        Object.entries(styles)
-          .map(([key, value]) => `${key}: ${value};`)
-          .join(" ") +
-        " }";
-      styleElement.textContent = cssText;
-    }
-  };
-
-  // Toggle overlay visibility
-  const toggleOverlayVisibility = (isVisible) => {
-    if (!selectedImage) return;
-
-    updateOverlayStyles({
-      display: isVisible ? "block" : "none",
+    Object.entries(styles).forEach(([key, value]) => {
+      overlay.style[key] = value;
     });
   };
 
-  // Set overlay color
-  const setOverlayColor = (color) => {
+  const getTextValue = (selector) => {
+    const el = document.querySelector(selector);
+    if (!el) return null;
+    const text = el.textContent.trim();
+    return text.replace("px", "").replace("#", "").trim();
+  };
+
+  const applyOverlayFromUI = () => {
     if (!selectedImage) return;
+
+    const colorHex =
+      getTextValue(".sc-inActiveTab-border p.sc-text-xs") || "363544";
+    const color = `#${colorHex}`;
+
+    const width =
+      parseInt(
+        getTextValue(
+          ".sc-flex.sc-mt-2.sc-items-center:nth-child(2) .sc-text-sm"
+        )
+      ) || 100;
+
+    const height =
+      parseInt(
+        getTextValue(
+          ".sc-flex.sc-mt-2.sc-items-center:nth-child(3) .sc-text-sm"
+        )
+      ) || 100;
+
+    const x =
+      parseInt(getTextValue(".mt-3 .sc-w-full:nth-child(1) .sc-text-xs")) || 0;
+
+    const y =
+      parseInt(getTextValue(".mt-3 .sc-w-full:nth-child(2) .sc-text-xs")) || 0;
 
     updateOverlayStyles({
       backgroundColor: color,
-    });
-  };
-
-  // Set overlay dimensions
-  const setOverlayDimensions = (width, height) => {
-    if (!selectedImage) return;
-
-    updateOverlayStyles({
       width: `${width}px`,
       height: `${height}px`,
-    });
-  };
-
-  // Set overlay position
-  const setOverlayPosition = (x, y) => {
-    if (!selectedImage) return;
-
-    updateOverlayStyles({
-      top: `${y}px`,
       left: `${x}px`,
+      top: `${y}px`,
     });
   };
 
-  // Initialize event listeners
   const initEventListeners = () => {
-    // Overlay visibility toggle
-    const visibilityToggle = document.querySelector("#overLayButton");
-    if (visibilityToggle) {
-      visibilityToggle.addEventListener("click", () => {
-        const overlaySection = document.querySelector("#overLaySection");
-        overlaySection.classList.toggle("sc-hidden");
+    // Toggle visibility of the overlay panel
+    const toggleBtn = document.querySelector("#overLayButton");
+    toggleBtn?.addEventListener("click", () => {
+      document.querySelector("#overLaySection")?.classList.toggle("sc-hidden");
+    });
+
+    // Apply overlay when color swatch clicked
+    document
+      .querySelector(".sc-square-6")
+      ?.addEventListener("click", applyOverlayFromUI);
+
+    // Also apply when width/height/position changed — you can improve this using MutationObserver if needed
+    document
+      .querySelectorAll("#overLaySection .sc-cursor-pointer")
+      .forEach((el) => {
+        el.addEventListener("click", applyOverlayFromUI);
       });
-    }
-
-    // Color picker
-    const colorPicker = document.querySelector(".sc-square-6");
-    if (colorPicker) {
-      colorPicker.addEventListener("click", () => {
-        // Implement color picker functionality
-        const color = "#E13C335E"; // Default color
-        setOverlayColor(color);
-      });
-    }
-
-    // Width and Height controls
-    const widthInput = document.querySelector(
-      ".sc-flex.sc-mt-2.sc-items-center:nth-child(1) .sc-universal"
-    );
-    const heightInput = document.querySelector(
-      ".sc-flex.sc-mt-2.sc-items-center:nth-child(2) .sc-universal"
-    );
-
-    if (widthInput && heightInput) {
-      widthInput.addEventListener("change", (e) => {
-        setOverlayDimensions(e.target.value, selectedImage.offsetHeight);
-      });
-
-      heightInput.addEventListener("change", (e) => {
-        setOverlayDimensions(selectedImage.offsetWidth, e.target.value);
-      });
-    }
-
-    // Position controls (X and Y)
-    const xAxisInput = document.querySelector(
-      ".sc-flex.sc-gap-2.sc-items-center.sc-justify-between:nth-child(1) .sc-text-xs"
-    );
-    const yAxisInput = document.querySelector(
-      ".sc-flex.sc-gap-2.sc-items-center.sc-justify-between:nth-child(2) .sc-text-xs"
-    );
-
-    if (xAxisInput && yAxisInput) {
-      xAxisInput.addEventListener("change", (e) => {
-        setOverlayPosition(e.target.value, 0);
-      });
-
-      yAxisInput.addEventListener("change", (e) => {
-        setOverlayPosition(0, e.target.value);
-      });
-    }
   };
 
-  // Set selected image
   const setSelectedImage = (imageElement) => {
     selectedImage = imageElement;
     createOverlay();
+    applyOverlayFromUI(); // Apply values on load
   };
 
-  // Initialize the overlay controls
   const init = (imageElement) => {
     setSelectedImage(imageElement);
     initEventListeners();
@@ -159,9 +114,12 @@ export const InitImageOverLayControls = () => {
   return {
     init,
     setSelectedImage,
-    toggleOverlayVisibility,
-    setOverlayColor,
-    setOverlayDimensions,
-    setOverlayPosition,
+    toggleOverlayVisibility: (isVisible) =>
+      updateOverlayStyles({ display: isVisible ? "block" : "none" }),
+    setOverlayColor: (color) => updateOverlayStyles({ backgroundColor: color }),
+    setOverlayDimensions: (w, h) =>
+      updateOverlayStyles({ width: `${w}px`, height: `${h}px` }),
+    setOverlayPosition: (x, y) =>
+      updateOverlayStyles({ top: `${y}px`, left: `${x}px` }),
   };
 };
