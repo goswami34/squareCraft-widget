@@ -44,32 +44,69 @@ export const InitImageOverLayControls = () => {
     });
   };
 
-  const initSlider = (selector, key, isCentered = false) => {
+  //   const initSlider = (selector, key, isCentered = false) => {
+  //     const field = document.querySelector(selector);
+  //     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
+
+  //     if (!field || !bullet) return;
+
+  //     const setUI = (percent) => {
+  //       const px = (percent / 100) * field.offsetWidth;
+  //       bullet.style.left = `${px}px`;
+
+  //       const rawValue = isCentered
+  //         ? Math.round((percent / 100) * 200 - 100)
+  //         : Math.round((percent / 100) * 200);
+  //       overlayState[key] = rawValue;
+  //       updateOverlayStyles();
+  //     };
+
+  //     // Init to center
+  //     setTimeout(() => setUI(50), 100);
+
+  //     const drag = (e) => {
+  //       const clientX = e.clientX || e.touches?.[0]?.clientX;
+  //       const rect = field.getBoundingClientRect();
+  //       const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+  //       const percent = (offsetX / rect.width) * 100;
+  //       setUI(percent);
+  //     };
+
+  //     bullet.addEventListener("mousedown", (e) => {
+  //       e.preventDefault();
+  //       document.addEventListener("mousemove", drag);
+  //       document.addEventListener("mouseup", () => {
+  //         document.removeEventListener("mousemove", drag);
+  //       });
+  //     });
+  //   };
+
+  const initSlider = (selector, key) => {
     const field = document.querySelector(selector);
     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
 
     if (!field || !bullet) return;
 
-    const setUI = (percent) => {
-      const px = (percent / 100) * field.offsetWidth;
+    const updateUI = (px) => {
+      const percent = px / field.offsetWidth;
+      const value = Math.round(percent * 200 - 100); // -100 to +100
+      overlayState[key] = value;
       bullet.style.left = `${px}px`;
-
-      const rawValue = isCentered
-        ? Math.round((percent / 100) * 200 - 100)
-        : Math.round((percent / 100) * 200);
-      overlayState[key] = rawValue;
+      bullet.style.transform = "translateX(-50%)";
       updateOverlayStyles();
-    };
 
-    // Init to center
-    setTimeout(() => setUI(50), 100);
+      // Optional: update display value (if you have one)
+      const valueDisplay = field
+        .closest(".sc-w-full")
+        ?.querySelector(".sc-text-xs");
+      if (valueDisplay) valueDisplay.textContent = `${value}px`;
+    };
 
     const drag = (e) => {
       const clientX = e.clientX || e.touches?.[0]?.clientX;
       const rect = field.getBoundingClientRect();
       const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
-      const percent = (offsetX / rect.width) * 100;
-      setUI(percent);
+      updateUI(offsetX);
     };
 
     bullet.addEventListener("mousedown", (e) => {
@@ -79,6 +116,12 @@ export const InitImageOverLayControls = () => {
         document.removeEventListener("mousemove", drag);
       });
     });
+
+    // Initialize bullet at center (0px)
+    setTimeout(() => {
+      const center = field.offsetWidth / 2;
+      updateUI(center);
+    }, 50);
   };
 
   const initEventListeners = () => {
