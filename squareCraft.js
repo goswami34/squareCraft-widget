@@ -347,6 +347,20 @@ let pendingModifications = new Map();
       }, 50);
     });
 
+    const triggerOverLayOne = document.getElementById("overLayFontColorPalate");
+    const paletteOverLayOne = document.getElementById("overlay-color-palette");
+
+    if (!triggerOverLayOne || !paletteOverLayOne) return;
+
+    triggerOverLayOne.addEventListener("click", () => {
+      paletteOverLayOne.classList.toggle("sc-hidden");
+
+      // Load palette after toggle
+      setTimeout(() => {
+        initOverLayColorPalate(themeColors, () => selectedElement);
+      }, 50);
+    });
+
     // const hoverFontTrigger = event.target.closest(
     //   "#hover-buttonFontColorPalate"
     // );

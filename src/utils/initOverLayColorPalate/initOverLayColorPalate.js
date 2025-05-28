@@ -10,11 +10,9 @@ export function initOverLayColorPalate(
 ) {
   //   const palette = document.getElementById(`${prefix}overlayColorPalate`);
   const paletteToggleButton = document.getElementById(
-    `${prefix}overlayColorPalate`
+    `${prefix}overLayFontColorPalate`
   );
-  const paletteBox = document.getElementById(
-    `${prefix}button-font-color-palette`
-  );
+  const paletteBox = document.getElementById(`${prefix}overlay-color-palette`);
   const container = document.getElementById(`${prefix}overlay-colors`);
   const selectorField = document.getElementById(
     `${prefix}overlay-color-selection-field`
