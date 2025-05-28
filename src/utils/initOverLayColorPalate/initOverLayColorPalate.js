@@ -5,6 +5,7 @@ export function initOverLayColorPalate(
   themeColors,
   selectedElement,
   prefix = "",
+
   saveFn
 ) {
   //   const palette = document.getElementById(`${prefix}overlayColorPalate`);
@@ -39,15 +40,6 @@ export function initOverLayColorPalate(
   );
 
   // Add click handler to show/hide color palette
-  //   if (container) {
-  //     container.addEventListener("click", (e) => {
-  //       e.stopPropagation();
-  //       if (palette) {
-  //         palette.classList.toggle("sc-hidden");
-  //       }
-  //     });
-  //   }
-
   if (paletteToggleButton && paletteBox) {
     paletteToggleButton.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -64,17 +56,6 @@ export function initOverLayColorPalate(
       }
     });
   }
-
-  // Close palette when clicking outside
-  document.addEventListener("click", (e) => {
-    if (
-      paletteToggleButton &&
-      !paletteToggleButton.contains(e.target) &&
-      !paletteToggleButton?.contains(e.target)
-    ) {
-      paletteToggleButton.classList.add("sc-hidden");
-    }
-  });
 
   function updateTransparencyField(hue) {
     if (transparencyField) {
