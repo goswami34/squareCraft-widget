@@ -1,3 +1,5 @@
+import { initOverLayColorPalate } from "../initOverLayColorPalate/initOverLayColorPalate";
+
 export const InitImageOverLayControls = () => {
   let selectedImage = null;
 
@@ -102,6 +104,20 @@ export const InitImageOverLayControls = () => {
     document.querySelector("#overLayButton")?.addEventListener("click", () => {
       document.querySelector("#overLaySection")?.classList.toggle("sc-hidden");
     });
+
+    // Initialize color palette for overlay
+    const colorPicker = document.querySelector(".sc-square-6");
+    if (colorPicker) {
+      initOverLayColorPalate(
+        { default: "#363544" },
+        () => selectedImage,
+        "overlay-",
+        (color, alpha) => {
+          overlayState.color = color;
+          updateOverlayStyles();
+        }
+      );
+    }
 
     document.querySelector(".sc-square-6")?.addEventListener("click", () => {
       const color = "#363544";

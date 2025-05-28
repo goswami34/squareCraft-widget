@@ -30,6 +30,27 @@ export function initOverLayColorPalate(
     `${prefix}button-color-transparency-bar`
   );
 
+  // Add click handler to show/hide color palette
+  if (container) {
+    container.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (palette) {
+        palette.classList.toggle("sc-hidden");
+      }
+    });
+  }
+
+  // Close palette when clicking outside
+  document.addEventListener("click", (e) => {
+    if (
+      palette &&
+      !palette.contains(e.target) &&
+      !container?.contains(e.target)
+    ) {
+      palette.classList.add("sc-hidden");
+    }
+  });
+
   function updateTransparencyField(hue) {
     if (transparencyField) {
       transparencyField.style.background = `linear-gradient(to bottom, 
