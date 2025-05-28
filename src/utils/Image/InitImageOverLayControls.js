@@ -108,7 +108,6 @@ export const InitImageOverLayControls = () => {
       document.querySelector("#overLaySection")?.classList.toggle("sc-hidden");
     });
 
-    // Handle Width / Height click update
     document.querySelectorAll(".sc-text-sm").forEach((el, idx) => {
       el.addEventListener("click", () => {
         const val = parseInt(el.textContent.replace("px", "")) || 100;
@@ -118,7 +117,6 @@ export const InitImageOverLayControls = () => {
       });
     });
 
-    // Initialize draggable X/Y sliders
     initOverlaySlider(".mt-3 .sc-w-full:nth-child(1) .sc-rounded-15px", "x");
     initOverlaySlider(
       ".mt-3 .sc-w-full:nth-child(2) .sc-rounded-15px",
@@ -126,13 +124,13 @@ export const InitImageOverLayControls = () => {
       true
     );
 
-    // Initialize color palette AFTER DOM loads
+    // ✅ Correct placement of initOverLayColorPalate
     setTimeout(() => {
       const colorPicker = document.getElementById("overlayColorPalate");
       if (colorPicker) {
         initOverLayColorPalate(
           {
-            accent: "rgb(239, 124, 47)",
+            accent: "#EF7C2F",
             white: "#ffffff",
             black: "#000000",
             darkAccent: "#1c1c1c",
