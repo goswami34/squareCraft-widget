@@ -309,6 +309,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/utils/Image/InitImageOverLayControls.js"
   );
 
+  const { initOverLayColorPalate } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initOverLayColorPalate/initOverLayColorPalate.js"
+  );
+
   //Image all functionality code end here
   //Image border controls end here
 
@@ -339,6 +343,7 @@ let pendingModifications = new Map();
       // Load palette after toggle
       setTimeout(() => {
         initShadowColorPalate(themeColors, () => selectedElement);
+        initOverLayColorPalate(themeColors, () => selectedElement);
       }, 50);
     });
 
