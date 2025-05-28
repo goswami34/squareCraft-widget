@@ -68,11 +68,11 @@ export function initOverLayColorPalate(
   // Close palette when clicking outside
   document.addEventListener("click", (e) => {
     if (
-      palette &&
-      !palette.contains(e.target) &&
-      !container?.contains(e.target)
+      paletteToggleButton &&
+      !paletteToggleButton.contains(e.target) &&
+      !paletteToggleButton?.contains(e.target)
     ) {
-      palette.classList.add("sc-hidden");
+      paletteToggleButton.classList.add("sc-hidden");
     }
   });
 
@@ -220,7 +220,7 @@ export function initOverLayColorPalate(
   }
 
   if (
-    !palette ||
+    !paletteToggleButton ||
     !container ||
     !selectorField ||
     !bullet ||
