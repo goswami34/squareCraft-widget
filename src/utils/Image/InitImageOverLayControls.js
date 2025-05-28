@@ -1,4 +1,4 @@
-import { initOverLayColorPalate } from "../initOverLayColorPalate/initOverLayColorPalate";
+import { initOverLayColorPalate } from "../initOverLayColorPalate/initOverLayColorPalate.js";
 
 export const InitImageOverLayControls = () => {
   let selectedImage = null;
