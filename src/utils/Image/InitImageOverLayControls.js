@@ -124,27 +124,25 @@ export const InitImageOverLayControls = () => {
       true
     );
 
-    // ✅ Correct placement of initOverLayColorPalate
-    setTimeout(() => {
-      const colorPicker = document.getElementById("overlayColorPalate");
-      if (colorPicker) {
-        initOverLayColorPalate(
-          {
-            accent: "#EF7C2F",
-            white: "#ffffff",
-            black: "#000000",
-            darkAccent: "#1c1c1c",
-            lightAccent: "#eaeaea",
-          },
-          () => selectedImage,
-          "overlay-",
-          (color, alpha) => {
-            overlayState.color = color;
-            updateOverlayStyles();
-          }
-        );
-      }
-    }, 100);
+    // Initialize color palette for overlay
+    const colorPicker = document.querySelector("#overlay-button-border-colors");
+    if (colorPicker) {
+      initOverLayColorPalate(
+        {
+          accent: "#EF7C2F",
+          white: "#ffffff",
+          black: "#000000",
+          darkAccent: "#1c1c1c",
+          lightAccent: "#eaeaea",
+        },
+        () => selectedImage,
+        "overlay-button-",
+        (color, alpha) => {
+          overlayState.color = color;
+          updateOverlayStyles();
+        }
+      );
+    }
   };
 
   const setSelectedImage = (imageElement) => {
