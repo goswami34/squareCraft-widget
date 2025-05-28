@@ -5,32 +5,38 @@ export function initOverLayColorPalate(
   themeColors,
   selectedElement,
   prefix = "",
+
   saveFn
 ) {
-  const paletteToggleButton = document.getElementById(`${prefix}border-colors`);
-  const paletteBox = document.getElementById(`${prefix}FontColorPalate`);
-  const container = document.getElementById(
-    `${prefix}all-color-selection-field`
+  //   const palette = document.getElementById(`${prefix}overlayColorPalate`);
+  const paletteToggleButton = document.getElementById(
+    `${prefix}overlayColorPalate`
   );
+  const paletteBox = document.getElementById(
+    `${prefix}button-font-color-palette`
+  );
+  const container = document.getElementById(`${prefix}overlay-colors`);
   const selectorField = document.getElementById(
-    `${prefix}color-selection-field`
+    `${prefix}overlay-color-selection-field`
   );
-  const bullet = document.getElementById(`${prefix}color-selection-bar`);
-  const colorCode = document.getElementById(`${prefix}color-code`);
+  const bullet = document.getElementById(
+    `${prefix}overlay-color-selection-bar`
+  );
+  const colorCode = document.getElementById(`${prefix}overlay-color-code`);
   const transparencyCount = document.getElementById(
-    `${prefix}color-transparency-count`
+    `${prefix}overlay-color-transparency-count`
   );
   const allColorField = document.getElementById(
-    `${prefix}all-color-selection-field`
+    `${prefix}overlay-all-color-selection-field`
   );
   const allColorBullet = document.getElementById(
-    `${prefix}all-color-selection-bar`
+    `${prefix}overlay-all-color-selection-bar`
   );
   const transparencyField = document.getElementById(
-    `${prefix}color-transparency-field`
+    `${prefix}overlay-color-transparency-field`
   );
   const transparencyBullet = document.getElementById(
-    `${prefix}color-transparency-bar`
+    `${prefix}overlay-color-transparency-bar`
   );
 
   // Add click handler to show/hide color palette
@@ -38,13 +44,6 @@ export function initOverLayColorPalate(
     paletteToggleButton.addEventListener("click", (e) => {
       e.stopPropagation();
       paletteBox.classList.toggle("sc-hidden");
-
-      // Position the palette below the color picker
-      const rect = paletteToggleButton.getBoundingClientRect();
-      paletteBox.style.position = "absolute";
-      paletteBox.style.top = `${rect.bottom + window.scrollY + 5}px`;
-      paletteBox.style.left = `${rect.left + window.scrollX}px`;
-      paletteBox.style.zIndex = "9999";
     });
 
     // Close palette when clicking outside
