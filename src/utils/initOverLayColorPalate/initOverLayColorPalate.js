@@ -7,8 +7,8 @@ export function initOverLayColorPalate(
   prefix = "",
   saveFn
 ) {
-  const palette = document.getElementById(`${prefix}buttonFontColorPalate`);
-  const container = document.getElementById(`${prefix}button-border-colors`);
+  const palette = document.getElementById(`${prefix}overLayFontColorPalate`);
+  const container = document.getElementById(`${prefix}overlay-border-colors`);
   const selectorField = document.getElementById(
     `${prefix}button-color-selection-field`
   );
