@@ -5,62 +5,37 @@ export function initOverLayColorPalate(
   themeColors,
   selectedElement,
   prefix = "",
-
   saveFn
 ) {
-  //   const palette = document.getElementById(`${prefix}overlayColorPalate`);
-  const paletteToggleButton = document.getElementById(
-    `${prefix}overLayFontColorPalate`
-  );
-  const paletteBox = document.getElementById(`${prefix}overlay-color-palette`);
-  const container = document.getElementById(`${prefix}overlay-colors`);
+  const palette = document.getElementById(`${prefix}buttonFontColorPalate`);
+  const container = document.getElementById(`${prefix}button-border-colors`);
   const selectorField = document.getElementById(
-    `${prefix}overlay-color-selection-field`
+    `${prefix}button-color-selection-field`
   );
-  const bullet = document.getElementById(
-    `${prefix}overlay-color-selection-bar`
-  );
-  const colorCode = document.getElementById(`${prefix}overlay-color-code`);
+  const bullet = document.getElementById(`${prefix}button-color-selection-bar`);
+  const colorCode = document.getElementById(`${prefix}button-color-code`);
   const transparencyCount = document.getElementById(
-    `${prefix}overlay-color-transparency-count`
+    `${prefix}button-color-transparency-count`
   );
   const allColorField = document.getElementById(
-    `${prefix}overlay-all-color-selection-field`
+    `${prefix}button-all-color-selection-field`
   );
   const allColorBullet = document.getElementById(
-    `${prefix}overlay-all-color-selection-bar`
+    `${prefix}button-all-color-selection-bar`
   );
   const transparencyField = document.getElementById(
-    `${prefix}overlay-color-transparency-field`
+    `${prefix}button-color-transparency-field`
   );
   const transparencyBullet = document.getElementById(
-    `${prefix}overlay-color-transparency-bar`
+    `${prefix}button-color-transparency-bar`
   );
-
-  // Add click handler to show/hide color palette
-  if (paletteToggleButton && paletteBox) {
-    paletteToggleButton.addEventListener("click", (e) => {
-      e.stopPropagation();
-      paletteBox.classList.toggle("sc-hidden");
-    });
-
-    // Close palette when clicking outside
-    document.addEventListener("click", (e) => {
-      if (
-        !paletteBox.contains(e.target) &&
-        !paletteToggleButton.contains(e.target)
-      ) {
-        paletteBox.classList.add("sc-hidden");
-      }
-    });
-  }
 
   function updateTransparencyField(hue) {
     if (transparencyField) {
       transparencyField.style.background = `linear-gradient(to bottom, 
-        hsla(${hue}, 100%, 50%, 1), 
-        hsla(${hue}, 100%, 50%, 0)
-      )`;
+          hsla(${hue}, 100%, 50%, 1), 
+          hsla(${hue}, 100%, 50%, 0)
+        )`;
     }
   }
   console.log("clicked element", selectedElement);
@@ -180,16 +155,16 @@ export function initOverLayColorPalate(
     }
 
     styleTag.textContent = `
-        a.${buttonType},
-        button.${buttonType} {
-          background-color: ${rgbaColor} !important;
-        }
-        a.${buttonType}:hover,
-        button.${buttonType}:hover {
-          background-color: ${rgbaColor} !important;
-          filter: brightness(0.95);
-        }
-      `;
+          a.${buttonType},
+          button.${buttonType} {
+            background-color: ${rgbaColor} !important;
+          }
+          a.${buttonType}:hover,
+          button.${buttonType}:hover {
+            background-color: ${rgbaColor} !important;
+            filter: brightness(0.95);
+          }
+        `;
     const allButtons = currentElement.querySelectorAll(
       `a.${buttonType}, button.${buttonType}`
     );
@@ -199,7 +174,7 @@ export function initOverLayColorPalate(
   }
 
   if (
-    !paletteToggleButton ||
+    !palette ||
     !container ||
     !selectorField ||
     !bullet ||
@@ -214,14 +189,14 @@ export function initOverLayColorPalate(
 
   if (allColorField) {
     allColorField.style.background = `linear-gradient(to bottom, 
-        hsl(0, 100%, 50%), 
-        hsl(60, 100%, 50%), 
-        hsl(120, 100%, 50%), 
-        hsl(180, 100%, 50%), 
-        hsl(240, 100%, 50%), 
-        hsl(300, 100%, 50%), 
-        hsl(360, 100%, 50%)
-      )`;
+          hsl(0, 100%, 50%), 
+          hsl(60, 100%, 50%), 
+          hsl(120, 100%, 50%), 
+          hsl(180, 100%, 50%), 
+          hsl(240, 100%, 50%), 
+          hsl(300, 100%, 50%), 
+          hsl(360, 100%, 50%)
+        )`;
   }
 
   if (
