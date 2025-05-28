@@ -106,12 +106,12 @@ export const InitImageOverLayControls = () => {
     });
 
     // Initialize color palette for overlay
-    const colorPicker = document.querySelector("#overlayColorPalate");
+    const colorPicker = document.querySelector("#overlay-button-border-colors");
     if (colorPicker) {
       initOverLayColorPalate(
         { default: "#363544" },
         () => selectedImage,
-        "overlay-",
+        "overlay-button-",
         (color, alpha) => {
           overlayState.color = color;
           updateOverlayStyles();
