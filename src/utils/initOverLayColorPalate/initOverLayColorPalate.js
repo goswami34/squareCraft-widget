@@ -31,41 +31,11 @@ export function initOverLayColorPalate(
   );
 
   // Add click handler to show/hide color palette
-  //   if (container) {
-  //     container.addEventListener("click", (e) => {
-  //       e.stopPropagation();
-  //       if (palette) {
-  //         palette.classList.toggle("sc-hidden");
-  //       }
-  //     });
-  //   }
-
-  // ✅ Correct target for toggle
-  if (palette) {
-    const toggleButton = document.getElementById(
-      `${prefix}buttonFontColorPalate`
-    );
-    toggleButton?.addEventListener("click", (e) => {
+  if (container) {
+    container.addEventListener("click", (e) => {
       e.stopPropagation();
-      const colorPaletteBox = document.getElementById(
-        `${prefix}button-font-color-palette`
-      );
-      if (colorPaletteBox) {
-        colorPaletteBox.classList.toggle("sc-hidden");
-      }
-    });
-
-    // ✅ Optional: hide palette on outside click
-    document.addEventListener("click", (e) => {
-      const colorPaletteBox = document.getElementById(
-        `${prefix}button-font-color-palette`
-      );
-      if (
-        colorPaletteBox &&
-        !colorPaletteBox.contains(e.target) &&
-        !toggleButton.contains(e.target)
-      ) {
-        colorPaletteBox.classList.add("sc-hidden");
+      if (palette) {
+        palette.classList.toggle("sc-hidden");
       }
     });
   }
