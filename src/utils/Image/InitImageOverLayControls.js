@@ -106,7 +106,7 @@ export const InitImageOverLayControls = () => {
     });
 
     // Initialize color palette for overlay
-    const colorPicker = document.querySelector(".sc-square-6");
+    const colorPicker = document.querySelector("#overlay-button-border-colors");
     if (colorPicker) {
       initOverLayColorPalate(
         { default: "#363544" },
@@ -118,12 +118,6 @@ export const InitImageOverLayControls = () => {
         }
       );
     }
-
-    document.querySelector(".sc-square-6")?.addEventListener("click", () => {
-      const color = "#363544";
-      overlayState.color = color;
-      updateOverlayStyles();
-    });
 
     // Handle Width / Height buttons
     document.querySelectorAll(".sc-text-sm").forEach((el, idx) => {

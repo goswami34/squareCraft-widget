@@ -36,6 +36,10 @@ export function initOverLayColorPalate(
       e.stopPropagation();
       if (palette) {
         palette.classList.toggle("sc-hidden");
+        // Position the palette below the color picker
+        const rect = container.getBoundingClientRect();
+        palette.style.top = `${rect.bottom + window.scrollY + 5}px`;
+        palette.style.left = `${rect.left + window.scrollX}px`;
       }
     });
   }
