@@ -1,5 +1,5 @@
 // At the top of initShadowColorPalate.js
-import { applyShadowColorFromPalette } from "../Image/InitImageOverLayControls.js";
+import { InitImageOverLayControls } from "../Image/InitImageOverLayControls.js";
 
 export function initOverLayColorPalate(
   themeColors,
@@ -346,7 +346,7 @@ export function initOverLayColorPalate(
         }
         const currentColor = colorCode?.textContent;
         if (currentColor) {
-          applyShadowColorFromPalette(
+          InitImageOverLayControls(
             currentColor,
             currentTransparency / 100,
             selectedElement,
@@ -429,7 +429,7 @@ export function initOverLayColorPalate(
         }
       });
 
-      applyShadowColorFromPalette(
+      InitImageOverLayControls(
         color,
         currentTransparency / 100,
         selectedElement,
