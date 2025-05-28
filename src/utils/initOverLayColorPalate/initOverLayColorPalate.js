@@ -7,7 +7,13 @@ export function initOverLayColorPalate(
   prefix = "",
   saveFn
 ) {
-  const palette = document.getElementById(`${prefix}overlayColorPalate`);
+  //   const palette = document.getElementById(`${prefix}overlayColorPalate`);
+  const paletteToggleButton = document.getElementById(
+    `${prefix}overlayColorPalate`
+  );
+  const paletteBox = document.getElementById(
+    `${prefix}button-font-color-palette`
+  );
   const container = document.getElementById(`${prefix}overlay-colors`);
   const selectorField = document.getElementById(
     `${prefix}overlay-color-selection-field`
@@ -33,11 +39,28 @@ export function initOverLayColorPalate(
   );
 
   // Add click handler to show/hide color palette
-  if (container) {
-    container.addEventListener("click", (e) => {
+  //   if (container) {
+  //     container.addEventListener("click", (e) => {
+  //       e.stopPropagation();
+  //       if (palette) {
+  //         palette.classList.toggle("sc-hidden");
+  //       }
+  //     });
+  //   }
+
+  if (paletteToggleButton && paletteBox) {
+    paletteToggleButton.addEventListener("click", (e) => {
       e.stopPropagation();
-      if (palette) {
-        palette.classList.toggle("sc-hidden");
+      paletteBox.classList.toggle("sc-hidden");
+    });
+
+    // Close palette when clicking outside
+    document.addEventListener("click", (e) => {
+      if (
+        !paletteBox.contains(e.target) &&
+        !paletteToggleButton.contains(e.target)
+      ) {
+        paletteBox.classList.add("sc-hidden");
       }
     });
   }
