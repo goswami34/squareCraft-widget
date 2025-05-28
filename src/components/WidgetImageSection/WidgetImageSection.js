@@ -360,7 +360,7 @@ export function WidgetImageSection(id) {
                         </p>
                         <div class="sc-py-0_5 sc-gap-5 sc-mt-2 sc-bg-3f3f3f sc-inActiveTab-border sc-flex sc-justify-between sc-items-center sc-px-1_5 sc-rounded-6px">
                            <p id="overlay-button-color-code" class="sc-text-xs sc-roboto sc-font-light sc-universal">#363544</p>
-                           <div id="overlay-button-border-colors" class="sc-border-colors sc-cursor-pointer"></div>
+                           <div id="overlay-button-border-colors" class="sc-square-6 sc-border-colors sc-cursor-pointer"></div>
                         </div>
                      </div>
                      <div class="">
