@@ -1129,5 +1129,5 @@ export function initOverLayColorPalate(
     overlay.style.backgroundColor = rgbaColor;
   }
 
-  applyImageOverlayColor("rgba(0,0,0,0.5)");
+  applyImageOverlayColor();
 }
