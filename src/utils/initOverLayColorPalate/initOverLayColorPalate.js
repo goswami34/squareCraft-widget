@@ -672,5 +672,5 @@ export function initOverLayColorPalate(
     `;
   }
 
-  applyImageOverlayColor("rgb(0, 0, 0)", 1);
+  applyImageOverlayColor("rgb(255, 255, 255)", 1);
 }
