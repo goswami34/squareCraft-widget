@@ -1,19 +1,6 @@
 // At the top of initShadowColorPalate.js
 import { InitImageOverLayControls } from "../Image/InitImageOverLayControls.js";
 
-const overlayControls = InitImageOverLayControls(themeColors);
-
-document.querySelectorAll('[id^="block-"]').forEach((block) => {
-  block.addEventListener("click", () => {
-    const imageBlock = block
-      .querySelector(".sqs-image-content")
-      ?.closest('[id^="block-"]');
-    if (imageBlock) {
-      overlayControls.init(imageBlock);
-    }
-  });
-});
-
 export function initOverLayColorPalate(
   themeColors,
   selectedElement,
