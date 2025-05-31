@@ -129,13 +129,7 @@ export const InitImageOverLayControls = () => {
       const colorPicker = document.getElementById("overlayColorPalate");
       if (colorPicker) {
         initOverLayColorPalate(
-          {
-            accent: "#EF7C2F",
-            white: "#ffffff",
-            black: "#000000",
-            darkAccent: "#1c1c1c",
-            lightAccent: "#eaeaea",
-          },
+          themeColors,
           () => selectedImage,
           "overlay-",
           (color, alpha) => {
