@@ -1,6 +1,19 @@
 // At the top of initShadowColorPalate.js
 import { InitImageOverLayControls } from "../Image/InitImageOverLayControls.js";
 
+const overlayControls = InitImageOverLayControls(themeColors);
+
+document.querySelectorAll('[id^="block-"]').forEach((block) => {
+  block.addEventListener("click", () => {
+    const imageBlock = block
+      .querySelector(".sqs-image-content")
+      ?.closest('[id^="block-"]');
+    if (imageBlock) {
+      overlayControls.init(imageBlock);
+    }
+  });
+});
+
 export function initOverLayColorPalate(
   themeColors,
   selectedElement,
@@ -237,17 +250,13 @@ export function initOverLayColorPalate(
     if (!currentElement) return;
 
     const isImage = currentElement.querySelector(".sqs-image-content");
-
     if (isImage) {
       const overlay = currentElement.querySelector(".sc-custom-overlay");
       if (overlay) {
         const rgbaColor = color.startsWith("rgb(")
           ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
           : color;
-
         overlay.style.backgroundColor = rgbaColor;
-      } else {
-        console.warn("❌ Overlay not found in block:", currentElement);
       }
     }
   }
@@ -354,7 +363,10 @@ export function initOverLayColorPalate(
         }
 
         // applyButtonBackgroundColor(rgb, currentTransparency / 100);
-        applyOverlayColorSmart(rgb, currentTransparency / 100);
+        // applyOverlayColorSmart(rgb, currentTransparency / 100);
+        if (typeof saveFn === "function") {
+          saveFn(rgb, currentTransparency / 100);
+        }
       };
 
       document.onmouseup = () => {
