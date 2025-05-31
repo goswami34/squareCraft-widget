@@ -700,7 +700,7 @@ export function initOverLayColorPalate(
         height: 100%;
         z-index: 1;
       }
-      #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
+      #${blockId} .sqs-image-content > :nth-child(-n+2) {
         position: relative;
       }
     `;
