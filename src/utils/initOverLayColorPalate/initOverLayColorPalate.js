@@ -243,7 +243,7 @@ export function initOverLayColorPalate(
       currentElement.querySelector("a.sqs-button-element--tertiary");
 
     if (isButton) {
-      applyOverlayColorSmart(color, alpha);
+      applyButtonBackgroundColor(color, alpha);
     } else if (isImage) {
       applyImageOverlayColor(color, alpha);
     }
