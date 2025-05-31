@@ -595,9 +595,9 @@ export function initOverLayColorPalate(
   saveFn
 ) {
   const palette = document.getElementById(`${prefix}buttonFontColorPalate`);
-  const container = document.getElementById(`${prefix}button-border-colors`);
+  const container = document.getElementById(`${prefix}overlay-border-colors`);
   const selectorField = document.getElementById(
-    `${prefix}button-color-selection-field`
+    `${prefix}overlay-color-selection-field`
   );
   const bullet = document.getElementById(`${prefix}button-color-selection-bar`);
   const colorCode = document.getElementById(`${prefix}button-color-code`);
