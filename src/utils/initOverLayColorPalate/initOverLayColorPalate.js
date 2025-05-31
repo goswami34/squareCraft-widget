@@ -618,10 +618,20 @@ export function initOverLayColorPalate(
   // }
 
   function applyImageOverlayColor(color, alpha = 1) {
+    if (!color || typeof color !== "string") {
+      console.warn(
+        "❌ Invalid color value passed to applyImageOverlayColor:",
+        color
+      );
+      return;
+    }
+
     const selected = selectedElement?.();
     if (!selected) return;
 
     const blockId = selected.closest('[id^="block-"]')?.id;
+    if (!blockId) return;
+
     const rgbaColor = color.startsWith("rgb(")
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
@@ -652,7 +662,7 @@ export function initOverLayColorPalate(
         content: '';
         position: absolute;
         top: 0; left: 0; width: 100%; height: 100%;
-        background-color: ${rgbaColor}; /* or use ${hexWithAlpha} if preferred */
+        background-color: ${rgbaColor};
         z-index: 1;
         pointer-events: none;
       }
@@ -662,5 +672,5 @@ export function initOverLayColorPalate(
     `;
   }
 
-  applyImageOverlayColor();
+  applyImageOverlayColor("rgb(0, 0, 0)", 1);
 }
