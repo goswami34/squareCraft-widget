@@ -374,19 +374,19 @@ export function WidgetImageSection(id) {
                      </div>
                      <div class="sc-h-1px sc-mt-2 sc-bg-color-gray"></div>
                      <div class="sc-flex color-h-selection sc-mt-2 sc-items-center sc-gap-2">
-                        <div id="button-color-selection-field" class="sc-relative" role="slider" aria-label="Color selection">
-                           <div id="button-color-selection-bar" class="sc-w-2 sc-h-2 sc-absolute sc-cursor-pointer sc-rounded-full sc-border sc-border-solid sc-border-white"></div>
+                        <div id="overlay-button-color-selection-field" class="sc-relative" role="slider" aria-label="Color selection">
+                           <div id="overlay-button-color-selection-bar" class="sc-w-2 sc-h-2 sc-absolute sc-cursor-pointer sc-rounded-full sc-border sc-border-solid sc-border-white"></div>
                         </div>
-                        <div id="button-color-transparency-field" class="sc-h-full sc-w-3 sc-relative sc-rounded-15px" role="slider" aria-label="Transparency">
-                           <div id="button-color-transparency-bar" class="sc-absolute sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px sc-cursor-grabbing sc-h-2 sc-bg-color-f2f2f2"></div>
+                        <div id="overlay-button-color-transparency-field" class="sc-h-full sc-w-3 sc-relative sc-rounded-15px" role="slider" aria-label="Transparency">
+                           <div id="overlay-button-color-transparency-bar" class="sc-absolute sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px sc-cursor-grabbing sc-h-2 sc-bg-color-f2f2f2"></div>
                         </div>
-                        <div id="button-all-color-selection-field" class="sc-h-full sc-w-3 sc-relative sc-rounded-15px" role="slider" aria-label="Hue selection">
-                           <div id="button-all-color-selection-bar" class="sc-absolute sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px sc-cursor-grabbing sc-h-2 sc-bg-color-f2f2f2"></div>
+                        <div id="overlay-button-all-color-selection-field" class="sc-h-full sc-w-3 sc-relative sc-rounded-15px" role="slider" aria-label="Hue selection">
+                           <div id="overlay-button-all-color-selection-bar" class="sc-absolute sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px sc-cursor-grabbing sc-h-2 sc-bg-color-f2f2f2"></div>
                         </div>
                      </div>
                      <div class="sc-flex sc-justify-between sc-mt-2 sc-px-2 sc-py-0_5 sc-rounded-6px sc-bg-454545">
-                        <p id="button-color-code" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select</p>
-                        <p id="button-color-transparency-count" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">100%</p>
+                        <p id="overlay-button-color-code" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select</p>
+                        <p id="overlay-button-color-transparency-count" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">100%</p>
                      </div>
                      </div>
                   </div>
