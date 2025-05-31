@@ -126,7 +126,7 @@ export const InitImageOverLayControls = () => {
 
     // ✅ Correct placement of initOverLayColorPalate
     setTimeout(() => {
-      const colorPicker = document.getElementById("overlayColorPalate");
+      const colorPicker = document.getElementById("overLayFontColorPalate");
       if (colorPicker) {
         initOverLayColorPalate(
           themeColors,

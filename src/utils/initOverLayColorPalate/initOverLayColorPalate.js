@@ -243,7 +243,7 @@ export function initOverLayColorPalate(
       currentElement.querySelector("a.sqs-button-element--tertiary");
 
     if (isButton) {
-      applyButtonBackgroundColor(color, alpha);
+      applyOverlayColorSmart(color, alpha);
     } else if (isImage) {
       applyImageOverlayColor(color, alpha);
     }
@@ -402,7 +402,8 @@ export function initOverLayColorPalate(
     const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
 
     colorCode.textContent = rgb;
-    applyButtonBackgroundColor(rgb);
+    // applyButtonBackgroundColor(rgb);
+    applyOverlayColorSmart(rgb, currentTransparency / 100);
   }
 
   if (transparencyField && transparencyBullet) {
@@ -425,7 +426,7 @@ export function initOverLayColorPalate(
         }
         const currentColor = colorCode?.textContent;
         if (currentColor) {
-          InitImageOverLayControls(
+          applyOverlayColorSmart(
             currentColor,
             currentTransparency / 100,
             selectedElement,
