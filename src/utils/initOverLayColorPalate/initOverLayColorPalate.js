@@ -619,10 +619,7 @@ export function initOverLayColorPalate(
 
   function applyImageOverlayColor(color, alpha = 1) {
     if (!color || typeof color !== "string") {
-      console.warn(
-        "❌ Invalid color value passed to applyImageOverlayColor:",
-        color
-      );
+      console.warn("❌ Invalid color passed to applyImageOverlayColor:", color);
       return;
     }
 
@@ -635,19 +632,6 @@ export function initOverLayColorPalate(
     const rgbaColor = color.startsWith("rgb(")
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
-
-    // Optional: convert to 8-digit hex if needed
-    const rgbMatch = color.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/);
-    let hexWithAlpha = "";
-    if (rgbMatch) {
-      const [r, g, b] = rgbMatch.slice(1).map(Number);
-      const a = Math.round(alpha * 255);
-      hexWithAlpha =
-        "#" +
-        [r, g, b, a]
-          .map((v) => v.toString(16).padStart(2, "0").toUpperCase())
-          .join("");
-    }
 
     const styleId = `sc-overlay-style-${blockId}`;
     let styleTag = document.getElementById(styleId);
