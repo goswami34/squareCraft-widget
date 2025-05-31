@@ -564,4 +564,26 @@ export function initOverLayColorPalate(
     colorCode.textContent = rgb;
     applyColor(rgb);
   }
+
+  // Toggle palette visibility on swatch click
+  if (palette) {
+    palette.onclick = function (e) {
+      e.stopPropagation();
+      const paletteBox = document.getElementById(
+        `${prefix}overlay-color-palette`
+      );
+      if (paletteBox) {
+        paletteBox.classList.toggle("sc-hidden");
+      }
+    };
+  }
+  // Optional: Hide palette when clicking outside
+  document.addEventListener("click", function (e) {
+    const paletteBox = document.getElementById(
+      `${prefix}overlay-color-palette`
+    );
+    if (paletteBox && !paletteBox.contains(e.target) && e.target !== palette) {
+      paletteBox.classList.add("sc-hidden");
+    }
+  });
 }
