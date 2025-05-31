@@ -188,8 +188,10 @@ export const InitImageOverLayControls = (themeColors) => {
       z-index: 2;
       pointer-events: none;
       border-radius: inherit;
+      transition: background-color 0.3s ease;
     `;
     content.style.position = "relative";
+    content.style.zIndex = "0";
     content.appendChild(overlay);
   };
 
@@ -292,7 +294,9 @@ export const InitImageOverLayControls = (themeColors) => {
           () => selectedImage,
           "overlay-",
           (color, alpha) => {
-            overlayState.color = color;
+            overlayState.color = color.startsWith("rgb(")
+              ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+              : color;
             updateOverlayStyles();
           }
         );
