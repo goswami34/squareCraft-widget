@@ -237,24 +237,19 @@ export function initOverLayColorPalate(
     if (!currentElement) return;
 
     const isImage = currentElement.querySelector(".sqs-image-content");
-    const isButton =
-      currentElement.querySelector("a.sqs-button-element--primary") ||
-      currentElement.querySelector("a.sqs-button-element--secondary") ||
-      currentElement.querySelector("a.sqs-button-element--tertiary");
 
-    if (isButton) {
-      applyButtonBackgroundColor(color, alpha);
-    } else if (isImage) {
-      // applyImageOverlayColor(color, alpha);
+    if (isImage) {
       const overlay = currentElement.querySelector(".sc-custom-overlay");
       if (overlay) {
+        const rgbaColor = color.startsWith("rgb(")
+          ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+          : color;
+
         overlay.style.backgroundColor = rgbaColor;
       } else {
-        console.warn("❌ Overlay not found for image block.");
+        console.warn("❌ Overlay not found in block:", currentElement);
       }
     }
-
-    if (saveFn) saveFn();
   }
 
   if (
