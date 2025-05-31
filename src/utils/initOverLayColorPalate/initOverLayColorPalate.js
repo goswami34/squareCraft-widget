@@ -622,21 +622,62 @@ export function initOverLayColorPalate(
   //   `;
   // }
 
-  function applyImageOverlayColor(color, alpha = 1) {
-    if (!color || typeof color !== "string") {
-      console.warn("❌ Invalid color passed to applyImageOverlayColor:", color);
-      return;
-    }
+  // function applyImageOverlayColor(color, alpha = 1) {
+  //   if (!color || typeof color !== "string") {
+  //     console.warn("❌ Invalid color passed to applyImageOverlayColor:", color);
+  //     return;
+  //   }
 
+  //   const selected = selectedElement?.();
+  //   if (!selected) return;
+
+  //   const blockId = selected.closest('[id^="block-"]')?.id;
+  //   if (!blockId) return;
+
+  //   const rgbaColor = color.startsWith("rgb(")
+  //     ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+  //     : color;
+
+  //   const styleId = `sc-overlay-style-${blockId}`;
+  //   let styleTag = document.getElementById(styleId);
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = styleId;
+  //     document.head.appendChild(styleTag);
+  //   }
+
+  //   styleTag.textContent = `
+  //     #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
+  //       content: '';
+  //       position: absolute;
+  //       top: 0;
+  //       left: 0;
+  //       width: 100%;
+  //       height: 100%;
+  //       background-color: ${rgbaColor};
+  //       z-index: 1;
+  //       pointer-events: none;
+  //       display: block;
+  //     }
+  //     #${blockId} .sqs-image-content > :nth-child(-n+2) {
+  //       position: relative;
+  //     }
+  //   `;
+  // }
+
+  function applyImageOverlayColor(color, alpha = 1) {
     const selected = selectedElement?.();
     if (!selected) return;
 
     const blockId = selected.closest('[id^="block-"]')?.id;
     if (!blockId) return;
 
-    const rgbaColor = color.startsWith("rgb(")
+    // Compose the color in hex with alpha if needed
+    let rgbaColor = color.startsWith("rgb(")
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
+
+    // If you want to convert rgb to hex with alpha, add a helper function
 
     const styleId = `sc-overlay-style-${blockId}`;
     let styleTag = document.getElementById(styleId);
@@ -646,20 +687,20 @@ export function initOverLayColorPalate(
       document.head.appendChild(styleTag);
     }
 
+    // Use the wrapper class if you added it, otherwise this will not work on <img>
     styleTag.textContent = `
-      #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
-        content: '';
+      #${blockId} .sqs-image-content > .image-bg-wrapper::before {
+        background-color: ${rgbaColor};
         position: absolute;
+        content: '';
+        display: block;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: ${rgbaColor};
         z-index: 1;
-        pointer-events: none;
-        display: block;
       }
-      #${blockId} .sqs-image-content > :nth-child(-n+2) {
+      #${blockId} .sqs-image-content > .image-bg-wrapper {
         position: relative;
       }
     `;
