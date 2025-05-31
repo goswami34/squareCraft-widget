@@ -177,6 +177,61 @@ export function initOverLayColorPalate(
   //   });
   // }
 
+  function applyButtonBackgroundColor(color, alpha = 1) {
+    const currentElement = selectedElement?.();
+    if (!currentElement) return;
+
+    const buttonTypes = [
+      "sqs-button-element--primary",
+      "sqs-button-element--secondary",
+      "sqs-button-element--tertiary",
+    ];
+
+    let buttonType = null;
+    for (let type of buttonTypes) {
+      if (currentElement.querySelector(`a.${type}`)) {
+        buttonType = type;
+        break;
+      }
+    }
+
+    if (!buttonType) {
+      console.warn("⚠️ No Squarespace button found in block.");
+      return;
+    }
+
+    const rgbaColor = color.startsWith("rgb(")
+      ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+      : color;
+
+    const styleId = `sc-style-global-${buttonType}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+
+    styleTag.textContent = `
+      a.${buttonType},
+      button.${buttonType} {
+        background-color: ${rgbaColor} !important;
+      }
+      a.${buttonType}:hover,
+      button.${buttonType}:hover {
+        background-color: ${rgbaColor} !important;
+        filter: brightness(0.95);
+      }
+    `;
+
+    const allButtons = currentElement.querySelectorAll(
+      `a.${buttonType}, button.${buttonType}`
+    );
+    allButtons.forEach((btn) => {
+      btn.dataset.scButtonBg = color;
+    });
+  }
+
   function applyOverlayColorSmart(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
