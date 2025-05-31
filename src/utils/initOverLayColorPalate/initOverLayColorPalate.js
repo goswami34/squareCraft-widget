@@ -594,27 +594,31 @@ export function initOverLayColorPalate(
   prefix = "",
   saveFn
 ) {
-  const palette = document.getElementById(`${prefix}buttonFontColorPalate`);
+  const palette = document.getElementById(`${prefix}overLayFontColorPalate`);
   const container = document.getElementById(`${prefix}overlay-border-colors`);
   const selectorField = document.getElementById(
     `${prefix}overlay-color-selection-field`
   );
-  const bullet = document.getElementById(`${prefix}button-color-selection-bar`);
-  const colorCode = document.getElementById(`${prefix}button-color-code`);
+  const bullet = document.getElementById(
+    `${prefix}overlay-color-selection-bar`
+  );
+  const colorCode = document.getElementById(
+    `${prefix}overlay-button-color-code`
+  );
   const transparencyCount = document.getElementById(
-    `${prefix}button-color-transparency-count`
+    `${prefix}overlay-button-color-transparency-count`
   );
   const allColorField = document.getElementById(
-    `${prefix}button-all-color-selection-field`
+    `${prefix}overlay-button-all-color-selection-field`
   );
   const allColorBullet = document.getElementById(
-    `${prefix}button-all-color-selection-bar`
+    `${prefix}overlay-button-all-color-selection-bar`
   );
   const transparencyField = document.getElementById(
-    `${prefix}button-color-transparency-field`
+    `${prefix}overlay-button-color-transparency-field`
   );
   const transparencyBullet = document.getElementById(
-    `${prefix}button-color-transparency-bar`
+    `${prefix}overlay-button-color-transparency-bar`
   );
 
   function updateTransparencyField(hue) {
