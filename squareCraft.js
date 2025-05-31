@@ -2704,7 +2704,7 @@ let pendingModifications = new Map();
         }
 
         // ✅ Initialize overlay controls properly
-        const overlayController = InitImageOverLayControls();
+        const overlayController = InitImageOverLayControls(themeColors);
         overlayController.init(selectedImage);
 
         setTimeout(() => {
