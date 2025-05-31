@@ -243,6 +243,71 @@ export function initOverLayColorPalate(
     };
   }
 
+  function applyImageOverlayColor(color, alpha = 1) {
+    const selected = selectedElement?.();
+    if (!selected) return;
+
+    const blockId = selected.closest('[id^="block-"]')?.id;
+    const imageWrapper = selected.querySelector(".sqs-image-content");
+    if (!blockId || !imageWrapper) return;
+
+    const rgbaColor = color.startsWith("rgb(")
+      ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+      : color;
+
+    const overlayId = `sc-image-overlay-${blockId}`;
+    let overlay = document.getElementById(overlayId);
+
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = overlayId;
+      overlay.style.position = "absolute";
+      overlay.style.top = "0";
+      overlay.style.left = "0";
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.pointerEvents = "none";
+      overlay.style.zIndex = "1";
+      overlay.style.borderRadius = "inherit";
+
+      imageWrapper.style.position = "relative";
+      imageWrapper.appendChild(overlay);
+    }
+
+    overlay.style.backgroundColor = rgbaColor;
+  }
+
+  function applyColor(color, alpha = 1) {
+    const currentElement = selectedElement?.();
+    if (!currentElement) return;
+
+    // Check if it's a button
+    const buttonTypes = [
+      "sqs-button-element--primary",
+      "sqs-button-element--secondary",
+      "sqs-button-element--tertiary",
+    ];
+
+    let buttonType = null;
+    for (let type of buttonTypes) {
+      if (currentElement.querySelector(`a.${type}`)) {
+        buttonType = type;
+        break;
+      }
+    }
+
+    if (buttonType) {
+      applyButtonBackgroundColor(color, alpha);
+    } else {
+      applyImageOverlayColor(color, alpha);
+    }
+
+    // Save the changes
+    if (saveFn) {
+      saveFn();
+    }
+  }
+
   if (selectorField && bullet) {
     bullet.onmousedown = function (e) {
       e.preventDefault();
@@ -262,19 +327,19 @@ export function initOverLayColorPalate(
 
         bullet.style.left = `${offsetX}px`;
         bullet.style.top = `${offsetY}px`;
+
         const canvas = selectorField.querySelector("canvas");
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
         if (!ctx) return;
 
         const data = ctx.getImageData(offsetX, offsetY, 1, 1).data;
-
         const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
 
         if (colorCode) {
           colorCode.textContent = rgb;
         }
 
-        applyButtonBackgroundColor(rgb, currentTransparency / 100);
+        applyColor(rgb, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
@@ -282,48 +347,6 @@ export function initOverLayColorPalate(
         document.onmouseup = null;
       };
     };
-  }
-
-  function getGradientCanvas(hue, width, height) {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-
-    canvas.width = width;
-    canvas.height = height;
-
-    const gradient1 = ctx.createLinearGradient(0, 0, width, 0);
-    gradient1.addColorStop(0, `hsl(${hue}, 100%, 50%)`);
-    gradient1.addColorStop(1, "white");
-
-    const gradient2 = ctx.createLinearGradient(0, height, 0, 0);
-    gradient2.addColorStop(0, "black");
-    gradient2.addColorStop(1, "transparent");
-
-    ctx.fillStyle = gradient1;
-    ctx.fillRect(0, 0, width, height);
-    ctx.globalCompositeOperation = "multiply";
-    ctx.fillStyle = gradient2;
-    ctx.fillRect(0, 0, width, height);
-
-    return canvas;
-  }
-
-  function moveBullet(offsetX, offsetY) {
-    bullet.style.left = `${offsetX}px`;
-    bullet.style.top = `${offsetY}px`;
-
-    const width = selectorField.offsetWidth;
-    const height = selectorField.offsetHeight;
-    if (!width || !height) return;
-
-    const canvas = selectorField.querySelector("canvas");
-    const ctx = canvas?.getContext("2d");
-    if (!ctx) return;
-    const data = ctx.getImageData(offsetX, offsetY, 1, 1).data;
-    const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
-
-    colorCode.textContent = rgb;
-    applyButtonBackgroundColor(rgb);
   }
 
   if (transparencyField && transparencyBullet) {
@@ -341,19 +364,17 @@ export function initOverLayColorPalate(
         const transparencyPercent =
           100 - Math.round((offsetY / rect.height) * 100);
         currentTransparency = transparencyPercent;
+
         if (transparencyCount) {
           transparencyCount.textContent = `${currentTransparency}%`;
         }
+
         const currentColor = colorCode?.textContent;
         if (currentColor) {
-          InitImageOverLayControls(
-            currentColor,
-            currentTransparency / 100,
-            selectedElement,
-            saveFn
-          );
+          applyColor(currentColor, currentTransparency / 100);
         }
       };
+
       document.onmouseup = () => {
         document.onmousemove = null;
         document.onmouseup = null;
@@ -385,7 +406,7 @@ export function initOverLayColorPalate(
         allColorBullet.style.top = `${bulletTop}px`;
       }
 
-      applyButtonBackgroundColor(color, currentTransparency / 100);
+      applyColor(color, currentTransparency / 100);
 
       requestAnimationFrame(() => {
         const canvas = selectorField.querySelector("canvas");
@@ -429,12 +450,7 @@ export function initOverLayColorPalate(
         }
       });
 
-      InitImageOverLayControls(
-        color,
-        currentTransparency / 100,
-        selectedElement,
-        saveFn
-      );
+      applyColor(color, currentTransparency / 100);
     };
 
     container.appendChild(swatch);
@@ -503,42 +519,45 @@ export function initOverLayColorPalate(
     }
   }
 
-  //color pallete code start here
-  function applyImageOverlayColor(color, alpha = 1) {
-    const selected = selectedElement?.(); // from your context
-    if (!selected) return;
+  function getGradientCanvas(hue, width, height) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
-    const blockId = selected.closest('[id^="block-"]')?.id;
-    const imageWrapper = selected.querySelector(".sqs-image-content");
-    if (!blockId || !imageWrapper) return;
+    canvas.width = width;
+    canvas.height = height;
 
-    const rgbaColor = color.startsWith("rgb(")
-      ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-      : color;
+    const gradient1 = ctx.createLinearGradient(0, 0, width, 0);
+    gradient1.addColorStop(0, `hsl(${hue}, 100%, 50%)`);
+    gradient1.addColorStop(1, "white");
 
-    const overlayId = `sc-image-overlay-${blockId}`;
-    let overlay = document.getElementById(overlayId);
+    const gradient2 = ctx.createLinearGradient(0, height, 0, 0);
+    gradient2.addColorStop(0, "black");
+    gradient2.addColorStop(1, "transparent");
 
-    if (!overlay) {
-      overlay = document.createElement("div");
-      overlay.id = overlayId;
-      overlay.style.position = "absolute";
-      overlay.style.top = "0";
-      overlay.style.left = "0";
-      overlay.style.width = "100%";
-      overlay.style.height = "100%";
-      overlay.style.pointerEvents = "none";
-      overlay.style.zIndex = "1";
-      overlay.style.borderRadius = "inherit";
+    ctx.fillStyle = gradient1;
+    ctx.fillRect(0, 0, width, height);
+    ctx.globalCompositeOperation = "multiply";
+    ctx.fillStyle = gradient2;
+    ctx.fillRect(0, 0, width, height);
 
-      imageWrapper.style.position = "relative";
-      imageWrapper.appendChild(overlay);
-    }
-
-    overlay.style.backgroundColor = rgbaColor;
+    return canvas;
   }
 
-  applyImageOverlayColor(color, alpha);
-}
+  function moveBullet(offsetX, offsetY) {
+    bullet.style.left = `${offsetX}px`;
+    bullet.style.top = `${offsetY}px`;
 
-//color pallete code end here
+    const width = selectorField.offsetWidth;
+    const height = selectorField.offsetHeight;
+    if (!width || !height) return;
+
+    const canvas = selectorField.querySelector("canvas");
+    const ctx = canvas?.getContext("2d");
+    if (!ctx) return;
+    const data = ctx.getImageData(offsetX, offsetY, 1, 1).data;
+    const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
+
+    colorCode.textContent = rgb;
+    applyColor(rgb);
+  }
+}
