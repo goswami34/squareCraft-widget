@@ -246,7 +246,7 @@ export function initOverLayColorPalate(
       applyButtonBackgroundColor(color, alpha);
     } else if (isImage) {
       // applyImageOverlayColor(color, alpha);
-      const overlay = currentElement.querySelector(".sqs-editing-overlay");
+      const overlay = currentElement.querySelector(".sc-custom-overlay");
       if (overlay) {
         overlay.style.backgroundColor = rgbaColor;
       } else {
