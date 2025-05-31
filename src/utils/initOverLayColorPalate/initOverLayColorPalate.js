@@ -245,8 +245,15 @@ export function initOverLayColorPalate(
     if (isButton) {
       applyButtonBackgroundColor(color, alpha);
     } else if (isImage) {
-      applyImageOverlayColor(color, alpha);
-    }
+      // applyImageOverlayColor(color, alpha);
+      const overlay = currentElement.querySelector(".sc-custom-overlay");
+      if (overlay) {
+        const rgbaColor = color.startsWith("rgb(")
+          ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+          : color;
+
+        overlay.style.backgroundColor = rgbaColor;
+        }
 
     if (saveFn) saveFn();
   }
