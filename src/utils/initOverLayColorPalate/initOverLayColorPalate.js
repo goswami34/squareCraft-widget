@@ -248,12 +248,11 @@ export function initOverLayColorPalate(
       // applyImageOverlayColor(color, alpha);
       const overlay = currentElement.querySelector(".sc-custom-overlay");
       if (overlay) {
-        const rgbaColor = color.startsWith("rgb(")
-          ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-          : color;
-
         overlay.style.backgroundColor = rgbaColor;
-        }
+      } else {
+        console.warn("❌ Overlay not found for image block.");
+      }
+    }
 
     if (saveFn) saveFn();
   }
