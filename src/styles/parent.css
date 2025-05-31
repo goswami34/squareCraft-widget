@@ -1632,7 +1632,19 @@
   border-radius: 6px !important;
 }
 
+#overlay-color-selection-field {
+  width: 100% !important;
+  height: 100px !important;
+  border-radius: 6px !important;
+}
+
 #button-color-selection-field {
+  width: 100% !important;
+  height: 100px !important;
+  border-radius: 6px !important;
+}
+
+#overlay-color-selection-field {
   width: 100% !important;
   height: 100px !important;
   border-radius: 6px !important;
