@@ -583,41 +583,6 @@ export function initOverLayColorPalate(
     }
   }
 
-  //color pallete code start here
-  // function applyImageOverlayColor(color, alpha = 1) {
-  //   const selected = selectedElement?.(); // from your context
-  //   if (!selected) return;
-
-  //   const blockId = selected.closest('[id^="block-"]')?.id;
-  //   const imageWrapper = selected.querySelector(".sqs-image-content");
-  //   if (!blockId || !imageWrapper) return;
-
-  //   const rgbaColor = color.startsWith("rgb(")
-  //     ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-  //     : color;
-
-  //   const overlayId = `sc-image-overlay-${blockId}`;
-  //   let overlay = document.getElementById(overlayId);
-
-  //   if (!overlay) {
-  //     overlay = document.createElement("div");
-  //     overlay.id = overlayId;
-  //     overlay.style.position = "absolute";
-  //     overlay.style.top = "0";
-  //     overlay.style.left = "0";
-  //     overlay.style.width = "100%";
-  //     overlay.style.height = "100%";
-  //     overlay.style.pointerEvents = "none";
-  //     overlay.style.zIndex = "1";
-  //     overlay.style.borderRadius = "inherit";
-
-  //     imageWrapper.style.position = "relative";
-  //     imageWrapper.appendChild(overlay);
-  //   }
-
-  //   overlay.style.backgroundColor = rgbaColor;
-  // }
-
   function applyImageOverlayColor(color, alpha = 1) {
     if (!color || typeof color !== "string") {
       console.warn("❌ Invalid color passed to applyImageOverlayColor:", color);
