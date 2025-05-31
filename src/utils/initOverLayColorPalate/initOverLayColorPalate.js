@@ -583,6 +583,45 @@ export function initOverLayColorPalate(
     }
   }
 
+  // function applyImageOverlayColor(color, alpha = 1) {
+  //   if (!color || typeof color !== "string") {
+  //     console.warn("❌ Invalid color passed to applyImageOverlayColor:", color);
+  //     return;
+  //   }
+
+  //   const selected = selectedElement?.();
+  //   if (!selected) return;
+
+  //   const blockId = selected.closest('[id^="block-"]')?.id;
+  //   if (!blockId) return;
+
+  //   const rgbaColor = color.startsWith("rgb(")
+  //     ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+  //     : color;
+
+  //   const styleId = `sc-overlay-style-${blockId}`;
+  //   let styleTag = document.getElementById(styleId);
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = styleId;
+  //     document.head.appendChild(styleTag);
+  //   }
+
+  //   styleTag.textContent = `
+  //     #${blockId} .sqs-image-content::before {
+  //       content: '';
+  //       position: absolute;
+  //       top: 0; left: 0; width: 100%; height: 100%;
+  //       background-color: ${rgbaColor};
+  //       z-index: 1;
+  //       pointer-events: none;
+  //     }
+  //     #${blockId} .sqs-image-content {
+  //       position: relative;
+  //     }
+  //   `;
+  // }
+
   function applyImageOverlayColor(color, alpha = 1) {
     if (!color || typeof color !== "string") {
       console.warn("❌ Invalid color passed to applyImageOverlayColor:", color);
@@ -608,15 +647,19 @@ export function initOverLayColorPalate(
     }
 
     styleTag.textContent = `
-      #${blockId} .sqs-image-content::before {
+      #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
         content: '';
         position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         background-color: ${rgbaColor};
         z-index: 1;
         pointer-events: none;
+        display: block;
       }
-      #${blockId} .sqs-image-content {
+      #${blockId} .sqs-image-content > :nth-child(-n+2) {
         position: relative;
       }
     `;
