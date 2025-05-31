@@ -689,7 +689,7 @@ export function initOverLayColorPalate(
 
     // Use the wrapper class if you added it, otherwise this will not work on <img>
     styleTag.textContent = `
-      #${blockId} .sqs-image-content > .image-bg-wrapper::before {
+      #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
         background-color: ${rgbaColor};
         position: absolute;
         content: '';
@@ -700,7 +700,7 @@ export function initOverLayColorPalate(
         height: 100%;
         z-index: 1;
       }
-      #${blockId} .sqs-image-content > .image-bg-wrapper {
+      #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
         position: relative;
       }
     `;
