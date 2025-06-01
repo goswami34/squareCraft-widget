@@ -99,7 +99,9 @@ export const InitImageOverLayControls = (themeColors) => {
     if (!selectedImage) return;
 
     // ✅ Use the native overlay div
-    const overlay = selectedImage.querySelector(".fluidImageOverlay");
+    const overlay = selectedImage.querySelector(
+      ".sqs-image-content > :nth-child(-n+2)::before"
+    );
     if (!overlay) {
       console.warn("⚠️ fluidImageOverlay not found inside selected image.");
       return;
