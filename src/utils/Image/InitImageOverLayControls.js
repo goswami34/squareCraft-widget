@@ -29,8 +29,8 @@ export const InitImageOverLayControls = (themeColors) => {
       position: "absolute",
       top: `${overlayState.y}px`,
       left: `${overlayState.x}px`,
-      width: `${overlayState.width}px`,
-      height: `${overlayState.height}px`,
+      width: `${overlayState.width}%`,
+      height: `${overlayState.height}%`,
       backgroundColor: overlayState.color,
       zIndex: "9999", // ensure on top
       pointerEvents: "none",
@@ -65,8 +65,8 @@ export const InitImageOverLayControls = (themeColors) => {
         position: absolute;
         top: ${overlayState.y}px;
         left: ${overlayState.x}px;
-        width: ${overlayState.width}px;
-        height: ${overlayState.height}px;
+        width: ${overlayState.width}%;
+        height: ${overlayState.height}%;
         background-color: ${rgbaColor};
         pointer-events: none;
         z-index: 5;
