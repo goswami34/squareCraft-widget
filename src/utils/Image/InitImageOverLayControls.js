@@ -8,13 +8,19 @@ export const InitImageOverLayControls = (themeColors) => {
     y: 0,
     width: 20,
     height: 20,
-    color: "#363544",
+    color: "rgba(0,0,0,0.5)",
   };
 
   const createOverlay = () => {
     if (!selectedImage) return;
     const content = selectedImage.querySelector(".sqs-image-content");
-    if (!content || content.querySelector(".sc-custom-overlay")) return;
+    if (!content) return;
+
+    // Remove existing overlay if any
+    const existingOverlay = content.querySelector(".sc-custom-overlay");
+    if (existingOverlay) {
+      existingOverlay.remove();
+    }
 
     const overlay = document.createElement("div");
     overlay.className = "sc-custom-overlay";
@@ -28,18 +34,21 @@ export const InitImageOverLayControls = (themeColors) => {
       zIndex: "2",
       pointerEvents: "none",
       borderRadius: "inherit",
-      transition: "background-color 0.3s ease",
+      transition: "all 0.3s ease",
     });
 
     content.style.position = "relative";
-    content.style.zIndex = "0";
     content.appendChild(overlay);
   };
 
   const updateOverlayStyles = () => {
     if (!selectedImage) return;
     const overlay = selectedImage.querySelector(".sc-custom-overlay");
-    if (!overlay) return;
+    if (!overlay) {
+      createOverlay();
+      return;
+    }
+
     Object.assign(overlay.style, {
       top: `${overlayState.y}px`,
       left: `${overlayState.x}px`,
@@ -48,6 +57,7 @@ export const InitImageOverLayControls = (themeColors) => {
       backgroundColor: overlayState.color,
     });
 
+    // Update display values
     const widthValue = document.getElementById("overlayWidthValue");
     const heightValue = document.getElementById("overlayHeightValue");
     if (widthValue) widthValue.textContent = `${overlayState.width}px`;
@@ -104,13 +114,13 @@ export const InitImageOverLayControls = (themeColors) => {
       });
     });
 
+    // Set initial position
     setTimeout(() => {
       const center = isYAxis ? field.offsetHeight / 2 : field.offsetWidth / 2;
       updateUI(center);
     }, 50);
   };
 
-  // ✅ Increment and decrement controls
   const setupIncrementControl = (controlId, valueId, key) => {
     const control = document.getElementById(controlId);
     const valueDisplay = document.getElementById(valueId);
@@ -140,7 +150,7 @@ export const InitImageOverLayControls = (themeColors) => {
       document.querySelector("#overLaySection")?.classList.toggle("sc-hidden");
     });
 
-    // ✅ Setup width/height up-down controls
+    // Setup width/height up-down controls
     setupIncrementControl("overlayWidthControl", "overlayWidthValue", "width");
     setupIncrementControl(
       "overlayHeightControl",
@@ -148,7 +158,7 @@ export const InitImageOverLayControls = (themeColors) => {
       "height"
     );
 
-    // ✅ X/Y bullet sliders
+    // X/Y bullet sliders
     initOverlaySlider(".mt-3 .sc-w-full:nth-child(1) .sc-rounded-15px", "x");
     initOverlaySlider(
       ".mt-3 .sc-w-full:nth-child(2) .sc-rounded-15px",
@@ -156,7 +166,7 @@ export const InitImageOverLayControls = (themeColors) => {
       true
     );
 
-    // ✅ Color palette
+    // Color palette
     setTimeout(() => {
       const colorPicker = document.getElementById("overLayFontColorPalate");
       if (colorPicker) {

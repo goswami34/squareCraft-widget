@@ -307,14 +307,15 @@ export function initOverLayColorPalate(
         }
 
         updateTransparencyField(dynamicHue);
-        applyButtonBackgroundColor(finalColor, currentTransparency / 100);
+        if (typeof saveFn === "function") {
+          saveFn(finalColor, currentTransparency / 100);
+        }
       };
 
       document.onmouseup = () => {
         document.onmousemove = null;
         document.onmouseup = null;
       };
-      console.log("🎨 Updated dynamicHue from palette:", dynamicHue);
     };
   }
 
@@ -342,15 +343,12 @@ export function initOverLayColorPalate(
         if (!ctx) return;
 
         const data = ctx.getImageData(offsetX, offsetY, 1, 1).data;
-
         const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
 
         if (colorCode) {
           colorCode.textContent = rgb;
         }
 
-        // applyButtonBackgroundColor(rgb, currentTransparency / 100);
-        // applyOverlayColorSmart(rgb, currentTransparency / 100);
         if (typeof saveFn === "function") {
           saveFn(rgb, currentTransparency / 100);
         }
@@ -425,13 +423,8 @@ export function initOverLayColorPalate(
           transparencyCount.textContent = `${currentTransparency}%`;
         }
         const currentColor = colorCode?.textContent;
-        if (currentColor) {
-          applyOverlayColorSmart(
-            currentColor,
-            currentTransparency / 100,
-            selectedElement,
-            saveFn
-          );
+        if (currentColor && typeof saveFn === "function") {
+          saveFn(currentColor, currentTransparency / 100);
         }
       };
       document.onmouseup = () => {
@@ -457,7 +450,6 @@ export function initOverLayColorPalate(
       const color = swatch.style.backgroundColor;
 
       updateSelectorField(color);
-      // Move allColorBullet to match dynamicHue
       if (allColorField && allColorBullet) {
         const rect = allColorField.getBoundingClientRect();
         const huePercentage = dynamicHue / 360;
@@ -465,7 +457,9 @@ export function initOverLayColorPalate(
         allColorBullet.style.top = `${bulletTop}px`;
       }
 
-      applyButtonBackgroundColor(color, currentTransparency / 100);
+      if (typeof saveFn === "function") {
+        saveFn(color, currentTransparency / 100);
+      }
 
       requestAnimationFrame(() => {
         const canvas = selectorField.querySelector("canvas");
@@ -503,26 +497,18 @@ export function initOverLayColorPalate(
           transparencyCount.textContent = `100%`;
         }
 
-        // Update the color code display
         if (colorCode) {
           colorCode.textContent = color;
         }
       });
-
-      InitImageOverLayControls(
-        color,
-        currentTransparency / 100,
-        selectedElement,
-        saveFn
-      );
     };
 
     container.appendChild(swatch);
   });
 
+  // Initialize with first color
   if (container.children.length > 0) {
     const firstSwatchColor = container.children[0].style.backgroundColor;
-
     updateSelectorField(firstSwatchColor);
 
     const rect = selectorField.getBoundingClientRect();
@@ -543,43 +529,8 @@ export function initOverLayColorPalate(
     currentTransparency = 100;
     transparencyCount.textContent = `100%`;
 
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        updateSelectorField(firstSwatchColor);
-
-        const rect = selectorField.getBoundingClientRect();
-        const defaultX = Math.round(rect.width * 0.5);
-        const defaultY = Math.round(rect.height * 0.5);
-        bullet.style.left = `${defaultX}px`;
-        bullet.style.top = `${defaultY}px`;
-
-        const canvas = selectorField.querySelector("canvas");
-        const ctx = canvas?.getContext("2d");
-        if (ctx) {
-          const data = ctx.getImageData(defaultX, defaultY, 1, 1).data;
-          const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
-          colorCode.textContent = rgb;
-        }
-
-        transparencyBullet.style.top = `0px`;
-        currentTransparency = 100;
-        transparencyCount.textContent = `100%`;
-      }, 50);
-    });
-  }
-
-  if (container.children.length === 0) {
-    const defaultColor =
-      Object.values(themeColors)[0]?.replace(/['"]+/g, "") || "rgb(255, 0, 0)";
-    updateSelectorField(defaultColor);
-    moveBullet(0, 0);
-
-    if (transparencyBullet && transparencyField) {
-      transparencyBullet.style.top = `0px`;
-    }
-    currentTransparency = 100;
-    if (transparencyCount) {
-      transparencyCount.textContent = `100%`;
+    if (typeof saveFn === "function") {
+      saveFn(firstSwatchColor, 1);
     }
   }
 
