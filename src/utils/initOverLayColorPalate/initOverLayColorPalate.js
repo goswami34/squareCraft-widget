@@ -639,20 +639,20 @@ export function initOverLayColorPalate(
     }
 
     // Use the wrapper class if you added it, otherwise this will not work on <img>
-    styleTag.textContent = `
-      #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
-        background-color: ${rgbaColor};
-        position: absolute;
-        content: '';
-        display: block;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
-      }
-      
-    `;
+    // styleTag.textContent = `
+    //   #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
+    //     background-color: ${rgbaColor};
+    //     position: absolute;
+    //     content: '';
+    //     display: block;
+    //     top: 0;
+    //     left: 0;
+    //     width: 100%;
+    //     height: 100%;
+    //     z-index: 1;
+    //   }
+
+    // `;
   }
 
   // applyImageOverlayColor("color", 1);

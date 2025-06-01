@@ -11,36 +11,6 @@ export const InitImageOverLayControls = (themeColors) => {
     color: "rgba(0,0,0,0.5)",
   };
 
-  // const createOverlay = () => {
-  //   if (!selectedImage) return;
-  //   const content = selectedImage.querySelector(".sqs-image-content");
-  //   if (!content) return;
-
-  //   // Remove existing overlay if any
-  //   const existingOverlay = content.querySelector(".sc-custom-overlay");
-  //   if (existingOverlay) {
-  //     existingOverlay.remove();
-  //   }
-
-  //   const overlay = document.createElement("div");
-  //   overlay.className = "sc-custom-overlay";
-  //   Object.assign(overlay.style, {
-  //     position: "absolute",
-  //     top: `${overlayState.y}px`,
-  //     left: `${overlayState.x}px`,
-  //     width: `${overlayState.width}px`,
-  //     height: `${overlayState.height}px`,
-  //     backgroundColor: overlayState.color,
-  //     zIndex: "2",
-  //     pointerEvents: "none",
-  //     borderRadius: "inherit",
-  //     transition: "all 0.3s ease",
-  //   });
-
-  //   // content.style.position = "relative";
-  //   content.appendChild(overlay);
-  // };
-
   const createOverlay = () => {
     if (!selectedImage) return;
     const content = selectedImage.querySelector(".sqs-image-content");
@@ -71,29 +41,6 @@ export const InitImageOverLayControls = (themeColors) => {
 
     content.appendChild(overlay);
   };
-
-  // const updateOverlayStyles = () => {
-  //   if (!selectedImage) return;
-  //   const overlay = selectedImage.querySelector(".sc-custom-overlay");
-  //   if (!overlay) {
-  //     createOverlay();
-  //     return;
-  //   }
-
-  //   Object.assign(overlay.style, {
-  //     top: `${overlayState.y}px`,
-  //     left: `${overlayState.x}px`,
-  //     width: `${overlayState.width}px`,
-  //     height: `${overlayState.height}px`,
-  //     backgroundColor: overlayState.color,
-  //   });
-
-  //   // Update display values
-  //   const widthValue = document.getElementById("overlayWidthValue");
-  //   const heightValue = document.getElementById("overlayHeightValue");
-  //   if (widthValue) widthValue.textContent = `${overlayState.width}px`;
-  //   if (heightValue) heightValue.textContent = `${overlayState.height}px`;
-  // };
 
   const updateOverlayStyles = () => {
     if (!selectedImage) return;
