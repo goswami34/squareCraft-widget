@@ -11,19 +11,50 @@ export const InitImageOverLayControls = (themeColors) => {
     color: "rgba(0,0,0,0.5)",
   };
 
+  // const createOverlay = () => {
+  //   if (!selectedImage) return;
+  //   const content = selectedImage.querySelector(".sqs-image-content");
+  //   if (!content) return;
+
+  //   // Remove existing overlay if any
+  //   const existingOverlay = content.querySelector(".sc-custom-overlay");
+  //   if (existingOverlay) {
+  //     existingOverlay.remove();
+  //   }
+
+  //   const overlay = document.createElement("div");
+  //   overlay.className = "sc-custom-overlay";
+  //   Object.assign(overlay.style, {
+  //     position: "absolute",
+  //     top: `${overlayState.y}px`,
+  //     left: `${overlayState.x}px`,
+  //     width: `${overlayState.width}px`,
+  //     height: `${overlayState.height}px`,
+  //     backgroundColor: overlayState.color,
+  //     zIndex: "2",
+  //     pointerEvents: "none",
+  //     borderRadius: "inherit",
+  //     transition: "all 0.3s ease",
+  //   });
+
+  //   // content.style.position = "relative";
+  //   content.appendChild(overlay);
+  // };
+
   const createOverlay = () => {
     if (!selectedImage) return;
     const content = selectedImage.querySelector(".sqs-image-content");
     if (!content) return;
 
-    // Remove existing overlay if any
-    const existingOverlay = content.querySelector(".sc-custom-overlay");
-    if (existingOverlay) {
-      existingOverlay.remove();
-    }
+    const existing = content.querySelector(".sc-custom-overlay");
+    if (existing) existing.remove();
+
+    // ✅ Make sure parent is positioned correctly
+    content.style.position = "relative";
 
     const overlay = document.createElement("div");
     overlay.className = "sc-custom-overlay";
+
     Object.assign(overlay.style, {
       position: "absolute",
       top: `${overlayState.y}px`,
@@ -31,13 +62,13 @@ export const InitImageOverLayControls = (themeColors) => {
       width: `${overlayState.width}px`,
       height: `${overlayState.height}px`,
       backgroundColor: overlayState.color,
-      zIndex: "2",
+      zIndex: "9999", // ensure on top
       pointerEvents: "none",
       borderRadius: "inherit",
       transition: "all 0.3s ease",
+      border: "1px solid red", // for visual debug, remove later
     });
 
-    content.style.position = "relative";
     content.appendChild(overlay);
   };
 
