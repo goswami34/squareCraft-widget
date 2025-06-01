@@ -98,24 +98,40 @@ export const InitImageOverLayControls = (themeColors) => {
   const updateOverlayStyles = () => {
     if (!selectedImage) return;
 
-    // ✅ Use the native overlay div
-    const overlay = selectedImage.querySelector(".fluidImageOverlay");
-    if (!overlay) {
-      console.warn("⚠️ fluidImageOverlay not found inside selected image.");
-      return;
+    const blockId = selectedImage.closest('[id^="block-"]')?.id;
+    if (!blockId) return;
+
+    const rgbaColor = overlayState.color;
+
+    const styleId = `sc-overlay-style-${blockId}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
     }
 
-    Object.assign(overlay.style, {
-      top: `${overlayState.y}px`,
-      left: `${overlayState.x}px`,
-      width: `${overlayState.width}px`,
-      height: `${overlayState.height}px`,
-      backgroundColor: overlayState.color,
-      opacity: "1", // ✅ Make sure it's visible
-      pointerEvents: "none",
-      zIndex: "5", // ⬅️ Make sure it's on top
-    });
+    // 💡 Apply CSS to the pseudo element using `::before`
+    styleTag.textContent = `
+      #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
+        content: '';
+        position: absolute;
+        top: ${overlayState.y}px;
+        left: ${overlayState.x}px;
+        width: ${overlayState.width}px;
+        height: ${overlayState.height}px;
+        background-color: ${rgbaColor};
+        pointer-events: none;
+        z-index: 5;
+        display: block;
+      }
+  
+      #${blockId} .sqs-image-content > :nth-child(-n+2) {
+        position: relative;
+      }
+    `;
 
+    // ✅ Optional: Update display values in UI
     const widthValue = document.getElementById("overlayWidthValue");
     const heightValue = document.getElementById("overlayHeightValue");
     if (widthValue) widthValue.textContent = `${overlayState.width}px`;
