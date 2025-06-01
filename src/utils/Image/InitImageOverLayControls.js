@@ -18,18 +18,19 @@ export const InitImageOverLayControls = (themeColors) => {
 
     const overlay = document.createElement("div");
     overlay.className = "sc-custom-overlay";
-    overlay.style.cssText = `
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: ${overlayState.width}px;
-      height: ${overlayState.height}px;
-      background-color: ${overlayState.color};
-      z-index: 2;
-      pointer-events: none;
-      border-radius: inherit;
-      transition: background-color 0.3s ease;
-    `;
+    Object.assign(overlay.style, {
+      position: "absolute",
+      top: `${overlayState.y}px`,
+      left: `${overlayState.x}px`,
+      width: `${overlayState.width}px`,
+      height: `${overlayState.height}px`,
+      backgroundColor: overlayState.color,
+      zIndex: "2",
+      pointerEvents: "none",
+      borderRadius: "inherit",
+      transition: "background-color 0.3s ease",
+    });
+
     content.style.position = "relative";
     content.style.zIndex = "0";
     content.appendChild(overlay);
@@ -109,6 +110,7 @@ export const InitImageOverLayControls = (themeColors) => {
     }, 50);
   };
 
+  // ✅ Increment and decrement controls
   const setupIncrementControl = (controlId, valueId, key) => {
     const control = document.getElementById(controlId);
     const valueDisplay = document.getElementById(valueId);
