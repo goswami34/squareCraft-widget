@@ -199,6 +199,8 @@ export const InitImageOverLayControls = (themeColors) => {
             overlayState.color = color.startsWith("rgb(")
               ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
               : color;
+
+            // ✅ Ensure update gets triggered!
             updateOverlayStyles();
           }
         );

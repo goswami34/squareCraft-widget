@@ -232,20 +232,59 @@ export function initOverLayColorPalate(
     });
   }
 
+  // function applyOverlayColorSmart(color, alpha = 1) {
+  //   const currentElement = selectedElement?.();
+  //   if (!currentElement) return;
+
+  //   const isImage = currentElement.querySelector(".sqs-image-content");
+  //   if (isImage) {
+  //     const overlay = currentElement.querySelector(".sc-custom-overlay");
+  //     if (overlay) {
+  //       const rgbaColor = color.startsWith("rgb(")
+  //         ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+  //         : color;
+  //       overlay.style.backgroundColor = rgbaColor;
+  //     }
+  //   }
+  // }
+
   function applyOverlayColorSmart(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
 
-    const isImage = currentElement.querySelector(".sqs-image-content");
-    if (isImage) {
-      const overlay = currentElement.querySelector(".sc-custom-overlay");
-      if (overlay) {
-        const rgbaColor = color.startsWith("rgb(")
-          ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-          : color;
-        overlay.style.backgroundColor = rgbaColor;
-      }
+    const blockId = currentElement.closest('[id^="block-"]')?.id;
+    if (!blockId) return;
+
+    const rgbaColor = color.startsWith("rgb(")
+      ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+      : color;
+
+    const styleId = `sc-overlay-style-${blockId}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
     }
+
+    styleTag.textContent = `
+      #${blockId} .sqs-image-content > .imageEffectContainer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: ${rgbaColor};
+        z-index: 5;
+        pointer-events: none;
+        display: block;
+      }
+  
+      #${blockId} .sqs-image-content > .imageEffectContainer {
+        position: relative;
+      }
+    `;
   }
 
   if (
@@ -309,6 +348,7 @@ export function initOverLayColorPalate(
         updateTransparencyField(dynamicHue);
         if (typeof saveFn === "function") {
           saveFn(finalColor, currentTransparency / 100);
+          applyOverlayColorSmart(rgb, currentTransparency / 100);
         }
       };
 
@@ -351,6 +391,7 @@ export function initOverLayColorPalate(
 
         if (typeof saveFn === "function") {
           saveFn(rgb, currentTransparency / 100);
+          applyOverlayColorSmart(rgb, currentTransparency / 100);
         }
       };
 
@@ -425,6 +466,7 @@ export function initOverLayColorPalate(
         const currentColor = colorCode?.textContent;
         if (currentColor && typeof saveFn === "function") {
           saveFn(currentColor, currentTransparency / 100);
+          applyOverlayColorSmart(rgb, currentTransparency / 100);
         }
       };
       document.onmouseup = () => {
@@ -459,6 +501,7 @@ export function initOverLayColorPalate(
 
       if (typeof saveFn === "function") {
         saveFn(color, currentTransparency / 100);
+        applyOverlayColorSmart(rgb, currentTransparency / 100);
       }
 
       requestAnimationFrame(() => {
