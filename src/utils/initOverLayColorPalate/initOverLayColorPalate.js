@@ -248,44 +248,44 @@ export function initOverLayColorPalate(
   //   }
   // }
 
-  function applyOverlayColorSmart(color, alpha = 1) {
-    const currentElement = selectedElement?.();
-    if (!currentElement) return;
+  // function applyOverlayColorSmart(color, alpha = 1) {
+  //   const currentElement = selectedElement?.();
+  //   if (!currentElement) return;
 
-    const blockId = currentElement.closest('[id^="block-"]')?.id;
-    if (!blockId) return;
+  //   const blockId = currentElement.closest('[id^="block-"]')?.id;
+  //   if (!blockId) return;
 
-    const rgbaColor = color.startsWith("rgb(")
-      ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-      : color;
+  //   const rgbaColor = color.startsWith("rgb(")
+  //     ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+  //     : color;
 
-    const styleId = `sc-overlay-style-${blockId}`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
-    }
+  //   const styleId = `sc-overlay-style-${blockId}`;
+  //   let styleTag = document.getElementById(styleId);
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = styleId;
+  //     document.head.appendChild(styleTag);
+  //   }
 
-    styleTag.textContent = `
-      #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: ${rgbaColor};
-        z-index: 5;
-        pointer-events: none;
-        display: block;
-      }
-  
-      #${blockId} .sqs-image-content > .imageEffectContainer {
-        position: relative;
-      }
-    `;
-  }
+  //   styleTag.textContent = `
+  //     #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
+  //       content: '';
+  //       position: absolute;
+  //       top: 0;
+  //       left: 0;
+  //       width: 100%;
+  //       height: 100%;
+  //       background-color: ${rgbaColor};
+  //       z-index: 5;
+  //       pointer-events: none;
+  //       display: block;
+  //     }
+
+  //     #${blockId} .sqs-image-content > .imageEffectContainer {
+  //       position: relative;
+  //     }
+  //   `;
+  // }
 
   if (
     !palette ||
