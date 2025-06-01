@@ -6,8 +6,8 @@ export const InitImageOverLayControls = (themeColors) => {
   const overlayState = {
     x: 0,
     y: 0,
-    width: 20,
-    height: 20,
+    width: "100%",
+    height: "100%",
     color: "rgba(0,0,0,0.5)",
   };
 
