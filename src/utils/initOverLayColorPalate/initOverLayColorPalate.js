@@ -346,9 +346,17 @@ export function initOverLayColorPalate(
         }
 
         updateTransparencyField(dynamicHue);
+        // if (typeof saveFn === "function") {
+        //   saveFn(finalColor, currentTransparency / 100);
+        //   applyOverlayColorSmart(rgb, currentTransparency / 100);
+        // }
+
         if (typeof saveFn === "function") {
-          saveFn(finalColor, currentTransparency / 100);
-          applyOverlayColorSmart(rgb, currentTransparency / 100);
+          const rgbaColor = finalColor
+            .replace("rgb(", "rgba(")
+            .replace(")", `, ${currentTransparency / 100})`);
+          saveFn(finalColor, currentTransparency / 100); // <-- already updates overlay
+          applyOverlayColorSmart(finalColor, currentTransparency / 100); // REMOVE THIS
         }
       };
 
@@ -391,7 +399,7 @@ export function initOverLayColorPalate(
 
         if (typeof saveFn === "function") {
           saveFn(rgb, currentTransparency / 100);
-          applyOverlayColorSmart(rgb, currentTransparency / 100);
+          // applyOverlayColorSmart(rgb, currentTransparency / 100);
         }
       };
 
@@ -466,7 +474,7 @@ export function initOverLayColorPalate(
         const currentColor = colorCode?.textContent;
         if (currentColor && typeof saveFn === "function") {
           saveFn(currentColor, currentTransparency / 100);
-          applyOverlayColorSmart(rgb, currentTransparency / 100);
+          // applyOverlayColorSmart(rgb, currentTransparency / 100);
         }
       };
       document.onmouseup = () => {
