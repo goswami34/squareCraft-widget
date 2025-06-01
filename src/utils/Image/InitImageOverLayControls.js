@@ -72,11 +72,36 @@ export const InitImageOverLayControls = (themeColors) => {
     content.appendChild(overlay);
   };
 
+  // const updateOverlayStyles = () => {
+  //   if (!selectedImage) return;
+  //   const overlay = selectedImage.querySelector(".sc-custom-overlay");
+  //   if (!overlay) {
+  //     createOverlay();
+  //     return;
+  //   }
+
+  //   Object.assign(overlay.style, {
+  //     top: `${overlayState.y}px`,
+  //     left: `${overlayState.x}px`,
+  //     width: `${overlayState.width}px`,
+  //     height: `${overlayState.height}px`,
+  //     backgroundColor: overlayState.color,
+  //   });
+
+  //   // Update display values
+  //   const widthValue = document.getElementById("overlayWidthValue");
+  //   const heightValue = document.getElementById("overlayHeightValue");
+  //   if (widthValue) widthValue.textContent = `${overlayState.width}px`;
+  //   if (heightValue) heightValue.textContent = `${overlayState.height}px`;
+  // };
+
   const updateOverlayStyles = () => {
     if (!selectedImage) return;
-    const overlay = selectedImage.querySelector(".sc-custom-overlay");
+
+    // ✅ Use the native overlay div
+    const overlay = selectedImage.querySelector(".fluidImageOverlay");
     if (!overlay) {
-      createOverlay();
+      console.warn("⚠️ fluidImageOverlay not found inside selected image.");
       return;
     }
 
@@ -86,9 +111,11 @@ export const InitImageOverLayControls = (themeColors) => {
       width: `${overlayState.width}px`,
       height: `${overlayState.height}px`,
       backgroundColor: overlayState.color,
+      opacity: "1", // ✅ Make sure it's visible
+      pointerEvents: "none",
+      zIndex: "5", // ⬅️ Make sure it's on top
     });
 
-    // Update display values
     const widthValue = document.getElementById("overlayWidthValue");
     const heightValue = document.getElementById("overlayHeightValue");
     if (widthValue) widthValue.textContent = `${overlayState.width}px`;
