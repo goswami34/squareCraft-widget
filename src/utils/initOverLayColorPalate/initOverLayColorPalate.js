@@ -351,12 +351,16 @@ export function initOverLayColorPalate(
         //   applyOverlayColorSmart(rgb, currentTransparency / 100);
         // }
 
+        // if (typeof saveFn === "function") {
+        //   const rgbaColor = finalColor
+        //     .replace("rgb(", "rgba(")
+        //     .replace(")", `, ${currentTransparency / 100})`);
+        //   saveFn(finalColor, currentTransparency / 100); // <-- already updates overlay
+        //   applyOverlayColorSmart(finalColor, currentTransparency / 100); // REMOVE THIS
+        // }
+
         if (typeof saveFn === "function") {
-          const rgbaColor = finalColor
-            .replace("rgb(", "rgba(")
-            .replace(")", `, ${currentTransparency / 100})`);
-          saveFn(finalColor, currentTransparency / 100); // <-- already updates overlay
-          applyOverlayColorSmart(finalColor, currentTransparency / 100); // REMOVE THIS
+          saveFn(finalColor, currentTransparency / 100); // this already triggers updateOverlayStyles()
         }
       };
 
