@@ -268,7 +268,7 @@ export function initOverLayColorPalate(
     }
 
     styleTag.textContent = `
-      #${blockId} .sqs-image-content > .imageEffectContainer::before {
+      #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
         content: '';
         position: absolute;
         top: 0;
