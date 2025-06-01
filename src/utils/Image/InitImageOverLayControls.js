@@ -123,12 +123,12 @@ export const InitImageOverLayControls = (themeColors) => {
     };
 
     up?.addEventListener("click", () => {
-      overlayState[key] += 10;
+      overlayState[key] += 1;
       updateDisplay();
     });
 
     down?.addEventListener("click", () => {
-      overlayState[key] = Math.max(0, overlayState[key] - 10);
+      overlayState[key] = Math.max(0, overlayState[key] - 1);
       updateDisplay();
     });
   };
