@@ -405,43 +405,38 @@ export function WidgetImageSection(id) {
 
 
 
-                     <div class="">
-                        <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300">
-                           Width
-                        </p>
-                        <div class="sc-flex sc-mt-2 sc-items-center">
-                           <div class="sc-bg-3f3f3f sc-py-1 sc-rounded-l sc-px-2">
-                              <p class="sc-universal sc-roboto sc-text-sm ">20px</p>
-                           </div>
-                           <div style="padding-top: 7px; padding-bottom: 7px;" class="sc-bg-454545 sc-px-2_5 ">
-                              <div class="sc-flex sc-flex-col sc-items-center sc-gap-2">
-                                 <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt=""
-                                    width="10">
-                                 <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" width="10"
-                                    class="sc-rotate-180" alt="">
-                              </div>
-                           </div>
-                        </div>
+                    <!-- Width Control -->
+<div class="">
+  <p class="sc-roboto sc-font-thin sc-universal sc-text-sm sc-font-thin sc-text-gray-300">Width</p>
+  <div class="sc-flex sc-mt-2 sc-items-center">
+    <div class="sc-bg-3f3f3f sc-py-1 sc-rounded-l sc-px-2">
+      <p id="overlayWidthValue" class="sc-universal sc-roboto sc-text-sm">100px</p>
+    </div>
+    <div id="overlayWidthControl" class="sc-bg-454545 sc-px-2_5" style="padding-top: 7px; padding-bottom: 7px;">
+      <div class="sc-flex sc-flex-col sc-items-center sc-gap-2">
+        <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt="" width="10" class="overlay-arrow-up" />
+        <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" width="10" class="overlay-arrow-down sc-rotate-180" alt="" />
+      </div>
+    </div>
+  </div>
+</div>
 
-                     </div>
-                     <div class="">
-                        <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300">
-                           Height
-                        </p>
-                        <div class="sc-flex sc-mt-2 sc-items-center">
-                           <div class="sc-bg-3f3f3f sc-py-1 sc-rounded-l sc-px-2">
-                              <p class="sc-universal sc-roboto sc-text-sm ">20px</p>
-                           </div>
-                           <div style="padding-top: 7px; padding-bottom: 7px;" class="sc-bg-454545 sc-px-2_5 ">
-                              <div class="sc-flex sc-flex-col sc-items-center sc-gap-2">
-                                 <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt=""
-                                    width="10">
-                                 <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" width="10"
-                                    class="sc-rotate-180" alt="">
-                              </div>
-                           </div>
-                        </div>
-                        <div>
+<!-- Height Control -->
+<div class="">
+  <p class="sc-roboto sc-font-thin sc-universal sc-text-sm sc-font-thin sc-text-gray-300">Height</p>
+  <div class="sc-flex sc-mt-2 sc-items-center">
+    <div class="sc-bg-3f3f3f sc-py-1 sc-rounded-l sc-px-2">
+      <p id="overlayHeightValue" class="sc-universal sc-roboto sc-text-sm">100px</p>
+    </div>
+    <div id="overlayHeightControl" class="sc-bg-454545 sc-px-2_5" style="padding-top: 7px; padding-bottom: 7px;">
+      <div class="sc-flex sc-flex-col sc-items-center sc-gap-2">
+        <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt="" width="10" class="overlay-arrow-up" />
+        <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" width="10" class="overlay-arrow-down sc-rotate-180" alt="" />
+      </div>
+    </div>
+  </div>
+</div>
+
 
                         </div>
                      </div>
