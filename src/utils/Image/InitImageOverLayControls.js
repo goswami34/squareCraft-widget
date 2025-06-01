@@ -81,8 +81,8 @@ export const InitImageOverLayControls = (themeColors) => {
     // ✅ Optional: Update display values in UI
     const widthValue = document.getElementById("overlayWidthValue");
     const heightValue = document.getElementById("overlayHeightValue");
-    if (widthValue) widthValue.textContent = `${overlayState.width}px`;
-    if (heightValue) heightValue.textContent = `${overlayState.height}px`;
+    if (widthValue) widthValue.textContent = `${overlayState.width}%`;
+    if (heightValue) heightValue.textContent = `${overlayState.height}%`;
   };
 
   const initOverlaySlider = (selector, key, isYAxis = false) => {
