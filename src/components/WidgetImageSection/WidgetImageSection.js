@@ -415,10 +415,10 @@ export function WidgetImageSection(id) {
                            </div>
                            <div id="overlayWidthControl" style="padding-top: 7px; padding-bottom: 7px;" class="sc-bg-454545 sc-px-2_5 ">
                               <div class="sc-flex sc-flex-col sc-items-center sc-gap-2">
-                                 <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt=""
+                                 <img class="overlay-arrow-up" src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt=""
                                     width="10">
                                  <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" width="10"
-                                    class="sc-rotate-180" alt="">
+                                    class="overlay-arrow-down sc-rotate-180" alt="">
                               </div>
                            </div>
                         </div>
@@ -434,10 +434,10 @@ export function WidgetImageSection(id) {
                            </div>
                            <div id="overlayHeightControl" style="padding-top: 7px; padding-bottom: 7px;" class="sc-bg-454545 sc-px-2_5 ">
                               <div class="sc-flex sc-flex-col sc-items-center sc-gap-2">
-                                 <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt=""
+                                 <img class="overlay-arrow-up" src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt=""
                                     width="10">
                                  <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" width="10"
-                                    class="sc-rotate-180" alt="">
+                                    class="overlay-arrow-down sc-rotate-180" alt="">
                               </div>
                            </div>
                         </div>
