@@ -6,8 +6,8 @@ export const InitImageOverLayControls = (themeColors) => {
   const overlayState = {
     x: 0,
     y: 0,
-    width: 100,
-    height: 100,
+    width: 20,
+    height: 20,
     color: "#363544",
   };
 
@@ -175,6 +175,18 @@ export const InitImageOverLayControls = (themeColors) => {
 
   const setSelectedImage = (imageElement) => {
     selectedImage = imageElement;
+
+    // Read initial values from DOM text and update state
+    const widthText = document.getElementById("overlayWidthValue")?.textContent;
+    const heightText =
+      document.getElementById("overlayHeightValue")?.textContent;
+
+    const width = parseInt(widthText?.replace("px", "").trim());
+    const height = parseInt(heightText?.replace("px", "").trim());
+
+    if (!isNaN(width)) overlayState.width = width;
+    if (!isNaN(height)) overlayState.height = height;
+
     createOverlay();
     updateOverlayStyles();
   };
