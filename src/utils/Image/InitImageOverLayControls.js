@@ -116,6 +116,7 @@ export const InitImageOverLayControls = (themeColors) => {
       opacity: "1", // ✅ Make sure it's visible
       pointerEvents: "none",
       zIndex: "5", // ⬅️ Make sure it's on top
+      content: "",
     });
 
     const widthValue = document.getElementById("overlayWidthValue");
