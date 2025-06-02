@@ -483,6 +483,7 @@ export function WidgetImageSection(id) {
                              <div id="xAxisBullet" class="sc-custom-overlay-bullet sc-absolute sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half sc-bg-color-EF7C2F"></div>
 
                         </div>
+                        
                      </div>
                      <div class="sc-w-full">
                         <div class="sc-flex sc-gap-2 sc-items-center sc-justify-between">

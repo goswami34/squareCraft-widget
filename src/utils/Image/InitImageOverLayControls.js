@@ -240,36 +240,76 @@ export const InitImageOverLayControls = (themeColors) => {
     }, 150);
   };
 
-  const setupIncrementControl = (controlId, valueId, key) => {
+  // const setupIncrementControl = (controlId, valueId, key) => {
+  //   const control = document.getElementById(controlId);
+  //   const valueDisplay = document.getElementById(valueId);
+  //   if (!control || !valueDisplay) return;
+
+  //   const up = control.querySelector(".overlay-arrow-up");
+  //   const down = control.querySelector(".overlay-arrow-down");
+
+  //   // const updateDisplay = () => {
+  //   //   valueDisplay.textContent = `${overlayState[key]}px`;
+  //   //   updateOverlayStyles();
+  //   // };
+
+  //   const updateDisplay = () => {
+  //     valueDisplay.textContent = `${overlayState[key]}px`;
+  //     updateOverlayStyles();
+  //     const bulletField = document.querySelector(
+  //       key === "x" ? "#xAxisSlider" : "#yAxisSlider"
+  //     );
+  //     const bullet = bulletField?.querySelector(".sc-custom-overlay-bullet");
+  //     if (bullet) {
+  //       const dimension =
+  //         key === "x" ? bulletField.offsetWidth : bulletField.offsetHeight;
+  //       const center = dimension / 2;
+  //       const pixel = center + overlayState[key];
+  //       if (key === "x") {
+  //         bullet.style.left = `${pixel}px`;
+  //       } else {
+  //         bullet.style.top = `${pixel}px`;
+  //       }
+  //     }
+  //   };
+
+  //   up?.addEventListener("click", () => {
+  //     overlayState[key] += 1;
+  //     updateDisplay();
+  //   });
+
+  //   down?.addEventListener("click", () => {
+  //     // overlayState[key] = Math.max(0, overlayState[key] - 1);
+  //     overlayState[key] -= 1;
+  //     updateDisplay();
+  //   });
+  // };
+
+  const setupIncrementControl = (controlId, valueId, key, bulletId) => {
     const control = document.getElementById(controlId);
     const valueDisplay = document.getElementById(valueId);
-    if (!control || !valueDisplay) return;
+    const bullet = document.getElementById(bulletId);
+    const field = document.querySelector(
+      key === "x" ? "#xAxisSlider" : "#yAxisSlider"
+    );
+
+    if (!control || !valueDisplay || !bullet || !field) return;
 
     const up = control.querySelector(".overlay-arrow-up");
     const down = control.querySelector(".overlay-arrow-down");
 
-    // const updateDisplay = () => {
-    //   valueDisplay.textContent = `${overlayState[key]}px`;
-    //   updateOverlayStyles();
-    // };
-
     const updateDisplay = () => {
       valueDisplay.textContent = `${overlayState[key]}px`;
       updateOverlayStyles();
-      const bulletField = document.querySelector(
-        key === "x" ? "#xAxisSlider" : "#yAxisSlider"
-      );
-      const bullet = bulletField?.querySelector(".sc-custom-overlay-bullet");
-      if (bullet) {
-        const dimension =
-          key === "x" ? bulletField.offsetWidth : bulletField.offsetHeight;
-        const center = dimension / 2;
-        const pixel = center + overlayState[key];
-        if (key === "x") {
-          bullet.style.left = `${pixel}px`;
-        } else {
-          bullet.style.top = `${pixel}px`;
-        }
+
+      const dimension = key === "x" ? field.offsetWidth : field.offsetHeight;
+      const center = dimension / 2;
+      const pixel = center + overlayState[key];
+
+      if (key === "x") {
+        bullet.style.left = `${pixel}px`;
+      } else {
+        bullet.style.top = `${pixel}px`;
       }
     };
 
@@ -279,7 +319,6 @@ export const InitImageOverLayControls = (themeColors) => {
     });
 
     down?.addEventListener("click", () => {
-      // overlayState[key] = Math.max(0, overlayState[key] - 1);
       overlayState[key] -= 1;
       updateDisplay();
     });
@@ -301,8 +340,11 @@ export const InitImageOverLayControls = (themeColors) => {
     // X/Y bullet sliders
     // initOverlaySlider("#xAxisSlider", "x");
     // initOverlaySlider("#yAxisSlider", "y", true);
-    initOverlaySlider("#xAxisSlider", "x", "xAxisBullet");
-    initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", true);
+    // initOverlaySlider("#xAxisSlider", "x", "xAxisBullet");
+    // initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", true);
+
+    setupIncrementControl("xAxisControl", "xAxisValue", "x", "xAxisBullet");
+    setupIncrementControl("yAxisControl", "yAxisValue", "y", "yAxisBullet");
 
     // Color palette
     setTimeout(() => {
