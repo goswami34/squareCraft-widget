@@ -36,7 +36,6 @@ export const InitImageOverLayControls = (themeColors) => {
       pointerEvents: "none",
       borderRadius: "inherit",
       transition: "all 0.3s ease",
-      border: "1px solid red", // for visual debug, remove later
     });
 
     content.appendChild(overlay);
@@ -44,40 +43,14 @@ export const InitImageOverLayControls = (themeColors) => {
 
   const updateOverlayStyles = () => {
     if (!selectedImage) return;
-
-    const blockId = selectedImage.closest('[id^="block-"]')?.id;
-    if (!blockId) return;
-
-    const rgbaColor = overlayState.color;
-
-    const styleId = `sc-overlay-style-${blockId}`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
+    const overlayEl = selectedImage.querySelector(".sc-custom-overlay");
+    if (overlayEl) {
+      overlayEl.style.backgroundColor = overlayState.color;
+      overlayEl.style.top = `${overlayState.y}px`;
+      overlayEl.style.left = `${overlayState.x}px`;
+      overlayEl.style.width = `${overlayState.width}%`;
+      overlayEl.style.height = `${overlayState.height}%`;
     }
-
-    // 💡 Apply CSS to the pseudo element using `::before`
-    styleTag.textContent = `
-      #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
-        content: '';
-        position: absolute;
-        top: ${overlayState.y}px;
-        left: ${overlayState.x}px;
-        width: ${overlayState.width}%;
-        height: ${overlayState.height}%;
-        background-color: ${rgbaColor};
-        pointer-events: none;
-        z-index: 5;
-        display: block;
-      }
-  
-      #${blockId} .sqs-image-content > :nth-child(-n+2) {
-        position: relative;
-      }
-    `;
-
     // ✅ Optional: Update display values in UI
     const widthValue = document.getElementById("overlayWidthValue");
     const heightValue = document.getElementById("overlayHeightValue");
@@ -196,24 +169,10 @@ export const InitImageOverLayControls = (themeColors) => {
           () => selectedImage,
           "overlay-",
           (color, alpha) => {
-            // overlayState.color = color.startsWith("rgb(")
-            //   ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-            //   : color;
             const rgbaColor = color.startsWith("rgb(")
               ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
               : color;
-
-            // overlayState.color = rgbaColor;
-
-            // // ✅ Ensure update gets triggered!
-            // updateOverlayStyles();
-
             overlayState.color = rgbaColor;
-            const overlayEl =
-              selectedImage?.querySelector(".sc-custom-overlay");
-            if (overlayEl) {
-              overlayEl.style.backgroundColor = rgbaColor;
-            }
             updateOverlayStyles();
           }
         );
