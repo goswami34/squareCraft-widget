@@ -87,37 +87,43 @@ export const InitImageOverLayControls = (themeColors) => {
   const initOverlaySlider = (selector, key, isYAxis = false) => {
     const field = document.querySelector(selector);
     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
-    const valueDisplay = field
+
+    const displayBox = field
       ?.closest(".sc-w-full")
-      ?.querySelector(".sc-text-xs");
+      ?.querySelector(
+        ".sc-flex.sc-gap-2.sc-items-center.sc-justify-between .sc-text-xs"
+      );
 
-    if (!field || !bullet) return;
+    if (!field || !bullet || !displayBox) return;
 
-    const updateUI = (px) => {
+    const updateUI = (pos) => {
       const dimension = isYAxis ? field.offsetHeight : field.offsetWidth;
       const center = dimension / 2;
-      const offset = px - center;
-      const clampedPx = Math.max(0, Math.min(px, dimension));
-      const value = Math.round(offset); // actual px from center
+
+      // Clamp position
+      const clampedPos = Math.max(0, Math.min(pos, dimension));
+      const value = Math.round(clampedPos - center); // -ve to +ve
 
       overlayState[key] = value;
 
+      // Update bullet position
       if (isYAxis) {
-        bullet.style.top = `${clampedPx}px`;
-        bullet.style.left = `50%`;
+        bullet.style.top = `${clampedPos}px`;
+        bullet.style.left = "50%";
         bullet.style.transform = "translate(-50%, -50%)";
       } else {
-        bullet.style.left = `${clampedPx}px`;
-        bullet.style.top = `50%`;
+        bullet.style.left = `${clampedPos}px`;
+        bullet.style.top = "50%";
         bullet.style.transform = "translate(-50%, -50%)";
       }
 
-      if (valueDisplay) valueDisplay.textContent = `${value}px`;
+      // ✅ Update displayed value
+      displayBox.textContent = `${value}px`;
 
+      // ✅ Update inline overlay style
       const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
       if (overlayEl) {
-        if (key === "x") overlayEl.style.left = `${value}px`;
-        if (key === "y") overlayEl.style.top = `${value}px`;
+        overlayEl.style[key === "x" ? "left" : "top"] = `${value}px`;
       }
 
       updateOverlayStyles();
@@ -130,6 +136,7 @@ export const InitImageOverLayControls = (themeColors) => {
 
       const rect = field.getBoundingClientRect();
       const pos = isYAxis ? clientPos - rect.top : clientPos - rect.left;
+
       updateUI(pos);
     };
 
@@ -141,7 +148,7 @@ export const InitImageOverLayControls = (themeColors) => {
       });
     });
 
-    // ✅ Start from center
+    // ✅ Initialize to center
     setTimeout(() => {
       const center = isYAxis ? field.offsetHeight / 2 : field.offsetWidth / 2;
       updateUI(center);
