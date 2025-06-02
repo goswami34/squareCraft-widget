@@ -1666,6 +1666,11 @@
   border: 2px solid #fff !important;
 }
 
+.sc-left-half {
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .sc-button-color-arrow {
   position: absolute !important;
   bottom: 100% !important;
