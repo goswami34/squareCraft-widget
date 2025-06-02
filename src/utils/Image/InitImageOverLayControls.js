@@ -96,10 +96,9 @@ export const InitImageOverLayControls = (themeColors) => {
     const updateUI = (px) => {
       const dimension = isYAxis ? field.offsetHeight : field.offsetWidth;
       const center = dimension / 2;
-
       const offset = px - center;
       const clampedPx = Math.max(0, Math.min(px, dimension));
-      const value = Math.round(offset);
+      const value = Math.round(offset); // actual px from center
 
       overlayState[key] = value;
 
@@ -115,11 +114,10 @@ export const InitImageOverLayControls = (themeColors) => {
 
       if (valueDisplay) valueDisplay.textContent = `${value}px`;
 
-      // Apply directly to overlay
       const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
       if (overlayEl) {
         if (key === "x") overlayEl.style.left = `${value}px`;
-        else overlayEl.style.top = `${value}px`;
+        if (key === "y") overlayEl.style.top = `${value}px`;
       }
 
       updateOverlayStyles();
@@ -132,7 +130,6 @@ export const InitImageOverLayControls = (themeColors) => {
 
       const rect = field.getBoundingClientRect();
       const pos = isYAxis ? clientPos - rect.top : clientPos - rect.left;
-
       updateUI(pos);
     };
 
@@ -144,7 +141,7 @@ export const InitImageOverLayControls = (themeColors) => {
       });
     });
 
-    // ✅ Center bullet initially
+    // ✅ Start from center
     setTimeout(() => {
       const center = isYAxis ? field.offsetHeight / 2 : field.offsetWidth / 2;
       updateUI(center);
@@ -189,12 +186,8 @@ export const InitImageOverLayControls = (themeColors) => {
     );
 
     // X/Y bullet sliders
-    initOverlaySlider(".mt-3 .sc-w-full:nth-child(1) .sc-rounded-15px", "x");
-    initOverlaySlider(
-      ".mt-3 .sc-w-full:nth-child(2) .sc-rounded-15px",
-      "y",
-      true
-    );
+    initOverlaySlider("#xAxisSlider", "x");
+    initOverlaySlider("#yAxisSlider", "y", true);
 
     // Color palette
     setTimeout(() => {

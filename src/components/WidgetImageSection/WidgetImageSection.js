@@ -479,8 +479,9 @@ export function WidgetImageSection(id) {
                            </div>
 
                         </div>
-                        <div class="sc-rounded-15px sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
-                           <div class="sc-custom-overlay-bullet sc-absolute sc-w-3 sc-h-3 sc-bg-color-EF7C2F sc-rounded-full sc-top-half sc-cursor-pointer"></div>
+                        <div id="xAxisSlider" class="sc-rounded-15px sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
+                             <div class="sc-custom-overlay-bullet sc-absolute sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half sc-bg-color-EF7C2F"></div>
+
                         </div>
                      </div>
                      <div class="sc-w-full">
@@ -501,8 +502,8 @@ export function WidgetImageSection(id) {
                            </div>
 
                         </div>
-                        <div class="sc-rounded-15px sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
-                           <div class="sc-custom-overlay-bullet sc-absolute sc-w-3 sc-h-3 sc-bg-color-EF7C2F sc-rounded-full sc-top-half sc-cursor-pointer"></div>
+                        <div id="yAxisSlider" class="sc-rounded-15px sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
+                             <div class="sc-custom-overlay-bullet sc-absolute sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half sc-bg-color-EF7C2F"></div>
                         </div>
                      </div>
                   </div>
