@@ -513,7 +513,7 @@ export function initOverLayColorPalate(
 
       if (typeof saveFn === "function") {
         saveFn(color, currentTransparency / 100);
-        applyOverlayColorSmart(rgb, currentTransparency / 100);
+        // applyOverlayColorSmart(rgb, currentTransparency / 100);
       }
 
       requestAnimationFrame(() => {
