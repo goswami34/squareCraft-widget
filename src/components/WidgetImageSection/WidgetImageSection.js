@@ -468,7 +468,7 @@ export function WidgetImageSection(id) {
                            </p>
                            <div
                               class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-2 sc-px-2 sc-py-0_5 sc-bg sc-bg-454545">
-                              <p class="sc-font-thin sc-roboto sc-universal sc-text-xs">0px</p>
+                              <p class="sc-font-thin sc-roboto sc-universal sc-text-xs" id="xAxisValue">0px</p>
                               <div class="sc-flex sc-flex-col sc-items-center sc-gap-1">
                                  <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt=""
                                     width="9">
@@ -491,7 +491,7 @@ export function WidgetImageSection(id) {
                            </p>
                            <div
                               class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-2 sc-px-2 sc-py-0_5 sc-bg sc-bg-454545">
-                              <p class="sc-font-thin sc-roboto sc-universal sc-text-xs">0px</p>
+                              <p class="sc-font-thin sc-roboto sc-universal sc-text-xs" id="yAxisValue">0px</p>
                               <div class="sc-flex sc-flex-col sc-items-center sc-gap-1">
                                  <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/arrow.svg" alt=""
                                     width="9">
