@@ -454,7 +454,7 @@ export function initOverLayColorPalate(
 
     colorCode.textContent = rgb;
     // applyButtonBackgroundColor(rgb);
-    applyOverlayColorSmart(rgb, currentTransparency / 100);
+    // applyOverlayColorSmart(rgb, currentTransparency / 100);
   }
 
   if (transparencyField && transparencyBullet) {
