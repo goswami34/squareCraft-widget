@@ -343,8 +343,8 @@ export const InitImageOverLayControls = (themeColors) => {
     // initOverlaySlider("#xAxisSlider", "x", "xAxisBullet");
     // initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", true);
 
-    setupIncrementControl("xAxisControl", "xAxisValue", "x", "xAxisBullet");
-    setupIncrementControl("yAxisControl", "yAxisValue", "y", "yAxisBullet");
+    initOverlaySlider("#xAxisSlider", "x", "xAxisBullet");
+    initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", true);
 
     // Color palette
     setTimeout(() => {
