@@ -84,6 +84,85 @@ export const InitImageOverLayControls = (themeColors) => {
     if (heightValue) heightValue.textContent = `${overlayState.height}%`;
   };
 
+  // const initOverlaySlider = (selector, key, isYAxis = false) => {
+  //   const field = document.querySelector(selector);
+  //   const bullet = field?.querySelector(".sc-custom-overlay-bullet");
+  //   const valueDisplay = document.getElementById(
+  //     key === "x" ? "xAxisValue" : "yAxisValue"
+  //   );
+
+  //   if (!field || !bullet || !valueDisplay) return;
+
+  //   const getDimension = () =>
+  //     isYAxis ? field.offsetHeight : field.offsetWidth;
+
+  //   const setBullet = (offset) => {
+  //     const center = getDimension() / 2;
+  //     const px = center + offset;
+
+  //     if (isYAxis) {
+  //       bullet.style.top = `${px}px`;
+  //       bullet.style.left = "50%";
+  //       bullet.style.transform = "translate(-50%, -50%)";
+  //     } else {
+  //       bullet.style.left = `${px}px`;
+  //       bullet.style.top = "50%";
+  //       bullet.style.transform = "translate(-50%, -50%)";
+  //     }
+  //   };
+
+  //   const updateUI = (pos) => {
+  //     const dimension = getDimension();
+  //     const center = dimension / 2;
+  //     const clamped = Math.max(0, Math.min(pos, dimension));
+  //     const offset = Math.round(clamped - center); // value in px from center
+
+  //     overlayState[key] = offset;
+
+  //     setBullet(offset);
+
+  //     valueDisplay.textContent = `${offset}px`;
+
+  //     const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
+  //     if (overlayEl) {
+  //       if (key === "x") overlayEl.style.left = `${offset}px`;
+  //       else overlayEl.style.top = `${offset}px`;
+  //     }
+
+  //     updateOverlayStyles();
+  //   };
+
+  //   const drag = (e) => {
+  //     const clientPos = isYAxis
+  //       ? e.clientY || e.touches?.[0]?.clientY
+  //       : e.clientX || e.touches?.[0]?.clientX;
+
+  //     const rect = field.getBoundingClientRect();
+  //     const pos = isYAxis ? clientPos - rect.top : clientPos - rect.left;
+
+  //     updateUI(pos);
+  //   };
+
+  //   bullet.addEventListener("mousedown", (e) => {
+  //     e.preventDefault();
+  //     document.addEventListener("mousemove", drag);
+  //     document.addEventListener("mouseup", () => {
+  //       document.removeEventListener("mousemove", drag);
+  //     });
+  //   });
+
+  //   // ✅ Set bullet to center initially
+  //   setTimeout(() => {
+  //     const dimension = getDimension();
+  //     const center = dimension / 2;
+  //     const offset = overlayState[key] || 0;
+  //     const pixel = center + offset;
+
+  //     setBullet(offset);
+  //     valueDisplay.textContent = `${offset}px`;
+  //   }, 100); // allow layout to settle
+  // };
+
   const initOverlaySlider = (selector, key, isYAxis = false) => {
     const field = document.querySelector(selector);
     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
@@ -93,8 +172,9 @@ export const InitImageOverLayControls = (themeColors) => {
 
     if (!field || !bullet || !valueDisplay) return;
 
-    const getDimension = () =>
-      isYAxis ? field.offsetHeight : field.offsetWidth;
+    const getDimension = () => {
+      return isYAxis ? field.offsetHeight : field.offsetWidth;
+    };
 
     const setBullet = (offset) => {
       const center = getDimension() / 2;
@@ -111,16 +191,8 @@ export const InitImageOverLayControls = (themeColors) => {
       }
     };
 
-    const updateUI = (pos) => {
-      const dimension = getDimension();
-      const center = dimension / 2;
-      const clamped = Math.max(0, Math.min(pos, dimension));
-      const offset = Math.round(clamped - center); // value in px from center
-
+    const updateValueOnly = (offset) => {
       overlayState[key] = offset;
-
-      setBullet(offset);
-
       valueDisplay.textContent = `${offset}px`;
 
       const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
@@ -128,8 +200,16 @@ export const InitImageOverLayControls = (themeColors) => {
         if (key === "x") overlayEl.style.left = `${offset}px`;
         else overlayEl.style.top = `${offset}px`;
       }
+    };
 
-      updateOverlayStyles();
+    const updateUI = (pos) => {
+      const dimension = getDimension();
+      const center = dimension / 2;
+      const clamped = Math.max(0, Math.min(pos, dimension));
+      const offset = Math.round(clamped - center); // -value to +value
+
+      setBullet(offset);
+      updateValueOnly(offset);
     };
 
     const drag = (e) => {
@@ -146,21 +226,24 @@ export const InitImageOverLayControls = (themeColors) => {
     bullet.addEventListener("mousedown", (e) => {
       e.preventDefault();
       document.addEventListener("mousemove", drag);
-      document.addEventListener("mouseup", () => {
-        document.removeEventListener("mousemove", drag);
-      });
+      document.addEventListener(
+        "mouseup",
+        () => {
+          document.removeEventListener("mousemove", drag);
+        },
+        { once: true }
+      ); // Ensures it detaches properly
     });
 
-    // ✅ Set bullet to center initially
+    // ✅ Set bullet to correct starting position
     setTimeout(() => {
-      const dimension = getDimension();
-      const center = dimension / 2;
+      const center = getDimension() / 2;
       const offset = overlayState[key] || 0;
       const pixel = center + offset;
 
-      setBullet(offset);
-      valueDisplay.textContent = `${offset}px`;
-    }, 100); // allow layout to settle
+      setBullet(offset); // only position
+      valueDisplay.textContent = `${offset}px`; // label
+    }, 200); // Wait longer to ensure layout is fully ready
   };
 
   const setupIncrementControl = (controlId, valueId, key) => {
