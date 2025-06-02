@@ -77,6 +77,12 @@ export const InitImageOverLayControls = (themeColors) => {
       }
     `;
 
+    const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
+    if (overlayEl) {
+      overlayEl.style.left = `${overlayState.x}px`;
+      overlayEl.style.top = `${overlayState.y}px`;
+    }
+
     // ✅ Optional: Update display values in UI
     const widthValue = document.getElementById("overlayWidthValue");
     const heightValue = document.getElementById("overlayHeightValue");
@@ -221,14 +227,28 @@ export const InitImageOverLayControls = (themeColors) => {
 
     bullet.addEventListener("mousedown", (e) => {
       e.preventDefault();
+      // document.addEventListener("mousemove", drag);
       document.addEventListener("mousemove", drag);
-      document.addEventListener(
-        "mouseup",
-        () => {
-          document.removeEventListener("mousemove", drag);
-        },
-        { once: true }
-      );
+      document.addEventListener("pointermove", drag); // Extra browser support
+
+      const cleanup = () => {
+        document.removeEventListener("mousemove", drag);
+        document.removeEventListener("pointermove", drag);
+      };
+
+      document.addEventListener("mouseup", cleanup, { once: true });
+      document.addEventListener("pointerup", cleanup, { once: true });
+
+      console.log("X:", overlayState.x);
+      console.log("Y:", overlayState.y);
+
+      // document.addEventListener(
+      //   "mouseup",
+      //   () => {
+      //     document.removeEventListener("mousemove", drag);
+      //   },
+      //   { once: true }
+      // );
     });
 
     // Set initial bullet position based on overlayState
