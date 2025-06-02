@@ -86,7 +86,7 @@ export const InitImageOverLayControls = (themeColors) => {
 
   const initOverlaySlider = (selector, key, isYAxis = false) => {
     const field = document.querySelector(selector);
-    const bullet = field?.querySelector(".shadow-bullet"); // adjust class name if needed
+    const bullet = field?.querySelector(".sc-custom-overlay-bullet");
     const valueDisplay = field
       ?.closest(".sc-w-full")
       ?.querySelector(".sc-text-xs");
@@ -96,25 +96,30 @@ export const InitImageOverLayControls = (themeColors) => {
     const updateUI = (px) => {
       const dimension = isYAxis ? field.offsetHeight : field.offsetWidth;
       const center = dimension / 2;
+
       const offset = px - center;
-      const value = Math.round(offset); // -value to +value
+      const clampedPx = Math.max(0, Math.min(px, dimension));
+      const value = Math.round(offset);
 
       overlayState[key] = value;
 
       if (isYAxis) {
-        bullet.style.top = `${px}px`;
-        bullet.style.transform = "translateY(-50%)";
+        bullet.style.top = `${clampedPx}px`;
+        bullet.style.left = `50%`;
+        bullet.style.transform = "translate(-50%, -50%)";
       } else {
-        bullet.style.left = `${px}px`;
-        bullet.style.transform = "translateX(-50%)";
+        bullet.style.left = `${clampedPx}px`;
+        bullet.style.top = `50%`;
+        bullet.style.transform = "translate(-50%, -50%)";
       }
 
       if (valueDisplay) valueDisplay.textContent = `${value}px`;
 
-      // ✅ Apply new top/left
+      // Apply directly to overlay
       const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
       if (overlayEl) {
-        overlayEl.style[key === "x" ? "left" : "top"] = `${value}px`;
+        if (key === "x") overlayEl.style.left = `${value}px`;
+        else overlayEl.style.top = `${value}px`;
       }
 
       updateOverlayStyles();
@@ -128,11 +133,7 @@ export const InitImageOverLayControls = (themeColors) => {
       const rect = field.getBoundingClientRect();
       const pos = isYAxis ? clientPos - rect.top : clientPos - rect.left;
 
-      const offset = Math.max(
-        0,
-        Math.min(pos, isYAxis ? rect.height : rect.width)
-      );
-      updateUI(offset);
+      updateUI(pos);
     };
 
     bullet.addEventListener("mousedown", (e) => {
@@ -143,7 +144,7 @@ export const InitImageOverLayControls = (themeColors) => {
       });
     });
 
-    // ✅ Start from center
+    // ✅ Center bullet initially
     setTimeout(() => {
       const center = isYAxis ? field.offsetHeight / 2 : field.offsetWidth / 2;
       updateUI(center);
