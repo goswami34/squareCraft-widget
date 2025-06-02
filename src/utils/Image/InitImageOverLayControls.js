@@ -223,6 +223,9 @@ export const InitImageOverLayControls = (themeColors) => {
             // overlayState.color = color.startsWith("rgb(")
             //   ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
             //   : color;
+            // const rgbaColor = color.startsWith("rgb(")
+            //   ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+            //   : color;
             const rgbaColor = color.startsWith("rgb(")
               ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
               : color;
