@@ -204,7 +204,8 @@ export const InitImageOverLayControls = (themeColors) => {
       // Apply directly to inline overlay styles
       const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
       if (overlayEl) {
-        overlayEl.style[key === "x" ? "left" : "top"] = `${offset}px`;
+        overlayEl.style.left = `${overlayState.x}px`;
+        overlayEl.style.top = `${overlayState.y}px`;
       }
     };
 
