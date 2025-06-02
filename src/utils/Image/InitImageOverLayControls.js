@@ -78,8 +78,8 @@ export const InitImageOverLayControls = (themeColors) => {
 
     const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
     if (overlayEl) {
-      overlayEl.style.left = `${overlayState.x}px`;
-      overlayEl.style.top = `${overlayState.y}px`;
+      overlayEl.style.left = `${overlayState.y}px`; // ← treat 'y' as horizontal
+      overlayEl.style.top = `${overlayState.x}px`; // optional: swap if you want
     }
 
     // ✅ Optional: Update display values in UI
@@ -344,7 +344,7 @@ export const InitImageOverLayControls = (themeColors) => {
     // initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", true);
 
     initOverlaySlider("#xAxisSlider", "x", "xAxisBullet");
-    initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", true);
+    initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", false);
 
     // Color palette
     setTimeout(() => {
