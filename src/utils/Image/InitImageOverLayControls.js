@@ -86,7 +86,7 @@ export const InitImageOverLayControls = (themeColors) => {
 
   const initOverlaySlider = (selector, key, isYAxis = false) => {
     const field = document.querySelector(selector);
-    const bullet = field?.querySelector(".sc-custom-overlay-bullet");
+    const bullet = field?.querySelector(".shadow-bullet"); // adjust class name if needed
     const valueDisplay = field
       ?.closest(".sc-w-full")
       ?.querySelector(".sc-text-xs");
@@ -95,10 +95,10 @@ export const InitImageOverLayControls = (themeColors) => {
 
     const updateUI = (px) => {
       const dimension = isYAxis ? field.offsetHeight : field.offsetWidth;
-      const percent = px / dimension;
-      const value = isYAxis
-        ? Math.round((1 - percent) * 200 - 100)
-        : Math.round(percent * 200 - 100);
+      const center = dimension / 2;
+      const offset = px - center;
+      const value = Math.round(offset); // -value to +value
+
       overlayState[key] = value;
 
       if (isYAxis) {
@@ -110,6 +110,13 @@ export const InitImageOverLayControls = (themeColors) => {
       }
 
       if (valueDisplay) valueDisplay.textContent = `${value}px`;
+
+      // ✅ Apply new top/left
+      const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
+      if (overlayEl) {
+        overlayEl.style[key === "x" ? "left" : "top"] = `${value}px`;
+      }
+
       updateOverlayStyles();
     };
 
@@ -119,10 +126,12 @@ export const InitImageOverLayControls = (themeColors) => {
         : e.clientX || e.touches?.[0]?.clientX;
 
       const rect = field.getBoundingClientRect();
-      const offset = isYAxis
-        ? Math.min(Math.max(clientPos - rect.top, 0), rect.height)
-        : Math.min(Math.max(clientPos - rect.left, 0), rect.width);
+      const pos = isYAxis ? clientPos - rect.top : clientPos - rect.left;
 
+      const offset = Math.max(
+        0,
+        Math.min(pos, isYAxis ? rect.height : rect.width)
+      );
       updateUI(offset);
     };
 
@@ -134,7 +143,7 @@ export const InitImageOverLayControls = (themeColors) => {
       });
     });
 
-    // Set initial position
+    // ✅ Start from center
     setTimeout(() => {
       const center = isYAxis ? field.offsetHeight / 2 : field.offsetWidth / 2;
       updateUI(center);
