@@ -306,10 +306,14 @@ export const InitImageOverLayControls = (themeColors) => {
       const center = dimension / 2;
       const pixel = center + overlayState[key];
 
-      if (key === "x") {
+      // if (key === "x") {
+      //   bullet.style.left = `${pixel}px`;
+      // } else {
+      //   bullet.style.top = `${pixel}px`;
+      // }
+
+      if (key === "x" || key === "y") {
         bullet.style.left = `${pixel}px`;
-      } else {
-        bullet.style.top = `${pixel}px`;
       }
     };
 
