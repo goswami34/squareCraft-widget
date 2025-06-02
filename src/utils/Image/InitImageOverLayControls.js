@@ -197,21 +197,38 @@ export const InitImageOverLayControls = (themeColors) => {
       }
     };
 
+    // const updateStateAndUI = (pixelPos) => {
+    //   const dimension = getDimension();
+    //   const center = dimension / 2;
+    //   const clamped = Math.max(0, Math.min(pixelPos, dimension));
+    //   const offset = Math.round(clamped - center);
+
+    //   overlayState[key] = offset;
+    //   valueDisplay.textContent = `${offset}px`;
+    //   setBulletPosition(offset);
+
+    //   // Apply directly to inline overlay styles
+    //   const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
+    //   if (overlayEl) {
+    //     overlayEl.style[key === "x" ? "left" : "top"] = `${offset}px`;
+    //   }
+    // };
+
     const updateStateAndUI = (pixelPos) => {
       const dimension = getDimension();
       const center = dimension / 2;
-      const clamped = Math.max(0, Math.min(pixelPos, dimension));
-      const offset = Math.round(clamped - center);
+      const offset = Math.round(pixelPos - center); // ← This is critical
 
       overlayState[key] = offset;
       valueDisplay.textContent = `${offset}px`;
       setBulletPosition(offset);
 
-      // Apply directly to inline overlay styles
       const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
       if (overlayEl) {
         overlayEl.style[key === "x" ? "left" : "top"] = `${offset}px`;
       }
+
+      updateOverlayStyles(); // ← This was missing in your version
     };
 
     const drag = (e) => {
@@ -267,9 +284,29 @@ export const InitImageOverLayControls = (themeColors) => {
     const up = control.querySelector(".overlay-arrow-up");
     const down = control.querySelector(".overlay-arrow-down");
 
+    // const updateDisplay = () => {
+    //   valueDisplay.textContent = `${overlayState[key]}px`;
+    //   updateOverlayStyles();
+    // };
+
     const updateDisplay = () => {
       valueDisplay.textContent = `${overlayState[key]}px`;
       updateOverlayStyles();
+      const bulletField = document.querySelector(
+        key === "x" ? "#xAxisSlider" : "#yAxisSlider"
+      );
+      const bullet = bulletField?.querySelector(".sc-custom-overlay-bullet");
+      if (bullet) {
+        const dimension =
+          key === "x" ? bulletField.offsetWidth : bulletField.offsetHeight;
+        const center = dimension / 2;
+        const pixel = center + overlayState[key];
+        if (key === "x") {
+          bullet.style.left = `${pixel}px`;
+        } else {
+          bullet.style.top = `${pixel}px`;
+        }
+      }
     };
 
     up?.addEventListener("click", () => {
@@ -278,7 +315,8 @@ export const InitImageOverLayControls = (themeColors) => {
     });
 
     down?.addEventListener("click", () => {
-      overlayState[key] = Math.max(0, overlayState[key] - 1);
+      // overlayState[key] = Math.max(0, overlayState[key] - 1);
+      overlayState[key] -= 1;
       updateDisplay();
     });
   };
