@@ -87,36 +87,42 @@ export const InitImageOverLayControls = (themeColors) => {
   const initOverlaySlider = (selector, key, isYAxis = false) => {
     const field = document.querySelector(selector);
     const bullet = field?.querySelector(".sc-custom-overlay-bullet");
-    const valueDisplay = field
-      ?.closest(".sc-w-full")
-      ?.querySelector(".sc-text-xs");
+    const valueDisplay = document.getElementById(
+      key === "x" ? "xAxisValue" : "yAxisValue"
+    );
 
     if (!field || !bullet || !valueDisplay) return;
 
-    const dimension = isYAxis ? field.offsetHeight : field.offsetWidth;
-    const center = dimension / 2;
+    const getDimension = () =>
+      isYAxis ? field.offsetHeight : field.offsetWidth;
 
-    const updateUI = (pos) => {
-      const clamped = Math.max(0, Math.min(pos, dimension));
-      const offset = Math.round(clamped - center);
+    const setBullet = (offset) => {
+      const center = getDimension() / 2;
+      const px = center + offset;
 
-      overlayState[key] = offset;
-
-      // Update bullet position
       if (isYAxis) {
-        bullet.style.top = `${clamped}px`;
+        bullet.style.top = `${px}px`;
         bullet.style.left = "50%";
         bullet.style.transform = "translate(-50%, -50%)";
       } else {
-        bullet.style.left = `${clamped}px`;
+        bullet.style.left = `${px}px`;
         bullet.style.top = "50%";
         bullet.style.transform = "translate(-50%, -50%)";
       }
+    };
 
-      // ✅ Update label text
+    const updateUI = (pos) => {
+      const dimension = getDimension();
+      const center = dimension / 2;
+      const clamped = Math.max(0, Math.min(pos, dimension));
+      const offset = Math.round(clamped - center); // value in px from center
+
+      overlayState[key] = offset;
+
+      setBullet(offset);
+
       valueDisplay.textContent = `${offset}px`;
 
-      // ✅ Apply to overlay
       const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
       if (overlayEl) {
         if (key === "x") overlayEl.style.left = `${offset}px`;
@@ -145,13 +151,16 @@ export const InitImageOverLayControls = (themeColors) => {
       });
     });
 
-    // ✅ Set initial from `overlayState`
+    // ✅ Set bullet to center initially
     setTimeout(() => {
-      const initialOffset = overlayState[key];
-      const center = isYAxis ? field.offsetHeight / 2 : field.offsetWidth / 2;
-      const pixel = center + initialOffset;
-      updateUI(pixel);
-    }, 50);
+      const dimension = getDimension();
+      const center = dimension / 2;
+      const offset = overlayState[key] || 0;
+      const pixel = center + offset;
+
+      setBullet(offset);
+      valueDisplay.textContent = `${offset}px`;
+    }, 100); // allow layout to settle
   };
 
   const setupIncrementControl = (controlId, valueId, key) => {
