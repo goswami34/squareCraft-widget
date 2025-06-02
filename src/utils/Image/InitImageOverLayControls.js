@@ -1,13 +1,14 @@
 import { initOverLayColorPalate } from "../initOverLayColorPalate/initOverLayColorPalate.js";
-const overlayState = {
-  x: 0,
-  y: 0,
-  width: "100%",
-  height: "100%",
-  color: "rgba(0,0,0,0.5)",
-};
 
 export const InitImageOverLayControls = (themeColors) => {
+  const overlayState = {
+    x: 0,
+    y: 0,
+    width: "100%",
+    height: "100%",
+    color: "rgba(0,0,0,0.5)",
+  };
+
   let selectedImage = null;
 
   const createOverlay = () => {
@@ -285,45 +286,69 @@ export const InitImageOverLayControls = (themeColors) => {
   //   });
   // };
 
-  const setupIncrementControl = (controlId, valueId, key, bulletId) => {
+  // const setupIncrementControl = (controlId, valueId, key, bulletId) => {
+  //   const control = document.getElementById(controlId);
+  //   const valueDisplay = document.getElementById(valueId);
+  //   const bullet = document.getElementById(bulletId);
+  //   const field = document.querySelector(
+  //     key === "x" ? "#xAxisSlider" : "#yAxisSlider"
+  //   );
+
+  //   if (!control || !valueDisplay || !bullet || !field) return;
+
+  //   const up = control.querySelector(".overlay-arrow-up");
+  //   const down = control.querySelector(".overlay-arrow-down");
+
+  //   const updateDisplay = () => {
+  //     valueDisplay.textContent = `${overlayState[key]}px`;
+  //     updateOverlayStyles();
+
+  //     const dimension = key === "x" ? field.offsetWidth : field.offsetHeight;
+  //     const center = dimension / 2;
+  //     const pixel = center + overlayState[key];
+
+  //     // if (key === "x") {
+  //     //   bullet.style.left = `${pixel}px`;
+  //     // } else {
+  //     //   bullet.style.top = `${pixel}px`;
+  //     // }
+
+  //     if (key === "x" || key === "y") {
+  //       bullet.style.left = `${pixel}px`;
+  //     }
+  //   };
+
+  //   up?.addEventListener("click", () => {
+  //     overlayState[key] += 1;
+  //     updateDisplay();
+  //   });
+
+  //   down?.addEventListener("click", () => {
+  //     overlayState[key] -= 1;
+  //     updateDisplay();
+  //   });
+  // };
+
+  const setupIncrementControl = (controlId, valueId, key) => {
     const control = document.getElementById(controlId);
     const valueDisplay = document.getElementById(valueId);
-    const bullet = document.getElementById(bulletId);
-    const field = document.querySelector(
-      key === "x" ? "#xAxisSlider" : "#yAxisSlider"
-    );
-
-    if (!control || !valueDisplay || !bullet || !field) return;
+    if (!control || !valueDisplay) return;
 
     const up = control.querySelector(".overlay-arrow-up");
     const down = control.querySelector(".overlay-arrow-down");
 
     const updateDisplay = () => {
-      valueDisplay.textContent = `${overlayState[key]}px`;
+      valueDisplay.textContent = `${overlayState[key]}%`;
       updateOverlayStyles();
-
-      const dimension = key === "x" ? field.offsetWidth : field.offsetHeight;
-      const center = dimension / 2;
-      const pixel = center + overlayState[key];
-
-      // if (key === "x") {
-      //   bullet.style.left = `${pixel}px`;
-      // } else {
-      //   bullet.style.top = `${pixel}px`;
-      // }
-
-      if (key === "x" || key === "y") {
-        bullet.style.left = `${pixel}px`;
-      }
     };
 
     up?.addEventListener("click", () => {
-      overlayState[key] += 1;
+      overlayState[key] = Math.min(100, overlayState[key] + 1);
       updateDisplay();
     });
 
     down?.addEventListener("click", () => {
-      overlayState[key] -= 1;
+      overlayState[key] = Math.max(0, overlayState[key] - 1);
       updateDisplay();
     });
   };
