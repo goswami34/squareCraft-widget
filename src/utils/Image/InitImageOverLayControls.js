@@ -203,9 +203,17 @@ export const InitImageOverLayControls = (themeColors) => {
               ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
               : color;
 
-            overlayState.color = rgbaColor;
+            // overlayState.color = rgbaColor;
 
-            // ✅ Ensure update gets triggered!
+            // // ✅ Ensure update gets triggered!
+            // updateOverlayStyles();
+
+            overlayState.color = rgbaColor;
+            const overlayEl =
+              selectedImage?.querySelector(".sc-custom-overlay");
+            if (overlayEl) {
+              overlayEl.style.backgroundColor = rgbaColor;
+            }
             updateOverlayStyles();
           }
         );
