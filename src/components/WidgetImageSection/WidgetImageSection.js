@@ -453,11 +453,6 @@ export function WidgetImageSection(id) {
                         <p class="sc-roboto sc-font-thin sc-universal  sc-text-sm sc-font-thin sc-text-gray-300"> Position
                         </p>
                      </div>
-                     <div class="sc-flex sc-mt-2 sc-items-center">
-                        <div class="sc-bg-3f3f3f sc-py-1 sc-w-40 sc-px-1_5 sc-rounded-l">
-                           <p class="sc-universal sc-roboto sc-text-sm ">Absolute</p>
-                        </div>
-                     </div>
                   </div>
 
                   <div class="mt-3 sc-flex sc-mt-4 sc-items-center sc-gap-3">
