@@ -1,14 +1,14 @@
 import { initOverLayColorPalate } from "../initOverLayColorPalate/initOverLayColorPalate.js";
 
-export const InitImageOverLayControls = (themeColors) => {
-  const overlayState = {
-    x: 0,
-    y: 0,
-    width: "100%",
-    height: "100%",
-    color: "rgba(0,0,0,0.5)",
-  };
+const overlayState = {
+  x: 0,
+  y: 0,
+  width: 100,
+  height: 100,
+  color: "rgba(0,0,0,0.5)",
+};
 
+export const InitImageOverLayControls = (themeColors) => {
   let selectedImage = null;
 
   const createOverlay = () => {
