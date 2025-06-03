@@ -418,50 +418,43 @@ export async function saveModificationsforImage(blockId, css, tagType) {
 }
 
 // ✅ Image Overlay Controls start here
-export async function saveImageOverlayModifications(blockId, cssOverlayStyles) {
+export async function saveImageOverlayModifications(blockId, css, tagType) {
+  // 1. Get pageId from DOM
   const pageId = document
     .querySelector("article[data-page-sections]")
     ?.getAttribute("data-page-sections");
 
+  // 2. Get auth from localStorage
   const userId = localStorage.getItem("sc_u_id");
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  // Defensive logging
-  console.log({
-    userId,
-    token,
-    widgetId,
-    pageId,
-    blockId,
-    cssOverlayStyles,
-  });
-
-  if (
-    !pageId ||
-    !blockId ||
-    !cssOverlayStyles ||
-    typeof cssOverlayStyles !== "object"
-  ) {
-    console.warn("⚠️ Missing required data for image overlay modifications", {
+  // 3. Validate required fields
+  if (!pageId || !blockId || !css || typeof css !== "object") {
+    console.warn("⚠️ Missing required data for overlay modifications", {
       pageId,
       blockId,
-      cssOverlayStyles,
+      css,
     });
     return { success: false, error: "Missing required data" };
   }
-
   if (!userId || !token || !widgetId) {
     console.warn("⚠️ Missing authentication data");
     return { success: false, error: "Missing authentication data" };
   }
 
-  // Clean and convert styles to kebab-case
-  const cleanedStyles = cleanCssObject(cssOverlayStyles);
-  const kebabStyles = toKebabCaseStyleObject(cleanedStyles);
+  // 4. Clean and convert styles
+  const cleanedCss = cleanCssObject(css);
+  if (Object.keys(cleanedCss).length === 0) {
+    console.warn("⚠️ No valid overlay styles to save");
+    return { success: false, error: "No valid styles to save" };
+  }
+  const kebabCss = toKebabCaseStyleObject(cleanedCss);
 
-  const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
+  // 5. Build selector for overlay <div>
+  const selector = `#${blockId} .sc-custom-overlay`;
 
+  // 6. Build payload
   const payload = {
     userId,
     token,
@@ -471,13 +464,14 @@ export async function saveImageOverlayModifications(blockId, cssOverlayStyles) {
     css: {
       image: {
         selector,
-        styles: kebabStyles,
+        styles: kebabCss,
       },
     },
   };
 
   console.log("📤 Sending overlay payload:", payload);
 
+  // 7. Send to backend
   try {
     const response = await fetch(
       "http://localhost:8001/api/v1/save-image-overlay-modifications",
@@ -504,7 +498,6 @@ export async function saveImageOverlayModifications(blockId, cssOverlayStyles) {
   } catch (error) {
     console.error("❌ Error saving overlay styles:", error);
     showNotification(`Failed to save overlay: ${error.message}`, "error");
-
     return { success: false, error: error.message };
   }
 }
