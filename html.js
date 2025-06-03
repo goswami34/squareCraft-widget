@@ -426,6 +426,16 @@ export async function saveImageOverlayModifications(blockId, css) {
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
+  // Defensive logging
+  console.log("📤 Sending overlay payload:", {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    blockId,
+    css,
+  });
+
   if (!pageId || !blockId || !css || typeof css !== "object") {
     console.warn("⚠️ Missing required data for overlay modifications", {
       pageId,
@@ -434,19 +444,14 @@ export async function saveImageOverlayModifications(blockId, css) {
     });
     return { success: false, error: "Missing required data" };
   }
-  if (!userId || !token || !widgetId) {
-    console.warn("⚠️ Missing authentication data");
-    return { success: false, error: "Missing authentication data" };
-  }
 
-  const cleanedCss = cleanCssObject(css);
-  if (Object.keys(cleanedCss).length === 0) {
-    console.warn("⚠️ No valid overlay styles to save");
-    return { success: false, error: "No valid styles to save" };
+  if (!userId || !token || !widgetId) {
+    console.warn("⚠️ Missing auth data", { userId, token, widgetId });
+    return { success: false, error: "Missing auth data" };
   }
-  const kebabCss = toKebabCaseStyleObject(cleanedCss);
 
   const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
+  const kebabCss = toKebabCaseStyleObject(css);
 
   const payload = {
     userId,
@@ -468,8 +473,6 @@ export async function saveImageOverlayModifications(blockId, css) {
     ],
   };
 
-  console.log("📤 Sending overlay payload:", payload);
-
   try {
     const response = await fetch(
       "http://localhost:8001/api/v1/save-image-overlay-modifications",
@@ -483,19 +486,16 @@ export async function saveImageOverlayModifications(blockId, css) {
       }
     );
 
-    const result = await response.json();
-
     if (!response.ok) {
-      throw new Error(result.message || `HTTP ${response.status}`);
+      const error = await response.json();
+      throw new Error(error.message || "Failed to save overlay styles");
     }
 
-    console.log("✅ Overlay saved successfully!", result);
-    showNotification("Overlay styles saved successfully!", "success");
-
+    const result = await response.json();
+    console.log("✅ Overlay styles saved:", result);
     return { success: true, data: result };
   } catch (error) {
     console.error("❌ Error saving overlay styles:", error);
-    showNotification(`Failed to save overlay: ${error.message}`, "error");
     return { success: false, error: error.message };
   }
 }

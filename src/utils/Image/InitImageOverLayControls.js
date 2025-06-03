@@ -59,26 +59,16 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
 
   function saveOverlayStyles(blockId) {
     if (typeof saveImageOverlayModifications !== "function") return;
-    saveImageOverlayModifications(
-      blockId,
-      {
-        overlay: {
-          selector: `#${blockId} .sc-custom-overlay`,
-          styles: {
-            backgroundColor: overlayState.color,
-            top: `${overlayState.y}px`,
-            left: `${overlayState.x}px`,
-            width: `${overlayState.width}%`,
-            height: `${overlayState.height}%`,
-            zIndex: "9999",
-            pointerEvents: "none",
-            borderRadius: "inherit",
-            transition: "all 0.3s ease",
-          },
-        },
-      },
-      "overlay"
-    );
+    saveImageOverlayModifications(blockId, {
+      top: `${overlayState.y}px`,
+      left: `${overlayState.x}px`,
+      width: `${overlayState.width}%`,
+      height: `${overlayState.height}%`,
+      "background-color": overlayState.color,
+      "pointer-events": "none",
+      "z-index": "5",
+      display: "block",
+    });
   }
 
   const updateOverlayStyles = () => {
