@@ -2737,6 +2737,21 @@ let pendingModifications = new Map();
     }
 
     //Image border controls end here
+
+    //Image overlay controls start here
+    const overlayControls = InitImageOverLayControls(themeColors);
+
+    document.addEventListener("click", (e) => {
+      const block = e.target.closest('[id^="block-"]');
+      if (!block) return;
+
+      const imageContent = block.querySelector(".sqs-image-content");
+      if (imageContent) {
+        overlayControls.init(block);
+      }
+    });
+
+    //Image overlay controls end here
   });
 
   observer.observe(parent.document.body, { childList: true, subtree: true });

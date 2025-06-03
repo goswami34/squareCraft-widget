@@ -214,6 +214,51 @@ export const InitImageOverLayControls = (themeColors) => {
     initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", false);
 
     // Color palette
+    // setTimeout(() => {
+    //   const colorPicker = document.getElementById("overLayFontColorPalate");
+    //   if (colorPicker) {
+    //     initOverLayColorPalate(
+    //       themeColors,
+    //       () => selectedImage,
+    //       "overlay-",
+    //       // (color, alpha) => {
+    //       //   const rgbaColor = color.startsWith("rgb(")
+    //       //     ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+    //       //     : color;
+
+    //       //   overlayState.color = rgbaColor;
+
+    //       //   const overlayEl =
+    //       //     selectedImage?.querySelector(".sc-custom-overlay");
+    //       //   if (overlayEl) {
+    //       //     overlayEl.style.backgroundColor = rgbaColor;
+    //       //   }
+
+    //       //   updateOverlayStyles();
+    //       // }
+    //       (color, alpha) => {
+    //         const rgbaColor = color.startsWith("rgb(")
+    //           ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+    //           : color;
+
+    //         overlayState.color = rgbaColor;
+
+    //         // ✅ Update inline overlay div (visible overlay)
+    //         const overlayEl =
+    //           selectedImage?.querySelector(".sc-custom-overlay");
+    //         if (overlayEl) {
+    //           overlayEl.style.backgroundColor = rgbaColor;
+    //         } else {
+    //           console.log("No overlay element found");
+    //         }
+
+    //         // ✅ Also update the ::before overlay via style tag
+    //         updateOverlayStyles();
+    //       }
+    //     );
+    //   }
+    // }, 100);
+
     setTimeout(() => {
       const colorPicker = document.getElementById("overLayFontColorPalate");
       if (colorPicker) {
@@ -221,21 +266,6 @@ export const InitImageOverLayControls = (themeColors) => {
           themeColors,
           () => selectedImage,
           "overlay-",
-          // (color, alpha) => {
-          //   const rgbaColor = color.startsWith("rgb(")
-          //     ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-          //     : color;
-
-          //   overlayState.color = rgbaColor;
-
-          //   const overlayEl =
-          //     selectedImage?.querySelector(".sc-custom-overlay");
-          //   if (overlayEl) {
-          //     overlayEl.style.backgroundColor = rgbaColor;
-          //   }
-
-          //   updateOverlayStyles();
-          // }
           (color, alpha) => {
             const rgbaColor = color.startsWith("rgb(")
               ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
@@ -243,16 +273,12 @@ export const InitImageOverLayControls = (themeColors) => {
 
             overlayState.color = rgbaColor;
 
-            // ✅ Update inline overlay div (visible overlay)
             const overlayEl =
               selectedImage?.querySelector(".sc-custom-overlay");
             if (overlayEl) {
               overlayEl.style.backgroundColor = rgbaColor;
-            } else {
-              console.log("No overlay element found");
             }
 
-            // ✅ Also update the ::before overlay via style tag
             updateOverlayStyles();
           }
         );
