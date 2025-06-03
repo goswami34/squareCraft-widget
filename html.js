@@ -416,3 +416,87 @@ export async function saveModificationsforImage(blockId, css, tagType) {
     return { success: false, error: err.message };
   }
 }
+
+// ✅ Image Overlay Controls start here
+export async function saveImageOverlayModifications(blockId, cssOverlayStyles) {
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  if (
+    !pageId ||
+    !blockId ||
+    !cssOverlayStyles ||
+    typeof cssOverlayStyles !== "object"
+  ) {
+    console.warn("⚠️ Missing required data for image overlay modifications", {
+      pageId,
+      blockId,
+      cssOverlayStyles,
+    });
+    return { success: false, error: "Missing required data" };
+  }
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  if (!userId || !token || !widgetId) {
+    console.warn("⚠️ Missing authentication data");
+    return { success: false, error: "Missing authentication data" };
+  }
+
+  // Clean and convert styles to kebab-case
+  const cleanedStyles = cleanCssObject(cssOverlayStyles);
+  const kebabStyles = toKebabCaseStyleObject(cleanedStyles);
+
+  const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
+
+  const payload = {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    elementId: blockId,
+    css: {
+      image: {
+        selector,
+        styles: kebabStyles,
+      },
+    },
+  };
+
+  console.log("📤 Sending overlay payload:", payload);
+
+  try {
+    const response = await fetch(
+      "http://localhost:8001/api/v1/save-image-overlay-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || `HTTP ${response.status}`);
+    }
+
+    console.log("✅ Overlay saved successfully!", result);
+    showNotification("Overlay styles saved successfully!", "success");
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("❌ Error saving overlay styles:", error);
+    showNotification(`Failed to save overlay: ${error.message}`, "error");
+
+    return { success: false, error: error.message };
+  }
+}
+
+// ✅ Image Overlay Controls end here
