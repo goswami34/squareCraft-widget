@@ -2708,8 +2708,19 @@ let pendingModifications = new Map();
         }
 
         // ✅ Initialize overlay controls properly
-        const overlayController = InitImageOverLayControls(themeColors);
-        overlayController.init(selectedImage);
+        // const overlayController = InitImageOverLayControls(themeColors);
+        // overlayController.init(selectedImage);
+
+        const overlayController = InitImageOverLayControls(themeColors, {
+          addPendingModification,
+          saveModificationsforImage,
+          token,
+          userId,
+          widgetId,
+        });
+        if (overlayController) {
+          overlayController.init(selectedImage);
+        }
 
         setTimeout(() => {
           handleImageBorderControlsClick(null, {
