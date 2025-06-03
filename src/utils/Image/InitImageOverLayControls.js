@@ -59,6 +59,21 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
 
   function saveOverlayStyles(blockId) {
     if (typeof saveImageOverlayModifications !== "function") return;
+
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!pageId || !blockId) {
+      console.warn("⚠️ Missing required data for overlay save:", {
+        pageId,
+        blockId,
+      });
+      return;
+    }
+
+    const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
+
     saveImageOverlayModifications(blockId, {
       top: `${overlayState.y}px`,
       left: `${overlayState.x}px`,
