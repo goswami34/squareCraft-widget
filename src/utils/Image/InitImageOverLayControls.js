@@ -248,6 +248,8 @@ export const InitImageOverLayControls = (themeColors) => {
               selectedImage?.querySelector(".sc-custom-overlay");
             if (overlayEl) {
               overlayEl.style.backgroundColor = rgbaColor;
+            } else {
+              console.log("No overlay element found");
             }
 
             // ✅ Also update the ::before overlay via style tag
