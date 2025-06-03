@@ -510,17 +510,15 @@ export async function saveImageOverlayModifications(blockId, css) {
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  if (!pageId || !blockId || !css || !userId || !token || !widgetId) {
-    console.warn("❌ Missing required fields", {
-      pageId,
-      blockId,
-      css,
-      userId,
-      token,
-      widgetId,
-    });
-    return { success: false, error: "Missing required data" };
-  }
+  // Detailed debug log
+  console.log("[DEBUG] Overlay Save Fields:", {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    blockId,
+    css,
+  });
 
   const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
   const kebabCss = toKebabCaseStyleObject(css);
@@ -545,7 +543,23 @@ export async function saveImageOverlayModifications(blockId, css) {
     ],
   };
 
-  console.log("📤 Sending validated overlay payload:", payload);
+  // Log the final payload
+  console.log(
+    "[DEBUG] Final overlay payload:",
+    JSON.stringify(payload, null, 2)
+  );
+
+  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+    console.warn("❌ Missing required fields", {
+      userId,
+      token,
+      widgetId,
+      pageId,
+      blockId,
+      css,
+    });
+    return { success: false, error: "Missing required data" };
+  }
 
   try {
     const response = await fetch(
