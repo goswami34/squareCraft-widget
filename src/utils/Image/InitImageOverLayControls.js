@@ -57,6 +57,30 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     content.appendChild(overlay);
   };
 
+  function saveOverlayStyles(blockId) {
+    if (typeof saveModificationsforImage !== "function") return;
+    saveModificationsforImage(
+      blockId,
+      {
+        overlay: {
+          selector: `#${blockId} .sc-custom-overlay`,
+          styles: {
+            backgroundColor: overlayState.color,
+            top: `${overlayState.y}px`,
+            left: `${overlayState.x}px`,
+            width: `${overlayState.width}%`,
+            height: `${overlayState.height}%`,
+            zIndex: "9999",
+            pointerEvents: "none",
+            borderRadius: "inherit",
+            transition: "all 0.3s ease",
+          },
+        },
+      },
+      "overlay"
+    );
+  }
+
   const updateOverlayStyles = () => {
     if (!selectedImage) return;
 
@@ -100,6 +124,9 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
       overlayEl.style.backgroundColor = overlayState.color;
       // optional: swap if you want
     }
+
+    // Save overlay styles to database
+    saveOverlayStyles(blockId);
 
     // ✅ Optional: Update display values in UI
     const widthValue = document.getElementById("overlayWidthValue");
