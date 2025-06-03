@@ -11,7 +11,7 @@ const overlayState = {
 export const InitImageOverLayControls = (themeColors, context = {}) => {
   const {
     addPendingModification,
-    saveModificationsforImage,
+    saveImageOverlayModifications,
     token,
     userId,
     widgetId,
@@ -58,8 +58,8 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
   };
 
   function saveOverlayStyles(blockId) {
-    if (typeof saveModificationsforImage !== "function") return;
-    saveModificationsforImage(
+    if (typeof saveImageOverlayModifications !== "function") return;
+    saveImageOverlayModifications(
       blockId,
       {
         overlay: {
