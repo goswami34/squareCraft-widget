@@ -49,13 +49,13 @@ export const InitImageOverLayControls = (themeColors) => {
 
     const rgbaColor = overlayState.color;
 
-    const styleId = `sc-overlay-style-${blockId}`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
-    }
+    // const styleId = `sc-overlay-style-${blockId}`;
+    // let styleTag = document.getElementById(styleId);
+    // if (!styleTag) {
+    //   styleTag = document.createElement("style");
+    //   styleTag.id = styleId;
+    //   document.head.appendChild(styleTag);
+    // }
 
     // 💡 Apply CSS to the pseudo element using `::before`
     styleTag.textContent = `
@@ -221,6 +221,21 @@ export const InitImageOverLayControls = (themeColors) => {
           themeColors,
           () => selectedImage,
           "overlay-",
+          // (color, alpha) => {
+          //   const rgbaColor = color.startsWith("rgb(")
+          //     ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+          //     : color;
+
+          //   overlayState.color = rgbaColor;
+
+          //   const overlayEl =
+          //     selectedImage?.querySelector(".sc-custom-overlay");
+          //   if (overlayEl) {
+          //     overlayEl.style.backgroundColor = rgbaColor;
+          //   }
+
+          //   updateOverlayStyles();
+          // }
           (color, alpha) => {
             const rgbaColor = color.startsWith("rgb(")
               ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
@@ -234,7 +249,7 @@ export const InitImageOverLayControls = (themeColors) => {
               overlayEl.style.backgroundColor = rgbaColor;
             }
 
-            updateOverlayStyles();
+            updateOverlayStyles(); // This will now re-apply color and size/pos
           }
         );
       }
