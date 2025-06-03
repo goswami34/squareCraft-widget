@@ -2756,7 +2756,7 @@ let pendingModifications = new Map();
     //Image overlay controls start here
     const overlayControls = InitImageOverLayControls(themeColors, {
       addPendingModification,
-      saveModificationsforImage,
+      saveImageOverlayModifications,
       token,
       userId,
       widgetId,
