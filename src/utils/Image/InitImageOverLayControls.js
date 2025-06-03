@@ -49,13 +49,13 @@ export const InitImageOverLayControls = (themeColors) => {
 
     const rgbaColor = overlayState.color;
 
-    // const styleId = `sc-overlay-style-${blockId}`;
-    // let styleTag = document.getElementById(styleId);
-    // if (!styleTag) {
-    //   styleTag = document.createElement("style");
-    //   styleTag.id = styleId;
-    //   document.head.appendChild(styleTag);
-    // }
+    const styleId = `sc-overlay-style-${blockId}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
 
     // 💡 Apply CSS to the pseudo element using `::before`
     styleTag.textContent = `
