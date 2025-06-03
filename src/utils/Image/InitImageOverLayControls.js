@@ -80,7 +80,9 @@ export const InitImageOverLayControls = (themeColors) => {
     const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
     if (overlayEl) {
       overlayEl.style.left = `${overlayState.y}px`; // ← treat 'y' as horizontal
-      overlayEl.style.top = `${overlayState.x}px`; // optional: swap if you want
+      overlayEl.style.top = `${overlayState.x}px`;
+      overlayEl.style.backgroundColor = overlayState.color;
+      // optional: swap if you want
     }
 
     // ✅ Optional: Update display values in UI
@@ -220,27 +222,18 @@ export const InitImageOverLayControls = (themeColors) => {
           () => selectedImage,
           "overlay-",
           (color, alpha) => {
-            // overlayState.color = color.startsWith("rgb(")
-            //   ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-            //   : color;
-            // const rgbaColor = color.startsWith("rgb(")
-            //   ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-            //   : color;
             const rgbaColor = color.startsWith("rgb(")
               ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
               : color;
 
-            // overlayState.color = rgbaColor;
-
-            // // ✅ Ensure update gets triggered!
-            // updateOverlayStyles();
-
             overlayState.color = rgbaColor;
+
             const overlayEl =
               selectedImage?.querySelector(".sc-custom-overlay");
             if (overlayEl) {
               overlayEl.style.backgroundColor = rgbaColor;
             }
+
             updateOverlayStyles();
           }
         );
