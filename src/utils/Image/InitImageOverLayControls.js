@@ -320,7 +320,6 @@
 // };
 
 import { initOverLayColorPalate } from "../initOverLayColorPalate/initOverLayColorPalate.js";
-import { saveImageOverlayModifications } from "../saveImageOverlayModifications/saveImageOverlayModifications.js";
 
 const overlayState = {
   x: 0,
