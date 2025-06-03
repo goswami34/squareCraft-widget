@@ -423,6 +423,20 @@ export async function saveImageOverlayModifications(blockId, cssOverlayStyles) {
     .querySelector("article[data-page-sections]")
     ?.getAttribute("data-page-sections");
 
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  // Defensive logging
+  console.log({
+    userId,
+    token,
+    widgetId,
+    pageId,
+    blockId,
+    cssOverlayStyles,
+  });
+
   if (
     !pageId ||
     !blockId ||
@@ -436,10 +450,6 @@ export async function saveImageOverlayModifications(blockId, cssOverlayStyles) {
     });
     return { success: false, error: "Missing required data" };
   }
-
-  const userId = localStorage.getItem("sc_u_id");
-  const token = localStorage.getItem("sc_auth_token");
-  const widgetId = localStorage.getItem("sc_w_id");
 
   if (!userId || !token || !widgetId) {
     console.warn("⚠️ Missing authentication data");
