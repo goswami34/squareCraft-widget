@@ -243,13 +243,15 @@ export const InitImageOverLayControls = (themeColors) => {
 
             overlayState.color = rgbaColor;
 
+            // ✅ Update inline overlay div (visible overlay)
             const overlayEl =
               selectedImage?.querySelector(".sc-custom-overlay");
             if (overlayEl) {
               overlayEl.style.backgroundColor = rgbaColor;
             }
 
-            updateOverlayStyles(); // <-- this updates the ::before also
+            // ✅ Also update the ::before overlay via style tag
+            updateOverlayStyles();
           }
         );
       }
