@@ -2754,14 +2754,20 @@ let pendingModifications = new Map();
     //Image border controls end here
 
     //Image overlay controls start here
-    const overlayControls = InitImageOverLayControls(themeColors);
+    const overlayControls = InitImageOverLayControls(themeColors, {
+      addPendingModification,
+      saveModificationsforImage,
+      token,
+      userId,
+      widgetId,
+    });
 
     document.addEventListener("click", (e) => {
       const block = e.target.closest('[id^="block-"]');
       if (!block) return;
 
       const imageContent = block.querySelector(".sqs-image-content");
-      if (imageContent) {
+      if (imageContent && overlayControls) {
         overlayControls.init(block);
       }
     });
