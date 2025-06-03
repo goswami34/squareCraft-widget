@@ -2713,7 +2713,7 @@ let pendingModifications = new Map();
 
         const overlayController = InitImageOverLayControls(themeColors, {
           addPendingModification,
-          saveModificationsforImage,
+          saveImageOverlayModifications,
           token,
           userId,
           widgetId,
