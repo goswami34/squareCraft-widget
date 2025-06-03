@@ -8,7 +8,7 @@ const overlayState = {
   color: "rgba(0,0,0,0.5)",
 };
 
-export const InitImageOverLayControls = (themeColors) => {
+export const InitImageOverLayControls = (themeColors, context = {}) => {
   const {
     addPendingModification,
     saveModificationsforImage,
@@ -18,6 +18,14 @@ export const InitImageOverLayControls = (themeColors) => {
   } = context;
 
   let selectedImage = null;
+
+  if (typeof addPendingModification !== "function") {
+    console.warn(
+      "❌ addPendingModification is not provided or not a function."
+    );
+    return;
+  }
+  console.log(addPendingModification);
 
   const createOverlay = () => {
     if (!selectedImage) return;
