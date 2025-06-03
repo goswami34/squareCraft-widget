@@ -418,18 +418,14 @@ export async function saveModificationsforImage(blockId, css, tagType) {
 }
 
 // ✅ Image Overlay Controls start here
-export async function saveImageOverlayModifications(blockId, css, tagType) {
-  // 1. Get pageId from DOM
+export async function saveImageOverlayModifications(blockId, css) {
   const pageId = document
     .querySelector("article[data-page-sections]")
     ?.getAttribute("data-page-sections");
-
-  // 2. Get auth from localStorage
   const userId = localStorage.getItem("sc_u_id");
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  // 3. Validate required fields
   if (!pageId || !blockId || !css || typeof css !== "object") {
     console.warn("⚠️ Missing required data for overlay modifications", {
       pageId,
@@ -443,7 +439,6 @@ export async function saveImageOverlayModifications(blockId, css, tagType) {
     return { success: false, error: "Missing authentication data" };
   }
 
-  // 4. Clean and convert styles
   const cleanedCss = cleanCssObject(css);
   if (Object.keys(cleanedCss).length === 0) {
     console.warn("⚠️ No valid overlay styles to save");
@@ -451,27 +446,30 @@ export async function saveImageOverlayModifications(blockId, css, tagType) {
   }
   const kebabCss = toKebabCaseStyleObject(cleanedCss);
 
-  // 5. Build selector for overlay <div>
-  const selector = `#${blockId} .sc-custom-overlay`;
+  const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
 
-  // 6. Build payload
   const payload = {
     userId,
     token,
     widgetId,
-    pageId,
-    elementId: blockId,
-    css: {
-      image: {
-        selector,
-        styles: kebabCss,
+    modifications: [
+      {
+        pageId,
+        elements: [
+          {
+            elementId: blockId,
+            overlayCSS: {
+              selector,
+              styles: kebabCss,
+            },
+          },
+        ],
       },
-    },
+    ],
   };
 
   console.log("📤 Sending overlay payload:", payload);
 
-  // 7. Send to backend
   try {
     const response = await fetch(
       "http://localhost:8001/api/v1/save-image-overlay-modifications",
