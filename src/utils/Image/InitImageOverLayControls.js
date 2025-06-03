@@ -9,6 +9,14 @@ const overlayState = {
 };
 
 export const InitImageOverLayControls = (themeColors) => {
+  const {
+    addPendingModification,
+    saveModificationsforImage,
+    token,
+    userId,
+    widgetId,
+  } = context;
+
   let selectedImage = null;
 
   const createOverlay = () => {
