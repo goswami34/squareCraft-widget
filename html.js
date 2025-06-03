@@ -418,6 +418,90 @@ export async function saveModificationsforImage(blockId, css, tagType) {
 }
 
 // ✅ Image Overlay Controls start here
+// export async function saveImageOverlayModifications(blockId, css) {
+//   const pageId = document
+//     .querySelector("article[data-page-sections]")
+//     ?.getAttribute("data-page-sections");
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
+
+//   // Defensive logging
+//   console.log("📤 Sending overlay payload:", {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId,
+//     blockId,
+//     css,
+//   });
+
+//   if (!pageId || !blockId || !css || typeof css !== "object") {
+//     console.warn("⚠️ Missing required data for overlay modifications", {
+//       pageId,
+//       blockId,
+//       css,
+//     });
+//     return { success: false, error: "Missing required data" };
+//   }
+
+//   if (!userId || !token || !widgetId) {
+//     console.warn("⚠️ Missing auth data", { userId, token, widgetId });
+//     return { success: false, error: "Missing auth data" };
+//   }
+
+//   const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
+//   const kebabCss = toKebabCaseStyleObject(css);
+
+//   const payload = {
+//     userId,
+//     token,
+//     widgetId,
+//     modifications: [
+//       {
+//         pageId,
+//         elements: [
+//           {
+//             elementId: blockId,
+//             overlayCSS: {
+//               selector,
+//               styles: kebabCss,
+//             },
+//           },
+//         ],
+//       },
+//     ],
+//   };
+
+//   console.log("✅ Overlay styles saved:", payload);
+
+//   try {
+//     const response = await fetch(
+//       "http://localhost:8001/api/v1/save-image-overlay-modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     if (!response.ok) {
+//       const error = await response.json();
+//       throw new Error(error.message || "Failed to save overlay styles");
+//     }
+
+//     const result = await response.json();
+//     console.log("✅ Overlay styles saved:", result);
+//     return { success: true, data: result };
+//   } catch (error) {
+//     console.error("❌ Error saving overlay styles:", error);
+//     return { success: false, error: error.message };
+//   }
+// }
+
 export async function saveImageOverlayModifications(blockId, css) {
   const pageId = document
     .querySelector("article[data-page-sections]")
@@ -426,28 +510,16 @@ export async function saveImageOverlayModifications(blockId, css) {
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  // Defensive logging
-  console.log("📤 Sending overlay payload:", {
-    userId,
-    token,
-    widgetId,
-    pageId,
-    blockId,
-    css,
-  });
-
-  if (!pageId || !blockId || !css || typeof css !== "object") {
-    console.warn("⚠️ Missing required data for overlay modifications", {
+  if (!pageId || !blockId || !css || !userId || !token || !widgetId) {
+    console.warn("❌ Missing required fields", {
       pageId,
       blockId,
       css,
+      userId,
+      token,
+      widgetId,
     });
     return { success: false, error: "Missing required data" };
-  }
-
-  if (!userId || !token || !widgetId) {
-    console.warn("⚠️ Missing auth data", { userId, token, widgetId });
-    return { success: false, error: "Missing auth data" };
   }
 
   const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
@@ -473,7 +545,7 @@ export async function saveImageOverlayModifications(blockId, css) {
     ],
   };
 
-  console.log("✅ Overlay styles saved:", payload);
+  console.log("📤 Sending validated overlay payload:", payload);
 
   try {
     const response = await fetch(
@@ -488,12 +560,12 @@ export async function saveImageOverlayModifications(blockId, css) {
       }
     );
 
+    const result = await response.json();
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to save overlay styles");
+      throw new Error(result.message || `HTTP ${response.status}`);
     }
 
-    const result = await response.json();
     console.log("✅ Overlay styles saved:", result);
     return { success: true, data: result };
   } catch (error) {
