@@ -473,6 +473,8 @@ export async function saveImageOverlayModifications(blockId, css) {
     ],
   };
 
+  console.log("✅ Overlay styles saved:", payload);
+
   try {
     const response = await fetch(
       "http://localhost:8001/api/v1/save-image-overlay-modifications",
