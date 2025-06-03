@@ -31,7 +31,7 @@ export const InitImageOverLayControls = (themeColors) => {
       left: `${overlayState.x}px`,
       width: `${overlayState.width}%`,
       height: `${overlayState.height}%`,
-      backgroundColor: overlayState.color,
+      backgroundColor: overlayState.color || "rgba(0,0,0,0.5)", // ✅ ADD THIS
       zIndex: "9999", // ensure on top
       pointerEvents: "none",
       borderRadius: "inherit",
@@ -249,7 +249,7 @@ export const InitImageOverLayControls = (themeColors) => {
               overlayEl.style.backgroundColor = rgbaColor;
             }
 
-            updateOverlayStyles(); // This will now re-apply color and size/pos
+            updateOverlayStyles(); // <-- this updates the ::before also
           }
         );
       }
