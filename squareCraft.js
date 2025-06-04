@@ -141,9 +141,7 @@ let pendingModifications = new Map();
   // const { initButtonSectionToggleControls } = await import(
   //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonSectionToggleControls/initButtonSectionToggleControls.js"
   // );
-  // const { initImageUploadPreview } = await import(
-  //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonSectionToggleControls/initImageUploadPreview.js"
-  // );
+  
   const { initImageMaskControls } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/initImageMaskControls.js"
   );
