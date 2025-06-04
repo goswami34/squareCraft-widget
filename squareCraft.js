@@ -385,6 +385,30 @@ let pendingModifications = new Map();
     //   initButtonFontColorPaletteToggle(themeColors, selectedElement);
     // }, 100);
 
+
+    async function createWidget() {
+      try {
+        const module = await import(
+          "https://goswami34.github.io/squareCraft-widget/html.js"
+        );
+        if (module && typeof module.html === "function") {
+          const htmlString = module.html();
+          if (typeof htmlString === "string" && htmlString.trim().length > 0) {
+            loadWidgetFromString(htmlString);
+            setTimeout(() => {
+              if (typeof module.initToggleSwitch === "function") {
+                module.initToggleSwitch();
+              }
+            }, 200);
+          } else {
+            console.error(":x: Retrieved HTML string is invalid or empty!");
+          }
+        }
+      } catch (error) {
+        console.error(":rotating_light: Error loading HTML module:", error);
+      }
+    }
+
     setTimeout(initImageSectionControls, 100);
     const clickedBlock = event.target.closest('[id^="block-"]');
     if (clickedBlock) {
