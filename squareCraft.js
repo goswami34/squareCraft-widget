@@ -85,14 +85,29 @@ let pendingModifications = new Map();
       document.head.appendChild(styleTag);
     }
 
-    let cssText = `#${elementId}, #${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} p { `;
-    Object.keys(css).forEach((prop) => {
-      cssText += `${prop}: ${css[prop]} !important; `;
-    });
-    cssText += "}";
-
-    styleTag.innerHTML = cssText;
+    // Check if this is an overlay style
+    if (css.selector && css.styles) {
+      // This is an overlay style
+      let cssText = `${css.selector} { `;
+      Object.entries(css.styles).forEach(([prop, value]) => {
+        if (value !== null && value !== undefined && value !== "null") {
+          cssText += `${prop}: ${value} !important; `;
+        }
+      });
+      cssText += "}";
+      styleTag.innerHTML = cssText;
+      console.log(`✅ Applied overlay styles with selector: ${css.selector}`);
+    } else {
+      // This is a regular style
+      let cssText = `#${elementId}, #${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} p { `;
+      Object.keys(css).forEach((prop) => {
+        cssText += `${prop}: ${css[prop]} !important; `;
+      });
+      cssText += "}";
+      styleTag.innerHTML = cssText;
+    }
   }
+
   const { getTextType } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/utils/getTextType.js"
   );
@@ -1669,7 +1684,7 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageModifications() {
+  async function fetchImageModifications(elementId) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -1904,6 +1919,11 @@ let pendingModifications = new Map();
 
   async function fetchImageOverlayModifications(elementId) {
     try {
+      if (!elementId) {
+        console.warn("❌ elementId is required for fetching overlay modifications");
+        return;
+      }
+
       const userId = localStorage.getItem("sc_u_id");
       const token = localStorage.getItem("sc_auth_token");
       const widgetId = localStorage.getItem("sc_w_id");
@@ -1925,15 +1945,19 @@ let pendingModifications = new Map();
       const cleanUserId = userId.trim();
       const cleanWidgetId = widgetId.trim();
       const cleanPageId = pageId.trim();
+      const cleanElementId = elementId.trim();
 
-      console.log("🔍 Fetching overlay modifications with params:", {
-        userId: cleanUserId,
-        widgetId: cleanWidgetId,
-        pageId: cleanPageId,
-      });
+      // Validate userId format
+      if (!/^[0-9a-fA-F]{24}$/.test(cleanUserId)) {
+        console.error("❌ Invalid userId format. Must be a 24-character hex string.");
+        showNotification("Invalid user ID format", "error");
+        return;
+      }
+
+      console.log("🔍 Fetching overlay modifications for element:", cleanElementId);
 
       const response = await fetch(
-        `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}`,
+        `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}&elementId=${cleanElementId}`,
         {
           method: "GET",
           headers: {
@@ -1943,15 +1967,15 @@ let pendingModifications = new Map();
         }
       );
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to fetch overlay modifications");
+        throw new Error(data.message || "Failed to fetch overlay modifications");
       }
 
-      const data = await response.json();
       console.log("📦 Received overlay modifications:", data);
 
-      if (!data.elements || !Array.isArray(data.elements)) {
+      if (!data.elements || !Array.isArray(data.elements) || data.elements.length === 0) {
         console.warn("⚠️ No valid elements found in response");
         return;
       }
@@ -1959,7 +1983,7 @@ let pendingModifications = new Map();
       // Process each element from the response
       for (const element of data.elements) {
         if (!element.elementId || !element.overlayCSS) {
-          console.warn("⚠️ Skipping invalid element:", element);
+          console.warn("⚠️ Invalid element data:", element);
           continue;
         }
 
@@ -1977,18 +2001,11 @@ let pendingModifications = new Map();
       console.log("✅ Completed applying overlay styles to all image elements");
     } catch (error) {
       console.error("❌ Error fetching overlay modifications:", error);
-      showNotification("Failed to load image overlay modifications", "error");
+      showNotification(error.message || "Failed to load image overlay modifications", "error");
     }
   }
 
   window.addEventListener("load", async () => {
-    await fetchModifications();
-    // await fetchImageModifications(lastClickedBlockId);
-
-    // if (lastClickedBlockId) {
-    //   await fetchImageModifications(lastClickedBlockId);
-    // }
-
     // Fallback: Auto-detect first image block on page load
     if (!lastClickedBlockId) {
       const fallbackBlock = document
@@ -1999,38 +2016,23 @@ let pendingModifications = new Map();
       }
     }
 
-    if (lastClickedBlockId) {
-      await fetchImageModifications(lastClickedBlockId);
-    }
-
-    // await fetchImageOverlayModifications();
-  });
-
-
-
-  window.addEventListener("load", async () => {
-    await fetchImageOverlayModifications();
-    // await fetchImageModifications(lastClickedBlockId);
-
-    // if (lastClickedBlockId) {
-    //   await fetchImageModifications(lastClickedBlockId);
-    // }
-
-    // Fallback: Auto-detect first image block on page load
-    if (!lastClickedBlockId) {
-      const fallbackBlock = document
-        .querySelector('[id^="block-"] img')
-        ?.closest('[id^="block-"]');
-      if (fallbackBlock) {
-        lastClickedBlockId = fallbackBlock.id;
-      }
-    }
-
+    // Only fetch if we have a block ID
     if (lastClickedBlockId) {
       await fetchImageOverlayModifications(lastClickedBlockId);
     }
+  });
 
-    // await fetchImageOverlayModifications();
+  const observer = new MutationObserver(() => {
+    addHeadingEventListeners();
+    fetchModifications();
+    
+    const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
+    const elementId = selectedBlock?.id || null;
+
+    if (elementId) {
+      fetchImageModifications(elementId);
+      fetchImageOverlayModifications(elementId);
+    }
   });
 
   async function addHeadingEventListeners() {
@@ -2062,1109 +2064,767 @@ let pendingModifications = new Map();
     });
   }
 
-  const observer = new MutationObserver(() => {
-    addHeadingEventListeners();
-    fetchModifications();
-    // fetchImageModifications(lastClickedBlockId);
-    const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
-    const elementId = selectedBlock?.id || null;
+  // const textColorContainer = document.getElementById("scTextColor");
+  // if (textColorContainer && !textColorContainer.dataset.initialized) {
+  //   textColorContainer.dataset.initialized = "true";
 
-    if (elementId) {
-      fetchImageModifications(elementId);
-    }
+  //   // Add click event listeners to all text colro buttons
+  //   textColorContainer
+  //     .querySelectorAll('[id^="scTextColor"]')
+  //     .forEach((button) => {
+  //       button.addEventListener("click", (event) => {
+  //         const lastClickedElement = document.querySelector(".sc-selected");
+  //         if (lastClickedElement) {
+  //           handleTextColorclicked(event, {
+  //             lastClickedElement,
+  //             lastClickedBlockId: lastClickedElement.id,
+  //           });
+  //         }
+  //       });
+  //     });
+  // }
 
-    if (elementId) {
-      fetchImageOverlayModifications(elementId)
-    }
+  //Link code start here
 
-    const fontWeightSelect = document.getElementById("squareCraftFontWeight");
-    if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
-      console.log("Initializing font weight select");
-      fontWeightSelect.dataset.initialized = "true";
+  const LinkfontsizeSelect = document.getElementById("scFontSizeInputLink");
+  if (LinkfontsizeSelect && !LinkfontsizeSelect.dataset.initialized) {
+    LinkfontsizeSelect.dataset.initialized = "true";
 
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        handleFontWeightClick(null, {
-          lastClickedElement,
-          saveModifications,
-          selectedElement,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-          addPendingModification,
-          getTextType,
-        });
-      }, 100);
-    }
-
-    const textTransformContainer = document.getElementById(
-      "squareCraftBoldElementTextTransform"
-    );
-    if (textTransformContainer && !textTransformContainer.dataset.initialized) {
-      textTransformContainer.dataset.initialized = "true";
-
-      // Add click event listeners to all text transform buttons
-      textTransformContainer
-        .querySelectorAll('[id^="scTextTransform"]')
-        .forEach((button) => {
-          button.addEventListener("click", (event) => {
-            const lastClickedElement = document.querySelector(".sc-selected");
-            if (lastClickedElement) {
-              handleBoldElementTextTransformClick(event, {
-                lastClickedElement,
-                lastClickedBlockId: lastClickedElement.id,
-                selectedSingleTextType,
-                addPendingModification,
-                showNotification,
-                getTextType,
-                applyStylesToElement,
-              });
-            }
-          });
-        });
-    }
-
-    // const textColorContainer = document.getElementById("scTextColor");
-    // if (textColorContainer && !textColorContainer.dataset.initialized) {
-    //   textColorContainer.dataset.initialized = "true";
-
-    //   // Add click event listeners to all text colro buttons
-    //   textColorContainer
-    //     .querySelectorAll('[id^="scTextColor"]')
-    //     .forEach((button) => {
-    //       button.addEventListener("click", (event) => {
-    //         const lastClickedElement = document.querySelector(".sc-selected");
-    //         if (lastClickedElement) {
-    //           handleTextColorclicked(event, {
-    //             lastClickedElement,
-    //             lastClickedBlockId: lastClickedElement.id,
-    //           });
-    //         }
-    //       });
-    //     });
-    // }
-
-    //Link code start here
-
-    const LinkfontsizeSelect = document.getElementById("scFontSizeInputLink");
-    if (LinkfontsizeSelect && !LinkfontsizeSelect.dataset.initialized) {
-      LinkfontsizeSelect.dataset.initialized = "true";
-
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        handleFontSizeLink(null, {
-          lastClickedElement,
-          getTextType,
-          saveModifications,
-          selectedElement,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
-          showNotification,
-        });
-      }, 100);
-    }
-
-    const textTransformLinkContainer = document.getElementById(
-      "squareCraftLink-text-transform"
-    );
-    if (
-      textTransformLinkContainer &&
-      !textTransformLinkContainer.dataset.initialized
-    ) {
-      textTransformLinkContainer.dataset.initialized = "true";
-
-      textTransformLinkContainer
-        .querySelectorAll('[id^="scTextTransform"]')
-        .forEach((button) => {
-          button.addEventListener("click", (event) => {
-            const lastClickedElement = document.querySelector(".sc-selected");
-            if (lastClickedElement) {
-              handleTextTransformLinkClick(event, {
-                lastClickedElement,
-                selectedSingleTextType,
-                addPendingModification,
-                showNotification,
-              });
-            }
-          });
-        });
-    }
-
-    // In squareCraft.js
-    const fontWeightLinkSelect = document.getElementById(
-      "squareCraftLinkFontWeight"
-    );
-    if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
-      console.log("Initializing font weight select for links");
-      fontWeightLinkSelect.dataset.initialized = "true";
-
-      fontWeightLinkSelect.addEventListener("change", function (event) {
-        event.preventDefault();
-        console.log("Font weight select changed");
-
-        const currentlySelectedBlock = document.querySelector(".sc-selected");
-        const selectedFontWeight = this.value;
-        console.log("Selected font weight:", selectedFontWeight);
-
-        if (!currentlySelectedBlock) {
-          showNotification(
-            "❌ Please select a block first fsfgsfgsfgsgfsgsg.",
-            "error"
-          );
-          this.value = "400";
-          return;
-        }
-
-        const selectedTab = document.querySelector(".sc-selected-tab");
-        if (!selectedTab) {
-          showNotification(
-            "❌ Please select a text type (h1, h2, p1 etc) first.",
-            "error"
-          );
-          this.value = "400";
-          return;
-        }
-
-        handleFontWeightLink(event, {
-          lastClickedElement: currentlySelectedBlock,
-          selectedSingleTextType: selectedSingleTextType,
-          addPendingModification,
-          showNotification,
-        });
+    // Add a small delay to ensure the DOM is fully loaded
+    setTimeout(() => {
+      handleFontSizeLink(null, {
+        lastClickedElement,
+        getTextType,
+        saveModifications,
+        selectedElement,
+        setSelectedElement: (val) => (selectedElement = val),
+        setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+        setLastClickedElement: (val) => (lastClickedElement = val),
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
       });
-    }
+    }, 100);
+  }
 
-    // handleLinkTextHighlightClick(
-    //   event,
-    //   lastClickedElement,
-    //   applyStylesToElement,
-    //   {
-    //     handleAllTextColorClick,
-    //     lastClickedElement,
-    //     selectedSingleTextType,
-    //     addPendingModification: (blockId, css, tagType) => {
-    //       if (!pendingModifications.has(blockId)) {
-    //         pendingModifications.set(blockId, []);
-    //       }
-    //       pendingModifications.get(blockId).push({ css, tagType });
-    //     },
-    //     showNotification,
-    //   }
-    // );
+  const textTransformLinkContainer = document.getElementById(
+    "squareCraftLink-text-transform"
+  );
+  if (
+    textTransformLinkContainer &&
+    !textTransformLinkContainer.dataset.initialized
+  ) {
+    textTransformLinkContainer.dataset.initialized = "true";
 
-    // In squareCraft.js
-    const colorInput = document.getElementById("scTextHighLight");
-    const hexInput = document.getElementById("scTextHeighlightHex");
-
-    if (colorInput && hexInput) {
-      // Sync color input with hex input
-      colorInput.addEventListener("input", function () {
-        hexInput.value = this.value;
-      });
-
-      // Sync hex input with color input
-      hexInput.addEventListener("input", function () {
-        if (/^#[0-9A-F]{6}$/i.test(this.value)) {
-          colorInput.value = this.value;
-        }
-      });
-    }
-
-    //Link code end here
-
-    //All font size code start here
-    const AllfontsizeSelect = document.getElementById("scAllFontSizeInput");
-    if (AllfontsizeSelect && !AllfontsizeSelect.dataset.initialized) {
-      AllfontsizeSelect.dataset.initialized = "true";
-
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        handleAllFontSizeClick(null, {
-          lastClickedElement,
-          selectedSingleTextType,
-          getTextType,
-          saveModifications,
-          selectedElement,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
-          showNotification,
-        });
-      }, 100);
-    }
-    //All font size code end here
-
-    //All text transform code start here
-    const AllTextTransformSelect = document.getElementById(
-      "squareCraftAllTextTransform"
-    );
-    if (AllTextTransformSelect && !AllTextTransformSelect.dataset.initialized) {
-      AllTextTransformSelect.dataset.initialized = "true";
-
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        handleAllTextTransformClick(null, {
-          lastClickedElement,
-          selectedSingleTextType,
-          getTextType,
-          saveModifications,
-          selectedElement,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
-          showNotification,
-        });
-      }, 100);
-    }
-    //All text transform code end here
-
-    //All text align code start here
-
-    const AlltextAlignContainer = document.getElementById(
-      "squareCraftAllTextAlign"
-    );
-    if (AlltextAlignContainer && !AlltextAlignContainer.dataset.initialized) {
-      AlltextAlignContainer.dataset.initialized = "true";
-
-      AlltextAlignContainer.querySelectorAll('[id^="scTextAlign"]').forEach(
-        (button) => {
-          button.addEventListener("click", (event) => {
-            handleAllTextAlignClick(event, {
+    textTransformLinkContainer
+      .querySelectorAll('[id^="scTextTransform"]')
+      .forEach((button) => {
+        button.addEventListener("click", (event) => {
+          const lastClickedElement = document.querySelector(".sc-selected");
+          if (lastClickedElement) {
+            handleTextTransformLinkClick(event, {
               lastClickedElement,
               selectedSingleTextType,
               addPendingModification,
               showNotification,
             });
+          }
+        });
+      });
+  }
+
+  // In squareCraft.js
+  const fontWeightLinkSelect = document.getElementById(
+    "squareCraftLinkFontWeight"
+  );
+  if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
+    console.log("Initializing font weight select for links");
+    fontWeightLinkSelect.dataset.initialized = "true";
+
+    fontWeightLinkSelect.addEventListener("change", function (event) {
+      event.preventDefault();
+      console.log("Font weight select changed");
+
+      const currentlySelectedBlock = document.querySelector(".sc-selected");
+      const selectedFontWeight = this.value;
+      console.log("Selected font weight:", selectedFontWeight);
+
+      if (!currentlySelectedBlock) {
+        showNotification(
+          "❌ Please select a block first fsfgsfgsfgsgfsgsg.",
+          "error"
+        );
+        this.value = "400";
+        return;
+      }
+
+      const selectedTab = document.querySelector(".sc-selected-tab");
+      if (!selectedTab) {
+        showNotification(
+          "❌ Please select a text type (h1, h2, p1 etc) first.",
+          "error"
+        );
+        this.value = "400";
+        return;
+      }
+
+      handleFontWeightLink(event, {
+        lastClickedElement: currentlySelectedBlock,
+        selectedSingleTextType: selectedSingleTextType,
+        addPendingModification,
+        showNotification,
+      });
+    });
+  }
+
+  // handleLinkTextHighlightClick(
+  //   event,
+  //   lastClickedElement,
+  //   applyStylesToElement,
+  //   {
+  //     handleAllTextColorClick,
+  //     lastClickedElement,
+  //     selectedSingleTextType,
+  //     addPendingModification: (blockId, css, tagType) => {
+  //       if (!pendingModifications.has(blockId)) {
+  //         pendingModifications.set(blockId, []);
+  //       }
+  //       pendingModifications.get(blockId).push({ css, tagType });
+  //     },
+  //     showNotification,
+  //   }
+  // );
+
+  // In squareCraft.js
+  const colorInput = document.getElementById("scTextHighLight");
+  const hexInput = document.getElementById("scTextHeighlightHex");
+
+  if (colorInput && hexInput) {
+    // Sync color input with hex input
+    colorInput.addEventListener("input", function () {
+      hexInput.value = this.value;
+    });
+
+    // Sync hex input with color input
+    hexInput.addEventListener("input", function () {
+      if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+        colorInput.value = this.value;
+      }
+    });
+  }
+
+  //Link code end here
+
+  //All font size code start here
+  const AllfontsizeSelect = document.getElementById("scAllFontSizeInput");
+  if (AllfontsizeSelect && !AllfontsizeSelect.dataset.initialized) {
+    AllfontsizeSelect.dataset.initialized = "true";
+
+    // Add a small delay to ensure the DOM is fully loaded
+    setTimeout(() => {
+      handleAllFontSizeClick(null, {
+        lastClickedElement,
+        selectedSingleTextType,
+        getTextType,
+        saveModifications,
+        selectedElement,
+        setSelectedElement: (val) => (selectedElement = val),
+        setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+        setLastClickedElement: (val) => (lastClickedElement = val),
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      });
+    }, 100);
+  }
+  //All font size code end here
+
+  //All text transform code start here
+  const AllTextTransformSelect = document.getElementById(
+    "squareCraftAllTextTransform"
+  );
+  if (AllTextTransformSelect && !AllTextTransformSelect.dataset.initialized) {
+    AllTextTransformSelect.dataset.initialized = "true";
+
+    // Add a small delay to ensure the DOM is fully loaded
+    setTimeout(() => {
+      handleAllTextTransformClick(null, {
+        lastClickedElement,
+        selectedSingleTextType,
+        getTextType,
+        saveModifications,
+        selectedElement,
+        setSelectedElement: (val) => (selectedElement = val),
+        setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+        setLastClickedElement: (val) => (lastClickedElement = val),
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      });
+    }, 100);
+  }
+  //All text transform code end here
+
+  //All text align code start here
+
+  const AlltextAlignContainer = document.getElementById(
+    "squareCraftAllTextAlign"
+  );
+  if (AlltextAlignContainer && !AlltextAlignContainer.dataset.initialized) {
+    AlltextAlignContainer.dataset.initialized = "true";
+
+    AlltextAlignContainer.querySelectorAll('[id^="scTextAlign"]').forEach(
+      (button) => {
+        button.addEventListener("click", (event) => {
+          handleAllTextAlignClick(event, {
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
           });
-        }
-      );
-    }
-
-    //All text align code end here
-
-    //All letter spacing code start here
-    const AllLetterSpacingSelect = document.getElementById(
-      "scLetterSpacingInput"
-    );
-    if (AllLetterSpacingSelect && !AllLetterSpacingSelect.dataset.initialized) {
-      AllLetterSpacingSelect.dataset.initialized = "true";
-
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        handleAllLetterSpacingClick(null, {
-          lastClickedElement,
-          selectedSingleTextType,
-          getTextType,
-          saveModifications,
-          selectedElement,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
-          showNotification,
         });
-      }, 100);
-    }
-    //All letter spacing code end here
-
-    //All line height code start here
-    const AllLineHeightSelect = document.getElementById("scLineHeightInput");
-    if (AllLineHeightSelect && !AllLineHeightSelect.dataset.initialized) {
-      AllLineHeightSelect.dataset.initialized = "true";
-
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        handleAllLineHeightClick(null, {
-          lastClickedElement,
-          selectedSingleTextType,
-          getTextType,
-          saveModifications,
-          selectedElement,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
-          showNotification,
-        });
-      }, 100);
-    }
-    //All line height code end here
-
-    //All font weight code start here
-
-    const AllFontWeightSelect = document.getElementById(
-      "squareCraftAllFontWeight"
+      }
     );
-    if (AllFontWeightSelect && !AllFontWeightSelect.dataset.initialized) {
-      AllFontWeightSelect.dataset.initialized = "true";
+  }
 
-      AllFontWeightSelect.addEventListener("change", (event) => {
-        handleAllFontWeightClick(event, {
+  //All text align code end here
+
+  //All letter spacing code start here
+  const AllLetterSpacingSelect = document.getElementById(
+    "scLetterSpacingInput"
+  );
+  if (AllLetterSpacingSelect && !AllLetterSpacingSelect.dataset.initialized) {
+    AllLetterSpacingSelect.dataset.initialized = "true";
+
+    // Add a small delay to ensure the DOM is fully loaded
+    setTimeout(() => {
+      handleAllLetterSpacingClick(null, {
+        lastClickedElement,
+        selectedSingleTextType,
+        getTextType,
+        saveModifications,
+        selectedElement,
+        setSelectedElement: (val) => (selectedElement = val),
+        setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+        setLastClickedElement: (val) => (lastClickedElement = val),
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      });
+    }, 100);
+  }
+  //All letter spacing code end here
+
+  //All line height code start here
+  const AllLineHeightSelect = document.getElementById("scLineHeightInput");
+  if (AllLineHeightSelect && !AllLineHeightSelect.dataset.initialized) {
+    AllLineHeightSelect.dataset.initialized = "true";
+
+    // Add a small delay to ensure the DOM is fully loaded
+    setTimeout(() => {
+      handleAllLineHeightClick(null, {
+        lastClickedElement,
+        selectedSingleTextType,
+        getTextType,
+        saveModifications,
+        selectedElement,
+        setSelectedElement: (val) => (selectedElement = val),
+        setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+        setLastClickedElement: (val) => (lastClickedElement = val),
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      });
+    }, 100);
+  }
+  //All line height code end here
+
+  //All font weight code start here
+
+  const AllFontWeightSelect = document.getElementById(
+    "squareCraftAllFontWeight"
+  );
+  if (AllFontWeightSelect && !AllFontWeightSelect.dataset.initialized) {
+    AllFontWeightSelect.dataset.initialized = "true";
+
+    AllFontWeightSelect.addEventListener("change", (event) => {
+      handleAllFontWeightClick(event, {
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification,
+        showNotification,
+      });
+
+      if (selectedSingleTextType) {
+        showNotification(
+          `Font weight applied to: ${selectedSingleTextType}`,
+          "success"
+        );
+      }
+    });
+  }
+
+  //All font weight code end here
+
+  //All text color code start here
+  const textColorDiv = document.getElementById("textColorPalate");
+  if (textColorDiv && !textColorDiv.dataset.initialized) {
+    textColorDiv.dataset.initialized = "true";
+
+    textColorDiv.addEventListener("click", (event) => {
+      handleTextColorClick(event, lastClickedElement, applyStylesToElement, {
+        handleAllTextColorClick,
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification,
+        showNotification,
+      });
+
+      if (selectedSingleTextType) {
+        showNotification(
+          `Text color applied to: ${selectedSingleTextType}`,
+          "success"
+        );
+      }
+    });
+  }
+
+  //All text color code end here
+
+  //All text highlight color code start here
+  const textHighlightColorDiv = document.getElementById(
+    "texHeightlistPalate"
+  );
+  if (textHighlightColorDiv && !textHighlightColorDiv.dataset.initialized) {
+    textHighlightColorDiv.dataset.initialized = "true";
+
+    textHighlightColorDiv.addEventListener("click", (event) => {
+      handleTextHighlightColorClick(
+        event,
+        lastClickedElement,
+        applyStylesToElement,
+        {
+          handleAllTextHighlightClick,
           lastClickedElement,
           selectedSingleTextType,
           addPendingModification,
           showNotification,
-        });
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `Font weight applied to: ${selectedSingleTextType}`,
-            "success"
-          );
         }
+      );
+
+      if (selectedSingleTextType) {
+        showNotification(
+          `Text color applied to: ${selectedSingleTextType}`,
+          "success"
+        );
+      }
+    });
+  }
+
+  //All text highlight color code end here
+
+  //All font family code start here
+  const allFontFamilySelect = document.getElementById(
+    "squareCraftAllFontFamily"
+  );
+  if (allFontFamilySelect && !allFontFamilySelect.dataset.initialized) {
+    allFontFamilySelect.dataset.initialized = "true";
+
+    allFontFamilySelect.addEventListener("change", (event) => {
+      handleAllFontFamilyClick(event, {
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
       });
-    }
+    });
+  }
 
-    //All font weight code end here
+  //All font family code end here
 
-    //All text color code start here
-    const textColorDiv = document.getElementById("textColorPalate");
-    if (textColorDiv && !textColorDiv.dataset.initialized) {
-      textColorDiv.dataset.initialized = "true";
+  //italic text color code start here
+  const ItalictextColorDiv = document.getElementById("textColorPalate");
+  if (ItalictextColorDiv && !ItalictextColorDiv.dataset.initialized) {
+    ItalictextColorDiv.dataset.initialized = "true";
 
-      textColorDiv.addEventListener("click", (event) => {
-        handleTextColorClick(event, lastClickedElement, applyStylesToElement, {
+    ItalictextColorDiv.addEventListener("click", (event) => {
+      handleItalicTextColorClickEvent(
+        event,
+        lastClickedElement,
+        applyStylesToElement,
+        {
           handleAllTextColorClick,
           lastClickedElement,
           selectedSingleTextType,
           addPendingModification,
           showNotification,
-        });
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `Text color applied to: ${selectedSingleTextType}`,
-            "success"
-          );
         }
-      });
-    }
-
-    //All text color code end here
-
-    //All text highlight color code start here
-    const textHighlightColorDiv = document.getElementById(
-      "texHeightlistPalate"
-    );
-    if (textHighlightColorDiv && !textHighlightColorDiv.dataset.initialized) {
-      textHighlightColorDiv.dataset.initialized = "true";
-
-      textHighlightColorDiv.addEventListener("click", (event) => {
-        handleTextHighlightColorClick(
-          event,
-          lastClickedElement,
-          applyStylesToElement,
-          {
-            handleAllTextHighlightClick,
-            lastClickedElement,
-            selectedSingleTextType,
-            addPendingModification,
-            showNotification,
-          }
-        );
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `Text color applied to: ${selectedSingleTextType}`,
-            "success"
-          );
-        }
-      });
-    }
-
-    //All text highlight color code end here
-
-    //All font family code start here
-    const allFontFamilySelect = document.getElementById(
-      "squareCraftAllFontFamily"
-    );
-    if (allFontFamilySelect && !allFontFamilySelect.dataset.initialized) {
-      allFontFamilySelect.dataset.initialized = "true";
-
-      allFontFamilySelect.addEventListener("change", (event) => {
-        handleAllFontFamilyClick(event, {
-          lastClickedElement,
-          selectedSingleTextType,
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
-          showNotification,
-        });
-      });
-    }
-
-    //All font family code end here
-
-    //italic text color code start here
-    const ItalictextColorDiv = document.getElementById("textColorPalate");
-    if (ItalictextColorDiv && !ItalictextColorDiv.dataset.initialized) {
-      ItalictextColorDiv.dataset.initialized = "true";
-
-      ItalictextColorDiv.addEventListener("click", (event) => {
-        handleItalicTextColorClickEvent(
-          event,
-          lastClickedElement,
-          applyStylesToElement,
-          {
-            handleAllTextColorClick,
-            lastClickedElement,
-            selectedSingleTextType,
-            addPendingModification,
-            showNotification,
-          }
-        );
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `Text color applied to: ${selectedSingleTextType}`,
-            "success"
-          );
-        }
-      });
-    }
-
-    //italic text color code end here
-
-    //italic font size code start here
-
-    const ItalicFontSizeSelect = document.getElementById(
-      "scFontSizeItalicInput"
-    );
-    if (ItalicFontSizeSelect && !ItalicFontSizeSelect.dataset.initialized) {
-      ItalicFontSizeSelect.dataset.initialized = "true";
-
-      ItalicFontSizeSelect.addEventListener("change", (event) => {
-        handleItalicFontSizeClick(event, {
-          lastClickedElement,
-          selectedSingleTextType,
-          addPendingModification,
-          showNotification,
-        });
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `Font Size applied to: ${selectedSingleTextType}`,
-            "success"
-          );
-        }
-      });
-    }
-
-    //italic font weight code start here
-
-    const ItalicFontWeightSelect = document.getElementById(
-      "squareCraftItalicFontWeight"
-    );
-    if (ItalicFontWeightSelect && !ItalicFontWeightSelect.dataset.initialized) {
-      ItalicFontWeightSelect.dataset.initialized = "true";
-
-      ItalicFontWeightSelect.addEventListener("change", (event) => {
-        handleItalicFontWeightClick(event, {
-          lastClickedElement,
-          selectedSingleTextType,
-          addPendingModification,
-          showNotification,
-        });
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `Font weight applied to: ${selectedSingleTextType}`,
-            "success"
-          );
-        }
-      });
-    }
-
-    //italic font weight code end here
-
-    //Italic text transform code start here
-    const ItalicTextTransformSelect = document.getElementById(
-      "squareCraftItalicTextTransform"
-    );
-    if (
-      ItalicTextTransformSelect &&
-      !ItalicTextTransformSelect.dataset.initialized
-    ) {
-      ItalicTextTransformSelect.dataset.initialized = "true";
-
-      // Add a small delay to ensure the DOM is fully loaded
-      setTimeout(() => {
-        handleItalicTextTransformClick(null, {
-          lastClickedElement,
-          selectedSingleTextType,
-          getTextType,
-          saveModifications,
-          selectedElement,
-          setSelectedElement: (val) => (selectedElement = val),
-          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-          setLastClickedElement: (val) => (lastClickedElement = val),
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
-          showNotification,
-        });
-      }, 100);
-    }
-    //Italic text transform code end here
-
-    //Italic text highlight code start here
-    const ItalictextHighlightColorDiv = document.getElementById(
-      "ItalictextHighlightColorPalate"
-    );
-    if (
-      ItalictextHighlightColorDiv &&
-      !ItalictextHighlightColorDiv.dataset.initialized
-    ) {
-      ItalictextHighlightColorDiv.dataset.initialized = "true";
-
-      ItalictextHighlightColorDiv.addEventListener("click", (event) => {
-        handleItalicTextHeighlightClickEvent(
-          event,
-          lastClickedElement,
-          applyStylesToElement,
-          {
-            handleAllTextHighlightClick,
-            lastClickedElement,
-            selectedSingleTextType,
-            addPendingModification,
-            showNotification,
-          }
-        );
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `Text color applied to: ${selectedSingleTextType}`,
-            "success"
-          );
-        }
-      });
-    }
-
-    //Italic text highlight code end here
-
-    //bold text color code start here
-
-    const BoldtextColorDiv = document.getElementById("BoldtextColorPalate");
-    if (BoldtextColorDiv && !BoldtextColorDiv.dataset.initialized) {
-      BoldtextColorDiv.dataset.initialized = "true";
-
-      BoldtextColorDiv.addEventListener("click", (event) => {
-        handleBoldTextColorClick(
-          event,
-          lastClickedElement,
-          applyStylesToElement,
-          {
-            handleAllTextColorClick,
-            lastClickedElement,
-            selectedSingleTextType,
-            addPendingModification,
-            showNotification,
-          }
-        );
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `Bold Text color applied to: ${selectedSingleTextType}`,
-            "success"
-          );
-        }
-      });
-    }
-
-    //bold text color code end here
-
-    //bold text highlight code start here
-    const BoldtextHighlightDiv = document.getElementById(
-      "BoldtextHighlightPalate"
-    );
-    if (BoldtextHighlightDiv && !BoldtextHighlightDiv.dataset.initialized) {
-      BoldtextHighlightDiv.dataset.initialized = "true";
-
-      BoldtextHighlightDiv.addEventListener("click", (event) => {
-        handleBoldTextHighlightClick(
-          event,
-          lastClickedElement,
-          applyStylesToElement,
-          {
-            handleAllTextColorClick,
-            lastClickedElement,
-            selectedSingleTextType,
-            addPendingModification,
-            showNotification,
-          }
-        );
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `Bold Text color applied to: ${selectedSingleTextType}`,
-            "success"
-          );
-        }
-      });
-    }
-    //bold text highlight code end here
-
-    //link text highlight code start here
-    // const LinktextHighlightColorDiv = document.getElementById(
-    //   "LinktextHighlightColorPalate"
-    // );
-    // if (
-    //   LinktextHighlightColorDiv &&
-    //   !LinktextHighlightColorDiv.dataset.initialized
-    // ) {
-    //   LinktextHighlightColorDiv.dataset.initialized = "true";
-
-    //   LinktextHighlightColorDiv.addEventListener("click", (event) => {
-    //     handleLinkTextHighlightClick(
-    //       event,
-    //       lastClickedElement,
-    //       applyStylesToElement,
-    //       {
-    //         handleAllTextHighlightClick,
-    //         lastClickedElement,
-    //         selectedSingleTextType,
-    //         addPendingModification,
-    //         showNotification,
-    //       }
-    //     );
-
-    //     if (selectedSingleTextType) {
-    //       showNotification(
-    //         `Text color applied to: ${selectedSingleTextType}`,
-    //         "success"
-    //       );
-    //     }
-    //   });
-    // }
-
-    const LinktextHighlightColorDiv = document.getElementById(
-      "LinktextHighlightColorPalate"
-    );
-    if (
-      LinktextHighlightColorDiv &&
-      !LinktextHighlightColorDiv.dataset.initialized
-    ) {
-      LinktextHighlightColorDiv.dataset.initialized = "true";
-
-      // Remove any existing listeners
-      const newDiv = LinktextHighlightColorDiv.cloneNode(true);
-      LinktextHighlightColorDiv.parentNode.replaceChild(
-        newDiv,
-        LinktextHighlightColorDiv
       );
 
-      newDiv.addEventListener("click", (event) => {
-        handleLinkTextHighlightClick(
-          event,
-          lastClickedElement,
-          applyStylesToElement,
-          {
-            handleAllTextHighlightClick,
-            lastClickedElement,
-            selectedSingleTextType,
-            addPendingModification,
-            showNotification,
-          }
+      if (selectedSingleTextType) {
+        showNotification(
+          `Text color applied to: ${selectedSingleTextType}`,
+          "success"
         );
-      });
-    }
-    //link text highlight code end here
-
-    //Image border controls
-    // Initialize border controls
-    const ImageBorderAllControls = document.getElementById("imageSection");
-    if (ImageBorderAllControls && !ImageBorderAllControls.dataset.initialized) {
-      ImageBorderAllControls.dataset.initialized = "true";
-
-      ImageBorderAllControls.addEventListener("click", () => {
-        const selectedImage = document.querySelector(".sc-selected-image");
-
-        if (!selectedImage) {
-          showNotification("Please select an image first", "error");
-          return;
-        }
-
-        // ✅ Initialize overlay controls properly
-        // const overlayController = InitImageOverLayControls(themeColors);
-        // overlayController.init(selectedImage);
-
-        const overlayController = InitImageOverLayControls(themeColors, {
-          addPendingModification,
-          saveImageOverlayModifications,
-          token,
-          userId,
-          widgetId,
-        });
-        if (overlayController) {
-          overlayController.init(selectedImage);
-        }
-
-        setTimeout(() => {
-          handleImageBorderControlsClick(null, {
-            getTextType,
-            selectedElement,
-            setSelectedElement: (val) => (selectedElement = val),
-            lastClickedElement,
-            setLastClickedElement: (val) => (lastClickedElement = val),
-            setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-            selectedSingleTextType,
-            setSelectedSingleTextType: (val) => (selectedSingleTextType = val),
-            showNotification,
-            saveModifications,
-            addPendingModification: (blockId, css, tagType) => {
-              if (!pendingModifications.has(blockId)) {
-                pendingModifications.set(blockId, []);
-              }
-              pendingModifications.get(blockId).push({ css, tagType });
-            },
-          });
-        }, 100);
-
-        initImageBorderControls(selectedImage);
-        // initImageShadowControls(selectedImage);
-        initImageShadowControls(() => selectedImage);
-
-        showNotification("Border applied to image", "success");
-      });
-    }
-
-    //Image border controls end here
-
-    //Image overlay controls start here
-    const overlayControls = InitImageOverLayControls(themeColors, {
-      addPendingModification,
-      saveImageOverlayModifications,
-      token,
-      userId,
-      widgetId,
-    });
-
-    document.addEventListener("click", (e) => {
-      const block = e.target.closest('[id^="block-"]');
-      if (!block) return;
-
-      const imageContent = block.querySelector(".sqs-image-content");
-      if (imageContent && overlayControls) {
-        overlayControls.init(block);
       }
     });
-
-    //Image overlay controls end here
-  });
-
-  observer.observe(parent.document.body, { childList: true, subtree: true });
-
-  addHeadingEventListeners();
-
-  try {
-    const { injectNavbarIcon } = await import(
-      "https://goswami34.github.io/squareCraft-widget/injectNavbarIcon.js"
-    );
-    injectNavbarIcon();
-  } catch (error) {
-    console.error("🚨 Failed to load navbar icon script", error);
   }
 
-  async function toggleWidgetVisibility(event) {
-    event.stopPropagation();
-    const clickedBlock = event?.target?.closest('[id^="block-"]');
-    if (!clickedBlock) {
-      return;
-    }
+  //italic text color code end here
 
-    if (!widgetLoaded) {
-      await createWidget(clickedBlock);
-      waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
-        .then(() => {
-          handleAndDetect(clickedBlock);
-        })
-        .catch((error) => {
-          console.error(error.message);
-        });
-    } else {
-      widgetContainer.style.display =
-        widgetContainer.style.display === "none" ? "block" : "none";
-      waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
-        .then(() => {
-          handleAndDetect(clickedBlock);
-        })
-        .catch((error) => {
-          console.error(error.message);
-        });
-    }
+  //italic font size code start here
+
+  const ItalicFontSizeSelect = document.getElementById(
+    "scFontSizeItalicInput"
+  );
+  if (ItalicFontSizeSelect && !ItalicFontSizeSelect.dataset.initialized) {
+    ItalicFontSizeSelect.dataset.initialized = "true";
+
+    ItalicFontSizeSelect.addEventListener("change", (event) => {
+      handleItalicFontSizeClick(event, {
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification,
+        showNotification,
+      });
+
+      if (selectedSingleTextType) {
+        showNotification(
+          `Font Size applied to: ${selectedSingleTextType}`,
+          "success"
+        );
+      }
+    });
   }
 
-  function handleAndDetect(clickedBlock) {
-    handleBlockClick(
-      { target: clickedBlock },
-      {
+  //italic font weight code start here
+
+  const ItalicFontWeightSelect = document.getElementById(
+    "squareCraftItalicFontWeight"
+  );
+  if (ItalicFontWeightSelect && !ItalicFontWeightSelect.dataset.initialized) {
+    ItalicFontWeightSelect.dataset.initialized = "true";
+
+    ItalicFontWeightSelect.addEventListener("change", (event) => {
+      handleItalicFontWeightClick(event, {
+        lastClickedElement,
+        selectedSingleTextType,
+        addPendingModification,
+        showNotification,
+      });
+
+      if (selectedSingleTextType) {
+        showNotification(
+          `Font weight applied to: ${selectedSingleTextType}`,
+          "success"
+        );
+      }
+    });
+  }
+
+  //italic font weight code end here
+
+  //Italic text transform code start here
+  const ItalicTextTransformSelect = document.getElementById(
+    "squareCraftItalicTextTransform"
+  );
+  if (
+    ItalicTextTransformSelect &&
+    !ItalicTextTransformSelect.dataset.initialized
+  ) {
+    ItalicTextTransformSelect.dataset.initialized = "true";
+
+    // Add a small delay to ensure the DOM is fully loaded
+    setTimeout(() => {
+      handleItalicTextTransformClick(null, {
+        lastClickedElement,
+        selectedSingleTextType,
         getTextType,
+        saveModifications,
         selectedElement,
-        setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
         setSelectedElement: (val) => (selectedElement = val),
         setLastClickedBlockId: (val) => (lastClickedBlockId = val),
         setLastClickedElement: (val) => (lastClickedElement = val),
-        setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
-        setLastActiveAlignmentElement: (val) =>
-          (lastActiveAlignmentElement = val),
-      }
-    );
-    detectBlockElementTypes(clickedBlock);
-  }
-
-  async function createWidget(clickedBlock) {
-    try {
-      const module = await import(
-        "https://goswami34.github.io/squareCraft-widget/html.js"
-      );
-      const htmlString = module.html();
-
-      if (typeof htmlString === "string" && htmlString.trim().length > 0) {
-        loadWidgetFromString(htmlString, clickedBlock);
-        setTimeout(() => {
-          if (typeof module.initToggleSwitch === "function") {
-            module.initToggleSwitch();
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
           }
-        }, 200);
-      }
-    } catch (err) {
-      console.error("🚨 Error loading HTML module:", err);
-    }
-  }
-
-  function waitForElement(selector, timeout = 3000) {
-    return new Promise((resolve, reject) => {
-      const el = document.querySelector(selector);
-      if (el) {
-        resolve(el);
-        return;
-      }
-
-      const observer = new MutationObserver(() => {
-        const el = document.querySelector(selector);
-        if (el) {
-          resolve(el);
-          observer.disconnect();
-        }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
       });
+    }, 100);
+  }
+  //Italic text transform code end here
 
-      observer.observe(document.body, { childList: true, subtree: true });
+  //Italic text highlight code start here
+  const ItalictextHighlightColorDiv = document.getElementById(
+    "ItalictextHighlightColorPalate"
+  );
+  if (
+    ItalictextHighlightColorDiv &&
+    !ItalictextHighlightColorDiv.dataset.initialized
+  ) {
+    ItalictextHighlightColorDiv.dataset.initialized = "true";
 
-      setTimeout(() => {
-        observer.disconnect();
-        reject(new Error(`Timeout: Element ${selector} not found`));
-      }, timeout);
+    ItalictextHighlightColorDiv.addEventListener("click", (event) => {
+      handleItalicTextHeighlightClickEvent(
+        event,
+        lastClickedElement,
+        applyStylesToElement,
+        {
+          handleAllTextHighlightClick,
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        }
+      );
+
+      if (selectedSingleTextType) {
+        showNotification(
+          `Text color applied to: ${selectedSingleTextType}`,
+          "success"
+        );
+      }
     });
   }
 
-  function loadWidgetFromString(htmlString, clickedBlock) {
-    if (!widgetContainer) {
-      widgetContainer = document.createElement("div");
-      widgetContainer.id = "sc-widget-container";
-      widgetContainer.classList.add(
-        "sc-fixed",
-        "sc-text-color-white",
-        "sc-universal",
-        "sc-z-9999"
+  //Italic text highlight code end here
+
+  //bold text color code start here
+
+  const BoldtextColorDiv = document.getElementById("BoldtextColorPalate");
+  if (BoldtextColorDiv && !BoldtextColorDiv.dataset.initialized) {
+    BoldtextColorDiv.dataset.initialized = "true";
+
+    BoldtextColorDiv.addEventListener("click", (event) => {
+      handleBoldTextColorClick(
+        event,
+        lastClickedElement,
+        applyStylesToElement,
+        {
+          handleAllTextColorClick,
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        }
       );
 
-      // ✅ Inject your CSS file before setting innerHTML
-      const styleLink = document.createElement("link");
-      styleLink.rel = "stylesheet";
-      styleLink.type = "text/css";
-      styleLink.href =
-        "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
-      widgetContainer.appendChild(styleLink);
-
-      // ✅ Then set HTML content
-      const contentWrapper = document.createElement("div");
-      contentWrapper.innerHTML = htmlString;
-      widgetContainer.appendChild(contentWrapper);
-
-      widgetContainer.style.display = "block";
-      document.body.appendChild(widgetContainer);
-
-      initImageMaskControls(() => selectedElement);
-      makeWidgetDraggable();
-      widgetLoaded = true;
-      initImageSectionToggleControls();
-      // initButtonSectionToggleControls();
-      // initImageUploadPreview(() => selectedElement);
-
-      if (clickedBlock) {
-        waitForElement("#typoSection, #imageSection")
-          .then(() => {
-            handleBlockClick(
-              { target: clickedBlock },
-              {
-                getTextType,
-                selectedElement,
-                setSelectedSingleTextType: (tag) =>
-                  (selectedSingleTextType = tag),
-                setSelectedElement: (val) => (selectedElement = val),
-                setLastClickedBlockId: (val) => (lastClickedBlockId = val),
-                setLastClickedElement: (val) => (lastClickedElement = val),
-                setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
-                setLastActiveAlignmentElement: (val) =>
-                  (lastActiveAlignmentElement = val),
-              }
-            );
-            detectBlockElementTypes(clickedBlock);
-          })
-          .catch((error) => {
-            console.error(error.message);
-          });
+      if (selectedSingleTextType) {
+        showNotification(
+          `Bold Text color applied to: ${selectedSingleTextType}`,
+          "success"
+        );
       }
-    }
+    });
   }
 
-  // function makeWidgetDraggable() {
-  //   if (!widgetContainer) return;
+  //bold text color code end here
 
-  //   widgetContainer.style.position = "absolute";
-  //   widgetContainer.style.zIndex = "999";
-  //   widgetContainer.style.left = "10px";
-  //   widgetContainer.style.top = "10px";
+  //bold text highlight code start here
+  const BoldtextHighlightDiv = document.getElementById(
+    "BoldtextHighlightPalate"
+  );
+  if (BoldtextHighlightDiv && !BoldtextHighlightDiv.dataset.initialized) {
+    BoldtextHighlightDiv.dataset.initialized = "true";
 
-  //   let offsetX = 0,
-  //     offsetY = 0,
-  //     isDragging = false;
+    BoldtextHighlightDiv.addEventListener("click", (event) => {
+      handleBoldTextHighlightClick(
+        event,
+        lastClickedElement,
+        applyStylesToElement,
+        {
+          handleAllTextColorClick,
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        }
+      );
 
-  //   function startDrag(event) {
-  //     const draggableElement = event.target.closest("#sc-grabbing");
+      if (selectedSingleTextType) {
+        showNotification(
+          `Bold Text color applied to: ${selectedSingleTextType}`,
+          "success"
+        );
+      }
+    });
+  }
+  //bold text highlight code end here
 
-  //     if (!draggableElement || event.target.closest(".sc-dropdown")) {
-  //       return;
+  //link text highlight code start here
+  // const LinktextHighlightColorDiv = document.getElementById(
+  //   "LinktextHighlightColorPalate"
+  // );
+  // if (
+  //   LinktextHighlightColorDiv &&
+  //   !LinktextHighlightColorDiv.dataset.initialized
+  // ) {
+  //   LinktextHighlightColorDiv.dataset.initialized = "true";
+
+  //   LinktextHighlightColorDiv.addEventListener("click", (event) => {
+  //     handleLinkTextHighlightClick(
+  //       event,
+  //       lastClickedElement,
+  //       applyStylesToElement,
+  //       {
+  //         handleAllTextHighlightClick,
+  //         lastClickedElement,
+  //         selectedSingleTextType,
+  //         addPendingModification,
+  //         showNotification,
+  //       }
+  //     );
+
+  //     if (selectedSingleTextType) {
+  //       showNotification(
+  //         `Text color applied to: ${selectedSingleTextType}`,
+  //         "success"
+  //       );
   //     }
-
-  //     event.preventDefault();
-  //     isDragging = true;
-
-  //     let clientX = event.clientX || event.touches?.[0]?.clientX;
-  //     let clientY = event.clientY || event.touches?.[0]?.clientY;
-
-  //     offsetX = clientX - widgetContainer.getBoundingClientRect().left;
-  //     offsetY = clientY - widgetContainer.getBoundingClientRect().top;
-
-  //     document.addEventListener("mousemove", moveAt);
-  //     document.addEventListener("mouseup", stopDragging);
-  //     document.addEventListener("touchmove", moveAt);
-  //     document.addEventListener("touchend", stopDragging);
-  //   }
-
-  //   function moveAt(event) {
-  //     if (!isDragging) return;
-
-  //     let clientX = event.clientX || event.touches?.[0]?.clientX;
-  //     let clientY = event.clientY || event.touches?.[0]?.clientY;
-
-  //     let newX = clientX - offsetX;
-  //     let newY = clientY - offsetY;
-
-  //     let maxX = window.innerWidth - widgetContainer.offsetWidth;
-  //     let maxY = window.innerHeight - widgetContainer.offsetHeight;
-
-  //     newX = Math.max(0, Math.min(maxX, newX));
-  //     newY = Math.max(0, Math.min(maxY, newY));
-
-  //     widgetContainer.style.left = `${newX}px`;
-  //     widgetContainer.style.top = `${newY}px`;
-  //   }
-
-  //   function stopDragging() {
-  //     isDragging = false;
-  //     document.removeEventListener("mousemove", moveAt);
-  //     document.removeEventListener("mouseup", stopDragging);
-  //     document.removeEventListener("touchmove", moveAt);
-  //     document.removeEventListener("touchend", stopDragging);
-  //   }
-
-  //   widgetContainer.removeEventListener("mousedown", startDrag);
-  //   widgetContainer.removeEventListener("touchstart", startDrag);
-
-  //   widgetContainer.addEventListener("mousedown", startDrag);
-  //   widgetContainer.addEventListener("touchstart", startDrag);
+  //   });
   // }
 
-  function makeWidgetDraggable() {
-    if (!widgetContainer) return;
-    widgetContainer.style.position = "absolute";
-    widgetContainer.style.zIndex = "999";
-    widgetContainer.style.left = "10px";
-    widgetContainer.style.top = "10px";
-    let offsetX = 0,
-      offsetY = 0,
-      isDragging = false;
-    function startDrag(event) {
-      const draggableElement = event.target.closest("#sc-grabbing");
-      if (!draggableElement || event.target.closest(".sc-dropdown")) return;
-      event.preventDefault();
-      isDragging = true;
-      let clientX = event.clientX || event.touches?.[0]?.clientX;
-      let clientY = event.clientY || event.touches?.[0]?.clientY;
-      offsetX = clientX - widgetContainer.getBoundingClientRect().left;
-      offsetY = clientY - widgetContainer.getBoundingClientRect().top;
-      document.addEventListener("mousemove", moveAt);
-      document.addEventListener("mouseup", stopDragging);
-      document.addEventListener("touchmove", moveAt);
-      document.addEventListener("touchend", stopDragging);
-    }
-    function moveAt(event) {
-      if (!isDragging) return;
-      let clientX = event.clientX || event.touches?.[0]?.clientX;
-      let clientY = event.clientY || event.touches?.[0]?.clientY;
-      const newX = clientX - offsetX;
-      const newY = clientY - offsetY;
-      widgetContainer.style.left = `${newX}px`;
-      widgetContainer.style.top = `${newY}px`;
-    }
-    function stopDragging() {
-      isDragging = false;
-      document.removeEventListener("mousemove", moveAt);
-      document.removeEventListener("mouseup", stopDragging);
-      document.removeEventListener("touchmove", moveAt);
-      document.removeEventListener("touchend", stopDragging);
-    }
-    widgetContainer.removeEventListener("mousedown", startDrag);
-    widgetContainer.removeEventListener("touchstart", startDrag);
-    widgetContainer.addEventListener("mousedown", startDrag);
-    widgetContainer.addEventListener("touchstart", startDrag);
+  const LinktextHighlightColorDiv = document.getElementById(
+    "LinktextHighlightColorPalate"
+  );
+  if (
+    LinktextHighlightColorDiv &&
+    !LinktextHighlightColorDiv.dataset.initialized
+  ) {
+    LinktextHighlightColorDiv.dataset.initialized = "true";
+
+    // Remove any existing listeners
+    const newDiv = LinktextHighlightColorDiv.cloneNode(true);
+    LinktextHighlightColorDiv.parentNode.replaceChild(
+      newDiv,
+      LinktextHighlightColorDiv
+    );
+
+    newDiv.addEventListener("click", (event) => {
+      handleLinkTextHighlightClick(
+        event,
+        lastClickedElement,
+        applyStylesToElement,
+        {
+          handleAllTextHighlightClick,
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        }
+      );
+    });
   }
+  //link text highlight code end here
+
+  //Image border controls
+  // Initialize border controls
+  const ImageBorderAllControls = document.getElementById("imageSection");
+  if (ImageBorderAllControls && !ImageBorderAllControls.dataset.initialized) {
+    ImageBorderAllControls.dataset.initialized = "true";
+
+    ImageBorderAllControls.addEventListener("click", () => {
+      const selectedImage = document.querySelector(".sc-selected-image");
+
+      if (!selectedImage) {
+        showNotification("Please select an image first", "error");
+        return;
+      }
+
+      // ✅ Initialize overlay controls properly
+      // const overlayController = InitImageOverLayControls(themeColors);
+      // overlayController.init(selectedImage);
+
+      const overlayController = InitImageOverLayControls(themeColors, {
+        addPendingModification,
+        saveImageOverlayModifications,
+        token,
+        userId,
+        widgetId,
+      });
+      if (overlayController) {
+        overlayController.init(selectedImage);
+      }
+
+      setTimeout(() => {
+        handleImageBorderControlsClick(null, {
+          getTextType,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          lastClickedElement,
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          selectedSingleTextType,
+          setSelectedSingleTextType: (val) => (selectedSingleTextType = val),
+          showNotification,
+          saveModifications,
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+        });
+      }, 100);
+
+      initImageBorderControls(selectedImage);
+      // initImageShadowControls(selectedImage);
+      initImageShadowControls(() => selectedImage);
+
+      showNotification("Border applied to image", "success");
+    });
+  }
+
+  //Image border controls end here
+
+  //Image overlay controls start here
+  const overlayControls = InitImageOverLayControls(themeColors, {
+    addPendingModification,
+    saveImageOverlayModifications,
+    token,
+    userId,
+    widgetId,
+  });
+
+  document.addEventListener("click", (e) => {
+    const block = e.target.closest('[id^="block-"]');
+    if (!block) return;
+
+    const imageContent = block.querySelector(".sqs-image-content");
+    if (imageContent && overlayControls) {
+      overlayControls.init(block);
+    }
+  });
+
+  //Image overlay controls end here
 
   document.body.addEventListener("click", (e) => {
     const isInsideWidget = widgetContainer?.contains(e.target);
