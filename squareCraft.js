@@ -2840,6 +2840,19 @@ let pendingModifications = new Map();
   window.addEventListener("resize", adjustWidgetPosition);
   adjustWidgetPosition();
 
+  function toggleWidgetVisibility(event) {
+    if (!widgetContainer) {
+      console.warn("❌ Widget container not found");
+      return;
+    }
+
+    const currentDisplay = widgetContainer.style.display;
+    widgetContainer.style.display = currentDisplay === "none" ? "block" : "none";
+
+    // Adjust position after toggling
+    adjustWidgetPosition();
+  }
+
   function injectIcon() {
     async function waitForTargets(selector, maxRetries = 10, delay = 500) {
       for (let attempt = 0; attempt < maxRetries; attempt++) {
