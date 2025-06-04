@@ -1916,8 +1916,13 @@ let pendingModifications = new Map();
     }
 
     try {
+      // Remove any spaces from the parameters
+      const cleanUserId = userId.trim();
+      const cleanWidgetId = widgetId.trim();
+      const cleanPageId = pageId.trim();
+
       const response = await fetch(
-        `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
+        `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
