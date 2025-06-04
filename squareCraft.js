@@ -1,6 +1,23 @@
 let pendingModifications = new Map();
 // let selectedElement = null;
 
+// Define toggleWidgetVisibility in global scope
+function toggleWidgetVisibility(event) {
+  const widgetContainer = document.getElementById("sc-widget-container");
+  if (!widgetContainer) {
+    console.warn("❌ Widget container not found");
+    return;
+  }
+
+  const currentDisplay = widgetContainer.style.display;
+  widgetContainer.style.display = currentDisplay === "none" ? "block" : "none";
+
+  // Adjust position after toggling
+  if (typeof adjustWidgetPosition === 'function') {
+    adjustWidgetPosition();
+  }
+}
+
 (async function squareCraft() {
   const Url = parent.document.location.href;
   console.log("parent", Url);
@@ -2839,19 +2856,6 @@ let pendingModifications = new Map();
 
   window.addEventListener("resize", adjustWidgetPosition);
   adjustWidgetPosition();
-
-  function toggleWidgetVisibility(event) {
-    if (!widgetContainer) {
-      console.warn("❌ Widget container not found");
-      return;
-    }
-
-    const currentDisplay = widgetContainer.style.display;
-    widgetContainer.style.display = currentDisplay === "none" ? "block" : "none";
-
-    // Adjust position after toggling
-    adjustWidgetPosition();
-  }
 
   function injectIcon() {
     async function waitForTargets(selector, maxRetries = 10, delay = 500) {
