@@ -85,29 +85,14 @@ let pendingModifications = new Map();
       document.head.appendChild(styleTag);
     }
 
-    // Check if this is an overlay style
-    if (css.selector && css.styles) {
-      // This is an overlay style
-      let cssText = `${css.selector} { `;
-      Object.entries(css.styles).forEach(([prop, value]) => {
-        if (value !== null && value !== undefined && value !== "null") {
-          cssText += `${prop}: ${value} !important; `;
-        }
-      });
-      cssText += "}";
-      styleTag.innerHTML = cssText;
-      console.log(`✅ Applied overlay styles with selector: ${css.selector}`);
-    } else {
-      // This is a regular style
-      let cssText = `#${elementId}, #${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} p { `;
-      Object.keys(css).forEach((prop) => {
-        cssText += `${prop}: ${css[prop]} !important; `;
-      });
-      cssText += "}";
-      styleTag.innerHTML = cssText;
-    }
-  }
+    let cssText = `#${elementId}, #${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} p { `;
+    Object.keys(css).forEach((prop) => {
+      cssText += `${prop}: ${css[prop]} !important; `;
+    });
+    cssText += "}";
 
+    styleTag.innerHTML = cssText;
+  }
   const { getTextType } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/utils/getTextType.js"
   );
@@ -141,7 +126,9 @@ let pendingModifications = new Map();
   // const { initButtonSectionToggleControls } = await import(
   //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonSectionToggleControls/initButtonSectionToggleControls.js"
   // );
-  
+  // const { initImageUploadPreview } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonSectionToggleControls/initImageUploadPreview.js"
+  // );
   const { initImageMaskControls } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/initImageMaskControls.js"
   );
