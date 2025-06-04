@@ -1902,6 +1902,67 @@ let pendingModifications = new Map();
     }
   }
 
+  async function fetchImageOverlayModifications() {
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message);
+
+      const elements = result.elements || [];
+
+      elements.forEach(({ elementId, css }) => {
+        if (!css || !elementId) return;
+
+        const selector = `#${elementId} .sqs-image-content > :nth-child(-n+2)::before`;
+        const styleTagId = `sc-overlay-style-${elementId}`;
+        
+        let styleTag = document.getElementById(styleTagId);
+        if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = styleTagId;
+          document.head.appendChild(styleTag);
+        }
+
+        let cssText = `${selector} {`;
+        Object.entries(css).forEach(([prop, value]) => {
+          if (value !== null && value !== undefined && value !== "null") {
+            cssText += `${prop}: ${value} !important; `;
+          }
+        });
+        cssText += "}";
+
+        styleTag.textContent = cssText;
+
+        const block = document.getElementById(elementId);
+        if (block) block.classList.add("sc-overlay-styled");
+      });
+
+      console.log("✅ Applied overlay styles to all image elements");
+    } catch (error) {
+      console.error("❌ Failed to fetch image overlay modifications:", error.message);
+    }
+  }
+
   window.addEventListener("load", async () => {
     await fetchModifications();
     // await fetchImageModifications(lastClickedBlockId);
@@ -1923,6 +1984,8 @@ let pendingModifications = new Map();
     if (lastClickedBlockId) {
       await fetchImageModifications(lastClickedBlockId);
     }
+
+    await fetchImageOverlayModifications();
   });
 
   async function addHeadingEventListeners() {
@@ -1963,6 +2026,10 @@ let pendingModifications = new Map();
 
     if (elementId) {
       fetchImageModifications(elementId);
+    }
+
+    if (lastClickedBlockId) {
+      fetchImageOverlayModifications(elementId)
     }
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
@@ -3239,6 +3306,10 @@ let pendingModifications = new Map();
       if (lastClickedBlockId) {
         fetchImageModifications(lastClickedBlockId);
         clearInterval(retryInterval);
+      }
+
+      if (lastClickedBlockId) {
+        fetchImageOverlayModifications(lastClickedBlockId);
       }
       if (--retries <= 0) clearInterval(retryInterval);
     }, 300);
