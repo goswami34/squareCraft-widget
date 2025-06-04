@@ -1979,7 +1979,10 @@ let pendingModifications = new Map();
       await fetchImageModifications(lastClickedBlockId);
     }
 
-    await fetchImageOverlayModifications();
+    if (lastClickedBlockId) {
+      await fetchImageOverlayModifications(lastClickedBlockId);
+    }
+
   });
 
   async function addHeadingEventListeners() {
@@ -2022,7 +2025,7 @@ let pendingModifications = new Map();
       fetchImageModifications(elementId);
     }
 
-    if (lastClickedBlockId) {
+    if (elementId) {
       fetchImageOverlayModifications(elementId)
     }
 
