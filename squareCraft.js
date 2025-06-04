@@ -2023,7 +2023,34 @@ let pendingModifications = new Map();
       await fetchImageModifications(lastClickedBlockId);
     }
 
+    // await fetchImageOverlayModifications();
+  });
+
+
+
+  window.addEventListener("load", async () => {
     await fetchImageOverlayModifications();
+    // await fetchImageModifications(lastClickedBlockId);
+
+    // if (lastClickedBlockId) {
+    //   await fetchImageModifications(lastClickedBlockId);
+    // }
+
+    // Fallback: Auto-detect first image block on page load
+    if (!lastClickedBlockId) {
+      const fallbackBlock = document
+        .querySelector('[id^="block-"] img')
+        ?.closest('[id^="block-"]');
+      if (fallbackBlock) {
+        lastClickedBlockId = fallbackBlock.id;
+      }
+    }
+
+    if (lastClickedBlockId) {
+      await fetchImageOverlayModifications(lastClickedBlockId);
+    }
+
+    // await fetchImageOverlayModifications();
   });
 
   async function addHeadingEventListeners() {
