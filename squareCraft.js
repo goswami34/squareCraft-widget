@@ -1911,7 +1911,12 @@ let pendingModifications = new Map();
       ?.getAttribute("data-page-sections");
 
     if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
+      console.warn("⚠️ Missing credentials or page ID", {
+        userId: !!userId,
+        token: !!token,
+        widgetId: !!widgetId,
+        pageId: !!pageId
+      });
       return;
     }
 
@@ -1921,22 +1926,43 @@ let pendingModifications = new Map();
       const cleanWidgetId = widgetId.trim();
       const cleanPageId = pageId.trim();
 
+      console.log("🔍 Fetching overlay modifications with params:", {
+        userId: cleanUserId,
+        widgetId: cleanWidgetId,
+        pageId: cleanPageId
+      });
+
       const response = await fetch(
         `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}`,
         {
+          method: 'GET',
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
       );
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message);
+      console.log("📦 Received overlay modifications:", result);
 
-      const elements = result.elements || [];
+      if (!result.elements || !Array.isArray(result.elements)) {
+        console.warn("⚠️ No elements found in response or invalid format");
+        return;
+      }
 
-      elements.forEach(({ elementId, css }) => {
-        if (!css || !elementId) return;
+      result.elements.forEach(({ elementId, css }) => {
+        if (!css || !elementId) {
+          console.warn("⚠️ Skipping invalid element:", { elementId, css });
+          return;
+        }
+
+        console.log(`🎨 Applying overlay styles to element: ${elementId}`);
 
         const selector = `#${elementId} .sqs-image-content > :nth-child(-n+2)::before`;
         const styleTagId = `sc-overlay-style-${elementId}`;
@@ -1959,12 +1985,19 @@ let pendingModifications = new Map();
         styleTag.textContent = cssText;
 
         const block = document.getElementById(elementId);
-        if (block) block.classList.add("sc-overlay-styled");
+        if (block) {
+          block.classList.add("sc-overlay-styled");
+          console.log(`✅ Applied overlay styles to element: ${elementId}`);
+        } else {
+          console.warn(`⚠️ Element not found in DOM: ${elementId}`);
+        }
       });
 
-      console.log("✅ Applied overlay styles to all image elements");
+      console.log("✅ Completed applying overlay styles to all image elements");
     } catch (error) {
       console.error("❌ Failed to fetch image overlay modifications:", error.message);
+      // Show error notification to user
+      showNotification("Failed to load image overlay styles", "error");
     }
   }
 
