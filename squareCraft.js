@@ -2093,7 +2093,7 @@ let pendingModifications = new Map();
       fetchImageModifications(elementId);
     }
 
-    if (lastClickedBlockId) {
+    if (elementId) {
       fetchImageOverlayModifications(elementId)
     }
 
