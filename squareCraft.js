@@ -1922,7 +1922,6 @@ let pendingModifications = new Map();
     }
 
     try {
-      // Remove any spaces from the parameters
       const cleanUserId = userId.trim();
       const cleanWidgetId = widgetId.trim();
       const cleanPageId = pageId.trim();
