@@ -1926,6 +1926,7 @@ let pendingModifications = new Map();
       const cleanUserId = userId.trim();
       const cleanWidgetId = widgetId.trim();
       const cleanPageId = pageId.trim();
+      const cleanElementId = elementId.trim();
 
       console.log("🔍 Fetching overlay modifications with params:", {
         userId: cleanUserId,
