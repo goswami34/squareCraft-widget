@@ -1902,7 +1902,7 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageOverlayModifications() {
+  async function fetchImageOverlayModifications(elementId) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -1910,13 +1910,14 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    if (!userId || !token || !widgetId || !pageId) {
+    if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing credentials or page ID");
       console.warn("⚠️ Missing credentials or page ID", {
         userId: !!userId,
         token: !!token,
         widgetId: !!widgetId,
-        pageId: !!pageId
+        pageId: !!pageId,
+        elementId: !!elementId
       });
       return;
     }
@@ -1930,7 +1931,8 @@ let pendingModifications = new Map();
       console.log("🔍 Fetching overlay modifications with params:", {
         userId: cleanUserId,
         widgetId: cleanWidgetId,
-        pageId: cleanPageId
+        pageId: cleanPageId,
+        elementId: cleanElementId
       });
 
       const response = await fetch(
