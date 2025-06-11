@@ -1917,7 +1917,7 @@ let pendingModifications = new Map();
         token: !!token,
         widgetId: !!widgetId,
         pageId: !!pageId,
-        elementId: !!elementId
+        elementId: !!elementId,
       });
       return;
     }
@@ -1932,29 +1932,34 @@ let pendingModifications = new Map();
         userId: cleanUserId,
         widgetId: cleanWidgetId,
         pageId: cleanPageId,
-        elementId: cleanElementId
+        elementId: cleanElementId,
       });
 
       const response = await fetch(
-        `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}&elementId=${cleanElementId}`,
+        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}&elementId=${cleanElementId}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch overlay modifications");
+        throw new Error(
+          data.message || "Failed to fetch overlay modifications"
+        );
       }
 
       console.log("✅ Applied overlay styles to all image elements");
       console.log("✅ Completed applying overlay styles to all image elements");
     } catch (error) {
-      console.error("❌ Failed to fetch image overlay modifications:", error.message);
+      console.error(
+        "❌ Failed to fetch image overlay modifications:",
+        error.message
+      );
       showNotification("Failed to load image overlay styles", "error");
     }
   }
@@ -1984,7 +1989,6 @@ let pendingModifications = new Map();
     if (lastClickedBlockId) {
       await fetchImageOverlayModifications(lastClickedBlockId);
     }
-
   });
 
   async function addHeadingEventListeners() {
@@ -2028,7 +2032,7 @@ let pendingModifications = new Map();
     }
 
     if (elementId) {
-      fetchImageOverlayModifications(elementId)
+      fetchImageOverlayModifications(elementId);
     }
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
@@ -3314,7 +3318,6 @@ let pendingModifications = new Map();
     }, 300);
   }
 
-
   if (lastClickedBlockId) {
     fetchImageOverlayModifications(lastClickedBlockId);
   } else {
@@ -3332,8 +3335,6 @@ let pendingModifications = new Map();
       if (--retries <= 0) clearInterval(retryInterval);
     }, 300);
   }
-
-
 
   function addPendingModification(blockId, css, tagType) {
     if (!pendingModifications.has(blockId)) {
