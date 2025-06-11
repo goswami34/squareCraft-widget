@@ -1684,7 +1684,7 @@ let pendingModifications = new Map();
 
     try {
       const res = await fetch(
-        `http://localhost:8001/api/v1/get-image-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
+        `https://admin.squareplugin.com/api/v1/get-image-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
