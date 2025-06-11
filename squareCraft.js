@@ -1910,6 +1910,36 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
+    // Store the original element ID in localStorage when first detected
+    const originalElementId = localStorage.getItem(
+      `sc_original_element_${elementId}`
+    );
+    if (!originalElementId) {
+      // If we don't have the original ID stored, try to find it in the database
+      try {
+        const response = await fetch(
+          `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        if (data.success && data.elements && data.elements.length > 0) {
+          // Store the original element ID for future use
+          localStorage.setItem(
+            `sc_original_element_${elementId}`,
+            data.elements[0].elementId
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch original element ID:", error);
+      }
+    }
+
     if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing credentials or page ID");
       console.warn("⚠️ Missing credentials or page ID", {
@@ -1926,7 +1956,7 @@ let pendingModifications = new Map();
       const cleanUserId = userId.trim();
       const cleanWidgetId = widgetId.trim();
       const cleanPageId = pageId.trim();
-      const cleanElementId = elementId.trim();
+      const cleanElementId = originalElementId || elementId.trim();
 
       console.log("🔍 Fetching overlay modifications with params:", {
         userId: cleanUserId,
@@ -1966,8 +1996,8 @@ let pendingModifications = new Map();
             document.head.appendChild(styleElement);
           }
 
-          // Create the CSS rule
-          const cssRule = `${element.overlayCSS.selector} {
+          // Create the CSS rule using the current element ID
+          const cssRule = `#${elementId} .sqs-image-content > :nth-child(-n+2)::before {
             ${Object.entries(element.overlayCSS.styles)
               .map(([property, value]) => `${property}: ${value};`)
               .join("\n")}
