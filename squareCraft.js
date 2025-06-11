@@ -1953,6 +1953,8 @@ let pendingModifications = new Map();
         );
       }
 
+      console.log(data);
+
       console.log("✅ Applied overlay styles to all image elements");
       console.log("✅ Completed applying overlay styles to all image elements");
     } catch (error) {
