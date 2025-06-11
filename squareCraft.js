@@ -1910,15 +1910,8 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    // Validate all required parameters
-    if (!userId || !token || !widgetId || !pageId || !elementId) {
-      console.warn("⚠️ Missing required parameters:", {
-        userId: userId || "missing",
-        token: token ? "present" : "missing",
-        widgetId: widgetId || "missing",
-        pageId: pageId || "missing",
-        elementId: elementId || "missing",
-      });
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
       return;
     }
 
@@ -1926,72 +1919,20 @@ let pendingModifications = new Map();
       const cleanUserId = userId.trim();
       const cleanWidgetId = widgetId.trim();
       const cleanPageId = pageId.trim();
-      const cleanElementId = elementId.trim();
-
-      // First, fetch all modifications for this page to get the mapping
-      const allModificationsResponse = await fetch(
-        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${encodeURIComponent(
-          cleanUserId
-        )}&widgetId=${encodeURIComponent(
-          cleanWidgetId
-        )}&pageId=${encodeURIComponent(cleanPageId)}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const allModificationsData = await allModificationsResponse.json();
-
-      if (!allModificationsData.success) {
-        console.error(
-          "Failed to fetch all modifications:",
-          allModificationsData.message
-        );
-        return;
-      }
-
-      // Find the matching element in the database
-      let databaseElementId = null;
-      if (
-        allModificationsData.elements &&
-        allModificationsData.elements.length > 0
-      ) {
-        // Store the mapping in localStorage for future use
-        allModificationsData.elements.forEach((element) => {
-          localStorage.setItem(
-            `sc_element_mapping_${cleanElementId}`,
-            element.elementId
-          );
-        });
-        databaseElementId = allModificationsData.elements[0].elementId;
-      }
-
-      if (!databaseElementId) {
-        console.warn("No matching element found in database");
-        return;
-      }
 
       console.log("🔍 Fetching overlay modifications with params:", {
         userId: cleanUserId,
         widgetId: cleanWidgetId,
         pageId: cleanPageId,
-        currentElementId: cleanElementId,
-        databaseElementId: databaseElementId,
       });
 
-      // Now fetch the specific modifications using the database element ID
+      // Fetch all modifications for this page
       const response = await fetch(
         `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${encodeURIComponent(
           cleanUserId
         )}&widgetId=${encodeURIComponent(
           cleanWidgetId
-        )}&pageId=${encodeURIComponent(
-          cleanPageId
-        )}&elementId=${encodeURIComponent(databaseElementId)}`,
+        )}&pageId=${encodeURIComponent(cleanPageId)}`,
         {
           method: "GET",
           headers: {
@@ -2011,8 +1952,15 @@ let pendingModifications = new Map();
       console.log("Received overlay data:", data);
 
       if (data.success && data.elements && data.elements.length > 0) {
-        const element = data.elements[0];
-        if (element.overlayCSS) {
+        // Find the element that matches our current elementId
+        const matchingElement = data.elements.find(
+          (element) =>
+            element.elementId === elementId ||
+            localStorage.getItem(`sc_element_mapping_${elementId}`) ===
+              element.elementId
+        );
+
+        if (matchingElement && matchingElement.overlayCSS) {
           // Create or update the style element
           let styleElement = document.getElementById("sc-overlay-styles");
           if (!styleElement) {
@@ -2022,8 +1970,8 @@ let pendingModifications = new Map();
           }
 
           // Create the CSS rule using the current element ID
-          const cssRule = `#${cleanElementId} .sqs-image-content > :nth-child(-n+2)::before {
-            ${Object.entries(element.overlayCSS.styles)
+          const cssRule = `#${elementId} .sqs-image-content > :nth-child(-n+2)::before {
+            ${Object.entries(matchingElement.overlayCSS.styles)
               .map(([property, value]) => `${property}: ${value};`)
               .join("\n")}
           }`;
@@ -2031,6 +1979,11 @@ let pendingModifications = new Map();
           // Add the rule to the style element
           styleElement.textContent = cssRule;
           console.log("✅ Applied overlay styles:", cssRule);
+        } else {
+          console.log(
+            "No matching element found for current elementId:",
+            elementId
+          );
         }
       } else {
         console.log("No overlay styles to apply");
