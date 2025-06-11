@@ -1953,10 +1953,35 @@ let pendingModifications = new Map();
         );
       }
 
-      console.log(data);
+      console.log("Received overlay data:", data);
 
-      console.log("✅ Applied overlay styles to all image elements");
-      console.log("✅ Completed applying overlay styles to all image elements");
+      if (data.success && data.elements && data.elements.length > 0) {
+        const element = data.elements[0];
+        if (element.overlayCSS) {
+          // Create or update the style element
+          let styleElement = document.getElementById("sc-overlay-styles");
+          if (!styleElement) {
+            styleElement = document.createElement("style");
+            styleElement.id = "sc-overlay-styles";
+            document.head.appendChild(styleElement);
+          }
+
+          // Create the CSS rule
+          const cssRule = `${element.overlayCSS.selector} {
+            ${Object.entries(element.overlayCSS.styles)
+              .map(([property, value]) => `${property}: ${value};`)
+              .join("\n")}
+          }`;
+
+          // Add the rule to the style element
+          styleElement.textContent = cssRule;
+          console.log("✅ Applied overlay styles:", cssRule);
+        }
+      } else {
+        console.log("No overlay styles to apply");
+      }
+
+      console.log("✅ Completed applying overlay styles");
     } catch (error) {
       console.error(
         "❌ Failed to fetch image overlay modifications:",
