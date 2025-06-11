@@ -1910,14 +1910,14 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
+    // Validate all required parameters
     if (!userId || !token || !widgetId || !pageId || !elementId) {
-      console.warn("⚠️ Missing credentials or page ID");
-      console.warn("⚠️ Missing credentials or page ID", {
-        userId: !!userId,
-        token: !!token,
-        widgetId: !!widgetId,
-        pageId: !!pageId,
-        elementId: !!elementId,
+      console.warn("⚠️ Missing required parameters:", {
+        userId: userId || "missing",
+        token: token ? "present" : "missing",
+        widgetId: widgetId || "missing",
+        pageId: pageId || "missing",
+        elementId: elementId || "missing",
       });
       return;
     }
@@ -1926,10 +1926,15 @@ let pendingModifications = new Map();
       const cleanUserId = userId.trim();
       const cleanWidgetId = widgetId.trim();
       const cleanPageId = pageId.trim();
+      const cleanElementId = elementId.trim();
 
       // First, fetch all modifications for this page to get the mapping
       const allModificationsResponse = await fetch(
-        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}`,
+        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${encodeURIComponent(
+          cleanUserId
+        )}&widgetId=${encodeURIComponent(
+          cleanWidgetId
+        )}&pageId=${encodeURIComponent(cleanPageId)}`,
         {
           method: "GET",
           headers: {
@@ -1942,7 +1947,11 @@ let pendingModifications = new Map();
       const allModificationsData = await allModificationsResponse.json();
 
       if (!allModificationsData.success) {
-        throw new Error("Failed to fetch all modifications");
+        console.error(
+          "Failed to fetch all modifications:",
+          allModificationsData.message
+        );
+        return;
       }
 
       // Find the matching element in the database
@@ -1954,7 +1963,7 @@ let pendingModifications = new Map();
         // Store the mapping in localStorage for future use
         allModificationsData.elements.forEach((element) => {
           localStorage.setItem(
-            `sc_element_mapping_${elementId}`,
+            `sc_element_mapping_${cleanElementId}`,
             element.elementId
           );
         });
@@ -1970,13 +1979,19 @@ let pendingModifications = new Map();
         userId: cleanUserId,
         widgetId: cleanWidgetId,
         pageId: cleanPageId,
-        currentElementId: elementId,
+        currentElementId: cleanElementId,
         databaseElementId: databaseElementId,
       });
 
       // Now fetch the specific modifications using the database element ID
       const response = await fetch(
-        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}&elementId=${databaseElementId}`,
+        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${encodeURIComponent(
+          cleanUserId
+        )}&widgetId=${encodeURIComponent(
+          cleanWidgetId
+        )}&pageId=${encodeURIComponent(
+          cleanPageId
+        )}&elementId=${encodeURIComponent(databaseElementId)}`,
         {
           method: "GET",
           headers: {
@@ -2007,7 +2022,7 @@ let pendingModifications = new Map();
           }
 
           // Create the CSS rule using the current element ID
-          const cssRule = `#${elementId} .sqs-image-content > :nth-child(-n+2)::before {
+          const cssRule = `#${cleanElementId} .sqs-image-content > :nth-child(-n+2)::before {
             ${Object.entries(element.overlayCSS.styles)
               .map(([property, value]) => `${property}: ${value};`)
               .join("\n")}
