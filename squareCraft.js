@@ -1910,36 +1910,6 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    // Store the original element ID in localStorage when first detected
-    const originalElementId = localStorage.getItem(
-      `sc_original_element_${elementId}`
-    );
-    if (!originalElementId) {
-      // If we don't have the original ID stored, try to find it in the database
-      try {
-        const response = await fetch(
-          `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
-        if (data.success && data.elements && data.elements.length > 0) {
-          // Store the original element ID for future use
-          localStorage.setItem(
-            `sc_original_element_${elementId}`,
-            data.elements[0].elementId
-          );
-        }
-      } catch (error) {
-        console.error("Failed to fetch original element ID:", error);
-      }
-    }
-
     if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing credentials or page ID");
       console.warn("⚠️ Missing credentials or page ID", {
@@ -1956,17 +1926,57 @@ let pendingModifications = new Map();
       const cleanUserId = userId.trim();
       const cleanWidgetId = widgetId.trim();
       const cleanPageId = pageId.trim();
-      const cleanElementId = originalElementId || elementId.trim();
+
+      // First, fetch all modifications for this page to get the mapping
+      const allModificationsResponse = await fetch(
+        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const allModificationsData = await allModificationsResponse.json();
+
+      if (!allModificationsData.success) {
+        throw new Error("Failed to fetch all modifications");
+      }
+
+      // Find the matching element in the database
+      let databaseElementId = null;
+      if (
+        allModificationsData.elements &&
+        allModificationsData.elements.length > 0
+      ) {
+        // Store the mapping in localStorage for future use
+        allModificationsData.elements.forEach((element) => {
+          localStorage.setItem(
+            `sc_element_mapping_${elementId}`,
+            element.elementId
+          );
+        });
+        databaseElementId = allModificationsData.elements[0].elementId;
+      }
+
+      if (!databaseElementId) {
+        console.warn("No matching element found in database");
+        return;
+      }
 
       console.log("🔍 Fetching overlay modifications with params:", {
         userId: cleanUserId,
         widgetId: cleanWidgetId,
         pageId: cleanPageId,
-        elementId: cleanElementId,
+        currentElementId: elementId,
+        databaseElementId: databaseElementId,
       });
 
+      // Now fetch the specific modifications using the database element ID
       const response = await fetch(
-        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}&elementId=${cleanElementId}`,
+        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}&elementId=${databaseElementId}`,
         {
           method: "GET",
           headers: {
