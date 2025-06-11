@@ -1910,13 +1910,19 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    if (!userId || !token || !widgetId || !pageId || !elementId) {
+    // Get the current element ID from the clicked block
+    const currentBlock = document.querySelector(
+      '[id^="block-"]:has(.sqs-image-content)'
+    );
+    const currentElementId = currentBlock?.id || elementId;
+
+    if (!userId || !token || !widgetId || !pageId || !currentElementId) {
       console.warn("⚠️ Missing required parameters:", {
         userId: userId || "missing",
         token: token ? "present" : "missing",
         widgetId: widgetId || "missing",
         pageId: pageId || "missing",
-        elementId: elementId || "missing",
+        currentElementId: currentElementId || "missing",
       });
       return;
     }
@@ -1925,7 +1931,9 @@ let pendingModifications = new Map();
       const cleanUserId = userId.trim();
       const cleanWidgetId = widgetId.trim();
       const cleanPageId = pageId.trim();
-      const cleanElementId = elementId.trim();
+      const cleanElementId = currentElementId.trim();
+
+      console.log("🔍 Current element ID:", cleanElementId);
 
       // First, get the database element ID from localStorage or fetch it
       let databaseElementId = localStorage.getItem(
@@ -1957,6 +1965,10 @@ let pendingModifications = new Map();
             `sc_db_element_${cleanElementId}`,
             databaseElementId
           );
+          console.log("📝 Stored database element ID mapping:", {
+            current: cleanElementId,
+            database: databaseElementId,
+          });
         }
       }
 
