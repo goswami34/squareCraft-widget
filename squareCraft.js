@@ -1927,16 +1927,55 @@ let pendingModifications = new Map();
       const cleanPageId = pageId.trim();
       const cleanElementId = elementId.trim();
 
+      // First, get the database element ID from localStorage or fetch it
+      let databaseElementId = localStorage.getItem(
+        `sc_db_element_${cleanElementId}`
+      );
+
+      if (!databaseElementId) {
+        // If we don't have the mapping, fetch all modifications to find it
+        const allModificationsResponse = await fetch(
+          `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const allModificationsData = await allModificationsResponse.json();
+        if (
+          allModificationsData.success &&
+          allModificationsData.elements &&
+          allModificationsData.elements.length > 0
+        ) {
+          // Store the mapping for future use
+          databaseElementId = allModificationsData.elements[0].elementId;
+          localStorage.setItem(
+            `sc_db_element_${cleanElementId}`,
+            databaseElementId
+          );
+        }
+      }
+
+      if (!databaseElementId) {
+        console.warn("Could not find database element ID for:", cleanElementId);
+        return;
+      }
+
       console.log("🔍 Fetching overlay modifications with params:", {
         userId: cleanUserId,
         widgetId: cleanWidgetId,
         pageId: cleanPageId,
-        elementId: cleanElementId,
+        currentElementId: cleanElementId,
+        databaseElementId: databaseElementId,
       });
 
-      // Make the API call with all required parameters
+      // Now fetch the specific modifications using the database element ID
       const response = await fetch(
-        `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}&elementId=${cleanElementId}`,
+        `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}&elementId=${databaseElementId}`,
         {
           method: "GET",
           headers: {
