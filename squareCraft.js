@@ -1910,13 +1910,19 @@ let pendingModifications = new Map();
     const pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
-    let blockOverlay = event?.target?.closest('[id^="block-"]');
-    console.log("🔍 blockOverlay:", blockOverlay);
 
-    // const blockId = blockOverlay.id;
+    let elementId;
 
-    // blockId is the same as elementId
-    const elementId = blockOverlay.id;
+    if (event) {
+      // If called with an event, get the block ID from the event target
+      let blockOverlay = event.target?.closest('[id^="block-"]');
+      console.log("🔍 blockOverlay:", blockOverlay);
+      elementId = blockOverlay?.id;
+    } else if (block) {
+      // If called with just a block, use its ID
+      elementId = block.id;
+    }
+
     console.log("🔍 elementId:", elementId);
 
     if (!userId || !token || !widgetId || !pageId || !elementId) {
