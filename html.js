@@ -445,8 +445,20 @@ export async function saveImageOverlayModifications(blockId, css) {
     widgetId,
     pageId,
     elementId: blockId,
-    selector,
-    styles: kebabCss,
+    modifications: [
+      {
+        pageId,
+        elements: [
+          {
+            elementId: blockId,
+            overlayCSS: {
+              selector,
+              styles: kebabCss,
+            },
+          },
+        ],
+      },
+    ],
   };
 
   // Log the final payload
@@ -469,7 +481,7 @@ export async function saveImageOverlayModifications(blockId, css) {
 
   try {
     const response = await fetch(
-      "https://admin.squareplugin.com/api/v1/save-image-overlay-modifications",
+      "http://localhost:8001/api/v1/save-image-overlay-modifications",
       {
         method: "POST",
         headers: {
