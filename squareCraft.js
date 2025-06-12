@@ -1911,20 +1911,18 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    // if (event) {
-    //   // If called with an event, get the block ID from the event target
-    //   let blockOverlay = event.target?.closest('[id^="block-"]');
-    //   console.log("🔍 blockOverlay:", blockOverlay);
-    //   elementId = blockOverlay?.id;
-    // } else if (block) {
-    //   // If called with just a block, use its ID
-    //   elementId = block.id;
-    // }
+    // Get all blocks on the page
+    const blocks = document.querySelectorAll('[id^="block-"]');
+    console.log("🔍 Found blocks:", blocks);
 
-    const selectedBlock = document.querySelector('[id^="block-"]');
-    const elementId = selectedBlock?.id || null;
+    // Try to find the block with the YUI ID pattern
+    const yuiBlock = Array.from(blocks).find((block) =>
+      block.id.includes("yui_3_17_2_1_1747891480387_7006")
+    );
 
-    console.log("🔍 elementId:", elementId);
+    // Use the YUI block ID if found, otherwise use the first block ID
+    const elementId = yuiBlock?.id || blocks[0]?.id;
+    console.log("🔍 Using elementId:", elementId);
 
     if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing required parameters:", {
