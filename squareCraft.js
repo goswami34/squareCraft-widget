@@ -1902,13 +1902,14 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageOverlayModifications(elementId) {
+  async function fetchImageOverlayModifications(element) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
     const pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
+    const elementId = element.id;
 
     // Get the current element ID from the clicked block
     const currentBlock = document.querySelector(
