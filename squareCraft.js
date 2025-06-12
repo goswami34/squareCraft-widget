@@ -2236,7 +2236,7 @@ let pendingModifications = new Map();
 
         if (!currentlySelectedBlock) {
           showNotification(
-            "❌ Please select a block first fsfgsfgsfgsgfsgsg.",
+            // "❌ Please select a block first fsfgsfgsfgsgfsgsg.",
             "error"
           );
           this.value = "400";
@@ -2246,7 +2246,7 @@ let pendingModifications = new Map();
         const selectedTab = document.querySelector(".sc-selected-tab");
         if (!selectedTab) {
           showNotification(
-            "❌ Please select a text type (h1, h2, p1 etc) first.",
+            // "❌ Please select a text type (h1, h2, p1 etc) first.",
             "error"
           );
           this.value = "400";
