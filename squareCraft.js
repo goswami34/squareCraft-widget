@@ -1921,7 +1921,7 @@ let pendingModifications = new Map();
     //   elementId = block.id;
     // }
 
-    const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
+    const selectedBlock = document.querySelector('[id^="block-"]');
     const elementId = selectedBlock?.id || null;
 
     console.log("🔍 elementId:", elementId);
