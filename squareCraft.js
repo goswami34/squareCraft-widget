@@ -1934,7 +1934,7 @@ let pendingModifications = new Map();
 
       // Use the local development API endpoint
       const response = await fetch(
-        `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
+        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
         {
           method: "GET",
           headers: {
