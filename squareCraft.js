@@ -1911,17 +1911,18 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    let elementId;
+    // if (event) {
+    //   // If called with an event, get the block ID from the event target
+    //   let blockOverlay = event.target?.closest('[id^="block-"]');
+    //   console.log("🔍 blockOverlay:", blockOverlay);
+    //   elementId = blockOverlay?.id;
+    // } else if (block) {
+    //   // If called with just a block, use its ID
+    //   elementId = block.id;
+    // }
 
-    if (event) {
-      // If called with an event, get the block ID from the event target
-      let blockOverlay = event.target?.closest('[id^="block-"]');
-      console.log("🔍 blockOverlay:", blockOverlay);
-      elementId = blockOverlay?.id;
-    } else if (block) {
-      // If called with just a block, use its ID
-      elementId = block.id;
-    }
+    const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
+    const elementId = selectedBlock?.id || null;
 
     console.log("🔍 elementId:", elementId);
 
