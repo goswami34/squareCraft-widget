@@ -1916,6 +1916,7 @@ let pendingModifications = new Map();
 
     // blockId is the same as elementId
     const elementId = blockOverlay;
+    console.log("🔍 elementId:", elementId);
 
     if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing required parameters:", {
