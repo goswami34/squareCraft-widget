@@ -1911,6 +1911,8 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
+    const blockId = block.id;
+
     // blockId is the same as elementId
     const elementId = blockId;
 
