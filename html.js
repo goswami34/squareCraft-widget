@@ -481,7 +481,7 @@ export async function saveImageOverlayModifications(blockId, css) {
 
   try {
     const response = await fetch(
-      "http://localhost:8001/api/v1/save-image-overlay-modifications",
+      "https://admin.squareplugin.com/api/v1/save-image-overlay-modifications",
       {
         method: "POST",
         headers: {
