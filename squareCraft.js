@@ -1902,7 +1902,7 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageOverlayModifications(block) {
+  async function fetchImageOverlayModifications(block, event) {
     console.log("🔍 Fetching overlay modifications for block:", block);
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
@@ -1910,7 +1910,7 @@ let pendingModifications = new Map();
     const pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
-    let blockOverlay = targetElement.closest('[id^="block-"]');
+    let blockOverlay = event?.target?.closest('[id^="block-"]');
 
     const blockId = blockOverlay.id;
 
