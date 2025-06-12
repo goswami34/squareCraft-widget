@@ -1911,84 +1911,20 @@ let pendingModifications = new Map();
       ?.getAttribute("data-page-sections");
     const elementId = element.id;
 
-    // Get the current element ID from the clicked block
-    const currentBlock = document.querySelector(
-      '[id^="block-"]:has(.sqs-image-content)'
-    );
-    const currentElementId = currentBlock?.id || elementId;
-
-    if (!userId || !token || !widgetId || !pageId || !currentElementId) {
+    if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing required parameters:", {
         userId: userId || "missing",
         token: token ? "present" : "missing",
         widgetId: widgetId || "missing",
         pageId: pageId || "missing",
-        currentElementId: currentElementId || "missing",
+        elementId: elementId || "missing",
       });
       return;
     }
 
     try {
-      const cleanUserId = userId.trim();
-      const cleanWidgetId = widgetId.trim();
-      const cleanPageId = pageId.trim();
-      const cleanElementId = currentElementId.trim();
-
-      console.log("🔍 Current element ID:", cleanElementId);
-
-      // First, get the database element ID from localStorage or fetch it
-      let databaseElementId = localStorage.getItem(
-        `sc_db_element_${cleanElementId}`
-      );
-
-      if (!databaseElementId) {
-        // If we don't have the mapping, fetch all modifications to find it
-        const allModificationsResponse = await fetch(
-          `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const allModificationsData = await allModificationsResponse.json();
-        if (
-          allModificationsData.success &&
-          allModificationsData.elements &&
-          allModificationsData.elements.length > 0
-        ) {
-          // Store the mapping for future use
-          databaseElementId = allModificationsData.elements[0].elementId;
-          localStorage.setItem(
-            `sc_db_element_${cleanElementId}`,
-            databaseElementId
-          );
-          console.log("📝 Stored database element ID mapping:", {
-            current: cleanElementId,
-            database: databaseElementId,
-          });
-        }
-      }
-
-      if (!databaseElementId) {
-        console.warn("Could not find database element ID for:", cleanElementId);
-        return;
-      }
-
-      console.log("🔍 Fetching overlay modifications with params:", {
-        userId: cleanUserId,
-        widgetId: cleanWidgetId,
-        pageId: cleanPageId,
-        currentElementId: cleanElementId,
-        databaseElementId: databaseElementId,
-      });
-
-      // Now fetch the specific modifications using the database element ID
       const response = await fetch(
-        `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${cleanUserId}&widgetId=${cleanWidgetId}&pageId=${cleanPageId}&elementId=${databaseElementId}`,
+        `http://localhost:8001/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
         {
           method: "GET",
           headers: {
@@ -2007,27 +1943,30 @@ let pendingModifications = new Map();
 
       console.log("Received overlay data:", data);
 
-      if (data.success && data.elements && data.elements.length > 0) {
-        const element = data.elements[0];
-        if (element.overlayCSS) {
-          // Create or update the style element
-          let styleElement = document.getElementById("sc-overlay-styles");
-          if (!styleElement) {
-            styleElement = document.createElement("style");
-            styleElement.id = "sc-overlay-styles";
-            document.head.appendChild(styleElement);
+      if (data.success && data.modifications && data.modifications.length > 0) {
+        const modification = data.modifications[0];
+        if (modification.elements && modification.elements.length > 0) {
+          const elementData = modification.elements[0];
+          if (elementData.overlayCSS) {
+            // Create or update the style element
+            let styleElement = document.getElementById("sc-overlay-styles");
+            if (!styleElement) {
+              styleElement = document.createElement("style");
+              styleElement.id = "sc-overlay-styles";
+              document.head.appendChild(styleElement);
+            }
+
+            // Create the CSS rule using the selector from the database
+            const cssRule = `${elementData.overlayCSS.selector} {
+              ${Object.entries(elementData.overlayCSS.styles)
+                .map(([property, value]) => `${property}: ${value};`)
+                .join("\n")}
+            }`;
+
+            // Add the rule to the style element
+            styleElement.textContent = cssRule;
+            console.log("✅ Applied overlay styles:", cssRule);
           }
-
-          // Create the CSS rule using the current element ID
-          const cssRule = `#${cleanElementId} .sqs-image-content > :nth-child(-n+2)::before {
-            ${Object.entries(element.overlayCSS.styles)
-              .map(([property, value]) => `${property}: ${value};`)
-              .join("\n")}
-          }`;
-
-          // Add the rule to the style element
-          styleElement.textContent = cssRule;
-          console.log("✅ Applied overlay styles:", cssRule);
         }
       } else {
         console.log("No overlay styles to apply");
