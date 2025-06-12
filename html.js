@@ -445,20 +445,8 @@ export async function saveImageOverlayModifications(blockId, css) {
     widgetId,
     pageId,
     elementId: blockId,
-    modifications: [
-      {
-        pageId,
-        elements: [
-          {
-            elementId: blockId,
-            overlayCSS: {
-              selector,
-              styles: kebabCss,
-            },
-          },
-        ],
-      },
-    ],
+    selector,
+    styles: kebabCss,
   };
 
   // Log the final payload
