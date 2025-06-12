@@ -1911,11 +1911,12 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
     let blockOverlay = event?.target?.closest('[id^="block-"]');
+    console.log("🔍 blockOverlay:", blockOverlay);
 
     // const blockId = blockOverlay.id;
 
     // blockId is the same as elementId
-    const elementId = blockOverlay;
+    const elementId = blockOverlay.id;
     console.log("🔍 elementId:", elementId);
 
     if (!userId || !token || !widgetId || !pageId || !elementId) {
