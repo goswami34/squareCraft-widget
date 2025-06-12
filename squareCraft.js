@@ -1956,19 +1956,23 @@ let pendingModifications = new Map();
       );
 
       const data = await response.json();
+      console.log("Raw response data:", data);
+
       if (!response.ok) {
         throw new Error(
           data.message || "Failed to fetch overlay modifications"
         );
       }
 
-      console.log("Received overlay data:", data);
-
       // Check for modifications in the response
       if (data.success && data.modifications && data.modifications.length > 0) {
         const modification = data.modifications[0];
+        console.log("Found modification:", modification);
+
         if (modification.elements && modification.elements.length > 0) {
           const elementData = modification.elements[0];
+          console.log("Element data:", elementData);
+
           if (elementData.overlayCSS) {
             // Create or update the style element
             let styleElement = document.getElementById("sc-overlay-styles");
@@ -1985,13 +1989,38 @@ let pendingModifications = new Map();
                 .join("\n")}
             }`;
 
+            console.log("Applying CSS rule:", cssRule);
+
             // Add the rule to the style element
             styleElement.textContent = cssRule;
-            console.log("✅ Applied overlay styles:", cssRule);
+
+            // Also try to apply styles directly to the element
+            const targetElement = document.querySelector(
+              elementData.overlayCSS.selector
+            );
+            if (targetElement) {
+              console.log("Found target element:", targetElement);
+              Object.entries(elementData.overlayCSS.styles).forEach(
+                ([property, value]) => {
+                  targetElement.style[property] = value;
+                }
+              );
+            } else {
+              console.warn(
+                "Target element not found for selector:",
+                elementData.overlayCSS.selector
+              );
+            }
+
+            console.log("✅ Applied overlay styles");
+          } else {
+            console.log("No overlayCSS found in element data");
           }
+        } else {
+          console.log("No elements found in modification");
         }
       } else {
-        console.log("No overlay styles to apply");
+        console.log("No modifications found in response");
       }
 
       console.log("✅ Completed applying overlay styles");
