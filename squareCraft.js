@@ -1902,8 +1902,8 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageOverlayModifications(blockId) {
-    console.log("🔍 Fetching overlay modifications for block:", blockId);
+  async function fetchImageOverlayModifications(block) {
+    console.log("🔍 Fetching overlay modifications for block:", block);
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
