@@ -1932,8 +1932,9 @@ let pendingModifications = new Map();
         elementId,
       });
 
+      // Use the same endpoint as save function
       const response = await fetch(
-        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
+        `https://admin.squareplugin.com/api/v1/save-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
         {
           method: "GET",
           headers: {
@@ -1952,6 +1953,7 @@ let pendingModifications = new Map();
 
       console.log("Received overlay data:", data);
 
+      // Check for modifications in the response
       if (data.success && data.modifications && data.modifications.length > 0) {
         const modification = data.modifications[0];
         if (modification.elements && modification.elements.length > 0) {

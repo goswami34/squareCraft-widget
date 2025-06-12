@@ -438,15 +438,27 @@ export async function saveImageOverlayModifications(blockId, css) {
   const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
   const kebabCss = toKebabCaseStyleObject(css);
 
-  // FLAT PAYLOAD for backend
+  // Updated payload structure to match fetch expectations
   const payload = {
     userId,
     token,
     widgetId,
     pageId,
     elementId: blockId,
-    selector,
-    styles: kebabCss,
+    modifications: [
+      {
+        pageId,
+        elements: [
+          {
+            elementId: blockId,
+            overlayCSS: {
+              selector,
+              styles: kebabCss,
+            },
+          },
+        ],
+      },
+    ],
   };
 
   // Log the final payload
