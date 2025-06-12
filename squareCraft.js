@@ -1974,7 +1974,11 @@ let pendingModifications = new Map();
           console.log("Element data:", elementData);
 
           if (elementData.overlayCSS) {
-            // Create or update the style element
+            const selector = elementData.overlayCSS.selector;
+            const styles = elementData.overlayCSS.styles;
+            const isPseudo =
+              selector.includes("::before") || selector.includes("::after");
+
             let styleElement = document.getElementById("sc-overlay-styles");
             if (!styleElement) {
               styleElement = document.createElement("style");
@@ -1982,37 +1986,27 @@ let pendingModifications = new Map();
               document.head.appendChild(styleElement);
             }
 
-            // Create the CSS rule using the selector from the database
-            const cssRule = `${elementData.overlayCSS.selector} {
-              ${Object.entries(elementData.overlayCSS.styles)
-                .map(([property, value]) => `${property}: ${value};`)
-                .join("\n")}
-            }`;
+            const cssRule = `${selector} { ${Object.entries(styles)
+              .map(([property, value]) => `${property}: ${value} !important;`)
+              .join(" ")} }`;
+            styleElement.textContent += cssRule;
+            console.log("✅ Applied overlay styles via <style> tag:", cssRule);
 
-            console.log("Applying CSS rule:", cssRule);
-
-            // Add the rule to the style element
-            styleElement.textContent = cssRule;
-
-            // Also try to apply styles directly to the element
-            const targetElement = document.querySelector(
-              elementData.overlayCSS.selector
-            );
-            if (targetElement) {
-              console.log("Found target element:", targetElement);
-              Object.entries(elementData.overlayCSS.styles).forEach(
-                ([property, value]) => {
-                  targetElement.style[property] = value;
-                }
-              );
-            } else {
-              console.warn(
-                "Target element not found for selector:",
-                elementData.overlayCSS.selector
-              );
+            if (!isPseudo) {
+              // Optionally also apply as inline style for non-pseudo selectors
+              const targetElement = document.querySelector(selector);
+              if (targetElement) {
+                Object.entries(styles).forEach(([property, value]) => {
+                  targetElement.style.setProperty(property, value, "important");
+                });
+                console.log("✅ Applied overlay styles as inline styles.");
+              } else {
+                console.warn(
+                  "Target element not found for selector:",
+                  selector
+                );
+              }
             }
-
-            console.log("✅ Applied overlay styles");
           } else {
             console.log("No overlayCSS found in element data");
           }
