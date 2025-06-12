@@ -1902,13 +1902,15 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageOverlayModifications(elementId) {
+  async function fetchImageOverlayModifications(blockId) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
     const pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
+
+    const elementId = blockId;
 
     if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing required parameters:", {
