@@ -1932,7 +1932,7 @@ let pendingModifications = new Map();
         elementId,
       });
 
-      // Use the local development API endpoint
+      // Use the production API endpoint
       const response = await fetch(
         `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
         {
