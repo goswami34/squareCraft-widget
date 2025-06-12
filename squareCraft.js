@@ -1910,6 +1910,7 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
+    // blockId is the same as elementId
     const elementId = blockId;
 
     if (!userId || !token || !widgetId || !pageId || !elementId) {
@@ -1924,25 +1925,15 @@ let pendingModifications = new Map();
     }
 
     try {
-      // First, try to get the database element ID from localStorage
-      let databaseElementId = localStorage.getItem(
-        `sc_db_element_${elementId}`
-      );
+      console.log("🔍 Fetching overlay modifications for block:", {
+        userId,
+        widgetId,
+        pageId,
+        elementId,
+      });
 
-      if (!databaseElementId) {
-        // If we don't have the mapping, use the current elementId
-        databaseElementId = elementId;
-        // Store the mapping for future use
-        localStorage.setItem(`sc_db_element_${elementId}`, databaseElementId);
-        console.log("📝 Stored element ID mapping:", {
-          current: elementId,
-          database: databaseElementId,
-        });
-      }
-
-      // Fetch the specific modifications using the element ID
       const response = await fetch(
-        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${databaseElementId}`,
+        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
         {
           method: "GET",
           headers: {
