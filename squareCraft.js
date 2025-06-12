@@ -1910,8 +1910,9 @@ let pendingModifications = new Map();
     const pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
+    let blockOverlay = targetElement.closest('[id^="block-"]');
 
-    const blockId = block.id;
+    const blockId = blockOverlay.id;
 
     // blockId is the same as elementId
     const elementId = blockId;
