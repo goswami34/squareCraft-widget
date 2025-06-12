@@ -256,9 +256,29 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
   const initEventListeners = () => {
     document.querySelector("#overLayButton")?.addEventListener("click", () => {
       document.querySelector("#overLaySection")?.classList.toggle("sc-hidden");
-      // Add publish button when overlay section is shown
-      addPublishButton();
     });
+
+    // Add click handler to the existing publish button
+    const publishButton = document.getElementById("publish");
+    if (publishButton) {
+      publishButton.addEventListener("click", async () => {
+        try {
+          // Show loading state
+          publishButton.disabled = true;
+          publishButton.textContent = "Publishing...";
+
+          await publishPendingModifications();
+        } catch (error) {
+          if (typeof context.showNotification === "function") {
+            context.showNotification(error.message, "error");
+          }
+        } finally {
+          // Reset button state
+          publishButton.disabled = false;
+          publishButton.textContent = "Publish";
+        }
+      });
+    }
 
     // Setup width/height up-down controls
     setupIncrementControl("overlayWidthControl", "overlayWidthValue", "width");
@@ -408,31 +428,6 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
         context.showNotification("Failed to publish changes", "error");
       }
     }
-  };
-
-  // Add publish button to the UI
-  const addPublishButton = () => {
-    const overlaySection = document.querySelector("#overLaySection");
-    if (!overlaySection) return;
-
-    // Check if publish button already exists
-    if (document.getElementById("publishOverlayButton")) return;
-
-    const publishButton = document.createElement("button");
-    publishButton.id = "publishOverlayButton";
-    publishButton.className = "sc-button sc-publish-button";
-    publishButton.textContent = "Publish Changes";
-    publishButton.style.marginTop = "10px";
-    publishButton.style.width = "100%";
-    publishButton.style.padding = "8px";
-    publishButton.style.backgroundColor = "#4CAF50";
-    publishButton.style.color = "white";
-    publishButton.style.border = "none";
-    publishButton.style.borderRadius = "4px";
-    publishButton.style.cursor = "pointer";
-
-    publishButton.addEventListener("click", publishPendingModifications);
-    overlaySection.appendChild(publishButton);
   };
 
   return {
