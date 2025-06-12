@@ -1922,8 +1922,70 @@ let pendingModifications = new Map();
     }
 
     try {
+      // First, try to get the database element ID from localStorage
+      let databaseElementId = localStorage.getItem(
+        `sc_db_element_${elementId}`
+      );
+
+      if (!databaseElementId) {
+        // If we don't have the mapping, fetch all modifications to find it
+        const allModificationsResponse = await fetch(
+          `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const allModificationsData = await allModificationsResponse.json();
+        if (
+          allModificationsData.success &&
+          allModificationsData.modifications &&
+          allModificationsData.modifications.length > 0
+        ) {
+          // Find the modification that matches our current element
+          const matchingModification = allModificationsData.modifications.find(
+            (mod) => {
+              return (
+                mod.elements &&
+                mod.elements.some((el) => {
+                  const selector = el.overlayCSS?.selector;
+                  return selector && selector.includes(elementId);
+                })
+              );
+            }
+          );
+
+          if (
+            matchingModification &&
+            matchingModification.elements &&
+            matchingModification.elements.length > 0
+          ) {
+            databaseElementId = matchingModification.elements[0].elementId;
+            // Store the mapping for future use
+            localStorage.setItem(
+              `sc_db_element_${elementId}`,
+              databaseElementId
+            );
+            console.log("📝 Stored database element ID mapping:", {
+              current: elementId,
+              database: databaseElementId,
+            });
+          }
+        }
+      }
+
+      if (!databaseElementId) {
+        console.warn("Could not find database element ID for:", elementId);
+        return;
+      }
+
+      // Now fetch the specific modifications using the database element ID
       const response = await fetch(
-        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
+        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${databaseElementId}`,
         {
           method: "GET",
           headers: {
