@@ -8,6 +8,9 @@ const overlayState = {
   color: "rgba(0,0,0,0.5)",
 };
 
+// Store pending modifications
+const pendingOverlayModifications = new Map();
+
 export const InitImageOverLayControls = (themeColors, context = {}) => {
   const {
     addPendingModification,
@@ -57,33 +60,44 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     content.appendChild(overlay);
   };
 
-  function saveOverlayStyles(blockId) {
-    if (typeof saveImageOverlayModifications !== "function") return;
+  function storeOverlayStyles(blockId) {
+    if (!blockId) return;
 
     const pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    if (!pageId || !blockId) {
-      console.warn("⚠️ Missing required data for overlay save:", {
-        pageId,
-        blockId,
-      });
+    if (!pageId) {
+      console.warn("⚠️ Missing pageId for overlay save");
       return;
     }
 
     const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
 
-    saveImageOverlayModifications(blockId, {
-      top: `${overlayState.y}px`,
-      left: `${overlayState.x}px`,
-      width: `${overlayState.width}%`,
-      height: `${overlayState.height}%`,
-      "background-color": overlayState.color,
-      "pointer-events": "none",
-      "z-index": "5",
-      display: "block",
+    // Store the modification locally
+    pendingOverlayModifications.set(blockId, {
+      pageId,
+      elementId: blockId,
+      selector,
+      styles: {
+        top: `${overlayState.y}px`,
+        left: `${overlayState.x}px`,
+        width: `${overlayState.width}%`,
+        height: `${overlayState.height}%`,
+        "background-color": overlayState.color,
+        "pointer-events": "none",
+        "z-index": "5",
+        display: "block",
+      },
     });
+
+    // Show notification that changes are pending
+    if (typeof context.showNotification === "function") {
+      context.showNotification(
+        "Changes saved locally. Click Publish to save to database.",
+        "info"
+      );
+    }
   }
 
   const updateOverlayStyles = () => {
@@ -130,8 +144,8 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
       // optional: swap if you want
     }
 
-    // Save overlay styles to database
-    saveOverlayStyles(blockId);
+    // Store styles locally instead of saving to database
+    storeOverlayStyles(blockId);
 
     // ✅ Optional: Update display values in UI
     const widthValue = document.getElementById("overlayWidthValue");
@@ -242,6 +256,8 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
   const initEventListeners = () => {
     document.querySelector("#overLayButton")?.addEventListener("click", () => {
       document.querySelector("#overLaySection")?.classList.toggle("sc-hidden");
+      // Add publish button when overlay section is shown
+      addPublishButton();
     });
 
     // Setup width/height up-down controls
@@ -361,8 +377,67 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     initEventListeners();
   };
 
+  // Function to publish all pending modifications
+  const publishPendingModifications = async () => {
+    if (pendingOverlayModifications.size === 0) {
+      if (typeof context.showNotification === "function") {
+        context.showNotification("No changes to publish", "info");
+      }
+      return;
+    }
+
+    try {
+      for (const [blockId, modification] of pendingOverlayModifications) {
+        if (typeof saveImageOverlayModifications === "function") {
+          await saveImageOverlayModifications(blockId, modification.styles);
+        }
+      }
+
+      // Clear pending modifications after successful publish
+      pendingOverlayModifications.clear();
+
+      if (typeof context.showNotification === "function") {
+        context.showNotification(
+          "All changes published successfully!",
+          "success"
+        );
+      }
+    } catch (error) {
+      console.error("Failed to publish modifications:", error);
+      if (typeof context.showNotification === "function") {
+        context.showNotification("Failed to publish changes", "error");
+      }
+    }
+  };
+
+  // Add publish button to the UI
+  const addPublishButton = () => {
+    const overlaySection = document.querySelector("#overLaySection");
+    if (!overlaySection) return;
+
+    // Check if publish button already exists
+    if (document.getElementById("publishOverlayButton")) return;
+
+    const publishButton = document.createElement("button");
+    publishButton.id = "publishOverlayButton";
+    publishButton.className = "sc-button sc-publish-button";
+    publishButton.textContent = "Publish Changes";
+    publishButton.style.marginTop = "10px";
+    publishButton.style.width = "100%";
+    publishButton.style.padding = "8px";
+    publishButton.style.backgroundColor = "#4CAF50";
+    publishButton.style.color = "white";
+    publishButton.style.border = "none";
+    publishButton.style.borderRadius = "4px";
+    publishButton.style.cursor = "pointer";
+
+    publishButton.addEventListener("click", publishPendingModifications);
+    overlaySection.appendChild(publishButton);
+  };
+
   return {
     init,
     setSelectedImage,
+    publishPendingModifications, // Export the publish function
   };
 };
