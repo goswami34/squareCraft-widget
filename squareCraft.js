@@ -1912,10 +1912,10 @@ let pendingModifications = new Map();
       ?.getAttribute("data-page-sections");
     let blockOverlay = event?.target?.closest('[id^="block-"]');
 
-    const blockId = blockOverlay.id;
+    // const blockId = blockOverlay.id;
 
     // blockId is the same as elementId
-    const elementId = blockId;
+    const elementId = blockOverlay;
 
     if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing required parameters:", {
