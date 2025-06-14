@@ -402,10 +402,10 @@ let pendingModifications = new Map();
     // const clickedBlockOne = event?.target?.closest('[id^="block-"]');
     // console.log("clickedBlockOne", clickedBlockOne);
 
-    document.addEventListener("click", (event) => {
-      const clickedBlockOne = event?.target?.closest('[id^="block-"]');
-      console.log("clickedBlockOne", clickedBlockOne || "❌ No block found");
-    });
+    const clickedBlockOne = parent.document
+      ?.querySelector(event.target)
+      ?.closest('[id^="block-"]');
+    console.log("clickedBlockOne", clickedBlockOne);
 
     handleBlockClick(event, {
       getTextType,
