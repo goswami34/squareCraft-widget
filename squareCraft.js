@@ -2083,7 +2083,9 @@ let pendingModifications = new Map();
     }
 
     if (lastClickedBlockId) {
-      await fetchImageOverlayModifications(lastClickedBlockId);
+      await fetchImageOverlayModifications(
+        getStableBlockId(lastClickedBlockId)
+      );
     }
   });
 
@@ -2128,7 +2130,7 @@ let pendingModifications = new Map();
     }
 
     if (elementId) {
-      fetchImageOverlayModifications(elementId);
+      fetchImageOverlayModifications(getStableBlockId(elementId));
     }
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
