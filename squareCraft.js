@@ -1910,6 +1910,7 @@ let pendingModifications = new Map();
   }
 
   async function fetchImageOverlayModifications(blockOrElement) {
+    console.log(blockOrElement);
     try {
       // Get the block ID from the clicked element or its parent
       let blockId;
