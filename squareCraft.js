@@ -1915,6 +1915,8 @@ let pendingModifications = new Map();
         ? blockOrElement
         : getParentBlockId(blockOrElement); // ✅ Convert element to correct block ID
 
+    console.log(elementId);
+
     if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing required parameters:", {
         userId,
