@@ -1909,6 +1909,8 @@ let pendingModifications = new Map();
     return block ? block.id : null;
   }
 
+  console.log(element);
+
   async function fetchImageOverlayModifications(blockOrElement) {
     let blockId;
     if (
