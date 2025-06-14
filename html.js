@@ -417,6 +417,88 @@ export async function saveModificationsforImage(blockId, css, tagType) {
   }
 }
 
+// export async function saveImageOverlayModifications(blockId, css) {
+//   const pageId = document
+//     .querySelector("article[data-page-sections]")
+//     ?.getAttribute("data-page-sections");
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
+
+//   const stylesWithContent = {
+//     ...css,
+//     content: "", // Always include content property
+//   };
+
+//   // Detailed debug log
+//   console.log("[DEBUG] Overlay Save Fields:", {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId,
+//     blockId,
+//     css,
+//   });
+
+//   const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
+//   const kebabCss = toKebabCaseStyleObject(css);
+
+//   // FLAT PAYLOAD for backend
+//   const payload = {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId,
+//     elementId: blockId,
+//     selector,
+//     styles: kebabCss,
+//   };
+
+//   // Log the final payload
+//   console.log(
+//     "[DEBUG] Final overlay payload:",
+//     JSON.stringify(payload, null, 2)
+//   );
+
+//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+//     console.warn("❌ Missing required fields", {
+//       userId,
+//       token,
+//       widgetId,
+//       pageId,
+//       blockId,
+//       css,
+//     });
+//     return { success: false, error: "Missing required data" };
+//   }
+
+//   try {
+//     const response = await fetch(
+//       "https://admin.squareplugin.com/api/v1/save-image-overlay-modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     const result = await response.json();
+
+//     if (!response.ok) {
+//       throw new Error(result.message || `HTTP ${response.status}`);
+//     }
+
+//     console.log("✅ Overlay styles saved:", result);
+//     return { success: true, data: result };
+//   } catch (error) {
+//     console.error("❌ Error saving overlay styles:", error);
+//     return { success: false, error: error.message };
+//   }
+// }
+
 export async function saveImageOverlayModifications(blockId, css) {
   const pageId = document
     .querySelector("article[data-page-sections]")
@@ -425,6 +507,12 @@ export async function saveImageOverlayModifications(blockId, css) {
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
+  // Ensure content is included in the styles
+  const stylesWithContent = {
+    ...css,
+    content: "", // Always include content property
+  };
+
   // Detailed debug log
   console.log("[DEBUG] Overlay Save Fields:", {
     userId,
@@ -432,11 +520,11 @@ export async function saveImageOverlayModifications(blockId, css) {
     widgetId,
     pageId,
     blockId,
-    css,
+    css: stylesWithContent, // Log the modified css
   });
 
   const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
-  const kebabCss = toKebabCaseStyleObject(css);
+  const kebabCss = toKebabCaseStyleObject(stylesWithContent);
 
   // FLAT PAYLOAD for backend
   const payload = {
