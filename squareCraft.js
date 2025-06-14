@@ -1966,18 +1966,22 @@ let pendingModifications = new Map();
           );
 
           if (data && data.modifications) {
-            // Process each modification
             data.modifications.forEach((modification) => {
               if (modification.elements) {
                 modification.elements.forEach((element) => {
                   if (element.elementId === elementId && element.overlayCSS) {
                     console.log("Applying styles for block:", elementId);
-
-                    // Apply the styles to the element
+                    // Use a robust selector for the overlay
+                    const selector = `#${element.elementId} .sqs-image-content::before`;
+                    // Ensure content property is present
+                    const styles = {
+                      ...element.overlayCSS.styles,
+                      content: element.overlayCSS.styles.content || '" "',
+                    };
                     const styleTag = document.createElement("style");
                     styleTag.textContent = `
-                      ${element.overlayCSS.selector} {
-                        ${Object.entries(element.overlayCSS.styles)
+                      ${selector} {
+                        ${Object.entries(styles)
                           .map(([key, value]) => `${key}: ${value};`)
                           .join("\n")}
                       }
@@ -1993,7 +1997,6 @@ let pendingModifications = new Map();
             `❌ Failed to fetch modifications for block ${elementId}:`,
             error
           );
-          // Continue with next block even if this one fails
           continue;
         }
       }
