@@ -1934,58 +1934,69 @@ let pendingModifications = new Map();
       );
       console.log("Found image blocks:", imageBlocks);
 
-      // Fetch modifications for the page
-      const url = `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-      console.log("Fetching from URL:", url);
+      // Fetch modifications for each image block
+      for (const block of imageBlocks) {
+        const elementId = block.id;
+        const url = `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`;
+        console.log("Fetching from URL:", url);
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        try {
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
-      if (!response.ok) {
-        if (response.status === 404) {
-          console.log("No overlay modifications found for this page");
-          return null;
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+          if (!response.ok) {
+            if (response.status === 404) {
+              console.log(
+                `No overlay modifications found for block: ${elementId}`
+              );
+              continue;
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
 
-      const data = await response.json();
-      console.log("✅ Fetched overlay modifications:", data);
+          const data = await response.json();
+          console.log(
+            `✅ Fetched overlay modifications for block ${elementId}:`,
+            data
+          );
 
-      if (data && data.modifications) {
-        // Process each modification
-        data.modifications.forEach((modification) => {
-          if (modification.elements) {
-            modification.elements.forEach((element) => {
-              // Check if this element's block exists on the page
-              const blockElement = document.getElementById(element.elementId);
-              if (blockElement) {
-                console.log("Applying styles for block:", element.elementId);
+          if (data && data.modifications) {
+            // Process each modification
+            data.modifications.forEach((modification) => {
+              if (modification.elements) {
+                modification.elements.forEach((element) => {
+                  if (element.elementId === elementId && element.overlayCSS) {
+                    console.log("Applying styles for block:", elementId);
 
-                if (element.overlayCSS) {
-                  // Apply the styles to the element
-                  const styleTag = document.createElement("style");
-                  styleTag.textContent = `
-                    ${element.overlayCSS.selector} {
-                      ${Object.entries(element.overlayCSS.styles)
-                        .map(([key, value]) => `${key}: ${value};`)
-                        .join("\n")}
-                    }
-                  `;
-                  document.head.appendChild(styleTag);
-                }
+                    // Apply the styles to the element
+                    const styleTag = document.createElement("style");
+                    styleTag.textContent = `
+                      ${element.overlayCSS.selector} {
+                        ${Object.entries(element.overlayCSS.styles)
+                          .map(([key, value]) => `${key}: ${value};`)
+                          .join("\n")}
+                      }
+                    `;
+                    document.head.appendChild(styleTag);
+                  }
+                });
               }
             });
           }
-        });
+        } catch (error) {
+          console.error(
+            `❌ Failed to fetch modifications for block ${elementId}:`,
+            error
+          );
+          // Continue with next block even if this one fails
+          continue;
+        }
       }
-
-      return data;
     } catch (error) {
       console.error("❌ Failed to fetch image overlay modifications:", error);
       return null;
