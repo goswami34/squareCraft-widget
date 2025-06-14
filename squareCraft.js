@@ -1902,209 +1902,209 @@ let pendingModifications = new Map();
     }
   }
 
-  // async function fetchImageOverlayModifications(block, event) {
-  //   console.log("🔍 Fetching overlay modifications for block:", block);
-  //   const userId = localStorage.getItem("sc_u_id");
-  //   const token = localStorage.getItem("sc_auth_token");
-  //   const widgetId = localStorage.getItem("sc_w_id");
-  //   const pageId = document
-  //     .querySelector("article[data-page-sections]")
-  //     ?.getAttribute("data-page-sections");
-
-  //   // Get all blocks on the page
-  //   const blocks = document.querySelectorAll('[id^="block-"]');
-  //   console.log("🔍 Found blocks:", blocks);
-
-  //   // Try to find the block with the YUI ID pattern
-  //   const yuiBlock = Array.from(blocks).find((block) =>
-  //     block.id.includes("yui_3_17_2_1_1747891480387_7006")
-  //   );
-
-  //   // Use the YUI block ID if found, otherwise use the first block ID
-  //   const elementId = yuiBlock?.id || blocks[0]?.id;
-  //   console.log("🔍 Using elementId:", elementId);
-
-  //   if (!userId || !token || !widgetId || !pageId || !elementId) {
-  //     console.warn("⚠️ Missing required parameters:", {
-  //       userId: userId || "missing",
-  //       token: token ? "present" : "missing",
-  //       widgetId: widgetId || "missing",
-  //       pageId: pageId || "missing",
-  //       elementId: elementId || "missing",
-  //     });
-  //     return;
-  //   }
-
-  //   try {
-  //     console.log("🔍 Fetching overlay modifications for block:", {
-  //       userId,
-  //       widgetId,
-  //       pageId,
-  //       elementId,
-  //     });
-
-  //     // Use the production API endpoint
-  //     const response = await fetch(
-  //       `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
-  //       {
-  //         method: "GET",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-
-  //     const data = await response.json();
-  //     console.log("Raw response data:", data);
-
-  //     if (!response.ok) {
-  //       throw new Error(
-  //         data.message || "Failed to fetch overlay modifications"
-  //       );
-  //     }
-
-  //     // Check for modifications in the response
-  //     if (data.success && data.modifications && data.modifications.length > 0) {
-  //       const modification = data.modifications[0];
-  //       console.log("Found modification:", modification);
-
-  //       if (modification.elements && modification.elements.length > 0) {
-  //         const elementData = modification.elements[0];
-  //         console.log("Element data:", elementData);
-
-  //         if (elementData.overlayCSS) {
-  //           const selector = elementData.overlayCSS.selector;
-  //           const styles = elementData.overlayCSS.styles;
-  //           const isPseudo =
-  //             selector.includes("::before") || selector.includes("::after");
-
-  //           let styleElement = document.getElementById("sc-overlay-styles");
-  //           if (!styleElement) {
-  //             styleElement = document.createElement("style");
-  //             styleElement.id = "sc-overlay-styles";
-  //             document.head.appendChild(styleElement);
-  //           }
-
-  //           const cssRule = `${selector} { ${Object.entries(styles)
-  //             .map(([property, value]) => `${property}: ${value} !important;`)
-  //             .join(" ")} }`;
-  //           styleElement.textContent += cssRule;
-  //           console.log("✅ Applied overlay styles via <style> tag:", cssRule);
-
-  //           if (!isPseudo) {
-  //             // Optionally also apply as inline style for non-pseudo selectors
-  //             const targetElement = document.querySelector(selector);
-  //             if (targetElement) {
-  //               Object.entries(styles).forEach(([property, value]) => {
-  //                 targetElement.style.setProperty(property, value, "important");
-  //               });
-  //               console.log("✅ Applied overlay styles as inline styles.");
-  //             } else {
-  //               console.warn(
-  //                 "Target element not found for selector:",
-  //                 selector
-  //               );
-  //             }
-  //           }
-  //         } else {
-  //           console.log("No overlayCSS found in element data");
-  //         }
-  //       } else {
-  //         console.log("No elements found in modification");
-  //       }
-  //     } else {
-  //       console.log("No modifications found in response");
-  //     }
-
-  //     console.log("✅ Completed applying overlay styles");
-  //   } catch (error) {
-  //     console.error(
-  //       "❌ Failed to fetch image overlay modifications:",
-  //       error.message
-  //     );
-  //     showNotification("Failed to load image overlay styles", "error");
-  //   }
-  // }
-
   async function fetchImageOverlayModifications(block, event) {
+    console.log("🔍 Fetching overlay modifications for block:", block);
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    // Get all blocks on the page
+    const blocks = document.querySelectorAll('[id^="block-"]');
+    console.log("🔍 Found blocks:", blocks);
+
+    // Try to find the block with the YUI ID pattern
+    const yuiBlock = Array.from(blocks).find((block) =>
+      block.id.includes("yui_3_17_2_1_1747891480387_7006")
+    );
+
+    // Use the YUI block ID if found, otherwise use the first block ID
+    const elementId = yuiBlock?.id || blocks[0]?.id;
+    console.log("🔍 Using elementId:", elementId);
+
+    if (!userId || !token || !widgetId || !pageId || !elementId) {
+      console.warn("⚠️ Missing required parameters:", {
+        userId: userId || "missing",
+        token: token ? "present" : "missing",
+        widgetId: widgetId || "missing",
+        pageId: pageId || "missing",
+        elementId: elementId || "missing",
+      });
+      return;
+    }
+
     try {
-      // Get the block ID from the clicked element
-      const blockId = block?.id;
-      if (!blockId) {
-        console.warn("No block ID found");
-        return;
-      }
-
-      const userId = localStorage.getItem("sc_u_id");
-      const token = localStorage.getItem("sc_auth_token");
-      const widgetId = localStorage.getItem("sc_w_id");
-      const pageId = document
-        .querySelector("article[data-page-sections]")
-        ?.getAttribute("data-page-sections");
-
-      if (!userId || !token || !widgetId || !pageId) {
-        console.warn(
-          "Missing required data for fetching overlay modifications"
-        );
-        return;
-      }
-
-      // Use the correct local development URL
-      const url = new URL(
-        "https://admin.squareplugin.com/api/v1/get-image-overlay-modifications"
-      );
-      url.searchParams.append("userId", userId);
-      url.searchParams.append("widgetId", widgetId);
-      url.searchParams.append("pageId", pageId);
-      url.searchParams.append("elementId", blockId);
-
-      console.log("Fetching from URL:", url.toString());
-
-      const response = await fetch(url.toString(), {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+      console.log("🔍 Fetching overlay modifications for block:", {
+        userId,
+        widgetId,
+        pageId,
+        elementId,
       });
 
-      if (!response.ok) {
-        if (response.status === 404) {
-          console.log("No overlay modifications found for this element");
-          return null;
+      // Use the production API endpoint
+      const response = await fetch(
+        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      );
 
       const data = await response.json();
-      console.log("✅ Fetched overlay modifications:", data);
+      console.log("Raw response data:", data);
 
-      if (data && data.modifications) {
-        // Apply the modifications to the element
-        const modifications = data.modifications;
-        for (const mod of modifications) {
-          if (mod.styles) {
-            // Apply the styles to the element
-            const styleTag = document.createElement("style");
-            styleTag.textContent = `
-              ${mod.selector} {
-                ${Object.entries(mod.styles)
-                  .map(([key, value]) => `${key}: ${value};`)
-                  .join("\n")}
-              }
-            `;
-            document.head.appendChild(styleTag);
-          }
-        }
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to fetch overlay modifications"
+        );
       }
 
-      return data;
+      // Check for modifications in the response
+      if (data.success && data.modifications && data.modifications.length > 0) {
+        const modification = data.modifications[0];
+        console.log("Found modification:", modification);
+
+        if (modification.elements && modification.elements.length > 0) {
+          const elementData = modification.elements[0];
+          console.log("Element data:", elementData);
+
+          if (elementData.overlayCSS) {
+            const selector = elementData.overlayCSS.selector;
+            const styles = elementData.overlayCSS.styles;
+            const isPseudo =
+              selector.includes("::before") || selector.includes("::after");
+
+            let styleElement = document.getElementById("sc-overlay-styles");
+            if (!styleElement) {
+              styleElement = document.createElement("style");
+              styleElement.id = "sc-overlay-styles";
+              document.head.appendChild(styleElement);
+            }
+
+            const cssRule = `${selector} { ${Object.entries(styles)
+              .map(([property, value]) => `${property}: ${value} !important;`)
+              .join(" ")} }`;
+            styleElement.textContent += cssRule;
+            console.log("✅ Applied overlay styles via <style> tag:", cssRule);
+
+            if (!isPseudo) {
+              // Optionally also apply as inline style for non-pseudo selectors
+              const targetElement = document.querySelector(selector);
+              if (targetElement) {
+                Object.entries(styles).forEach(([property, value]) => {
+                  targetElement.style.setProperty(property, value, "important");
+                });
+                console.log("✅ Applied overlay styles as inline styles.");
+              } else {
+                console.warn(
+                  "Target element not found for selector:",
+                  selector
+                );
+              }
+            }
+          } else {
+            console.log("No overlayCSS found in element data");
+          }
+        } else {
+          console.log("No elements found in modification");
+        }
+      } else {
+        console.log("No modifications found in response");
+      }
+
+      console.log("✅ Completed applying overlay styles");
     } catch (error) {
-      console.error("❌ Failed to fetch image overlay modifications:", error);
-      return null;
+      console.error(
+        "❌ Failed to fetch image overlay modifications:",
+        error.message
+      );
+      showNotification("Failed to load image overlay styles", "error");
     }
   }
+
+  // async function fetchImageOverlayModifications(block, event) {
+  //   try {
+  //     // Get the block ID from the clicked element
+  //     const blockId = block?.id;
+  //     if (!blockId) {
+  //       console.warn("No block ID found");
+  //       return;
+  //     }
+
+  //     const userId = localStorage.getItem("sc_u_id");
+  //     const token = localStorage.getItem("sc_auth_token");
+  //     const widgetId = localStorage.getItem("sc_w_id");
+  //     const pageId = document
+  //       .querySelector("article[data-page-sections]")
+  //       ?.getAttribute("data-page-sections");
+
+  //     if (!userId || !token || !widgetId || !pageId) {
+  //       console.warn(
+  //         "Missing required data for fetching overlay modifications"
+  //       );
+  //       return;
+  //     }
+
+  //     // Use the correct local development URL
+  //     const url = new URL(
+  //       "https://admin.squareplugin.com/api/v1/get-image-overlay-modifications"
+  //     );
+  //     url.searchParams.append("userId", userId);
+  //     url.searchParams.append("widgetId", widgetId);
+  //     url.searchParams.append("pageId", pageId);
+  //     url.searchParams.append("elementId", blockId);
+
+  //     console.log("Fetching from URL:", url.toString());
+
+  //     const response = await fetch(url.toString(), {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     if (!response.ok) {
+  //       if (response.status === 404) {
+  //         console.log("No overlay modifications found for this element");
+  //         return null;
+  //       }
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+
+  //     const data = await response.json();
+  //     console.log("✅ Fetched overlay modifications:", data);
+
+  //     if (data && data.modifications) {
+  //       // Apply the modifications to the element
+  //       const modifications = data.modifications;
+  //       for (const mod of modifications) {
+  //         if (mod.styles) {
+  //           // Apply the styles to the element
+  //           const styleTag = document.createElement("style");
+  //           styleTag.textContent = `
+  //             ${mod.selector} {
+  //               ${Object.entries(mod.styles)
+  //                 .map(([key, value]) => `${key}: ${value};`)
+  //                 .join("\n")}
+  //             }
+  //           `;
+  //           document.head.appendChild(styleTag);
+  //         }
+  //       }
+  //     }
+
+  //     return data;
+  //   } catch (error) {
+  //     console.error("❌ Failed to fetch image overlay modifications:", error);
+  //     return null;
+  //   }
+  // }
 
   window.addEventListener("load", async () => {
     await fetchModifications();
