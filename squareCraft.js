@@ -2050,7 +2050,7 @@ let pendingModifications = new Map();
         return;
       }
 
-      // Construct the URL with proper query parameters
+      // Use the correct local development URL
       const url = new URL(
         "https://admin.squareplugin.com/api/v1/get-image-overlay-modifications"
       );
@@ -2058,6 +2058,8 @@ let pendingModifications = new Map();
       url.searchParams.append("widgetId", widgetId);
       url.searchParams.append("pageId", pageId);
       url.searchParams.append("elementId", blockId);
+
+      console.log("Fetching from URL:", url.toString());
 
       const response = await fetch(url.toString(), {
         method: "GET",
