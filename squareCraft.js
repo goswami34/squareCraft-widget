@@ -1902,12 +1902,25 @@ let pendingModifications = new Map();
     }
   }
 
+  // function getStableBlockId(element) {
+  //   const yuiBlocks = document.querySelectorAll('[id^="block-yui_3_17_2_1_"]');
+  //   const match = Array.from(yuiBlocks).find((block) =>
+  //     block.contains(element)
+  //   );
+  //   return match?.id || element?.closest('[id^="block-"]')?.id || null;
+  // }
+
   function getStableBlockId(element) {
-    const yuiBlocks = document.querySelectorAll('[id^="block-yui_3_17_2_1_"]');
-    const match = Array.from(yuiBlocks).find((block) =>
-      block.contains(element)
-    );
-    return match?.id || element?.closest('[id^="block-"]')?.id || null;
+    if (!element) return null;
+
+    // If element is already a block, return its id
+    if (element.id && element.id.startsWith("block-")) {
+      return element.id;
+    }
+
+    // Find the closest parent block element
+    const blockElement = element.closest('[id^="block-"]');
+    return blockElement ? blockElement.id : null;
   }
 
   async function fetchImageOverlayModifications(blockOrElement) {
@@ -1980,85 +1993,6 @@ let pendingModifications = new Map();
       showNotification("Failed to load image overlay styles", "error");
     }
   }
-
-  // async function fetchImageOverlayModifications(block, event) {
-  //   try {
-  //     // Get the block ID from the clicked element
-  //     const blockId = block?.id;
-  //     if (!blockId) {
-  //       console.warn("No block ID found");
-  //       return;
-  //     }
-
-  //     const userId = localStorage.getItem("sc_u_id");
-  //     const token = localStorage.getItem("sc_auth_token");
-  //     const widgetId = localStorage.getItem("sc_w_id");
-  //     const pageId = document
-  //       .querySelector("article[data-page-sections]")
-  //       ?.getAttribute("data-page-sections");
-
-  //     if (!userId || !token || !widgetId || !pageId) {
-  //       console.warn(
-  //         "Missing required data for fetching overlay modifications"
-  //       );
-  //       return;
-  //     }
-
-  //     // Use the correct local development URL
-  //     const url = new URL(
-  //       "https://admin.squareplugin.com/api/v1/get-image-overlay-modifications"
-  //     );
-  //     url.searchParams.append("userId", userId);
-  //     url.searchParams.append("widgetId", widgetId);
-  //     url.searchParams.append("pageId", pageId);
-  //     url.searchParams.append("elementId", blockId);
-
-  //     console.log("Fetching from URL:", url.toString());
-
-  //     const response = await fetch(url.toString(), {
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     if (!response.ok) {
-  //       if (response.status === 404) {
-  //         console.log("No overlay modifications found for this element");
-  //         return null;
-  //       }
-  //       throw new Error(`HTTP error! status: ${response.status}`);
-  //     }
-
-  //     const data = await response.json();
-  //     console.log("✅ Fetched overlay modifications:", data);
-
-  //     if (data && data.modifications) {
-  //       // Apply the modifications to the element
-  //       const modifications = data.modifications;
-  //       for (const mod of modifications) {
-  //         if (mod.styles) {
-  //           // Apply the styles to the element
-  //           const styleTag = document.createElement("style");
-  //           styleTag.textContent = `
-  //             ${mod.selector} {
-  //               ${Object.entries(mod.styles)
-  //                 .map(([key, value]) => `${key}: ${value};`)
-  //                 .join("\n")}
-  //             }
-  //           `;
-  //           document.head.appendChild(styleTag);
-  //         }
-  //       }
-  //     }
-
-  //     return data;
-  //   } catch (error) {
-  //     console.error("❌ Failed to fetch image overlay modifications:", error);
-  //     return null;
-  //   }
-  // }
 
   window.addEventListener("load", async () => {
     await fetchModifications();
