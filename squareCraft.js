@@ -3350,6 +3350,8 @@ let pendingModifications = new Map();
     }, 300);
   }
 
+  console.log("lastClickedBlockId", lastClickedBlockId);
+
   if (lastClickedBlockId) {
     fetchImageOverlayModifications(lastClickedBlockId);
   } else {
