@@ -1904,10 +1904,18 @@ let pendingModifications = new Map();
 
   async function fetchImageOverlayModifications(blockOrElement) {
     try {
-      // Get the block ID from the clicked element
-      const blockId = blockOrElement?.id;
+      // Get the block ID from the clicked element or its parent
+      let blockId;
+      if (blockOrElement?.id?.startsWith("block-")) {
+        blockId = blockOrElement.id;
+      } else {
+        // Find the closest parent block element
+        const blockElement = blockOrElement?.closest('[id^="block-"]');
+        blockId = blockElement?.id;
+      }
+
       if (!blockId) {
-        console.warn("No block ID found");
+        console.warn("No block ID found for element:", blockOrElement);
         return;
       }
 
@@ -1925,18 +1933,12 @@ let pendingModifications = new Map();
         return;
       }
 
-      // Construct URL with the same parameters used in save
-      const url = new URL(
-        "http://localhost:8001/api/v1/get-image-overlay-modifications"
-      );
-      url.searchParams.append("userId", userId);
-      url.searchParams.append("widgetId", widgetId);
-      url.searchParams.append("pageId", pageId);
-      url.searchParams.append("elementId", blockId); // Using the same elementId format as save
+      // Use the correct production API URL
+      const url = `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${blockId}`;
 
-      console.log("Fetching from URL:", url.toString());
+      console.log("Fetching from URL:", url);
 
-      const response = await fetch(url.toString(), {
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
