@@ -1912,26 +1912,8 @@ let pendingModifications = new Map();
     }
   }
 
-  // Helper function to get only image block IDs
-  function getImageBlockId(element) {
-    // Only match IDs that look like image blocks
-    const block = element.closest('[id^="block-yui_3_17_2_1_"]');
-    console.log("getImageBlockId found block:", block);
-    return block ? block.id : null;
-  }
-
-  async function fetchImageOverlayModifications(blockId) {
-    console.log("blockId amit", blockId);
+  async function fetchImageOverlayModifications() {
     try {
-      // Ensure we're using the correct block ID format
-      if (!blockId || !blockId.startsWith("block-yui_3_17_2_1_")) {
-        console.warn(
-          "Invalid block ID format. Expected block-yui_3_17_2_1_ format, got:",
-          blockId
-        );
-        return;
-      }
-
       const userId = localStorage.getItem("sc_u_id");
       const token = localStorage.getItem("sc_auth_token");
       const widgetId = localStorage.getItem("sc_w_id");
@@ -1946,9 +1928,14 @@ let pendingModifications = new Map();
         return;
       }
 
-      // Use the correct production API URL with the specific block ID
-      const url = `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${blockId}`;
+      // Get all image blocks on the page
+      const imageBlocks = document.querySelectorAll(
+        '[id^="block-yui_3_17_2_1_"]'
+      );
+      console.log("Found image blocks:", imageBlocks);
 
+      // Fetch modifications for the page
+      const url = `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
       console.log("Fetching from URL:", url);
 
       const response = await fetch(url, {
@@ -1961,7 +1948,7 @@ let pendingModifications = new Map();
 
       if (!response.ok) {
         if (response.status === 404) {
-          console.log("No overlay modifications found for this element");
+          console.log("No overlay modifications found for this page");
           return null;
         }
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -1971,29 +1958,31 @@ let pendingModifications = new Map();
       console.log("✅ Fetched overlay modifications:", data);
 
       if (data && data.modifications) {
-        // Find the modification for this specific block
-        const blockModification = data.modifications.find(
-          (mod) =>
-            mod.elements && mod.elements.some((el) => el.elementId === blockId)
-        );
+        // Process each modification
+        data.modifications.forEach((modification) => {
+          if (modification.elements) {
+            modification.elements.forEach((element) => {
+              // Check if this element's block exists on the page
+              const blockElement = document.getElementById(element.elementId);
+              if (blockElement) {
+                console.log("Applying styles for block:", element.elementId);
 
-        if (blockModification) {
-          const elementData = blockModification.elements.find(
-            (el) => el.elementId === blockId
-          );
-          if (elementData?.overlayCSS) {
-            // Apply the styles to the element
-            const styleTag = document.createElement("style");
-            styleTag.textContent = `
-              ${elementData.overlayCSS.selector} {
-                ${Object.entries(elementData.overlayCSS.styles)
-                  .map(([key, value]) => `${key}: ${value};`)
-                  .join("\n")}
+                if (element.overlayCSS) {
+                  // Apply the styles to the element
+                  const styleTag = document.createElement("style");
+                  styleTag.textContent = `
+                    ${element.overlayCSS.selector} {
+                      ${Object.entries(element.overlayCSS.styles)
+                        .map(([key, value]) => `${key}: ${value};`)
+                        .join("\n")}
+                    }
+                  `;
+                  document.head.appendChild(styleTag);
+                }
               }
-            `;
-            document.head.appendChild(styleTag);
+            });
           }
-        }
+        });
       }
 
       return data;
