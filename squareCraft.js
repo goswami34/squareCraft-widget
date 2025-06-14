@@ -1923,7 +1923,7 @@ let pendingModifications = new Map();
         ? blockOrElement
         : getStableBlockId(blockOrElement);
 
-    console.log(elementId);
+    console.log("✅ Using elementId for fetch:", elementId);
 
     if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing required parameters:", {
