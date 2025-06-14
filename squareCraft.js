@@ -1923,29 +1923,8 @@ let pendingModifications = new Map();
   async function fetchImageOverlayModifications(blockId) {
     console.log("blockId amit", blockId);
     try {
-      // Get the block ID from the clicked element or its parent
-      // let blockId;
-      // if (typeof blockOrElement === "string") {
-      //   // If it's already a string, use it directly
-      //   blockId = blockOrElement;
-      // } else if (blockOrElement?.id) {
-      //   // If it's an element with an ID, use that
-      //   blockId = blockOrElement.id;
-      // } else if (blockOrElement instanceof Element) {
-      //   // If it's an element without an ID, find the closest block
-      //   const blockElement = blockOrElement.closest(
-      //     '[id^="block-yui_3_17_2_1_"]'
-      //   );
-      //   blockId = blockElement?.id;
-      // }
-
-      // if (!blockId) {
-      //   console.warn("No valid image block ID found for:", blockOrElement);
-      //   return;
-      // }
-
       // Ensure we're using the correct block ID format
-      if (!blockId.startsWith("block-yui_3_17_2_1_")) {
+      if (!blockId || !blockId.startsWith("block-yui_3_17_2_1_")) {
         console.warn(
           "Invalid block ID format. Expected block-yui_3_17_2_1_ format, got:",
           blockId
@@ -1967,7 +1946,7 @@ let pendingModifications = new Map();
         return;
       }
 
-      // Use the correct production API URL
+      // Use the correct production API URL with the specific block ID
       const url = `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${blockId}`;
 
       console.log("Fetching from URL:", url);
@@ -1992,15 +1971,22 @@ let pendingModifications = new Map();
       console.log("✅ Fetched overlay modifications:", data);
 
       if (data && data.modifications) {
-        // Apply the modifications to the element
-        const modifications = data.modifications;
-        for (const mod of modifications) {
-          if (mod.styles) {
+        // Find the modification for this specific block
+        const blockModification = data.modifications.find(
+          (mod) =>
+            mod.elements && mod.elements.some((el) => el.elementId === blockId)
+        );
+
+        if (blockModification) {
+          const elementData = blockModification.elements.find(
+            (el) => el.elementId === blockId
+          );
+          if (elementData?.overlayCSS) {
             // Apply the styles to the element
             const styleTag = document.createElement("style");
             styleTag.textContent = `
-              ${mod.selector} {
-                ${Object.entries(mod.styles)
+              ${elementData.overlayCSS.selector} {
+                ${Object.entries(elementData.overlayCSS.styles)
                   .map(([key, value]) => `${key}: ${value};`)
                   .join("\n")}
               }
