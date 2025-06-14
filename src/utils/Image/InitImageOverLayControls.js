@@ -81,6 +81,7 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
       elementId: blockId,
       selector,
       styles: {
+        content: " ",
         top: `${overlayState.y}px`,
         left: `${overlayState.x}px`,
         width: `${overlayState.width}%`,
@@ -89,7 +90,6 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
         "pointer-events": "none",
         "z-index": "5",
         display: "block",
-        content: " ",
       },
     });
 
