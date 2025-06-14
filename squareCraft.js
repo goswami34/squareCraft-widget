@@ -1909,8 +1909,6 @@ let pendingModifications = new Map();
     return block ? block.id : null;
   }
 
-  console.log("block id", blockId);
-
   async function fetchImageOverlayModifications(blockOrElement) {
     console.log(blockOrElement);
     try {
@@ -2942,6 +2940,8 @@ let pendingModifications = new Map();
     document.addEventListener("click", (e) => {
       const block = e.target.closest('[id^="block-"]');
       if (!block) return;
+
+      console.log("block", block);
 
       const imageContent = block.querySelector(".sqs-image-content");
       if (imageContent && overlayControls) {
