@@ -1902,6 +1902,14 @@ let pendingModifications = new Map();
     }
   }
 
+  function getStableBlockId(element) {
+    const yuiBlocks = document.querySelectorAll('[id^="block-yui_3_17_2_1_"]');
+    const match = Array.from(yuiBlocks).find((block) =>
+      block.contains(element)
+    );
+    return match?.id || element?.closest('[id^="block-"]')?.id || null;
+  }
+
   async function fetchImageOverlayModifications(blockOrElement) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
