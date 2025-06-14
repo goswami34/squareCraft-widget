@@ -1913,9 +1913,7 @@ let pendingModifications = new Map();
     const elementId =
       typeof blockOrElement === "string"
         ? blockOrElement
-        : getParentBlockId(blockOrElement); // ✅ Convert element to correct block ID
-
-    console.log(elementId);
+        : getStableBlockId(blockOrElement);
 
     if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing required parameters:", {
@@ -1966,13 +1964,9 @@ let pendingModifications = new Map();
       }`;
 
       styleElement.textContent += cssRule;
-
       console.log("✅ Applied overlay styles:", cssRule);
     } catch (error) {
-      console.error(
-        "❌ Failed to fetch image overlay modifications:",
-        error.message
-      );
+      console.error("❌ Failed to fetch overlay modifications:", error.message);
       showNotification("Failed to load image overlay styles", "error");
     }
   }
