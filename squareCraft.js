@@ -1903,21 +1903,29 @@ let pendingModifications = new Map();
   }
 
   async function fetchImageOverlayModifications(blockOrElement) {
-    console.log(blockOrElement);
     try {
-      // Handle both string (blockId) and element inputs
+      // Get the block ID from the clicked element or its parent
       let blockId;
       if (typeof blockOrElement === "string") {
+        // If it's already a string, use it directly
         blockId = blockOrElement;
-      } else if (blockOrElement?.id?.startsWith("block-")) {
+      } else if (blockOrElement?.id) {
+        // If it's an element with an ID, use that
         blockId = blockOrElement.id;
       } else if (blockOrElement instanceof Element) {
+        // If it's an element without an ID, find the closest block
         const blockElement = blockOrElement.closest('[id^="block-"]');
         blockId = blockElement?.id;
       }
 
       if (!blockId) {
         console.warn("No block ID found for:", blockOrElement);
+        return;
+      }
+
+      // Ensure blockId starts with 'block-'
+      if (!blockId.startsWith("block-")) {
+        console.warn("Invalid block ID format:", blockId);
         return;
       }
 
