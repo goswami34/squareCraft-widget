@@ -510,7 +510,7 @@ export async function saveImageOverlayModifications(blockId, css) {
   // Ensure content is included in the styles
   const stylesWithContent = {
     ...css,
-    content: "", // Always include content property
+    content: " ", // Always include content property
   };
 
   // Detailed debug log
