@@ -1902,8 +1902,7 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageOverlayModifications(block, event) {
-    console.log("🔍 Fetching overlay modifications for block:", block);
+  async function fetchImageOverlayModifications(blockOrElement) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -1911,39 +1910,23 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    // Get all blocks on the page
-    const blocks = document.querySelectorAll('[id^="block-"]');
-    console.log("🔍 Found blocks:", blocks);
-
-    // Try to find the block with the YUI ID pattern
-    const yuiBlock = Array.from(blocks).find((block) =>
-      block.id.includes("yui_3_17_2_1_1747891480387_7006")
-    );
-
-    // Use the YUI block ID if found, otherwise use the first block ID
-    const elementId = yuiBlock?.id || blocks[0]?.id;
-    console.log("🔍 Using elementId:", elementId);
+    const elementId =
+      typeof blockOrElement === "string"
+        ? blockOrElement
+        : getParentBlockId(blockOrElement);
 
     if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing required parameters:", {
-        userId: userId || "missing",
-        token: token ? "present" : "missing",
-        widgetId: widgetId || "missing",
-        pageId: pageId || "missing",
-        elementId: elementId || "missing",
+        userId,
+        token,
+        widgetId,
+        pageId,
+        elementId,
       });
       return;
     }
 
     try {
-      console.log("🔍 Fetching overlay modifications for block:", {
-        userId,
-        widgetId,
-        pageId,
-        elementId,
-      });
-
-      // Use the production API endpoint
       const response = await fetch(
         `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
         {
@@ -1956,7 +1939,7 @@ let pendingModifications = new Map();
       );
 
       const data = await response.json();
-      console.log("Raw response data:", data);
+      console.log("Overlay fetch response:", data);
 
       if (!response.ok) {
         throw new Error(
@@ -1964,65 +1947,43 @@ let pendingModifications = new Map();
         );
       }
 
-      // Check for modifications in the response
-      if (data.success && data.modifications && data.modifications.length > 0) {
-        const modification = data.modifications[0];
-        console.log("Found modification:", modification);
-
-        if (modification.elements && modification.elements.length > 0) {
-          const elementData = modification.elements[0];
-          console.log("Element data:", elementData);
-
-          if (elementData.overlayCSS) {
-            const selector = elementData.overlayCSS.selector;
-            const styles = elementData.overlayCSS.styles;
-            const isPseudo =
-              selector.includes("::before") || selector.includes("::after");
-
-            let styleElement = document.getElementById("sc-overlay-styles");
-            if (!styleElement) {
-              styleElement = document.createElement("style");
-              styleElement.id = "sc-overlay-styles";
-              document.head.appendChild(styleElement);
-            }
-
-            const cssRule = `${selector} { ${Object.entries(styles)
-              .map(([property, value]) => `${property}: ${value} !important;`)
-              .join(" ")} }`;
-            styleElement.textContent += cssRule;
-            console.log("✅ Applied overlay styles via <style> tag:", cssRule);
-
-            if (!isPseudo) {
-              // Optionally also apply as inline style for non-pseudo selectors
-              const targetElement = document.querySelector(selector);
-              if (targetElement) {
-                Object.entries(styles).forEach(([property, value]) => {
-                  targetElement.style.setProperty(property, value, "important");
-                });
-                console.log("✅ Applied overlay styles as inline styles.");
-              } else {
-                console.warn(
-                  "Target element not found for selector:",
-                  selector
-                );
-              }
-            }
-          } else {
-            console.log("No overlayCSS found in element data");
-          }
-        } else {
-          console.log("No elements found in modification");
-        }
-      } else {
-        console.log("No modifications found in response");
+      const elementData = data?.modifications?.[0]?.elements?.[0];
+      if (!elementData?.overlayCSS) {
+        console.log("❌ No overlayCSS found in data.");
+        return;
       }
 
-      console.log("✅ Completed applying overlay styles");
+      const { selector, styles } = elementData.overlayCSS;
+      const isPseudo =
+        selector.includes("::before") || selector.includes("::after");
+
+      let styleElement = document.getElementById("sc-overlay-styles");
+      if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "sc-overlay-styles";
+        document.head.appendChild(styleElement);
+      }
+
+      const cssRule = `${selector} { ${Object.entries(styles)
+        .map(([prop, val]) => `${prop}: ${val} !important;`)
+        .join(" ")} }`;
+
+      styleElement.textContent += cssRule;
+      console.log("✅ Applied overlay styles:", cssRule);
+
+      if (!isPseudo) {
+        const targetElement = document.querySelector(selector);
+        if (targetElement) {
+          Object.entries(styles).forEach(([prop, val]) => {
+            targetElement.style.setProperty(prop, val, "important");
+          });
+          console.log("✅ Applied inline overlay styles.");
+        } else {
+          console.warn("⚠️ Target element not found for selector:", selector);
+        }
+      }
     } catch (error) {
-      console.error(
-        "❌ Failed to fetch image overlay modifications:",
-        error.message
-      );
+      console.error("❌ Error fetching overlay modifications:", error.message);
       showNotification("Failed to load image overlay styles", "error");
     }
   }
