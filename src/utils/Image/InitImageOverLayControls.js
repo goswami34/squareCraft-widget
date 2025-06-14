@@ -88,6 +88,7 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
         "pointer-events": "none",
         "z-index": "5",
         display: "block",
+        content: "",
       },
     });
 
@@ -129,6 +130,7 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
         pointer-events: none;
         z-index: 5;
         display: block;
+        content: "";
       }
   
       #${blockId} .sqs-image-content > :nth-child(-n+2) {
