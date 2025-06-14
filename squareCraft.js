@@ -1903,6 +1903,7 @@ let pendingModifications = new Map();
   }
 
   async function fetchImageOverlayModifications(blockOrElement) {
+    console.log(blockOrElement);
     try {
       // Handle both string (blockId) and element inputs
       let blockId;
