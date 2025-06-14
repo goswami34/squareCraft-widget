@@ -1972,21 +1972,38 @@ let pendingModifications = new Map();
                   if (element.elementId === elementId && element.overlayCSS) {
                     console.log("Applying styles for block:", elementId);
                     // Use a robust selector for the overlay
-                    const selector = `#${element.elementId} .sqs-image-content::before`;
-                    // Ensure content property is present
+                    // const selector = `#${element.elementId} .sqs-image-content::before`;
+                    // // Ensure content property is present
+                    // const styles = {
+                    //   ...element.overlayCSS.styles,
+                    //   content: element.overlayCSS.styles.content || '" "',
+                    // };
+                    // const styleTag = document.createElement("style");
+                    // styleTag.textContent = `
+                    //   ${selector} {
+                    //     ${Object.entries(styles)
+                    //       .map(([key, value]) => `${key}: ${value};`)
+                    //       .join("\n")}
+                    //   }
+                    // `;
+                    // document.head.appendChild(styleTag);
+
+                    const selector = element.overlayCSS.selector;
                     const styles = {
                       ...element.overlayCSS.styles,
                       content: element.overlayCSS.styles.content || '" "',
                     };
+
                     const styleTag = document.createElement("style");
                     styleTag.textContent = `
                       ${selector} {
                         ${Object.entries(styles)
-                          .map(([key, value]) => `${key}: ${value};`)
+                          .map(([key, value]) => `${key}: ${value} !important;`)
                           .join("\n")}
                       }
                     `;
                     document.head.appendChild(styleTag);
+                    console.log("✅ Applied overlay CSS to:", selector);
                   }
                 });
               }
