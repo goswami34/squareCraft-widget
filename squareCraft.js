@@ -1903,7 +1903,6 @@ let pendingModifications = new Map();
   }
 
   async function fetchImageOverlayModifications(blockOrElement) {
-    console.log(blockOrElement);
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -1914,7 +1913,7 @@ let pendingModifications = new Map();
     const elementId =
       typeof blockOrElement === "string"
         ? blockOrElement
-        : getParentBlockId(blockOrElement);
+        : getParentBlockId(blockOrElement); // ✅ Convert element to correct block ID
 
     if (!userId || !token || !widgetId || !pageId || !elementId) {
       console.warn("⚠️ Missing required parameters:", {
@@ -1940,8 +1939,6 @@ let pendingModifications = new Map();
       );
 
       const data = await response.json();
-      console.log("Overlay fetch response:", data);
-
       if (!response.ok) {
         throw new Error(
           data.message || "Failed to fetch overlay modifications"
@@ -1949,14 +1946,9 @@ let pendingModifications = new Map();
       }
 
       const elementData = data?.modifications?.[0]?.elements?.[0];
-      if (!elementData?.overlayCSS) {
-        console.log("❌ No overlayCSS found in data.");
-        return;
-      }
+      if (!elementData?.overlayCSS) return;
 
       const { selector, styles } = elementData.overlayCSS;
-      const isPseudo =
-        selector.includes("::before") || selector.includes("::after");
 
       let styleElement = document.getElementById("sc-overlay-styles");
       if (!styleElement) {
@@ -1965,26 +1957,20 @@ let pendingModifications = new Map();
         document.head.appendChild(styleElement);
       }
 
-      const cssRule = `${selector} { ${Object.entries(styles)
-        .map(([prop, val]) => `${prop}: ${val} !important;`)
-        .join(" ")} }`;
+      const cssRule = `${selector} {
+        ${Object.entries(styles)
+          .map(([prop, val]) => `${prop}: ${val} !important;`)
+          .join(" ")}
+      }`;
 
       styleElement.textContent += cssRule;
-      console.log("✅ Applied overlay styles:", cssRule);
 
-      if (!isPseudo) {
-        const targetElement = document.querySelector(selector);
-        if (targetElement) {
-          Object.entries(styles).forEach(([prop, val]) => {
-            targetElement.style.setProperty(prop, val, "important");
-          });
-          console.log("✅ Applied inline overlay styles.");
-        } else {
-          console.warn("⚠️ Target element not found for selector:", selector);
-        }
-      }
+      console.log("✅ Applied overlay styles:", cssRule);
     } catch (error) {
-      console.error("❌ Error fetching overlay modifications:", error.message);
+      console.error(
+        "❌ Failed to fetch image overlay modifications:",
+        error.message
+      );
       showNotification("Failed to load image overlay styles", "error");
     }
   }
