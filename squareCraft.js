@@ -1920,7 +1920,8 @@ let pendingModifications = new Map();
     return block ? block.id : null;
   }
 
-  async function fetchImageOverlayModifications(blockOrElement) {
+  async function fetchImageOverlayModifications(clickedBlockOne) {
+    console.log("clickedBlockOne", clickedBlockOne);
     let blockId;
     if (
       typeof blockOrElement === "string" &&
