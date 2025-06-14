@@ -1909,11 +1909,6 @@ let pendingModifications = new Map();
     return block ? block.id : null;
   }
 
-  const block = e.target.closest('[id^="block-"]');
-  if (!block) return;
-
-  console.log("block", block);
-
   async function fetchImageOverlayModifications(blockOrElement) {
     console.log(blockOrElement);
     try {
@@ -1929,6 +1924,8 @@ let pendingModifications = new Map();
       } else if (blockOrElement instanceof Element) {
         blockId = getImageBlockId(blockOrElement);
       }
+
+      console.log("block id", blockId);
 
       if (!blockId) {
         console.warn("No valid image block ID found for:", blockOrElement);
