@@ -55,6 +55,7 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
       pointerEvents: "none",
       borderRadius: "inherit",
       transition: "all 0.3s ease",
+      content: " ",
     });
 
     content.appendChild(overlay);
@@ -88,7 +89,7 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
         "pointer-events": "none",
         "z-index": "5",
         display: "block",
-        content: "",
+        content: " ",
       },
     });
 
@@ -120,7 +121,6 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     // 💡 Apply CSS to the pseudo element using `::before`
     styleTag.textContent = `
       #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
-        content: '';
         position: absolute;
         top: ${overlayState.y}px;
         left: ${overlayState.x}px;
@@ -130,7 +130,7 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
         pointer-events: none;
         z-index: 5;
         display: block;
-        content: "";
+        content: " ";
       }
   
       #${blockId} .sqs-image-content > :nth-child(-n+2) {
