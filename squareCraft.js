@@ -387,6 +387,8 @@ let pendingModifications = new Map();
 
     setTimeout(initImageSectionControls, 100);
     const clickedBlock = event.target.closest('[id^="block-"]');
+    console.log("clickedBlock", clickedBlock);
+
     if (clickedBlock) {
       waitForElement("#typoSection, #imageSection")
         .then(() => {
