@@ -1906,6 +1906,8 @@ let pendingModifications = new Map();
     // This will find the closest parent with an ID that matches the image block pattern
     // (You may want to refine the regex if you have other block types)
     const block = element.closest('[id^="block-yui_3_17_2_1_"]');
+
+    console.log("block", block);
     return block ? block.id : null;
   }
 
