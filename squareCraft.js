@@ -1988,22 +1988,28 @@ let pendingModifications = new Map();
                     // `;
                     // document.head.appendChild(styleTag);
 
-                    const selector = element.overlayCSS.selector;
+                    const selector = `#${element.elementId} .sqs-image-content`;
                     const styles = {
                       ...element.overlayCSS.styles,
                       content: element.overlayCSS.styles.content || '" "',
+                      position: "relative", // Ensure this to support ::before
                     };
 
-                    const styleTag = document.createElement("style");
-                    styleTag.textContent = `
-                      ${selector} {
+                    const overlayBeforeStyles = `
+                      ${selector}::before {
                         ${Object.entries(styles)
                           .map(([key, value]) => `${key}: ${value} !important;`)
                           .join("\n")}
                       }
                     `;
+
+                    const styleTag = document.createElement("style");
+                    styleTag.textContent = overlayBeforeStyles;
                     document.head.appendChild(styleTag);
-                    console.log("✅ Applied overlay CSS to:", selector);
+                    console.log(
+                      "✅ Injected overlay pseudo-element styles for",
+                      selector
+                    );
                   }
                 });
               }
