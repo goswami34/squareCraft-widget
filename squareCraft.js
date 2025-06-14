@@ -1921,44 +1921,56 @@ let pendingModifications = new Map();
   }
 
   async function fetchImageOverlayModifications(blockOrElement) {
-    let blockId;
-    if (
-      typeof blockOrElement === "string" &&
-      blockOrElement.startsWith("block-yui_3_17_2_1_")
-    ) {
-      blockId = blockOrElement;
-    } else if (
-      blockOrElement?.id &&
-      blockOrElement.id.startsWith("block-yui_3_17_2_1_")
-    ) {
-      blockId = blockOrElement.id;
-    } else if (blockOrElement instanceof Element) {
-      blockId = getImageBlockId(blockOrElement);
-    }
-
-    if (!blockId) {
-      console.warn("No valid image block ID found for:", blockOrElement);
-      return;
-    }
-
-    const userId = localStorage.getItem("sc_u_id");
-    const token = localStorage.getItem("sc_auth_token");
-    const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
-
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("Missing required data for fetching overlay modifications");
-      return;
-    }
-
-    // Use the correct production API URL
-    const url = `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${blockId}`;
-
-    console.log("Fetching from URL:", url);
-
     try {
+      // Get the block ID from the clicked element or its parent
+      let blockId;
+      if (typeof blockOrElement === "string") {
+        // If it's already a string, use it directly
+        blockId = blockOrElement;
+      } else if (blockOrElement?.id) {
+        // If it's an element with an ID, use that
+        blockId = blockOrElement.id;
+      } else if (blockOrElement instanceof Element) {
+        // If it's an element without an ID, find the closest block
+        const blockElement = blockOrElement.closest(
+          '[id^="block-yui_3_17_2_1_"]'
+        );
+        blockId = blockElement?.id;
+      }
+
+      if (!blockId) {
+        console.warn("No valid image block ID found for:", blockOrElement);
+        return;
+      }
+
+      // Ensure we're using the correct block ID format
+      if (!blockId.startsWith("block-yui_3_17_2_1_")) {
+        console.warn(
+          "Invalid block ID format. Expected block-yui_3_17_2_1_ format, got:",
+          blockId
+        );
+        return;
+      }
+
+      const userId = localStorage.getItem("sc_u_id");
+      const token = localStorage.getItem("sc_auth_token");
+      const widgetId = localStorage.getItem("sc_w_id");
+      const pageId = document
+        .querySelector("article[data-page-sections]")
+        ?.getAttribute("data-page-sections");
+
+      if (!userId || !token || !widgetId || !pageId) {
+        console.warn(
+          "Missing required data for fetching overlay modifications"
+        );
+        return;
+      }
+
+      // Use the correct production API URL
+      const url = `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${blockId}`;
+
+      console.log("Fetching from URL:", url);
+
       const response = await fetch(url, {
         method: "GET",
         headers: {
