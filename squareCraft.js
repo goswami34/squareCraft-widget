@@ -1906,10 +1906,9 @@ let pendingModifications = new Map();
   function getImageBlockId(element) {
     // Only match IDs that look like image blocks
     const block = element.closest('[id^="block-yui_3_17_2_1_"]');
+    console.log("getImageBlockId found block:", block);
     return block ? block.id : null;
   }
-
-  console.log(element);
 
   async function fetchImageOverlayModifications(blockOrElement) {
     let blockId;
