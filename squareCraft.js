@@ -2023,7 +2023,7 @@ let pendingModifications = new Map();
                           .join("\n")}
                       }
                     `;
-                    const styleTag = document.createElement("style");
+                    const styleTag = document.createElement("styles");
                     styleTag.textContent = overlayBeforeStyles;
                     document.head.appendChild(styleTag);
                     console.log(
