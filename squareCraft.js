@@ -1904,18 +1904,19 @@ let pendingModifications = new Map();
 
   async function fetchImageOverlayModifications(blockOrElement) {
     try {
-      // Get the block ID from the clicked element or its parent
+      // Handle both string (blockId) and element inputs
       let blockId;
-      if (blockOrElement?.id?.startsWith("block-")) {
+      if (typeof blockOrElement === "string") {
+        blockId = blockOrElement;
+      } else if (blockOrElement?.id?.startsWith("block-")) {
         blockId = blockOrElement.id;
-      } else {
-        // Find the closest parent block element
-        const blockElement = blockOrElement?.closest('[id^="block-"]');
+      } else if (blockOrElement instanceof Element) {
+        const blockElement = blockOrElement.closest('[id^="block-"]');
         blockId = blockElement?.id;
       }
 
       if (!blockId) {
-        console.warn("No block ID found for element:", blockOrElement);
+        console.warn("No block ID found for:", blockOrElement);
         return;
       }
 
