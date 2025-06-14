@@ -1920,28 +1920,29 @@ let pendingModifications = new Map();
     return block ? block.id : null;
   }
 
-  async function fetchImageOverlayModifications(blockOrElement) {
+  async function fetchImageOverlayModifications(blockId) {
+    console.log("blockId amit", blockId);
     try {
       // Get the block ID from the clicked element or its parent
-      let blockId;
-      if (typeof blockOrElement === "string") {
-        // If it's already a string, use it directly
-        blockId = blockOrElement;
-      } else if (blockOrElement?.id) {
-        // If it's an element with an ID, use that
-        blockId = blockOrElement.id;
-      } else if (blockOrElement instanceof Element) {
-        // If it's an element without an ID, find the closest block
-        const blockElement = blockOrElement.closest(
-          '[id^="block-yui_3_17_2_1_"]'
-        );
-        blockId = blockElement?.id;
-      }
+      // let blockId;
+      // if (typeof blockOrElement === "string") {
+      //   // If it's already a string, use it directly
+      //   blockId = blockOrElement;
+      // } else if (blockOrElement?.id) {
+      //   // If it's an element with an ID, use that
+      //   blockId = blockOrElement.id;
+      // } else if (blockOrElement instanceof Element) {
+      //   // If it's an element without an ID, find the closest block
+      //   const blockElement = blockOrElement.closest(
+      //     '[id^="block-yui_3_17_2_1_"]'
+      //   );
+      //   blockId = blockElement?.id;
+      // }
 
-      if (!blockId) {
-        console.warn("No valid image block ID found for:", blockOrElement);
-        return;
-      }
+      // if (!blockId) {
+      //   console.warn("No valid image block ID found for:", blockOrElement);
+      //   return;
+      // }
 
       // Ensure we're using the correct block ID format
       if (!blockId.startsWith("block-yui_3_17_2_1_")) {
