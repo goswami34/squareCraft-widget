@@ -1902,24 +1902,30 @@ let pendingModifications = new Map();
     }
   }
 
+  function getImageBlockId(element) {
+    // This will find the closest parent with an ID that matches the image block pattern
+    // (You may want to refine the regex if you have other block types)
+    const block = element.closest('[id^="block-yui_3_17_2_1_"]');
+    return block ? block.id : null;
+  }
+
   async function fetchImageOverlayModifications(blockOrElement) {
     try {
       // Get the block ID from the clicked element or its parent
       let blockId;
       if (typeof blockOrElement === "string") {
-        // If it's already a string, use it directly
         blockId = blockOrElement;
-      } else if (blockOrElement?.id) {
-        // If it's an element with an ID, use that
+      } else if (
+        blockOrElement?.id &&
+        blockOrElement.id.startsWith("block-yui_3_17_2_1_")
+      ) {
         blockId = blockOrElement.id;
       } else if (blockOrElement instanceof Element) {
-        // If it's an element without an ID, find the closest block
-        const blockElement = blockOrElement.closest('[id^="block-"]');
-        blockId = blockElement?.id;
+        blockId = getImageBlockId(blockOrElement);
       }
 
       if (!blockId) {
-        console.warn("No block ID found for:", blockOrElement);
+        console.warn("No valid image block ID found for:", blockOrElement);
         return;
       }
 
