@@ -399,6 +399,9 @@ let pendingModifications = new Map();
         });
     }
 
+    const clickedBlockOne = event?.target?.closest('[id^="block-"]');
+    console.log("clickedBlockOne", clickedBlockOne);
+
     handleBlockClick(event, {
       getTextType,
       selectedElement,
