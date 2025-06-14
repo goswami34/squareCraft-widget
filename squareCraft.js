@@ -1909,6 +1909,11 @@ let pendingModifications = new Map();
     return block ? block.id : null;
   }
 
+  const block = e.target.closest('[id^="block-"]');
+  if (!block) return;
+
+  console.log("block", block);
+
   async function fetchImageOverlayModifications(blockOrElement) {
     console.log(blockOrElement);
     try {
