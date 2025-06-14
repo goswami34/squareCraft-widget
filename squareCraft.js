@@ -1903,6 +1903,7 @@ let pendingModifications = new Map();
   }
 
   async function fetchImageOverlayModifications(blockOrElement) {
+    console.log(blockOrElement);
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
