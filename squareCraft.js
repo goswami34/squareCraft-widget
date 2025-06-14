@@ -399,8 +399,13 @@ let pendingModifications = new Map();
         });
     }
 
-    const clickedBlockOne = event?.target?.closest('[id^="block-"]');
-    console.log("clickedBlockOne", clickedBlockOne);
+    // const clickedBlockOne = event?.target?.closest('[id^="block-"]');
+    // console.log("clickedBlockOne", clickedBlockOne);
+
+    document.addEventListener("click", (event) => {
+      const clickedBlockOne = event?.target?.closest('[id^="block-"]');
+      console.log("clickedBlockOne", clickedBlockOne || "❌ No block found");
+    });
 
     handleBlockClick(event, {
       getTextType,
