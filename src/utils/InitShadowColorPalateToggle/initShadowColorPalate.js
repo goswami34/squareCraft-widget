@@ -119,7 +119,7 @@ export function initShadowColorPalate(
     updateTransparencyField(dynamicHue);
   }
 
-  function applyButtonBackgroundColor(color, alpha = 1) {
+  function applyImageShadowColor(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
 
@@ -232,7 +232,7 @@ export function initShadowColorPalate(
         }
 
         updateTransparencyField(dynamicHue);
-        applyButtonBackgroundColor(finalColor, currentTransparency / 100);
+        applyImageShadowColor(finalColor, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
@@ -274,7 +274,7 @@ export function initShadowColorPalate(
           colorCode.textContent = rgb;
         }
 
-        applyButtonBackgroundColor(rgb, currentTransparency / 100);
+        applyImageShadowColor(rgb, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
@@ -323,7 +323,7 @@ export function initShadowColorPalate(
     const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
 
     colorCode.textContent = rgb;
-    applyButtonBackgroundColor(rgb);
+    applyImageShadowColor(rgb);
   }
 
   if (transparencyField && transparencyBullet) {
@@ -385,7 +385,7 @@ export function initShadowColorPalate(
         allColorBullet.style.top = `${bulletTop}px`;
       }
 
-      applyButtonBackgroundColor(color, currentTransparency / 100);
+      applyImageShadowColor(color, currentTransparency / 100);
 
       requestAnimationFrame(() => {
         const canvas = selectorField.querySelector("canvas");
@@ -504,7 +504,7 @@ export function initShadowColorPalate(
   }
 
   //color pallete code start here
-  function applyImageOverlayColor(color, alpha = 1) {
+  function applyImageShadowColor(color, alpha = 1) {
     const selected = selectedElement?.(); // from your context
     if (!selected) return;
 
@@ -538,7 +538,7 @@ export function initShadowColorPalate(
     overlay.style.backgroundColor = rgbaColor;
   }
 
-  applyImageOverlayColor("rgba(0,0,0,0.5)");
+  applyImageShadowColor("rgba(0,0,0,0.5)");
 }
 
 //color pallete code end here
