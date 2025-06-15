@@ -564,7 +564,7 @@ export function initShadowColorPalate(
     overlay.style.backgroundColor = rgbaColor;
   }
 
-  applyImageShadowColor("rgba(0,0,0,0.5)");
+  // applyImageShadowColor("rgba(0,0,0,0.5)");
 }
 
 //color pallete code end here
