@@ -118,6 +118,11 @@ function applyOverflowVisible(blockId) {
 }
 
 function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
+  if (typeof saveFn !== "function") {
+    console.warn("❌ saveFn is not a function in initShadowSlider()");
+    return;
+  }
+
   const field = document.getElementById(controlId);
   const bullet = field?.querySelector(".shadow-bullet");
   const label = field?.previousElementSibling?.querySelector("p.sc-text-xs");
@@ -197,6 +202,13 @@ function applyShadowColorFromPalette(
   getSelectedElement,
   saveFn
 ) {
+  if (typeof saveFn !== "function") {
+    console.warn(
+      "❌ saveFn is not a function in applyShadowColorFromPalette()"
+    );
+    return;
+  }
+
   const selected = getSelectedElement?.();
   if (!selected) return;
 
@@ -248,6 +260,11 @@ function applyShadowColorFromPalette(
 }
 
 export function initImageShadowControls(getSelectedElement, saveFn) {
+  if (typeof saveFn !== "function") {
+    console.warn("❌ saveFn is not a function in initImageShadowControls()");
+    return;
+  }
+
   initShadowSlider("shadowXSlider", "x", getSelectedElement, saveFn); // ✅ -100 to +100
   initShadowSlider("shadowYSlider", "y", getSelectedElement, saveFn); // ✅ -100 to +100
   initShadowSlider("shadowBlurSlider", "blur", getSelectedElement, saveFn); // ✅ 0 to 100
