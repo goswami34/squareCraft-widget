@@ -2,9 +2,15 @@ const imageStyleMap = new Map();
 
 // ✅ initImageShadowControls.js
 
-function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
-  if (typeof saveFn !== "function") {
-    console.warn("❌ saveFn is not a function in mergeAndSaveImageStyles()");
+function mergeAndSaveImageStyles(
+  blockId,
+  newStyles,
+  saveImageShadowModifications
+) {
+  if (typeof saveImageShadowModifications !== "function") {
+    console.warn(
+      "❌ saveImageShadowModifications is not a function in mergeAndSaveImageStyles()"
+    );
     return;
   }
 
@@ -45,7 +51,7 @@ function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
 
   // Save to map and database
   imageStyleMap.set(blockId, finalData);
-  saveFn(blockId, finalData, "image");
+  saveImageShadowModifications(blockId, finalData, "image");
 }
 
 const shadowState = {
@@ -56,7 +62,7 @@ const shadowState = {
   color: "rgba(0,0,0,0.5)",
 };
 
-function updateShadowCSS(blockId, saveFn) {
+function updateShadowCSS(blockId, saveImageShadowModifications) {
   const { x, y, blur, spread, color } = shadowState;
   const selector = `#${blockId} div.sqs-image-content`;
   const styleId = `sc-shadow-style-${blockId}`;
@@ -82,7 +88,7 @@ function updateShadowCSS(blockId, saveFn) {
     `;
 
   // Save to database while preserving existing styles
-  if (typeof saveFn === "function") {
+  if (typeof saveImageShadowModifications === "function") {
     mergeAndSaveImageStyles(
       blockId,
       {
@@ -94,7 +100,7 @@ function updateShadowCSS(blockId, saveFn) {
           },
         },
       },
-      saveFn
+      saveImageShadowModifications
     );
   }
 }
@@ -117,9 +123,16 @@ function applyOverflowVisible(blockId) {
     `;
 }
 
-function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
-  if (typeof saveFn !== "function") {
-    console.warn("❌ saveFn is not a function in initShadowSlider()");
+function initShadowSlider(
+  controlId,
+  key,
+  getSelectedElement,
+  saveImageShadowModifications
+) {
+  if (typeof saveImageShadowModifications !== "function") {
+    console.warn(
+      "❌ saveImageShadowModifications is not a function in initShadowSlider()"
+    );
     return;
   }
 
@@ -174,7 +187,7 @@ function initShadowSlider(controlId, key, getSelectedElement, saveFn) {
       const selected = getSelectedElement?.();
       const blockId = selected?.closest('[id^="block-"]')?.id;
       if (blockId) {
-        updateShadowCSS(blockId, saveFn);
+        updateShadowCSS(blockId, saveImageShadowModifications);
         if (key === "blur") applyOverflowVisible(blockId);
       }
     };
@@ -200,11 +213,11 @@ function applyShadowColorFromPalette(
   color,
   alpha = 1,
   getSelectedElement,
-  saveFn
+  saveImageShadowModifications
 ) {
-  if (typeof saveFn !== "function") {
+  if (typeof saveImageShadowModifications !== "function") {
     console.warn(
-      "❌ saveFn is not a function in applyShadowColorFromPalette()"
+      "❌ saveImageShadowModifications is not a function in applyShadowColorFromPalette()"
     );
     return;
   }
@@ -252,23 +265,48 @@ function applyShadowColorFromPalette(
         },
       },
     },
-    saveFn
+    saveImageShadowModifications
   );
 
   // Update live style
-  updateShadowCSS(blockId, saveFn);
+  updateShadowCSS(blockId, saveImageShadowModifications);
 }
 
-export function initImageShadowControls(getSelectedElement, saveFn) {
-  if (typeof saveFn !== "function") {
-    console.warn("❌ saveFn is not a function in initImageShadowControls()");
+export function initImageShadowControls(
+  getSelectedElement,
+  saveImageShadowModifications
+) {
+  if (typeof saveImageShadowModifications !== "function") {
+    console.warn(
+      "❌ saveImageShadowModifications is not a function in initImageShadowControls()"
+    );
     return;
   }
 
-  initShadowSlider("shadowXSlider", "x", getSelectedElement, saveFn); // ✅ -100 to +100
-  initShadowSlider("shadowYSlider", "y", getSelectedElement, saveFn); // ✅ -100 to +100
-  initShadowSlider("shadowBlurSlider", "blur", getSelectedElement, saveFn); // ✅ 0 to 100
-  initShadowSlider("shadowSpreadSlider", "spread", getSelectedElement, saveFn); // ✅ 0 to 100
+  initShadowSlider(
+    "shadowXSlider",
+    "x",
+    getSelectedElement,
+    saveImageShadowModifications
+  ); // ✅ -100 to +100
+  initShadowSlider(
+    "shadowYSlider",
+    "y",
+    getSelectedElement,
+    saveImageShadowModifications
+  ); // ✅ -100 to +100
+  initShadowSlider(
+    "shadowBlurSlider",
+    "blur",
+    getSelectedElement,
+    saveImageShadowModifications
+  ); // ✅ 0 to 100
+  initShadowSlider(
+    "shadowSpreadSlider",
+    "spread",
+    getSelectedElement,
+    saveImageShadowModifications
+  ); // ✅ 0 to 100
 }
 
 export { applyShadowColorFromPalette };

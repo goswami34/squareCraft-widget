@@ -5,7 +5,7 @@ export function initShadowColorPalate(
   themeColors,
   selectedElement,
   prefix = "",
-  saveFn
+  saveImageShadowModifications
 ) {
   const palette = document.getElementById(`${prefix}buttonFontColorPalate`);
   const container = document.getElementById(`${prefix}button-border-colors`);
@@ -237,7 +237,7 @@ export function initShadowColorPalate(
           finalColor,
           currentTransparency / 100,
           selectedElement,
-          saveFn
+          saveImageShadowModifications
         );
       };
 
@@ -285,7 +285,7 @@ export function initShadowColorPalate(
           rgb,
           currentTransparency / 100,
           selectedElement,
-          saveFn
+          saveImageShadowModifications
         );
       };
 
@@ -342,7 +342,7 @@ export function initShadowColorPalate(
       rgb,
       currentTransparency / 100,
       selectedElement,
-      saveFn
+      saveImageShadowModifications
     );
   }
 
@@ -370,7 +370,7 @@ export function initShadowColorPalate(
             currentColor,
             currentTransparency / 100,
             selectedElement,
-            saveFn
+            saveImageShadowModifications
           );
         }
       };
@@ -410,7 +410,7 @@ export function initShadowColorPalate(
         color,
         currentTransparency / 100,
         selectedElement,
-        saveFn
+        saveImageShadowModifications
       );
 
       requestAnimationFrame(() => {
@@ -459,7 +459,7 @@ export function initShadowColorPalate(
         color,
         currentTransparency / 100,
         selectedElement,
-        saveFn
+        saveImageShadowModifications
       );
     };
 
