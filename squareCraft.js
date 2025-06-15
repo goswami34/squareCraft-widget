@@ -2103,6 +2103,7 @@ let pendingModifications = new Map();
           continue;
         }
 
+        // Inject image box-shadow styles
         const styleId = `sc-shadow-style-${blockId}`;
         let styleTag = document.getElementById(styleId);
         if (!styleTag) {
@@ -2122,7 +2123,26 @@ let pendingModifications = new Map();
           }
         `;
 
-        // Optional: force the target image wrapper to be visible if shadow blur > 0
+        // Inject imageTag styles if available
+        if (css.imageTag?.selector && css.imageTag?.styles) {
+          const tagStyleId = `sc-image-tag-style-${blockId}`;
+          let tagStyle = document.getElementById(tagStyleId);
+          if (!tagStyle) {
+            tagStyle = document.createElement("style");
+            tagStyle.id = tagStyleId;
+            document.head.appendChild(tagStyle);
+          }
+
+          tagStyle.textContent = `
+            ${css.imageTag.selector} {
+              ${Object.entries(css.imageTag.styles)
+                .map(([key, value]) => `${key}: ${value} !important;`)
+                .join("\n")}
+            }
+          `;
+        }
+
+        // Add overflow: visible if box-shadow blur is applied
         const blurVal = styles["box-shadow"]?.split(" ")[2];
         if (blurVal && parseInt(blurVal) > 0) {
           const overflowStyleId = `sc-overflow-style-${blockId}`;
