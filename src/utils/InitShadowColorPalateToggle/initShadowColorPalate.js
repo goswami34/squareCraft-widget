@@ -232,7 +232,13 @@ export function initShadowColorPalate(
         }
 
         updateTransparencyField(dynamicHue);
-        applyImageShadowColor(finalColor, currentTransparency / 100);
+        // applyImageShadowColor(finalColor, currentTransparency / 100);
+        applyShadowColorFromPalette(
+          finalColor,
+          currentTransparency / 100,
+          selectedElement,
+          saveFn
+        );
       };
 
       document.onmouseup = () => {
@@ -274,7 +280,13 @@ export function initShadowColorPalate(
           colorCode.textContent = rgb;
         }
 
-        applyImageShadowColor(rgb, currentTransparency / 100);
+        // applyImageShadowColor(rgb, currentTransparency / 100);
+        applyShadowColorFromPalette(
+          rgb,
+          currentTransparency / 100,
+          selectedElement,
+          saveFn
+        );
       };
 
       document.onmouseup = () => {
@@ -385,7 +397,13 @@ export function initShadowColorPalate(
         allColorBullet.style.top = `${bulletTop}px`;
       }
 
-      applyImageShadowColor(color, currentTransparency / 100);
+      // applyImageShadowColor(color, currentTransparency / 100);
+      applyShadowColorFromPalette(
+        color,
+        currentTransparency / 100,
+        selectedElement,
+        saveFn
+      );
 
       requestAnimationFrame(() => {
         const canvas = selectorField.querySelector("canvas");
