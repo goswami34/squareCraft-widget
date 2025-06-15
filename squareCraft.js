@@ -352,7 +352,7 @@ let pendingModifications = new Map();
       setTimeout(() => {
         initShadowColorPalate(
           themeColors,
-          () => selectedElement(),
+          () => selectedElement,
           "",
           saveImageShadowModifications
         );
