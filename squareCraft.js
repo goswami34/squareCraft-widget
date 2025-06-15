@@ -2058,6 +2058,93 @@ let pendingModifications = new Map();
     }
   }
 
+  async function fetchImageShadowModifications() {
+    try {
+      const token = localStorage.getItem("sc_auth_token");
+      const userId = localStorage.getItem("sc_u_id");
+      const widgetId = localStorage.getItem("sc_w_id");
+
+      const pageId = document
+        .querySelector("article[data-page-sections]")
+        ?.getAttribute("data-page-sections");
+
+      if (!token || !userId || !widgetId || !pageId) {
+        console.warn("❌ Missing required auth or page info");
+        return;
+      }
+
+      const response = await fetch(
+        `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.error("❌ Failed to fetch image shadow modifications");
+        return;
+      }
+
+      const data = await response.json();
+      if (!data || !data.imageBlocks) {
+        console.warn("⚠️ No imageBlocks found in response");
+        return;
+      }
+
+      for (const block of data.imageBlocks) {
+        const blockId = block.blockId;
+        const css = block.css;
+
+        if (!blockId || !css || !css.image?.selector || !css.image?.styles) {
+          console.warn(`⚠️ Incomplete CSS data for block ${blockId}`);
+          continue;
+        }
+
+        const styleId = `sc-shadow-style-${blockId}`;
+        let styleTag = document.getElementById(styleId);
+        if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = styleId;
+          document.head.appendChild(styleTag);
+        }
+
+        const selector = css.image.selector;
+        const styles = css.image.styles;
+
+        styleTag.textContent = `
+          ${selector} {
+            ${Object.entries(styles)
+              .map(([key, value]) => `${key}: ${value} !important;`)
+              .join("\n")}
+          }
+        `;
+
+        // Optional: force the target image wrapper to be visible if shadow blur > 0
+        const blurVal = styles["box-shadow"]?.split(" ")[2];
+        if (blurVal && parseInt(blurVal) > 0) {
+          const overflowStyleId = `sc-overflow-style-${blockId}`;
+          let overflowStyle = document.getElementById(overflowStyleId);
+          if (!overflowStyle) {
+            overflowStyle = document.createElement("style");
+            overflowStyle.id = overflowStyleId;
+            document.head.appendChild(overflowStyle);
+          }
+
+          overflowStyle.textContent = `
+            #${blockId} .intrinsic, #${blockId} .sqs-image {
+              overflow: visible !important;
+            }
+          `;
+        }
+      }
+    } catch (err) {
+      console.error("❌ Error fetching image shadow modifications:", err);
+    }
+  }
+
   window.addEventListener("load", async () => {
     await fetchModifications();
     // await fetchImageModifications(lastClickedBlockId);
@@ -2082,6 +2169,10 @@ let pendingModifications = new Map();
 
     if (lastClickedBlockId) {
       await fetchImageOverlayModifications(lastClickedBlockId);
+    }
+
+    if (lastClickedBlockId) {
+      await fetchImageShadowModifications(lastClickedBlockId);
     }
   });
 
@@ -2127,6 +2218,10 @@ let pendingModifications = new Map();
 
     if (elementId) {
       fetchImageOverlayModifications(elementId);
+    }
+
+    if (elementId) {
+      fetchImageShadowModifications(elementId);
     }
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
@@ -3424,6 +3519,24 @@ let pendingModifications = new Map();
     const retryInterval = setInterval(() => {
       if (lastClickedBlockId) {
         fetchImageOverlayModifications(lastClickedBlockId);
+        clearInterval(retryInterval);
+      }
+
+      // if (lastClickedBlockId) {
+      //   fetchImageOverlayModifications(lastClickedBlockId);
+      // }
+      if (--retries <= 0) clearInterval(retryInterval);
+    }, 300);
+  }
+
+  if (lastClickedBlockId) {
+    fetchImageShadowModifications(lastClickedBlockId);
+  } else {
+    // Retry after a short delay until it gets set
+    let retries = 5;
+    const retryInterval = setInterval(() => {
+      if (lastClickedBlockId) {
+        fetchImageShadowModifications(lastClickedBlockId);
         clearInterval(retryInterval);
       }
 
