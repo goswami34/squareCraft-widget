@@ -350,7 +350,12 @@ let pendingModifications = new Map();
 
       // Load palette after toggle
       setTimeout(() => {
-        initShadowColorPalate(themeColors, () => selectedElement);
+        initShadowColorPalate(
+          themeColors,
+          () => selectedElement(),
+          "",
+          saveImageShadowModifications
+        );
         // initOverLayColorPalate(themeColors, () => selectedElement);
       }, 50);
     });
