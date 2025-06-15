@@ -7,6 +7,11 @@ export function initShadowColorPalate(
   prefix = "",
   saveFn
 ) {
+  if (typeof saveFn !== "function") {
+    console.warn("❌ saveFn is not a function in initShadowColorPalate()");
+    return;
+  }
+
   const palette = document.getElementById(`${prefix}buttonFontColorPalate`);
   const container = document.getElementById(`${prefix}button-border-colors`);
   const selectorField = document.getElementById(
@@ -232,7 +237,6 @@ export function initShadowColorPalate(
         }
 
         updateTransparencyField(dynamicHue);
-        // applyImageShadowColor(finalColor, currentTransparency / 100);
         applyShadowColorFromPalette(
           finalColor,
           currentTransparency / 100,
@@ -280,7 +284,6 @@ export function initShadowColorPalate(
           colorCode.textContent = rgb;
         }
 
-        // applyImageShadowColor(rgb, currentTransparency / 100);
         applyShadowColorFromPalette(
           rgb,
           currentTransparency / 100,
@@ -333,9 +336,6 @@ export function initShadowColorPalate(
     if (!ctx) return;
     const data = ctx.getImageData(offsetX, offsetY, 1, 1).data;
     const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
-
-    // colorCode.textContent = rgb;
-    // applyImageShadowColor(rgb);
 
     colorCode.textContent = rgb;
     applyShadowColorFromPalette(
@@ -397,7 +397,6 @@ export function initShadowColorPalate(
       const color = swatch.style.backgroundColor;
 
       updateSelectorField(color);
-      // Move allColorBullet to match dynamicHue
       if (allColorField && allColorBullet) {
         const rect = allColorField.getBoundingClientRect();
         const huePercentage = dynamicHue / 360;
@@ -405,7 +404,6 @@ export function initShadowColorPalate(
         allColorBullet.style.top = `${bulletTop}px`;
       }
 
-      // applyImageShadowColor(color, currentTransparency / 100);
       applyShadowColorFromPalette(
         color,
         currentTransparency / 100,
@@ -449,7 +447,6 @@ export function initShadowColorPalate(
           transparencyCount.textContent = `100%`;
         }
 
-        // Update the color code display
         if (colorCode) {
           colorCode.textContent = color;
         }
@@ -528,43 +525,4 @@ export function initShadowColorPalate(
       transparencyCount.textContent = `100%`;
     }
   }
-
-  //color pallete code start here
-  function applyImageShadowColor(color, alpha = 1) {
-    const selected = selectedElement?.(); // from your context
-    if (!selected) return;
-
-    const blockId = selected.closest('[id^="block-"]')?.id;
-    const imageWrapper = selected.querySelector(".sqs-image-content");
-    if (!blockId || !imageWrapper) return;
-
-    const rgbaColor = color.startsWith("rgb(")
-      ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-      : color;
-
-    const overlayId = `sc-image-overlay-${blockId}`;
-    let overlay = document.getElementById(overlayId);
-
-    if (!overlay) {
-      overlay = document.createElement("div");
-      overlay.id = overlayId;
-      overlay.style.position = "absolute";
-      overlay.style.top = "0";
-      overlay.style.left = "0";
-      overlay.style.width = "100%";
-      overlay.style.height = "100%";
-      overlay.style.pointerEvents = "none";
-      overlay.style.zIndex = "1";
-      overlay.style.borderRadius = "inherit";
-
-      imageWrapper.style.position = "relative";
-      imageWrapper.appendChild(overlay);
-    }
-
-    overlay.style.backgroundColor = rgbaColor;
-  }
-
-  // applyImageShadowColor("rgba(0,0,0,0.5)");
 }
-
-//color pallete code end here
