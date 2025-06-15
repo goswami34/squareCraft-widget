@@ -389,7 +389,7 @@ export async function saveModificationsforImage(blockId, css, tagType) {
 
   try {
     const response = await fetch(
-      "http://localhost:8001/api/v1/Image-modifications",
+      "https://admin.squareplugin.com/api/v1/Image-modifications",
       {
         method: "POST",
         headers: {
