@@ -334,8 +334,16 @@ export function initShadowColorPalate(
     const data = ctx.getImageData(offsetX, offsetY, 1, 1).data;
     const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
 
+    // colorCode.textContent = rgb;
+    // applyImageShadowColor(rgb);
+
     colorCode.textContent = rgb;
-    applyImageShadowColor(rgb);
+    applyShadowColorFromPalette(
+      rgb,
+      currentTransparency / 100,
+      selectedElement,
+      saveFn
+    );
   }
 
   if (transparencyField && transparencyBullet) {
