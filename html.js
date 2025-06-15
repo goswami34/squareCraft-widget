@@ -349,20 +349,6 @@ export async function saveModificationsforImage(blockId, css, tagType) {
   // ✅ Convert camelCase → kebab-case
   const kebabCss = toKebabCaseStyleObject(cleanedCss);
 
-  // const payload = {
-  //   userId,
-  //   token,
-  //   widgetId,
-  //   pageId,
-  //   elementId: blockId,
-  //   css: {
-  //     image: {
-  //       selector,
-  //       styles: kebabCss,
-  //     },
-  //   },
-  // };
-
   const imageSelector = `#siteWrapper #${blockId} .sqs-image-content img`;
   const payload = {
     userId,
