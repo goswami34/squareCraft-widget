@@ -569,3 +569,100 @@ export async function saveImageOverlayModifications(blockId, css) {
 }
 
 // ✅ Image Overlay Controls end here
+
+// image shadow code start here
+export async function saveImageShadowModifications(blockId, css) {
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  // ✅ Check all required data
+  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+    console.warn("❌ Missing required data to save shadow styles", {
+      userId,
+      token,
+      widgetId,
+      pageId,
+      blockId,
+      css,
+    });
+    return { success: false, error: "Missing required data" };
+  }
+
+  // ✅ Extract image styles and clean them
+  const rawStyles = css?.image?.styles || css;
+  const selector = css?.image?.selector || `#${blockId} div.sqs-image-content`;
+
+  const cleanedStyles = cleanCssObject(rawStyles);
+  if (Object.keys(cleanedStyles).length === 0) {
+    return { success: false, error: "No valid shadow styles to save" };
+  }
+
+  const kebabCss = toKebabCaseStyleObject(cleanedStyles);
+
+  // ✅ Default imageTag fallback
+  const imageTagSelector =
+    css?.imageTag?.selector || `#siteWrapper #${blockId} .sqs-image`;
+  const imageTagStyles = cleanCssObject(
+    css?.imageTag?.styles || {
+      overflow: "visible",
+    }
+  );
+
+  // ✅ Final payload
+  const payload = {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    elementId: blockId,
+    css: {
+      image: {
+        selector,
+        styles: kebabCss,
+      },
+      imageTag: {
+        selector: imageTagSelector,
+        styles: toKebabCaseStyleObject(imageTagStyles),
+      },
+    },
+  };
+
+  console.log("📤 Sending shadow payload:", payload);
+
+  try {
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/save-image-shadow-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || `HTTP ${response.status}`);
+    }
+
+    console.log("✅ Shadow styles saved:", result);
+    showNotification("Image shadow styles saved successfully!", "success");
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("❌ Error saving image shadow styles:", error);
+    showNotification(`Failed to save shadow: ${error.message}`, "error");
+
+    return { success: false, error: error.message };
+  }
+}
+
+// image shadow code end here

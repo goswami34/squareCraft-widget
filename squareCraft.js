@@ -317,6 +317,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { saveImageShadowModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   //Image all functionality code end here
   //Image border controls end here
 
@@ -1553,7 +1557,7 @@ let pendingModifications = new Map();
         return null;
       }
       return selectedElement;
-    }, saveModificationsforImage);
+    }, saveImageShadowModifications);
 
     handleTextColorClick(event, lastClickedElement, applyStylesToElement);
     // handleFontWeightDropdownClick(event);
