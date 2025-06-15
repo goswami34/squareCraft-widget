@@ -2068,43 +2068,42 @@ let pendingModifications = new Map();
         .querySelector("article[data-page-sections]")
         ?.getAttribute("data-page-sections");
 
-      if (!token || !userId || !widgetId || !pageId) {
-        console.warn("❌ Missing required auth or page info");
-        return;
-      }
+      // Get all Squarespace image blocks (or loop through a specific one)
+      const imageBlocks = document.querySelectorAll('[id^="block-"]');
 
-      const response = await fetch(
-        `https://admin.squareplugin.com/api/v1/get-image-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      for (const block of imageBlocks) {
+        const elementId = block.id;
 
-      if (!response.ok) {
-        console.error("❌ Failed to fetch image shadow modifications");
-        return;
-      }
-
-      const data = await response.json();
-      if (!data || !data.imageBlocks) {
-        console.warn("⚠️ No imageBlocks found in response");
-        return;
-      }
-
-      for (const block of data.imageBlocks) {
-        const blockId = block.blockId;
-        const css = block.css;
-
-        if (!blockId || !css || !css.image?.selector || !css.image?.styles) {
-          console.warn(`⚠️ Incomplete CSS data for block ${blockId}`);
+        if (!token || !userId || !widgetId || !pageId || !elementId) {
+          console.warn("❌ Missing required auth or page info");
           continue;
         }
 
-        // Inject image box-shadow styles
-        const styleId = `sc-shadow-style-${blockId}`;
+        const response = await fetch(
+          `https://admin.squareplugin.com/api/v1/get-image-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          console.error(`❌ Failed to fetch shadow for block: ${elementId}`);
+          continue;
+        }
+
+        const data = await response.json();
+        const css = data?.css;
+
+        if (!css || !css.image?.selector || !css.image?.styles) {
+          console.warn(`⚠️ Incomplete CSS data for block ${elementId}`);
+          continue;
+        }
+
+        // Inject image styles
+        const styleId = `sc-shadow-style-${elementId}`;
         let styleTag = document.getElementById(styleId);
         if (!styleTag) {
           styleTag = document.createElement("style");
@@ -2123,9 +2122,9 @@ let pendingModifications = new Map();
           }
         `;
 
-        // Inject imageTag styles if available
+        // Optional: imageTag styles
         if (css.imageTag?.selector && css.imageTag?.styles) {
-          const tagStyleId = `sc-image-tag-style-${blockId}`;
+          const tagStyleId = `sc-image-tag-style-${elementId}`;
           let tagStyle = document.getElementById(tagStyleId);
           if (!tagStyle) {
             tagStyle = document.createElement("style");
@@ -2142,10 +2141,10 @@ let pendingModifications = new Map();
           `;
         }
 
-        // Add overflow: visible if box-shadow blur is applied
+        // Set overflow: visible if shadow is present
         const blurVal = styles["box-shadow"]?.split(" ")[2];
         if (blurVal && parseInt(blurVal) > 0) {
-          const overflowStyleId = `sc-overflow-style-${blockId}`;
+          const overflowStyleId = `sc-overflow-style-${elementId}`;
           let overflowStyle = document.getElementById(overflowStyleId);
           if (!overflowStyle) {
             overflowStyle = document.createElement("style");
@@ -2154,7 +2153,7 @@ let pendingModifications = new Map();
           }
 
           overflowStyle.textContent = `
-            #${blockId} .intrinsic, #${blockId} .sqs-image {
+            #${elementId} .intrinsic, #${elementId} .sqs-image {
               overflow: visible !important;
             }
           `;
