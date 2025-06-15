@@ -465,7 +465,8 @@ export function initImageBorderControls(selectedElement, context = {}) {
       const blockId = block.id;
 
       // ✅ Get previously saved border-width value or default
-      const prevStyles = imageStyleMap.get(blockId)?.image?.styles || {};
+      const prevStyles =
+        window.__scImageStyleMap.get(blockId)?.image?.styles || {};
       const savedBorderWidth = prevStyles["border-width"] || "1px"; // fallback
 
       const blockSelector = `#${blockId} div.sqs-image-content`;
@@ -754,7 +755,8 @@ export function initImageBorderControls(selectedElement, context = {}) {
     }
 
     // ✅ Get previously saved border-width
-    const prevStyles = imageStyleMap.get(blockId)?.image?.styles || {};
+    const prevStyles =
+      window.__scImageStyleMap.get(blockId)?.image?.styles || {};
     const savedBorderWidth = prevStyles["border-width"] || "1px"; // fallback
 
     // ✅ Save to database with correct border-width
