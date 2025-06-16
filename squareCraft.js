@@ -2188,7 +2188,7 @@ let pendingModifications = new Map();
 
     if (lastClickedBlockId) {
       await fetchImageOverlayModifications(lastClickedBlockId);
-      await debouncedFetchImageShadowModifications();
+      // await debouncedFetchImageShadowModifications();
     }
   });
 
