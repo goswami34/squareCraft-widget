@@ -2077,20 +2077,28 @@ let pendingModifications = new Map();
       for (const block of imageBlocks) {
         const elementId = block.id;
 
+        // Debug log all IDs used for the API call
+        console.log("[fetchImageShadowModifications] IDs:", {
+          userId,
+          widgetId,
+          pageId,
+          elementId,
+        });
+
         if (!token || !userId || !widgetId || !pageId || !elementId) {
           console.warn("❌ Missing required auth or page info");
           continue;
         }
 
-        const response = await fetch(
-          `https://admin.squareplugin.com/api/v1/get-image-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const apiUrl = `https://admin.squareplugin.com/api/v1/get-image-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`;
+        console.log("[fetchImageShadowModifications] Fetching:", apiUrl);
+
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (response.status === 404) {
           // No shadow data for this block, not an error
@@ -2104,7 +2112,13 @@ let pendingModifications = new Map();
           continue;
         }
 
+        // Log the API response for debugging
         const data = await response.json();
+        console.log(
+          "[fetchImageShadowModifications] API response for",
+          elementId,
+          data
+        );
         const css = data?.css;
 
         if (!css || !css.image?.selector || !css.image?.styles) {
