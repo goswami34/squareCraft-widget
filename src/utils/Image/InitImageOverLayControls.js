@@ -11,6 +11,13 @@ const overlayState = {
 // Store pending modifications
 const pendingOverlayModifications = new Map();
 
+// Helper function to convert rgb to rgba with alpha
+function rgbToRgba(rgb, alpha) {
+  const result = rgb.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+  if (!result) return rgb;
+  return `rgba(${result[1]}, ${result[2]}, ${result[3]}, ${alpha})`;
+}
+
 export const InitImageOverLayControls = (themeColors, context = {}) => {
   const {
     addPendingModification,
@@ -295,10 +302,10 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
           () => selectedImage,
           "overlay-",
           (color, alpha) => {
-            const rgbaColor = color.startsWith("rgb(")
-              ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-              : color;
-
+            let rgbaColor = color;
+            if (color.startsWith("rgb(")) {
+              rgbaColor = rgbToRgba(color, alpha);
+            }
             console.log(
               "[Overlay Color Palette] Picked color:",
               color,
@@ -307,7 +314,6 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
               "rgbaColor:",
               rgbaColor
             );
-
             overlayState.color = rgbaColor;
             updateOverlayStyles();
           }
