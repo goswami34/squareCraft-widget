@@ -2005,6 +2005,7 @@ let pendingModifications = new Map();
                 // cssText += "}";
 
                 let cssText = `${selector} {`;
+                cssText += "position: absolute !important; "; // Always add position: absolute
                 Object.entries(styles).forEach(([prop, value]) => {
                   if (
                     value !== null &&
