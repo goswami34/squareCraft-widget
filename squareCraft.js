@@ -2127,24 +2127,34 @@ let pendingModifications = new Map();
         }
 
         // Inject image styles
-        const styleId = `sc-shadow-style-${elementId}`;
-        let styleTag = document.getElementById(styleId);
-        if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = styleId;
-          document.head.appendChild(styleTag);
-        }
-
         const selector = css.image.selector;
         const styles = css.image.styles;
 
-        styleTag.textContent = `
-          ${selector} {
-            ${Object.entries(styles)
-              .map(([key, value]) => `${key}: ${value} !important;`)
-              .join("\n")}
+        // Debug: Log selector and check if element exists
+        console.log("[Shadow Injection] Selector:", selector);
+        const targetElem = document.querySelector(selector);
+        console.log("[Shadow Injection] Element exists:", !!targetElem);
+
+        if (Object.keys(styles).length > 0) {
+          const styleTagId = `sc-shadow-style-${elementId}`;
+          let styleTag = document.getElementById(styleTagId);
+          if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = styleTagId;
+            document.head.appendChild(styleTag);
           }
-        `;
+
+          let cssText = `${selector} {`;
+          Object.entries(styles).forEach(([prop, value]) => {
+            if (value !== null && value !== undefined && value !== "null") {
+              cssText += `${prop}: ${value} !important; `;
+            }
+          });
+          cssText += "}";
+
+          styleTag.textContent = cssText;
+          console.log("[Shadow Injection] Injected CSS:", cssText);
+        }
 
         // Optional: imageTag styles
         if (css.imageTag?.selector && css.imageTag?.styles) {
