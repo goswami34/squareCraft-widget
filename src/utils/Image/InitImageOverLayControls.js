@@ -300,7 +300,7 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
         initOverLayColorPalate(
           themeColors,
           () => selectedImage,
-          "overlay-",
+          "",
           (color, alpha) => {
             let rgbaColor = color;
             if (color.startsWith("rgb(")) {
