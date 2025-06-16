@@ -2119,7 +2119,7 @@ let pendingModifications = new Map();
           elementId,
           data
         );
-        const css = data?.css;
+        const css = data?.element?.css;
 
         if (!css || !css.image?.selector || !css.image?.styles) {
           console.warn(`⚠️ Incomplete CSS data for block ${elementId}`);
