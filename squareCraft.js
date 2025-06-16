@@ -3025,7 +3025,7 @@ let pendingModifications = new Map();
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
 
-  addHeadingEventListeners();
+  // addHeadingEventListeners();
 
   try {
     const { injectNavbarIcon } = await import(
