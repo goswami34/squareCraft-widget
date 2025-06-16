@@ -2068,8 +2068,11 @@ let pendingModifications = new Map();
         .querySelector("article[data-page-sections]")
         ?.getAttribute("data-page-sections");
 
-      // Get all Squarespace image blocks (or loop through a specific one)
-      const imageBlocks = document.querySelectorAll('[id^="block-"]');
+      // Only select blocks that actually contain an image
+      const allBlocks = document.querySelectorAll('[id^="block-"]');
+      const imageBlocks = Array.from(allBlocks).filter((block) =>
+        block.querySelector("img")
+      );
 
       for (const block of imageBlocks) {
         const elementId = block.id;
@@ -2089,8 +2092,15 @@ let pendingModifications = new Map();
           }
         );
 
+        if (response.status === 404) {
+          // No shadow data for this block, not an error
+          // console.info(`ℹ️ No shadow data for block: ${elementId}`);
+          continue;
+        }
         if (!response.ok) {
-          console.error(`❌ Failed to fetch shadow for block: ${elementId}`);
+          console.error(
+            `❌ Failed to fetch shadow for block: ${elementId} (status: ${response.status})`
+          );
           continue;
         }
 
