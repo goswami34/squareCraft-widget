@@ -1991,19 +1991,6 @@ let pendingModifications = new Map();
                   !!targetElem
                 );
 
-                // Build CSS for pseudo-element
-                // let cssText = `${selector} {`;
-                // Object.entries(styles).forEach(([prop, value]) => {
-                //   if (
-                //     value !== null &&
-                //     value !== undefined &&
-                //     value !== "null"
-                //   ) {
-                //     cssText += `${prop}: ${value} !important; `;
-                //   }
-                // });
-                // cssText += "}";
-
                 let cssText = `${selector} {`;
                 cssText += "position: absolute !important; "; // Always add position: absolute
                 Object.entries(styles).forEach(([prop, value]) => {
