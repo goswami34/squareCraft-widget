@@ -2193,7 +2193,7 @@ let pendingModifications = new Map();
   });
 
   const observer = new MutationObserver(() => {
-    addHeadingEventListeners();
+    // addHeadingEventListeners();
     fetchModifications();
     // fetchImageModifications(lastClickedBlockId);
     const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
