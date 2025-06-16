@@ -2074,89 +2074,112 @@ let pendingModifications = new Map();
       for (const block of imageBlocks) {
         const elementId = block.id;
 
+        // Log missing parameters for debugging
         if (!token || !userId || !widgetId || !pageId || !elementId) {
-          console.warn("❌ Missing required auth or page info");
+          const missingParams = [];
+          if (!token) missingParams.push("token");
+          if (!userId) missingParams.push("userId");
+          if (!widgetId) missingParams.push("widgetId");
+          if (!pageId) missingParams.push("pageId");
+          if (!elementId) missingParams.push("elementId");
+          console.warn(
+            `❌ Missing required parameters for block ${elementId}:`,
+            missingParams.join(", ")
+          );
           continue;
         }
 
-        const response = await fetch(
-          `https://admin.squareplugin.com/api/v1/get-image-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        try {
+          const response = await fetch(
+            `https://admin.squareplugin.com/api/v1/get-image-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
 
-        if (!response.ok) {
-          console.error(`❌ Failed to fetch shadow for block: ${elementId}`);
-          continue;
-        }
-
-        const data = await response.json();
-        const css = data?.css;
-
-        if (!css || !css.image?.selector || !css.image?.styles) {
-          console.warn(`⚠️ Incomplete CSS data for block ${elementId}`);
-          continue;
-        }
-
-        // Inject image styles
-        const styleId = `sc-shadow-style-${elementId}`;
-        let styleTag = document.getElementById(styleId);
-        if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = styleId;
-          document.head.appendChild(styleTag);
-        }
-
-        const selector = css.image.selector;
-        const styles = css.image.styles;
-
-        styleTag.textContent = `
-          ${selector} {
-            ${Object.entries(styles)
-              .map(([key, value]) => `${key}: ${value} !important;`)
-              .join("\n")}
-          }
-        `;
-
-        // Optional: imageTag styles
-        if (css.imageTag?.selector && css.imageTag?.styles) {
-          const tagStyleId = `sc-image-tag-style-${elementId}`;
-          let tagStyle = document.getElementById(tagStyleId);
-          if (!tagStyle) {
-            tagStyle = document.createElement("style");
-            tagStyle.id = tagStyleId;
-            document.head.appendChild(tagStyle);
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`❌ Failed to fetch shadow for block: ${elementId}`, {
+              status: response.status,
+              statusText: response.statusText,
+              error: errorText,
+            });
+            continue;
           }
 
-          tagStyle.textContent = `
-            ${css.imageTag.selector} {
-              ${Object.entries(css.imageTag.styles)
+          const data = await response.json();
+          const css = data?.css;
+
+          if (!css || !css.image?.selector || !css.image?.styles) {
+            console.warn(`⚠️ Incomplete CSS data for block ${elementId}:`, css);
+            continue;
+          }
+
+          // Inject image styles
+          const styleId = `sc-shadow-style-${elementId}`;
+          let styleTag = document.getElementById(styleId);
+          if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = styleId;
+            document.head.appendChild(styleTag);
+          }
+
+          const selector = css.image.selector;
+          const styles = css.image.styles;
+
+          styleTag.textContent = `
+            ${selector} {
+              ${Object.entries(styles)
                 .map(([key, value]) => `${key}: ${value} !important;`)
                 .join("\n")}
             }
           `;
-        }
 
-        // Set overflow: visible if shadow is present
-        const blurVal = styles["box-shadow"]?.split(" ")[2];
-        if (blurVal && parseInt(blurVal) > 0) {
-          const overflowStyleId = `sc-overflow-style-${elementId}`;
-          let overflowStyle = document.getElementById(overflowStyleId);
-          if (!overflowStyle) {
-            overflowStyle = document.createElement("style");
-            overflowStyle.id = overflowStyleId;
-            document.head.appendChild(overflowStyle);
+          // Optional: imageTag styles
+          if (css.imageTag?.selector && css.imageTag?.styles) {
+            const tagStyleId = `sc-image-tag-style-${elementId}`;
+            let tagStyle = document.getElementById(tagStyleId);
+            if (!tagStyle) {
+              tagStyle = document.createElement("style");
+              tagStyle.id = tagStyleId;
+              document.head.appendChild(tagStyle);
+            }
+
+            tagStyle.textContent = `
+              ${css.imageTag.selector} {
+                ${Object.entries(css.imageTag.styles)
+                  .map(([key, value]) => `${key}: ${value} !important;`)
+                  .join("\n")}
+              }
+            `;
           }
 
-          overflowStyle.textContent = `
-            #${elementId} .intrinsic, #${elementId} .sqs-image {
-              overflow: visible !important;
+          // Set overflow: visible if shadow is present
+          const blurVal = styles["box-shadow"]?.split(" ")[2];
+          if (blurVal && parseInt(blurVal) > 0) {
+            const overflowStyleId = `sc-overflow-style-${elementId}`;
+            let overflowStyle = document.getElementById(overflowStyleId);
+            if (!overflowStyle) {
+              overflowStyle = document.createElement("style");
+              overflowStyle.id = overflowStyleId;
+              document.head.appendChild(overflowStyle);
             }
-          `;
+
+            overflowStyle.textContent = `
+              #${elementId} .intrinsic, #${elementId} .sqs-image {
+                overflow: visible !important;
+              }
+            `;
+          }
+        } catch (error) {
+          console.error(
+            `❌ Failed to fetch shadow for block: ${elementId}`,
+            error
+          );
+          continue;
         }
       }
     } catch (err) {
@@ -2164,83 +2187,45 @@ let pendingModifications = new Map();
     }
   }
 
+  // Add debounce function at the top level
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  // Debounce the fetchImageShadowModifications function
+  const debouncedFetchImageShadowModifications = debounce(
+    fetchImageShadowModifications,
+    500
+  );
+
   window.addEventListener("load", async () => {
     await fetchModifications();
-    // await fetchImageModifications(lastClickedBlockId);
-
-    // if (lastClickedBlockId) {
-    //   await fetchImageModifications(lastClickedBlockId);
-    // }
-
-    // Fallback: Auto-detect first image block on page load
-    if (!lastClickedBlockId) {
-      const fallbackBlock = document
-        .querySelector('[id^="block-"] img')
-        ?.closest('[id^="block-"]');
-      if (fallbackBlock) {
-        lastClickedBlockId = fallbackBlock.id;
-      }
-    }
 
     if (lastClickedBlockId) {
       await fetchImageModifications(lastClickedBlockId);
-    }
-
-    if (lastClickedBlockId) {
       await fetchImageOverlayModifications(lastClickedBlockId);
-    }
-
-    if (lastClickedBlockId) {
-      await fetchImageShadowModifications(lastClickedBlockId);
+      await debouncedFetchImageShadowModifications();
     }
   });
-
-  async function addHeadingEventListeners() {
-    const widgetContainer = document.getElementById("sc-widget-container");
-    if (!widgetContainer) return;
-
-    if (widgetContainer.dataset.listenerAttached === "true") return;
-
-    widgetContainer.dataset.listenerAttached = "true";
-
-    function toggleTabClass(targetElement) {
-      if (targetElement.classList.contains("sc-activeTab-border")) {
-        targetElement.classList.remove("sc-activeTab-border");
-        targetElement.classList.add("sc-inActiveTab-border");
-      } else {
-        targetElement.classList.remove("sc-inActiveTab-border");
-        targetElement.classList.add("sc-activeTab-border");
-      }
-    }
-
-    widgetContainer.addEventListener("click", (event) => {
-      const tabElement = event.target;
-      if (
-        tabElement.classList.contains("sc-inActiveTab-border") ||
-        tabElement.classList.contains("sc-activeTab-border")
-      ) {
-        toggleTabClass(tabElement);
-      }
-    });
-  }
 
   const observer = new MutationObserver(() => {
     addHeadingEventListeners();
     fetchModifications();
-    // fetchImageModifications(lastClickedBlockId);
     const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
     const elementId = selectedBlock?.id || null;
 
     if (elementId) {
       fetchImageModifications(elementId);
-    }
-
-    if (elementId) {
       fetchImageOverlayModifications(elementId);
-    }
-
-    if (elementId) {
-      fetchImageShadowModifications(elementId);
+      debouncedFetchImageShadowModifications();
     }
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
