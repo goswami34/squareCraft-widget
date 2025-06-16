@@ -1992,6 +1992,18 @@ let pendingModifications = new Map();
                 );
 
                 // Build CSS for pseudo-element
+                // let cssText = `${selector} {`;
+                // Object.entries(styles).forEach(([prop, value]) => {
+                //   if (
+                //     value !== null &&
+                //     value !== undefined &&
+                //     value !== "null"
+                //   ) {
+                //     cssText += `${prop}: ${value} !important; `;
+                //   }
+                // });
+                // cssText += "}";
+
                 let cssText = `${selector} {`;
                 Object.entries(styles).forEach(([prop, value]) => {
                   if (
@@ -1999,7 +2011,11 @@ let pendingModifications = new Map();
                     value !== undefined &&
                     value !== "null"
                   ) {
-                    cssText += `${prop}: ${value} !important; `;
+                    if (prop === "content") {
+                      cssText += `content: "${value}" !important; `;
+                    } else {
+                      cssText += `${prop}: ${value} !important; `;
+                    }
                   }
                 });
                 cssText += "}";
