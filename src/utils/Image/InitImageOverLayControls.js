@@ -102,6 +102,10 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     }
 
     // 💡 Apply CSS to the pseudo element using `::before`
+    console.log(
+      "[Overlay CSS] Updating overlay with color:",
+      overlayState.color
+    );
     styleTag.textContent = `
       #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
         position: absolute;
@@ -295,8 +299,16 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
               ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
               : color;
 
+            console.log(
+              "[Overlay Color Palette] Picked color:",
+              color,
+              "alpha:",
+              alpha,
+              "rgbaColor:",
+              rgbaColor
+            );
+
             overlayState.color = rgbaColor;
-            // Do NOT update .sc-custom-overlay div, only update pseudo-element
             updateOverlayStyles();
           }
         );
