@@ -1970,83 +1970,56 @@ let pendingModifications = new Map();
 
           const data = await response.json();
           console.log(
-            `✅ Fetched overlay modifications for block ${elementId}:`,
+            `✅ Fetched overlay modifications for block ${elementId}:",`,
             data
           );
 
-          if (data && data.modifications) {
-            data.modifications.forEach((modification) => {
-              if (modification.elements) {
-                modification.elements.forEach((element) => {
-                  if (element.elementId === elementId && element.overlayCSS) {
-                    console.log("Applying styles for block:", elementId);
-                    // Use a robust selector for the overlay
-                    // const selector = `#${element.elementId} .sqs-image-content::before`;
-                    // // Ensure content property is present
-                    // const styles = {
-                    //   ...element.overlayCSS.styles,
-                    //   content: element.overlayCSS.styles.content || '" "',
-                    // };
-                    // const styleTag = document.createElement("style");
-                    // styleTag.textContent = `
-                    //   ${selector} {
-                    //     ${Object.entries(styles)
-                    //       .map(([key, value]) => `${key}: ${value};`)
-                    //       .join("\n")}
-                    //   }
-                    // `;
-                    // document.head.appendChild(styleTag);
+          // FIX: Use data.elements, not data.modifications
+          if (data && data.elements) {
+            data.elements.forEach((element) => {
+              if (element.elementId === elementId && element.overlayCSS) {
+                const selector = element.overlayCSS.selector;
+                const styles = element.overlayCSS.styles;
 
-                    // const selector = `#${element.elementId} .sqs-image-content`;
-                    // const styles = {
-                    //   ...element.overlayCSS.styles,
-                    //   content: element.overlayCSS.styles.content || '" "',
-                    //   position: "relative", // Ensure this to support ::before
-                    // };
+                // Debug: Log selector and check if element exists
+                console.log("[Overlay Injection] Selector:", selector);
+                const targetElem = document.querySelector(
+                  selector.split("::")[0]
+                );
+                console.log(
+                  "[Overlay Injection] Element exists:",
+                  !!targetElem
+                );
 
-                    // const overlayBeforeStyles = `
-                    //   ${selector}::before {
-                    //     ${Object.entries(styles)
-                    //       .map(([key, value]) => `${key}: ${value} !important;`)
-                    //       .join("\n")}
-                    //   }
-                    // `;
-
-                    // const styleTag = document.createElement("style");
-                    // styleTag.textContent = overlayBeforeStyles;
-                    // document.head.appendChild(styleTag);
-                    // console.log(
-                    //   "✅ Injected overlay pseudo-element styles for",
-                    //   selector
-                    // );
-
-                    const selector = `#${element.elementId} .sqs-image-content::before`;
-                    const styles = {
-                      ...element.overlayCSS.styles,
-                      content: element.overlayCSS.styles.content || '" "',
-                    };
-                    const overlayBeforeStyles = `
-                      ${selector} {
-                        ${Object.entries(styles)
-                          .map(([key, value]) => `${key}: ${value};`)
-                          .join("\n")}
-                      }
-                    `;
-                    const styleTag = document.createElement("styles");
-                    styleTag.textContent = overlayBeforeStyles;
-                    document.head.appendChild(styleTag);
-                    console.log(
-                      "✅ Injected overlay pseudo-element styles for",
-                      selector
-                    );
+                // Build CSS for pseudo-element
+                let cssText = `${selector} {`;
+                Object.entries(styles).forEach(([prop, value]) => {
+                  if (
+                    value !== null &&
+                    value !== undefined &&
+                    value !== "null"
+                  ) {
+                    cssText += `${prop}: ${value} !important; `;
                   }
                 });
+                cssText += "}";
+
+                // Inject style tag
+                const styleTagId = `sc-overlay-style-${element.elementId}`;
+                let styleTag = document.getElementById(styleTagId);
+                if (!styleTag) {
+                  styleTag = document.createElement("style");
+                  styleTag.id = styleTagId;
+                  document.head.appendChild(styleTag);
+                }
+                styleTag.textContent = cssText;
+                console.log("[Overlay Injection] Injected CSS:", cssText);
               }
             });
           }
         } catch (error) {
           console.error(
-            `❌ Failed to fetch modifications for block ${elementId}:`,
+            `❌ Failed to fetch modifications for block ${elementId}:",`,
             error
           );
           continue;
