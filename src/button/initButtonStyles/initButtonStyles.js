@@ -301,8 +301,85 @@ export function initButtonFontFamilyControls(
   }
 }
 
-export function initButtonStyles(selectedButtonElement) {
-  if (!selectedButtonElement) return;
+export function initButtonStyles(
+  getSelectedElement,
+  addPendingModification,
+  showNotification,
+  saveButtonModifications
+) {
+  const buttonStyleMap = new Map();
+
+  function mergeAndSaveButtonStyles(
+    blockId,
+    typeClass,
+    newStyles,
+    tagType = "button"
+  ) {
+    if (!blockId || !typeClass || !newStyles) {
+      console.warn("❌ Missing required data for button styles:", {
+        blockId,
+        typeClass,
+        newStyles,
+      });
+      return;
+    }
+
+    try {
+      const prev = buttonStyleMap.get(blockId) || {
+        buttonPrimary: { selector: ".sqs-button-element--primary", styles: {} },
+        buttonSecondary: {
+          selector: ".sqs-button-element--secondary",
+          styles: {},
+        },
+        buttonTertiary: {
+          selector: ".sqs-button-element--tertiary",
+          styles: {},
+        },
+      };
+
+      const merged = { ...prev };
+      if (typeClass === "sqs-button-element--primary") {
+        merged.buttonPrimary = {
+          ...merged.buttonPrimary,
+          styles: { ...merged.buttonPrimary.styles, ...newStyles },
+        };
+      } else if (typeClass === "sqs-button-element--secondary") {
+        merged.buttonSecondary = {
+          ...merged.buttonSecondary,
+          styles: { ...merged.buttonSecondary.styles, ...newStyles },
+        };
+      } else if (typeClass === "sqs-button-element--tertiary") {
+        merged.buttonTertiary = {
+          ...merged.buttonTertiary,
+          styles: { ...merged.buttonTertiary.styles, ...newStyles },
+        };
+      }
+
+      buttonStyleMap.set(blockId, merged);
+
+      if (typeof addPendingModification === "function") {
+        addPendingModification(blockId, merged, tagType);
+      }
+
+      if (typeof showNotification === "function") {
+        showNotification("Button style updated!", "success");
+      }
+
+      console.log("✅ Button styles merged:", {
+        blockId,
+        typeClass,
+        newStyles,
+        merged,
+      });
+    } catch (error) {
+      console.error("❌ Error merging button styles:", error);
+      if (typeof showNotification === "function") {
+        showNotification("Failed to update button style", "error");
+      }
+    }
+  }
+
+  if (!getSelectedElement) return;
 
   const fontSizeInput = document.getElementById("scButtonFontSizeInput");
   const letterSpacingInput = document.getElementById(
@@ -311,10 +388,10 @@ export function initButtonStyles(selectedButtonElement) {
   const fontSizeOptions = document.getElementById("scButtonFontSizeOptions");
 
   const buttonElement =
-    selectedButtonElement.querySelector(
+    getSelectedElement.querySelector(
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
     ) ||
-    selectedButtonElement.querySelector(
+    getSelectedElement.querySelector(
       "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
     );
 
@@ -461,7 +538,56 @@ export function initButtonStyles(selectedButtonElement) {
   );
 }
 
-export function initButtonIconPositionToggle(getSelectedElement) {
+export function initButtonIconPositionToggle(
+  getSelectedElement,
+  addPendingModification,
+  showNotification,
+  saveButtonModifications
+) {
+  const iconPositionMap = new Map();
+
+  function updateIconPosition(blockId, typeClass, position) {
+    if (!blockId || !typeClass) {
+      console.warn("❌ Missing required data for icon position:", {
+        blockId,
+        typeClass,
+      });
+      return;
+    }
+
+    try {
+      const styleId = `sc-icon-position-${typeClass}`;
+      let style = document.getElementById(styleId);
+      if (!style) {
+        style = document.createElement("style");
+        style.id = styleId;
+        document.head.appendChild(style);
+      }
+
+      const flexDirection = position === "left" ? "row" : "row-reverse";
+      style.innerHTML = `
+        .${typeClass} {
+          flex-direction: ${flexDirection} !important;
+        }
+      `;
+
+      mergeAndSaveButtonStyles(
+        blockId,
+        typeClass,
+        { flexDirection },
+        saveButtonModifications,
+        addPendingModification,
+        showNotification,
+        "icon"
+      );
+    } catch (error) {
+      console.error("❌ Error updating icon position:", error);
+      if (typeof showNotification === "function") {
+        showNotification("Failed to update icon position", "error");
+      }
+    }
+  }
+
   document.getElementById("buttoniconPositionSection").onclick = () => {
     document
       .getElementById("iconPositionDropdown")
@@ -520,7 +646,55 @@ export function initButtonIconPositionToggle(getSelectedElement) {
 
 let normalRotationInitialized = false;
 
-export function initButtonIconRotationControl(getSelectedElement) {
+export function initButtonIconRotationControl(
+  getSelectedElement,
+  addPendingModification,
+  showNotification,
+  saveButtonModifications
+) {
+  const iconRotationMap = new Map();
+
+  function updateIconRotation(blockId, typeClass, rotation) {
+    if (!blockId || !typeClass) {
+      console.warn("❌ Missing required data for icon rotation:", {
+        blockId,
+        typeClass,
+      });
+      return;
+    }
+
+    try {
+      const styleId = `sc-icon-rotation-${typeClass}`;
+      let style = document.getElementById(styleId);
+      if (!style) {
+        style = document.createElement("style");
+        style.id = styleId;
+        document.head.appendChild(style);
+      }
+
+      style.innerHTML = `
+        .${typeClass} .sqs-add-to-cart-button-inner {
+          transform: rotate(${rotation}deg) !important;
+        }
+      `;
+
+      mergeAndSaveButtonStyles(
+        blockId,
+        typeClass,
+        { transform: `rotate(${rotation}deg)` },
+        saveButtonModifications,
+        addPendingModification,
+        showNotification,
+        "icon"
+      );
+    } catch (error) {
+      console.error("❌ Error updating icon rotation:", error);
+      if (typeof showNotification === "function") {
+        showNotification("Failed to update icon rotation", "error");
+      }
+    }
+  }
+
   if (normalRotationInitialized) return;
   normalRotationInitialized = true;
 
@@ -651,7 +825,55 @@ export function initButtonIconRotationControl(getSelectedElement) {
   setTimeout(syncFromIconRotation, 50);
 }
 
-export function initButtonIconSizeControl(getSelectedElement) {
+export function initButtonIconSizeControl(
+  getSelectedElement,
+  addPendingModification,
+  showNotification,
+  saveButtonModifications
+) {
+  const iconSizeMap = new Map();
+
+  function updateIconSize(blockId, typeClass, size) {
+    if (!blockId || !typeClass) {
+      console.warn("❌ Missing required data for icon size:", {
+        blockId,
+        typeClass,
+      });
+      return;
+    }
+
+    try {
+      const styleId = `sc-icon-size-${typeClass}`;
+      let style = document.getElementById(styleId);
+      if (!style) {
+        style = document.createElement("style");
+        style.id = styleId;
+        document.head.appendChild(style);
+      }
+
+      style.innerHTML = `
+        .${typeClass} .sqs-add-to-cart-button-inner {
+          font-size: ${size}px !important;
+        }
+      `;
+
+      mergeAndSaveButtonStyles(
+        blockId,
+        typeClass,
+        { fontSize: `${size}px` },
+        saveButtonModifications,
+        addPendingModification,
+        showNotification,
+        "icon"
+      );
+    } catch (error) {
+      console.error("❌ Error updating icon size:", error);
+      if (typeof showNotification === "function") {
+        showNotification("Failed to update icon size", "error");
+      }
+    }
+  }
+
   const bullet = document.getElementById("buttonIconSizeradiusBullet");
   const fill = document.getElementById("buttonIconSizeradiusFill");
   const field = document.getElementById("buttonIconSizeradiusField");
@@ -757,7 +979,55 @@ export function initButtonIconSizeControl(getSelectedElement) {
   setTimeout(syncFromIcon, 50);
 }
 
-export function initButtonIconSpacingControl(getSelectedElement) {
+export function initButtonIconSpacingControl(
+  getSelectedElement,
+  addPendingModification,
+  showNotification,
+  saveButtonModifications
+) {
+  const iconSpacingMap = new Map();
+
+  function updateIconSpacing(blockId, typeClass, spacing) {
+    if (!blockId || !typeClass) {
+      console.warn("❌ Missing required data for icon spacing:", {
+        blockId,
+        typeClass,
+      });
+      return;
+    }
+
+    try {
+      const styleId = `sc-icon-spacing-${typeClass}`;
+      let style = document.getElementById(styleId);
+      if (!style) {
+        style = document.createElement("style");
+        style.id = styleId;
+        document.head.appendChild(style);
+      }
+
+      style.innerHTML = `
+        .${typeClass} .sqs-add-to-cart-button-inner {
+          margin-right: ${spacing}px !important;
+        }
+      `;
+
+      mergeAndSaveButtonStyles(
+        blockId,
+        typeClass,
+        { marginRight: `${spacing}px` },
+        saveButtonModifications,
+        addPendingModification,
+        showNotification,
+        "icon"
+      );
+    } catch (error) {
+      console.error("❌ Error updating icon spacing:", error);
+      if (typeof showNotification === "function") {
+        showNotification("Failed to update icon spacing", "error");
+      }
+    }
+  }
+
   const fill = document.getElementById("buttonIconSpacingradiusFill");
   const bullet = document.getElementById("buttonIconSpacingradiusBullet");
   const field = document.getElementById("buttonIconSpacingradiusField");
@@ -846,7 +1116,55 @@ export function initButtonIconSpacingControl(getSelectedElement) {
   }, 50);
 }
 
-export function initButtonBorderControl(getSelectedElement) {
+export function initButtonBorderControl(
+  getSelectedElement,
+  addPendingModification,
+  showNotification,
+  saveButtonModifications
+) {
+  const borderMap = new Map();
+
+  function updateBorder(blockId, typeClass, border) {
+    if (!blockId || !typeClass) {
+      console.warn("❌ Missing required data for border:", {
+        blockId,
+        typeClass,
+      });
+      return;
+    }
+
+    try {
+      const styleId = `sc-border-${typeClass}`;
+      let style = document.getElementById(styleId);
+      if (!style) {
+        style = document.createElement("style");
+        style.id = styleId;
+        document.head.appendChild(style);
+      }
+
+      style.innerHTML = `
+        .${typeClass} {
+          border: ${border} !important;
+        }
+      `;
+
+      mergeAndSaveButtonStyles(
+        blockId,
+        typeClass,
+        { border },
+        saveButtonModifications,
+        addPendingModification,
+        showNotification,
+        "border"
+      );
+    } catch (error) {
+      console.error("❌ Error updating border:", error);
+      if (typeof showNotification === "function") {
+        showNotification("Failed to update border", "error");
+      }
+    }
+  }
+
   const fill = document.getElementById("buttonBorderFill");
   const bullet = document.getElementById("buttonBorderBullet");
   const field = document.getElementById("buttonBorderField");
@@ -1025,7 +1343,55 @@ export function initButtonBorderControl(getSelectedElement) {
   }, 50);
 }
 
-export function initButtonBorderTypeToggle(getSelectedElement) {
+export function initButtonBorderTypeToggle(
+  getSelectedElement,
+  addPendingModification,
+  showNotification,
+  saveButtonModifications
+) {
+  const borderTypeMap = new Map();
+
+  function updateBorderType(blockId, typeClass, borderType) {
+    if (!blockId || !typeClass) {
+      console.warn("❌ Missing required data for border type:", {
+        blockId,
+        typeClass,
+      });
+      return;
+    }
+
+    try {
+      const styleId = `sc-border-type-${typeClass}`;
+      let style = document.getElementById(styleId);
+      if (!style) {
+        style = document.createElement("style");
+        style.id = styleId;
+        document.head.appendChild(style);
+      }
+
+      style.innerHTML = `
+        .${typeClass} {
+          border-style: ${borderType} !important;
+        }
+      `;
+
+      mergeAndSaveButtonStyles(
+        blockId,
+        typeClass,
+        { borderStyle: borderType },
+        saveButtonModifications,
+        addPendingModification,
+        showNotification,
+        "border"
+      );
+    } catch (error) {
+      console.error("❌ Error updating border type:", error);
+      if (typeof showNotification === "function") {
+        showNotification("Failed to update border type", "error");
+      }
+    }
+  }
+
   const typeButtons = [
     { id: "buttonBorderTypeSolid", type: "solid" },
     { id: "buttonBorderTypeDashed", type: "dashed" },
@@ -1067,31 +1433,60 @@ export function initButtonBorderTypeToggle(getSelectedElement) {
       };
       window.__squareCraftBorderStateMap.set(key, { ...state });
 
-      const styleId = `sc-button-border-${typeClass}`;
-      let styleTag = document.getElementById(styleId);
-      if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = styleId;
-        document.head.appendChild(styleTag);
-      }
-
-      const borderColor = state.color || "black";
-
-      styleTag.textContent = `
-.${typeClass} {
-  box-sizing: border-box !important;
-  border-style: ${type} !important;
-  border-color: ${borderColor} !important;
-  border-top-width: ${state.values.Top || 0}px !important;
-  border-right-width: ${state.values.Right || 0}px !important;
-  border-bottom-width: ${state.values.Bottom || 0}px !important;
-  border-left-width: ${state.values.Left || 0}px !important;
-}`;
+      updateBorderType(blockId, typeClass, type);
     };
   });
 }
 
-export function initButtonBorderRadiusControl(getSelectedElement) {
+export function initButtonBorderRadiusControl(
+  getSelectedElement,
+  addPendingModification,
+  showNotification,
+  saveButtonModifications
+) {
+  const borderRadiusMap = new Map();
+
+  function updateBorderRadius(blockId, typeClass, radius) {
+    if (!blockId || !typeClass) {
+      console.warn("❌ Missing required data for border radius:", {
+        blockId,
+        typeClass,
+      });
+      return;
+    }
+
+    try {
+      const styleId = `sc-border-radius-${typeClass}`;
+      let style = document.getElementById(styleId);
+      if (!style) {
+        style = document.createElement("style");
+        style.id = styleId;
+        document.head.appendChild(style);
+      }
+
+      style.innerHTML = `
+        .${typeClass} {
+          border-radius: ${radius}px !important;
+        }
+      `;
+
+      mergeAndSaveButtonStyles(
+        blockId,
+        typeClass,
+        { borderRadius: `${radius}px` },
+        saveButtonModifications,
+        addPendingModification,
+        showNotification,
+        "border"
+      );
+    } catch (error) {
+      console.error("❌ Error updating border radius:", error);
+      if (typeof showNotification === "function") {
+        showNotification("Failed to update border radius", "error");
+      }
+    }
+  }
+
   const fillField = document.getElementById("buttonBorderradiusField");
   const bullet = document.getElementById("buttonBorderradiusBullet");
   const fill = document.getElementById("buttonBorderradiusFill");
@@ -1553,7 +1948,70 @@ window.syncButtonStylesFromElement = function (selectedElement) {
   window.updateActiveButtonBars?.();
 };
 
-export function resetAllButtonStyles(getSelectedElement) {
+export function resetAllButtonStyles(
+  getSelectedElement,
+  addPendingModification,
+  showNotification,
+  saveButtonModifications
+) {
+  function resetStyles(blockId, typeClass) {
+    if (!blockId || !typeClass) {
+      console.warn("❌ Missing required data for reset:", {
+        blockId,
+        typeClass,
+      });
+      return;
+    }
+
+    try {
+      // Remove all style tags
+      const styleTags = document.querySelectorAll(`style[id^="sc-"]`);
+      styleTags.forEach((tag) => tag.remove());
+
+      // Reset all maps
+      buttonStyleMap.delete(blockId);
+      iconPositionMap.delete(blockId);
+      iconRotationMap.delete(blockId);
+      iconSizeMap.delete(blockId);
+      iconSpacingMap.delete(blockId);
+      borderMap.delete(blockId);
+      borderTypeMap.delete(blockId);
+      borderRadiusMap.delete(blockId);
+
+      // Save reset state
+      mergeAndSaveButtonStyles(
+        blockId,
+        typeClass,
+        {
+          fontFamily: "inherit",
+          fontWeight: "normal",
+          fontSize: "inherit",
+          color: "inherit",
+          backgroundColor: "inherit",
+          border: "none",
+          borderRadius: "0",
+          boxShadow: "none",
+          transform: "none",
+          marginRight: "0",
+          flexDirection: "row",
+        },
+        saveButtonModifications,
+        addPendingModification,
+        showNotification,
+        "reset"
+      );
+
+      if (typeof showNotification === "function") {
+        showNotification("All button styles have been reset!", "success");
+      }
+    } catch (error) {
+      console.error("❌ Error resetting styles:", error);
+      if (typeof showNotification === "function") {
+        showNotification("Failed to reset styles", "error");
+      }
+    }
+  }
+
   const resetTrigger = document.getElementById("buttonResetAll");
   const resetIcon = document.getElementById("buttonResetAll-icon");
   if (!resetTrigger) return;
@@ -1809,7 +2267,51 @@ export function resetAllButtonStyles(getSelectedElement) {
   });
 }
 
-export function initButtonBorderResetHandlers(getSelectedElement) {
+export function initButtonBorderResetHandlers(
+  getSelectedElement,
+  addPendingModification,
+  showNotification,
+  saveButtonModifications
+) {
+  function resetBorder(blockId, typeClass) {
+    if (!blockId || !typeClass) {
+      console.warn("❌ Missing required data for border reset:", {
+        blockId,
+        typeClass,
+      });
+      return;
+    }
+
+    try {
+      // Remove border style tag
+      const styleTag = document.getElementById(`sc-border-${typeClass}`);
+      if (styleTag) styleTag.remove();
+
+      // Reset border map
+      borderMap.delete(blockId);
+
+      // Save reset state
+      mergeAndSaveButtonStyles(
+        blockId,
+        typeClass,
+        { border: "none" },
+        saveButtonModifications,
+        addPendingModification,
+        showNotification,
+        "border"
+      );
+
+      if (typeof showNotification === "function") {
+        showNotification("Border styles have been reset!", "success");
+      }
+    } catch (error) {
+      console.error("❌ Error resetting border:", error);
+      if (typeof showNotification === "function") {
+        showNotification("Failed to reset border", "error");
+      }
+    }
+  }
+
   const resetMap = {
     "border-reset": [
       "buttonBorderBullet",
