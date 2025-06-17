@@ -543,7 +543,7 @@ let pendingModifications = new Map();
         }
       );
       initButtonBorderRadiusControl(() => selectedElement);
-      WidgetTypoSectionStateControls();
+      // WidgetTypoSectionStateControls();
     }, 50);
 
     //button all functionality code end here
