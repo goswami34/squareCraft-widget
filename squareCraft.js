@@ -462,17 +462,6 @@ let pendingModifications = new Map();
     //   initButtonFontColorPaletteToggle(themeColors, selectedElement);
     // }, 100);
 
-    function getAddPending() {
-      return (blockId, css, tagType) => {
-        if (!pendingModifications.has(blockId)) {
-          pendingModifications.set(blockId, []);
-        }
-        pendingModifications.get(blockId).push({ css, tagType });
-      };
-    }
-
-    const addPendingModification = getAddPending();
-
     setTimeout(initImageSectionControls, 100);
     const clickedBlock = event.target.closest('[id^="block-"]');
     console.log("clickedBlock", clickedBlock);
@@ -540,70 +529,124 @@ let pendingModifications = new Map();
       initButtonFontColorPaletteToggle(
         themeColors,
         () => selectedElement,
-        addPendingModification,
-        showNotification,
-        saveButtonModifications
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
       );
-      initButtonFontColorPaletteToggle(
-        themeColors,
+      initButtonIconPositionToggle(
         () => selectedElement,
-        addPendingModification,
-        showNotification,
-        saveButtonModifications
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
       );
       initHoverButtonShadowControls(
         () => selectedElement,
-        addPendingModification,
-        showNotification,
-        saveButtonModifications
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
       );
       initButtonIconRotationControl(
         () => selectedElement,
-        addPendingModification,
-        showNotification,
-        saveButtonModifications
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
       );
       initButtonIconSizeControl(
         () => selectedElement,
-        addPendingModification,
-        showNotification,
-        saveButtonModifications
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
       );
       initButtonIconSpacingControl(
         () => selectedElement,
-        addPendingModification,
-        showNotification,
-        saveButtonModifications
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
       );
       initButtonBorderControl(
         () => selectedElement,
-        addPendingModification,
-        showNotification,
-        saveButtonModifications
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
       );
       initButtonShadowControls(
         () => selectedElement,
-        addPendingModification,
-        showNotification,
-        saveButtonModifications
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
       );
       resetAllButtonStyles(
         () => selectedElement,
-        addPendingModification,
-        showNotification,
-        saveButtonModifications
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
       );
       initButtonBorderResetHandlers(
         () => selectedElement,
-        addPendingModification,
-        showNotification,
-        saveButtonModifications
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
       );
       initButtonFontFamilyControls(
         () => selectedElement,
-        addPendingModification,
-        showNotification,
-        saveButtonModifications
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
       );
       initButtonBorderTypeToggle(
         () => selectedElement,
@@ -613,14 +656,17 @@ let pendingModifications = new Map();
             selected.dispatchEvent(event);
           }
         },
-        addPendingModification,
-        showNotification,
-        saveButtonModifications
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
       );
       initButtonBorderRadiusControl(
         () => selectedElement,
-        addPendingModification,
-        showNotification,
         saveButtonModifications
       );
       // WidgetTypoSectionStateControls();
