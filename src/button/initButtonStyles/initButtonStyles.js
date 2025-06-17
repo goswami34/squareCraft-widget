@@ -379,7 +379,9 @@ export function initButtonStyles(
     }
   }
 
-  if (!getSelectedElement) return;
+  // if (!getSelectedElement) return;
+  const selected = getSelectedElement?.();
+  if (!selected) return;
 
   const fontSizeInput = document.getElementById("scButtonFontSizeInput");
   const letterSpacingInput = document.getElementById(
@@ -388,10 +390,10 @@ export function initButtonStyles(
   const fontSizeOptions = document.getElementById("scButtonFontSizeOptions");
 
   const buttonElement =
-    getSelectedElement.querySelector(
+    selected.querySelector(
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
     ) ||
-    getSelectedElement.querySelector(
+    selected.querySelector(
       "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
     );
 
