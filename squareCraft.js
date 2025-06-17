@@ -324,6 +324,10 @@ let pendingModifications = new Map();
   //Image all functionality code end here
   //Image border controls end here
 
+  const { parentHtmlTabClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/parentHtmlTabClick.js"
+  );
+
   //button all functionality code start here
 
   const { initButtonAdvanceStyles } = await import(
