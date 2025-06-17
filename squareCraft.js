@@ -486,7 +486,7 @@ let pendingModifications = new Map();
 
     //button all functionality code start here
     if (selectedElement) {
-      initButtonStyles(selectedElement);
+      initButtonStyles(() => selectedElement);
     }
     if (selectedElement) {
       initButtonAdvanceStyles(() => selectedElement);

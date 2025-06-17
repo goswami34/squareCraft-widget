@@ -379,9 +379,17 @@ export function initButtonStyles(
     }
   }
 
-  // if (!getSelectedElement) return;
-  const selected = getSelectedElement?.();
-  if (!selected) return;
+  // Fix: Check if getSelectedElement is a function before calling it
+  if (typeof getSelectedElement !== "function") {
+    console.warn("getSelectedElement is not a function");
+    return;
+  }
+
+  const selected = getSelectedElement();
+  if (!selected) {
+    console.warn("No selected element found");
+    return;
+  }
 
   const fontSizeInput = document.getElementById("scButtonFontSizeInput");
   const letterSpacingInput = document.getElementById(
@@ -397,7 +405,10 @@ export function initButtonStyles(
       "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
     );
 
-  if (!buttonElement) return;
+  if (!buttonElement) {
+    console.warn("No button element found in selected element");
+    return;
+  }
 
   const typeClass = [...buttonElement.classList].find((cls) =>
     cls.startsWith("sqs-button-element--")
