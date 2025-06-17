@@ -3290,12 +3290,32 @@ let pendingModifications = new Map();
       const contentWrapper = document.createElement("div");
       contentWrapper.innerHTML = htmlString;
       widgetContainer.appendChild(contentWrapper);
+      parentHtmlTabClick();
 
       widgetContainer.style.display = "block";
       document.body.appendChild(widgetContainer);
 
       initImageMaskControls(() => selectedElement);
       makeWidgetDraggable();
+
+      setTimeout(() => {
+        const placeholders = widgetContainer.querySelectorAll(
+          ".sc-arrow-placeholder"
+        );
+
+        placeholders.forEach((span) => {
+          const isRotate = span.classList.contains("sc-rotate-180");
+          const cloneClassList = Array.from(span.classList);
+          const originalId = span.getAttribute("id") || "";
+          const id =
+            originalId || `sc-arrow-${Math.floor(Math.random() * 10000)}`;
+
+          const svg = createHoverableArrowSVG(id, isRotate);
+          cloneClassList.forEach((cls) => svg.classList.add(cls));
+          span.replaceWith(svg);
+        });
+      }, 100);
+
       widgetLoaded = true;
       initImageSectionToggleControls();
       // initButtonSectionToggleControls();
