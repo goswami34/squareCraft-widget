@@ -324,9 +324,9 @@ let pendingModifications = new Map();
   //Image all functionality code end here
   //Image border controls end here
 
-  const { parentHtmlTabClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/parentHtmlTabClick.js"
-  );
+  // const { parentHtmlTabClick } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/clickEvents/parentHtmlTabClick.js"
+  // );
 
   //button all functionality code start here
 
@@ -3294,7 +3294,7 @@ let pendingModifications = new Map();
       const contentWrapper = document.createElement("div");
       contentWrapper.innerHTML = htmlString;
       widgetContainer.appendChild(contentWrapper);
-      parentHtmlTabClick();
+      // parentHtmlTabClick();
 
       widgetContainer.style.display = "block";
       document.body.appendChild(widgetContainer);
