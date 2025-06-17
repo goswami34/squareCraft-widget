@@ -11,7 +11,11 @@ setTimeout(() => {
   }
 }, 200);
 
-export function initButtonFontFamilyControls(getSelectedElement) {
+export function initButtonFontFamilyControls(
+  getSelectedElement,
+  addPendingModification,
+  showNotification
+) {
   const GOOGLE_FONTS_API =
     "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk";
 
@@ -176,6 +180,14 @@ export function initButtonFontFamilyControls(getSelectedElement) {
           fontWeightSelectedLabel.innerText = variants.includes("400")
             ? "400"
             : variants[0] || "";
+        }
+
+        const blockId = selectedElement.id;
+        if (typeof addPendingModification === "function") {
+          addPendingModification(blockId, { fontFamily: family }, "font");
+        }
+        if (typeof showNotification === "function") {
+          showNotification("Font changed!", "success");
         }
       });
 
@@ -1303,7 +1315,6 @@ export function initButtonShadowControls(getSelectedElement) {
   setupShadowControl("Spread", 30);
 }
 
-
 window.syncButtonStylesFromElement = function (selectedElement) {
   if (!selectedElement) return;
 
@@ -1454,7 +1465,6 @@ export function resetAllButtonStyles(getSelectedElement) {
         el.classList.remove("sc-bg-454545");
       }
     });
-    
 
     const normalStyleIds = [
       `sc-font-style-${typeClass}`,
@@ -1559,7 +1569,7 @@ export function resetAllButtonStyles(getSelectedElement) {
       document.getElementById("buttoniconSizeradiusCount").textContent = "0px";
 
       inputSync("buttonIconSpacingradius", "0px", "0%");
-      document.getElementById("buttoniconSpacingCount").textContent = "0px"; 
+      document.getElementById("buttoniconSpacingCount").textContent = "0px";
 
       inputSync("hover-buttonIconTransformPosition", "0px", "50%");
       inputSync("hover-buttonBorder", "0px", "0%");
@@ -1729,7 +1739,6 @@ export function initButtonBorderResetHandlers(getSelectedElement) {
           el.classList.remove("sc-bg-454545");
         }
       });
-      
 
       if (resetId === "shadow-axis-reset") {
         const xConf = config[0];
@@ -1776,15 +1785,6 @@ export function initButtonBorderResetHandlers(getSelectedElement) {
     });
   });
 }
-
-
-
-
-
-
-
-
-
 
 setTimeout(() => {
   if (typeof window.syncButtonStylesFromElement === "function") {
