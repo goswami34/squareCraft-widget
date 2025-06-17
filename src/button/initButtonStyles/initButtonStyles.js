@@ -1167,92 +1167,180 @@ export function initButtonBorderControl(
 
   const fill = document.getElementById("buttonBorderFill");
   const bullet = document.getElementById("buttonBorderBullet");
-  const input = document.getElementById("buttonBorderInput");
+  const field = document.getElementById("buttonBorderField");
+  const valueText = document.getElementById("buttonBorderCount");
+  const incBtn = document.getElementById("buttonBorderIncrease");
+  const decBtn = document.getElementById("buttonBorderDecrease");
+  const resetBtn = valueText
+    ?.closest(".sc-flex")
+    ?.querySelector('img[alt="reset"]');
 
-  if (!fill || !bullet || !input) return;
+  if (!fill || !bullet || !field || !valueText) return;
 
-  let isDragging = false;
-  let startX = 0;
-  let startLeft = 0;
+  const max = 10;
+  let currentValue = 0;
 
-  function updatePosition(x) {
-    const rect = fill.getBoundingClientRect();
-    const maxX = rect.width;
-    const newX = Math.max(0, Math.min(x, maxX));
-    const percentage = (newX / maxX) * 100;
-    bullet.style.left = `${percentage}%`;
-    input.value = Math.round(percentage);
+  if (!window.__squareCraftBorderStateMap)
+    window.__squareCraftBorderStateMap = new Map();
+  const sides = ["Top", "Right", "Bottom", "Left"];
+
+  ["All", ...sides].forEach((side) => {
+    const el = document.getElementById(`buttonBorder${side}`);
+    if (!el) return;
+
+    el.addEventListener("click", () => {
+      ["All", ...sides].forEach((s) => {
+        const btn = document.getElementById(`buttonBorder${s}`);
+        btn?.classList.remove("sc-bg-454545");
+      });
+      el.classList.add("sc-bg-454545");
+
+      const selectedElement = getSelectedElement?.();
+      if (!selectedElement) return;
+
+      const btn = selectedElement.querySelector(
+        "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
+      );
+      if (!btn) return;
+
+      const typeClass = [...btn.classList].find((c) =>
+        c.startsWith("sqs-button-element--")
+      );
+      const blockId = selectedElement.id || "block-id";
+      const key = `${blockId}--${typeClass}`;
+
+      const state = window.__squareCraftBorderStateMap.get(key) || {
+        values: {},
+        side: "All",
+      };
+      state.side = side;
+
+      if (side === "All") {
+        const v = state.values;
+        const avg =
+          ((v.Top ?? 0) + (v.Right ?? 0) + (v.Bottom ?? 0) + (v.Left ?? 0)) / 4;
+        currentValue = Math.round(avg);
+      } else {
+        state.values[side] = state.values[side] || 0;
+        currentValue = state.values[side];
+      }
+
+      window.__squareCraftBorderStateMap.set(key, state);
+      updateUIFromValue(currentValue);
+    });
+  });
+
+  function applyBorder() {
+    const selected = getSelectedElement?.();
+    const btn = selected?.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const typeClass = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
+    );
+    if (!typeClass) return;
+
+    const blockId = selected.id || "block-id";
+    const key = `${blockId}--${typeClass}`;
+    const state = window.__squareCraftBorderStateMap.get(key) || {
+      values: {},
+      side: "All",
+    };
+
+    if (state.side === "All") {
+      sides.forEach((side) => {
+        state.values[side] = currentValue;
+      });
+    } else {
+      state.values[state.side] = currentValue;
+    }
+
+    window.__squareCraftBorderStateMap.set(key, state);
+
+    const styleId = `sc-button-border-${typeClass}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+
+    styleTag.innerHTML = `
+.${typeClass} {
+  box-sizing: border-box !important;
+  border-style: ${window.__squareCraftBorderStyle || "solid"} !important;
+  border-color: black !important;
+  border-top-width: ${state.values.Top || 0}px !important;
+  border-right-width: ${state.values.Right || 0}px !important;
+  border-bottom-width: ${state.values.Bottom || 0}px !important;
+  border-left-width: ${state.values.Left || 0}px !important;
+}
+    `;
   }
 
-  bullet.onmousedown = (e) => {
-    isDragging = true;
-    startX = e.clientX;
-    startLeft = bullet.offsetLeft;
+  function updateUIFromValue(value) {
+    currentValue = Math.max(0, Math.min(max, value));
+    const percent = (currentValue / max) * 100;
+    bullet.style.left = `${percent}%`;
+    fill.style.width = `${percent}%`;
+    valueText.textContent = `${currentValue}px`;
+    applyBorder();
+  }
+
+  bullet.addEventListener("mousedown", (e) => {
     e.preventDefault();
-  };
+    const move = (eMove) => {
+      const rect = field.getBoundingClientRect();
+      const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
+      const value = Math.round((x / rect.width) * max);
+      updateUIFromValue(value);
+    };
+    const up = () => {
+      document.removeEventListener("mousemove", move);
+      document.removeEventListener("mouseup", up);
+    };
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseup", up);
+  });
 
-  document.onmousemove = (e) => {
-    if (!isDragging) return;
-    const deltaX = e.clientX - startX;
-    const newLeft = startLeft + deltaX;
-    updatePosition(newLeft);
+  field.addEventListener("click", (e) => {
+    const rect = field.getBoundingClientRect();
+    const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
+    const value = Math.round((x / rect.width) * max);
+    updateUIFromValue(value);
+  });
 
-    const selectedElement = getSelectedElement?.();
-    if (!selectedElement) return;
+  incBtn?.addEventListener("click", () => updateUIFromValue(currentValue + 1));
+  decBtn?.addEventListener("click", () => updateUIFromValue(currentValue - 1));
+  resetBtn?.addEventListener("click", () => updateUIFromValue(0));
 
-    const btn = selectedElement.querySelector(
-      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary," +
-        "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
+  setTimeout(() => {
+    const selected = getSelectedElement?.();
+    const btn = selected?.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
     );
     if (!btn) return;
 
-    const typeClass = [...btn.classList].find((cls) =>
-      cls.startsWith("sqs-button-element--")
+    const typeClass = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
     );
-    if (!typeClass) return;
-
-    const blockId = selectedElement.id;
-    if (!blockId) {
-      console.warn("❌ No block ID found for selected element");
-      return;
+    const blockId = selected.id || "block-id";
+    const key = `${blockId}--${typeClass}`;
+    const stored = window.__squareCraftBorderStateMap.get(key);
+    if (stored?.side) {
+      if (stored.side === "All") {
+        const v = stored.values;
+        const avg =
+          ((v.Top ?? 0) + (v.Right ?? 0) + (v.Bottom ?? 0) + (v.Left ?? 0)) / 4;
+        currentValue = Math.round(avg);
+      } else {
+        currentValue = stored.values[stored.side] || 0;
+      }
+      updateUIFromValue(currentValue);
     }
-
-    const borderWidth = Math.round((newLeft / fill.offsetWidth) * 100);
-    updateBorder(blockId, typeClass, `${borderWidth}px solid black`);
-  };
-
-  document.onmouseup = () => {
-    isDragging = false;
-  };
-
-  input.oninput = () => {
-    const value = parseInt(input.value);
-    if (isNaN(value)) return;
-    const percentage = Math.max(0, Math.min(value, 100));
-    updatePosition((percentage / 100) * fill.offsetWidth);
-
-    const selectedElement = getSelectedElement?.();
-    if (!selectedElement) return;
-
-    const btn = selectedElement.querySelector(
-      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary," +
-        "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
-    );
-    if (!btn) return;
-
-    const typeClass = [...btn.classList].find((cls) =>
-      cls.startsWith("sqs-button-element--")
-    );
-    if (!typeClass) return;
-
-    const blockId = selectedElement.id;
-    if (!blockId) {
-      console.warn("❌ No block ID found for selected element");
-      return;
-    }
-
-    updateBorder(blockId, typeClass, `${percentage}px solid black`);
-  };
+  }, 50);
 }
 
 export function initButtonBorderTypeToggle(
@@ -1308,24 +1396,26 @@ export function initButtonBorderTypeToggle(
     { id: "buttonBorderTypeSolid", type: "solid" },
     { id: "buttonBorderTypeDashed", type: "dashed" },
     { id: "buttonBorderTypeDotted", type: "dotted" },
-    { id: "buttonBorderTypeDouble", type: "double" },
-    { id: "buttonBorderTypeGroove", type: "groove" },
-    { id: "buttonBorderTypeRidge", type: "ridge" },
-    { id: "buttonBorderTypeInset", type: "inset" },
-    { id: "buttonBorderTypeOutset", type: "outset" },
   ];
 
   typeButtons.forEach(({ id, type }) => {
-    const button = document.getElementById(id);
-    if (!button) return;
+    const el = document.getElementById(id);
+    if (!el) return;
 
-    button.onclick = () => {
-      const selectedElement = getSelectedElement?.();
-      if (!selectedElement) return;
+    el.onclick = () => {
+      typeButtons.forEach(({ id }) => {
+        const btn = document.getElementById(id);
+        btn?.classList.remove("sc-bg-454545");
+      });
 
-      const btn = selectedElement.querySelector(
-        "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary," +
-          "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
+      el.classList.add("sc-bg-454545");
+      window.__squareCraftBorderStyle = type;
+
+      const selected = getSelectedElement?.();
+      if (!selected) return;
+
+      const btn = selected.querySelector(
+        "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
       );
       if (!btn) return;
 
@@ -1334,11 +1424,14 @@ export function initButtonBorderTypeToggle(
       );
       if (!typeClass) return;
 
-      const blockId = selectedElement.id;
-      if (!blockId) {
-        console.warn("❌ No block ID found for selected element");
-        return;
-      }
+      const blockId = selected.id || "block-id";
+      const key = `${blockId}--${typeClass}`;
+      const state = window.__squareCraftBorderStateMap.get(key) || {
+        values: {},
+        side: "All",
+        color: "#000000",
+      };
+      window.__squareCraftBorderStateMap.set(key, { ...state });
 
       updateBorderType(blockId, typeClass, type);
     };
@@ -1396,92 +1489,111 @@ export function initButtonBorderRadiusControl(
 
   const fillField = document.getElementById("buttonBorderradiusField");
   const bullet = document.getElementById("buttonBorderradiusBullet");
-  const input = document.getElementById("buttonBorderradiusInput");
+  const fill = document.getElementById("buttonBorderradiusFill");
+  const valueText = document.getElementById("buttonBorderradiusCount");
+  const incBtn = document.getElementById("buttonBorderradiusIncrease");
+  const decBtn = document.getElementById("buttonBorderradiusDecrease");
+  const resetBtn = valueText
+    ?.closest(".sc-flex")
+    ?.querySelector('img[alt="reset"]');
 
-  if (!fillField || !bullet || !input) return;
+  if (!fillField || !bullet || !fill || !valueText) return;
 
-  let isDragging = false;
-  let startX = 0;
-  let startLeft = 0;
+  const max = 50;
+  let radiusValue = 0;
 
-  function updatePosition(x) {
-    const rect = fillField.getBoundingClientRect();
-    const maxX = rect.width;
-    const newX = Math.max(0, Math.min(x, maxX));
-    const percentage = (newX / maxX) * 100;
-    bullet.style.left = `${percentage}%`;
-    input.value = Math.round(percentage);
+  function getButtonTypeClass(btn) {
+    if (btn.classList.contains("sqs-button-element--secondary"))
+      return "sqs-button-element--secondary";
+    if (btn.classList.contains("sqs-button-element--tertiary"))
+      return "sqs-button-element--tertiary";
+    return "sqs-button-element--primary";
   }
 
-  bullet.onmousedown = (e) => {
-    isDragging = true;
-    startX = e.clientX;
-    startLeft = bullet.offsetLeft;
+  function applyBorderRadius() {
+    const selected = getSelectedElement?.();
+    const btn = selected?.querySelector(
+      ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const typeClass = getButtonTypeClass(btn);
+    const styleId = `sc-normal-radius-${typeClass.replace(/--/g, "-")}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+
+    styleTag.textContent = `
+.${typeClass} {
+  border-radius: ${radiusValue}px !important;
+  overflow: hidden !important;
+}
+.${typeClass} span,
+.${typeClass} .sqs-add-to-cart-button-inner {
+  border-radius: ${radiusValue}px !important;
+}
+.${typeClass}:hover {
+  border-radius: ${radiusValue}px !important;
+  overflow: hidden !important;
+}
+.${typeClass}:hover span,
+.${typeClass}:hover .sqs-add-to-cart-button-inner {
+  border-radius: ${radiusValue}px !important;
+}
+    `;
+  }
+
+  function updateUIFromValue(value) {
+    radiusValue = Math.max(0, Math.min(max, value));
+    const percent = (radiusValue / max) * 100;
+
+    bullet.style.left = `${percent}%`;
+    fill.style.width = `${percent}%`;
+    valueText.textContent = `${radiusValue}px`;
+
+    applyBorderRadius();
+  }
+
+  bullet.addEventListener("mousedown", (e) => {
     e.preventDefault();
-  };
+    const move = (eMove) => {
+      const rect = fillField.getBoundingClientRect();
+      const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
+      const value = Math.round((x / rect.width) * max);
+      updateUIFromValue(value);
+    };
+    const up = () => {
+      document.removeEventListener("mousemove", move);
+      document.removeEventListener("mouseup", up);
+    };
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseup", up);
+  });
 
-  document.onmousemove = (e) => {
-    if (!isDragging) return;
-    const deltaX = e.clientX - startX;
-    const newLeft = startLeft + deltaX;
-    updatePosition(newLeft);
+  fillField.addEventListener("click", (e) => {
+    const rect = fillField.getBoundingClientRect();
+    const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
+    const value = Math.round((x / rect.width) * max);
+    updateUIFromValue(value);
+  });
 
-    const selectedElement = getSelectedElement?.();
-    if (!selectedElement) return;
+  incBtn?.addEventListener("click", () => updateUIFromValue(radiusValue + 1));
+  decBtn?.addEventListener("click", () => updateUIFromValue(radiusValue - 1));
+  resetBtn?.addEventListener("click", () => updateUIFromValue(0));
 
-    const btn = selectedElement.querySelector(
-      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary," +
-        "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
+  setTimeout(() => {
+    const selected = getSelectedElement?.();
+    const btn = selected?.querySelector(
+      ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
     );
     if (!btn) return;
 
-    const typeClass = [...btn.classList].find((cls) =>
-      cls.startsWith("sqs-button-element--")
-    );
-    if (!typeClass) return;
-
-    const blockId = selectedElement.id;
-    if (!blockId) {
-      console.warn("❌ No block ID found for selected element");
-      return;
-    }
-
-    const radius = Math.round((newLeft / fillField.offsetWidth) * 100);
-    updateBorderRadius(blockId, typeClass, radius);
-  };
-
-  document.onmouseup = () => {
-    isDragging = false;
-  };
-
-  input.oninput = () => {
-    const value = parseInt(input.value);
-    if (isNaN(value)) return;
-    const percentage = Math.max(0, Math.min(value, 100));
-    updatePosition((percentage / 100) * fillField.offsetWidth);
-
-    const selectedElement = getSelectedElement?.();
-    if (!selectedElement) return;
-
-    const btn = selectedElement.querySelector(
-      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary," +
-        "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
-    );
-    if (!btn) return;
-
-    const typeClass = [...btn.classList].find((cls) =>
-      cls.startsWith("sqs-button-element--")
-    );
-    if (!typeClass) return;
-
-    const blockId = selectedElement.id;
-    if (!blockId) {
-      console.warn("❌ No block ID found for selected element");
-      return;
-    }
-
-    updateBorderRadius(blockId, typeClass, percentage);
-  };
+    const computed = parseInt(window.getComputedStyle(btn).borderRadius || "0");
+    if (!isNaN(computed)) updateUIFromValue(computed);
+  }, 50);
 }
 
 export function initButtonShadowControls(
