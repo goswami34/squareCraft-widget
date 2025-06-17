@@ -648,6 +648,19 @@ let pendingModifications = new Map();
         },
         showNotification
       );
+
+      initButtonStyles(
+        () => selectedElement,
+        saveButtonModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
+      );
+
       initButtonBorderTypeToggle(
         () => selectedElement,
         (selected) => {
