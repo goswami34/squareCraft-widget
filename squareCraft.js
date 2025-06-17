@@ -324,6 +324,66 @@ let pendingModifications = new Map();
   //Image all functionality code end here
   //Image border controls end here
 
+  //button all functionality code start here
+
+  const { initButtonAdvanceStyles } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonSection/WidgetButtonAdvanceStyles/WidgetButtonAdvanceStyles.js"
+  );
+  const { ButtonAdvanceToggleControls } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/ButtonAdvanceToggleControls/ButtonAdvanceToggleControls.js"
+  );
+
+  const {
+    initHoverButtonSectionToggleControls,
+    initHoverButtonEffectDropdowns,
+  } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/initHoverButtonSectionToggleControls/initHoverButtonSectionToggleControls.js"
+  );
+  const { initButtonSectionToggleControls } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/initButtonSectionToggleControls/initButtonSectionToggleControls.js"
+  );
+  const { initImageUploadPreview } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/initButtonSectionToggleControls/initImageUploadPreview.js"
+  );
+  const { buttonTooltipControls } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/buttonTooltipControls/buttonTooltipControls.js"
+  );
+  const { initButtonFontColorPaletteToggle } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js"
+  );
+
+  const {
+    initButtonStyles,
+    initButtonIconPositionToggle,
+    initButtonIconRotationControl,
+    initButtonIconSizeControl,
+    initButtonIconSpacingControl,
+    initButtonBorderControl,
+    initButtonBorderTypeToggle,
+    initButtonBorderRadiusControl,
+    initButtonShadowControls,
+    initButtonFontFamilyControls,
+    resetAllButtonStyles,
+    initButtonBorderResetHandlers,
+  } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonStyles.js"
+  );
+
+  const {
+    initHoverButtonShadowControls,
+    initHoverButtonIconRotationControl,
+    initHoverButtonIconSizeControl,
+    initHoverButtonIconSpacingControl,
+    initHoverButtonBorderRadiusControl,
+    initHoverButtonBorderTypeToggle,
+    initHoverButtonBorderControl,
+    applyHoverButtonEffects,
+  } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonHoverStyles.js"
+  );
+
+  //button all functionality code end here
+
   const themeColors = await getSquarespaceThemeStyles();
 
   document.body.addEventListener("click", (event) => {
@@ -399,7 +459,7 @@ let pendingModifications = new Map();
     console.log("clickedBlock", clickedBlock);
 
     if (clickedBlock) {
-      waitForElement("#typoSection, #imageSection")
+      waitForElement("#typoSection, #imageSection,  #buttonSection")
         .then(() => {
           detectBlockElementTypes(clickedBlock);
         })
@@ -415,6 +475,74 @@ let pendingModifications = new Map();
     //   ?.querySelector(event.target)
     //   ?.closest('[id^="block-"]');
     // console.log("clickedBlockOne", clickedBlockOne);
+
+    //button all functionality code start here
+    if (selectedElement) {
+      initButtonStyles(selectedElement);
+    }
+    if (selectedElement) {
+      initButtonAdvanceStyles(() => selectedElement);
+    }
+
+    if (selectedElement) {
+      initHoverButtonIconRotationControl(() => selectedElement);
+    }
+    if (selectedElement) {
+      initHoverButtonIconSizeControl(() => selectedElement);
+    }
+    if (selectedElement) {
+      initHoverButtonIconSpacingControl(() => selectedElement);
+    }
+    if (selectedElement) {
+      initHoverButtonBorderRadiusControl(() => selectedElement);
+    }
+    if (selectedElement) {
+      initHoverButtonBorderTypeToggle(() => selectedElement);
+    }
+    if (selectedElement) {
+      initHoverButtonBorderControl(() => selectedElement);
+    }
+    if (selectedElement) {
+      applyHoverButtonEffects(() => selectedElement);
+    }
+
+    setTimeout(() => {
+      handleBlockClick(event, {
+        getTextType,
+        selectedElement,
+        setSelectedElement: (val) => (selectedElement = val),
+        setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+        setLastClickedElement: (val) => (lastClickedElement = val),
+        setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+        setLastActiveAlignmentElement: (val) =>
+          (lastActiveAlignmentElement = val),
+      });
+
+      initButtonFontColorPaletteToggle(themeColors, () => selectedElement);
+      initButtonIconPositionToggle(() => selectedElement);
+      initHoverButtonShadowControls(() => selectedElement);
+      initButtonIconRotationControl(() => selectedElement);
+      initButtonIconSizeControl(() => selectedElement);
+      initButtonIconSpacingControl(() => selectedElement);
+      initButtonBorderControl(() => selectedElement);
+      initButtonShadowControls(() => selectedElement);
+      resetAllButtonStyles(() => selectedElement);
+      initButtonBorderResetHandlers(() => selectedElement);
+      initButtonFontFamilyControls(() => selectedElement);
+      initButtonBorderTypeToggle(
+        () => selectedElement,
+        (selected) => {
+          if (selected) {
+            const event = new Event("reapplyBorder");
+            selected.dispatchEvent(event);
+          }
+        }
+      );
+      initButtonBorderRadiusControl(() => selectedElement);
+      WidgetTypoSectionStateControls();
+    }, 50);
+
+    //button all functionality code end here
 
     handleBlockClick(event, {
       getTextType,
@@ -3172,9 +3300,17 @@ let pendingModifications = new Map();
       initImageSectionToggleControls();
       // initButtonSectionToggleControls();
       // initImageUploadPreview(() => selectedElement);
+      ButtonAdvanceToggleControls();
+      buttonTooltipControls();
+      initButtonSectionToggleControls();
+      initImageStateTabToggle();
+      WidgetImageHoverToggleControls();
+      initHoverButtonSectionToggleControls();
+      initHoverButtonEffectDropdowns();
+      initImageUploadPreview(() => selectedElement);
 
       if (clickedBlock) {
-        waitForElement("#typoSection, #imageSection")
+        waitForElement("#typoSection, #imageSection, #buttonSection")
           .then(() => {
             handleBlockClick(
               { target: clickedBlock },
