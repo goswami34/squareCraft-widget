@@ -457,88 +457,6 @@ export async function saveModificationsforImage(blockId, css, tagType) {
   }
 }
 
-// export async function saveImageOverlayModifications(blockId, css) {
-//   const pageId = document
-//     .querySelector("article[data-page-sections]")
-//     ?.getAttribute("data-page-sections");
-//   const userId = localStorage.getItem("sc_u_id");
-//   const token = localStorage.getItem("sc_auth_token");
-//   const widgetId = localStorage.getItem("sc_w_id");
-
-//   const stylesWithContent = {
-//     ...css,
-//     content: "", // Always include content property
-//   };
-
-//   // Detailed debug log
-//   console.log("[DEBUG] Overlay Save Fields:", {
-//     userId,
-//     token,
-//     widgetId,
-//     pageId,
-//     blockId,
-//     css,
-//   });
-
-//   const selector = `#${blockId} .sqs-image-content > :nth-child(-n+2)::before`;
-//   const kebabCss = toKebabCaseStyleObject(css);
-
-//   // FLAT PAYLOAD for backend
-//   const payload = {
-//     userId,
-//     token,
-//     widgetId,
-//     pageId,
-//     elementId: blockId,
-//     selector,
-//     styles: kebabCss,
-//   };
-
-//   // Log the final payload
-//   console.log(
-//     "[DEBUG] Final overlay payload:",
-//     JSON.stringify(payload, null, 2)
-//   );
-
-//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-//     console.warn("❌ Missing required fields", {
-//       userId,
-//       token,
-//       widgetId,
-//       pageId,
-//       blockId,
-//       css,
-//     });
-//     return { success: false, error: "Missing required data" };
-//   }
-
-//   try {
-//     const response = await fetch(
-//       "https://admin.squareplugin.com/api/v1/save-image-overlay-modifications",
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify(payload),
-//       }
-//     );
-
-//     const result = await response.json();
-
-//     if (!response.ok) {
-//       throw new Error(result.message || `HTTP ${response.status}`);
-//     }
-
-//     console.log("✅ Overlay styles saved:", result);
-//     return { success: true, data: result };
-//   } catch (error) {
-//     console.error("❌ Error saving overlay styles:", error);
-//     return { success: false, error: error.message };
-//   }
-// }
-
 export async function saveImageOverlayModifications(blockId, css) {
   const pageId = document
     .querySelector("article[data-page-sections]")
@@ -623,101 +541,6 @@ export async function saveImageOverlayModifications(blockId, css) {
 }
 
 // ✅ Image Overlay Controls end here
-
-// image shadow code start here
-// export async function saveImageShadowModifications(blockId, css) {
-//   const pageId = document
-//     .querySelector("article[data-page-sections]")
-//     ?.getAttribute("data-page-sections");
-
-//   const userId = localStorage.getItem("sc_u_id");
-//   const token = localStorage.getItem("sc_auth_token");
-//   const widgetId = localStorage.getItem("sc_w_id");
-
-//   // ✅ Check all required data
-//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-//     console.warn("❌ Missing required data to save shadow styles", {
-//       userId,
-//       token,
-//       widgetId,
-//       pageId,
-//       blockId,
-//       css,
-//     });
-//     return { success: false, error: "Missing required data" };
-//   }
-
-//   // ✅ Extract image styles and clean them
-//   const rawStyles = css?.image?.styles || css;
-//   const selector = css?.image?.selector || `#${blockId} div.sqs-image-content`;
-
-//   const cleanedStyles = cleanCssObject(rawStyles);
-//   if (Object.keys(cleanedStyles).length === 0) {
-//     return { success: false, error: "No valid shadow styles to save" };
-//   }
-
-//   const kebabCss = toKebabCaseStyleObject(cleanedStyles);
-
-//   // ✅ Default imageTag fallback
-//   const imageTagSelector =
-//     css?.imageTag?.selector || `#siteWrapper #${blockId} .sqs-image`;
-//   const imageTagStyles = cleanCssObject(
-//     css?.imageTag?.styles || {
-//       overflow: "visible",
-//     }
-//   );
-
-//   // ✅ Final payload
-//   const payload = {
-//     userId,
-//     token,
-//     widgetId,
-//     pageId,
-//     elementId: blockId,
-//     css: {
-//       image: {
-//         selector,
-//         styles: kebabCss,
-//       },
-//       imageTag: {
-//         selector: imageTagSelector,
-//         styles: toKebabCaseStyleObject(imageTagStyles),
-//       },
-//     },
-//   };
-
-//   console.log("📤 Sending shadow payload:", payload);
-
-//   try {
-//     const response = await fetch(
-//       "https://admin.squareplugin.com/api/v1/save-image-shadow-modifications",
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify(payload),
-//       }
-//     );
-
-//     const result = await response.json();
-
-//     if (!response.ok) {
-//       throw new Error(result.message || `HTTP ${response.status}`);
-//     }
-
-//     console.log("✅ Shadow styles saved:", result);
-//     showNotification("Image shadow styles saved successfully!", "success");
-
-//     return { success: true, data: result };
-//   } catch (error) {
-//     console.error("❌ Error saving image shadow styles:", error);
-//     showNotification(`Failed to save shadow: ${error.message}`, "error");
-
-//     return { success: false, error: error.message };
-//   }
-// }
 
 export async function saveImageShadowModifications(blockId, css) {
   const pageId = document
@@ -810,3 +633,127 @@ export async function saveImageShadowModifications(blockId, css) {
 }
 
 // image shadow code end here
+
+//button save modification start here
+export async function saveButtonModifications(blockId, css) {
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+    console.warn("❌ Missing required data to save button styles", {
+      userId,
+      token,
+      widgetId,
+      pageId,
+      blockId,
+      css,
+    });
+    return { success: false, error: "Missing required data" };
+  }
+
+  // ✅ Clean and normalize each button type
+  const cleanCssObject = (rawCss = {}) =>
+    Object.fromEntries(
+      Object.entries(rawCss).filter(
+        ([_, value]) =>
+          value !== null &&
+          value !== undefined &&
+          value !== "" &&
+          value !== "null"
+      )
+    );
+
+  const toKebabCase = (obj) =>
+    Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [
+        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        value,
+      ])
+    );
+
+  const cleanedPrimary = css.buttonPrimary
+    ? {
+        selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
+        styles: toKebabCase(cleanCssObject(css.buttonPrimary.styles || {})),
+      }
+    : { selector: null, styles: {} };
+
+  const cleanedSecondary = css.buttonSecondary
+    ? {
+        selector:
+          css.buttonSecondary.selector || ".sqs-button-element--secondary",
+        styles: toKebabCase(cleanCssObject(css.buttonSecondary.styles || {})),
+      }
+    : { selector: null, styles: {} };
+
+  const cleanedTertiary = css.buttonTertiary
+    ? {
+        selector:
+          css.buttonTertiary.selector || ".sqs-button-element--tertiary",
+        styles: toKebabCase(cleanCssObject(css.buttonTertiary.styles || {})),
+      }
+    : { selector: null, styles: {} };
+
+  // ✅ At least one valid style
+  const isEmpty =
+    Object.keys(cleanedPrimary.styles).length === 0 &&
+    Object.keys(cleanedSecondary.styles).length === 0 &&
+    Object.keys(cleanedTertiary.styles).length === 0;
+
+  if (isEmpty) {
+    console.warn("⚠️ No valid button styles to save");
+    return { success: false, error: "No valid button styles to save" };
+  }
+
+  const payload = {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    elementId: blockId,
+    css: {
+      buttonPrimary: cleanedPrimary,
+      buttonSecondary: cleanedSecondary,
+      buttonTertiary: cleanedTertiary,
+    },
+  };
+
+  console.log("📤 Sending button style payload:", payload);
+
+  try {
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/save-button-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || `HTTP ${response.status}`);
+    }
+
+    console.log("✅ Button styles saved:", result);
+    showNotification("Button styles saved successfully!", "success");
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("❌ Error saving button styles:", error);
+    showNotification(`Failed to save button styles: ${error.message}`, "error");
+
+    return { success: false, error: error.message };
+  }
+}
+
+//button save modification end here

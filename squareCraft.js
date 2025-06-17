@@ -386,6 +386,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonHoverStyles.js"
   );
 
+  const { saveButtonModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   //button all functionality code end here
 
   const themeColors = await getSquarespaceThemeStyles();
@@ -522,17 +526,39 @@ let pendingModifications = new Map();
           (lastActiveAlignmentElement = val),
       });
 
-      initButtonFontColorPaletteToggle(themeColors, () => selectedElement);
-      initButtonIconPositionToggle(() => selectedElement);
-      initHoverButtonShadowControls(() => selectedElement);
-      initButtonIconRotationControl(() => selectedElement);
-      initButtonIconSizeControl(() => selectedElement);
-      initButtonIconSpacingControl(() => selectedElement);
-      initButtonBorderControl(() => selectedElement);
-      initButtonShadowControls(() => selectedElement);
-      resetAllButtonStyles(() => selectedElement);
-      initButtonBorderResetHandlers(() => selectedElement);
-      initButtonFontFamilyControls(() => selectedElement);
+      initButtonFontColorPaletteToggle(
+        themeColors,
+        () => selectedElement,
+        saveButtonModifications
+      );
+      initButtonIconPositionToggle(
+        () => selectedElement,
+        saveButtonModifications
+      );
+      initHoverButtonShadowControls(
+        () => selectedElement,
+        saveButtonModifications
+      );
+      initButtonIconRotationControl(
+        () => selectedElement,
+        saveButtonModifications
+      );
+      initButtonIconSizeControl(() => selectedElement, saveButtonModifications);
+      initButtonIconSpacingControl(
+        () => selectedElement,
+        saveButtonModifications
+      );
+      initButtonBorderControl(() => selectedElement, saveButtonModifications);
+      initButtonShadowControls(() => selectedElement, saveButtonModifications);
+      resetAllButtonStyles(() => selectedElement, saveButtonModifications);
+      initButtonBorderResetHandlers(
+        () => selectedElement,
+        saveButtonModifications
+      );
+      initButtonFontFamilyControls(
+        () => selectedElement,
+        saveButtonModifications
+      );
       initButtonBorderTypeToggle(
         () => selectedElement,
         (selected) => {
@@ -540,9 +566,13 @@ let pendingModifications = new Map();
             const event = new Event("reapplyBorder");
             selected.dispatchEvent(event);
           }
-        }
+        },
+        saveButtonModifications
       );
-      initButtonBorderRadiusControl(() => selectedElement);
+      initButtonBorderRadiusControl(
+        () => selectedElement,
+        saveButtonModifications
+      );
       // WidgetTypoSectionStateControls();
     }, 50);
 
