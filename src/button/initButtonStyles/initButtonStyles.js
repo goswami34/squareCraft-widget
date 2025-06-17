@@ -23,38 +23,70 @@ function mergeAndSaveButtonStyles(
   showNotification,
   tagType = "button"
 ) {
-  if (!blockId || !typeClass || !newStyles) return;
-  // Get previous styles for this block/type
-  const prev = buttonStyleMap.get(blockId) || {
-    buttonPrimary: { selector: ".sqs-button-element--primary", styles: {} },
-    buttonSecondary: { selector: ".sqs-button-element--secondary", styles: {} },
-    buttonTertiary: { selector: ".sqs-button-element--tertiary", styles: {} },
-  };
-  // Merge new styles into the correct type
-  const merged = { ...prev };
-  if (typeClass === "sqs-button-element--primary") {
-    merged.buttonPrimary = {
-      ...merged.buttonPrimary,
-      styles: { ...merged.buttonPrimary.styles, ...newStyles },
-    };
-  } else if (typeClass === "sqs-button-element--secondary") {
-    merged.buttonSecondary = {
-      ...merged.buttonSecondary,
-      styles: { ...merged.buttonSecondary.styles, ...newStyles },
-    };
-  } else if (typeClass === "sqs-button-element--tertiary") {
-    merged.buttonTertiary = {
-      ...merged.buttonTertiary,
-      styles: { ...merged.buttonTertiary.styles, ...newStyles },
-    };
+  if (!blockId || !typeClass || !newStyles) {
+    console.warn("❌ Missing required data for button styles:", {
+      blockId,
+      typeClass,
+      newStyles,
+    });
+    return;
   }
-  buttonStyleMap.set(blockId, merged);
-  // Save to DB (deferred until publish, but you can call saveButtonModifications here if needed)
-  if (typeof addPendingModification === "function") {
-    addPendingModification(blockId, merged, tagType);
-  }
-  if (typeof showNotification === "function") {
-    showNotification("Button style updated!", "success");
+
+  try {
+    // Get previous styles for this block/type
+    const prev = buttonStyleMap.get(blockId) || {
+      buttonPrimary: { selector: ".sqs-button-element--primary", styles: {} },
+      buttonSecondary: {
+        selector: ".sqs-button-element--secondary",
+        styles: {},
+      },
+      buttonTertiary: { selector: ".sqs-button-element--tertiary", styles: {} },
+    };
+
+    // Merge new styles into the correct type
+    const merged = { ...prev };
+    if (typeClass === "sqs-button-element--primary") {
+      merged.buttonPrimary = {
+        ...merged.buttonPrimary,
+        styles: { ...merged.buttonPrimary.styles, ...newStyles },
+      };
+    } else if (typeClass === "sqs-button-element--secondary") {
+      merged.buttonSecondary = {
+        ...merged.buttonSecondary,
+        styles: { ...merged.buttonSecondary.styles, ...newStyles },
+      };
+    } else if (typeClass === "sqs-button-element--tertiary") {
+      merged.buttonTertiary = {
+        ...merged.buttonTertiary,
+        styles: { ...merged.buttonTertiary.styles, ...newStyles },
+      };
+    }
+
+    // Store in map
+    buttonStyleMap.set(blockId, merged);
+
+    // Add to pending modifications
+    if (typeof addPendingModification === "function") {
+      addPendingModification(blockId, merged, tagType);
+    }
+
+    // Show success notification
+    if (typeof showNotification === "function") {
+      showNotification("Button style updated!", "success");
+    }
+
+    // Log for debugging
+    console.log("✅ Button styles merged:", {
+      blockId,
+      typeClass,
+      newStyles,
+      merged,
+    });
+  } catch (error) {
+    console.error("❌ Error merging button styles:", error);
+    if (typeof showNotification === "function") {
+      showNotification("Failed to update button style", "error");
+    }
   }
 }
 
@@ -169,6 +201,27 @@ export function initButtonFontFamilyControls(
         if (!typeClass) return;
 
         const blockId = selectedElement.id;
+        if (!blockId) {
+          console.warn("❌ No block ID found for selected element");
+          return;
+        }
+
+        // Apply style to DOM
+        const styleId = `sc-font-style-${typeClass}`;
+        let style = document.getElementById(styleId);
+        if (!style) {
+          style = document.createElement("style");
+          style.id = styleId;
+          document.head.appendChild(style);
+        }
+
+        style.innerHTML = `
+          .${typeClass}, .${typeClass} span, .${typeClass} .sqs-add-to-cart-button-inner {
+            font-family: ${fontFace} !important;
+          }
+        `;
+
+        // Save to pending modifications
         mergeAndSaveButtonStyles(
           blockId,
           typeClass,
@@ -178,6 +231,67 @@ export function initButtonFontFamilyControls(
           showNotification,
           "font"
         );
+
+        // Handle font weight options
+        const fontWeightOptions = document.getElementById(
+          "scButtonFontWeightOptions"
+        );
+        const fontWeightSelectedLabel = document.getElementById(
+          "scButtonFontWeightSelected"
+        );
+
+        if (fontWeightOptions && fontItem.variants) {
+          fontWeightOptions.innerHTML = "";
+
+          const variants = fontItem.variants
+            .filter((v) => v !== "italic")
+            .map((v) => (v === "regular" ? "400" : v));
+
+          variants.forEach((weight) => {
+            const item = document.createElement("div");
+            item.className =
+              "sc-dropdown-item sc-py-1px sc-text-center sc-font-size-12 sc-cursor-pointer";
+            item.innerText = weight;
+
+            item.onclick = () => {
+              fontWeightSelectedLabel.innerText = weight;
+              fontWeightOptions.classList.add("sc-hidden");
+
+              // Apply weight style to DOM
+              const weightStyleId = `sc-font-weight-${typeClass}`;
+              let weightStyle = document.getElementById(weightStyleId);
+              if (!weightStyle) {
+                weightStyle = document.createElement("style");
+                weightStyle.id = weightStyleId;
+                document.head.appendChild(weightStyle);
+              }
+
+              weightStyle.innerHTML = `
+                .${typeClass} span,
+                .${typeClass} .sqs-add-to-cart-button-inner {
+                  font-weight: ${weight} !important;
+                }
+              `;
+
+              // Save weight to pending modifications
+              mergeAndSaveButtonStyles(
+                blockId,
+                typeClass,
+                { fontWeight: weight },
+                saveButtonModifications,
+                addPendingModification,
+                showNotification,
+                "font"
+              );
+            };
+
+            fontWeightOptions.appendChild(item);
+          });
+
+          fontWeightSelectedLabel.innerText = variants.includes("400")
+            ? "400"
+            : variants[0] || "";
+        }
       });
 
       fontFamilyOptions.appendChild(div);
@@ -1121,7 +1235,9 @@ export function initButtonShadowControls(
     }
 
     const shadowState = window.shadowStatesByType.get(typeClass);
+    const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
 
+    // Apply to DOM
     const styleId = `sc-button-shadow-${typeClass}`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
@@ -1130,21 +1246,24 @@ export function initButtonShadowControls(
       document.head.appendChild(styleTag);
     }
 
-    const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
-
     styleTag.innerHTML = `
-.${typeClass} {
-  box-shadow: ${value} !important;
-}
-.${typeClass}:hover {
-  box-shadow: ${value} !important;
-}
+      .${typeClass} {
+        box-shadow: ${value} !important;
+      }
+      .${typeClass}:hover {
+        box-shadow: ${value} !important;
+      }
     `;
 
-    // Save to map and pending modifications
-    const elBlockId = el.id;
+    // Save to pending modifications
+    const blockId = el.id;
+    if (!blockId) {
+      console.warn("❌ No block ID found for selected element");
+      return;
+    }
+
     mergeAndSaveButtonStyles(
-      elBlockId,
+      blockId,
       typeClass,
       { boxShadow: value },
       saveButtonModifications,
