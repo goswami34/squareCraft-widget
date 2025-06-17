@@ -11,10 +11,58 @@ setTimeout(() => {
   }
 }, 200);
 
+// Add a map to track button styles by block/type
+const buttonStyleMap = new Map();
+
+function mergeAndSaveButtonStyles(
+  blockId,
+  typeClass,
+  newStyles,
+  saveButtonModifications,
+  addPendingModification,
+  showNotification,
+  tagType = "button"
+) {
+  if (!blockId || !typeClass || !newStyles) return;
+  // Get previous styles for this block/type
+  const prev = buttonStyleMap.get(blockId) || {
+    buttonPrimary: { selector: ".sqs-button-element--primary", styles: {} },
+    buttonSecondary: { selector: ".sqs-button-element--secondary", styles: {} },
+    buttonTertiary: { selector: ".sqs-button-element--tertiary", styles: {} },
+  };
+  // Merge new styles into the correct type
+  const merged = { ...prev };
+  if (typeClass === "sqs-button-element--primary") {
+    merged.buttonPrimary = {
+      ...merged.buttonPrimary,
+      styles: { ...merged.buttonPrimary.styles, ...newStyles },
+    };
+  } else if (typeClass === "sqs-button-element--secondary") {
+    merged.buttonSecondary = {
+      ...merged.buttonSecondary,
+      styles: { ...merged.buttonSecondary.styles, ...newStyles },
+    };
+  } else if (typeClass === "sqs-button-element--tertiary") {
+    merged.buttonTertiary = {
+      ...merged.buttonTertiary,
+      styles: { ...merged.buttonTertiary.styles, ...newStyles },
+    };
+  }
+  buttonStyleMap.set(blockId, merged);
+  // Save to DB (deferred until publish, but you can call saveButtonModifications here if needed)
+  if (typeof addPendingModification === "function") {
+    addPendingModification(blockId, merged, tagType);
+  }
+  if (typeof showNotification === "function") {
+    showNotification("Button style updated!", "success");
+  }
+}
+
 export function initButtonFontFamilyControls(
   getSelectedElement,
   addPendingModification,
-  showNotification
+  showNotification,
+  saveButtonModifications
 ) {
   const GOOGLE_FONTS_API =
     "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk";
@@ -120,75 +168,16 @@ export function initButtonFontFamilyControls(
         );
         if (!typeClass) return;
 
-        const styleId = `sc-font-style-${typeClass}`;
-        let style = document.getElementById(styleId);
-        if (!style) {
-          style = document.createElement("style");
-          style.id = styleId;
-          document.head.appendChild(style);
-        }
-
-        style.innerHTML = `
-          .${typeClass}, .${typeClass} span, .${typeClass} .sqs-add-to-cart-button-inner {
-            font-family: ${fontFace} !important;
-          }
-        `;
-
-        const fontWeightOptions = document.getElementById(
-          "scButtonFontWeightOptions"
-        );
-        const fontWeightSelectedLabel = document.getElementById(
-          "scButtonFontWeightSelected"
-        );
-
-        if (fontWeightOptions && fontItem.variants) {
-          fontWeightOptions.innerHTML = "";
-
-          const variants = fontItem.variants
-            .filter((v) => v !== "italic")
-            .map((v) => (v === "regular" ? "400" : v));
-
-          variants.forEach((weight) => {
-            const item = document.createElement("div");
-            item.className =
-              "sc-dropdown-item sc-py-1px sc-text-center sc-font-size-12 sc-cursor-pointer";
-            item.innerText = weight;
-
-            item.onclick = () => {
-              fontWeightSelectedLabel.innerText = weight;
-              fontWeightOptions.classList.add("sc-hidden");
-
-              const weightStyleId = `sc-font-weight-${typeClass}`;
-              let weightStyle = document.getElementById(weightStyleId);
-              if (!weightStyle) {
-                weightStyle = document.createElement("style");
-                weightStyle.id = weightStyleId;
-                document.head.appendChild(weightStyle);
-              }
-
-              weightStyle.innerHTML = `
-                .${typeClass} span,
-                .${typeClass} .sqs-add-to-cart-button-inner {
-                  font-weight: ${weight} !important;
-                }
-              `;
-            };
-
-            fontWeightOptions.appendChild(item);
-          });
-
-          fontWeightSelectedLabel.innerText = variants.includes("400")
-            ? "400"
-            : variants[0] || "";
-        }
-
         const blockId = selectedElement.id;
-        if (typeof addPendingModification === "function") {
-          addPendingModification(blockId, { fontFamily: family }, "font");
-        }
-        if (typeof showNotification === "function") {
-          showNotification("Font changed!", "success");
-        }
+        mergeAndSaveButtonStyles(
+          blockId,
+          typeClass,
+          { fontFamily: fontFace },
+          saveButtonModifications,
+          addPendingModification,
+          showNotification,
+          "font"
+        );
       });
 
       fontFamilyOptions.appendChild(div);
@@ -1098,7 +1087,12 @@ export function initButtonBorderRadiusControl(getSelectedElement) {
   }, 50);
 }
 
-export function initButtonShadowControls(getSelectedElement) {
+export function initButtonShadowControls(
+  getSelectedElement,
+  addPendingModification,
+  showNotification,
+  saveButtonModifications
+) {
   if (!window.shadowStatesByType) {
     window.shadowStatesByType = new Map();
   }
@@ -1146,6 +1140,18 @@ export function initButtonShadowControls(getSelectedElement) {
   box-shadow: ${value} !important;
 }
     `;
+
+    // Save to map and pending modifications
+    const elBlockId = el.id;
+    mergeAndSaveButtonStyles(
+      elBlockId,
+      typeClass,
+      { boxShadow: value },
+      saveButtonModifications,
+      addPendingModification,
+      showNotification,
+      "shadow"
+    );
   }
 
   function setupShadowControl(type, range = 50) {
