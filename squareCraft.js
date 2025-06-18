@@ -3862,4 +3862,50 @@ let pendingModifications = new Map();
 
   checkView();
   window.addEventListener("resize", checkView);
+
+  // Utility to get the latest border and border-radius styles from the selected button
+  function getLatestButtonBorderStyles(selectedElement) {
+    const btn = selectedElement?.querySelector(
+      ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+    );
+    if (!btn) return null;
+
+    const computed = window.getComputedStyle(btn);
+    return {
+      buttonPrimary: {
+        selector: ".sqs-button-element--primary",
+        styles: {
+          boxSizing: computed.boxSizing,
+          borderStyle: computed.borderStyle,
+          borderColor: computed.borderColor,
+          borderTopWidth: computed.borderTopWidth,
+          borderRightWidth: computed.borderRightWidth,
+          borderBottomWidth: computed.borderBottomWidth,
+          borderLeftWidth: computed.borderLeftWidth,
+          borderRadius: computed.borderRadius,
+          overflow: computed.overflow,
+        },
+      },
+    };
+  }
+
+  // Find your publish button logic and update it to use the latest border styles
+  // Example: in your publish handler (pseudo-code, adapt as needed)
+  async function handlePublish() {
+    // ... existing code ...
+    // Save all pending modifications as before
+    for (const [blockId, modifications] of pendingModifications.entries()) {
+      for (const mod of modifications) {
+        // ... existing code for other types ...
+      }
+    }
+    // Now, always send the latest border styles for the selected element
+    if (selectedElement) {
+      const borderStyles = getLatestButtonBorderStyles(selectedElement);
+      if (borderStyles) {
+        await saveButtonBorderModifications(selectedElement.id, borderStyles);
+      }
+    }
+    // ... existing code ...
+  }
 })();
