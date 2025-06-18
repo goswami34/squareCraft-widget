@@ -2450,6 +2450,108 @@ let pendingModifications = new Map();
     }
   }
 
+  // Fetch and apply button modifications from the backend
+  async function fetchButtonModifications(blockId = null) {
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
+      return;
+    }
+
+    let url = `https://admin.squareplugin.com/api/v1/get-button-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+    if (blockId) url += `&elementId=${blockId}`;
+
+    try {
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message);
+      const elements = result.elements || [];
+      elements.forEach(({ elementId, css }) => {
+        // Apply button styles to DOM
+        const buttonPrimary = css?.buttonPrimary;
+        if (buttonPrimary?.selector && buttonPrimary?.styles) {
+          const selector = buttonPrimary.selector;
+          const styles = buttonPrimary.styles;
+          const block = document.getElementById(elementId);
+          if (block) {
+            const btn = block.querySelector(selector);
+            if (btn) {
+              Object.entries(styles).forEach(([prop, value]) => {
+                btn.style.setProperty(prop, value, "important");
+              });
+            }
+          }
+        }
+        // Optionally handle secondary/tertiary
+      });
+      console.log("✅ Applied button styles to all elements");
+    } catch (error) {
+      console.error("❌ Failed to fetch button modifications:", error.message);
+    }
+  }
+
+  // Fetch and apply button border modifications from the backend
+  async function fetchButtonBorderModifications(blockId = null) {
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
+      return;
+    }
+
+    let url = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+    if (blockId) url += `&elementId=${blockId}`;
+
+    try {
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message);
+      const elements = result.elements || [];
+      elements.forEach(({ elementId, css }) => {
+        // Apply button border styles to DOM
+        const buttonPrimary = css?.buttonPrimary;
+        if (buttonPrimary?.selector && buttonPrimary?.styles) {
+          const selector = buttonPrimary.selector;
+          const styles = buttonPrimary.styles;
+          const block = document.getElementById(elementId);
+          if (block) {
+            const btn = block.querySelector(selector);
+            if (btn) {
+              Object.entries(styles).forEach(([prop, value]) => {
+                btn.style.setProperty(prop, value, "important");
+              });
+            }
+          }
+        }
+      });
+      console.log("✅ Applied button border styles to all elements");
+    } catch (error) {
+      console.error(
+        "❌ Failed to fetch button border modifications:",
+        error.message
+      );
+    }
+  }
+
   window.addEventListener("load", async () => {
     await fetchModifications();
     // await fetchImageModifications(lastClickedBlockId);
@@ -2495,6 +2597,11 @@ let pendingModifications = new Map();
 
     if (elementId) {
       fetchImageShadowModifications(elementId);
+    }
+
+    if (elementId) {
+      fetchButtonModifications(elementId);
+      fetchButtonBorderModifications(elementId);
     }
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
