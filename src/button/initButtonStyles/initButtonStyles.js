@@ -1233,7 +1233,13 @@ export function initButtonBorderControl(
 
     // Only update local state, do not save to DB
     if (blockId && blockId !== "block-id") {
-      addPendingModification(blockId, borderStyles, "border");
+      const stylePayload = {
+        buttonPrimary: {
+          selector: ".sqs-button-element--primary",
+          styles: borderStyles,
+        },
+      };
+      addPendingModification(blockId, stylePayload, "border");
       if (typeof showNotification === "function") {
         showNotification("Border updated locally!", "info");
       }
@@ -1335,7 +1341,13 @@ export function initButtonBorderTypeToggle(
       `;
 
       // Only update local state, do not save to DB
-      addPendingModification(blockId, { borderStyle: borderType }, "border");
+      const stylePayload = {
+        buttonPrimary: {
+          selector: ".sqs-button-element--primary",
+          styles: { borderStyle: borderType },
+        },
+      };
+      addPendingModification(blockId, stylePayload, "border");
       if (typeof showNotification === "function") {
         showNotification("Border style updated locally!", "info");
       }
@@ -1533,8 +1545,7 @@ export function initButtonBorderRadiusControl(
 export function initButtonShadowControls(
   getSelectedElement,
   addPendingModification,
-  showNotification,
-  saveButtonModifications
+  showNotification
 ) {
   if (!window.shadowStatesByType) {
     window.shadowStatesByType = new Map();
@@ -1584,22 +1595,22 @@ export function initButtonShadowControls(
       }
     `;
 
-    // Save to pending modifications
+    // Only update local state, do not save to DB
     const blockId = el.id;
     if (!blockId) {
       console.warn("❌ No block ID found for selected element");
       return;
     }
-
-    mergeAndSaveButtonStyles(
-      blockId,
-      typeClass,
-      { boxShadow: value },
-      saveButtonModifications,
-      addPendingModification,
-      showNotification,
-      "shadow"
-    );
+    const stylePayload = {
+      buttonPrimary: {
+        selector: ".sqs-button-element--primary",
+        styles: { boxShadow: value },
+      },
+    };
+    addPendingModification(blockId, stylePayload, "shadow");
+    if (typeof showNotification === "function") {
+      showNotification("Shadow updated locally!", "info");
+    }
   }
 
   function setupShadowControl(type, range = 50) {
