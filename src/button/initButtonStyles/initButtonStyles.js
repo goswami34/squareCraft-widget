@@ -1213,6 +1213,17 @@ export function initButtonBorderControl(
       document.head.appendChild(styleTag);
     }
 
+    // Create border styles object for database
+    const borderStyles = {
+      boxSizing: "border-box",
+      borderStyle: window.__squareCraftBorderStyle || "solid",
+      borderColor: "black",
+      borderTopWidth: `${state.values.Top || 0}px`,
+      borderRightWidth: `${state.values.Right || 0}px`,
+      borderBottomWidth: `${state.values.Bottom || 0}px`,
+      borderLeftWidth: `${state.values.Left || 0}px`,
+    };
+
     styleTag.innerHTML = `
 .${typeClass} {
   box-sizing: border-box !important;
@@ -1224,6 +1235,19 @@ export function initButtonBorderControl(
   border-left-width: ${state.values.Left || 0}px !important;
 }
     `;
+
+    // Save border styles to database
+    if (blockId && blockId !== "block-id") {
+      mergeAndSaveButtonStyles(
+        blockId,
+        typeClass,
+        borderStyles,
+        saveButtonModifications,
+        addPendingModification,
+        showNotification,
+        "border"
+      );
+    }
   }
 
   function updateUIFromValue(value) {
@@ -1490,6 +1514,20 @@ export function initButtonBorderRadiusControl(
   border-radius: ${radiusValue}px !important;
 }
     `;
+
+    // Save border radius to database
+    const blockId = selected.id;
+    if (blockId && blockId !== "block-id") {
+      mergeAndSaveButtonStyles(
+        blockId,
+        typeClass,
+        { borderRadius: `${radiusValue}px` },
+        saveButtonModifications,
+        addPendingModification,
+        showNotification,
+        "border"
+      );
+    }
   }
 
   function updateUIFromValue(value) {
