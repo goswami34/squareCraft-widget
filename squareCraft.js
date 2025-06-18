@@ -3844,11 +3844,38 @@ let pendingModifications = new Map();
     }, 300);
   }
 
-  function addPendingModification(blockId, css, tagType) {
-    if (!pendingModifications.has(blockId)) {
-      pendingModifications.set(blockId, []);
+  function addPendingModification(blockId, newStylePayload, type, tagType) {
+    if (type === "button") {
+      let existing = pendingModifications.get(blockId)?.[0]?.css || {};
+      const merged = {
+        ...existing,
+        buttonPrimary: {
+          selector: ".sqs-button-element--primary",
+          styles: {
+            ...(existing.buttonPrimary?.styles || {}),
+            ...(newStylePayload.buttonPrimary?.styles || {}),
+          },
+        },
+        buttonSecondary: {
+          selector: ".sqs-button-element--secondary",
+          styles: {
+            ...(existing.buttonSecondary?.styles || {}),
+            ...(newStylePayload.buttonSecondary?.styles || {}),
+          },
+        },
+        buttonTertiary: {
+          selector: ".sqs-button-element--tertiary",
+          styles: {
+            ...(existing.buttonTertiary?.styles || {}),
+            ...(newStylePayload.buttonTertiary?.styles || {}),
+          },
+        },
+      };
+      pendingModifications.set(blockId, [{ css: merged, tagType }]);
+    } else {
+      // For text, image, etc. just replace or shallow merge
+      pendingModifications.set(blockId, [{ css: newStylePayload, tagType }]);
     }
-    pendingModifications.get(blockId).push({ css, tagType });
   }
 
   function moveWidgetToDesktop() {
