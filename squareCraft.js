@@ -2450,6 +2450,30 @@ let pendingModifications = new Map();
     }
   }
 
+  // Utility: Apply styles as external CSS (not inline)
+  function applyStylesAsExternalCSS(
+    selector,
+    styles,
+    styleIdPrefix = "sc-btn-style"
+  ) {
+    const styleId = `${styleIdPrefix}-${selector.replace(
+      /[^a-zA-Z0-9-_]/g,
+      ""
+    )}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+    let cssText = `${selector} {`;
+    Object.entries(styles).forEach(([prop, value]) => {
+      cssText += `${prop}: ${value} !important; `;
+    });
+    cssText += "}";
+    styleTag.textContent = cssText;
+  }
+
   // Fetch and apply button modifications from the backend
   async function fetchButtonModifications(blockId = null) {
     const userId = localStorage.getItem("sc_u_id");
@@ -2481,57 +2505,36 @@ let pendingModifications = new Map();
       modifications.forEach((mod) => {
         const elements = mod.elements || [];
         elements.forEach(({ elementId, css }) => {
-          // Apply button styles to DOM
+          // Apply button styles as external CSS
           const buttonPrimary = css?.buttonPrimary;
           if (buttonPrimary?.selector && buttonPrimary?.styles) {
-            const selector = buttonPrimary.selector;
-            const styles = buttonPrimary.styles;
-            const block = document.getElementById(elementId);
-            if (block) {
-              const btn = block.querySelector(selector);
-              if (btn) {
-                Object.entries(styles).forEach(([prop, value]) => {
-                  btn.style.setProperty(prop, value, "important");
-                });
-                console.log(
-                  `✅ Applied button styles to ${elementId}:`,
-                  styles
-                );
-              }
-            }
+            applyStylesAsExternalCSS(
+              buttonPrimary.selector,
+              buttonPrimary.styles
+            );
+            console.log(
+              `✅ Applied button styles to ${elementId}:`,
+              buttonPrimary.styles
+            );
           }
           // Optionally handle secondary/tertiary
           const buttonSecondary = css?.buttonSecondary;
           if (buttonSecondary?.selector && buttonSecondary?.styles) {
-            const selector = buttonSecondary.selector;
-            const styles = buttonSecondary.styles;
-            const block = document.getElementById(elementId);
-            if (block) {
-              const btn = block.querySelector(selector);
-              if (btn) {
-                Object.entries(styles).forEach(([prop, value]) => {
-                  btn.style.setProperty(prop, value, "important");
-                });
-              }
-            }
+            applyStylesAsExternalCSS(
+              buttonSecondary.selector,
+              buttonSecondary.styles
+            );
           }
           const buttonTertiary = css?.buttonTertiary;
           if (buttonTertiary?.selector && buttonTertiary?.styles) {
-            const selector = buttonTertiary.selector;
-            const styles = buttonTertiary.styles;
-            const block = document.getElementById(elementId);
-            if (block) {
-              const btn = block.querySelector(selector);
-              if (btn) {
-                Object.entries(styles).forEach(([prop, value]) => {
-                  btn.style.setProperty(prop, value, "important");
-                });
-              }
-            }
+            applyStylesAsExternalCSS(
+              buttonTertiary.selector,
+              buttonTertiary.styles
+            );
           }
         });
       });
-      console.log("✅ Applied button styles to all elements");
+      console.log("✅ Applied button styles to all elements (external CSS)");
     } catch (error) {
       console.error("❌ Failed to fetch button modifications:", error.message);
     }
@@ -2566,24 +2569,18 @@ let pendingModifications = new Map();
       // Handle the direct structure: elements[]
       const elements = result.elements || [];
       elements.forEach(({ elementId, selector, styles }) => {
-        // Apply button border styles to DOM
+        // Apply button border styles as external CSS
         if (selector && styles) {
-          const block = document.getElementById(elementId);
-          if (block) {
-            const btn = block.querySelector(selector);
-            if (btn) {
-              Object.entries(styles).forEach(([prop, value]) => {
-                btn.style.setProperty(prop, value, "important");
-              });
-              console.log(
-                `✅ Applied button border styles to ${elementId}:`,
-                styles
-              );
-            }
-          }
+          applyStylesAsExternalCSS(selector, styles, "sc-btn-border-style");
+          console.log(
+            `✅ Applied button border styles to ${elementId}:`,
+            styles
+          );
         }
       });
-      console.log("✅ Applied button border styles to all elements");
+      console.log(
+        "✅ Applied button border styles to all elements (external CSS)"
+      );
     } catch (error) {
       console.error(
         "❌ Failed to fetch button border modifications:",
