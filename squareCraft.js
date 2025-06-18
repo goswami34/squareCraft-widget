@@ -2464,7 +2464,7 @@ let pendingModifications = new Map();
       return;
     }
 
-    let url = `https://admin.squareplugin.com/api/v1/get-button-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+    let url = `https://admin.squareplugin.com/api/v1/get-button-modifications?userId=${userId}&widgetId=${widgetId}`;
     if (blockId) url += `&elementId=${blockId}`;
 
     try {
