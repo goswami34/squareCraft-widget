@@ -390,6 +390,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { saveButtonBorderModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   //button all functionality code end here
 
   const themeColors = await getSquarespaceThemeStyles();
@@ -595,7 +599,7 @@ let pendingModifications = new Map();
       );
       initButtonBorderControl(
         () => selectedElement,
-        saveButtonModifications,
+        saveButtonBorderModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
@@ -669,7 +673,7 @@ let pendingModifications = new Map();
             selected.dispatchEvent(event);
           }
         },
-        saveButtonModifications,
+        saveButtonBorderModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
@@ -680,7 +684,7 @@ let pendingModifications = new Map();
       );
       initButtonBorderRadiusControl(
         () => selectedElement,
-        saveButtonModifications
+        saveButtonBorderModifications
       );
       // WidgetTypoSectionStateControls();
     }, 50);
