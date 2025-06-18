@@ -307,77 +307,8 @@ export function initButtonStyles(
   showNotification,
   saveButtonModifications
 ) {
-  const buttonStyleMap = new Map();
-
-  function mergeAndSaveButtonStyles(
-    blockId,
-    typeClass,
-    newStyles,
-    tagType = "button"
-  ) {
-    if (!blockId || !typeClass || !newStyles) {
-      console.warn("❌ Missing required data for button styles:", {
-        blockId,
-        typeClass,
-        newStyles,
-      });
-      return;
-    }
-
-    try {
-      const prev = buttonStyleMap.get(blockId) || {
-        buttonPrimary: { selector: ".sqs-button-element--primary", styles: {} },
-        buttonSecondary: {
-          selector: ".sqs-button-element--secondary",
-          styles: {},
-        },
-        buttonTertiary: {
-          selector: ".sqs-button-element--tertiary",
-          styles: {},
-        },
-      };
-
-      const merged = { ...prev };
-      if (typeClass === "sqs-button-element--primary") {
-        merged.buttonPrimary = {
-          ...merged.buttonPrimary,
-          styles: { ...merged.buttonPrimary.styles, ...newStyles },
-        };
-      } else if (typeClass === "sqs-button-element--secondary") {
-        merged.buttonSecondary = {
-          ...merged.buttonSecondary,
-          styles: { ...merged.buttonSecondary.styles, ...newStyles },
-        };
-      } else if (typeClass === "sqs-button-element--tertiary") {
-        merged.buttonTertiary = {
-          ...merged.buttonTertiary,
-          styles: { ...merged.buttonTertiary.styles, ...newStyles },
-        };
-      }
-
-      buttonStyleMap.set(blockId, merged);
-
-      if (typeof addPendingModification === "function") {
-        addPendingModification(blockId, merged, tagType);
-      }
-
-      if (typeof showNotification === "function") {
-        showNotification("Button style updated!", "success");
-      }
-
-      console.log("✅ Button styles merged:", {
-        blockId,
-        typeClass,
-        newStyles,
-        merged,
-      });
-    } catch (error) {
-      console.error("❌ Error merging button styles:", error);
-      if (typeof showNotification === "function") {
-        showNotification("Failed to update button style", "error");
-      }
-    }
-  }
+  // Remove the local buttonStyleMap and mergeAndSaveButtonStyles function
+  // Use the global ones instead
 
   // Fix: Check if getSelectedElement is a function before calling it
   if (typeof getSelectedElement !== "function") {
@@ -453,6 +384,20 @@ export function initButtonStyles(
     updateRule(textSelector);
 
     styleTag.innerHTML = allRules.join("\n");
+
+    // Save to database using the global mergeAndSaveButtonStyles function
+    const blockId = selected.id;
+    if (blockId) {
+      mergeAndSaveButtonStyles(
+        blockId,
+        typeClass,
+        { [property]: value },
+        saveButtonModifications,
+        addPendingModification,
+        showNotification,
+        "button"
+      );
+    }
   }
 
   if (fontSizeOptions && fontSizeInput) {
@@ -477,78 +422,66 @@ export function initButtonStyles(
     };
   }
 
-  ["scButtonAllCapital", "scButtonAllSmall", "scButtonFirstCapital"].forEach(
-    (id) => {
-      const transformButton = document.getElementById(id);
-      if (transformButton) {
-        transformButton.onclick = () => {
-          const transformMap = {
-            scButtonAllCapital: "sc-text-upper",
-            scButtonAllSmall: "sc-text-lower",
-            scButtonFirstCapital: "sc-text-capitalize",
-          };
-          const activeClass = transformMap[id];
+  // Text transform controls
+  const textTransformButtons = [
+    { id: "scButtonAllCapital", value: "uppercase" },
+    { id: "scButtonAllSmall", value: "lowercase" },
+    { id: "scButtonFirstCapital", value: "capitalize" },
+  ];
 
-          const isAlreadyActive = transformButton.classList.contains(
-            "sc-activeTab-border"
-          );
+  textTransformButtons.forEach(({ id, value }) => {
+    const button = document.getElementById(id);
+    if (!button) return;
 
-          [
-            "scButtonAllCapital",
-            "scButtonAllSmall",
-            "scButtonFirstCapital",
-          ].forEach((btnId) => {
-            const btn = document.getElementById(btnId);
-            if (btn) {
-              btn.classList.remove("sc-activeTab-border");
-              btn.classList.add("sc-inActiveTab-border");
-            }
-          });
+    button.addEventListener("click", () => {
+      // Remove active class from all buttons
+      textTransformButtons.forEach(({ id }) => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.classList.remove("sc-activeTab-border");
+          btn.classList.add("sc-inActiveTab-border");
+        }
+      });
 
-          const spans = document.querySelectorAll(
-            `.${typeClass} span, .${typeClass} .sqs-add-to-cart-button-inner`
-          );
+      // Add active class to clicked button
+      button.classList.remove("sc-inActiveTab-border");
+      button.classList.add("sc-activeTab-border");
 
-          if (isAlreadyActive) {
-            transformButton.classList.remove("sc-activeTab-border");
-            transformButton.classList.add("sc-inActiveTab-border");
+      updateGlobalStyle("text-transform", value);
+    });
+  });
 
-            spans.forEach((span) => {
-              span.classList.remove(
-                "sc-text-upper",
-                "sc-text-lower",
-                "sc-text-capitalize"
-              );
-            });
-          } else {
-            transformButton.classList.remove("sc-inActiveTab-border");
-            transformButton.classList.add("sc-activeTab-border");
+  // Font weight controls
+  const fontWeightButtons = [
+    { id: "scButtonFontWeightLight", value: "300" },
+    { id: "scButtonFontWeightNormal", value: "400" },
+    { id: "scButtonFontWeightMedium", value: "500" },
+    { id: "scButtonFontWeightSemiBold", value: "600" },
+    { id: "scButtonFontWeightBold", value: "700" },
+    { id: "scButtonFontWeightExtraBold", value: "800" },
+  ];
 
-            const transformValueMap = {
-              scButtonAllCapital: "uppercase",
-              scButtonAllSmall: "lowercase",
-              scButtonFirstCapital: "capitalize",
-            };
-            const value = transformValueMap[id];
+  fontWeightButtons.forEach(({ id, value }) => {
+    const button = document.getElementById(id);
+    if (!button) return;
 
-            const styleId = `sc-transform-style-${typeClass}`;
-            let styleTag = document.getElementById(styleId);
-            if (!styleTag) {
-              styleTag = document.createElement("style");
-              styleTag.id = styleId;
-              document.head.appendChild(styleTag);
-            }
-            styleTag.innerHTML = `
-  .${typeClass} span,
-  .${typeClass} .sqs-add-to-cart-button-inner {
-    text-transform: ${value} !important;
-  }
-`;
-          }
-        };
-      }
-    }
-  );
+    button.addEventListener("click", () => {
+      // Remove active class from all buttons
+      fontWeightButtons.forEach(({ id }) => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.classList.remove("sc-activeTab-border");
+          btn.classList.add("sc-inActiveTab-border");
+        }
+      });
+
+      // Add active class to clicked button
+      button.classList.remove("sc-inActiveTab-border");
+      button.classList.add("sc-activeTab-border");
+
+      updateGlobalStyle("font-weight", value);
+    });
+  });
 }
 
 export function initButtonIconPositionToggle(
