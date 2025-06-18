@@ -1218,6 +1218,8 @@ export function initButtonBorderControl(
       borderRightWidth: `${state.values.Right || 0}px`,
       borderBottomWidth: `${state.values.Bottom || 0}px`,
       borderLeftWidth: `${state.values.Left || 0}px`,
+      borderRadius: btn ? window.getComputedStyle(btn).borderRadius : "0px",
+      overflow: btn ? window.getComputedStyle(btn).overflow : "hidden",
     };
 
     styleTag.innerHTML = `
