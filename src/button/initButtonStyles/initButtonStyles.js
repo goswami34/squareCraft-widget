@@ -1065,8 +1065,7 @@ export function initButtonIconSpacingControl(
 export function initButtonBorderControl(
   getSelectedElement,
   addPendingModification,
-  showNotification,
-  saveButtonModifications
+  showNotification
 ) {
   const borderMap = new Map();
 
@@ -1094,15 +1093,11 @@ export function initButtonBorderControl(
         }
       `;
 
-      mergeAndSaveButtonStyles(
-        blockId,
-        typeClass,
-        { border },
-        saveButtonModifications,
-        addPendingModification,
-        showNotification,
-        "border"
-      );
+      // Only update local state, do not save to DB
+      addPendingModification(blockId, { border }, "border");
+      if (typeof showNotification === "function") {
+        showNotification("Border updated locally!", "info");
+      }
     } catch (error) {
       console.error("❌ Error updating border:", error);
       if (typeof showNotification === "function") {
@@ -1213,7 +1208,7 @@ export function initButtonBorderControl(
       document.head.appendChild(styleTag);
     }
 
-    // Create border styles object for database
+    // Create border styles object for local state
     const borderStyles = {
       boxSizing: "border-box",
       borderStyle: window.__squareCraftBorderStyle || "solid",
@@ -1236,17 +1231,12 @@ export function initButtonBorderControl(
 }
     `;
 
-    // Save border styles to database
+    // Only update local state, do not save to DB
     if (blockId && blockId !== "block-id") {
-      mergeAndSaveButtonStyles(
-        blockId,
-        typeClass,
-        borderStyles,
-        saveButtonModifications,
-        addPendingModification,
-        showNotification,
-        "border"
-      );
+      addPendingModification(blockId, borderStyles, "border");
+      if (typeof showNotification === "function") {
+        showNotification("Border updated locally!", "info");
+      }
     }
   }
 
@@ -1316,8 +1306,7 @@ export function initButtonBorderControl(
 export function initButtonBorderTypeToggle(
   getSelectedElement,
   addPendingModification,
-  showNotification,
-  saveButtonModifications
+  showNotification
 ) {
   const borderTypeMap = new Map();
 
@@ -1345,15 +1334,11 @@ export function initButtonBorderTypeToggle(
         }
       `;
 
-      mergeAndSaveButtonStyles(
-        blockId,
-        typeClass,
-        { borderStyle: borderType },
-        saveButtonModifications,
-        addPendingModification,
-        showNotification,
-        "border"
-      );
+      // Only update local state, do not save to DB
+      addPendingModification(blockId, { borderStyle: borderType }, "border");
+      if (typeof showNotification === "function") {
+        showNotification("Border style updated locally!", "info");
+      }
     } catch (error) {
       console.error("❌ Error updating border type:", error);
       if (typeof showNotification === "function") {
@@ -1411,66 +1396,9 @@ export function initButtonBorderTypeToggle(
 export function initButtonBorderRadiusControl(
   getSelectedElement,
   addPendingModification,
-  showNotification,
-  saveButtonModifications
+  showNotification
 ) {
   const borderRadiusMap = new Map();
-
-  function updateBorderRadius(blockId, typeClass, radius) {
-    if (!blockId || !typeClass) {
-      console.warn("❌ Missing required data for border radius:", {
-        blockId,
-        typeClass,
-      });
-      return;
-    }
-
-    try {
-      const styleId = `sc-border-radius-${typeClass}`;
-      let style = document.getElementById(styleId);
-      if (!style) {
-        style = document.createElement("style");
-        style.id = styleId;
-        document.head.appendChild(style);
-      }
-
-      style.innerHTML = `
-        .${typeClass} {
-          border-radius: ${radius}px !important;
-        }
-      `;
-
-      mergeAndSaveButtonStyles(
-        blockId,
-        typeClass,
-        { borderRadius: `${radius}px` },
-        saveButtonModifications,
-        addPendingModification,
-        showNotification,
-        "border"
-      );
-    } catch (error) {
-      console.error("❌ Error updating border radius:", error);
-      if (typeof showNotification === "function") {
-        showNotification("Failed to update border radius", "error");
-      }
-    }
-  }
-
-  const fillField = document.getElementById("buttonBorderradiusField");
-  const bullet = document.getElementById("buttonBorderradiusBullet");
-  const fill = document.getElementById("buttonBorderradiusFill");
-  const valueText = document.getElementById("buttonBorderradiusCount");
-  const incBtn = document.getElementById("buttonBorderradiusIncrease");
-  const decBtn = document.getElementById("buttonBorderradiusDecrease");
-  const resetBtn = valueText
-    ?.closest(".sc-flex")
-    ?.querySelector('img[alt="reset"]');
-
-  if (!fillField || !bullet || !fill || !valueText) return;
-
-  const max = 50;
-  let radiusValue = 0;
 
   function getButtonTypeClass(btn) {
     if (btn.classList.contains("sqs-button-element--secondary"))
@@ -1515,7 +1443,7 @@ export function initButtonBorderRadiusControl(
 }
     `;
 
-    // Save all border styles (including border-radius and overflow) to database
+    // Only update local state, do not save to DB
     const blockId = selected.id;
     if (blockId && blockId !== "block-id") {
       const computed = window.getComputedStyle(btn);
@@ -1530,17 +1458,27 @@ export function initButtonBorderRadiusControl(
         borderRadius: `${radiusValue}px`,
         overflow: "hidden",
       };
-      mergeAndSaveButtonStyles(
-        blockId,
-        typeClass,
-        currentStyles,
-        saveButtonModifications,
-        addPendingModification,
-        showNotification,
-        "border"
-      );
+      addPendingModification(blockId, currentStyles, "border");
+      if (typeof showNotification === "function") {
+        showNotification("Border radius updated locally!", "info");
+      }
     }
   }
+
+  const fillField = document.getElementById("buttonBorderradiusField");
+  const bullet = document.getElementById("buttonBorderradiusBullet");
+  const fill = document.getElementById("buttonBorderradiusFill");
+  const valueText = document.getElementById("buttonBorderradiusCount");
+  const incBtn = document.getElementById("buttonBorderradiusIncrease");
+  const decBtn = document.getElementById("buttonBorderradiusDecrease");
+  const resetBtn = valueText
+    ?.closest(".sc-flex")
+    ?.querySelector('img[alt="reset"]');
+
+  if (!fillField || !bullet || !fill || !valueText) return;
+
+  const max = 50;
+  let radiusValue = 0;
 
   function updateUIFromValue(value) {
     radiusValue = Math.max(0, Math.min(max, value));
