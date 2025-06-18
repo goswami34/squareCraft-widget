@@ -1239,7 +1239,7 @@ export function initButtonBorderControl(
           styles: borderStyles,
         },
       };
-      addPendingModification(blockId, stylePayload, "border");
+      addPendingModification(blockId, stylePayload, "button", "border");
       if (typeof showNotification === "function") {
         showNotification("Border updated locally!", "info");
       }
@@ -1347,7 +1347,7 @@ export function initButtonBorderTypeToggle(
           styles: { borderStyle: borderType },
         },
       };
-      addPendingModification(blockId, stylePayload, "border");
+      addPendingModification(blockId, stylePayload, "button", "border");
       if (typeof showNotification === "function") {
         showNotification("Border style updated locally!", "info");
       }
@@ -1470,7 +1470,13 @@ export function initButtonBorderRadiusControl(
         borderRadius: `${radiusValue}px`,
         overflow: "hidden",
       };
-      addPendingModification(blockId, currentStyles, "border");
+      const stylePayload = {
+        buttonPrimary: {
+          selector: ".sqs-button-element--primary",
+          styles: currentStyles,
+        },
+      };
+      addPendingModification(blockId, stylePayload, "button", "border");
       if (typeof showNotification === "function") {
         showNotification("Border radius updated locally!", "info");
       }
@@ -1607,7 +1613,7 @@ export function initButtonShadowControls(
         styles: { boxShadow: value },
       },
     };
-    addPendingModification(blockId, stylePayload, "shadow");
+    addPendingModification(blockId, stylePayload, "button", "shadow");
     if (typeof showNotification === "function") {
       showNotification("Shadow updated locally!", "info");
     }
