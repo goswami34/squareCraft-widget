@@ -1065,7 +1065,8 @@ export function initButtonIconSpacingControl(
 export function initButtonBorderControl(
   getSelectedElement,
   addPendingModification,
-  showNotification
+  showNotification,
+  saveButtonBorderModifications
 ) {
   const borderMap = new Map();
 
@@ -1171,7 +1172,7 @@ export function initButtonBorderControl(
     });
   });
 
-  function applyBorder() {
+  function applyBorder(saveToDB = false) {
     const selected = getSelectedElement?.();
     const btn = selected?.querySelector(
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
@@ -1240,6 +1241,9 @@ export function initButtonBorderControl(
         },
       };
       addPendingModification(blockId, stylePayload, "button", "border");
+      if (saveToDB && typeof saveButtonBorderModifications === "function") {
+        saveButtonBorderModifications(blockId, stylePayload);
+      }
       if (typeof showNotification === "function") {
         showNotification("Border updated locally!", "info");
       }
@@ -1312,11 +1316,12 @@ export function initButtonBorderControl(
 export function initButtonBorderTypeToggle(
   getSelectedElement,
   addPendingModification,
-  showNotification
+  showNotification,
+  saveButtonBorderModifications
 ) {
   const borderTypeMap = new Map();
 
-  function updateBorderType(blockId, typeClass, borderType) {
+  function updateBorderType(blockId, typeClass, borderType, saveToDB = false) {
     if (!blockId || !typeClass) {
       console.warn("❌ Missing required data for border type:", {
         blockId,
@@ -1348,6 +1353,9 @@ export function initButtonBorderTypeToggle(
         },
       };
       addPendingModification(blockId, stylePayload, "button", "border");
+      if (saveToDB && typeof saveButtonBorderModifications === "function") {
+        saveButtonBorderModifications(blockId, stylePayload);
+      }
       if (typeof showNotification === "function") {
         showNotification("Border style updated locally!", "info");
       }
@@ -1408,7 +1416,8 @@ export function initButtonBorderTypeToggle(
 export function initButtonBorderRadiusControl(
   getSelectedElement,
   addPendingModification,
-  showNotification
+  showNotification,
+  saveButtonBorderModifications
 ) {
   const borderRadiusMap = new Map();
 
@@ -1420,7 +1429,7 @@ export function initButtonBorderRadiusControl(
     return "sqs-button-element--primary";
   }
 
-  function applyBorderRadius() {
+  function applyBorderRadius(saveToDB = false) {
     const selected = getSelectedElement?.();
     const btn = selected?.querySelector(
       ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
@@ -1477,6 +1486,9 @@ export function initButtonBorderRadiusControl(
         },
       };
       addPendingModification(blockId, stylePayload, "button", "border");
+      if (saveToDB && typeof saveButtonBorderModifications === "function") {
+        saveButtonBorderModifications(blockId, stylePayload);
+      }
       if (typeof showNotification === "function") {
         showNotification("Border radius updated locally!", "info");
       }
