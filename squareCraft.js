@@ -2464,7 +2464,7 @@ let pendingModifications = new Map();
       return;
     }
 
-    let url = `https://admin.squareplugin.com/api/v1/get-button-modifications?userId=${userId}&widgetId=${widgetId}`;
+    let url = `https://admin.squareplugin.com/api/v1/get-button-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
     if (blockId) url += `&elementId=${blockId}`;
 
     try {
@@ -2475,24 +2475,61 @@ let pendingModifications = new Map();
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.message);
-      const elements = result.elements || [];
-      elements.forEach(({ elementId, css }) => {
-        // Apply button styles to DOM
-        const buttonPrimary = css?.buttonPrimary;
-        if (buttonPrimary?.selector && buttonPrimary?.styles) {
-          const selector = buttonPrimary.selector;
-          const styles = buttonPrimary.styles;
-          const block = document.getElementById(elementId);
-          if (block) {
-            const btn = block.querySelector(selector);
-            if (btn) {
-              Object.entries(styles).forEach(([prop, value]) => {
-                btn.style.setProperty(prop, value, "important");
-              });
+
+      // Handle the nested structure: modifications[].elements[]
+      const modifications = result.modifications || [];
+      modifications.forEach((mod) => {
+        const elements = mod.elements || [];
+        elements.forEach(({ elementId, css }) => {
+          // Apply button styles to DOM
+          const buttonPrimary = css?.buttonPrimary;
+          if (buttonPrimary?.selector && buttonPrimary?.styles) {
+            const selector = buttonPrimary.selector;
+            const styles = buttonPrimary.styles;
+            const block = document.getElementById(elementId);
+            if (block) {
+              const btn = block.querySelector(selector);
+              if (btn) {
+                Object.entries(styles).forEach(([prop, value]) => {
+                  btn.style.setProperty(prop, value, "important");
+                });
+                console.log(
+                  `✅ Applied button styles to ${elementId}:`,
+                  styles
+                );
+              }
             }
           }
-        }
-        // Optionally handle secondary/tertiary
+          // Optionally handle secondary/tertiary
+          const buttonSecondary = css?.buttonSecondary;
+          if (buttonSecondary?.selector && buttonSecondary?.styles) {
+            const selector = buttonSecondary.selector;
+            const styles = buttonSecondary.styles;
+            const block = document.getElementById(elementId);
+            if (block) {
+              const btn = block.querySelector(selector);
+              if (btn) {
+                Object.entries(styles).forEach(([prop, value]) => {
+                  btn.style.setProperty(prop, value, "important");
+                });
+              }
+            }
+          }
+          const buttonTertiary = css?.buttonTertiary;
+          if (buttonTertiary?.selector && buttonTertiary?.styles) {
+            const selector = buttonTertiary.selector;
+            const styles = buttonTertiary.styles;
+            const block = document.getElementById(elementId);
+            if (block) {
+              const btn = block.querySelector(selector);
+              if (btn) {
+                Object.entries(styles).forEach(([prop, value]) => {
+                  btn.style.setProperty(prop, value, "important");
+                });
+              }
+            }
+          }
+        });
       });
       console.log("✅ Applied button styles to all elements");
     } catch (error) {
@@ -2525,13 +2562,12 @@ let pendingModifications = new Map();
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.message);
+
+      // Handle the direct structure: elements[]
       const elements = result.elements || [];
-      elements.forEach(({ elementId, css }) => {
+      elements.forEach(({ elementId, selector, styles }) => {
         // Apply button border styles to DOM
-        const buttonPrimary = css?.buttonPrimary;
-        if (buttonPrimary?.selector && buttonPrimary?.styles) {
-          const selector = buttonPrimary.selector;
-          const styles = buttonPrimary.styles;
+        if (selector && styles) {
           const block = document.getElementById(elementId);
           if (block) {
             const btn = block.querySelector(selector);
@@ -2539,6 +2575,10 @@ let pendingModifications = new Map();
               Object.entries(styles).forEach(([prop, value]) => {
                 btn.style.setProperty(prop, value, "important");
               });
+              console.log(
+                `✅ Applied button border styles to ${elementId}:`,
+                styles
+              );
             }
           }
         }
