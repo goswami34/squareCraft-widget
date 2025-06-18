@@ -1515,13 +1515,25 @@ export function initButtonBorderRadiusControl(
 }
     `;
 
-    // Save border radius to database
+    // Save all border styles (including border-radius and overflow) to database
     const blockId = selected.id;
     if (blockId && blockId !== "block-id") {
+      const computed = window.getComputedStyle(btn);
+      const currentStyles = {
+        boxSizing: computed.boxSizing,
+        borderStyle: computed.borderStyle,
+        borderColor: computed.borderColor,
+        borderTopWidth: computed.borderTopWidth,
+        borderRightWidth: computed.borderRightWidth,
+        borderBottomWidth: computed.borderBottomWidth,
+        borderLeftWidth: computed.borderLeftWidth,
+        borderRadius: `${radiusValue}px`,
+        overflow: "hidden",
+      };
       mergeAndSaveButtonStyles(
         blockId,
         typeClass,
-        { borderRadius: `${radiusValue}px` },
+        currentStyles,
         saveButtonModifications,
         addPendingModification,
         showNotification,
