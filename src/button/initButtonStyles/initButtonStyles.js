@@ -1231,6 +1231,8 @@ export function initButtonBorderControl(
   border-right-width: ${state.values.Right || 0}px !important;
   border-bottom-width: ${state.values.Bottom || 0}px !important;
   border-left-width: ${state.values.Left || 0}px !important;
+  borderRadius: btn ? window.getComputedStyle(btn).borderRadius : "0px",
+  overflow: btn ? window.getComputedStyle(btn).overflow : "hidden",
 }
     `;
 
