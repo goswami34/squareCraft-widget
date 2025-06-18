@@ -757,3 +757,103 @@ export async function saveButtonModifications(blockId, css) {
 }
 
 //button save modification end here
+
+//button border save modification start here
+export async function saveButtonBorderModifications(blockId, css) {
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+    console.warn("❌ Missing required data to save button border styles", {
+      userId,
+      token,
+      widgetId,
+      pageId,
+      blockId,
+      css,
+    });
+    return { success: false, error: "Missing required data" };
+  }
+
+  // Clean & normalize buttonPrimary border styles
+  const cleanCssObject = (obj = {}) =>
+    Object.fromEntries(
+      Object.entries(obj).filter(
+        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+      )
+    );
+
+  const toKebabCaseStyleObject = (obj = {}) =>
+    Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [
+        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        value,
+      ])
+    );
+
+  const cleanedPrimary = css.buttonPrimary
+    ? {
+        selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
+        styles: toKebabCaseStyleObject(
+          cleanCssObject(css.buttonPrimary.styles || {})
+        ),
+      }
+    : { selector: null, styles: {} };
+
+  if (Object.keys(cleanedPrimary.styles).length === 0) {
+    console.warn("⚠️ No valid border styles found in buttonPrimary.");
+    return { success: false, error: "No valid border styles to save" };
+  }
+
+  const payload = {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    elementId: blockId,
+    css: {
+      buttonPrimary: cleanedPrimary,
+    },
+  };
+
+  console.log("📤 Sending button border payload:", payload);
+
+  try {
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/save-button-border-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || `HTTP ${response.status}`);
+    }
+
+    console.log("✅ Button border styles saved:", result);
+    showNotification("Button border styles saved successfully!", "success");
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("❌ Error saving button border styles:", error);
+    showNotification(
+      `Failed to save button border styles: ${error.message}`,
+      "error"
+    );
+    return { success: false, error: error.message };
+  }
+}
+
+//button border save modification end here
