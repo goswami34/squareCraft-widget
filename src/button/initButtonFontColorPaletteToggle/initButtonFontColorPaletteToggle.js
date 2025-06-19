@@ -179,7 +179,7 @@ export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
 
     return `rgba(${r}, ${g}, ${b}, ${alpha})`; // fallback: RGB
   }
-  
+
   function updateSelectorField(hueOrColor) {
     let hue = typeof hueOrColor === "number" ? hueOrColor : null;
     if (!hue) {
@@ -213,7 +213,12 @@ export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
         return;
       }
 
-      const rgba = formatColorOutput(data[0], data[1], data[2], currentTransparency / 100)
+      const rgba = formatColorOutput(
+        data[0],
+        data[1],
+        data[2],
+        currentTransparency / 100
+      );
       colorCode.textContent = rgba;
       if (palette) palette.style.backgroundColor = rgba;
       applyButtonBackgroundColor(rgba, currentTransparency / 100);
@@ -375,7 +380,6 @@ export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
           currentTransparency / 100
         );
 
-
         if (colorCode) colorCode.textContent = rgba;
         if (palette) palette.style.backgroundColor = rgba;
         applyButtonBackgroundColor(rgba, currentTransparency / 100);
@@ -387,8 +391,6 @@ export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
       };
     };
   }
-
-
 
   function moveBullet(offsetX, offsetY) {
     bullet.style.left = `${offsetX}px`;
@@ -448,7 +450,6 @@ export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
           data[2],
           currentTransparency / 100
         );
-
 
         if (colorCode) colorCode.textContent = rgba;
         if (palette) palette.style.backgroundColor = rgba;
@@ -551,7 +552,6 @@ export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
         return;
       }
 
-
       const pixel = ctx.getImageData(centerX, centerY, 1, 1).data;
       const [r, g, b] = pixel;
 
@@ -577,7 +577,12 @@ export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
     const ctx = canvas?.getContext("2d");
     if (ctx) {
       const data = ctx.getImageData(defaultX, defaultY, 1, 1).data;
-      const rgba = formatColorOutput(data[0], data[1], data[2], currentTransparency / 100)
+      const rgba = formatColorOutput(
+        data[0],
+        data[1],
+        data[2],
+        currentTransparency / 100
+      );
       colorCode.textContent = rgba;
     }
 
@@ -613,7 +618,12 @@ export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
         return;
       }
 
-      const rgba = formatColorOutput(data[0], data[1], data[2], currentTransparency / 100)
+      const rgba = formatColorOutput(
+        data[0],
+        data[1],
+        data[2],
+        currentTransparency / 100
+      );
       bullet.style.left = `${x}px`;
       bullet.style.top = `${y}px`;
       colorCode.textContent = rgba;
@@ -645,7 +655,12 @@ export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
 
       bullet.style.left = `${x}px`;
       bullet.style.top = `${y}px`;
-      const rgba = formatColorOutput(data[0], data[1], data[2], currentTransparency / 100)
+      const rgba = formatColorOutput(
+        data[0],
+        data[1],
+        data[2],
+        currentTransparency / 100
+      );
       colorCode.textContent = rgba;
     }
 
@@ -660,5 +675,23 @@ export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
     if (transparencyCount) {
       transparencyCount.textContent = `100%`;
     }
+  }
+
+  // Add click event listener to toggle color palette visibility
+  const paletteSwatch = document.getElementById("buttonFontColorPalate");
+  const paletteDropdown = document.getElementById("button-font-color-palette");
+
+  if (paletteSwatch && paletteDropdown) {
+    paletteSwatch.addEventListener("click", (e) => {
+      e.stopPropagation();
+      paletteDropdown.classList.toggle("sc-hidden");
+    });
+
+    // Hide palette when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!paletteDropdown.contains(e.target) && e.target !== paletteSwatch) {
+        paletteDropdown.classList.add("sc-hidden");
+      }
+    });
   }
 }
