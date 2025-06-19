@@ -592,81 +592,206 @@ export function initButtonIconPositionToggle(
 
 let normalRotationInitialized = false;
 
-export function initButtonIconRotationControl(
-  getSelectedElement,
-  addPendingModification,
-  showNotification,
-  saveButtonModifications
-) {
-  const iconRotationMap = new Map();
+// export function initButtonIconRotationControl(
+//   getSelectedElement,
+//   addPendingModification,
+//   showNotification,
+//   saveButtonModifications
+// ) {
+//   const iconRotationMap = new Map();
 
-  function updateIconRotation(blockId, typeClass, rotation) {
-    if (!blockId || !typeClass) {
-      console.warn("❌ Missing required data for icon rotation:", {
-        blockId,
-        typeClass,
-      });
-      return;
-    }
+//   function updateIconRotation(blockId, typeClass, rotation) {
+//     if (!blockId || !typeClass) {
+//       console.warn("❌ Missing required data for icon rotation:", {
+//         blockId,
+//         typeClass,
+//       });
+//       return;
+//     }
 
-    try {
-      const styleId = `sc-icon-rotation-${typeClass}`;
-      let style = document.getElementById(styleId);
-      if (!style) {
-        style = document.createElement("style");
-        style.id = styleId;
-        document.head.appendChild(style);
-      }
+//     try {
+//       const styleId = `sc-icon-rotation-${typeClass}`;
+//       let style = document.getElementById(styleId);
+//       if (!style) {
+//         style = document.createElement("style");
+//         style.id = styleId;
+//         document.head.appendChild(style);
+//       }
 
-      style.innerHTML = `
-        .${typeClass} .sqs-add-to-cart-button-inner {
-          transform: rotate(${rotation}deg) !important;
-        }
-      `;
+//       style.innerHTML = `
+//         .${typeClass} .sqs-add-to-cart-button-inner {
+//           transform: rotate(${rotation}deg) !important;
+//         }
+//       `;
 
-      mergeAndSaveButtonStyles(
-        blockId,
-        typeClass,
-        { transform: `rotate(${rotation}deg)` },
-        saveButtonModifications,
-        addPendingModification,
-        showNotification,
-        "icon"
-      );
-    } catch (error) {
-      console.error("❌ Error updating icon rotation:", error);
-      if (typeof showNotification === "function") {
-        showNotification("Failed to update icon rotation", "error");
-      }
-    }
-  }
+//       mergeAndSaveButtonStyles(
+//         blockId,
+//         typeClass,
+//         { transform: `rotate(${rotation}deg)` },
+//         saveButtonModifications,
+//         addPendingModification,
+//         showNotification,
+//         "icon"
+//       );
+//     } catch (error) {
+//       console.error("❌ Error updating icon rotation:", error);
+//       if (typeof showNotification === "function") {
+//         showNotification("Failed to update icon rotation", "error");
+//       }
+//     }
+//   }
 
+//   if (normalRotationInitialized) return;
+//   normalRotationInitialized = true;
+
+//   const bullet = document.getElementById("buttonIconRotationradiusBullet");
+//   const fill = document.getElementById("buttonIconRotationradiusFill");
+//   const field = document.getElementById("buttonIconRotationradiusField");
+//   const label = document.getElementById("buttoniconRotationradiusCount");
+
+//   const incBtn = document.getElementById("buttoniconRotationIncrease");
+//   const decBtn = document.getElementById("buttoniconRotationDecrease");
+
+//   let currentRotation = 0;
+//   let userInteracted = false;
+
+//   function applyRotation() {
+//     const selectedElement = getSelectedElement?.();
+//     const btn = selectedElement?.querySelector(
+//       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+//     );
+//     if (!btn) return;
+
+//     const typeClass = [...btn.classList].find((cls) =>
+//       cls.startsWith("sqs-button-element--")
+//     );
+//     if (!typeClass) return;
+
+//     const buttons = document.querySelectorAll(`a.${typeClass}`);
+//     buttons.forEach((button) => {
+//       const icon = button.querySelector(
+//         ".sqscraft-button-icon, .sqscraft-image-icon"
+//       );
+//       if (icon) {
+//         icon.style.transform = `rotate(${currentRotation}deg)`;
+//       }
+//     });
+//   }
+
+//   function updateUI(clientX) {
+//     const rect = field.getBoundingClientRect();
+//     const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+//     const centerX = rect.width / 2;
+//     const deltaX = x - centerX;
+//     currentRotation = Math.round((deltaX / centerX) * 180);
+
+//     const percent = (x / rect.width) * 100;
+//     bullet.style.left = `${percent}%`;
+
+//     const fillStart = 50;
+//     fill.style.left = `${Math.min(percent, fillStart)}%`;
+//     fill.style.width = `${Math.abs(percent - fillStart)}%`;
+
+//     label.textContent = `${currentRotation}deg`;
+
+//     applyRotation();
+//   }
+
+//   function updateFromRotationValue(value) {
+//     const clamped = Math.max(-180, Math.min(180, value));
+//     currentRotation = clamped;
+//     const percent = ((clamped + 180) / 360) * 100;
+
+//     bullet.style.left = `${percent}%`;
+
+//     const center = 50;
+//     fill.style.left = `${Math.min(percent, center)}%`;
+//     fill.style.width = `${Math.abs(percent - center)}%`;
+
+//     label.textContent = `${clamped}deg`;
+//     applyRotation();
+//   }
+
+//   function syncFromIconRotation() {
+//     if (userInteracted) return;
+
+//     const selectedElement = getSelectedElement?.();
+//     const btn = selectedElement?.querySelector(
+//       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+//     );
+//     if (!btn) return;
+
+//     const icon = btn.querySelector(
+//       ".sqscraft-button-icon, .sqscraft-image-icon"
+//     );
+//     if (!icon) {
+//       updateFromRotationValue(0);
+//       return;
+//     }
+
+//     const match = icon.style.transform?.match(/rotate\((-?\d+(?:\.\d+)?)deg\)/);
+//     if (match) {
+//       const rotation = parseFloat(match[1]);
+//       if (!isNaN(rotation)) {
+//         updateFromRotationValue(rotation);
+//         return;
+//       }
+//     }
+
+//     updateFromRotationValue(0);
+//   }
+
+//   bullet.addEventListener("mousedown", (e) => {
+//     e.preventDefault();
+//     userInteracted = true;
+//     const move = (e) => updateUI(e.clientX);
+//     const up = () => {
+//       document.removeEventListener("mousemove", move);
+//       document.removeEventListener("mouseup", up);
+//     };
+//     document.addEventListener("mousemove", move);
+//     document.addEventListener("mouseup", up);
+//   });
+
+//   field.addEventListener("click", (e) => {
+//     userInteracted = true;
+//     updateUI(e.clientX);
+//   });
+
+//   incBtn?.addEventListener("click", () => {
+//     userInteracted = true;
+//     updateFromRotationValue(currentRotation + 1);
+//   });
+
+//   decBtn?.addEventListener("click", () => {
+//     userInteracted = true;
+//     updateFromRotationValue(currentRotation - 1);
+//   });
+
+//   setTimeout(syncFromIconRotation, 50);
+// }
+
+export function initButtonIconRotationControl(getSelectedElement) {
   if (normalRotationInitialized) return;
   normalRotationInitialized = true;
-
   const bullet = document.getElementById("buttonIconRotationradiusBullet");
   const fill = document.getElementById("buttonIconRotationradiusFill");
   const field = document.getElementById("buttonIconRotationradiusField");
   const label = document.getElementById("buttoniconRotationradiusCount");
-
   const incBtn = document.getElementById("buttoniconRotationIncrease");
   const decBtn = document.getElementById("buttoniconRotationDecrease");
-
   let currentRotation = 0;
   let userInteracted = false;
-
   function applyRotation() {
     const selectedElement = getSelectedElement?.();
     const btn = selectedElement?.querySelector(
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
     );
     if (!btn) return;
-
     const typeClass = [...btn.classList].find((cls) =>
       cls.startsWith("sqs-button-element--")
     );
     if (!typeClass) return;
-
     const buttons = document.querySelectorAll(`a.${typeClass}`);
     buttons.forEach((button) => {
       const icon = button.querySelector(
@@ -677,50 +802,38 @@ export function initButtonIconRotationControl(
       }
     });
   }
-
   function updateUI(clientX) {
     const rect = field.getBoundingClientRect();
     const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
     const centerX = rect.width / 2;
     const deltaX = x - centerX;
     currentRotation = Math.round((deltaX / centerX) * 180);
-
     const percent = (x / rect.width) * 100;
     bullet.style.left = `${percent}%`;
-
     const fillStart = 50;
     fill.style.left = `${Math.min(percent, fillStart)}%`;
     fill.style.width = `${Math.abs(percent - fillStart)}%`;
-
     label.textContent = `${currentRotation}deg`;
-
     applyRotation();
   }
-
   function updateFromRotationValue(value) {
     const clamped = Math.max(-180, Math.min(180, value));
     currentRotation = clamped;
     const percent = ((clamped + 180) / 360) * 100;
-
     bullet.style.left = `${percent}%`;
-
     const center = 50;
     fill.style.left = `${Math.min(percent, center)}%`;
     fill.style.width = `${Math.abs(percent - center)}%`;
-
     label.textContent = `${clamped}deg`;
     applyRotation();
   }
-
   function syncFromIconRotation() {
     if (userInteracted) return;
-
     const selectedElement = getSelectedElement?.();
     const btn = selectedElement?.querySelector(
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
     );
     if (!btn) return;
-
     const icon = btn.querySelector(
       ".sqscraft-button-icon, .sqscraft-image-icon"
     );
@@ -728,7 +841,6 @@ export function initButtonIconRotationControl(
       updateFromRotationValue(0);
       return;
     }
-
     const match = icon.style.transform?.match(/rotate\((-?\d+(?:\.\d+)?)deg\)/);
     if (match) {
       const rotation = parseFloat(match[1]);
@@ -737,10 +849,8 @@ export function initButtonIconRotationControl(
         return;
       }
     }
-
     updateFromRotationValue(0);
   }
-
   bullet.addEventListener("mousedown", (e) => {
     e.preventDefault();
     userInteracted = true;
@@ -752,100 +862,196 @@ export function initButtonIconRotationControl(
     document.addEventListener("mousemove", move);
     document.addEventListener("mouseup", up);
   });
-
   field.addEventListener("click", (e) => {
     userInteracted = true;
     updateUI(e.clientX);
   });
-
   incBtn?.addEventListener("click", () => {
     userInteracted = true;
     updateFromRotationValue(currentRotation + 1);
   });
-
   decBtn?.addEventListener("click", () => {
     userInteracted = true;
     updateFromRotationValue(currentRotation - 1);
   });
-
   setTimeout(syncFromIconRotation, 50);
 }
 
-export function initButtonIconSizeControl(
-  getSelectedElement,
-  addPendingModification,
-  showNotification,
-  saveButtonModifications
-) {
-  const iconSizeMap = new Map();
+// export function initButtonIconSizeControl(
+//   getSelectedElement,
+//   addPendingModification,
+//   showNotification,
+//   saveButtonModifications
+// ) {
+//   const iconSizeMap = new Map();
 
-  function updateIconSize(blockId, typeClass, size) {
-    if (!blockId || !typeClass) {
-      console.warn("❌ Missing required data for icon size:", {
-        blockId,
-        typeClass,
-      });
-      return;
-    }
+//   function updateIconSize(blockId, typeClass, size) {
+//     if (!blockId || !typeClass) {
+//       console.warn("❌ Missing required data for icon size:", {
+//         blockId,
+//         typeClass,
+//       });
+//       return;
+//     }
 
-    try {
-      const styleId = `sc-icon-size-${typeClass}`;
-      let style = document.getElementById(styleId);
-      if (!style) {
-        style = document.createElement("style");
-        style.id = styleId;
-        document.head.appendChild(style);
-      }
+//     try {
+//       const styleId = `sc-icon-size-${typeClass}`;
+//       let style = document.getElementById(styleId);
+//       if (!style) {
+//         style = document.createElement("style");
+//         style.id = styleId;
+//         document.head.appendChild(style);
+//       }
 
-      style.innerHTML = `
-        .${typeClass} .sqs-add-to-cart-button-inner {
-          font-size: ${size}px !important;
-        }
-      `;
+//       style.innerHTML = `
+//         .${typeClass} .sqs-add-to-cart-button-inner {
+//           font-size: ${size}px !important;
+//         }
+//       `;
 
-      mergeAndSaveButtonStyles(
-        blockId,
-        typeClass,
-        { fontSize: `${size}px` },
-        saveButtonModifications,
-        addPendingModification,
-        showNotification,
-        "icon"
-      );
-    } catch (error) {
-      console.error("❌ Error updating icon size:", error);
-      if (typeof showNotification === "function") {
-        showNotification("Failed to update icon size", "error");
-      }
-    }
-  }
+//       mergeAndSaveButtonStyles(
+//         blockId,
+//         typeClass,
+//         { fontSize: `${size}px` },
+//         saveButtonModifications,
+//         addPendingModification,
+//         showNotification,
+//         "icon"
+//       );
+//     } catch (error) {
+//       console.error("❌ Error updating icon size:", error);
+//       if (typeof showNotification === "function") {
+//         showNotification("Failed to update icon size", "error");
+//       }
+//     }
+//   }
 
+//   const bullet = document.getElementById("buttonIconSizeradiusBullet");
+//   const fill = document.getElementById("buttonIconSizeradiusFill");
+//   const field = document.getElementById("buttonIconSizeradiusField");
+//   const label = document.getElementById("buttoniconSizeradiusCount");
+
+//   const incBtn = document.getElementById("buttoniconSizeIncrease");
+//   const decBtn = document.getElementById("buttoniconSizeDecrease");
+
+//   const maxSize = 50;
+//   let currentSize = 0;
+
+//   function applySize() {
+//     const selectedElement = getSelectedElement?.();
+//     if (!selectedElement) return;
+
+//     const btn = selectedElement.querySelector(
+//       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, " +
+//         "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
+//     );
+//     if (!btn) return;
+
+//     const typeClass = [...btn.classList].find((cls) =>
+//       cls.startsWith("sqs-button-element--")
+//     );
+//     if (!typeClass) return;
+
+//     const allButtons = document.querySelectorAll(
+//       `a.${typeClass}, button.${typeClass}`
+//     );
+//     allButtons.forEach((button) => {
+//       const icons = button.querySelectorAll(
+//         ".sqscraft-button-icon, .sqscraft-image-icon"
+//       );
+//       icons.forEach((icon) => {
+//         icon.style.width = `${currentSize}px`;
+//         icon.style.height = "auto";
+//       });
+//     });
+//   }
+
+//   function updateFromSizeValue(value) {
+//     currentSize = Math.max(0, Math.min(maxSize, value));
+//     const percent = (currentSize / maxSize) * 100;
+
+//     bullet.style.left = `${percent}%`;
+//     fill.style.width = `${percent}%`;
+//     label.textContent = `${currentSize}px`;
+
+//     applySize();
+//   }
+
+//   function updateUI(clientX) {
+//     const rect = field.getBoundingClientRect();
+//     const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+//     const newSize = Math.round((x / rect.width) * maxSize);
+//     updateFromSizeValue(newSize);
+//   }
+
+//   function syncFromIcon() {
+//     const selectedElement = getSelectedElement?.();
+//     const btn = selectedElement?.querySelector(
+//       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, " +
+//         "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
+//     );
+//     if (!btn) return;
+
+//     const icon = btn.querySelector(
+//       ".sqscraft-button-icon, .sqscraft-image-icon"
+//     );
+//     if (!icon || !icon.style.width) return;
+
+//     const size = parseInt(icon.style.width, 10);
+//     if (!isNaN(size)) {
+//       updateFromSizeValue(size);
+//     }
+//   }
+
+//   bullet.addEventListener("mousedown", (e) => {
+//     e.preventDefault();
+//     const move = (e) => updateUI(e.clientX);
+//     const up = () => {
+//       document.removeEventListener("mousemove", move);
+//       document.removeEventListener("mouseup", up);
+//     };
+//     document.addEventListener("mousemove", move);
+//     document.addEventListener("mouseup", up);
+//   });
+
+//   field.addEventListener("click", (e) => updateUI(e.clientX));
+
+//   if (incBtn) {
+//     incBtn.addEventListener("click", () => {
+//       updateFromSizeValue(currentSize + 1);
+//     });
+//   }
+
+//   if (decBtn) {
+//     decBtn.addEventListener("click", () => {
+//       updateFromSizeValue(currentSize - 1);
+//     });
+//   }
+
+//   setTimeout(syncFromIcon, 50);
+// }
+
+export function initButtonIconSizeControl(getSelectedElement) {
   const bullet = document.getElementById("buttonIconSizeradiusBullet");
   const fill = document.getElementById("buttonIconSizeradiusFill");
   const field = document.getElementById("buttonIconSizeradiusField");
   const label = document.getElementById("buttoniconSizeradiusCount");
-
   const incBtn = document.getElementById("buttoniconSizeIncrease");
   const decBtn = document.getElementById("buttoniconSizeDecrease");
-
   const maxSize = 50;
   let currentSize = 0;
-
   function applySize() {
     const selectedElement = getSelectedElement?.();
     if (!selectedElement) return;
-
     const btn = selectedElement.querySelector(
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, " +
         "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
     );
     if (!btn) return;
-
     const typeClass = [...btn.classList].find((cls) =>
       cls.startsWith("sqs-button-element--")
     );
     if (!typeClass) return;
-
     const allButtons = document.querySelectorAll(
       `a.${typeClass}, button.${typeClass}`
     );
@@ -859,25 +1065,20 @@ export function initButtonIconSizeControl(
       });
     });
   }
-
   function updateFromSizeValue(value) {
     currentSize = Math.max(0, Math.min(maxSize, value));
     const percent = (currentSize / maxSize) * 100;
-
     bullet.style.left = `${percent}%`;
     fill.style.width = `${percent}%`;
     label.textContent = `${currentSize}px`;
-
     applySize();
   }
-
   function updateUI(clientX) {
     const rect = field.getBoundingClientRect();
     const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
     const newSize = Math.round((x / rect.width) * maxSize);
     updateFromSizeValue(newSize);
   }
-
   function syncFromIcon() {
     const selectedElement = getSelectedElement?.();
     const btn = selectedElement?.querySelector(
@@ -885,18 +1086,15 @@ export function initButtonIconSizeControl(
         "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
     );
     if (!btn) return;
-
     const icon = btn.querySelector(
       ".sqscraft-button-icon, .sqscraft-image-icon"
     );
     if (!icon || !icon.style.width) return;
-
     const size = parseInt(icon.style.width, 10);
     if (!isNaN(size)) {
       updateFromSizeValue(size);
     }
   }
-
   bullet.addEventListener("mousedown", (e) => {
     e.preventDefault();
     const move = (e) => updateUI(e.clientX);
@@ -907,73 +1105,158 @@ export function initButtonIconSizeControl(
     document.addEventListener("mousemove", move);
     document.addEventListener("mouseup", up);
   });
-
   field.addEventListener("click", (e) => updateUI(e.clientX));
-
   if (incBtn) {
     incBtn.addEventListener("click", () => {
       updateFromSizeValue(currentSize + 1);
     });
   }
-
   if (decBtn) {
     decBtn.addEventListener("click", () => {
       updateFromSizeValue(currentSize - 1);
     });
   }
-
   setTimeout(syncFromIcon, 50);
 }
 
-export function initButtonIconSpacingControl(
-  getSelectedElement,
-  addPendingModification,
-  showNotification,
-  saveButtonModifications
-) {
-  const iconSpacingMap = new Map();
+// export function initButtonIconSpacingControl(
+//   getSelectedElement,
+//   addPendingModification,
+//   showNotification,
+//   saveButtonModifications
+// ) {
+//   const iconSpacingMap = new Map();
 
-  function updateIconSpacing(blockId, typeClass, spacing) {
-    if (!blockId || !typeClass) {
-      console.warn("❌ Missing required data for icon spacing:", {
-        blockId,
-        typeClass,
-      });
-      return;
-    }
+//   function updateIconSpacing(blockId, typeClass, spacing) {
+//     if (!blockId || !typeClass) {
+//       console.warn("❌ Missing required data for icon spacing:", {
+//         blockId,
+//         typeClass,
+//       });
+//       return;
+//     }
 
-    try {
-      const styleId = `sc-icon-spacing-${typeClass}`;
-      let style = document.getElementById(styleId);
-      if (!style) {
-        style = document.createElement("style");
-        style.id = styleId;
-        document.head.appendChild(style);
-      }
+//     try {
+//       const styleId = `sc-icon-spacing-${typeClass}`;
+//       let style = document.getElementById(styleId);
+//       if (!style) {
+//         style = document.createElement("style");
+//         style.id = styleId;
+//         document.head.appendChild(style);
+//       }
 
-      style.innerHTML = `
-        .${typeClass} .sqs-add-to-cart-button-inner {
-          margin-right: ${spacing}px !important;
-        }
-      `;
+//       style.innerHTML = `
+//         .${typeClass} .sqs-add-to-cart-button-inner {
+//           margin-right: ${spacing}px !important;
+//         }
+//       `;
 
-      mergeAndSaveButtonStyles(
-        blockId,
-        typeClass,
-        { marginRight: `${spacing}px` },
-        saveButtonModifications,
-        addPendingModification,
-        showNotification,
-        "icon"
-      );
-    } catch (error) {
-      console.error("❌ Error updating icon spacing:", error);
-      if (typeof showNotification === "function") {
-        showNotification("Failed to update icon spacing", "error");
-      }
-    }
-  }
+//       mergeAndSaveButtonStyles(
+//         blockId,
+//         typeClass,
+//         { marginRight: `${spacing}px` },
+//         saveButtonModifications,
+//         addPendingModification,
+//         showNotification,
+//         "icon"
+//       );
+//     } catch (error) {
+//       console.error("❌ Error updating icon spacing:", error);
+//       if (typeof showNotification === "function") {
+//         showNotification("Failed to update icon spacing", "error");
+//       }
+//     }
+//   }
 
+//   const fill = document.getElementById("buttonIconSpacingradiusFill");
+//   const bullet = document.getElementById("buttonIconSpacingradiusBullet");
+//   const field = document.getElementById("buttonIconSpacingradiusField");
+//   const valueText = document.getElementById("buttoniconSpacingCount");
+//   const incBtn = document.getElementById("buttoniconSpacingIncrease");
+//   const decBtn = document.getElementById("buttoniconSpacingDecrease");
+//   const resetBtn =
+//     field?.previousElementSibling?.querySelector('img[alt="reset"]');
+
+//   if (!fill || !bullet || !field || !valueText) return;
+
+//   const maxGap = 30;
+//   let gapValue = 0;
+
+//   function applyGap() {
+//     const selected = getSelectedElement?.();
+//     const btn = selected?.querySelector(
+//       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+//     );
+//     if (!btn) return;
+
+//     const btnClass = [...btn.classList].find((c) =>
+//       c.startsWith("sqs-button-element--")
+//     );
+//     if (!btnClass) return;
+
+//     document.querySelectorAll(`a.${btnClass}`).forEach((el) => {
+//       const hasIcon = el.querySelector(
+//         ".sqscraft-button-icon, .sqscraft-image-icon"
+//       );
+//       if (hasIcon) {
+//         el.classList.add("sc-flex", "sc-items-center");
+//         el.style.gap = `${gapValue}px`;
+//       } else {
+//         el.classList.remove("sc-flex", "sc-items-center");
+//         el.style.gap = "";
+//       }
+//     });
+//   }
+
+//   function updateUI(val) {
+//     gapValue = Math.max(0, Math.min(maxGap, val));
+//     const percent = (gapValue / maxGap) * 100;
+//     fill.style.width = `${percent}%`;
+//     bullet.style.left = `${percent}%`;
+//     valueText.textContent = `${gapValue}px`;
+//     applyGap();
+//   }
+
+//   bullet.addEventListener("mousedown", (e) => {
+//     e.preventDefault();
+//     const move = (eMove) => {
+//       const rect = field.getBoundingClientRect();
+//       const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
+//       const val = Math.round((x / rect.width) * maxGap);
+//       updateUI(val);
+//     };
+//     const up = () => {
+//       document.removeEventListener("mousemove", move);
+//       document.removeEventListener("mouseup", up);
+//     };
+//     document.addEventListener("mousemove", move);
+//     document.addEventListener("mouseup", up);
+//   });
+
+//   field.addEventListener("click", (e) => {
+//     const rect = field.getBoundingClientRect();
+//     const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
+//     const val = Math.round((x / rect.width) * maxGap);
+//     updateUI(val);
+//   });
+
+//   incBtn?.addEventListener("click", () => updateUI(gapValue + 1));
+//   decBtn?.addEventListener("click", () => updateUI(gapValue - 1));
+//   resetBtn?.addEventListener("click", () => updateUI(8));
+
+//   setTimeout(() => {
+//     const selected = getSelectedElement?.();
+//     const btn = selected?.querySelector(
+//       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+//     );
+//     if (btn) {
+//       const computedGap = parseInt(window.getComputedStyle(btn).gap);
+//       if (!isNaN(computedGap)) updateUI(computedGap);
+//     }
+//   }, 50);
+// }
+
+export function initButtonIconSpacingControl(getSelectedElement) {
   const fill = document.getElementById("buttonIconSpacingradiusFill");
   const bullet = document.getElementById("buttonIconSpacingradiusBullet");
   const field = document.getElementById("buttonIconSpacingradiusField");
@@ -982,24 +1265,19 @@ export function initButtonIconSpacingControl(
   const decBtn = document.getElementById("buttoniconSpacingDecrease");
   const resetBtn =
     field?.previousElementSibling?.querySelector('img[alt="reset"]');
-
   if (!fill || !bullet || !field || !valueText) return;
-
   const maxGap = 30;
   let gapValue = 0;
-
   function applyGap() {
     const selected = getSelectedElement?.();
     const btn = selected?.querySelector(
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
     );
     if (!btn) return;
-
     const btnClass = [...btn.classList].find((c) =>
       c.startsWith("sqs-button-element--")
     );
     if (!btnClass) return;
-
     document.querySelectorAll(`a.${btnClass}`).forEach((el) => {
       const hasIcon = el.querySelector(
         ".sqscraft-button-icon, .sqscraft-image-icon"
@@ -1013,7 +1291,6 @@ export function initButtonIconSpacingControl(
       }
     });
   }
-
   function updateUI(val) {
     gapValue = Math.max(0, Math.min(maxGap, val));
     const percent = (gapValue / maxGap) * 100;
@@ -1022,7 +1299,6 @@ export function initButtonIconSpacingControl(
     valueText.textContent = `${gapValue}px`;
     applyGap();
   }
-
   bullet.addEventListener("mousedown", (e) => {
     e.preventDefault();
     const move = (eMove) => {
@@ -1038,18 +1314,15 @@ export function initButtonIconSpacingControl(
     document.addEventListener("mousemove", move);
     document.addEventListener("mouseup", up);
   });
-
   field.addEventListener("click", (e) => {
     const rect = field.getBoundingClientRect();
     const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
     const val = Math.round((x / rect.width) * maxGap);
     updateUI(val);
   });
-
   incBtn?.addEventListener("click", () => updateUI(gapValue + 1));
   decBtn?.addEventListener("click", () => updateUI(gapValue - 1));
   resetBtn?.addEventListener("click", () => updateUI(8));
-
   setTimeout(() => {
     const selected = getSelectedElement?.();
     const btn = selected?.querySelector(
