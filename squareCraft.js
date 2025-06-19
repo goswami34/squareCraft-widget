@@ -614,14 +614,14 @@ let pendingModifications = new Map();
       );
       initButtonShadowControls(
         () => selectedElement,
-        saveButtonShadowModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
           }
           pendingModifications.get(blockId).push({ css, tagType });
         },
-        showNotification
+        showNotification,
+        saveButtonShadowModifications
       );
       resetAllButtonStyles(
         () => selectedElement,
