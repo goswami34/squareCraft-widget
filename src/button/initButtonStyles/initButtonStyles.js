@@ -2266,8 +2266,6 @@ setTimeout(() => {
 
 import { initButtonFontColorPaletteToggle } from "https://goswami34.github.io/squareCraft-widget/src/button/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js";
 
-// At the end of your main initialization or after rendering the HTML:
-
 // Example themeColors object (replace with your actual theme colors)
 const themeColors = {
   color1: "#EF7C2F",
