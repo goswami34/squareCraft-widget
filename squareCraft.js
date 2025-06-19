@@ -2593,6 +2593,72 @@ let pendingModifications = new Map();
     }
   }
 
+  // Fetch button shadow modifications from the backend
+  async function fetchButtonShadowModifications(blockId = null) {
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
+      return;
+    }
+
+    let url = `https://admin.squareplugin.com/api/v1/get-button-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+    if (blockId) url += `&elementId=${blockId}`;
+
+    try {
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message);
+
+      const elements = result.elements || [];
+      elements.forEach(({ elementId, selector, styles }) => {
+        if (!selector || !styles) return;
+
+        const styleId = `sc-btn-shadow-style-${elementId}`;
+        let styleTag = document.getElementById(styleId);
+        if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = styleId;
+          document.head.appendChild(styleTag);
+        }
+
+        let cssText = `${selector} {`;
+        Object.entries(styles).forEach(([prop, val]) => {
+          if (val !== null && val !== undefined && val !== "null") {
+            cssText += `${prop}: ${val} !important; `;
+          }
+        });
+        cssText += "}";
+
+        styleTag.textContent = cssText;
+
+        console.log(
+          `✅ Applied button shadow styles for ${elementId}:`,
+          styles
+        );
+      });
+
+      console.log("✅ All button shadow modifications applied (external CSS)");
+    } catch (error) {
+      console.error(
+        "❌ Failed to fetch button shadow modifications:",
+        error.message
+      );
+    }
+  }
+
+  // Fetch button border modifications from the backend end here
+
   window.addEventListener("load", async () => {
     await fetchModifications();
     // await fetchImageModifications(lastClickedBlockId);
@@ -2643,6 +2709,7 @@ let pendingModifications = new Map();
     if (elementId) {
       fetchButtonModifications(elementId);
       fetchButtonBorderModifications(elementId);
+      fetchButtonShadowModifications(elementId);
     }
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
