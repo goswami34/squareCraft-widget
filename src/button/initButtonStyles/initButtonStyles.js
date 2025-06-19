@@ -1567,13 +1567,14 @@ export function initButtonBorderRadiusControl(
 export function initButtonShadowControls(
   getSelectedElement,
   addPendingModification,
-  showNotification
+  showNotification,
+  saveButtonShadowModifications
 ) {
   if (!window.shadowStatesByType) {
     window.shadowStatesByType = new Map();
   }
 
-  function applyShadow() {
+  function applyShadow(saveToDB = false) {
     const el = getSelectedElement?.();
     if (!el) return;
 
@@ -1617,21 +1618,30 @@ export function initButtonShadowControls(
       }
     `;
 
-    // Only update local state, do not save to DB
+    // Save to database and local state
     const blockId = el.id;
     if (!blockId) {
       console.warn("❌ No block ID found for selected element");
       return;
     }
+
     const stylePayload = {
       buttonPrimary: {
         selector: ".sqs-button-element--primary",
         styles: { boxShadow: value },
       },
     };
+
+    // Add to pending modifications
     addPendingModification(blockId, stylePayload, "button", "shadow");
+
+    // Save to database if requested
+    if (saveToDB && typeof saveButtonShadowModifications === "function") {
+      saveButtonShadowModifications(blockId, stylePayload);
+    }
+
     if (typeof showNotification === "function") {
-      showNotification("Shadow updated locally!", "info");
+      showNotification("Shadow updated!", "success");
     }
   }
 
@@ -1673,7 +1683,7 @@ export function initButtonShadowControls(
     bullet.style.transform = "translateX(-50%)";
     bullet.style.zIndex = "1";
 
-    function updateUI(value) {
+    function updateUI(value, saveToDB = false) {
       const el = getSelectedElement?.();
       if (!el) return;
 
@@ -1708,7 +1718,7 @@ export function initButtonShadowControls(
       fill.style.width = `${Math.abs(percent - centerPercent)}%`;
 
       label.textContent = `${val}px`;
-      applyShadow();
+      applyShadow(saveToDB);
     }
 
     bullet.addEventListener("mousedown", (e) => {
@@ -1718,11 +1728,36 @@ export function initButtonShadowControls(
         const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
         const percent = x / rect.width;
         const val = Math.round(percent * (maxValue - minValue) + minValue);
-        updateUI(val);
+        updateUI(val, false); // Don't save to DB during drag
       };
       const up = () => {
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
+        // Save to DB when drag ends
+        const el = getSelectedElement?.();
+        if (el) {
+          const btn = el.querySelector(
+            ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+          );
+          if (btn) {
+            const typeClass = [...btn.classList].find((cls) =>
+              cls.startsWith("sqs-button-element--")
+            );
+            if (typeClass && window.shadowStatesByType.has(typeClass)) {
+              const shadowState = window.shadowStatesByType.get(typeClass);
+              const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
+              const stylePayload = {
+                buttonPrimary: {
+                  selector: ".sqs-button-element--primary",
+                  styles: { boxShadow: value },
+                },
+              };
+              if (typeof saveButtonShadowModifications === "function") {
+                saveButtonShadowModifications(el.id, stylePayload);
+              }
+            }
+          }
+        }
       };
       document.addEventListener("mousemove", move);
       document.addEventListener("mouseup", up);
@@ -1733,7 +1768,7 @@ export function initButtonShadowControls(
       const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
       const percent = x / rect.width;
       const val = Math.round(percent * (maxValue - minValue) + minValue);
-      updateUI(val);
+      updateUI(val, true); // Save to DB on click
     });
 
     if (incBtn) {
@@ -1753,7 +1788,7 @@ export function initButtonShadowControls(
 
         const state = window.shadowStatesByType.get(typeClass) || {};
         const current = state[type] || 0;
-        updateUI(current + 1);
+        updateUI(current + 1, true); // Save to DB on button click
       };
     }
 
@@ -1774,7 +1809,7 @@ export function initButtonShadowControls(
 
         const state = window.shadowStatesByType.get(typeClass) || {};
         const current = state[type] || 0;
-        updateUI(current - 1);
+        updateUI(current - 1, true); // Save to DB on button click
       };
     }
 
@@ -1790,7 +1825,7 @@ export function initButtonShadowControls(
         );
         if (typeClass && window.shadowStatesByType.has(typeClass)) {
           const current = window.shadowStatesByType.get(typeClass)[type] || 0;
-          updateUI(current);
+          updateUI(current, false); // Don't save to DB on initial load
         }
       }
     }
@@ -2192,10 +2227,30 @@ export function resetAllButtonStyles(
       initButtonIconRotationControl(getSelectedElement);
       initButtonIconSizeControl(getSelectedElement);
       initButtonIconSpacingControl(getSelectedElement);
-      initButtonBorderControl(getSelectedElement);
-      initButtonBorderTypeToggle(getSelectedElement);
-      initButtonBorderRadiusControl(getSelectedElement);
-      initButtonShadowControls(getSelectedElement);
+      initButtonBorderControl(
+        getSelectedElement,
+        addPendingModification,
+        showNotification,
+        saveButtonModifications
+      );
+      initButtonBorderTypeToggle(
+        getSelectedElement,
+        addPendingModification,
+        showNotification,
+        saveButtonModifications
+      );
+      initButtonBorderRadiusControl(
+        getSelectedElement,
+        addPendingModification,
+        showNotification,
+        saveButtonModifications
+      );
+      initButtonShadowControls(
+        getSelectedElement,
+        addPendingModification,
+        showNotification,
+        saveButtonModifications
+      );
 
       const {
         initHoverButtonShadowControls,
@@ -2386,11 +2441,21 @@ setTimeout(() => {
   }
 
   if (typeof initButtonBorderRadiusControl === "function") {
-    initButtonBorderRadiusControl(getSelectedElement);
+    initButtonBorderRadiusControl(
+      getSelectedElement,
+      addPendingModification,
+      showNotification,
+      saveButtonModifications
+    );
   }
 
   if (typeof initButtonBorderTypeToggle === "function") {
-    initButtonBorderTypeToggle(getSelectedElement);
+    initButtonBorderTypeToggle(
+      getSelectedElement,
+      addPendingModification,
+      showNotification,
+      saveButtonModifications
+    );
   }
 
   document.getElementById("buttonBorderTypeSolid")?.click();

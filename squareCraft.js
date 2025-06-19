@@ -394,6 +394,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { saveButtonShadowModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   //button all functionality code end here
 
   const themeColors = await getSquarespaceThemeStyles();
@@ -610,7 +614,7 @@ let pendingModifications = new Map();
       );
       initButtonShadowControls(
         () => selectedElement,
-        saveButtonModifications,
+        saveButtonShadowModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
