@@ -2263,3 +2263,20 @@ setTimeout(() => {
 
   document.getElementById("buttonBorderTypeSolid")?.click();
 }, 100);
+
+import { initButtonFontColorPaletteToggle } from "./initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle";
+
+// At the end of your main initialization or after rendering the HTML:
+
+// Example themeColors object (replace with your actual theme colors)
+const themeColors = {
+  color1: "#EF7C2F",
+  color2: "#363544",
+  color3: "#FF0000",
+  // ...add more as needed
+};
+
+// Ensure this runs after the HTML is rendered
+setTimeout(() => {
+  initButtonFontColorPaletteToggle(themeColors, getSelectedElement);
+}, 0);
