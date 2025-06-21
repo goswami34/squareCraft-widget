@@ -571,7 +571,9 @@ let pendingModifications = new Map();
           setTimeout(() => {
             initButtonFontColorPaletteToggle(
               themeColors,
-              selectedElement
+              () => selectedElement,
+              "",
+              saveImageShadowModifications
             );
           }, 50);
         };
