@@ -36,15 +36,15 @@ export function handleAllFontFamilyClick(event = null, context = null) {
 
   const selectedFontFamily = event.target.value;
 
-  if (!lastClickedElement) {
-    showNotification("Please select a block first", "error");
-    return;
-  }
+  // if (!lastClickedElement) {
+  //   showNotification("Please select a block first", "error");
+  //   return;
+  // }
 
-  if (!selectedSingleTextType) {
-    showNotification("Please select a text type first", "error");
-    return;
-  }
+  // if (!selectedSingleTextType) {
+  //   showNotification("Please select a text type first", "error");
+  //   return;
+  // }
 
   //   const block = lastClickedElement.closest('[id^="block-"]');
 

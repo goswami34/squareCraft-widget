@@ -78,10 +78,10 @@ export function handleBoldTextColorClick(
         selectedTextType = colorPickerContext.selectedSingleTextType;
       }
 
-      if (!selectedTextType) {
-        context.showNotification("Please select a text type first", "error");
-        return;
-      }
+      // if (!selectedTextType) {
+      //   context.showNotification("Please select a text type first", "error");
+      //   return;
+      // }
 
       // Find the block element
       const block =
