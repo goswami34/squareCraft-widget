@@ -536,7 +536,7 @@ let pendingModifications = new Map();
 
       initButtonFontColorPaletteToggle(
         themeColors,
-        () => selectedElement,
+        selectedElement,
         saveButtonModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
@@ -546,6 +546,53 @@ let pendingModifications = new Map();
         },
         showNotification
       );
+      
+      // Initialize button color palette toggle
+      const buttonFontColorTrigger = document.getElementById("buttonFontColorPalate");
+      const buttonFontColorPalette = document.getElementById("button-font-color-palette");
+      
+      console.log("🔍 Button color palette elements:", {
+        trigger: !!buttonFontColorTrigger,
+        palette: !!buttonFontColorPalette,
+        triggerElement: buttonFontColorTrigger,
+        paletteElement: buttonFontColorPalette
+      });
+      
+      if (buttonFontColorTrigger && buttonFontColorPalette) {
+        // Remove any existing listeners to prevent duplicates
+        buttonFontColorTrigger.removeEventListener("click", buttonFontColorTrigger._clickHandler);
+        
+        buttonFontColorTrigger._clickHandler = (event) => {
+          event.stopPropagation();
+          console.log("🎨 Button color palette clicked!");
+          buttonFontColorPalette.classList.toggle("sc-hidden");
+          
+          // Load palette after toggle
+          setTimeout(() => {
+            initButtonFontColorPaletteToggle(
+              themeColors,
+              selectedElement
+            );
+          }, 50);
+        };
+        
+        buttonFontColorTrigger.addEventListener("click", buttonFontColorTrigger._clickHandler);
+        
+        // Close palette when clicking outside
+        document.addEventListener("click", (event) => {
+          if (!buttonFontColorTrigger.contains(event.target) && !buttonFontColorPalette.contains(event.target)) {
+            buttonFontColorPalette.classList.add("sc-hidden");
+          }
+        });
+        
+        console.log("✅ Button color palette initialized successfully");
+      } else {
+        console.warn("⚠️ Button color palette elements not found");
+      }
+      
+      // Ensure all button section toggle controls are initialized
+      initButtonSectionToggleControls();
+      
       initButtonIconPositionToggle(
         () => selectedElement,
         saveButtonModifications,
@@ -4122,5 +4169,66 @@ let pendingModifications = new Map();
       }
     }
     // ... existing code ...
+  }
+
+  // Ensure all button section toggle controls are initialized
+  initButtonSectionToggleControls();
+  
+  // Initialize button color palette toggle with retry mechanism
+  function initializeButtonColorPalette() {
+    const buttonFontColorTrigger = document.getElementById("buttonFontColorPalate");
+    const buttonFontColorPalette = document.getElementById("button-font-color-palette");
+    
+    console.log("🔍 Button color palette elements:", {
+      trigger: !!buttonFontColorTrigger,
+      palette: !!buttonFontColorPalette,
+      triggerElement: buttonFontColorTrigger,
+      paletteElement: buttonFontColorPalette
+    });
+    
+    if (buttonFontColorTrigger && buttonFontColorPalette) {
+      // Remove any existing listeners to prevent duplicates
+      buttonFontColorTrigger.removeEventListener("click", buttonFontColorTrigger._clickHandler);
+      
+      buttonFontColorTrigger._clickHandler = (event) => {
+        event.stopPropagation();
+        console.log("🎨 Button color palette clicked!");
+        buttonFontColorPalette.classList.toggle("sc-hidden");
+        
+        // Load palette after toggle - use the correct function for button colors
+        setTimeout(() => {
+          initButtonFontColorPaletteToggle(
+            themeColors,
+            selectedElement
+          );
+        }, 50);
+      };
+      
+      buttonFontColorTrigger.addEventListener("click", buttonFontColorTrigger._clickHandler);
+      
+      // Close palette when clicking outside
+      document.addEventListener("click", (event) => {
+        if (!buttonFontColorTrigger.contains(event.target) && !buttonFontColorPalette.contains(event.target)) {
+          buttonFontColorPalette.classList.add("sc-hidden");
+        }
+      });
+      
+      console.log("✅ Button color palette initialized successfully");
+      return true;
+    } else {
+      console.warn("⚠️ Button color palette elements not found, retrying...");
+      return false;
+    }
+  }
+  
+  // Try to initialize immediately, then retry if needed
+  if (!initializeButtonColorPalette()) {
+    // Retry after a short delay
+    setTimeout(() => {
+      if (!initializeButtonColorPalette()) {
+        // Final retry after longer delay
+        setTimeout(initializeButtonColorPalette, 500);
+      }
+    }, 100);
   }
 })();
