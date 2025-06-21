@@ -75,10 +75,11 @@ export function handleAllFontFamilyClick(event = null, context = null) {
     paragraphSelector = "h4";
   }
 
-  // if (!paragraphSelector) {
-  //   showNotification("Selector not found", "error");
-  //   return;
-  // }
+  // Check if paragraphSelector is empty
+  if (!paragraphSelector) {
+    showNotification("Please select a valid text type first", "error");
+    return;
+  }
 
   // When a text type is selected
   const selectedElements = block.querySelectorAll(paragraphSelector);
