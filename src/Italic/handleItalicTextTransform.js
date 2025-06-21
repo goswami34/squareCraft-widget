@@ -63,17 +63,17 @@ export function handleItalicTextTransformClick(event = null, context = null) {
   const textTransform = clickedTransform.getAttribute("data-text-transform");
   console.log("🔎 Text transform value:", textTransform);
 
-  // if (!lastClickedElement) {
-  //   console.log("❌ No last clicked element");
-  //   showNotification("Please select a block first", "error");
-  //   return;
-  // }
+  if (!lastClickedElement) {
+    console.log("❌ No last clicked element");
+    showNotification("Please select a block first", "error");
+    return;
+  }
 
-  // if (!selectedSingleTextType) {
-  //   console.log("❌ No selected text type");
-  //   showNotification("Please select a text type first", "error");
-  //   return;
-  // }
+  if (!selectedSingleTextType) {
+    console.log("❌ No selected text type");
+    showNotification("Please select a text type first", "error");
+    return;
+  }
 
   const block = lastClickedElement.closest('[id^="block-"]');
   console.log("🔍 Found block:", block);

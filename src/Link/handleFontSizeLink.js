@@ -46,15 +46,15 @@ function showNotification(message, type = "info") {
   
     const fontSize = clickedInput.value + "px";
   
-    // if (!lastClickedElement) {
-    //   showNotification("Please select a block first", "error");
-    //   return;
-    // }
+    if (!lastClickedElement) {
+      showNotification("Please select a block first", "error");
+      return;
+    }
   
-    // if (!selectedSingleTextType) {
-    //   showNotification("Please select a text type first", "error");
-    //   return;
-    // }
+    if (!selectedSingleTextType) {
+      showNotification("Please select a text type first", "error");
+      return;
+    }
   
     const block = lastClickedElement.closest('[id^="block-"]');
     if (!block) {
