@@ -1,46 +1,48 @@
 let pendingModifications = new Map();
+// let selectedElement = null;
 
 (async function squareCraft() {
-  let isSameOrigin = true;
-  if (!window.__squareCraftResetFlags) {
-    window.__squareCraftResetFlags = new Map();
-  }
-
-  const Url = isSameOrigin
-    ? parent.document.location.href
-    : document.location.href;
+  const Url = parent.document.location.href;
   console.log("parent", Url);
+  const widgetScript = document.getElementById("sc-script");
 
-  try {
-    void parent.document;
-  } catch (e) {
-    isSameOrigin = false;
+  if (!widgetScript) {
+    console.error(
+      "❌ Widget script not found! Ensure the script tag exists with id 'sc-script'."
+    );
+    return;
+  }
+  let selectedElement = null;
+  let widgetContainer = null;
+
+  let widgetLoaded = false;
+  let token = widgetScript.dataset?.token;
+  let userId = widgetScript.dataset?.uId;
+  let widgetId = widgetScript.dataset?.wId;
+
+  if (token) {
+    localStorage.setItem("sc_auth_token", token);
+    document.cookie = `sc_auth_token=${token}; path=/; domain=${location.hostname}; Secure; SameSite=Lax`;
   }
 
-  function safeQuerySelector(selector) {
-    return isSameOrigin
-      ? parent.document.querySelector(selector)
-      : document.querySelector(selector);
+  if (userId) {
+    localStorage.setItem("sc_u_id", userId);
+    document.cookie = `sc_u_id=${userId}; path=.squarespace.com;`;
   }
 
-  function safeQuerySelectorAll(selector) {
-    try {
-      if (parent && parent !== window && parent.document !== document) {
-        return parent.document.querySelectorAll(selector);
-      }
-    } catch (err) {
-      if (err.name === "SecurityError") {
-        console.warn(
-          `⚠️ Cross-origin restriction: falling back to current document for selectorAll: ${selector}`
-        );
-      } else {
-        console.error(`❌ Error in safeQuerySelectorAll("${selector}"):`, err);
-      }
-    }
-    return document.querySelectorAll(selector);
+  if (widgetId) {
+    localStorage.setItem("sc_w_id", widgetId);
+    document.cookie = `sc_w_id=${widgetId}; path=.squarespace.com;`;
   }
 
-  // show notification start here
+  let lastClickedBlockId = null;
+  let lastClickedElement = null;
+  let lastAppliedAlignment = null;
+  let lastActiveAlignmentElement = null;
+  let selectedTextElement = null;
+  let selectedSingleTextType = null;
+
+  // Add showNotification function
   function showNotification(message, type = "info") {
     const notification = document.createElement("div");
     notification.className = `sc-notification sc-${type}`;
@@ -71,93 +73,6 @@ let pendingModifications = new Map();
     }, 3000);
   }
 
-  // show notification end here
-
-  let selectedElement = null;
-  let widgetContainer = null;
-
-  let widgetLoaded = false;
-  const widgetScript = document.getElementById("sc-script");
-
-  let token = null;
-  let userId = null;
-  let widgetId = null;
-
-  if (widgetScript) {
-    token = widgetScript.dataset?.token;
-    userId = widgetScript.dataset?.uId;
-    widgetId = widgetScript.dataset?.wId;
-
-    if (token) {
-      localStorage.setItem("sc_auth_token", token);
-      document.cookie = `sc_auth_token=${token}; path=/; domain=${location.hostname}; Secure; SameSite=Lax`;
-    }
-
-    if (userId) {
-      localStorage.setItem("sc_u_id", userId);
-      document.cookie = `sc_u_id=${userId}; path=.squarespace.com;`;
-    }
-
-    if (widgetId) {
-      localStorage.setItem("sc_w_id", widgetId);
-      document.cookie = `sc_w_id=${widgetId}; path=.squarespace.com;`;
-    }
-  }
-
-  let lastClickedBlockId = null;
-  let lastClickedElement = null;
-  let lastAppliedAlignment = null;
-  let lastActiveAlignmentElement = null;
-
-  function injectLaunchAnimationCSS(targetDoc = document) {
-    if (targetDoc.getElementById("sc-launch-animation-style")) return;
-
-    const style = targetDoc.createElement("style");
-    style.id = "sc-launch-animation-style";
-    style.innerHTML = `
-      @keyframes scFadeInUp {
-        0% {
-          filter: grayscale(100%);
-          transform: translateY(60px) scale(0.95);
-          opacity: 0.5;
-        }
-        100% {
-          filter: grayscale(0%);
-          transform: translateY(0) scale(1);
-          opacity: 1;
-        }
-      }
-  
-      body[id^="collection-"].sc-launching {
-        animation: scFadeInUp 0.8s ease-out forwards;
-        transform-origin: center center;
-      }
-    `;
-    targetDoc.head.appendChild(style);
-  }
-
-  function triggerLaunchAnimation() {
-    let iframeDoc = null;
-
-    try {
-      const iframe = document.getElementById("sqs-site-frame");
-      if (!iframe) return;
-
-      iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-      const liveBody = iframeDoc.querySelector('body[id^="collection-"]');
-      if (!liveBody) return;
-
-      injectLaunchAnimationCSS(iframeDoc);
-      liveBody.classList.add("sc-launching");
-
-      setTimeout(() => {
-        liveBody.classList.remove("sc-launching");
-      }, 1000);
-    } catch (e) {
-      console.warn("⚠️ Could not access iframe content for animation.");
-    }
-  }
-
   function applyStylesToElement(element, css) {
     if (!element || !css) return;
 
@@ -178,7 +93,6 @@ let pendingModifications = new Map();
 
     styleTag.innerHTML = cssText;
   }
-
   const { getTextType } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/utils/getTextType.js"
   );
@@ -485,9 +399,13 @@ let pendingModifications = new Map();
   );
 
   //button all functionality code end here
+
   const themeColors = await getSquarespaceThemeStyles();
 
   document.body.addEventListener("click", (event) => {
+    // if (selectedElement) {
+    //   initButtonStyles(selectedElement);
+    // }
     const trigger = event.target.closest("#border-color-select");
 
     if (trigger) {
@@ -589,6 +507,29 @@ let pendingModifications = new Map();
     //   initButtonFontColorPaletteToggle(themeColors, selectedElement);
     // }, 100);
 
+    setTimeout(initImageSectionControls, 100);
+    const clickedBlock = event.target.closest('[id^="block-"]');
+    console.log("clickedBlock", clickedBlock);
+
+    if (clickedBlock) {
+      waitForElement("#typoSection, #imageSection,  #buttonSection")
+        .then(() => {
+          detectBlockElementTypes(clickedBlock);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    }
+
+    // const clickedBlockOne = event?.target?.closest('[id^="block-"]');
+    // console.log("clickedBlockOne", clickedBlockOne);
+
+    // const clickedBlockOne = parent.document
+    //   ?.querySelector(event.target)
+    //   ?.closest('[id^="block-"]');
+    // console.log("clickedBlockOne", clickedBlockOne);
+
+    //button all functionality code start here
     if (selectedElement) {
       initButtonStyles(() => selectedElement);
     }
@@ -3550,48 +3491,11 @@ let pendingModifications = new Map();
 
   observer.observe(parent.document.body, { childList: true, subtree: true });
 
-  async function addHeadingEventListeners() {
-    const widgetContainer = document.getElementById("sc-widget-container");
-    if (!widgetContainer) return;
-
-    if (widgetContainer.dataset.listenerAttached === "true") return;
-
-    widgetContainer.dataset.listenerAttached = "true";
-
-    function toggleTabClass(targetElement) {
-      if (targetElement.classList.contains("sc-activeTab-border")) {
-        targetElement.classList.remove("sc-activeTab-border");
-        targetElement.classList.add("sc-inActiveTab-border");
-      } else {
-        targetElement.classList.remove("sc-inActiveTab-border");
-        targetElement.classList.add("sc-activeTab-border");
-      }
-    }
-
-    widgetContainer.addEventListener("click", (event) => {
-      const tabElement = event.target;
-      if (
-        tabElement.classList.contains("sc-inActiveTab-border") ||
-        tabElement.classList.contains("sc-activeTab-border")
-      ) {
-        toggleTabClass(tabElement);
-      }
-    });
-  }
-
-  // const observer = new MutationObserver(() => {
-  //   addHeadingEventListeners();
-  //   fetchModifications();
-  // });
-
-  const obsTarget = isSameOrigin ? parent.document.body : document.body;
-  observer.observe(obsTarget, { childList: true, subtree: true });
-
-  addHeadingEventListeners();
+  // addHeadingEventListeners();
 
   try {
     const { injectNavbarIcon } = await import(
-      "https://fatin-webefo.github.io/squareCraft-plugin/injectNavbarIcon.js"
+      "https://goswami34.github.io/squareCraft-widget/injectNavbarIcon.js"
     );
     injectNavbarIcon();
   } catch (error) {
@@ -3632,8 +3536,8 @@ let pendingModifications = new Map();
       { target: clickedBlock },
       {
         getTextType,
-        getHoverTextType,
         selectedElement,
+        setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
         setSelectedElement: (val) => (selectedElement = val),
         setLastClickedBlockId: (val) => (lastClickedBlockId = val),
         setLastClickedElement: (val) => (lastClickedElement = val),
@@ -3642,14 +3546,13 @@ let pendingModifications = new Map();
           (lastActiveAlignmentElement = val),
       }
     );
-
     detectBlockElementTypes(clickedBlock);
   }
 
   async function createWidget(clickedBlock) {
     try {
       const module = await import(
-        "https://fatin-webefo.github.io/squareCraft-plugin/html.js"
+        "https://goswami34.github.io/squareCraft-widget/html.js"
       );
       const htmlString = module.html();
 
@@ -3664,7 +3567,6 @@ let pendingModifications = new Map();
     } catch (err) {
       console.error("🚨 Error loading HTML module:", err);
     }
-    triggerLaunchAnimation();
   }
 
   function waitForElement(selector, timeout = 3000) {
@@ -3692,6 +3594,31 @@ let pendingModifications = new Map();
     });
   }
 
+  function createHoverableArrowSVG(id, isRotate = false) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "12");
+    svg.setAttribute("height", "12");
+    svg.setAttribute("viewBox", "0 0 12 12");
+    svg.setAttribute("fill", "none");
+    svg.id = id;
+    svg.classList.add("sc-hover-arrow", "sc-arrow-trigger");
+
+    if (isRotate) {
+      svg.classList.add("sc-rotate-180");
+    }
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M2.5 4L6 7.5L9.5 4");
+    path.setAttribute("stroke", "currentColor");
+    path.setAttribute("stroke-width", "1.5");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
+    path.id = "Vector 175";
+
+    svg.appendChild(path);
+    return svg;
+  }
+
   function loadWidgetFromString(htmlString, clickedBlock) {
     if (!widgetContainer) {
       widgetContainer = document.createElement("div");
@@ -3700,25 +3627,29 @@ let pendingModifications = new Map();
         "sc-fixed",
         "sc-text-color-white",
         "sc-universal",
-        "sc-z-999999"
+        "sc-z-9999"
       );
 
+      // ✅ Inject your CSS file before setting innerHTML
       const styleLink = document.createElement("link");
       styleLink.rel = "stylesheet";
       styleLink.type = "text/css";
       styleLink.href =
-        "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
+        "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
       widgetContainer.appendChild(styleLink);
 
+      // ✅ Then set HTML content
       const contentWrapper = document.createElement("div");
       contentWrapper.innerHTML = htmlString;
       widgetContainer.appendChild(contentWrapper);
+      // parentHtmlTabClick();
 
       widgetContainer.style.display = "block";
       document.body.appendChild(widgetContainer);
 
       initImageMaskControls(() => selectedElement);
       makeWidgetDraggable();
+
       setTimeout(() => {
         const placeholders = widgetContainer.querySelectorAll(
           ".sc-arrow-placeholder"
@@ -3736,49 +3667,19 @@ let pendingModifications = new Map();
           span.replaceWith(svg);
         });
       }, 100);
+
       widgetLoaded = true;
       initImageSectionToggleControls();
+      // initButtonSectionToggleControls();
+      // initImageUploadPreview(() => selectedElement);
       ButtonAdvanceToggleControls();
       buttonTooltipControls();
       initButtonSectionToggleControls();
-      // WidgetTypoSectionStateControls();
-      initImageStateTabToggle();
-      WidgetImageHoverToggleControls();
-      initHoverTypoTabControls([
-        {
-          buttonId: "typo-all-hover-font-button",
-          sectionId: "typo-all-hover-font-section",
-        },
-        {
-          buttonId: "typo-all-hover-border-button",
-          sectionId: "typo-all-hover-border-section",
-        },
-        {
-          buttonId: "typo-all-hover-shadow-button",
-          sectionId: "typo-all-hover-shadow-section",
-        },
-        {
-          buttonId: "typo-all-hover-effects-button",
-          sectionId: "typo-all-hover-effects-section",
-        },
-        {
-          buttonId: "typo-bold-hover-font-button",
-          sectionId: "typo-bold-hover-font-section",
-        },
-        {
-          buttonId: "typo-italic-hover-font-button",
-          sectionId: "typo-italic-hover-font-section",
-        },
-        {
-          buttonId: "typo-link-hover-font-button",
-          sectionId: "typo-link-hover-font-section",
-        },
-      ]);
+      initImageSectionToggleControls();
       initHoverButtonSectionToggleControls();
-      hoverTypoTabSelect();
       initHoverButtonEffectDropdowns();
       initImageUploadPreview(() => selectedElement);
-      triggerLaunchAnimation();
+
       if (clickedBlock) {
         waitForElement("#typoSection, #imageSection, #buttonSection")
           .then(() => {
@@ -3786,8 +3687,9 @@ let pendingModifications = new Map();
               { target: clickedBlock },
               {
                 getTextType,
-                getHoverTextType,
                 selectedElement,
+                setSelectedSingleTextType: (tag) =>
+                  (selectedSingleTextType = tag),
                 setSelectedElement: (val) => (selectedElement = val),
                 setLastClickedBlockId: (val) => (lastClickedBlockId = val),
                 setLastClickedElement: (val) => (lastClickedElement = val),
@@ -3807,48 +3709,36 @@ let pendingModifications = new Map();
 
   function makeWidgetDraggable() {
     if (!widgetContainer) return;
-
     widgetContainer.style.position = "absolute";
     widgetContainer.style.zIndex = "999";
     widgetContainer.style.left = "10px";
     widgetContainer.style.top = "10px";
-
     let offsetX = 0,
       offsetY = 0,
       isDragging = false;
-
     function startDrag(event) {
       const draggableElement = event.target.closest("#sc-grabbing");
       if (!draggableElement || event.target.closest(".sc-dropdown")) return;
-
       event.preventDefault();
       isDragging = true;
-
       let clientX = event.clientX || event.touches?.[0]?.clientX;
       let clientY = event.clientY || event.touches?.[0]?.clientY;
-
       offsetX = clientX - widgetContainer.getBoundingClientRect().left;
       offsetY = clientY - widgetContainer.getBoundingClientRect().top;
-
       document.addEventListener("mousemove", moveAt);
       document.addEventListener("mouseup", stopDragging);
       document.addEventListener("touchmove", moveAt);
       document.addEventListener("touchend", stopDragging);
     }
-
     function moveAt(event) {
       if (!isDragging) return;
-
       let clientX = event.clientX || event.touches?.[0]?.clientX;
       let clientY = event.clientY || event.touches?.[0]?.clientY;
-
       const newX = clientX - offsetX;
       const newY = clientY - offsetY;
-
       widgetContainer.style.left = `${newX}px`;
       widgetContainer.style.top = `${newY}px`;
     }
-
     function stopDragging() {
       isDragging = false;
       document.removeEventListener("mousemove", moveAt);
@@ -3856,10 +3746,8 @@ let pendingModifications = new Map();
       document.removeEventListener("touchmove", moveAt);
       document.removeEventListener("touchend", stopDragging);
     }
-
     widgetContainer.removeEventListener("mousedown", startDrag);
     widgetContainer.removeEventListener("touchstart", startDrag);
-
     widgetContainer.addEventListener("mousedown", startDrag);
     widgetContainer.addEventListener("touchstart", startDrag);
   }
@@ -3896,7 +3784,7 @@ let pendingModifications = new Map();
   function injectIcon() {
     async function waitForTargets(selector, maxRetries = 10, delay = 500) {
       for (let attempt = 0; attempt < maxRetries; attempt++) {
-        const elements = safeQuerySelectorAll(selector);
+        const elements = parent.document.querySelectorAll(selector);
         if (elements.length > 0) return elements;
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
@@ -3959,24 +3847,22 @@ let pendingModifications = new Map();
       });
     }
 
-    injectIconIntoTargetElements();
+    injectIconIntoTargetElements(); // run once at startup
 
     const observer = new MutationObserver(() => {
       injectIconIntoTargetElements();
     });
-    const obsTarget = isSameOrigin ? parent.document.body : document.body;
-    observer.observe(obsTarget, { childList: true, subtree: true });
+    observer.observe(parent.document.body, { childList: true, subtree: true });
 
-    try {
-      iframe?.contentWindow?.document?.addEventListener("click", (event) => {
+    const iframe = document.querySelector("iframe");
+    if (iframe) {
+      iframe.contentWindow.document.addEventListener("click", function (event) {
         if (event.target.classList.contains("sc-admin-icon")) {
           event.stopPropagation();
           event.preventDefault();
           toggleWidgetVisibility(event);
         }
       });
-    } catch (e) {
-      console.warn("⚠️ Could not access iframe document (likely cross-origin)");
     }
   }
 
@@ -3985,7 +3871,7 @@ let pendingModifications = new Map();
       console.error("❌ Failed to find Squarespace nav bar.");
       return;
     }
-    const nav = safeQuerySelector("ul.css-1tn5iw9");
+    const nav = parent.document.querySelector("ul.css-1tn5iw9");
     if (!nav) {
       setTimeout(() => waitForNavBar(attempts + 1), 500);
     } else {
@@ -3994,7 +3880,6 @@ let pendingModifications = new Map();
   }
 
   waitForNavBar();
-  handleSectionFind();
   function checkView() {
     const isMobile = window.innerWidth <= 768;
 
@@ -4008,30 +3893,22 @@ let pendingModifications = new Map();
   function moveWidgetToMobileContainer() {
     if (!widgetContainer) return;
 
-    const mobileContainer = safeQuerySelector(
+    const mobileContainer = parent.document.querySelector(
       'div[data-test="mouse-catcher-right-of-frame"].right-scroll-and-hover-catcher.js-space-around-frame'
     );
 
     if (mobileContainer) {
-      const existingLink = safeQuerySelector(
-        'link[href="https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css"]'
+      const existingLink = parent.document.querySelector(
+        'link[href="https://goswami34.github.io/squareCraft-widget/src/styles/parent.css"]'
       );
 
       if (!existingLink) {
-        function createAndAppendToHead(tag) {
-          const el = isSameOrigin
-            ? parent.document.createElement(tag)
-            : document.createElement(tag);
-          const head = isSameOrigin ? parent.document.head : document.head;
-          head.appendChild(el);
-          return el;
-        }
-
-        const link = createAndAppendToHead("link");
+        const link = parent.document.createElement("link");
         link.rel = "stylesheet";
         link.type = "text/css";
         link.href =
-          "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
+          "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
+        parent.document.head.appendChild(link);
       }
 
       mobileContainer.classList.add("sc-relative");
@@ -4049,7 +3926,61 @@ let pendingModifications = new Map();
     }
   }
 
-  fetchModifications();
+  // fetchModifications();
+  // // fetchImageModifications(lastClickedBlockId);
+  // if (lastClickedBlockId) {
+  //   fetchImageModifications(lastClickedBlockId);
+  // } else {
+  //   // Retry after a short delay until it gets set
+  //   let retries = 5;
+  //   const retryInterval = setInterval(() => {
+  //     if (lastClickedBlockId) {
+  //       fetchImageModifications(lastClickedBlockId);
+  //       clearInterval(retryInterval);
+  //     }
+
+  //     // if (lastClickedBlockId) {
+  //     //   fetchImageOverlayModifications(lastClickedBlockId);
+  //     // }
+  //     if (--retries <= 0) clearInterval(retryInterval);
+  //   }, 300);
+  // }
+
+  // console.log("lastClickedBlockId", lastClickedBlockId);
+
+  // if (lastClickedBlockId) {
+  //   fetchImageOverlayModifications(lastClickedBlockId);
+  // } else {
+  //   // Retry after a short delay until it gets set
+  //   let retries = 5;
+  //   const retryInterval = setInterval(() => {
+  //     if (lastClickedBlockId) {
+  //       fetchImageOverlayModifications(lastClickedBlockId);
+  //       clearInterval(retryInterval);
+  //     }
+  //     if (--retries <= 0) clearInterval(retryInterval);
+  //   }, 300);
+  // }
+
+  // if (lastClickedBlockId) {
+  //   fetchImageShadowModifications(lastClickedBlockId);
+  // } else {
+  //   // Retry after a short delay until it gets set
+  //   let retries = 5;
+  //   const retryInterval = setInterval(() => {
+  //     if (lastClickedBlockId) {
+  //       fetchImageShadowModifications(lastClickedBlockId);
+  //       clearInterval(retryInterval);
+  //     }
+  //     if (--retries <= 0) clearInterval(retryInterval);
+  //   }, 300);
+  // }
+
+  function addPendingModification(blockId, css, tagType) {
+    if (!pendingModifications.has(blockId)) {
+      pendingModifications.set(blockId, []);
+    }
+  }
 
   function moveWidgetToDesktop() {
     if (!widgetContainer) return;
@@ -4059,4 +3990,50 @@ let pendingModifications = new Map();
 
   checkView();
   window.addEventListener("resize", checkView);
+
+  // Utility to get the latest border and border-radius styles from the selected button
+  function getLatestButtonBorderStyles(selectedElement) {
+    const btn = selectedElement?.querySelector(
+      ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+    );
+    if (!btn) return null;
+
+    const computed = window.getComputedStyle(btn);
+    return {
+      buttonPrimary: {
+        selector: ".sqs-button-element--primary",
+        styles: {
+          boxSizing: computed.boxSizing,
+          borderStyle: computed.borderStyle,
+          borderColor: computed.borderColor,
+          borderTopWidth: computed.borderTopWidth,
+          borderRightWidth: computed.borderRightWidth,
+          borderBottomWidth: computed.borderBottomWidth,
+          borderLeftWidth: computed.borderLeftWidth,
+          borderRadius: computed.borderRadius,
+          overflow: computed.overflow,
+        },
+      },
+    };
+  }
+
+  // Find your publish button logic and update it to use the latest border styles
+  // Example: in your publish handler (pseudo-code, adapt as needed)
+  async function handlePublish() {
+    // ... existing code ...
+    // Save all pending modifications as before
+    for (const [blockId, modifications] of pendingModifications.entries()) {
+      for (const mod of modifications) {
+        // ... existing code for other types ...
+      }
+    }
+    // Now, always send the latest border styles for the selected element
+    if (selectedElement) {
+      const borderStyles = getLatestButtonBorderStyles(selectedElement);
+      if (borderStyles) {
+        await saveButtonBorderModifications(selectedElement.id, borderStyles);
+      }
+    }
+    // ... existing code ...
+  }
 })();
