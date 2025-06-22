@@ -2272,7 +2272,7 @@ setTimeout(() => {
   if (typeof initButtonBorderRadiusControl === "function") {
     initButtonBorderRadiusControl(
       getSelectedElement,
-      // addPendingModification,
+      addPendingModification,
       showNotification,
       saveButtonModifications
     );
@@ -2281,7 +2281,7 @@ setTimeout(() => {
   if (typeof initButtonBorderTypeToggle === "function") {
     initButtonBorderTypeToggle(
       getSelectedElement,
-      // addPendingModification,
+      addPendingModification,
       showNotification,
       saveButtonModifications
     );
