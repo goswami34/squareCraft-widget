@@ -4005,63 +4005,63 @@ let pendingModifications = new Map();
     }
   }
 
-  fetchModifications();
-  // fetchImageModifications(lastClickedBlockId);
-  if (lastClickedBlockId) {
-    fetchImageModifications(lastClickedBlockId);
-  } else {
-    // Retry after a short delay until it gets set
-    let retries = 5;
-    const retryInterval = setInterval(() => {
-      if (lastClickedBlockId) {
-        fetchImageModifications(lastClickedBlockId);
-        clearInterval(retryInterval);
-      }
+  // fetchModifications();
+  // // fetchImageModifications(lastClickedBlockId);
+  // if (lastClickedBlockId) {
+  //   fetchImageModifications(lastClickedBlockId);
+  // } else {
+  //   // Retry after a short delay until it gets set
+  //   let retries = 5;
+  //   const retryInterval = setInterval(() => {
+  //     if (lastClickedBlockId) {
+  //       fetchImageModifications(lastClickedBlockId);
+  //       clearInterval(retryInterval);
+  //     }
 
-      // if (lastClickedBlockId) {
-      //   fetchImageOverlayModifications(lastClickedBlockId);
-      // }
-      if (--retries <= 0) clearInterval(retryInterval);
-    }, 300);
-  }
+  //     // if (lastClickedBlockId) {
+  //     //   fetchImageOverlayModifications(lastClickedBlockId);
+  //     // }
+  //     if (--retries <= 0) clearInterval(retryInterval);
+  //   }, 300);
+  // }
 
-  console.log("lastClickedBlockId", lastClickedBlockId);
+  // console.log("lastClickedBlockId", lastClickedBlockId);
 
-  if (lastClickedBlockId) {
-    fetchImageOverlayModifications(lastClickedBlockId);
-  } else {
-    // Retry after a short delay until it gets set
-    let retries = 5;
-    const retryInterval = setInterval(() => {
-      if (lastClickedBlockId) {
-        fetchImageOverlayModifications(lastClickedBlockId);
-        clearInterval(retryInterval);
-      }
+  // if (lastClickedBlockId) {
+  //   fetchImageOverlayModifications(lastClickedBlockId);
+  // } else {
+  //   // Retry after a short delay until it gets set
+  //   let retries = 5;
+  //   const retryInterval = setInterval(() => {
+  //     if (lastClickedBlockId) {
+  //       fetchImageOverlayModifications(lastClickedBlockId);
+  //       clearInterval(retryInterval);
+  //     }
 
-      // if (lastClickedBlockId) {
-      //   fetchImageOverlayModifications(lastClickedBlockId);
-      // }
-      if (--retries <= 0) clearInterval(retryInterval);
-    }, 300);
-  }
+  //     // if (lastClickedBlockId) {
+  //     //   fetchImageOverlayModifications(lastClickedBlockId);
+  //     // }
+  //     if (--retries <= 0) clearInterval(retryInterval);
+  //   }, 300);
+  // }
 
-  if (lastClickedBlockId) {
-    fetchImageShadowModifications(lastClickedBlockId);
-  } else {
-    // Retry after a short delay until it gets set
-    let retries = 5;
-    const retryInterval = setInterval(() => {
-      if (lastClickedBlockId) {
-        fetchImageShadowModifications(lastClickedBlockId);
-        clearInterval(retryInterval);
-      }
+  // if (lastClickedBlockId) {
+  //   fetchImageShadowModifications(lastClickedBlockId);
+  // } else {
+  //   // Retry after a short delay until it gets set
+  //   let retries = 5;
+  //   const retryInterval = setInterval(() => {
+  //     if (lastClickedBlockId) {
+  //       fetchImageShadowModifications(lastClickedBlockId);
+  //       clearInterval(retryInterval);
+  //     }
 
-      // if (lastClickedBlockId) {
-      //   fetchImageOverlayModifications(lastClickedBlockId);
-      // }
-      if (--retries <= 0) clearInterval(retryInterval);
-    }, 300);
-  }
+  //     // if (lastClickedBlockId) {
+  //     //   fetchImageOverlayModifications(lastClickedBlockId);
+  //     // }
+  //     if (--retries <= 0) clearInterval(retryInterval);
+  //   }, 300);
+  // }
 
   function addPendingModification(blockId, css, tagType) {
     if (!pendingModifications.has(blockId)) {
