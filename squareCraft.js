@@ -42,6 +42,60 @@ let pendingModifications = new Map();
   let selectedTextElement = null;
   let selectedSingleTextType = null;
 
+  window.getSelectedElement = () => selectedElement;
+
+  function moveWidgetToDesktop() {
+    if (!widgetContainer) return;
+
+    document.body.appendChild(widgetContainer);
+  }
+
+  function moveWidgetToMobileContainer() {
+    if (!widgetContainer) return;
+
+    const mobileContainer = parent.document.querySelector(
+      'div[data-test="mouse-catcher-right-of-frame"].right-scroll-and-hover-catcher.js-space-around-frame'
+    );
+
+    if (mobileContainer) {
+      const existingLink = parent.document.querySelector(
+        'link[href="https://goswami34.github.io/squareCraft-widget/src/styles/parent.css"]'
+      );
+
+      if (!existingLink) {
+        const link = parent.document.createElement("link");
+        link.rel = "stylesheet";
+        link.type = "text/css";
+        link.href =
+          "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
+        parent.document.head.appendChild(link);
+      }
+
+      mobileContainer.classList.add("sc-relative");
+
+      widgetContainer.style.position = "absolute";
+      widgetContainer.style.right = "11%";
+      widgetContainer.style.top = "50%";
+      widgetContainer.style.transform = "translateY(-50%)";
+
+      mobileContainer.appendChild(widgetContainer);
+    } else {
+      console.warn(
+        "❌ Mobile container not found. Widget remains in default location."
+      );
+    }
+  }
+
+  function checkView() {
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+      moveWidgetToMobileContainer();
+    } else {
+      moveWidgetToDesktop();
+    }
+  }
+
   // Add showNotification function
   function showNotification(message, type = "info") {
     const notification = document.createElement("div");
@@ -2719,12 +2773,6 @@ let pendingModifications = new Map();
     if (!pendingModifications.has(blockId)) {
       pendingModifications.set(blockId, []);
     }
-  }
-
-  function moveWidgetToDesktop() {
-    if (!widgetContainer) return;
-
-    document.body.appendChild(widgetContainer);
   }
 
   checkView();
