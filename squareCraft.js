@@ -713,6 +713,7 @@ let pendingModifications = new Map();
 
       initButtonStyles(
         () => selectedElement,
+        addPendingModification,
         saveButtonModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
