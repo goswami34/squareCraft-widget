@@ -1,3 +1,5 @@
+let pendingModifications = new Map();
+
 (async function squareCraft() {
   let isSameOrigin = true;
   if (!window.__squareCraftResetFlags) {
