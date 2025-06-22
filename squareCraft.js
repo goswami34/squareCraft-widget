@@ -2595,30 +2595,30 @@ let pendingModifications = new Map();
 
   // Fetch button border modifications from the backend end here
 
-  window.addEventListener("load", async () => {
-    await fetchModifications();
-    // await fetchImageModifications(lastClickedBlockId);
+  // window.addEventListener("load", async () => {
+  //   await fetchModifications();
+  //   // await fetchImageModifications(lastClickedBlockId);
 
-    // if (lastClickedBlockId) {
-    //   await fetchImageModifications(lastClickedBlockId);
-    // }
+  //   // if (lastClickedBlockId) {
+  //   //   await fetchImageModifications(lastClickedBlockId);
+  //   // }
 
-    // Fallback: Auto-detect first image block on page load
-    if (!lastClickedBlockId) {
-      const fallbackBlock = document
-        .querySelector('[id^="block-"] img')
-        ?.closest('[id^="block-"]');
-      if (fallbackBlock) {
-        lastClickedBlockId = fallbackBlock.id;
-      }
-    }
+  //   // Fallback: Auto-detect first image block on page load
+  //   if (!lastClickedBlockId) {
+  //     const fallbackBlock = document
+  //       .querySelector('[id^="block-"] img')
+  //       ?.closest('[id^="block-"]');
+  //     if (fallbackBlock) {
+  //       lastClickedBlockId = fallbackBlock.id;
+  //     }
+  //   }
 
-    if (lastClickedBlockId) {
-      await fetchImageModifications(lastClickedBlockId);
-      await fetchImageOverlayModifications(lastClickedBlockId);
-      await fetchImageShadowModifications(lastClickedBlockId);
-    }
-  });
+  //   if (lastClickedBlockId) {
+  //     await fetchImageModifications(lastClickedBlockId);
+  //     await fetchImageOverlayModifications(lastClickedBlockId);
+  //     await fetchImageShadowModifications(lastClickedBlockId);
+  //   }
+  // });
 
   const observer = new MutationObserver(() => {
     // addHeadingEventListeners();
