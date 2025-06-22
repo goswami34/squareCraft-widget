@@ -42,60 +42,6 @@ let pendingModifications = new Map();
   let selectedTextElement = null;
   let selectedSingleTextType = null;
 
-  window.getSelectedElement = () => selectedElement;
-
-  function moveWidgetToDesktop() {
-    if (!widgetContainer) return;
-
-    document.body.appendChild(widgetContainer);
-  }
-
-  function moveWidgetToMobileContainer() {
-    if (!widgetContainer) return;
-
-    const mobileContainer = parent.document.querySelector(
-      'div[data-test="mouse-catcher-right-of-frame"].right-scroll-and-hover-catcher.js-space-around-frame'
-    );
-
-    if (mobileContainer) {
-      const existingLink = parent.document.querySelector(
-        'link[href="https://goswami34.github.io/squareCraft-widget/src/styles/parent.css"]'
-      );
-
-      if (!existingLink) {
-        const link = parent.document.createElement("link");
-        link.rel = "stylesheet";
-        link.type = "text/css";
-        link.href =
-          "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
-        parent.document.head.appendChild(link);
-      }
-
-      mobileContainer.classList.add("sc-relative");
-
-      widgetContainer.style.position = "absolute";
-      widgetContainer.style.right = "11%";
-      widgetContainer.style.top = "50%";
-      widgetContainer.style.transform = "translateY(-50%)";
-
-      mobileContainer.appendChild(widgetContainer);
-    } else {
-      console.warn(
-        "❌ Mobile container not found. Widget remains in default location."
-      );
-    }
-  }
-
-  function checkView() {
-    const isMobile = window.innerWidth <= 768;
-
-    if (isMobile) {
-      moveWidgetToMobileContainer();
-    } else {
-      moveWidgetToDesktop();
-    }
-  }
-
   // Add showNotification function
   function showNotification(message, type = "info") {
     const notification = document.createElement("div");
@@ -713,7 +659,6 @@ let pendingModifications = new Map();
 
       initButtonStyles(
         () => selectedElement,
-        addPendingModification,
         saveButtonModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
@@ -743,13 +688,6 @@ let pendingModifications = new Map();
       );
       initButtonBorderRadiusControl(
         () => selectedElement,
-        (blockId, css, tagType) => {
-          if (!pendingModifications.has(blockId)) {
-            pendingModifications.set(blockId, []);
-          }
-          pendingModifications.get(blockId).push({ css, tagType });
-        },
-        showNotification,
         saveButtonBorderModifications
       );
       // WidgetTypoSectionStateControls();
@@ -2029,7 +1967,7 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageModifications(blockId = null) {
+  async function fetchImageModifications() {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -2056,70 +1994,6 @@ let pendingModifications = new Map();
       if (!res.ok) throw new Error(result.message);
 
       const elements = result.elements || [];
-
-      // elements.forEach(({ elementId, css }) => {
-      //   let styleBlock = css?.image;
-      //   let selector = `#${elementId} div.sqs-image-content`;
-
-      //   if (styleBlock?.styles) {
-      //     selector = styleBlock.selector || selector;
-      //     styleBlock = styleBlock.styles;
-      //   }
-
-      //   if (!styleBlock || typeof styleBlock !== "object") return;
-
-      //   const styleTagId = `sc-style-${elementId}`;
-      //   let styleTag = document.getElementById(styleTagId);
-      //   if (!styleTag) {
-      //     styleTag = document.createElement("style");
-      //     styleTag.id = styleTagId;
-      //     document.head.appendChild(styleTag);
-      //   }
-
-      //   // 🧼 Optional: Clear all sides if main border-width is used
-      //   const hasShorthandWidth = styleBlock["border-width"];
-      //   if (hasShorthandWidth) {
-      //     delete styleBlock["border-top-width"];
-      //     delete styleBlock["border-bottom-width"];
-      //     delete styleBlock["border-left-width"];
-      //     delete styleBlock["border-right-width"];
-      //   }
-
-      //   // let cssText = `${selector} {`;
-      //   // Object.entries(styleBlock).forEach(([prop, value]) => {
-      //   //   if (value !== null && value !== undefined && value !== "null") {
-      //   //     cssText += `${prop}: ${value} !important; `;
-      //   //   }
-      //   // });
-      //   // cssText += "}";
-
-      //   // styleTag.textContent = cssText;
-
-      //   // const block = document.getElementById(elementId);
-      //   // if (block) block.classList.add("sc-image-styled");
-
-      //   // ✅ Apply optional imageTag styles (img-level styles)
-      //   const imageTagBlock = css?.imageTag;
-      //   if (imageTagBlock?.selector && imageTagBlock?.styles) {
-      //     const imgTagId = `sc-img-style-${elementId}`;
-      //     let imgTag = document.getElementById(imgTagId);
-      //     if (!imgTag) {
-      //       imgTag = document.createElement("style");
-      //       imgTag.id = imgTagId;
-      //       document.head.appendChild(imgTag);
-      //     }
-
-      //     let imgCSS = `${imageTagBlock.selector} {`;
-      //     Object.entries(imageTagBlock.styles).forEach(([prop, val]) => {
-      //       if (val !== null && val !== undefined && val !== "null") {
-      //         imgCSS += `${prop}: ${val} !important; `;
-      //       }
-      //     });
-      //     imgCSS += "}";
-
-      //     imgTag.textContent = imgCSS;
-      //   }
-      // });
 
       elements.forEach(({ elementId, css }) => {
         // --- Apply main block styles ---
@@ -2262,7 +2136,7 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageOverlayModifications(blockId = null) {
+  async function fetchImageOverlayModifications() {
     try {
       const userId = localStorage.getItem("sc_u_id");
       const token = localStorage.getItem("sc_auth_token");
@@ -2279,9 +2153,9 @@ let pendingModifications = new Map();
       }
 
       // Get all image blocks on the page
-      const imageBlocks = blockId
-        ? [document.getElementById(blockId)].filter(Boolean)
-        : document.querySelectorAll('[id^="block-yui_3_17_2_1_"]');
+      const imageBlocks = document.querySelectorAll(
+        '[id^="block-yui_3_17_2_1_"]'
+      );
       console.log("Found image blocks:", imageBlocks);
 
       // Fetch modifications for each image block
@@ -2376,7 +2250,7 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageShadowModifications(blockId = null) {
+  async function fetchImageShadowModifications() {
     try {
       const token = localStorage.getItem("sc_auth_token");
       const userId = localStorage.getItem("sc_u_id");
@@ -2387,11 +2261,8 @@ let pendingModifications = new Map();
         ?.getAttribute("data-page-sections");
 
       // Only select blocks that actually contain an image
-      const blocksToProcess = blockId
-        ? [document.getElementById(blockId)].filter(Boolean)
-        : Array.from(document.querySelectorAll('[id^="block-"]'));
-
-      const imageBlocks = blocksToProcess.filter((block) =>
+      const allBlocks = document.querySelectorAll('[id^="block-"]');
+      const imageBlocks = Array.from(allBlocks).filter((block) =>
         block.querySelector("img")
       );
 
@@ -2726,61 +2597,1350 @@ let pendingModifications = new Map();
 
   window.addEventListener("load", async () => {
     await fetchModifications();
+    // await fetchImageModifications(lastClickedBlockId);
 
-    const initialImageBlock = document
-      .querySelector('[id^="block-"] img')
-      ?.closest('[id^="block-"]');
+    // if (lastClickedBlockId) {
+    //   await fetchImageModifications(lastClickedBlockId);
+    // }
 
-    if (initialImageBlock) {
-      const elementId = initialImageBlock.id;
-      await fetchImageModifications(elementId);
-      await fetchImageOverlayModifications(elementId);
-      await fetchImageShadowModifications(elementId);
-      await fetchButtonModifications(elementId);
-      await fetchButtonBorderModifications(elementId);
-      await fetchButtonShadowModifications(elementId);
-    }
-  });
-
-  const observer = new MutationObserver(async (mutations, obs) => {
-    obs.disconnect();
-
-    let elementId = null;
-    for (const mutation of mutations) {
-      const addedNode = mutation.addedNodes[0];
-      if (
-        addedNode &&
-        addedNode.nodeType === 1 &&
-        addedNode.id.startsWith("block-")
-      ) {
-        elementId = addedNode.id;
-        break;
+    // Fallback: Auto-detect first image block on page load
+    if (!lastClickedBlockId) {
+      const fallbackBlock = document
+        .querySelector('[id^="block-"] img')
+        ?.closest('[id^="block-"]');
+      if (fallbackBlock) {
+        lastClickedBlockId = fallbackBlock.id;
       }
     }
 
-    if (elementId) {
-      await fetchImageModifications(elementId);
-      await fetchImageOverlayModifications(elementId);
-      await fetchImageShadowModifications(elementId);
-      await fetchButtonModifications(elementId);
-      await fetchButtonBorderModifications(elementId);
-      await fetchButtonShadowModifications(elementId);
+    if (lastClickedBlockId) {
+      await fetchImageModifications(lastClickedBlockId);
     }
 
-    obs.observe(parent.document.body, {
-      childList: true,
-      subtree: true,
+    if (lastClickedBlockId) {
+      await fetchImageOverlayModifications(lastClickedBlockId);
+      // await debouncedFetchImageShadowModifications();
+    }
+  });
+
+  const observer = new MutationObserver(() => {
+    // addHeadingEventListeners();
+    fetchModifications();
+    // fetchImageModifications(lastClickedBlockId);
+    const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
+    const elementId = selectedBlock?.id || null;
+
+    if (elementId) {
+      fetchImageModifications(elementId);
+    }
+
+    if (elementId) {
+      fetchImageOverlayModifications(elementId);
+    }
+
+    if (elementId) {
+      fetchImageShadowModifications(elementId);
+    }
+
+    if (elementId) {
+      fetchButtonModifications(elementId);
+      fetchButtonBorderModifications(elementId);
+      fetchButtonShadowModifications(elementId);
+    }
+
+    const fontWeightSelect = document.getElementById("squareCraftFontWeight");
+    if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
+      console.log("Initializing font weight select");
+      fontWeightSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleFontWeightClick(null, {
+          lastClickedElement,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification,
+          getTextType,
+        });
+      }, 100);
+    }
+
+    const textTransformContainer = document.getElementById(
+      "squareCraftBoldElementTextTransform"
+    );
+    if (textTransformContainer && !textTransformContainer.dataset.initialized) {
+      textTransformContainer.dataset.initialized = "true";
+
+      // Add click event listeners to all text transform buttons
+      textTransformContainer
+        .querySelectorAll('[id^="scTextTransform"]')
+        .forEach((button) => {
+          button.addEventListener("click", (event) => {
+            const lastClickedElement = document.querySelector(".sc-selected");
+            if (lastClickedElement) {
+              handleBoldElementTextTransformClick(event, {
+                lastClickedElement,
+                lastClickedBlockId: lastClickedElement.id,
+                selectedSingleTextType,
+                addPendingModification,
+                showNotification,
+                getTextType,
+                applyStylesToElement,
+              });
+            }
+          });
+        });
+    }
+
+    // const textColorContainer = document.getElementById("scTextColor");
+    // if (textColorContainer && !textColorContainer.dataset.initialized) {
+    //   textColorContainer.dataset.initialized = "true";
+
+    //   // Add click event listeners to all text colro buttons
+    //   textColorContainer
+    //     .querySelectorAll('[id^="scTextColor"]')
+    //     .forEach((button) => {
+    //       button.addEventListener("click", (event) => {
+    //         const lastClickedElement = document.querySelector(".sc-selected");
+    //         if (lastClickedElement) {
+    //           handleTextColorclicked(event, {
+    //             lastClickedElement,
+    //             lastClickedBlockId: lastClickedElement.id,
+    //           });
+    //         }
+    //       });
+    //     });
+    // }
+
+    //Link code start here
+
+    const LinkfontsizeSelect = document.getElementById("scFontSizeInputLink");
+    if (LinkfontsizeSelect && !LinkfontsizeSelect.dataset.initialized) {
+      LinkfontsizeSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleFontSizeLink(null, {
+          lastClickedElement,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+
+    const textTransformLinkContainer = document.getElementById(
+      "squareCraftLink-text-transform"
+    );
+    if (
+      textTransformLinkContainer &&
+      !textTransformLinkContainer.dataset.initialized
+    ) {
+      textTransformLinkContainer.dataset.initialized = "true";
+
+      textTransformLinkContainer
+        .querySelectorAll('[id^="scTextTransform"]')
+        .forEach((button) => {
+          button.addEventListener("click", (event) => {
+            const lastClickedElement = document.querySelector(".sc-selected");
+            if (lastClickedElement) {
+              handleTextTransformLinkClick(event, {
+                lastClickedElement,
+                selectedSingleTextType,
+                addPendingModification,
+                showNotification,
+              });
+            }
+          });
+        });
+    }
+
+    // In squareCraft.js
+    const fontWeightLinkSelect = document.getElementById(
+      "squareCraftLinkFontWeight"
+    );
+    if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
+      console.log("Initializing font weight select for links");
+      fontWeightLinkSelect.dataset.initialized = "true";
+
+      fontWeightLinkSelect.addEventListener("change", function (event) {
+        event.preventDefault();
+        console.log("Font weight select changed");
+
+        const currentlySelectedBlock = document.querySelector(".sc-selected");
+        const selectedFontWeight = this.value;
+        console.log("Selected font weight:", selectedFontWeight);
+
+        if (!currentlySelectedBlock) {
+          showNotification(
+            // "❌ Please select a block first fsfgsfgsfgsgfsgsg.",
+            "error"
+          );
+          this.value = "400";
+          return;
+        }
+
+        const selectedTab = document.querySelector(".sc-selected-tab");
+        if (!selectedTab) {
+          showNotification(
+            // "❌ Please select a text type (h1, h2, p1 etc) first.",
+            "error"
+          );
+          this.value = "400";
+          return;
+        }
+
+        handleFontWeightLink(event, {
+          lastClickedElement: currentlySelectedBlock,
+          selectedSingleTextType: selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+      });
+    }
+
+    // handleLinkTextHighlightClick(
+    //   event,
+    //   lastClickedElement,
+    //   applyStylesToElement,
+    //   {
+    //     handleAllTextColorClick,
+    //     lastClickedElement,
+    //     selectedSingleTextType,
+    //     addPendingModification: (blockId, css, tagType) => {
+    //       if (!pendingModifications.has(blockId)) {
+    //         pendingModifications.set(blockId, []);
+    //       }
+    //       pendingModifications.get(blockId).push({ css, tagType });
+    //     },
+    //     showNotification,
+    //   }
+    // );
+
+    // In squareCraft.js
+    const colorInput = document.getElementById("scTextHighLight");
+    const hexInput = document.getElementById("scTextHeighlightHex");
+
+    if (colorInput && hexInput) {
+      // Sync color input with hex input
+      colorInput.addEventListener("input", function () {
+        hexInput.value = this.value;
+      });
+
+      // Sync hex input with color input
+      hexInput.addEventListener("input", function () {
+        if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+          colorInput.value = this.value;
+        }
+      });
+    }
+
+    //Link code end here
+
+    //All font size code start here
+    const AllfontsizeSelect = document.getElementById("scAllFontSizeInput");
+    if (AllfontsizeSelect && !AllfontsizeSelect.dataset.initialized) {
+      AllfontsizeSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleAllFontSizeClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //All font size code end here
+
+    //All text transform code start here
+    const AllTextTransformSelect = document.getElementById(
+      "squareCraftAllTextTransform"
+    );
+    if (AllTextTransformSelect && !AllTextTransformSelect.dataset.initialized) {
+      AllTextTransformSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleAllTextTransformClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //All text transform code end here
+
+    //All text align code start here
+
+    const AlltextAlignContainer = document.getElementById(
+      "squareCraftAllTextAlign"
+    );
+    if (AlltextAlignContainer && !AlltextAlignContainer.dataset.initialized) {
+      AlltextAlignContainer.dataset.initialized = "true";
+
+      AlltextAlignContainer.querySelectorAll('[id^="scTextAlign"]').forEach(
+        (button) => {
+          button.addEventListener("click", (event) => {
+            handleAllTextAlignClick(event, {
+              lastClickedElement,
+              selectedSingleTextType,
+              addPendingModification,
+              showNotification,
+            });
+          });
+        }
+      );
+    }
+
+    //All text align code end here
+
+    //All letter spacing code start here
+    const AllLetterSpacingSelect = document.getElementById(
+      "scLetterSpacingInput"
+    );
+    if (AllLetterSpacingSelect && !AllLetterSpacingSelect.dataset.initialized) {
+      AllLetterSpacingSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleAllLetterSpacingClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //All letter spacing code end here
+
+    //All line height code start here
+    const AllLineHeightSelect = document.getElementById("scLineHeightInput");
+    if (AllLineHeightSelect && !AllLineHeightSelect.dataset.initialized) {
+      AllLineHeightSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleAllLineHeightClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //All line height code end here
+
+    //All font weight code start here
+
+    const AllFontWeightSelect = document.getElementById(
+      "squareCraftAllFontWeight"
+    );
+    if (AllFontWeightSelect && !AllFontWeightSelect.dataset.initialized) {
+      AllFontWeightSelect.dataset.initialized = "true";
+
+      AllFontWeightSelect.addEventListener("change", (event) => {
+        handleAllFontWeightClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Font weight applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //All font weight code end here
+
+    //All text color code start here
+    const textColorDiv = document.getElementById("textColorPalate");
+    if (textColorDiv && !textColorDiv.dataset.initialized) {
+      textColorDiv.dataset.initialized = "true";
+
+      textColorDiv.addEventListener("click", (event) => {
+        handleTextColorClick(event, lastClickedElement, applyStylesToElement, {
+          handleAllTextColorClick,
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //All text color code end here
+
+    //All text highlight color code start here
+    const textHighlightColorDiv = document.getElementById(
+      "texHeightlistPalate"
+    );
+    if (textHighlightColorDiv && !textHighlightColorDiv.dataset.initialized) {
+      textHighlightColorDiv.dataset.initialized = "true";
+
+      textHighlightColorDiv.addEventListener("click", (event) => {
+        handleTextHighlightColorClick(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextHighlightClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //All text highlight color code end here
+
+    //All font family code start here
+    const allFontFamilySelect = document.getElementById(
+      "squareCraftAllFontFamily"
+    );
+    if (allFontFamilySelect && !allFontFamilySelect.dataset.initialized) {
+      allFontFamilySelect.dataset.initialized = "true";
+
+      allFontFamilySelect.addEventListener("change", (event) => {
+        handleAllFontFamilyClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      });
+    }
+
+    //All font family code end here
+
+    //italic text color code start here
+    const ItalictextColorDiv = document.getElementById("textColorPalate");
+    if (ItalictextColorDiv && !ItalictextColorDiv.dataset.initialized) {
+      ItalictextColorDiv.dataset.initialized = "true";
+
+      ItalictextColorDiv.addEventListener("click", (event) => {
+        handleItalicTextColorClickEvent(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextColorClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //italic text color code end here
+
+    //italic font size code start here
+
+    const ItalicFontSizeSelect = document.getElementById(
+      "scFontSizeItalicInput"
+    );
+    if (ItalicFontSizeSelect && !ItalicFontSizeSelect.dataset.initialized) {
+      ItalicFontSizeSelect.dataset.initialized = "true";
+
+      ItalicFontSizeSelect.addEventListener("change", (event) => {
+        handleItalicFontSizeClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Font Size applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //italic font weight code start here
+
+    const ItalicFontWeightSelect = document.getElementById(
+      "squareCraftItalicFontWeight"
+    );
+    if (ItalicFontWeightSelect && !ItalicFontWeightSelect.dataset.initialized) {
+      ItalicFontWeightSelect.dataset.initialized = "true";
+
+      ItalicFontWeightSelect.addEventListener("change", (event) => {
+        handleItalicFontWeightClick(event, {
+          lastClickedElement,
+          selectedSingleTextType,
+          addPendingModification,
+          showNotification,
+        });
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Font weight applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //italic font weight code end here
+
+    //Italic text transform code start here
+    const ItalicTextTransformSelect = document.getElementById(
+      "squareCraftItalicTextTransform"
+    );
+    if (
+      ItalicTextTransformSelect &&
+      !ItalicTextTransformSelect.dataset.initialized
+    ) {
+      ItalicTextTransformSelect.dataset.initialized = "true";
+
+      // Add a small delay to ensure the DOM is fully loaded
+      setTimeout(() => {
+        handleItalicTextTransformClick(null, {
+          lastClickedElement,
+          selectedSingleTextType,
+          getTextType,
+          saveModifications,
+          selectedElement,
+          setSelectedElement: (val) => (selectedElement = val),
+          setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+          setLastClickedElement: (val) => (lastClickedElement = val),
+          addPendingModification: (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification,
+        });
+      }, 100);
+    }
+    //Italic text transform code end here
+
+    //Italic text highlight code start here
+    const ItalictextHighlightColorDiv = document.getElementById(
+      "ItalictextHighlightColorPalate"
+    );
+    if (
+      ItalictextHighlightColorDiv &&
+      !ItalictextHighlightColorDiv.dataset.initialized
+    ) {
+      ItalictextHighlightColorDiv.dataset.initialized = "true";
+
+      ItalictextHighlightColorDiv.addEventListener("click", (event) => {
+        handleItalicTextHeighlightClickEvent(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextHighlightClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //Italic text highlight code end here
+
+    //bold text color code start here
+
+    const BoldtextColorDiv = document.getElementById("BoldtextColorPalate");
+    if (BoldtextColorDiv && !BoldtextColorDiv.dataset.initialized) {
+      BoldtextColorDiv.dataset.initialized = "true";
+
+      BoldtextColorDiv.addEventListener("click", (event) => {
+        handleBoldTextColorClick(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextColorClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Bold Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+
+    //bold text color code end here
+
+    //bold text highlight code start here
+    const BoldtextHighlightDiv = document.getElementById(
+      "BoldtextHighlightPalate"
+    );
+    if (BoldtextHighlightDiv && !BoldtextHighlightDiv.dataset.initialized) {
+      BoldtextHighlightDiv.dataset.initialized = "true";
+
+      BoldtextHighlightDiv.addEventListener("click", (event) => {
+        handleBoldTextHighlightClick(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextColorClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+
+        if (selectedSingleTextType) {
+          showNotification(
+            `Bold Text color applied to: ${selectedSingleTextType}`,
+            "success"
+          );
+        }
+      });
+    }
+    //bold text highlight code end here
+
+    //link text highlight code start here
+    // const LinktextHighlightColorDiv = document.getElementById(
+    //   "LinktextHighlightColorPalate"
+    // );
+    // if (
+    //   LinktextHighlightColorDiv &&
+    //   !LinktextHighlightColorDiv.dataset.initialized
+    // ) {
+    //   LinktextHighlightColorDiv.dataset.initialized = "true";
+
+    //   LinktextHighlightColorDiv.addEventListener("click", (event) => {
+    //     handleLinkTextHighlightClick(
+    //       event,
+    //       lastClickedElement,
+    //       applyStylesToElement,
+    //       {
+    //         handleAllTextHighlightClick,
+    //         lastClickedElement,
+    //         selectedSingleTextType,
+    //         addPendingModification,
+    //         showNotification,
+    //       }
+    //     );
+
+    //     if (selectedSingleTextType) {
+    //       showNotification(
+    //         `Text color applied to: ${selectedSingleTextType}`,
+    //         "success"
+    //       );
+    //     }
+    //   });
+    // }
+
+    const LinktextHighlightColorDiv = document.getElementById(
+      "LinktextHighlightColorPalate"
+    );
+    if (
+      LinktextHighlightColorDiv &&
+      !LinktextHighlightColorDiv.dataset.initialized
+    ) {
+      LinktextHighlightColorDiv.dataset.initialized = "true";
+
+      // Remove any existing listeners
+      const newDiv = LinktextHighlightColorDiv.cloneNode(true);
+      LinktextHighlightColorDiv.parentNode.replaceChild(
+        newDiv,
+        LinktextHighlightColorDiv
+      );
+
+      newDiv.addEventListener("click", (event) => {
+        handleLinkTextHighlightClick(
+          event,
+          lastClickedElement,
+          applyStylesToElement,
+          {
+            handleAllTextHighlightClick,
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          }
+        );
+      });
+    }
+    //link text highlight code end here
+
+    //Image border controls
+    // Initialize border controls
+    const ImageBorderAllControls = document.getElementById("imageSection");
+    if (ImageBorderAllControls && !ImageBorderAllControls.dataset.initialized) {
+      ImageBorderAllControls.dataset.initialized = "true";
+
+      ImageBorderAllControls.addEventListener("click", () => {
+        const selectedImage = document.querySelector(".sc-selected-image");
+
+        if (!selectedImage) {
+          showNotification("Please select an image first", "error");
+          return;
+        }
+
+        // ✅ Initialize overlay controls properly
+        // const overlayController = InitImageOverLayControls(themeColors);
+        // overlayController.init(selectedImage);
+
+        const overlayController = InitImageOverLayControls(themeColors, {
+          addPendingModification,
+          saveImageOverlayModifications,
+          token,
+          userId,
+          widgetId,
+        });
+        if (overlayController) {
+          overlayController.init(selectedImage);
+        }
+
+        setTimeout(() => {
+          handleImageBorderControlsClick(null, {
+            getTextType,
+            selectedElement,
+            setSelectedElement: (val) => (selectedElement = val),
+            lastClickedElement,
+            setLastClickedElement: (val) => (lastClickedElement = val),
+            setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+            selectedSingleTextType,
+            setSelectedSingleTextType: (val) => (selectedSingleTextType = val),
+            showNotification,
+            saveModifications,
+            addPendingModification: (blockId, css, tagType) => {
+              if (!pendingModifications.has(blockId)) {
+                pendingModifications.set(blockId, []);
+              }
+              pendingModifications.get(blockId).push({ css, tagType });
+            },
+          });
+        }, 100);
+
+        initImageBorderControls(selectedImage);
+        // initImageShadowControls(selectedImage);
+        initImageShadowControls(() => selectedImage);
+
+        showNotification("Border applied to image", "success");
+      });
+    }
+
+    //Image border controls end here
+
+    //Image overlay controls start here
+    const overlayControls = InitImageOverLayControls(themeColors, {
+      addPendingModification,
+      saveImageOverlayModifications,
+      token,
+      userId,
+      widgetId,
     });
+
+    document.addEventListener("click", (e) => {
+      const block = e.target.closest('[id^="block-"]');
+      if (!block) return;
+
+      console.log("block", block);
+
+      const imageContent = block.querySelector(".sqs-image-content");
+      if (imageContent && overlayControls) {
+        overlayControls.init(block);
+      }
+    });
+
+    //Image overlay controls end here
   });
-  observer.observe(parent.document.body, {
-    childList: true,
-    subtree: true,
+
+  observer.observe(parent.document.body, { childList: true, subtree: true });
+
+  // addHeadingEventListeners();
+
+  try {
+    const { injectNavbarIcon } = await import(
+      "https://goswami34.github.io/squareCraft-widget/injectNavbarIcon.js"
+    );
+    injectNavbarIcon();
+  } catch (error) {
+    console.error("🚨 Failed to load navbar icon script", error);
+  }
+
+  async function toggleWidgetVisibility(event) {
+    event.stopPropagation();
+    const clickedBlock = event?.target?.closest('[id^="block-"]');
+    if (!clickedBlock) {
+      return;
+    }
+
+    if (!widgetLoaded) {
+      await createWidget(clickedBlock);
+      waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
+        .then(() => {
+          handleAndDetect(clickedBlock);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    } else {
+      widgetContainer.style.display =
+        widgetContainer.style.display === "none" ? "block" : "none";
+      waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
+        .then(() => {
+          handleAndDetect(clickedBlock);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    }
+  }
+
+  function handleAndDetect(clickedBlock) {
+    handleBlockClick(
+      { target: clickedBlock },
+      {
+        getTextType,
+        selectedElement,
+        setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+        setSelectedElement: (val) => (selectedElement = val),
+        setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+        setLastClickedElement: (val) => (lastClickedElement = val),
+        setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+        setLastActiveAlignmentElement: (val) =>
+          (lastActiveAlignmentElement = val),
+      }
+    );
+    detectBlockElementTypes(clickedBlock);
+  }
+
+  async function createWidget(clickedBlock) {
+    try {
+      const module = await import(
+        "https://goswami34.github.io/squareCraft-widget/html.js"
+      );
+      const htmlString = module.html();
+
+      if (typeof htmlString === "string" && htmlString.trim().length > 0) {
+        loadWidgetFromString(htmlString, clickedBlock);
+        setTimeout(() => {
+          if (typeof module.initToggleSwitch === "function") {
+            module.initToggleSwitch();
+          }
+        }, 200);
+      }
+    } catch (err) {
+      console.error("🚨 Error loading HTML module:", err);
+    }
+  }
+
+  function waitForElement(selector, timeout = 3000) {
+    return new Promise((resolve, reject) => {
+      const el = document.querySelector(selector);
+      if (el) {
+        resolve(el);
+        return;
+      }
+
+      const observer = new MutationObserver(() => {
+        const el = document.querySelector(selector);
+        if (el) {
+          resolve(el);
+          observer.disconnect();
+        }
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+
+      setTimeout(() => {
+        observer.disconnect();
+        reject(new Error(`Timeout: Element ${selector} not found`));
+      }, timeout);
+    });
+  }
+
+  function loadWidgetFromString(htmlString, clickedBlock) {
+    if (!widgetContainer) {
+      widgetContainer = document.createElement("div");
+      widgetContainer.id = "sc-widget-container";
+      widgetContainer.classList.add(
+        "sc-fixed",
+        "sc-text-color-white",
+        "sc-universal",
+        "sc-z-9999"
+      );
+
+      // ✅ Inject your CSS file before setting innerHTML
+      const styleLink = document.createElement("link");
+      styleLink.rel = "stylesheet";
+      styleLink.type = "text/css";
+      styleLink.href =
+        "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
+      widgetContainer.appendChild(styleLink);
+
+      // ✅ Then set HTML content
+      const contentWrapper = document.createElement("div");
+      contentWrapper.innerHTML = htmlString;
+      widgetContainer.appendChild(contentWrapper);
+      // parentHtmlTabClick();
+
+      widgetContainer.style.display = "block";
+      document.body.appendChild(widgetContainer);
+
+      initImageMaskControls(() => selectedElement);
+      makeWidgetDraggable();
+
+      setTimeout(() => {
+        const placeholders = widgetContainer.querySelectorAll(
+          ".sc-arrow-placeholder"
+        );
+
+        placeholders.forEach((span) => {
+          const isRotate = span.classList.contains("sc-rotate-180");
+          const cloneClassList = Array.from(span.classList);
+          const originalId = span.getAttribute("id") || "";
+          const id =
+            originalId || `sc-arrow-${Math.floor(Math.random() * 10000)}`;
+
+          const svg = createHoverableArrowSVG(id, isRotate);
+          cloneClassList.forEach((cls) => svg.classList.add(cls));
+          span.replaceWith(svg);
+        });
+      }, 100);
+
+      widgetLoaded = true;
+      initImageSectionToggleControls();
+      // initButtonSectionToggleControls();
+      // initImageUploadPreview(() => selectedElement);
+      ButtonAdvanceToggleControls();
+      buttonTooltipControls();
+      initButtonSectionToggleControls();
+      initImageStateTabToggle();
+      WidgetImageHoverToggleControls();
+      initHoverButtonSectionToggleControls();
+      initHoverButtonEffectDropdowns();
+      initImageUploadPreview(() => selectedElement);
+
+      if (clickedBlock) {
+        waitForElement("#typoSection, #imageSection, #buttonSection")
+          .then(() => {
+            handleBlockClick(
+              { target: clickedBlock },
+              {
+                getTextType,
+                selectedElement,
+                setSelectedSingleTextType: (tag) =>
+                  (selectedSingleTextType = tag),
+                setSelectedElement: (val) => (selectedElement = val),
+                setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+                setLastClickedElement: (val) => (lastClickedElement = val),
+                setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+                setLastActiveAlignmentElement: (val) =>
+                  (lastActiveAlignmentElement = val),
+              }
+            );
+            detectBlockElementTypes(clickedBlock);
+          })
+          .catch((error) => {
+            console.error(error.message);
+          });
+      }
+    }
+  }
+
+  function makeWidgetDraggable() {
+    if (!widgetContainer) return;
+    widgetContainer.style.position = "absolute";
+    widgetContainer.style.zIndex = "999";
+    widgetContainer.style.left = "10px";
+    widgetContainer.style.top = "10px";
+    let offsetX = 0,
+      offsetY = 0,
+      isDragging = false;
+    function startDrag(event) {
+      const draggableElement = event.target.closest("#sc-grabbing");
+      if (!draggableElement || event.target.closest(".sc-dropdown")) return;
+      event.preventDefault();
+      isDragging = true;
+      let clientX = event.clientX || event.touches?.[0]?.clientX;
+      let clientY = event.clientY || event.touches?.[0]?.clientY;
+      offsetX = clientX - widgetContainer.getBoundingClientRect().left;
+      offsetY = clientY - widgetContainer.getBoundingClientRect().top;
+      document.addEventListener("mousemove", moveAt);
+      document.addEventListener("mouseup", stopDragging);
+      document.addEventListener("touchmove", moveAt);
+      document.addEventListener("touchend", stopDragging);
+    }
+    function moveAt(event) {
+      if (!isDragging) return;
+      let clientX = event.clientX || event.touches?.[0]?.clientX;
+      let clientY = event.clientY || event.touches?.[0]?.clientY;
+      const newX = clientX - offsetX;
+      const newY = clientY - offsetY;
+      widgetContainer.style.left = `${newX}px`;
+      widgetContainer.style.top = `${newY}px`;
+    }
+    function stopDragging() {
+      isDragging = false;
+      document.removeEventListener("mousemove", moveAt);
+      document.removeEventListener("mouseup", stopDragging);
+      document.removeEventListener("touchmove", moveAt);
+      document.removeEventListener("touchend", stopDragging);
+    }
+    widgetContainer.removeEventListener("mousedown", startDrag);
+    widgetContainer.removeEventListener("touchstart", startDrag);
+    widgetContainer.addEventListener("mousedown", startDrag);
+    widgetContainer.addEventListener("touchstart", startDrag);
+  }
+
+  document.body.addEventListener("click", (e) => {
+    const isInsideWidget = widgetContainer?.contains(e.target);
+    const isToolbarIcon = e.target.closest(".sc-toolbar-icon");
+    const isHiddenInput =
+      e.target.tagName === "INPUT" && e.target.type === "file";
+
+    if (
+      !isInsideWidget &&
+      !isToolbarIcon &&
+      !isHiddenInput &&
+      widgetContainer?.style.display === "block"
+    ) {
+      widgetContainer.style.display = "none";
+    }
   });
+
+  function adjustWidgetPosition() {
+    if (!widgetContainer) return;
+
+    if (window.innerWidth <= 768) {
+      widgetContainer.style.left = "auto";
+      widgetContainer.style.right = "0px";
+      widgetContainer.style.top = "100px";
+    }
+  }
+
+  window.addEventListener("resize", adjustWidgetPosition);
+  adjustWidgetPosition();
+
+  function injectIcon() {
+    async function waitForTargets(selector, maxRetries = 10, delay = 500) {
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        const elements = parent.document.querySelectorAll(selector);
+        if (elements.length > 0) return elements;
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+      console.warn("⏱️ Timeout: Target elements not found:", selector);
+      return [];
+    }
+
+    async function injectIconIntoTargetElements() {
+      const targets = await waitForTargets(
+        ".tidILMJ7AVANuKwS:not(.sc-processed)"
+      );
+
+      targets.forEach((element) => {
+        element.classList.add("sc-processed");
+
+        const deleteButton = element.querySelector('[aria-label="Remove"]');
+        if (!deleteButton) {
+          console.warn("❌ Delete button not found, skipping:", element);
+          return;
+        }
+
+        if (element.querySelector(".sc-toolbar-icon")) return;
+
+        const clonedIcon = document.createElement("img");
+        clonedIcon.src = "https://i.ibb.co.com/kg9fn02s/Frame-33.png";
+        clonedIcon.alt = "sc";
+        clonedIcon.classList.add("sc-toolbar-icon", "sc-z-99999");
+        Object.assign(clonedIcon.style, {
+          width: "35px",
+          height: "35px",
+          borderRadius: "20%",
+          cursor: "pointer",
+          backgroundColor: "white",
+          marginLeft: "6px",
+        });
+
+        deleteButton.parentNode.insertBefore(
+          clonedIcon,
+          deleteButton.nextSibling
+        );
+
+        clonedIcon.addEventListener("click", function (event) {
+          event.stopPropagation();
+          event.preventDefault();
+          toggleWidgetVisibility(event);
+          if (!widgetLoaded) {
+            createWidget().then(() => {
+              widgetContainer = document.getElementById("sc-widget-container");
+              if (widgetContainer) {
+                widgetContainer.style.display = "block";
+              } else {
+                console.error("❌ Widget container not found after creation.");
+              }
+            });
+          } else {
+            widgetContainer.style.display =
+              widgetContainer.style.display === "none" ? "block" : "none";
+          }
+        });
+      });
+    }
+
+    injectIconIntoTargetElements(); // run once at startup
+
+    const observer = new MutationObserver(() => {
+      injectIconIntoTargetElements();
+    });
+    observer.observe(parent.document.body, { childList: true, subtree: true });
+
+    const iframe = document.querySelector("iframe");
+    if (iframe) {
+      iframe.contentWindow.document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("sc-admin-icon")) {
+          event.stopPropagation();
+          event.preventDefault();
+          toggleWidgetVisibility(event);
+        }
+      });
+    }
+  }
+
+  function waitForNavBar(attempts = 0) {
+    if (attempts > 10) {
+      console.error("❌ Failed to find Squarespace nav bar.");
+      return;
+    }
+    const nav = parent.document.querySelector("ul.css-1tn5iw9");
+    if (!nav) {
+      setTimeout(() => waitForNavBar(attempts + 1), 500);
+    } else {
+      injectIcon();
+    }
+  }
+
+  waitForNavBar();
+  function checkView() {
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+      moveWidgetToMobileContainer();
+    } else {
+      moveWidgetToDesktop();
+    }
+  }
+
+  function moveWidgetToMobileContainer() {
+    if (!widgetContainer) return;
+
+    const mobileContainer = parent.document.querySelector(
+      'div[data-test="mouse-catcher-right-of-frame"].right-scroll-and-hover-catcher.js-space-around-frame'
+    );
+
+    if (mobileContainer) {
+      const existingLink = parent.document.querySelector(
+        'link[href="https://goswami34.github.io/squareCraft-widget/src/styles/parent.css"]'
+      );
+
+      if (!existingLink) {
+        const link = parent.document.createElement("link");
+        link.rel = "stylesheet";
+        link.type = "text/css";
+        link.href =
+          "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
+        parent.document.head.appendChild(link);
+      }
+
+      mobileContainer.classList.add("sc-relative");
+
+      widgetContainer.style.position = "absolute";
+      widgetContainer.style.right = "11%";
+      widgetContainer.style.top = "50%";
+      widgetContainer.style.transform = "translateY(-50%)";
+
+      mobileContainer.appendChild(widgetContainer);
+    } else {
+      console.warn(
+        "❌ Mobile container not found. Widget remains in default location."
+      );
+    }
+  }
+
+  fetchModifications();
+  // fetchImageModifications(lastClickedBlockId);
+  if (lastClickedBlockId) {
+    fetchImageModifications(lastClickedBlockId);
+  } else {
+    // Retry after a short delay until it gets set
+    let retries = 5;
+    const retryInterval = setInterval(() => {
+      if (lastClickedBlockId) {
+        fetchImageModifications(lastClickedBlockId);
+        clearInterval(retryInterval);
+      }
+
+      // if (lastClickedBlockId) {
+      //   fetchImageOverlayModifications(lastClickedBlockId);
+      // }
+      if (--retries <= 0) clearInterval(retryInterval);
+    }, 300);
+  }
+
+  console.log("lastClickedBlockId", lastClickedBlockId);
+
+  if (lastClickedBlockId) {
+    fetchImageOverlayModifications(lastClickedBlockId);
+  } else {
+    // Retry after a short delay until it gets set
+    let retries = 5;
+    const retryInterval = setInterval(() => {
+      if (lastClickedBlockId) {
+        fetchImageOverlayModifications(lastClickedBlockId);
+        clearInterval(retryInterval);
+      }
+
+      // if (lastClickedBlockId) {
+      //   fetchImageOverlayModifications(lastClickedBlockId);
+      // }
+      if (--retries <= 0) clearInterval(retryInterval);
+    }, 300);
+  }
+
+  if (lastClickedBlockId) {
+    fetchImageShadowModifications(lastClickedBlockId);
+  } else {
+    // Retry after a short delay until it gets set
+    let retries = 5;
+    const retryInterval = setInterval(() => {
+      if (lastClickedBlockId) {
+        fetchImageShadowModifications(lastClickedBlockId);
+        clearInterval(retryInterval);
+      }
+
+      // if (lastClickedBlockId) {
+      //   fetchImageOverlayModifications(lastClickedBlockId);
+      // }
+      if (--retries <= 0) clearInterval(retryInterval);
+    }, 300);
+  }
 
   function addPendingModification(blockId, css, tagType) {
     if (!pendingModifications.has(blockId)) {
       pendingModifications.set(blockId, []);
     }
+  }
+
+  function moveWidgetToDesktop() {
+    if (!widgetContainer) return;
+
+    document.body.appendChild(widgetContainer);
   }
 
   checkView();
