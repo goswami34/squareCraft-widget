@@ -2240,7 +2240,7 @@ export function initButtonBorderResetHandlers(
 
 setTimeout(() => {
   if (typeof window.syncButtonStylesFromElement === "function") {
-    window.syncButtonStylesFromElement(getSelectedElement);
+    window.syncButtonStylesFromElement(getSelectedElement());
   }
 
   if (typeof initButtonBorderRadiusControl === "function") {
