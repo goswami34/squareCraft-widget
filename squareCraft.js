@@ -546,27 +546,34 @@ let pendingModifications = new Map();
         },
         showNotification
       );
-      
+
       // Initialize button color palette toggle
-      const buttonFontColorTrigger = document.getElementById("buttonFontColorPalate");
-      const buttonFontColorPalette = document.getElementById("button-font-color-palette");
-      
+      const buttonFontColorTrigger = document.getElementById(
+        "buttonFontColorPalate"
+      );
+      const buttonFontColorPalette = document.getElementById(
+        "button-font-color-palette"
+      );
+
       console.log("🔍 Button color palette elements:", {
         trigger: !!buttonFontColorTrigger,
         palette: !!buttonFontColorPalette,
         triggerElement: buttonFontColorTrigger,
-        paletteElement: buttonFontColorPalette
+        paletteElement: buttonFontColorPalette,
       });
-      
+
       if (buttonFontColorTrigger && buttonFontColorPalette) {
         // Remove any existing listeners to prevent duplicates
-        buttonFontColorTrigger.removeEventListener("click", buttonFontColorTrigger._clickHandler);
-        
+        buttonFontColorTrigger.removeEventListener(
+          "click",
+          buttonFontColorTrigger._clickHandler
+        );
+
         buttonFontColorTrigger._clickHandler = (event) => {
           event.stopPropagation();
           console.log("🎨 Button color palette clicked!");
           buttonFontColorPalette.classList.toggle("sc-hidden");
-          
+
           // Load palette after toggle
           setTimeout(() => {
             initButtonFontColorPaletteToggle(
@@ -577,24 +584,30 @@ let pendingModifications = new Map();
             );
           }, 50);
         };
-        
-        buttonFontColorTrigger.addEventListener("click", buttonFontColorTrigger._clickHandler);
-        
+
+        buttonFontColorTrigger.addEventListener(
+          "click",
+          buttonFontColorTrigger._clickHandler
+        );
+
         // Close palette when clicking outside
         document.addEventListener("click", (event) => {
-          if (!buttonFontColorTrigger.contains(event.target) && !buttonFontColorPalette.contains(event.target)) {
+          if (
+            !buttonFontColorTrigger.contains(event.target) &&
+            !buttonFontColorPalette.contains(event.target)
+          ) {
             buttonFontColorPalette.classList.add("sc-hidden");
           }
         });
-        
+
         console.log("✅ Button color palette initialized successfully");
       } else {
         console.warn("⚠️ Button color palette elements not found");
       }
-      
+
       // Ensure all button section toggle controls are initialized
       initButtonSectionToggleControls();
-      
+
       initButtonIconPositionToggle(
         () => selectedElement,
         saveButtonModifications,
@@ -2044,70 +2057,6 @@ let pendingModifications = new Map();
 
       const elements = result.elements || [];
 
-      // elements.forEach(({ elementId, css }) => {
-      //   let styleBlock = css?.image;
-      //   let selector = `#${elementId} div.sqs-image-content`;
-
-      //   if (styleBlock?.styles) {
-      //     selector = styleBlock.selector || selector;
-      //     styleBlock = styleBlock.styles;
-      //   }
-
-      //   if (!styleBlock || typeof styleBlock !== "object") return;
-
-      //   const styleTagId = `sc-style-${elementId}`;
-      //   let styleTag = document.getElementById(styleTagId);
-      //   if (!styleTag) {
-      //     styleTag = document.createElement("style");
-      //     styleTag.id = styleTagId;
-      //     document.head.appendChild(styleTag);
-      //   }
-
-      //   // 🧼 Optional: Clear all sides if main border-width is used
-      //   const hasShorthandWidth = styleBlock["border-width"];
-      //   if (hasShorthandWidth) {
-      //     delete styleBlock["border-top-width"];
-      //     delete styleBlock["border-bottom-width"];
-      //     delete styleBlock["border-left-width"];
-      //     delete styleBlock["border-right-width"];
-      //   }
-
-      //   // let cssText = `${selector} {`;
-      //   // Object.entries(styleBlock).forEach(([prop, value]) => {
-      //   //   if (value !== null && value !== undefined && value !== "null") {
-      //   //     cssText += `${prop}: ${value} !important; `;
-      //   //   }
-      //   // });
-      //   // cssText += "}";
-
-      //   // styleTag.textContent = cssText;
-
-      //   // const block = document.getElementById(elementId);
-      //   // if (block) block.classList.add("sc-image-styled");
-
-      //   // ✅ Apply optional imageTag styles (img-level styles)
-      //   const imageTagBlock = css?.imageTag;
-      //   if (imageTagBlock?.selector && imageTagBlock?.styles) {
-      //     const imgTagId = `sc-img-style-${elementId}`;
-      //     let imgTag = document.getElementById(imgTagId);
-      //     if (!imgTag) {
-      //       imgTag = document.createElement("style");
-      //       imgTag.id = imgTagId;
-      //       document.head.appendChild(imgTag);
-      //     }
-
-      //     let imgCSS = `${imageTagBlock.selector} {`;
-      //     Object.entries(imageTagBlock.styles).forEach(([prop, val]) => {
-      //       if (val !== null && val !== undefined && val !== "null") {
-      //         imgCSS += `${prop}: ${val} !important; `;
-      //       }
-      //     });
-      //     imgCSS += "}";
-
-      //     imgTag.textContent = imgCSS;
-      //   }
-      // });
-
       elements.forEach(({ elementId, css }) => {
         // --- Apply main block styles ---
         const imageStyles = css?.image?.styles || css?.image || {};
@@ -2156,88 +2105,6 @@ let pendingModifications = new Map();
 
         const block = document.getElementById(elementId);
         if (block) block.classList.add("sc-image-styled");
-
-        ///////// this is new code
-
-        // ✅ Sync UI controls with restored styles
-        // const styleValues = css?.image?.styles || {};
-        // const blockElement = document.getElementById(elementId);
-        // if (!blockElement) return;
-
-        // const imageContent = blockElement.querySelector(
-        //   "div.sqs-image-content"
-        // );
-        // if (!imageContent) return;
-
-        // // Select this image for syncing controls
-        // document.querySelectorAll(".sqs-image-content").forEach((img) => {
-        //   img.classList.remove("sc-selected-image");
-        // });
-        // imageContent.classList.add("sc-selected-image");
-
-        // // ✅ Border Width Sync
-        // const bw = styleValues["border-width"];
-        // if (bw && document.getElementById("radiousField")) {
-        //   const width = parseInt(bw);
-        //   const slider = document.getElementById("radiousField");
-        //   const bullet = document.getElementById("radiousBullet");
-        //   const fill = document.getElementById("radiousFill");
-        //   const display = document.getElementById("radiousCount");
-
-        //   const sliderWidth = slider.offsetWidth;
-        //   const percent = width / 100;
-        //   const px = percent * sliderWidth;
-
-        //   bullet.style.left = `${px}px`;
-        //   bullet.style.transform = "translateX(-50%)";
-        //   fill.style.width = `${px}px`;
-        //   display.textContent = `${width}px`;
-        // }
-
-        // // ✅ Border Color Sync
-        // const color = styleValues["border-color"];
-        // if (color) {
-        //   const code = document.getElementById("color-code");
-        //   if (code) code.textContent = color;
-        // }
-
-        // // ✅ Border Style Sync
-        // const style = styleValues["border-style"];
-        // const styleBtnMap = {
-        //   solid: "borderStyleSolid",
-        //   dashed: "borderStyleDashed",
-        //   dotted: "borderStyleDotted",
-        // };
-        // if (style && styleBtnMap[style]) {
-        //   const btn = document.getElementById(styleBtnMap[style]);
-        //   if (btn) {
-        //     document
-        //       .querySelectorAll(
-        //         "#borderStyleSolid, #borderStyleDashed, #borderStyleDotted"
-        //       )
-        //       .forEach((b) => b.classList.remove("sc-bg-454545"));
-        //     btn.classList.add("sc-bg-454545");
-        //   }
-        // }
-
-        // // ✅ Border Radius Sync (main/all)
-        // const radius = styleValues["border-radius"];
-        // if (radius && document.getElementById("radiusField")) {
-        //   const r = parseInt(radius);
-        //   const slider = document.getElementById("radiusField");
-        //   const bullet = document.getElementById("radiusBullet");
-        //   const fill = document.getElementById("radiusFill");
-        //   const display = document.getElementById("radiusCountAnother");
-
-        //   const sliderWidth = slider.offsetWidth;
-        //   const percent = r / 100;
-        //   const px = percent * sliderWidth;
-
-        //   bullet.style.left = `${px}px`;
-        //   bullet.style.transform = "translateX(-50%)";
-        //   fill.style.width = `${px}px`;
-        //   display.textContent = `${r}px`;
-        // }
       });
 
       console.log("✅ Applied styles to all image elements");
@@ -2302,7 +2169,6 @@ let pendingModifications = new Map();
             data
           );
 
-          // FIX: Use data.elements, not data.modifications
           if (data && data.elements) {
             data.elements.forEach((element) => {
               if (element.elementId === elementId && element.overlayCSS) {
@@ -4175,46 +4041,56 @@ let pendingModifications = new Map();
 
   // Ensure all button section toggle controls are initialized
   initButtonSectionToggleControls();
-  
+
   // Initialize button color palette toggle with retry mechanism
   function initializeButtonColorPalette() {
-    const buttonFontColorTrigger = document.getElementById("buttonFontColorPalate");
-    const buttonFontColorPalette = document.getElementById("button-font-color-palette");
-    
+    const buttonFontColorTrigger = document.getElementById(
+      "buttonFontColorPalate"
+    );
+    const buttonFontColorPalette = document.getElementById(
+      "button-font-color-palette"
+    );
+
     console.log("🔍 Button color palette elements:", {
       trigger: !!buttonFontColorTrigger,
       palette: !!buttonFontColorPalette,
       triggerElement: buttonFontColorTrigger,
-      paletteElement: buttonFontColorPalette
+      paletteElement: buttonFontColorPalette,
     });
-    
+
     if (buttonFontColorTrigger && buttonFontColorPalette) {
       // Remove any existing listeners to prevent duplicates
-      buttonFontColorTrigger.removeEventListener("click", buttonFontColorTrigger._clickHandler);
-      
+      buttonFontColorTrigger.removeEventListener(
+        "click",
+        buttonFontColorTrigger._clickHandler
+      );
+
       buttonFontColorTrigger._clickHandler = (event) => {
         event.stopPropagation();
         console.log("🎨 Button color palette clicked!");
         buttonFontColorPalette.classList.toggle("sc-hidden");
-        
+
         // Load palette after toggle - use the correct function for button colors
         setTimeout(() => {
-          initButtonFontColorPaletteToggle(
-            themeColors,
-            selectedElement
-          );
+          initButtonFontColorPaletteToggle(themeColors, selectedElement);
         }, 50);
       };
-      
-      buttonFontColorTrigger.addEventListener("click", buttonFontColorTrigger._clickHandler);
-      
+
+      buttonFontColorTrigger.addEventListener(
+        "click",
+        buttonFontColorTrigger._clickHandler
+      );
+
       // Close palette when clicking outside
       document.addEventListener("click", (event) => {
-        if (!buttonFontColorTrigger.contains(event.target) && !buttonFontColorPalette.contains(event.target)) {
+        if (
+          !buttonFontColorTrigger.contains(event.target) &&
+          !buttonFontColorPalette.contains(event.target)
+        ) {
           buttonFontColorPalette.classList.add("sc-hidden");
         }
       });
-      
+
       console.log("✅ Button color palette initialized successfully");
       return true;
     } else {
@@ -4222,7 +4098,7 @@ let pendingModifications = new Map();
       return false;
     }
   }
-  
+
   // Try to initialize immediately, then retry if needed
   if (!initializeButtonColorPalette()) {
     // Retry after a short delay
