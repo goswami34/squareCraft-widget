@@ -7,28 +7,28 @@ export function initShadowColorPalate(
   prefix = "",
   saveImageShadowModifications
 ) {
-  const palette = document.getElementById(`${prefix}imageFontColorPalate`);
-  const container = document.getElementById(`${prefix}button-border-colors`);
-  const selectorField = document.getElementById(
-    `${prefix}button-color-selection-field`
-  );
-  const bullet = document.getElementById(`${prefix}button-color-selection-bar`);
-  const colorCode = document.getElementById(`${prefix}button-color-code`);
+  // Use image-specific IDs instead of relying on prefix
+  const palette = document.getElementById("imageFontColorPalate");
+  const container = document.getElementById("image-border-colors");
+  const selectorField = document.getElementById("image-color-selection-field");
+  const bullet = document.getElementById("image-color-selection-bar");
+  const colorCode = document.getElementById("image-color-code");
   const transparencyCount = document.getElementById(
-    `${prefix}button-color-transparency-count`
+    "image-color-transparency-count"
   );
   const allColorField = document.getElementById(
-    `${prefix}button-all-color-selection-field`
+    "image-all-color-selection-field"
   );
   const allColorBullet = document.getElementById(
-    `${prefix}button-all-color-selection-bar`
+    "image-all-color-selection-bar"
   );
   const transparencyField = document.getElementById(
-    `${prefix}button-color-transparency-field`
+    "image-color-transparency-field"
   );
   const transparencyBullet = document.getElementById(
-    `${prefix}button-color-transparency-bar`
+    "image-color-transparency-bar"
   );
+  const paletteContainer = document.getElementById("image-font-color-palette");
 
   function updateTransparencyField(hue) {
     if (transparencyField) {
