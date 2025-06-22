@@ -40,6 +40,39 @@ let pendingModifications = new Map();
     return document.querySelectorAll(selector);
   }
 
+  // show notification start here
+  function showNotification(message, type = "info") {
+    const notification = document.createElement("div");
+    notification.className = `sc-notification sc-${type}`;
+    notification.textContent = message;
+
+    // Style the notification
+    Object.assign(notification.style, {
+      position: "fixed",
+      top: "20px",
+      right: "20px",
+      padding: "10px 20px",
+      borderRadius: "4px",
+      zIndex: "10000",
+      color: "white",
+      backgroundColor: type === "error" ? "#ff4444" : "#4CAF50",
+      boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+      transition: "opacity 0.3s ease-in-out",
+    });
+
+    document.body.appendChild(notification);
+
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+      notification.style.opacity = "0";
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 300);
+    }, 3000);
+  }
+
+  // show notification end here
+
   let selectedElement = null;
   let widgetContainer = null;
 
@@ -3708,7 +3741,7 @@ let pendingModifications = new Map();
       ButtonAdvanceToggleControls();
       buttonTooltipControls();
       initButtonSectionToggleControls();
-      WidgetTypoSectionStateControls();
+      // WidgetTypoSectionStateControls();
       initImageStateTabToggle();
       WidgetImageHoverToggleControls();
       initHoverTypoTabControls([
