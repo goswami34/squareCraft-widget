@@ -185,6 +185,7 @@
 export async function handleBlockClick(event, context) {
   const {
     getTextType,
+    getHoverTextType,
     setSelectedElement,
     selectedElement,
     setLastClickedBlockId,
@@ -192,10 +193,8 @@ export async function handleBlockClick(event, context) {
     setLastAppliedAlignment,
     setLastActiveAlignmentElement,
   } = context;
-
   const block = event.target.closest('[id^="block-"]');
   if (!block) return;
-
   if (selectedElement && selectedElement !== block) {
     selectedElement.style.outline = "";
     selectedElement.classList.remove("sc-selected");
@@ -205,10 +204,8 @@ export async function handleBlockClick(event, context) {
       el.style.padding = "";
     });
   }
-
   setSelectedElement(block);
   block.classList.add("sc-selected");
-
   if (typeof window.syncButtonStylesFromElement === "function") {
     window.syncButtonStylesFromElement(block);
   }
@@ -218,10 +215,8 @@ export async function handleBlockClick(event, context) {
   if (typeof window.updateActiveButtonBars === "function") {
     window.updateActiveButtonBars();
   }
-
   setLastClickedBlockId(block.id);
   setLastClickedElement(block);
-
   let appliedTextAlign = window.getComputedStyle(block).textAlign;
   if (!appliedTextAlign || appliedTextAlign === "start") {
     const nested = block.querySelector("h1,h2,h3,h4,p");
@@ -229,7 +224,6 @@ export async function handleBlockClick(event, context) {
       appliedTextAlign = window.getComputedStyle(nested).textAlign;
     }
   }
-
   if (appliedTextAlign) {
     setLastAppliedAlignment(appliedTextAlign);
     const map = {
@@ -245,7 +239,6 @@ export async function handleBlockClick(event, context) {
       setLastActiveAlignmentElement(activeIcon);
     }
   }
-
   const allParts = [
     "heading1Part",
     "heading2Part",
@@ -266,7 +259,6 @@ export async function handleBlockClick(event, context) {
   ];
   const visibleParts = new Set();
   const innerTextElements = block.querySelectorAll("h1,h2,h3,h4,p");
-
   innerTextElements.forEach((el) => {
     const tag = el.tagName.toLowerCase();
     const result = getTextType(tag, el);
@@ -277,21 +269,17 @@ export async function handleBlockClick(event, context) {
       el.style.padding = "2px 4px";
     }
   });
-
   await waitForPartsAndTabsReady(allParts, allTabs);
-
   allParts.forEach((id) => {
     const part = document.getElementById(id);
     if (part) {
       part.classList.toggle("sc-hidden", !visibleParts.has(id));
     }
   });
-
   visibleParts.forEach((partId) => {
     const typeId = partId.replace("Part", "");
     const tab = document.getElementById(typeId);
     if (!tab) return;
-
     tab.onmouseenter = () => {
       const b = document.getElementById(block.id);
       const t = typeId.startsWith("heading")
@@ -304,7 +292,49 @@ export async function handleBlockClick(event, context) {
         }
       });
     };
-
+    tab.onmouseleave = () => {
+      const b = document.getElementById(block.id);
+      b.querySelectorAll("h1,h2,h3,h4,p").forEach((el) => {
+        el.style.outline = "";
+      });
+    };
+  });
+  const hoverParts = allParts.map((id) => `hover-${id}`);
+  const hoverTabs = allTabs.map((id) => `hover-${id}`);
+  const visibleHoverParts = new Set();
+  innerTextElements.forEach((el) => {
+    const tag = el.tagName.toLowerCase();
+    const result = getHoverTextType(tag, el);
+    if (result) {
+      visibleHoverParts.add(`hover-${result.type}Part`);
+      el.style.border = `1px dashed ${result.borderColor}`;
+      el.style.borderRadius = "4px";
+      el.style.padding = "2px 4px";
+    }
+  });
+  await waitForPartsAndTabsReady(hoverParts, hoverTabs);
+  hoverParts.forEach((id) => {
+    const part = document.getElementById(id);
+    if (part) {
+      part.classList.toggle("sc-hidden", !visibleHoverParts.has(id));
+    }
+  });
+  visibleHoverParts.forEach((partId) => {
+    const typeId = partId.replace("hover-", "").replace("Part", "");
+    const tab = document.getElementById(`hover-${typeId}`);
+    if (!tab) return;
+    tab.onmouseenter = () => {
+      const b = document.getElementById(block.id);
+      const t = typeId.startsWith("heading")
+        ? `h${typeId.replace("heading", "")}`
+        : "p";
+      b.querySelectorAll(t).forEach((el) => {
+        const r = getHoverTextType(t, el);
+        if (r?.type === typeId) {
+          el.style.outline = `2px dashed ${r.borderColor}`;
+        }
+      });
+    };
     tab.onmouseleave = () => {
       const b = document.getElementById(block.id);
       b.querySelectorAll("h1,h2,h3,h4,p").forEach((el) => {
@@ -313,7 +343,6 @@ export async function handleBlockClick(event, context) {
     };
   });
 }
-
 async function waitForPartsAndTabsReady(allParts, allTabs) {
   for (let attempt = 0; attempt < 10; attempt++) {
     const partsReady = allParts.every((id) => document.getElementById(id));
