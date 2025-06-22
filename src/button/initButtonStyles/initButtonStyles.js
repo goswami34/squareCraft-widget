@@ -2264,17 +2264,17 @@ setTimeout(() => {
   document.getElementById("buttonBorderTypeSolid")?.click();
 }, 100);
 
-import { initButtonFontColorPaletteToggle } from "https://goswami34.github.io/squareCraft-widget/src/button/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js";
+// import { initButtonFontColorPaletteToggle } from "https://goswami34.github.io/squareCraft-widget/src/button/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js";
 
-// Example themeColors object (replace with your actual theme colors)
-const themeColors = {
-  color1: "#EF7C2F",
-  color2: "#363544",
-  color3: "#FF0000",
-  // ...add more as needed
-};
+// // Example themeColors object (replace with your actual theme colors)
+// const themeColors = {
+//   color1: "#EF7C2F",
+//   color2: "#363544",
+//   color3: "#FF0000",
+//   // ...add more as needed
+// };
 
-// Ensure this runs after the HTML is rendered
-setTimeout(() => {
-  initButtonFontColorPaletteToggle(themeColors, getSelectedElement);
-}, 0);
+// // Ensure this runs after the HTML is rendered
+// setTimeout(() => {
+//   initButtonFontColorPaletteToggle(themeColors, getSelectedElement);
+// }, 0);
