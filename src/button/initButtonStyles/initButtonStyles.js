@@ -2264,29 +2264,42 @@ export function initButtonBorderResetHandlers(
 //   document.getElementById("buttonBorderTypeSolid")?.click();
 // }, 100);
 
+// setTimeout(() => {
+//   if (typeof window.syncButtonStylesFromElement === "function") {
+//     window.syncButtonStylesFromElement(getSelectedElement());
+//   }
+
+//   if (typeof initButtonBorderRadiusControl === "function") {
+//     initButtonBorderRadiusControl(
+//       getSelectedElement,
+//       addPendingModification,
+//       showNotification,
+//       saveButtonModifications
+//     );
+//   }
+
+//   if (typeof initButtonBorderTypeToggle === "function") {
+//     initButtonBorderTypeToggle(
+//       getSelectedElement,
+//       addPendingModification,
+//       showNotification,
+//       saveButtonModifications
+//     );
+//   }
+
+//   document.getElementById("buttonBorderTypeSolid")?.click();
+// }, 100);
+
 setTimeout(() => {
   if (typeof window.syncButtonStylesFromElement === "function") {
-    window.syncButtonStylesFromElement(getSelectedElement());
+    window.syncButtonStylesFromElement(getSelectedElement);
   }
-
   if (typeof initButtonBorderRadiusControl === "function") {
-    initButtonBorderRadiusControl(
-      getSelectedElement,
-      addPendingModification,
-      showNotification,
-      saveButtonModifications
-    );
+    initButtonBorderRadiusControl(getSelectedElement);
   }
-
   if (typeof initButtonBorderTypeToggle === "function") {
-    initButtonBorderTypeToggle(
-      getSelectedElement,
-      addPendingModification,
-      showNotification,
-      saveButtonModifications
-    );
+    initButtonBorderTypeToggle(getSelectedElement);
   }
-
   document.getElementById("buttonBorderTypeSolid")?.click();
 }, 100);
 
