@@ -426,15 +426,52 @@ let pendingModifications = new Map();
 
       // Load palette after toggle
       setTimeout(() => {
-        initShadowColorPalate(
+        initButtonFontColorPaletteToggle(
           themeColors,
           () => selectedElement,
-          "",
-          saveImageShadowModifications
+          saveButtonModifications,
+          (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification
         );
-        // initOverLayColorPalate(themeColors, () => selectedElement);
       }, 50);
     });
+
+    // Add trigger for image shadow color palette
+    const triggerShadowOne = document.getElementById("imageFontColorPalate");
+    const paletteShadowOne = document.getElementById(
+      "image-font-color-palette"
+    );
+
+    if (triggerShadowOne && paletteShadowOne) {
+      triggerShadowOne.addEventListener("click", () => {
+        paletteShadowOne.classList.toggle("sc-hidden");
+
+        // Load palette after toggle
+        setTimeout(() => {
+          initShadowColorPalate(
+            themeColors,
+            () => selectedElement,
+            "",
+            saveImageShadowModifications
+          );
+        }, 50);
+      });
+
+      // Close palette when clicking outside
+      document.addEventListener("click", (e) => {
+        if (
+          !triggerShadowOne.contains(e.target) &&
+          !paletteShadowOne.contains(e.target)
+        ) {
+          paletteShadowOne.classList.add("sc-hidden");
+        }
+      });
+    }
 
     const triggerOverLayOne = document.getElementById("overLayFontColorPalate");
     const paletteOverLayOne = document.getElementById("overlay-color-palette");
@@ -3613,7 +3650,7 @@ let pendingModifications = new Map();
       ButtonAdvanceToggleControls();
       buttonTooltipControls();
       initButtonSectionToggleControls();
-      initImageStateTabToggle();
+      initImageSectionToggleControls();
       WidgetImageHoverToggleControls();
       initHoverButtonSectionToggleControls();
       initHoverButtonEffectDropdowns();
