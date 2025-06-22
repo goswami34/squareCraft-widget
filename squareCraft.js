@@ -3594,6 +3594,31 @@ let pendingModifications = new Map();
     });
   }
 
+  function createHoverableArrowSVG(id, isRotate = false) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "12");
+    svg.setAttribute("height", "12");
+    svg.setAttribute("viewBox", "0 0 12 12");
+    svg.setAttribute("fill", "none");
+    svg.id = id;
+    svg.classList.add("sc-hover-arrow", "sc-arrow-trigger");
+
+    if (isRotate) {
+      svg.classList.add("sc-rotate-180");
+    }
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M2.5 4L6 7.5L9.5 4");
+    path.setAttribute("stroke", "currentColor");
+    path.setAttribute("stroke-width", "1.5");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
+    path.id = "Vector 175";
+
+    svg.appendChild(path);
+    return svg;
+  }
+
   function loadWidgetFromString(htmlString, clickedBlock) {
     if (!widgetContainer) {
       widgetContainer = document.createElement("div");
@@ -3651,7 +3676,6 @@ let pendingModifications = new Map();
       buttonTooltipControls();
       initButtonSectionToggleControls();
       initImageSectionToggleControls();
-      WidgetImageHoverToggleControls();
       initHoverButtonSectionToggleControls();
       initHoverButtonEffectDropdowns();
       initImageUploadPreview(() => selectedElement);
