@@ -2029,7 +2029,7 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageModifications(blockId = null) {
+  async function fetchImageModifications() {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -2116,7 +2116,7 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageOverlayModifications(blockId = null) {
+  async function fetchImageOverlayModifications() {
     try {
       const userId = localStorage.getItem("sc_u_id");
       const token = localStorage.getItem("sc_auth_token");
@@ -2133,9 +2133,9 @@ let pendingModifications = new Map();
       }
 
       // Get all image blocks on the page
-      const imageBlocks = blockId
-        ? [document.getElementById(blockId)].filter(Boolean)
-        : document.querySelectorAll('[id^="block-yui_3_17_2_1_"]');
+      const imageBlocks = document.querySelectorAll(
+        '[id^="block-yui_3_17_2_1_"]'
+      );
       console.log("Found image blocks:", imageBlocks);
 
       // Fetch modifications for each image block
@@ -2229,7 +2229,7 @@ let pendingModifications = new Map();
     }
   }
 
-  async function fetchImageShadowModifications(blockId = null) {
+  async function fetchImageShadowModifications() {
     try {
       const token = localStorage.getItem("sc_auth_token");
       const userId = localStorage.getItem("sc_u_id");
@@ -2240,10 +2240,8 @@ let pendingModifications = new Map();
         ?.getAttribute("data-page-sections");
 
       // Only select blocks that actually contain an image
-      const blocksToProcess = blockId
-        ? [document.getElementById(blockId)].filter(Boolean)
-        : Array.from(document.querySelectorAll('[id^="block-"]'));
-      const imageBlocks = blocksToProcess.filter((block) =>
+      const allBlocks = document.querySelectorAll('[id^="block-"]');
+      const imageBlocks = Array.from(allBlocks).filter((block) =>
         block.querySelector("img")
       );
 
@@ -2604,30 +2602,29 @@ let pendingModifications = new Map();
     }
   });
 
-  const observer = new MutationObserver(async () => {
-    observer.disconnect();
+  const observer = new MutationObserver(() => {
     // addHeadingEventListeners();
-    await fetchModifications();
+    fetchModifications();
     // fetchImageModifications(lastClickedBlockId);
     const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
     const elementId = selectedBlock?.id || null;
 
     if (elementId) {
-      await fetchImageModifications(elementId);
+      fetchImageModifications(elementId);
     }
 
     if (elementId) {
-      await fetchImageOverlayModifications(elementId);
+      fetchImageOverlayModifications(elementId);
     }
 
     if (elementId) {
-      await fetchImageShadowModifications(elementId);
+      fetchImageShadowModifications(elementId);
     }
 
     if (elementId) {
-      await fetchButtonModifications(elementId);
-      await fetchButtonBorderModifications(elementId);
-      await fetchButtonShadowModifications(elementId);
+      fetchButtonModifications(elementId);
+      fetchButtonBorderModifications(elementId);
+      fetchButtonShadowModifications(elementId);
     }
 
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
