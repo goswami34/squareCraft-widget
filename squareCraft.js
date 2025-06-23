@@ -548,8 +548,9 @@ let pendingModifications = new Map();
   );
   // ata te somorsa ache
   const { WidgetImageHoverToggleControls } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/WidgetImageHoverToggleControls/WidgetImageHoverToggleControls.js"
+    "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetImageSection/WidgetImageHoverToggleControls/WidgetImageHoverToggleControls.js"
   );
+  //ata te somorsa ache
 
   const { handleAlignmentClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleAlignmentClick.js"
