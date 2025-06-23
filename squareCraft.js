@@ -3861,7 +3861,7 @@ let pendingModifications = new Map();
               { target: clickedBlock },
               {
                 getTextType,
-                getHoverTextType,
+                // getHoverTextType,
                 selectedElement,
                 setSelectedElement: (val) => (selectedElement = val),
                 setLastClickedBlockId: (val) => (lastClickedBlockId = val),
