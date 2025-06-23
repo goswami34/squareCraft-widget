@@ -225,7 +225,7 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/components/BlockType/detectBlockElementTypes.js"
   );
   const { initImageSectionControls } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/utils/initImageSectionControls.js"
+    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initImageSectionControls.js"
   );
   const { WidgetTypoSectionStateControls } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetTypoSection/WidgetTypoSectionStateControls/WidgetTypoSectionStateControls.js"
