@@ -3952,7 +3952,7 @@ let pendingModifications = new Map();
   async function createWidget(clickedBlock) {
     try {
       const module = await import(
-        "https://goswami34.github.io/squareCraft-widget/html.js"
+        "https://fatin-webefo.github.io/squareCraft-plugin/html.js"
       );
       const htmlString = module.html();
 
@@ -3967,6 +3967,7 @@ let pendingModifications = new Map();
     } catch (err) {
       console.error("🚨 Error loading HTML module:", err);
     }
+    triggerLaunchAnimation();
   }
 
   function waitForElement(selector, timeout = 3000) {
@@ -3993,4 +3994,164 @@ let pendingModifications = new Map();
       }, timeout);
     });
   }
+
+  function makeWidgetDraggable() {
+    if (!widgetContainer) return;
+
+    widgetContainer.style.position = "absolute";
+    widgetContainer.style.zIndex = "999";
+    widgetContainer.style.left = "10px";
+    widgetContainer.style.top = "10px";
+
+    let offsetX = 0,
+      offsetY = 0,
+      isDragging = false;
+
+    function startDrag(event) {
+      const draggableElement = event.target.closest("#sc-grabbing");
+      if (!draggableElement || event.target.closest(".sc-dropdown")) return;
+
+      event.preventDefault();
+      isDragging = true;
+
+      let clientX = event.clientX || event.touches?.[0]?.clientX;
+      let clientY = event.clientY || event.touches?.[0]?.clientY;
+
+      offsetX = clientX - widgetContainer.getBoundingClientRect().left;
+      offsetY = clientY - widgetContainer.getBoundingClientRect().top;
+
+      document.addEventListener("mousemove", moveAt);
+      document.addEventListener("mouseup", stopDragging);
+      document.addEventListener("touchmove", moveAt);
+      document.addEventListener("touchend", stopDragging);
+    }
+
+    function moveAt(event) {
+      if (!isDragging) return;
+
+      let clientX = event.clientX || event.touches?.[0]?.clientX;
+      let clientY = event.clientY || event.touches?.[0]?.clientY;
+
+      const newX = clientX - offsetX;
+      const newY = clientY - offsetY;
+
+      widgetContainer.style.left = `${newX}px`;
+      widgetContainer.style.top = `${newY}px`;
+    }
+
+    function stopDragging() {
+      isDragging = false;
+      document.removeEventListener("mousemove", moveAt);
+      document.removeEventListener("mouseup", stopDragging);
+      document.removeEventListener("touchmove", moveAt);
+      document.removeEventListener("touchend", stopDragging);
+    }
+
+    widgetContainer.removeEventListener("mousedown", startDrag);
+    widgetContainer.removeEventListener("touchstart", startDrag);
+
+    widgetContainer.addEventListener("mousedown", startDrag);
+    widgetContainer.addEventListener("touchstart", startDrag);
+  }
+
+  document.body.addEventListener("click", (e) => {
+    const isInsideWidget = widgetContainer?.contains(e.target);
+    const isToolbarIcon = e.target.closest(".sc-toolbar-icon");
+    const isHiddenInput =
+      e.target.tagName === "INPUT" && e.target.type === "file";
+
+    if (
+      !isInsideWidget &&
+      !isToolbarIcon &&
+      !isHiddenInput &&
+      widgetContainer?.style.display === "block"
+    ) {
+      widgetContainer.style.display = "none";
+    }
+  });
+
+  function adjustWidgetPosition() {
+    if (!widgetContainer) return;
+
+    if (window.innerWidth <= 768) {
+      widgetContainer.style.left = "auto";
+      widgetContainer.style.right = "0px";
+      widgetContainer.style.top = "100px";
+    }
+  }
+
+  window.addEventListener("resize", adjustWidgetPosition);
+  adjustWidgetPosition();
+
+  function injectIcon() {
+    async function waitForTargets(selector, maxRetries = 10, delay = 500) {
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        const elements = safeQuerySelectorAll(selector);
+        if (elements.length > 0) return elements;
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+      console.warn("⏱️ Timeout: Target elements not found:", selector);
+      return [];
+    }
+
+    async function injectIconIntoTargetElements() {}
+
+    injectIconIntoTargetElements();
+
+    const observer = new MutationObserver(() => {
+      injectIconIntoTargetElements();
+    });
+    const obsTarget = isSameOrigin ? parent.document.body : document.body;
+    observer.observe(obsTarget, { childList: true, subtree: true });
+
+    try {
+      iframe?.contentWindow?.document?.addEventListener("click", (event) => {
+        if (event.target.classList.contains("sc-admin-icon")) {
+          event.stopPropagation();
+          event.preventDefault();
+          toggleWidgetVisibility(event);
+        }
+      });
+    } catch (e) {
+      console.warn("⚠️ Could not access iframe document (likely cross-origin)");
+    }
+  }
+
+  function waitForNavBar(attempts = 0) {
+    if (attempts > 10) {
+      console.error("❌ Failed to find Squarespace nav bar.");
+      return;
+    }
+    const nav = safeQuerySelector("ul.css-1tn5iw9");
+    if (!nav) {
+      setTimeout(() => waitForNavBar(attempts + 1), 500);
+    } else {
+      injectIcon();
+    }
+  }
+
+  waitForNavBar();
+  handleSectionFind();
+  function checkView() {
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+      moveWidgetToMobileContainer();
+    } else {
+      moveWidgetToDesktop();
+    }
+  }
+
+  function moveWidgetToMobileContainer() {}
+
+  fetchModifications();
+
+  function moveWidgetToDesktop() {
+    if (!widgetContainer) return;
+
+    document.body.appendChild(widgetContainer);
+  }
+
+  checkView();
+  window.addEventListener("resize", checkView);
 })();
