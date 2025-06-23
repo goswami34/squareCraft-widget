@@ -2,37 +2,74 @@ let pendingModifications = new Map();
 // let selectedElement = null;
 
 (async function squareCraft() {
-  const Url = parent.document.location.href;
-  console.log("parent", Url);
-  const widgetScript = document.getElementById("sc-script");
-
-  if (!widgetScript) {
-    console.error(
-      "❌ Widget script not found! Ensure the script tag exists with id 'sc-script'."
-    );
-    return;
+  let isSameOrigin = true;
+  if (!window.__squareCraftResetFlags) {
+    window.__squareCraftResetFlags = new Map();
   }
+
+  const Url = isSameOrigin
+    ? parent.document.location.href
+    : document.location.href;
+  console.log("parent", Url);
+
+  try {
+    void parent.document;
+  } catch (e) {
+    isSameOrigin = false;
+  }
+
+  function safeQuerySelector(selector) {
+    return isSameOrigin
+      ? parent.document.querySelector(selector)
+      : document.querySelector(selector);
+  }
+
+  function safeQuerySelectorAll(selector) {
+    try {
+      if (parent && parent !== window && parent.document !== document) {
+        return parent.document.querySelectorAll(selector);
+      }
+    } catch (err) {
+      if (err.name === "SecurityError") {
+        console.warn(
+          `⚠️ Cross-origin restriction: falling back to current document for selectorAll: ${selector}`
+        );
+      } else {
+        console.error(`❌ Error in safeQuerySelectorAll("${selector}"):`, err);
+      }
+    }
+    return document.querySelectorAll(selector);
+  }
+
   let selectedElement = null;
   let widgetContainer = null;
 
   let widgetLoaded = false;
-  let token = widgetScript.dataset?.token;
-  let userId = widgetScript.dataset?.uId;
-  let widgetId = widgetScript.dataset?.wId;
+  const widgetScript = document.getElementById("sc-script");
 
-  if (token) {
-    localStorage.setItem("sc_auth_token", token);
-    document.cookie = `sc_auth_token=${token}; path=/; domain=${location.hostname}; Secure; SameSite=Lax`;
-  }
+  let token = null;
+  let userId = null;
+  let widgetId = null;
 
-  if (userId) {
-    localStorage.setItem("sc_u_id", userId);
-    document.cookie = `sc_u_id=${userId}; path=.squarespace.com;`;
-  }
+  if (widgetScript) {
+    token = widgetScript.dataset?.token;
+    userId = widgetScript.dataset?.uId;
+    widgetId = widgetScript.dataset?.wId;
 
-  if (widgetId) {
-    localStorage.setItem("sc_w_id", widgetId);
-    document.cookie = `sc_w_id=${widgetId}; path=.squarespace.com;`;
+    if (token) {
+      localStorage.setItem("sc_auth_token", token);
+      document.cookie = `sc_auth_token=${token}; path=/; domain=${location.hostname}; Secure; SameSite=Lax`;
+    }
+
+    if (userId) {
+      localStorage.setItem("sc_u_id", userId);
+      document.cookie = `sc_u_id=${userId}; path=.squarespace.com;`;
+    }
+
+    if (widgetId) {
+      localStorage.setItem("sc_w_id", widgetId);
+      document.cookie = `sc_w_id=${widgetId}; path=.squarespace.com;`;
+    }
   }
 
   let lastClickedBlockId = null;
