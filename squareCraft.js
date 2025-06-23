@@ -562,7 +562,7 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/typoTabSelect.js"
   );
   const { hoverTypoTabSelect } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/hoverTypoTabSelect.js"
+    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/hoverTypoTabSelect.js"
   );
   const { detectBlockElementTypes } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/components/BlockType/detectBlockElementTypes.js"
