@@ -222,10 +222,10 @@ let pendingModifications = new Map();
     "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/hoverTypoTabSelect.js"
   );
   const { detectBlockElementTypes } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/components/BlockType/detectBlockElementTypes.js"
+    "https://goswami34.github.io/squareCraft-widget/src/components/BlockType/detectBlockElementTypes.js"
   );
   const { initImageSectionControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initImageSectionControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initImageSectionControls.js"
   );
   const { WidgetTypoSectionStateControls } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetTypoSection/WidgetTypoSectionStateControls/WidgetTypoSectionStateControls.js"
