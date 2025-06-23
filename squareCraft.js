@@ -237,16 +237,16 @@ let pendingModifications = new Map();
   );
 
   const { initImageSectionToggleControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initImageSectionToggleControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initImageSectionToggleControls.js"
   );
   const {
     initHoverButtonSectionToggleControls,
     initHoverButtonEffectDropdowns,
   } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/button/initHoverButtonSectionToggleControls/initHoverButtonSectionToggleControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/button/initHoverButtonSectionToggleControls/initHoverButtonSectionToggleControls.js"
   );
   const { initButtonSectionToggleControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/button/initButtonSectionToggleControls/initButtonSectionToggleControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/button/initButtonSectionToggleControls/initButtonSectionToggleControls.js"
   );
   const { initImageUploadPreview } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/button/initButtonSectionToggleControls/initImageUploadPreview.js"
