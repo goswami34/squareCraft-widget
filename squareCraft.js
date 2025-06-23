@@ -3928,26 +3928,6 @@ let pendingModifications = new Map();
       }
     }
   }
-  // async function createWidget(clickedBlock) {
-  //   try {
-  //     const module = await import(
-  //       "https://fatin-webefo.github.io/squareCraft-plugin/html.js"
-  //     );
-  //     const htmlString = module.html();
-
-  //     if (typeof htmlString === "string" && htmlString.trim().length > 0) {
-  //       loadWidgetFromString(htmlString, clickedBlock);
-  //       setTimeout(() => {
-  //         if (typeof module.initToggleSwitch === "function") {
-  //           module.initToggleSwitch();
-  //         }
-  //       }, 200);
-  //     }
-  //   } catch (err) {
-  //     console.error("🚨 Error loading HTML module:", err);
-  //   }
-  //   triggerLaunchAnimation();
-  // }
 
   async function createWidget(clickedBlock) {
     try {
