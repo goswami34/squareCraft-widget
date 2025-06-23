@@ -517,51 +517,52 @@ let pendingModifications = new Map();
   // );
 
   const { initButtonAdvanceStyles } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/button/WidgetButtonSection/WidgetButtonAdvanceStyles/WidgetButtonAdvanceStyles.js"
+    "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonSection/WidgetButtonAdvanceStyles/WidgetButtonAdvanceStyles.js"
   );
+
   const { handleSectionFind } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/section/handleSectionFind.js"
   );
   const { ButtonAdvanceToggleControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/button/ButtonAdvanceToggleControls/ButtonAdvanceToggleControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/button/ButtonAdvanceToggleControls/ButtonAdvanceToggleControls.js"
   );
   const { getTextType } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/getTextType.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/getTextType.js"
   );
   const { getHoverTextType } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/getHoverTextType.js"
   );
 
   const { handleFontWeightDropdownClick } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleFontWeightDropdownClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleFontWeightDropdownClick.js"
   );
   const { initHoverTypoTabControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/initHoverTypoTabControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/initHoverTypoTabControls.js"
   );
   const { handleBlockClick } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleBlockClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBlockClick.js"
   );
   const { initImageStateTabToggle } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetImageSection/initImageStateTabToggle/initImageStateTabToggle.js"
+    "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/initImageStateTabToggle/initImageStateTabToggle.js"
   );
   const { WidgetImageHoverToggleControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetImageSection/WidgetImageHoverToggleControls/WidgetImageHoverToggleControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/WidgetImageHoverToggleControls/WidgetImageHoverToggleControls.js"
   );
 
   const { handleAlignmentClick } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleAlignmentClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleAlignmentClick.js"
   );
   const { handleTextColorClick } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleTextColorClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextColorClick.js"
   );
   const { typoTabSelect } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/typoTabSelect.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/typoTabSelect.js"
   );
   const { hoverTypoTabSelect } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/hoverTypoTabSelect.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/hoverTypoTabSelect.js"
   );
   const { detectBlockElementTypes } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/components/BlockType/detectBlockElementTypes.js"
+    "https://goswami34.github.io/squareCraft-widget/src/components/BlockType/detectBlockElementTypes.js"
   );
   const { initImageSectionControls } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initImageSectionControls.js"
