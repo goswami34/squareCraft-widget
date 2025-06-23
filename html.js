@@ -77,27 +77,24 @@ export function html() {
       <div class="sc-absolute sc-top-0 sc-left-0 sc-bg-color-EF7C2F sc-w-16 sc-h-1px sc-tab-active-indicator"></div>
       </div>
       <div id="tabContentWrapper" class="sc-rounded-4px sc-h-350 sc-scrollBar sc-mt-6 sc-border sc-border-solid sc-border-EF7C2F sc-bg-color-3d3d3d">
-        <div id="designTab">
-          <div id="typoSectionWrapper" style="display:none;">
-            ${WidgetTypoSection("typoSection")}
-          </div>
-          <div id="imageSectionWrapper" style="display:none;">
-            ${WidgetImageSection("imageSection")}
-          </div>
-          <div id="buttonSectionWrapper" style="display:none;">
-            ${WidgetButtonSection("buttonSection")}
-          </div>
-        </div>
-        <div id="advancedTab" class="sc-hidden">
-        <div id="advancedButtonSection">${WidgetButtonAdvanceSection()}</div>
-        <div id="advancedTypoSection">${WidgetTypoAdvanceSection()}</div>
-        <div id="advancedImageSection">${WidgetImageAdvanceSection()}</div>
-        </div>
-        <div id="presetsTab" class="sc-hidden">
-        <div id="presetButtonSection">${WidgetButtonPresetSection()}</div>
-        <div id="presetTypoSection">${WidgetTypoPresetSection()}</div>
-        <div id="presetImageSection">${WidgetImagePresetSection()}</div>
-        </div>
+      <div id="designTab"> ${WidgetTypoSection(
+        "typoSection"
+      )} ${WidgetImageSection("imageSection")} ${WidgetButtonSection(
+    "buttonSection"
+  )} </div>
+
+      <div id="advancedTab" class="sc-hidden">
+      <div id="advancedButtonSection">${WidgetButtonAdvanceSection()}</div>
+      <div id="advancedTypoSection">${WidgetTypoAdvanceSection()}</div>
+      <div id="advancedImageSection">${WidgetImageAdvanceSection()}</div>
+      </div>
+
+      <div id="presetsTab" class="sc-hidden">
+      <div id="presetButtonSection">${WidgetButtonPresetSection()}</div>
+      <div id="presetTypoSection">${WidgetTypoPresetSection()}</div>
+      <div id="presetImageSection">${WidgetImagePresetSection()}</div>
+      </div>
+
       </div>
       <div class="sc-mt-3">
       <div class="sc-flex  sc-items-center sc-justify-between sc-gap-2">
@@ -959,14 +956,3 @@ export async function saveButtonShadowModifications(blockId, css) {
   }
 }
 // button shadow save modification end here
-
-// Add this function to control which section is visible
-export function showWidgetSection(type) {
-  const typo = document.getElementById("typoSectionWrapper");
-  const image = document.getElementById("imageSectionWrapper");
-  const button = document.getElementById("buttonSectionWrapper");
-  if (!typo || !image || !button) return;
-  typo.style.display = type === "typo" ? "block" : "none";
-  image.style.display = type === "image" ? "block" : "none";
-  button.style.display = type === "button" ? "block" : "none";
-}

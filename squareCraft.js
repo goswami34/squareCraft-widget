@@ -551,25 +551,6 @@ let pendingModifications = new Map();
       waitForElement("#typoSection, #imageSection, #buttonSection")
         .then(() => {
           detectBlockElementTypes(clickedBlock);
-          // --- Show only the relevant widget section ---
-          // Use your own logic to detect type:
-          if (
-            clickedBlock.querySelector(".sqs-block-content") ||
-            clickedBlock.querySelector("h1, h2, h3, h4, p")
-          ) {
-            showWidgetSection("typo");
-          } else if (clickedBlock.querySelector("img")) {
-            showWidgetSection("image");
-          } else if (
-            clickedBlock.querySelector(
-              ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-            )
-          ) {
-            showWidgetSection("button");
-          } else {
-            // Default: hide all
-            showWidgetSection("");
-          }
         })
         .catch((error) => {
           console.error(error.message);
