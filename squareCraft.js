@@ -609,532 +609,532 @@ let pendingModifications = new Map();
     }
   });
 
-  async function fetchModifications(retries = 3) {
-    const module = await import(
-      "https://goswami34.github.io/squareCraft-widget/html.js"
-    );
-    const htmlString = module.html();
-
-    if (
-      typeof htmlString === "string" &&
-      widgetContainer &&
-      widgetContainer.innerHTML.trim() === ""
-    ) {
-      widgetContainer.innerHTML = htmlString;
-    }
-
-    setTimeout(() => {
-      if (typeof module.initToggleSwitch === "function") {
-        module.initToggleSwitch();
-      }
-    }, 200);
-
-    const isEnabled = localStorage.getItem("sc_enabled") !== "false";
-
-    if (!isEnabled) {
-      return;
-    }
-
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
-    if (!pageId) return;
-
-    if (!token || !userId) {
-      console.warn("Missing authentication data");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-
-      const data = await response.json();
-
-      if (!data.modifications || !Array.isArray(data.modifications)) {
-        console.warn("⚠️ No modifications found or invalid format");
-        return;
-      }
-
-      const modificationMap = new Map();
-
-      data.modifications.forEach((mod) => {
-        if (mod.pageId === pageId) {
-          mod.elements.forEach((elem) => {
-            if (elem.css) {
-              modificationMap.set(elem.elementId, elem.css);
-            }
-          });
-        }
-      });
-
-      const observer = new MutationObserver(() => {
-        modificationMap.forEach((css, elementId) => {
-          const element = document.getElementById(elementId);
-          if (element) {
-            Object.entries(css).forEach(([prop, value]) => {
-              element.style.setProperty(prop, value, "important");
-            });
-
-            const nestedElements =
-              element.querySelectorAll("h1, h2, h3, h4, p");
-            nestedElements.forEach((nestedElem) => {
-              Object.entries(css).forEach(([prop, value]) => {
-                nestedElem.style.setProperty(prop, value, "important");
-              });
-            });
-
-            if (!element.classList.contains("sc-font-modified")) {
-              element.classList.add("sc-font-modified");
-            }
-
-            modificationMap.delete(elementId);
-          }
-        });
-      });
-
-      observer.observe(document.body, { childList: true, subtree: true });
-    } catch (error) {
-      console.error("❌ Error Fetching Modifications:", error);
-      if (retries > 0) {
-        setTimeout(() => fetchModifications(retries - 1), 2000);
-      }
-    }
-  }
-
-  async function fetchImageModifications() {
-    const userId = localStorage.getItem("sc_u_id");
-    const token = localStorage.getItem("sc_auth_token");
-    const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
-
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
-      return;
-    }
-
-    try {
-      const res = await fetch(
-        `https://admin.squareplugin.com/api/v1/get-image-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message);
-
-      const elements = result.elements || [];
-
-      elements.forEach(({ elementId, css }) => {
-        // --- Apply main block styles ---
-        const imageStyles = css?.image?.styles || css?.image || {};
-        const selector =
-          css?.image?.selector || `#${elementId} div.sqs-image-content`;
-
-        if (Object.keys(imageStyles).length > 0) {
-          const styleTagId = `sc-style-${elementId}`;
-          let styleTag = document.getElementById(styleTagId);
-          if (!styleTag) {
-            styleTag = document.createElement("style");
-            styleTag.id = styleTagId;
-            document.head.appendChild(styleTag);
-          }
-
-          let cssText = `${selector} {`;
-          Object.entries(imageStyles).forEach(([prop, value]) => {
-            if (value !== null && value !== undefined && value !== "null") {
-              cssText += `${prop}: ${value} !important; `;
-            }
-          });
-          cssText += "}";
-          styleTag.textContent = cssText;
-        }
-
-        // --- Apply img tag styles ---
-        const imageTagBlock = css?.imageTag;
-        if (imageTagBlock?.selector && imageTagBlock?.styles) {
-          const imgTagId = `sc-img-style-${elementId}`;
-          let imgTag = document.getElementById(imgTagId);
-          if (!imgTag) {
-            imgTag = document.createElement("style");
-            imgTag.id = imgTagId;
-            document.head.appendChild(imgTag);
-          }
-
-          let imgCSS = `${imageTagBlock.selector} {`;
-          Object.entries(imageTagBlock.styles).forEach(([prop, val]) => {
-            if (val !== null && val !== undefined && val !== "null") {
-              imgCSS += `${prop}: ${val} !important; `;
-            }
-          });
-          imgCSS += "}";
-          imgTag.textContent = imgCSS;
-        }
-
-        const block = document.getElementById(elementId);
-        if (block) block.classList.add("sc-image-styled");
-
-        ///////// this is new code
-
-        // ✅ Sync UI controls with restored styles
-        // const styleValues = css?.image?.styles || {};
-        // const blockElement = document.getElementById(elementId);
-        // if (!blockElement) return;
-
-        // const imageContent = blockElement.querySelector(
-        //   "div.sqs-image-content"
-        // );
-        // if (!imageContent) return;
-
-        // // Select this image for syncing controls
-        // document.querySelectorAll(".sqs-image-content").forEach((img) => {
-        //   img.classList.remove("sc-selected-image");
-        // });
-        // imageContent.classList.add("sc-selected-image");
-
-        // // ✅ Border Width Sync
-        // const bw = styleValues["border-width"];
-        // if (bw && document.getElementById("radiousField")) {
-        //   const width = parseInt(bw);
-        //   const slider = document.getElementById("radiousField");
-        //   const bullet = document.getElementById("radiousBullet");
-        //   const fill = document.getElementById("radiousFill");
-        //   const display = document.getElementById("radiousCount");
-
-        //   const sliderWidth = slider.offsetWidth;
-        //   const percent = width / 100;
-        //   const px = percent * sliderWidth;
-
-        //   bullet.style.left = `${px}px`;
-        //   bullet.style.transform = "translateX(-50%)";
-        //   fill.style.width = `${px}px`;
-        //   display.textContent = `${width}px`;
-        // }
-
-        // // ✅ Border Color Sync
-        // const color = styleValues["border-color"];
-        // if (color) {
-        //   const code = document.getElementById("color-code");
-        //   if (code) code.textContent = color;
-        // }
-
-        // // ✅ Border Style Sync
-        // const style = styleValues["border-style"];
-        // const styleBtnMap = {
-        //   solid: "borderStyleSolid",
-        //   dashed: "borderStyleDashed",
-        //   dotted: "borderStyleDotted",
-        // };
-        // if (style && styleBtnMap[style]) {
-        //   const btn = document.getElementById(styleBtnMap[style]);
-        //   if (btn) {
-        //     document
-        //       .querySelectorAll(
-        //         "#borderStyleSolid, #borderStyleDashed, #borderStyleDotted"
-        //       )
-        //       .forEach((b) => b.classList.remove("sc-bg-454545"));
-        //     btn.classList.add("sc-bg-454545");
-        //   }
-        // }
-
-        // // ✅ Border Radius Sync (main/all)
-        // const radius = styleValues["border-radius"];
-        // if (radius && document.getElementById("radiusField")) {
-        //   const r = parseInt(radius);
-        //   const slider = document.getElementById("radiusField");
-        //   const bullet = document.getElementById("radiusBullet");
-        //   const fill = document.getElementById("radiusFill");
-        //   const display = document.getElementById("radiusCountAnother");
-
-        //   const sliderWidth = slider.offsetWidth;
-        //   const percent = r / 100;
-        //   const px = percent * sliderWidth;
-
-        //   bullet.style.left = `${px}px`;
-        //   bullet.style.transform = "translateX(-50%)";
-        //   fill.style.width = `${px}px`;
-        //   display.textContent = `${r}px`;
-        // }
-      });
-
-      console.log("✅ Applied styles to all image elements");
-    } catch (error) {
-      console.error(
-        "❌ Failed to fetch all image modifications:",
-        error.message
-      );
-    }
-  }
-
-  async function fetchImageOverlayModifications() {
-    try {
-      const userId = localStorage.getItem("sc_u_id");
-      const token = localStorage.getItem("sc_auth_token");
-      const widgetId = localStorage.getItem("sc_w_id");
-      const pageId = document
-        .querySelector("article[data-page-sections]")
-        ?.getAttribute("data-page-sections");
-
-      if (!userId || !token || !widgetId || !pageId) {
-        console.warn(
-          "Missing required data for fetching overlay modifications"
-        );
-        return;
-      }
-
-      // Get all image blocks on the page
-      const imageBlocks = document.querySelectorAll(
-        '[id^="block-yui_3_17_2_1_"]'
-      );
-      console.log("Found image blocks:", imageBlocks);
-
-      // Fetch modifications for each image block
-      for (const block of imageBlocks) {
-        const elementId = block.id;
-        const url = `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`;
-        console.log("Fetching from URL:", url);
-
-        try {
-          const response = await fetch(url, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          if (!response.ok) {
-            if (response.status === 404) {
-              console.log(
-                `No overlay modifications found for block: ${elementId}`
-              );
-              continue;
-            }
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          console.log(
-            `✅ Fetched overlay modifications for block ${elementId}:",`,
-            data
-          );
-
-          // FIX: Use data.elements, not data.modifications
-          if (data && data.elements) {
-            data.elements.forEach((element) => {
-              if (element.elementId === elementId && element.overlayCSS) {
-                const selector = element.overlayCSS.selector;
-                const styles = element.overlayCSS.styles;
-
-                // Debug: Log selector and check if element exists
-                console.log("[Overlay Injection] Selector:", selector);
-                const targetElem = document.querySelector(
-                  selector.split("::")[0]
-                );
-                console.log(
-                  "[Overlay Injection] Element exists:",
-                  !!targetElem
-                );
-
-                let cssText = `${selector} {`;
-                cssText += "position: absolute !important; "; // Always add position: absolute
-                Object.entries(styles).forEach(([prop, value]) => {
-                  if (
-                    value !== null &&
-                    value !== undefined &&
-                    value !== "null"
-                  ) {
-                    if (prop === "content") {
-                      cssText += `content: "${value}" !important; `;
-                    } else {
-                      cssText += `${prop}: ${value} !important; `;
-                    }
-                  }
-                });
-                cssText += "}";
-
-                // Inject style tag
-                const styleTagId = `sc-overlay-style-${element.elementId}`;
-                let styleTag = document.getElementById(styleTagId);
-                if (!styleTag) {
-                  styleTag = document.createElement("style");
-                  styleTag.id = styleTagId;
-                  document.head.appendChild(styleTag);
-                }
-                styleTag.textContent = cssText;
-                console.log("[Overlay Injection] Injected CSS:", cssText);
-              }
-            });
-          }
-        } catch (error) {
-          console.error(
-            `❌ Failed to fetch modifications for block ${elementId}:",`,
-            error
-          );
-          continue;
-        }
-      }
-    } catch (error) {
-      console.error("❌ Failed to fetch image overlay modifications:", error);
-      return null;
-    }
-  }
-
-  async function fetchImageShadowModifications() {
-    try {
-      const token = localStorage.getItem("sc_auth_token");
-      const userId = localStorage.getItem("sc_u_id");
-      const widgetId = localStorage.getItem("sc_w_id");
-
-      const pageId = document
-        .querySelector("article[data-page-sections]")
-        ?.getAttribute("data-page-sections");
-
-      // Only select blocks that actually contain an image
-      const allBlocks = document.querySelectorAll('[id^="block-"]');
-      const imageBlocks = Array.from(allBlocks).filter((block) =>
-        block.querySelector("img")
-      );
-
-      for (const block of imageBlocks) {
-        const elementId = block.id;
-
-        // Debug log all IDs used for the API call
-        console.log("[fetchImageShadowModifications] IDs:", {
-          userId,
-          widgetId,
-          pageId,
-          elementId,
-        });
-
-        if (!token || !userId || !widgetId || !pageId || !elementId) {
-          console.warn("❌ Missing required auth or page info");
-          continue;
-        }
-
-        const apiUrl = `https://admin.squareplugin.com/api/v1/get-image-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`;
-        console.log("[fetchImageShadowModifications] Fetching:", apiUrl);
-
-        const response = await fetch(apiUrl, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.status === 404) {
-          // No shadow data for this block, not an error
-          // console.info(`ℹ️ No shadow data for block: ${elementId}`);
-          continue;
-        }
-        if (!response.ok) {
-          console.error(
-            `❌ Failed to fetch shadow for block: ${elementId} (status: ${response.status})`
-          );
-          continue;
-        }
-
-        // Log the API response for debugging
-        const data = await response.json();
-        console.log(
-          "[fetchImageShadowModifications] API response for",
-          elementId,
-          data
-        );
-        const css = data?.element?.css;
-
-        if (!css || !css.image?.selector || !css.image?.styles) {
-          console.warn(`⚠️ Incomplete CSS data for block ${elementId}`);
-          continue;
-        }
-
-        // Inject image styles
-        const selector = css.image.selector;
-        const styles = css.image.styles;
-
-        // Debug: Log selector and check if element exists
-        console.log("[Shadow Injection] Selector:", selector);
-        const targetElem = document.querySelector(selector);
-        console.log("[Shadow Injection] Element exists:", !!targetElem);
-
-        if (Object.keys(styles).length > 0) {
-          const styleTagId = `sc-shadow-style-${elementId}`;
-          let styleTag = document.getElementById(styleTagId);
-          if (!styleTag) {
-            styleTag = document.createElement("style");
-            styleTag.id = styleTagId;
-            document.head.appendChild(styleTag);
-          }
-
-          let cssText = `${selector} {`;
-          Object.entries(styles).forEach(([prop, value]) => {
-            if (value !== null && value !== undefined && value !== "null") {
-              cssText += `${prop}: ${value} !important; `;
-            }
-          });
-          cssText += "}";
-
-          styleTag.textContent = cssText;
-          console.log("[Shadow Injection] Injected CSS:", cssText);
-        }
-
-        // Optional: imageTag styles
-        if (css.imageTag?.selector && css.imageTag?.styles) {
-          const tagStyleId = `sc-image-tag-style-${elementId}`;
-          let tagStyle = document.getElementById(tagStyleId);
-          if (!tagStyle) {
-            tagStyle = document.createElement("style");
-            tagStyle.id = tagStyleId;
-            document.head.appendChild(tagStyle);
-          }
-
-          tagStyle.textContent = `
-            ${css.imageTag.selector} {
-              ${Object.entries(css.imageTag.styles)
-                .map(([key, value]) => `${key}: ${value} !important;`)
-                .join("\n")}
-            }
-          `;
-        }
-
-        // Set overflow: visible if shadow is present
-        const blurVal = styles["box-shadow"]?.split(" ")[2];
-        if (blurVal && parseInt(blurVal) > 0) {
-          const overflowStyleId = `sc-overflow-style-${elementId}`;
-          let overflowStyle = document.getElementById(overflowStyleId);
-          if (!overflowStyle) {
-            overflowStyle = document.createElement("style");
-            overflowStyle.id = overflowStyleId;
-            document.head.appendChild(overflowStyle);
-          }
-
-          overflowStyle.textContent = `
-            #${elementId} .intrinsic, #${elementId} .sqs-image {
-              overflow: visible !important;
-            }
-          `;
-        }
-      }
-    } catch (err) {
-      console.error("❌ Error fetching image shadow modifications:", err);
-    }
-  }
+  // async function fetchModifications(retries = 3) {
+  //   const module = await import(
+  //     "https://goswami34.github.io/squareCraft-widget/html.js"
+  //   );
+  //   const htmlString = module.html();
+
+  //   if (
+  //     typeof htmlString === "string" &&
+  //     widgetContainer &&
+  //     widgetContainer.innerHTML.trim() === ""
+  //   ) {
+  //     widgetContainer.innerHTML = htmlString;
+  //   }
+
+  //   setTimeout(() => {
+  //     if (typeof module.initToggleSwitch === "function") {
+  //       module.initToggleSwitch();
+  //     }
+  //   }, 200);
+
+  //   const isEnabled = localStorage.getItem("sc_enabled") !== "false";
+
+  //   if (!isEnabled) {
+  //     return;
+  //   }
+
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
+  //   if (!pageId) return;
+
+  //   if (!token || !userId) {
+  //     console.warn("Missing authentication data");
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await fetch(
+  //       `https://admin.squareplugin.com/api/v1/get-modifications?userId=${userId}`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     if (!response.ok)
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+
+  //     const data = await response.json();
+
+  //     if (!data.modifications || !Array.isArray(data.modifications)) {
+  //       console.warn("⚠️ No modifications found or invalid format");
+  //       return;
+  //     }
+
+  //     const modificationMap = new Map();
+
+  //     data.modifications.forEach((mod) => {
+  //       if (mod.pageId === pageId) {
+  //         mod.elements.forEach((elem) => {
+  //           if (elem.css) {
+  //             modificationMap.set(elem.elementId, elem.css);
+  //           }
+  //         });
+  //       }
+  //     });
+
+  //     const observer = new MutationObserver(() => {
+  //       modificationMap.forEach((css, elementId) => {
+  //         const element = document.getElementById(elementId);
+  //         if (element) {
+  //           Object.entries(css).forEach(([prop, value]) => {
+  //             element.style.setProperty(prop, value, "important");
+  //           });
+
+  //           const nestedElements =
+  //             element.querySelectorAll("h1, h2, h3, h4, p");
+  //           nestedElements.forEach((nestedElem) => {
+  //             Object.entries(css).forEach(([prop, value]) => {
+  //               nestedElem.style.setProperty(prop, value, "important");
+  //             });
+  //           });
+
+  //           if (!element.classList.contains("sc-font-modified")) {
+  //             element.classList.add("sc-font-modified");
+  //           }
+
+  //           modificationMap.delete(elementId);
+  //         }
+  //       });
+  //     });
+
+  //     observer.observe(document.body, { childList: true, subtree: true });
+  //   } catch (error) {
+  //     console.error("❌ Error Fetching Modifications:", error);
+  //     if (retries > 0) {
+  //       setTimeout(() => fetchModifications(retries - 1), 2000);
+  //     }
+  //   }
+  // }
+
+  // async function fetchImageModifications() {
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
+
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn("⚠️ Missing credentials or page ID");
+  //     return;
+  //   }
+
+  //   try {
+  //     const res = await fetch(
+  //       `https://admin.squareplugin.com/api/v1/get-image-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     const result = await res.json();
+  //     if (!res.ok) throw new Error(result.message);
+
+  //     const elements = result.elements || [];
+
+  //     elements.forEach(({ elementId, css }) => {
+  //       // --- Apply main block styles ---
+  //       const imageStyles = css?.image?.styles || css?.image || {};
+  //       const selector =
+  //         css?.image?.selector || `#${elementId} div.sqs-image-content`;
+
+  //       if (Object.keys(imageStyles).length > 0) {
+  //         const styleTagId = `sc-style-${elementId}`;
+  //         let styleTag = document.getElementById(styleTagId);
+  //         if (!styleTag) {
+  //           styleTag = document.createElement("style");
+  //           styleTag.id = styleTagId;
+  //           document.head.appendChild(styleTag);
+  //         }
+
+  //         let cssText = `${selector} {`;
+  //         Object.entries(imageStyles).forEach(([prop, value]) => {
+  //           if (value !== null && value !== undefined && value !== "null") {
+  //             cssText += `${prop}: ${value} !important; `;
+  //           }
+  //         });
+  //         cssText += "}";
+  //         styleTag.textContent = cssText;
+  //       }
+
+  //       // --- Apply img tag styles ---
+  //       const imageTagBlock = css?.imageTag;
+  //       if (imageTagBlock?.selector && imageTagBlock?.styles) {
+  //         const imgTagId = `sc-img-style-${elementId}`;
+  //         let imgTag = document.getElementById(imgTagId);
+  //         if (!imgTag) {
+  //           imgTag = document.createElement("style");
+  //           imgTag.id = imgTagId;
+  //           document.head.appendChild(imgTag);
+  //         }
+
+  //         let imgCSS = `${imageTagBlock.selector} {`;
+  //         Object.entries(imageTagBlock.styles).forEach(([prop, val]) => {
+  //           if (val !== null && val !== undefined && val !== "null") {
+  //             imgCSS += `${prop}: ${val} !important; `;
+  //           }
+  //         });
+  //         imgCSS += "}";
+  //         imgTag.textContent = imgCSS;
+  //       }
+
+  //       const block = document.getElementById(elementId);
+  //       if (block) block.classList.add("sc-image-styled");
+
+  //       ///////// this is new code
+
+  //       // ✅ Sync UI controls with restored styles
+  //       // const styleValues = css?.image?.styles || {};
+  //       // const blockElement = document.getElementById(elementId);
+  //       // if (!blockElement) return;
+
+  //       // const imageContent = blockElement.querySelector(
+  //       //   "div.sqs-image-content"
+  //       // );
+  //       // if (!imageContent) return;
+
+  //       // // Select this image for syncing controls
+  //       // document.querySelectorAll(".sqs-image-content").forEach((img) => {
+  //       //   img.classList.remove("sc-selected-image");
+  //       // });
+  //       // imageContent.classList.add("sc-selected-image");
+
+  //       // // ✅ Border Width Sync
+  //       // const bw = styleValues["border-width"];
+  //       // if (bw && document.getElementById("radiousField")) {
+  //       //   const width = parseInt(bw);
+  //       //   const slider = document.getElementById("radiousField");
+  //       //   const bullet = document.getElementById("radiousBullet");
+  //       //   const fill = document.getElementById("radiousFill");
+  //       //   const display = document.getElementById("radiousCount");
+
+  //       //   const sliderWidth = slider.offsetWidth;
+  //       //   const percent = width / 100;
+  //       //   const px = percent * sliderWidth;
+
+  //       //   bullet.style.left = `${px}px`;
+  //       //   bullet.style.transform = "translateX(-50%)";
+  //       //   fill.style.width = `${px}px`;
+  //       //   display.textContent = `${width}px`;
+  //       // }
+
+  //       // // ✅ Border Color Sync
+  //       // const color = styleValues["border-color"];
+  //       // if (color) {
+  //       //   const code = document.getElementById("color-code");
+  //       //   if (code) code.textContent = color;
+  //       // }
+
+  //       // // ✅ Border Style Sync
+  //       // const style = styleValues["border-style"];
+  //       // const styleBtnMap = {
+  //       //   solid: "borderStyleSolid",
+  //       //   dashed: "borderStyleDashed",
+  //       //   dotted: "borderStyleDotted",
+  //       // };
+  //       // if (style && styleBtnMap[style]) {
+  //       //   const btn = document.getElementById(styleBtnMap[style]);
+  //       //   if (btn) {
+  //       //     document
+  //       //       .querySelectorAll(
+  //       //         "#borderStyleSolid, #borderStyleDashed, #borderStyleDotted"
+  //       //       )
+  //       //       .forEach((b) => b.classList.remove("sc-bg-454545"));
+  //       //     btn.classList.add("sc-bg-454545");
+  //       //   }
+  //       // }
+
+  //       // // ✅ Border Radius Sync (main/all)
+  //       // const radius = styleValues["border-radius"];
+  //       // if (radius && document.getElementById("radiusField")) {
+  //       //   const r = parseInt(radius);
+  //       //   const slider = document.getElementById("radiusField");
+  //       //   const bullet = document.getElementById("radiusBullet");
+  //       //   const fill = document.getElementById("radiusFill");
+  //       //   const display = document.getElementById("radiusCountAnother");
+
+  //       //   const sliderWidth = slider.offsetWidth;
+  //       //   const percent = r / 100;
+  //       //   const px = percent * sliderWidth;
+
+  //       //   bullet.style.left = `${px}px`;
+  //       //   bullet.style.transform = "translateX(-50%)";
+  //       //   fill.style.width = `${px}px`;
+  //       //   display.textContent = `${r}px`;
+  //       // }
+  //     });
+
+  //     console.log("✅ Applied styles to all image elements");
+  //   } catch (error) {
+  //     console.error(
+  //       "❌ Failed to fetch all image modifications:",
+  //       error.message
+  //     );
+  //   }
+  // }
+
+  // async function fetchImageOverlayModifications() {
+  //   try {
+  //     const userId = localStorage.getItem("sc_u_id");
+  //     const token = localStorage.getItem("sc_auth_token");
+  //     const widgetId = localStorage.getItem("sc_w_id");
+  //     const pageId = document
+  //       .querySelector("article[data-page-sections]")
+  //       ?.getAttribute("data-page-sections");
+
+  //     if (!userId || !token || !widgetId || !pageId) {
+  //       console.warn(
+  //         "Missing required data for fetching overlay modifications"
+  //       );
+  //       return;
+  //     }
+
+  //     // Get all image blocks on the page
+  //     const imageBlocks = document.querySelectorAll(
+  //       '[id^="block-yui_3_17_2_1_"]'
+  //     );
+  //     console.log("Found image blocks:", imageBlocks);
+
+  //     // Fetch modifications for each image block
+  //     for (const block of imageBlocks) {
+  //       const elementId = block.id;
+  //       const url = `https://admin.squareplugin.com/api/v1/get-image-overlay-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`;
+  //       console.log("Fetching from URL:", url);
+
+  //       try {
+  //         const response = await fetch(url, {
+  //           method: "GET",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         });
+
+  //         if (!response.ok) {
+  //           if (response.status === 404) {
+  //             console.log(
+  //               `No overlay modifications found for block: ${elementId}`
+  //             );
+  //             continue;
+  //           }
+  //           throw new Error(`HTTP error! status: ${response.status}`);
+  //         }
+
+  //         const data = await response.json();
+  //         console.log(
+  //           `✅ Fetched overlay modifications for block ${elementId}:",`,
+  //           data
+  //         );
+
+  //         // FIX: Use data.elements, not data.modifications
+  //         if (data && data.elements) {
+  //           data.elements.forEach((element) => {
+  //             if (element.elementId === elementId && element.overlayCSS) {
+  //               const selector = element.overlayCSS.selector;
+  //               const styles = element.overlayCSS.styles;
+
+  //               // Debug: Log selector and check if element exists
+  //               console.log("[Overlay Injection] Selector:", selector);
+  //               const targetElem = document.querySelector(
+  //                 selector.split("::")[0]
+  //               );
+  //               console.log(
+  //                 "[Overlay Injection] Element exists:",
+  //                 !!targetElem
+  //               );
+
+  //               let cssText = `${selector} {`;
+  //               cssText += "position: absolute !important; "; // Always add position: absolute
+  //               Object.entries(styles).forEach(([prop, value]) => {
+  //                 if (
+  //                   value !== null &&
+  //                   value !== undefined &&
+  //                   value !== "null"
+  //                 ) {
+  //                   if (prop === "content") {
+  //                     cssText += `content: "${value}" !important; `;
+  //                   } else {
+  //                     cssText += `${prop}: ${value} !important; `;
+  //                   }
+  //                 }
+  //               });
+  //               cssText += "}";
+
+  //               // Inject style tag
+  //               const styleTagId = `sc-overlay-style-${element.elementId}`;
+  //               let styleTag = document.getElementById(styleTagId);
+  //               if (!styleTag) {
+  //                 styleTag = document.createElement("style");
+  //                 styleTag.id = styleTagId;
+  //                 document.head.appendChild(styleTag);
+  //               }
+  //               styleTag.textContent = cssText;
+  //               console.log("[Overlay Injection] Injected CSS:", cssText);
+  //             }
+  //           });
+  //         }
+  //       } catch (error) {
+  //         console.error(
+  //           `❌ Failed to fetch modifications for block ${elementId}:",`,
+  //           error
+  //         );
+  //         continue;
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("❌ Failed to fetch image overlay modifications:", error);
+  //     return null;
+  //   }
+  // }
+
+  // async function fetchImageShadowModifications() {
+  //   try {
+  //     const token = localStorage.getItem("sc_auth_token");
+  //     const userId = localStorage.getItem("sc_u_id");
+  //     const widgetId = localStorage.getItem("sc_w_id");
+
+  //     const pageId = document
+  //       .querySelector("article[data-page-sections]")
+  //       ?.getAttribute("data-page-sections");
+
+  //     // Only select blocks that actually contain an image
+  //     const allBlocks = document.querySelectorAll('[id^="block-"]');
+  //     const imageBlocks = Array.from(allBlocks).filter((block) =>
+  //       block.querySelector("img")
+  //     );
+
+  //     for (const block of imageBlocks) {
+  //       const elementId = block.id;
+
+  //       // Debug log all IDs used for the API call
+  //       console.log("[fetchImageShadowModifications] IDs:", {
+  //         userId,
+  //         widgetId,
+  //         pageId,
+  //         elementId,
+  //       });
+
+  //       if (!token || !userId || !widgetId || !pageId || !elementId) {
+  //         console.warn("❌ Missing required auth or page info");
+  //         continue;
+  //       }
+
+  //       const apiUrl = `https://admin.squareplugin.com/api/v1/get-image-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`;
+  //       console.log("[fetchImageShadowModifications] Fetching:", apiUrl);
+
+  //       const response = await fetch(apiUrl, {
+  //         method: "GET",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+
+  //       if (response.status === 404) {
+  //         // No shadow data for this block, not an error
+  //         // console.info(`ℹ️ No shadow data for block: ${elementId}`);
+  //         continue;
+  //       }
+  //       if (!response.ok) {
+  //         console.error(
+  //           `❌ Failed to fetch shadow for block: ${elementId} (status: ${response.status})`
+  //         );
+  //         continue;
+  //       }
+
+  //       // Log the API response for debugging
+  //       const data = await response.json();
+  //       console.log(
+  //         "[fetchImageShadowModifications] API response for",
+  //         elementId,
+  //         data
+  //       );
+  //       const css = data?.element?.css;
+
+  //       if (!css || !css.image?.selector || !css.image?.styles) {
+  //         console.warn(`⚠️ Incomplete CSS data for block ${elementId}`);
+  //         continue;
+  //       }
+
+  //       // Inject image styles
+  //       const selector = css.image.selector;
+  //       const styles = css.image.styles;
+
+  //       // Debug: Log selector and check if element exists
+  //       console.log("[Shadow Injection] Selector:", selector);
+  //       const targetElem = document.querySelector(selector);
+  //       console.log("[Shadow Injection] Element exists:", !!targetElem);
+
+  //       if (Object.keys(styles).length > 0) {
+  //         const styleTagId = `sc-shadow-style-${elementId}`;
+  //         let styleTag = document.getElementById(styleTagId);
+  //         if (!styleTag) {
+  //           styleTag = document.createElement("style");
+  //           styleTag.id = styleTagId;
+  //           document.head.appendChild(styleTag);
+  //         }
+
+  //         let cssText = `${selector} {`;
+  //         Object.entries(styles).forEach(([prop, value]) => {
+  //           if (value !== null && value !== undefined && value !== "null") {
+  //             cssText += `${prop}: ${value} !important; `;
+  //           }
+  //         });
+  //         cssText += "}";
+
+  //         styleTag.textContent = cssText;
+  //         console.log("[Shadow Injection] Injected CSS:", cssText);
+  //       }
+
+  //       // Optional: imageTag styles
+  //       if (css.imageTag?.selector && css.imageTag?.styles) {
+  //         const tagStyleId = `sc-image-tag-style-${elementId}`;
+  //         let tagStyle = document.getElementById(tagStyleId);
+  //         if (!tagStyle) {
+  //           tagStyle = document.createElement("style");
+  //           tagStyle.id = tagStyleId;
+  //           document.head.appendChild(tagStyle);
+  //         }
+
+  //         tagStyle.textContent = `
+  //           ${css.imageTag.selector} {
+  //             ${Object.entries(css.imageTag.styles)
+  //               .map(([key, value]) => `${key}: ${value} !important;`)
+  //               .join("\n")}
+  //           }
+  //         `;
+  //       }
+
+  //       // Set overflow: visible if shadow is present
+  //       const blurVal = styles["box-shadow"]?.split(" ")[2];
+  //       if (blurVal && parseInt(blurVal) > 0) {
+  //         const overflowStyleId = `sc-overflow-style-${elementId}`;
+  //         let overflowStyle = document.getElementById(overflowStyleId);
+  //         if (!overflowStyle) {
+  //           overflowStyle = document.createElement("style");
+  //           overflowStyle.id = overflowStyleId;
+  //           document.head.appendChild(overflowStyle);
+  //         }
+
+  //         overflowStyle.textContent = `
+  //           #${elementId} .intrinsic, #${elementId} .sqs-image {
+  //             overflow: visible !important;
+  //           }
+  //         `;
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.error("❌ Error fetching image shadow modifications:", err);
+  //   }
+  // }
 
   // Utility: Apply styles as external CSS (not inline)
   function applyStylesAsExternalCSS(
@@ -1160,184 +1160,184 @@ let pendingModifications = new Map();
     styleTag.textContent = cssText;
   }
 
-  // Fetch and apply button modifications from the backend
-  async function fetchButtonModifications(blockId = null) {
-    const userId = localStorage.getItem("sc_u_id");
-    const token = localStorage.getItem("sc_auth_token");
-    const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
+  // // Fetch and apply button modifications from the backend
+  // async function fetchButtonModifications(blockId = null) {
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
 
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
-      return;
-    }
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn("⚠️ Missing credentials or page ID");
+  //     return;
+  //   }
 
-    let url = `https://admin.squareplugin.com/api/v1/get-button-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-    if (blockId) url += `&elementId=${blockId}`;
+  //   let url = `https://admin.squareplugin.com/api/v1/get-button-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+  //   if (blockId) url += `&elementId=${blockId}`;
 
-    try {
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message);
+  //   try {
+  //     const res = await fetch(url, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     const result = await res.json();
+  //     if (!res.ok) throw new Error(result.message);
 
-      // Handle the nested structure: modifications[].elements[]
-      const modifications = result.modifications || [];
-      modifications.forEach((mod) => {
-        const elements = mod.elements || [];
-        elements.forEach(({ elementId, css }) => {
-          // Apply button styles as external CSS
-          const buttonPrimary = css?.buttonPrimary;
-          if (buttonPrimary?.selector && buttonPrimary?.styles) {
-            applyStylesAsExternalCSS(
-              buttonPrimary.selector,
-              buttonPrimary.styles
-            );
-            console.log(
-              `✅ Applied button styles to ${elementId}:`,
-              buttonPrimary.styles
-            );
-          }
-          // Optionally handle secondary/tertiary
-          const buttonSecondary = css?.buttonSecondary;
-          if (buttonSecondary?.selector && buttonSecondary?.styles) {
-            applyStylesAsExternalCSS(
-              buttonSecondary.selector,
-              buttonSecondary.styles
-            );
-          }
-          const buttonTertiary = css?.buttonTertiary;
-          if (buttonTertiary?.selector && buttonTertiary?.styles) {
-            applyStylesAsExternalCSS(
-              buttonTertiary.selector,
-              buttonTertiary.styles
-            );
-          }
-        });
-      });
-      console.log("✅ Applied button styles to all elements (external CSS)");
-    } catch (error) {
-      console.error("❌ Failed to fetch button modifications:", error.message);
-    }
-  }
+  //     // Handle the nested structure: modifications[].elements[]
+  //     const modifications = result.modifications || [];
+  //     modifications.forEach((mod) => {
+  //       const elements = mod.elements || [];
+  //       elements.forEach(({ elementId, css }) => {
+  //         // Apply button styles as external CSS
+  //         const buttonPrimary = css?.buttonPrimary;
+  //         if (buttonPrimary?.selector && buttonPrimary?.styles) {
+  //           applyStylesAsExternalCSS(
+  //             buttonPrimary.selector,
+  //             buttonPrimary.styles
+  //           );
+  //           console.log(
+  //             `✅ Applied button styles to ${elementId}:`,
+  //             buttonPrimary.styles
+  //           );
+  //         }
+  //         // Optionally handle secondary/tertiary
+  //         const buttonSecondary = css?.buttonSecondary;
+  //         if (buttonSecondary?.selector && buttonSecondary?.styles) {
+  //           applyStylesAsExternalCSS(
+  //             buttonSecondary.selector,
+  //             buttonSecondary.styles
+  //           );
+  //         }
+  //         const buttonTertiary = css?.buttonTertiary;
+  //         if (buttonTertiary?.selector && buttonTertiary?.styles) {
+  //           applyStylesAsExternalCSS(
+  //             buttonTertiary.selector,
+  //             buttonTertiary.styles
+  //           );
+  //         }
+  //       });
+  //     });
+  //     console.log("✅ Applied button styles to all elements (external CSS)");
+  //   } catch (error) {
+  //     console.error("❌ Failed to fetch button modifications:", error.message);
+  //   }
+  // }
 
-  // Fetch and apply button border modifications from the backend
-  async function fetchButtonBorderModifications(blockId = null) {
-    const userId = localStorage.getItem("sc_u_id");
-    const token = localStorage.getItem("sc_auth_token");
-    const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
+  // // Fetch and apply button border modifications from the backend
+  // async function fetchButtonBorderModifications(blockId = null) {
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
 
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
-      return;
-    }
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn("⚠️ Missing credentials or page ID");
+  //     return;
+  //   }
 
-    let url = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-    if (blockId) url += `&elementId=${blockId}`;
+  //   let url = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+  //   if (blockId) url += `&elementId=${blockId}`;
 
-    try {
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message);
+  //   try {
+  //     const res = await fetch(url, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     const result = await res.json();
+  //     if (!res.ok) throw new Error(result.message);
 
-      // Handle the direct structure: elements[]
-      const elements = result.elements || [];
-      elements.forEach(({ elementId, selector, styles }) => {
-        // Apply button border styles as external CSS
-        if (selector && styles) {
-          applyStylesAsExternalCSS(selector, styles, "sc-btn-border-style");
-          console.log(
-            `✅ Applied button border styles to ${elementId}:`,
-            styles
-          );
-        }
-      });
-      console.log(
-        "✅ Applied button border styles to all elements (external CSS)"
-      );
-    } catch (error) {
-      console.error(
-        "❌ Failed to fetch button border modifications:",
-        error.message
-      );
-    }
-  }
+  //     // Handle the direct structure: elements[]
+  //     const elements = result.elements || [];
+  //     elements.forEach(({ elementId, selector, styles }) => {
+  //       // Apply button border styles as external CSS
+  //       if (selector && styles) {
+  //         applyStylesAsExternalCSS(selector, styles, "sc-btn-border-style");
+  //         console.log(
+  //           `✅ Applied button border styles to ${elementId}:`,
+  //           styles
+  //         );
+  //       }
+  //     });
+  //     console.log(
+  //       "✅ Applied button border styles to all elements (external CSS)"
+  //     );
+  //   } catch (error) {
+  //     console.error(
+  //       "❌ Failed to fetch button border modifications:",
+  //       error.message
+  //     );
+  //   }
+  // }
 
-  // Fetch button shadow modifications from the backend
-  async function fetchButtonShadowModifications(blockId = null) {
-    const userId = localStorage.getItem("sc_u_id");
-    const token = localStorage.getItem("sc_auth_token");
-    const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
+  // // Fetch button shadow modifications from the backend
+  // async function fetchButtonShadowModifications(blockId = null) {
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
 
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
-      return;
-    }
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn("⚠️ Missing credentials or page ID");
+  //     return;
+  //   }
 
-    let url = `https://admin.squareplugin.com/api/v1/get-button-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-    if (blockId) url += `&elementId=${blockId}`;
+  //   let url = `https://admin.squareplugin.com/api/v1/get-button-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+  //   if (blockId) url += `&elementId=${blockId}`;
 
-    try {
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  //   try {
+  //     const res = await fetch(url, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
 
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message);
+  //     const result = await res.json();
+  //     if (!res.ok) throw new Error(result.message);
 
-      const elements = result.elements || [];
-      elements.forEach(({ elementId, selector, styles }) => {
-        if (!selector || !styles) return;
+  //     const elements = result.elements || [];
+  //     elements.forEach(({ elementId, selector, styles }) => {
+  //       if (!selector || !styles) return;
 
-        const styleId = `sc-btn-shadow-style-${elementId}`;
-        let styleTag = document.getElementById(styleId);
-        if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = styleId;
-          document.head.appendChild(styleTag);
-        }
+  //       const styleId = `sc-btn-shadow-style-${elementId}`;
+  //       let styleTag = document.getElementById(styleId);
+  //       if (!styleTag) {
+  //         styleTag = document.createElement("style");
+  //         styleTag.id = styleId;
+  //         document.head.appendChild(styleTag);
+  //       }
 
-        let cssText = `${selector} {`;
-        Object.entries(styles).forEach(([prop, val]) => {
-          if (val !== null && val !== undefined && val !== "null") {
-            cssText += `${prop}: ${val} !important; `;
-          }
-        });
-        cssText += "}";
+  //       let cssText = `${selector} {`;
+  //       Object.entries(styles).forEach(([prop, val]) => {
+  //         if (val !== null && val !== undefined && val !== "null") {
+  //           cssText += `${prop}: ${val} !important; `;
+  //         }
+  //       });
+  //       cssText += "}";
 
-        styleTag.textContent = cssText;
+  //       styleTag.textContent = cssText;
 
-        console.log(
-          `✅ Applied button shadow styles for ${elementId}:`,
-          styles
-        );
-      });
+  //       console.log(
+  //         `✅ Applied button shadow styles for ${elementId}:`,
+  //         styles
+  //       );
+  //     });
 
-      console.log("✅ All button shadow modifications applied (external CSS)");
-    } catch (error) {
-      console.error(
-        "❌ Failed to fetch button shadow modifications:",
-        error.message
-      );
-    }
-  }
+  //     console.log("✅ All button shadow modifications applied (external CSS)");
+  //   } catch (error) {
+  //     console.error(
+  //       "❌ Failed to fetch button shadow modifications:",
+  //       error.message
+  //     );
+  //   }
+  // }
 
   // Fetch button border modifications from the backend end here
 
