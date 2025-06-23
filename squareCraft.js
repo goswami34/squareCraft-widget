@@ -3850,7 +3850,7 @@ let pendingModifications = new Map();
         },
       ]);
       initHoverButtonSectionToggleControls();
-      hoverTypoTabSelect();
+      // hoverTypoTabSelect();
       initHoverButtonEffectDropdowns();
       initImageUploadPreview(() => selectedElement);
       triggerLaunchAnimation();
