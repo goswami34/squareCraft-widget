@@ -3691,34 +3691,34 @@ let pendingModifications = new Map();
     console.error("🚨 Failed to load navbar icon script", error);
   }
 
-  async function toggleWidgetVisibility(event) {
-    event.stopPropagation();
-    const clickedBlock = event?.target?.closest('[id^="block-"]');
-    if (!clickedBlock) {
-      return;
-    }
+  // async function toggleWidgetVisibility(event) {
+  //   event.stopPropagation();
+  //   const clickedBlock = event?.target?.closest('[id^="block-"]');
+  //   if (!clickedBlock) {
+  //     return;
+  //   }
 
-    if (!widgetLoaded) {
-      await createWidget(clickedBlock);
-      waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
-        .then(() => {
-          handleAndDetect(clickedBlock);
-        })
-        .catch((error) => {
-          console.error(error.message);
-        });
-    } else {
-      widgetContainer.style.display =
-        widgetContainer.style.display === "none" ? "block" : "none";
-      waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
-        .then(() => {
-          handleAndDetect(clickedBlock);
-        })
-        .catch((error) => {
-          console.error(error.message);
-        });
-    }
-  }
+  //   if (!widgetLoaded) {
+  //     await createWidget(clickedBlock);
+  //     waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
+  //       .then(() => {
+  //         handleAndDetect(clickedBlock);
+  //       })
+  //       .catch((error) => {
+  //         console.error(error.message);
+  //       });
+  //   } else {
+  //     widgetContainer.style.display =
+  //       widgetContainer.style.display === "none" ? "block" : "none";
+  //     waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
+  //       .then(() => {
+  //         handleAndDetect(clickedBlock);
+  //       })
+  //       .catch((error) => {
+  //         console.error(error.message);
+  //       });
+  //   }
+  // }
 
   async function addHeadingEventListeners() {
     const widgetContainer = document.getElementById("sc-widget-container");
@@ -3768,34 +3768,34 @@ let pendingModifications = new Map();
     console.error("🚨 Failed to load navbar icon script", error);
   }
 
-  // async function toggleWidgetVisibility(event) {
-  //   event.stopPropagation();
-  //   const clickedBlock = event?.target?.closest('[id^="block-"]');
-  //   if (!clickedBlock) {
-  //     return;
-  //   }
+  async function toggleWidgetVisibility(event) {
+    event.stopPropagation();
+    const clickedBlock = event?.target?.closest('[id^="block-"]');
+    if (!clickedBlock) {
+      return;
+    }
 
-  //   if (!widgetLoaded) {
-  //     await createWidget(clickedBlock);
-  //     waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
-  //       .then(() => {
-  //         handleAndDetect(clickedBlock);
-  //       })
-  //       .catch((error) => {
-  //         console.error(error.message);
-  //       });
-  //   } else {
-  //     widgetContainer.style.display =
-  //       widgetContainer.style.display === "none" ? "block" : "none";
-  //     waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
-  //       .then(() => {
-  //         handleAndDetect(clickedBlock);
-  //       })
-  //       .catch((error) => {
-  //         console.error(error.message);
-  //       });
-  //   }
-  // }
+    if (!widgetLoaded) {
+      await createWidget(clickedBlock);
+      waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
+        .then(() => {
+          handleAndDetect(clickedBlock);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    } else {
+      widgetContainer.style.display =
+        widgetContainer.style.display === "none" ? "block" : "none";
+      waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
+        .then(() => {
+          handleAndDetect(clickedBlock);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    }
+  }
 
   function handleAndDetect(clickedBlock) {
     handleBlockClick(
@@ -3815,6 +3815,7 @@ let pendingModifications = new Map();
 
     detectBlockElementTypes(clickedBlock);
   }
+
   function loadWidgetFromString(htmlString, clickedBlock) {
     if (!widgetContainer) {
       widgetContainer = document.createElement("div");
