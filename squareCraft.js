@@ -3927,10 +3927,31 @@ let pendingModifications = new Map();
       }
     }
   }
+  // async function createWidget(clickedBlock) {
+  //   try {
+  //     const module = await import(
+  //       "https://fatin-webefo.github.io/squareCraft-plugin/html.js"
+  //     );
+  //     const htmlString = module.html();
+
+  //     if (typeof htmlString === "string" && htmlString.trim().length > 0) {
+  //       loadWidgetFromString(htmlString, clickedBlock);
+  //       setTimeout(() => {
+  //         if (typeof module.initToggleSwitch === "function") {
+  //           module.initToggleSwitch();
+  //         }
+  //       }, 200);
+  //     }
+  //   } catch (err) {
+  //     console.error("🚨 Error loading HTML module:", err);
+  //   }
+  //   triggerLaunchAnimation();
+  // }
+
   async function createWidget(clickedBlock) {
     try {
       const module = await import(
-        "https://fatin-webefo.github.io/squareCraft-plugin/html.js"
+        "https://goswami34.github.io/squareCraft-widget/html.js"
       );
       const htmlString = module.html();
 
@@ -3945,7 +3966,6 @@ let pendingModifications = new Map();
     } catch (err) {
       console.error("🚨 Error loading HTML module:", err);
     }
-    triggerLaunchAnimation();
   }
 
   function waitForElement(selector, timeout = 3000) {
@@ -3975,48 +3995,36 @@ let pendingModifications = new Map();
 
   function makeWidgetDraggable() {
     if (!widgetContainer) return;
-
     widgetContainer.style.position = "absolute";
     widgetContainer.style.zIndex = "999";
     widgetContainer.style.left = "10px";
     widgetContainer.style.top = "10px";
-
     let offsetX = 0,
       offsetY = 0,
       isDragging = false;
-
     function startDrag(event) {
       const draggableElement = event.target.closest("#sc-grabbing");
       if (!draggableElement || event.target.closest(".sc-dropdown")) return;
-
       event.preventDefault();
       isDragging = true;
-
       let clientX = event.clientX || event.touches?.[0]?.clientX;
       let clientY = event.clientY || event.touches?.[0]?.clientY;
-
       offsetX = clientX - widgetContainer.getBoundingClientRect().left;
       offsetY = clientY - widgetContainer.getBoundingClientRect().top;
-
       document.addEventListener("mousemove", moveAt);
       document.addEventListener("mouseup", stopDragging);
       document.addEventListener("touchmove", moveAt);
       document.addEventListener("touchend", stopDragging);
     }
-
     function moveAt(event) {
       if (!isDragging) return;
-
       let clientX = event.clientX || event.touches?.[0]?.clientX;
       let clientY = event.clientY || event.touches?.[0]?.clientY;
-
       const newX = clientX - offsetX;
       const newY = clientY - offsetY;
-
       widgetContainer.style.left = `${newX}px`;
       widgetContainer.style.top = `${newY}px`;
     }
-
     function stopDragging() {
       isDragging = false;
       document.removeEventListener("mousemove", moveAt);
@@ -4024,10 +4032,8 @@ let pendingModifications = new Map();
       document.removeEventListener("touchmove", moveAt);
       document.removeEventListener("touchend", stopDragging);
     }
-
     widgetContainer.removeEventListener("mousedown", startDrag);
     widgetContainer.removeEventListener("touchstart", startDrag);
-
     widgetContainer.addEventListener("mousedown", startDrag);
     widgetContainer.addEventListener("touchstart", startDrag);
   }
@@ -4151,7 +4157,7 @@ let pendingModifications = new Map();
       console.error("❌ Failed to find Squarespace nav bar.");
       return;
     }
-    const nav = safeQuerySelector("ul.css-1tn5iw9");
+    const nav = parent.document.querySelector("ul.css-1tn5iw9");
     if (!nav) {
       setTimeout(() => waitForNavBar(attempts + 1), 500);
     } else {
@@ -4160,7 +4166,6 @@ let pendingModifications = new Map();
   }
 
   waitForNavBar();
-  handleSectionFind();
   function checkView() {
     const isMobile = window.innerWidth <= 768;
 
@@ -4207,7 +4212,55 @@ let pendingModifications = new Map();
     }
   }
 
-  fetchModifications();
+  // fetchModifications();
+  // // fetchImageModifications(lastClickedBlockId);
+  // if (lastClickedBlockId) {
+  //   fetchImageModifications(lastClickedBlockId);
+  // } else {
+  //   // Retry after a short delay until it gets set
+  //   let retries = 5;
+  //   const retryInterval = setInterval(() => {
+  //     if (lastClickedBlockId) {
+  //       fetchImageModifications(lastClickedBlockId);
+  //       clearInterval(retryInterval);
+  //     }
+
+  //     // if (lastClickedBlockId) {
+  //     //   fetchImageOverlayModifications(lastClickedBlockId);
+  //     // }
+  //     if (--retries <= 0) clearInterval(retryInterval);
+  //   }, 300);
+  // }
+
+  // console.log("lastClickedBlockId", lastClickedBlockId);
+
+  // if (lastClickedBlockId) {
+  //   fetchImageOverlayModifications(lastClickedBlockId);
+  // } else {
+  //   // Retry after a short delay until it gets set
+  //   let retries = 5;
+  //   const retryInterval = setInterval(() => {
+  //     if (lastClickedBlockId) {
+  //       fetchImageOverlayModifications(lastClickedBlockId);
+  //       clearInterval(retryInterval);
+  //     }
+  //     if (--retries <= 0) clearInterval(retryInterval);
+  //   }, 300);
+  // }
+
+  // if (lastClickedBlockId) {
+  //   fetchImageShadowModifications(lastClickedBlockId);
+  // } else {
+  //   // Retry after a short delay until it gets set
+  //   let retries = 5;
+  //   const retryInterval = setInterval(() => {
+  //     if (lastClickedBlockId) {
+  //       fetchImageShadowModifications(lastClickedBlockId);
+  //       clearInterval(retryInterval);
+  //     }
+  //     if (--retries <= 0) clearInterval(retryInterval);
+  //   }, 300);
+  // }
 
   function addPendingModification(blockId, css, tagType) {
     if (!pendingModifications.has(blockId)) {
@@ -4223,4 +4276,50 @@ let pendingModifications = new Map();
 
   checkView();
   window.addEventListener("resize", checkView);
+
+  // Utility to get the latest border and border-radius styles from the selected button
+  function getLatestButtonBorderStyles(selectedElement) {
+    const btn = selectedElement?.querySelector(
+      ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+    );
+    if (!btn) return null;
+
+    const computed = window.getComputedStyle(btn);
+    return {
+      buttonPrimary: {
+        selector: ".sqs-button-element--primary",
+        styles: {
+          boxSizing: computed.boxSizing,
+          borderStyle: computed.borderStyle,
+          borderColor: computed.borderColor,
+          borderTopWidth: computed.borderTopWidth,
+          borderRightWidth: computed.borderRightWidth,
+          borderBottomWidth: computed.borderBottomWidth,
+          borderLeftWidth: computed.borderLeftWidth,
+          borderRadius: computed.borderRadius,
+          overflow: computed.overflow,
+        },
+      },
+    };
+  }
+
+  // Find your publish button logic and update it to use the latest border styles
+  // Example: in your publish handler (pseudo-code, adapt as needed)
+  async function handlePublish() {
+    // ... existing code ...
+    // Save all pending modifications as before
+    for (const [blockId, modifications] of pendingModifications.entries()) {
+      for (const mod of modifications) {
+        // ... existing code for other types ...
+      }
+    }
+    // Now, always send the latest border styles for the selected element
+    if (selectedElement) {
+      const borderStyles = getLatestButtonBorderStyles(selectedElement);
+      if (borderStyles) {
+        await saveButtonBorderModifications(selectedElement.id, borderStyles);
+      }
+    }
+    // ... existing code ...
+  }
 })();
