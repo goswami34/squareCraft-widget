@@ -4209,6 +4209,12 @@ let pendingModifications = new Map();
 
   fetchModifications();
 
+  function addPendingModification(blockId, css, tagType) {
+    if (!pendingModifications.has(blockId)) {
+      pendingModifications.set(blockId, []);
+    }
+  }
+
   function moveWidgetToDesktop() {
     if (!widgetContainer) return;
 
