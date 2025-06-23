@@ -73,6 +73,28 @@ let pendingModifications = new Map();
     }, 3000);
   }
 
+  function triggerLaunchAnimation() {
+    let iframeDoc = null;
+
+    try {
+      const iframe = document.getElementById("sqs-site-frame");
+      if (!iframe) return;
+
+      iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      const liveBody = iframeDoc.querySelector('body[id^="collection-"]');
+      if (!liveBody) return;
+
+      injectLaunchAnimationCSS(iframeDoc);
+      liveBody.classList.add("sc-launching");
+
+      setTimeout(() => {
+        liveBody.classList.remove("sc-launching");
+      }, 1000);
+    } catch (e) {
+      console.warn("⚠️ Could not access iframe content for animation.");
+    }
+  }
+
   function applyStylesToElement(element, css) {
     if (!element || !css) return;
 
