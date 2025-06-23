@@ -551,22 +551,6 @@ let pendingModifications = new Map();
       waitForElement("#typoSection, #imageSection, #buttonSection")
         .then(() => {
           detectBlockElementTypes(clickedBlock);
-          // Show only the relevant widget section
-          if (
-            clickedBlock.querySelector("h1, h2, h3, h4, p, .sqs-block-content")
-          ) {
-            showWidgetSection("typo");
-          } else if (clickedBlock.querySelector("img")) {
-            showWidgetSection("image");
-          } else if (
-            clickedBlock.querySelector(
-              ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-            )
-          ) {
-            showWidgetSection("button");
-          } else {
-            showWidgetSection("");
-          }
         })
         .catch((error) => {
           console.error(error.message);
@@ -4250,15 +4234,5 @@ let pendingModifications = new Map();
       }
     }
     // ... existing code ...
-  }
-
-  function showWidgetSection(type) {
-    const typo = document.getElementById("typoSectionWrapper");
-    const image = document.getElementById("imageSectionWrapper");
-    const button = document.getElementById("buttonSectionWrapper");
-    if (!typo || !image || !button) return;
-    typo.style.display = type === "typo" ? "block" : "none";
-    image.style.display = type === "image" ? "block" : "none";
-    button.style.display = type === "button" ? "block" : "none";
   }
 })();
