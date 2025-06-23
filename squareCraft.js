@@ -4064,7 +4064,7 @@ let pendingModifications = new Map();
   function injectIcon() {
     async function waitForTargets(selector, maxRetries = 10, delay = 500) {
       for (let attempt = 0; attempt < maxRetries; attempt++) {
-        const elements = safeQuerySelectorAll(selector);
+        const elements = parent.document.querySelectorAll(selector);
         if (elements.length > 0) return elements;
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
@@ -4127,24 +4127,22 @@ let pendingModifications = new Map();
       });
     }
 
-    injectIconIntoTargetElements();
+    injectIconIntoTargetElements(); // run once at startup
 
     const observer = new MutationObserver(() => {
       injectIconIntoTargetElements();
     });
-    const obsTarget = isSameOrigin ? parent.document.body : document.body;
-    observer.observe(obsTarget, { childList: true, subtree: true });
+    observer.observe(parent.document.body, { childList: true, subtree: true });
 
-    try {
-      iframe?.contentWindow?.document?.addEventListener("click", (event) => {
+    const iframe = document.querySelector("iframe");
+    if (iframe) {
+      iframe.contentWindow.document.addEventListener("click", function (event) {
         if (event.target.classList.contains("sc-admin-icon")) {
           event.stopPropagation();
           event.preventDefault();
           toggleWidgetVisibility(event);
         }
       });
-    } catch (e) {
-      console.warn("⚠️ Could not access iframe document (likely cross-origin)");
     }
   }
 
