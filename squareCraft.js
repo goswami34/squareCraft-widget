@@ -511,8 +511,18 @@ let pendingModifications = new Map();
     const clickedBlock = event.target.closest('[id^="block-"]');
     console.log("clickedBlock", clickedBlock);
 
+    // if (clickedBlock) {
+    //   waitForElement("#typoSection, #imageSection,  #buttonSection")
+    //     .then(() => {
+    //       detectBlockElementTypes(clickedBlock);
+    //     })
+    //     .catch((error) => {
+    //       console.error(error.message);
+    //     });
+    // }
+    // const clickedBlock = event.target.closest('[id^="block-"]');
     if (clickedBlock) {
-      waitForElement("#typoSection, #imageSection,  #buttonSection")
+      waitForElement("#typoSection, #imageSection, #buttonSection")
         .then(() => {
           detectBlockElementTypes(clickedBlock);
         })
