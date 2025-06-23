@@ -1366,9 +1366,9 @@ let pendingModifications = new Map();
     }
   });
 
-  window.addEventListener("load", async () => {
-    await fetchModifications();
-  });
+  // window.addEventListener("load", async () => {
+  //   await fetchModifications();
+  // });
 
   async function addHeadingEventListeners() {
     const widgetContainer = document.getElementById("sc-widget-container");
