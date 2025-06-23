@@ -200,7 +200,7 @@ let pendingModifications = new Map();
     "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/initHoverTypoTabControls.js"
   );
   const { handleBlockClick } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleBlockClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBlockClick.js"
   );
   const { initImageStateTabToggle } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetImageSection/initImageStateTabToggle/initImageStateTabToggle.js"
@@ -210,10 +210,10 @@ let pendingModifications = new Map();
   );
 
   const { handleAlignmentClick } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleAlignmentClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleAlignmentClick.js"
   );
   const { handleTextColorClick } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleTextColorClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextColorClick.js"
   );
   const { typoTabSelect } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/typoTabSelect.js"
