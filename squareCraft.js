@@ -542,9 +542,11 @@ let pendingModifications = new Map();
   const { handleBlockClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBlockClick.js"
   );
+  //ata te somorsa ache
   const { initImageStateTabToggle } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/initImageStateTabToggle/initImageStateTabToggle.js"
+    "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetImageSection/initImageStateTabToggle/initImageStateTabToggle.js"
   );
+  // ata te somorsa ache
   const { WidgetImageHoverToggleControls } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/WidgetImageHoverToggleControls/WidgetImageHoverToggleControls.js"
   );
