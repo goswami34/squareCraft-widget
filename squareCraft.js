@@ -534,7 +534,7 @@ let pendingModifications = new Map();
   );
 
   const { handleFontWeightDropdownClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleFontWeightDropdownClick.js"
+    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleFontWeightDropdownClick.js"
   );
   const { initHoverTypoTabControls } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/initHoverTypoTabControls.js"
