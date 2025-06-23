@@ -4174,30 +4174,22 @@ let pendingModifications = new Map();
   function moveWidgetToMobileContainer() {
     if (!widgetContainer) return;
 
-    const mobileContainer = safeQuerySelector(
+    const mobileContainer = parent.document.querySelector(
       'div[data-test="mouse-catcher-right-of-frame"].right-scroll-and-hover-catcher.js-space-around-frame'
     );
 
     if (mobileContainer) {
-      const existingLink = safeQuerySelector(
-        'link[href="https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css"]'
+      const existingLink = parent.document.querySelector(
+        'link[href="https://goswami34.github.io/squareCraft-widget/src/styles/parent.css"]'
       );
 
       if (!existingLink) {
-        function createAndAppendToHead(tag) {
-          const el = isSameOrigin
-            ? parent.document.createElement(tag)
-            : document.createElement(tag);
-          const head = isSameOrigin ? parent.document.head : document.head;
-          head.appendChild(el);
-          return el;
-        }
-
-        const link = createAndAppendToHead("link");
+        const link = parent.document.createElement("link");
         link.rel = "stylesheet";
         link.type = "text/css";
         link.href =
-          "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
+          "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
+        parent.document.head.appendChild(link);
       }
 
       mobileContainer.classList.add("sc-relative");
