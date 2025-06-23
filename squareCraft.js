@@ -343,6 +343,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { WidgetTypoSectionStateControls } = await import(
+    "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetTypoSection/WidgetTypoSectionStateControls/WidgetTypoSectionStateControls.js"
+  );
+
   //Image all functionality code end here
   //Image border controls end here
 
