@@ -3549,6 +3549,26 @@ let pendingModifications = new Map();
     detectBlockElementTypes(clickedBlock);
   }
 
+  // async function createWidget(clickedBlock) {
+  //   try {
+  //     const module = await import(
+  //       "https://goswami34.github.io/squareCraft-widget/html.js"
+  //     );
+  //     const htmlString = module.html();
+
+  //     if (typeof htmlString === "string" && htmlString.trim().length > 0) {
+  //       loadWidgetFromString(htmlString, clickedBlock);
+  //       setTimeout(() => {
+  //         if (typeof module.initToggleSwitch === "function") {
+  //           module.initToggleSwitch();
+  //         }
+  //       }, 200);
+  //     }
+  //   } catch (err) {
+  //     console.error("🚨 Error loading HTML module:", err);
+  //   }
+  // }
+
   async function createWidget(clickedBlock) {
     try {
       const module = await import(
@@ -3567,6 +3587,7 @@ let pendingModifications = new Map();
     } catch (err) {
       console.error("🚨 Error loading HTML module:", err);
     }
+    triggerLaunchAnimation();
   }
 
   function waitForElement(selector, timeout = 3000) {
