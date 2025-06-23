@@ -248,26 +248,27 @@ let pendingModifications = new Map();
   const { initButtonSectionToggleControls } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/button/initButtonSectionToggleControls/initButtonSectionToggleControls.js"
   );
+
   const { initImageUploadPreview } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/button/initButtonSectionToggleControls/initImageUploadPreview.js"
+    "https://goswami34.github.io/squareCraft-widget/src/button/initButtonSectionToggleControls/initImageUploadPreview.js"
   );
   const { initImageMaskControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/initImageMaskControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/initImageMaskControls.js"
   );
   const { getSquarespaceThemeStyles } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/getSquarespaceThemeStyles.js"
   );
   const { buttonTooltipControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/button/buttonTooltipControls/buttonTooltipControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/button/buttonTooltipControls/buttonTooltipControls.js"
   );
   const { initBorderColorPaletteToggle } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initBorderColorPaletteToggle.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initBorderColorPaletteToggle.js"
   );
   const { createHoverableArrowSVG } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/createHoverableArrowSVG/createHoverableArrowSVG.js"
   );
   const { initButtonFontColorPaletteToggle } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/button/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js"
+    "https://goswami34.github.io/squareCraft-widget/src/button/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js"
   );
   const {
     initButtonStyles,
@@ -283,7 +284,7 @@ let pendingModifications = new Map();
     resetAllButtonStyles,
     initButtonBorderResetHandlers,
   } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/button/initButtonStyles/initButtonStyles.js"
+    "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonStyles.js"
   );
   const {
     initHoverButtonShadowControls,
@@ -295,7 +296,7 @@ let pendingModifications = new Map();
     initHoverButtonBorderControl,
     applyHoverButtonEffects,
   } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/button/initButtonStyles/initButtonHoverStyles.js"
+    "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonHoverStyles.js"
   );
 
   const themeColors = await getSquarespaceThemeStyles();
