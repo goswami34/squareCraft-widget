@@ -3640,6 +3640,94 @@ let pendingModifications = new Map();
     return svg;
   }
 
+  // function loadWidgetFromString(htmlString, clickedBlock) {
+  //   if (!widgetContainer) {
+  //     widgetContainer = document.createElement("div");
+  //     widgetContainer.id = "sc-widget-container";
+  //     widgetContainer.classList.add(
+  //       "sc-fixed",
+  //       "sc-text-color-white",
+  //       "sc-universal",
+  //       "sc-z-9999"
+  //     );
+
+  //     // ✅ Inject your CSS file before setting innerHTML
+  //     const styleLink = document.createElement("link");
+  //     styleLink.rel = "stylesheet";
+  //     styleLink.type = "text/css";
+  //     styleLink.href =
+  //       "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
+  //     widgetContainer.appendChild(styleLink);
+
+  //     // ✅ Then set HTML content
+  //     const contentWrapper = document.createElement("div");
+  //     contentWrapper.innerHTML = htmlString;
+  //     widgetContainer.appendChild(contentWrapper);
+  //     // parentHtmlTabClick();
+
+  //     widgetContainer.style.display = "block";
+  //     document.body.appendChild(widgetContainer);
+
+  //     initImageMaskControls(() => selectedElement);
+  //     makeWidgetDraggable();
+
+  //     setTimeout(() => {
+  //       const placeholders = widgetContainer.querySelectorAll(
+  //         ".sc-arrow-placeholder"
+  //       );
+
+  //       placeholders.forEach((span) => {
+  //         const isRotate = span.classList.contains("sc-rotate-180");
+  //         const cloneClassList = Array.from(span.classList);
+  //         const originalId = span.getAttribute("id") || "";
+  //         const id =
+  //           originalId || `sc-arrow-${Math.floor(Math.random() * 10000)}`;
+
+  //         const svg = createHoverableArrowSVG(id, isRotate);
+  //         cloneClassList.forEach((cls) => svg.classList.add(cls));
+  //         span.replaceWith(svg);
+  //       });
+  //     }, 100);
+
+  //     widgetLoaded = true;
+  //     initImageSectionToggleControls();
+  //     // initButtonSectionToggleControls();
+  //     // initImageUploadPreview(() => selectedElement);
+  //     ButtonAdvanceToggleControls();
+  //     buttonTooltipControls();
+  //     initButtonSectionToggleControls();
+  //     initImageSectionToggleControls();
+  //     initHoverButtonSectionToggleControls();
+  //     initHoverButtonEffectDropdowns();
+  //     initImageUploadPreview(() => selectedElement);
+
+  //     if (clickedBlock) {
+  //       waitForElement("#typoSection, #imageSection, #buttonSection")
+  //         .then(() => {
+  //           handleBlockClick(
+  //             { target: clickedBlock },
+  //             {
+  //               getTextType,
+  //               selectedElement,
+  //               setSelectedSingleTextType: (tag) =>
+  //                 (selectedSingleTextType = tag),
+  //               setSelectedElement: (val) => (selectedElement = val),
+  //               setLastClickedBlockId: (val) => (lastClickedBlockId = val),
+  //               setLastClickedElement: (val) => (lastClickedElement = val),
+  //               setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
+  //               setLastActiveAlignmentElement: (val) =>
+  //                 (lastActiveAlignmentElement = val),
+  //             }
+  //           );
+  //           detectBlockElementTypes(clickedBlock);
+  //         })
+  //         .catch((error) => {
+  //           console.error(error.message);
+  //         });
+  //     }
+  //   }
+  // }
+
   function loadWidgetFromString(htmlString, clickedBlock) {
     if (!widgetContainer) {
       widgetContainer = document.createElement("div");
@@ -3648,10 +3736,9 @@ let pendingModifications = new Map();
         "sc-fixed",
         "sc-text-color-white",
         "sc-universal",
-        "sc-z-9999"
+        "sc-z-999999"
       );
 
-      // ✅ Inject your CSS file before setting innerHTML
       const styleLink = document.createElement("link");
       styleLink.rel = "stylesheet";
       styleLink.type = "text/css";
@@ -3659,18 +3746,15 @@ let pendingModifications = new Map();
         "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
       widgetContainer.appendChild(styleLink);
 
-      // ✅ Then set HTML content
       const contentWrapper = document.createElement("div");
       contentWrapper.innerHTML = htmlString;
       widgetContainer.appendChild(contentWrapper);
-      // parentHtmlTabClick();
 
       widgetContainer.style.display = "block";
       document.body.appendChild(widgetContainer);
 
       initImageMaskControls(() => selectedElement);
       makeWidgetDraggable();
-
       setTimeout(() => {
         const placeholders = widgetContainer.querySelectorAll(
           ".sc-arrow-placeholder"
@@ -3688,19 +3772,49 @@ let pendingModifications = new Map();
           span.replaceWith(svg);
         });
       }, 100);
-
       widgetLoaded = true;
       initImageSectionToggleControls();
-      // initButtonSectionToggleControls();
-      // initImageUploadPreview(() => selectedElement);
       ButtonAdvanceToggleControls();
       buttonTooltipControls();
       initButtonSectionToggleControls();
-      initImageSectionToggleControls();
+      WidgetTypoSectionStateControls();
+      initImageStateTabToggle();
+      WidgetImageHoverToggleControls();
+      initHoverTypoTabControls([
+        {
+          buttonId: "typo-all-hover-font-button",
+          sectionId: "typo-all-hover-font-section",
+        },
+        {
+          buttonId: "typo-all-hover-border-button",
+          sectionId: "typo-all-hover-border-section",
+        },
+        {
+          buttonId: "typo-all-hover-shadow-button",
+          sectionId: "typo-all-hover-shadow-section",
+        },
+        {
+          buttonId: "typo-all-hover-effects-button",
+          sectionId: "typo-all-hover-effects-section",
+        },
+        {
+          buttonId: "typo-bold-hover-font-button",
+          sectionId: "typo-bold-hover-font-section",
+        },
+        {
+          buttonId: "typo-italic-hover-font-button",
+          sectionId: "typo-italic-hover-font-section",
+        },
+        {
+          buttonId: "typo-link-hover-font-button",
+          sectionId: "typo-link-hover-font-section",
+        },
+      ]);
       initHoverButtonSectionToggleControls();
+      hoverTypoTabSelect();
       initHoverButtonEffectDropdowns();
       initImageUploadPreview(() => selectedElement);
-
+      triggerLaunchAnimation();
       if (clickedBlock) {
         waitForElement("#typoSection, #imageSection, #buttonSection")
           .then(() => {
@@ -3708,9 +3822,8 @@ let pendingModifications = new Map();
               { target: clickedBlock },
               {
                 getTextType,
+                getHoverTextType,
                 selectedElement,
-                setSelectedSingleTextType: (tag) =>
-                  (selectedSingleTextType = tag),
                 setSelectedElement: (val) => (selectedElement = val),
                 setLastClickedBlockId: (val) => (lastClickedBlockId = val),
                 setLastClickedElement: (val) => (lastClickedElement = val),
