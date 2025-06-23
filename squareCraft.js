@@ -215,9 +215,9 @@ let pendingModifications = new Map();
   const { handleTextColorClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextColorClick.js"
   );
-  const { typoTabSelect } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/typoTabSelect.js"
-  );
+  // const { typoTabSelect } = await import(
+  //   "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/typoTabSelect.js"
+  // );
   const { hoverTypoTabSelect } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/hoverTypoTabSelect.js"
   );
@@ -231,10 +231,6 @@ let pendingModifications = new Map();
   );
 
   // in the place of image show button this is responsibe import files end
-
-  const { WidgetTypoSectionStateControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetTypoSection/WidgetTypoSectionStateControls/WidgetTypoSectionStateControls.js"
-  );
 
   const { initImageSectionToggleControls } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/utils/initImageSectionToggleControls.js"
@@ -255,9 +251,9 @@ let pendingModifications = new Map();
   const { initImageMaskControls } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/initImageMaskControls.js"
   );
-  const { getSquarespaceThemeStyles } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/getSquarespaceThemeStyles.js"
-  );
+  // const { getSquarespaceThemeStyles } = await import(
+  //   "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/getSquarespaceThemeStyles.js"
+  // );
   const { buttonTooltipControls } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/button/buttonTooltipControls/buttonTooltipControls.js"
   );
@@ -270,6 +266,281 @@ let pendingModifications = new Map();
   const { initButtonFontColorPaletteToggle } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/button/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js"
   );
+  // const {
+  //   initButtonStyles,
+  //   initButtonIconPositionToggle,
+  //   initButtonIconRotationControl,
+  //   initButtonIconSizeControl,
+  //   initButtonIconSpacingControl,
+  //   initButtonBorderControl,
+  //   initButtonBorderTypeToggle,
+  //   initButtonBorderRadiusControl,
+  //   initButtonShadowControls,
+  //   initButtonFontFamilyControls,
+  //   resetAllButtonStyles,
+  //   initButtonBorderResetHandlers,
+  // } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonStyles.js"
+  // );
+  // const {
+  //   initHoverButtonShadowControls,
+  //   initHoverButtonIconRotationControl,
+  //   initHoverButtonIconSizeControl,
+  //   initHoverButtonIconSpacingControl,
+  //   initHoverButtonBorderRadiusControl,
+  //   initHoverButtonBorderTypeToggle,
+  //   initHoverButtonBorderControl,
+  //   applyHoverButtonEffects,
+  // } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonHoverStyles.js"
+  // );
+
+  // in the place of image show button this is responsibe import files end
+
+  const { getTextTypeBold } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/getTexttypeBold.js"
+  );
+  // const { handleFontWeightDropdownClick } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleFontWeightDropdownClick.js"
+  // );
+
+  const { typoTabSelect } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/typoTabSelect.js"
+  );
+
+  // const { initButtonSectionToggleControls } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonSectionToggleControls/initButtonSectionToggleControls.js"
+  // );
+  // const { initImageUploadPreview } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonSectionToggleControls/initImageUploadPreview.js"
+  // );
+
+  const { getSquarespaceThemeStyles } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/getSquarespaceThemeStyles.js"
+  );
+  // const { initBorderColorPaletteToggle } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/utils/initBorderColorPaletteToggle.js"
+  // );
+  const { saveModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+  // const { initButtonFontColorPaletteToggle } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js"
+  // );
+  // const { initButtonStyles } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/utils/initButtonStyles/initButtonStyles.js"
+  // );
+
+  // Typography all functionality code
+  const { handleBoldElementTextTransformClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleBoldTextTransform.js"
+  );
+  const { handleFontSizeLink } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontSizeLink.js"
+  );
+  const { handleLinkBlockClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleLinkBlockClick.js"
+  );
+  const { handleTextTransformLinkClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextTransformLinkClick.js"
+  );
+  const { handleFontWeightLink } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontWeightLink.js"
+  );
+  // const { handleTextHighLinghtClick } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextHighLinght.js"
+  // );
+  const { handleAllFontSizeClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontSize.js"
+  );
+
+  const { handleAllTextTransformClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextTransform.js"
+  );
+  const { handleAllTextAlignClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextAlign.js"
+  );
+  const { handleAllLetterSpacingClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleLetterSpeacing.js"
+  );
+
+  const { handleAllLineHeightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllLineHeight.js"
+  );
+
+  const { handleAllFontWeightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontWeight.js"
+  );
+
+  const { handleAllTextColorClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextColor.js"
+  );
+
+  const { handleFontSize } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontSize.js"
+  );
+
+  const { handleAllBlockClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleAllBlockClick.js"
+  );
+
+  const { handleAllTextHighlightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextHighlight.js"
+  );
+
+  const { handleTextHighlightColorClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextHighlightColorClick.js"
+  );
+
+  const { handleAllFontFamilyClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontFamily.js"
+  );
+
+  const { handleItalicBlockClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicBlockClick.js"
+  );
+
+  const { handleItalicFontSizeClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicFontSize.js"
+  );
+
+  const { handleItalicFontWeightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicFontWeight.js"
+  );
+
+  const { handleItalicTextTransformClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextTransform.js"
+  );
+
+  const { handleItalicTextColorClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextColor.js"
+  );
+
+  const { handleItalicTextHeighlightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextHeighlisht.js"
+  );
+
+  const { handleItalicTextColorClickEvent } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicTextColorClickEvent.js"
+  );
+
+  const { handleBoldTextColor } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleBoldTextColor.js"
+  );
+
+  const { handleFontWeightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleFontWeight.js"
+  );
+
+  const { handleBoldTextTransformClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextTransformClick.js"
+  );
+
+  const { handleBoldTextColorClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextColorClick.js"
+  );
+
+  const { handleBoldTextHighlightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBoldTextHighlightClick.js"
+  );
+
+  const { handleBoldTextHighlight } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Bold/handleBoldTextHighlight.js"
+  );
+
+  const { handleItalicTextHeighlight } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Italic/handleItalicTextHeighlisht.js"
+  );
+
+  const { handleItalicTextHeighlightClickEvent } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicTextHeighlightClickEvent.js"
+  );
+
+  const { handleLinkTextHighlightClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleLinkTextHighlightClick.js"
+  );
+
+  const { handleTextHighLinghtLink } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextHighLinghtLink.js"
+  );
+
+  // Typography all functionality code end here
+
+  //Image all functionality code start here
+  //Image border controls
+  const { initImageBorderControls } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/Image/initImageBorderControls.js"
+  );
+
+  const { handleImageBorderControlsClick } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleImageBorderControlsClick.js"
+  );
+
+  const { saveModificationsforImage } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
+  const { initImageShadowControls } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/Image/initImageShadowControls.js"
+  );
+
+  const { initShadowColorPalate } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/InitShadowColorPalateToggle/initShadowColorPalate.js"
+  );
+
+  const { InitImageOverLayControls } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/Image/InitImageOverLayControls.js"
+  );
+
+  const { initOverLayColorPalate } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initOverLayColorPalate/initOverLayColorPalate.js"
+  );
+
+  const { saveImageOverlayModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
+  const { saveImageShadowModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
+  const { WidgetTypoSectionStateControls } = await import(
+    "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetTypoSection/WidgetTypoSectionStateControls/WidgetTypoSectionStateControls.js"
+  );
+
+  //Image all functionality code end here
+  //Image border controls end here
+
+  // const { parentHtmlTabClick } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/clickEvents/parentHtmlTabClick.js"
+  // );
+
+  //button all functionality code start here
+
+  // const { initButtonAdvanceStyles } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonSection/WidgetButtonAdvanceStyles/WidgetButtonAdvanceStyles.js"
+  // );
+  // const { ButtonAdvanceToggleControls } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/button/ButtonAdvanceToggleControls/ButtonAdvanceToggleControls.js"
+  // );
+
+  // const {
+  //   initHoverButtonSectionToggleControls,
+  //   initHoverButtonEffectDropdowns,
+  // } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/button/initHoverButtonSectionToggleControls/initHoverButtonSectionToggleControls.js"
+  // );
+  // const { initButtonSectionToggleControls } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/button/initButtonSectionToggleControls/initButtonSectionToggleControls.js"
+  // );
+  // const { initImageUploadPreview } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/button/initButtonSectionToggleControls/initImageUploadPreview.js"
+  // );
+
+  // const { initButtonFontColorPaletteToggle } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/src/button/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js"
+  // );
+
   const {
     initButtonStyles,
     initButtonIconPositionToggle,
@@ -286,6 +557,7 @@ let pendingModifications = new Map();
   } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonStyles.js"
   );
+
   const {
     initHoverButtonShadowControls,
     initHoverButtonIconRotationControl,
@@ -297,6 +569,18 @@ let pendingModifications = new Map();
     applyHoverButtonEffects,
   } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonHoverStyles.js"
+  );
+
+  const { saveButtonModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
+  const { saveButtonBorderModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
+  const { saveButtonShadowModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
   const themeColors = await getSquarespaceThemeStyles();
