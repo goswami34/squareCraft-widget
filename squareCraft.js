@@ -221,7 +221,7 @@ let pendingModifications = new Map();
   //   "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleFontWeightDropdownClick.js"
   // );
   const { handleBlockClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBlockClick.js"
+    "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleBlockClick.js"
   );
   const { handleAlignmentClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleAlignmentClick.js"
