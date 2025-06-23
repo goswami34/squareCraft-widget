@@ -178,16 +178,16 @@ let pendingModifications = new Map();
   }
 
   const { initButtonAdvanceStyles } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/button/WidgetButtonSection/WidgetButtonAdvanceStyles/WidgetButtonAdvanceStyles.js"
+    "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonSection/WidgetButtonAdvanceStyles/WidgetButtonAdvanceStyles.js"
   );
   const { handleSectionFind } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/section/handleSectionFind.js"
   );
   const { ButtonAdvanceToggleControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/button/ButtonAdvanceToggleControls/ButtonAdvanceToggleControls.js"
+    "https://goswami34.github.io/squareCraft-widget/src/button/ButtonAdvanceToggleControls/ButtonAdvanceToggleControls.js"
   );
   const { getTextType } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/getTextType.js"
+    "https://goswami34.github.io/squareCraft-widget/src/utils/getTextType.js"
   );
   const { getHoverTextType } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/getHoverTextType.js"
