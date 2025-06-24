@@ -53,7 +53,7 @@ export function handleLinkTextHighlightClick(
       const selectedColor = event.target.value;
 
       if (!colorPickerContext?.lastClickedElement) {
-        context.showNotification("Please select a block first", "error");
+        colorPickerContext.showNotification("Please select a block first", "error");
         return;
       }
 
@@ -93,7 +93,7 @@ export function handleLinkTextHighlightClick(
 
       // Validate that we have a selectedTextType before proceeding
       if (!selectedTextType) {
-        context.showNotification("Please select a text type first", "error");
+        colorPickerContext.showNotification("Please select a text type first", "error");
         return;
       }
 
@@ -101,7 +101,7 @@ export function handleLinkTextHighlightClick(
       const block =
         colorPickerContext.lastClickedElement.closest('[id^="block-"]');
       if (!block) {
-        context.showNotification("Block not found", "error");
+        colorPickerContext.showNotification("Block not found", "error");
         return;
       }
 
@@ -135,7 +135,7 @@ export function handleLinkTextHighlightClick(
 
       // Validate that we have a valid selector before proceeding
       if (!paragraphSelector) {
-        context.showNotification(
+        colorPickerContext.showNotification(
           `Invalid text type: ${selectedTextType}. Please select a valid text type first.`,
           "error"
         );
@@ -145,7 +145,7 @@ export function handleLinkTextHighlightClick(
       const targetElements = block.querySelectorAll(paragraphSelector);
 
       if (!targetElements.length) {
-        context.showNotification(
+        colorPickerContext.showNotification(
           `No ${selectedTextType} found in the block`,
           "error"
         );
@@ -185,7 +185,7 @@ export function handleLinkTextHighlightClick(
       });
 
       if (!LinkFound) {
-        context.showNotification(
+        colorPickerContext.showNotification(
           `No Link (<a>) text found in ${selectedTextType}. Please add some Link text first.`,
           "info"
         );
@@ -223,10 +223,10 @@ export function handleLinkTextHighlightClick(
             },
           },
         },
-        context.saveLinkTextModifications
+        colorPickerContext.saveLinkTextModifications
       );
 
-      context.showNotification(
+      colorPickerContext.showNotification(
         `✅ Text highlight applied to ${LinkCount} link word(s) in ${selectedTextType}`,
         "success"
       );
