@@ -346,7 +346,7 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontSizeLink.js"
   );
   const { handleFontWeightLink } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontWeightLink.js"
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontSizeLink.js"
   );
   // const { handleTextHighLinghtClick } = await import(
   //   "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextHighLinght.js"
