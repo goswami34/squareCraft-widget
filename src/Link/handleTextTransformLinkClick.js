@@ -32,8 +32,12 @@ export function handleTextTransformLinkClick(event = null, context = null) {
     context,
   });
 
-  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
-    context || {};
+  const {
+    lastClickedElement,
+    selectedSingleTextType,
+    addPendingModification,
+    saveLinkTextModifications,
+  } = context || {};
 
   if (!event) {
     const activeButton = document.querySelector(

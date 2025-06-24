@@ -12,6 +12,17 @@ import { WidgetImagePresetSection } from "https://goswami34.github.io/squareCraf
 import { WidgetTypoPresetSection } from "https://goswami34.github.io/squareCraft-widget/src/components/WidgetTypoSection/WidgetTypoPresetSection/WidgetTypoPresetSection.js";
 import { WidgetButtonAdvanceSection } from "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonSection/WidgetButtonAdvanceSection/WidgetButtonAdvanceSection.js";
 
+// Global variable to store pending modifications
+let pendingModifications = new Map();
+
+// Function to add pending modifications
+export function addPendingModification(blockId, css, tagType) {
+  if (!pendingModifications.has(blockId)) {
+    pendingModifications.set(blockId, []);
+  }
+  pendingModifications.get(blockId).push({ css, tagType });
+}
+
 export function html() {
   //   const htmlString = `
   //      <div
@@ -297,9 +308,44 @@ async function handlePublish() {
     // Save each pending modification
     for (const [blockId, modifications] of pendingModifications.entries()) {
       for (const mod of modifications) {
-        const result = await saveModifications(blockId, mod.css, mod.tagType);
+        let result;
+
+        // Handle different types of modifications
+        if (mod.tagType === "link") {
+          // For link text modifications, use saveLinkTextModifications
+          const { target, ...cssStyles } = mod.css;
+          result = await saveLinkTextModifications(blockId, target, cssStyles);
+        } else if (mod.tagType === "image") {
+          // For image modifications, use saveModificationsforImage
+          result = await saveModificationsforImage(
+            blockId,
+            mod.css,
+            mod.tagType
+          );
+        } else if (mod.tagType === "imageOverlay") {
+          // For image overlay modifications, use saveImageOverlayModifications
+          result = await saveImageOverlayModifications(blockId, mod.css);
+        } else if (mod.tagType === "imageShadow") {
+          // For image shadow modifications, use saveImageShadowModifications
+          result = await saveImageShadowModifications(blockId, mod.css);
+        } else if (mod.tagType === "button") {
+          // For button modifications, use saveButtonModifications
+          result = await saveButtonModifications(blockId, mod.css);
+        } else if (mod.tagType === "buttonBorder") {
+          // For button border modifications, use saveButtonBorderModifications
+          result = await saveButtonBorderModifications(blockId, mod.css);
+        } else if (mod.tagType === "buttonShadow") {
+          // For button shadow modifications, use saveButtonShadowModifications
+          result = await saveButtonShadowModifications(blockId, mod.css);
+        } else {
+          // For regular text modifications, use saveModifications
+          result = await saveModifications(blockId, mod.css, mod.tagType);
+        }
+
         if (!result.success) {
-          throw new Error(`Failed to save changes for block ${blockId}`);
+          throw new Error(
+            `Failed to save changes for block ${blockId}: ${result.error}`
+          );
         }
       }
     }
@@ -1005,17 +1051,42 @@ export async function saveLinkTextModifications(blockId, tag, cssStyles) {
 
   const kebabStyles = toKebabCase(cleanedStyles);
 
-  // Construct payload
+  // Create selector based on tag type
+  let selector = "";
+  if (tag === "paragraph1") {
+    selector = `#${blockId} p.sqsrte-large a`;
+  } else if (tag === "paragraph2") {
+    selector = `#${blockId} p:not(.sqsrte-large):not(.sqsrte-small) a`;
+  } else if (tag === "paragraph3") {
+    selector = `#${blockId} p.sqsrte-small a`;
+  } else if (tag.startsWith("heading")) {
+    const headingNumber = tag.replace("heading", "");
+    selector = `#${blockId} h${headingNumber} a`;
+  } else {
+    selector = `#${blockId} ${tag} a`;
+  }
+
+  // Construct payload in the same format as image modifications
   const payload = {
     userId,
     token,
     widgetId,
-    pageId,
-    elementId: blockId,
-    css: {
-      target: tag, // example: h1, h2, p1, etc.
-      styles: kebabStyles,
-    },
+    modifications: [
+      {
+        pageId,
+        elements: [
+          {
+            elementId: blockId,
+            css: {
+              linkText: {
+                selector,
+                styles: kebabStyles,
+              },
+            },
+          },
+        ],
+      },
+    ],
   };
 
   console.log("📤 Sending link text style payload:", payload);
