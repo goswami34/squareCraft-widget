@@ -419,6 +419,8 @@ export async function handleTextTransformLinkClick(event = null, context = null)
 }
 
 export async function handleFontWeightLink(event, context) {
+  console.log("🚀 handleFontWeightLink called with:", { event, context });
+  
   const {
     lastClickedElement,
     selectedSingleTextType,
@@ -427,7 +429,16 @@ export async function handleFontWeightLink(event, context) {
     showNotification,
   } = context;
 
+  console.log("🔍 Context values:", {
+    lastClickedElement: !!lastClickedElement,
+    selectedSingleTextType,
+    hasSaveLinkTextModifications: typeof saveLinkTextModifications === 'function',
+    hasShowNotification: typeof showNotification === 'function'
+  });
+
   const fontWeightSelect = document.getElementById("squareCraftLinkFontWeight");
+  console.log("🔍 Font weight select found:", !!fontWeightSelect);
+  
   if (!fontWeightSelect) {
     showNotification("Font weight selector not found.", "error");
     return;
@@ -559,5 +570,7 @@ export async function handleFontWeightLink(event, context) {
     `✅ Font weight applied to link words in ${normalizedType}`,
     "success"
   );
+  
+  console.log("✅ handleFontWeightLink completed successfully");
 }
 

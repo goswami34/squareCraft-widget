@@ -1,5 +1,57 @@
 export function typoLinkSelect(fontSizes) {
   return `
+       <style>
+         /* Font weight dropdown styling */
+         #squareCraftLinkFontWeight {
+           background: transparent !important;
+           color: white !important;
+           border: none !important;
+           outline: none !important;
+           -webkit-appearance: none !important;
+           -moz-appearance: none !important;
+           appearance: none !important;
+           cursor: pointer !important;
+           font-size: 14px !important;
+           font-family: 'Poppins', sans-serif !important;
+           font-weight: 300 !important;
+           padding: 5px !important;
+           width: 100% !important;
+           position: relative !important;
+           z-index: 1 !important;
+         }
+         
+         #squareCraftLinkFontWeight option {
+           background: #3f3f3f !important;
+           color: white !important;
+           padding: 8px !important;
+           font-size: 14px !important;
+           font-family: 'Poppins', sans-serif !important;
+         }
+         
+         #squareCraftLinkFontWeight:focus {
+           background: #494949 !important;
+         }
+         
+         /* Custom dropdown arrow */
+         .sc-font-weight-container {
+           position: relative;
+         }
+         
+         .sc-font-weight-container::after {
+           content: '';
+           position: absolute;
+           right: 10px;
+           top: 50%;
+           transform: translateY(-50%);
+           width: 0;
+           height: 0;
+           border-left: 5px solid transparent;
+           border-right: 5px solid transparent;
+           border-top: 5px solid white;
+           pointer-events: none;
+         }
+       </style>
+       
        <div
    class="sc-mt-2 sc-relative sc-grid  sc-grid-cols-12 sc-gap-2 ">
 
@@ -61,36 +113,22 @@ export function typoLinkSelect(fontSizes) {
 </div>
  
 <div class="sc-mt-2 sc-grid sc-grid-cols-12 sc-gap-2">
-  <div class="sc-flex sc-bg-494949 sc-col-span-7 sc-justify-between sc-border sc-border-solid sc-border-585858 sc-rounded-6px sc-items-center">
+  <div class="sc-flex sc-bg-494949 sc-col-span-7 sc-justify-between sc-border sc-border-solid sc-border-585858 sc-rounded-6px sc-items-center sc-font-weight-container">
     <div class="sc-px-2">
       <select 
         id="squareCraftLinkFontWeight"
         class="sc-font-weight-select"
         data-font-weight-select
-        style="
-          background: transparent;
-          border: none;
-          color: white;
-          padding: 5px;
-          width: 100%;
-          cursor: pointer;
-          outline: none;
-          -webkit-appearance: none;
-          -moz-appearance: none;
-          appearance: none;
-          position: relative;
-          z-index: 1;
-        "
       >
-        <option id="squareCraftFontWeight" value="100">Thin (100)</option>
-        <option id="squareCraftFontWeight" value="200">Extra Light (200)</option>
-        <option id="squareCraftFontWeight" value="300">Light (300)</option>
-        <option id="squareCraftFontWeight" value="400" selected>Regular (400)</option>
-        <option id="squareCraftFontWeight" value="500">Medium (500)</option>
-        <option id="squareCraftFontWeight" value="600">Semi Bold (600)</option>
-        <option id="squareCraftFontWeight" value="700">Bold (700)</option>
-        <option id="squareCraftFontWeight" value="800">Extra Bold (800)</option>
-        <option id="squareCraftFontWeight" value="900">Black (900)</option>
+        <option value="100">Thin (100)</option>
+        <option value="200">Extra Light (200)</option>
+        <option value="300">Light (300)</option>
+        <option value="400" selected>Regular (400)</option>
+        <option value="500">Medium (500)</option>
+        <option value="600">Semi Bold (600)</option>
+        <option value="700">Bold (700)</option>
+        <option value="800">Extra Bold (800)</option>
+        <option value="900">Black (900)</option>
       </select>
     </div>
     <div class="sc-bg-3f3f3f sc-px-2" style="height: 27px; padding: 0 8px;">
