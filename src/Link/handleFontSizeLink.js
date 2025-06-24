@@ -31,7 +31,6 @@ export function handleFontSizeLink(event = null, context = null) {
     lastClickedElement,
     selectedSingleTextType,
     addPendingModification,
-    saveModifications,
     showNotification,
   } = context;
 

@@ -322,7 +322,7 @@ let pendingModifications = new Map();
   // const { initBorderColorPaletteToggle } = await import(
   //   "https://goswami34.github.io/squareCraft-widget/src/utils/initBorderColorPaletteToggle.js"
   // );
-  const { saveModifications } = await import(
+  const { saveModifications, saveLinkTextModifications } = await import(
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
   // const { initButtonFontColorPaletteToggle } = await import(
@@ -584,9 +584,9 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
-  const { saveLinkTextModifications } = await import(
-    "https://goswami34.github.io/squareCraft-widget/html.js"
-  );
+  // const { saveLinkTextModifications } = await import(
+  //   "https://goswami34.github.io/squareCraft-widget/html.js"
+  // );
 
   const themeColors = await getSquarespaceThemeStyles();
 
@@ -4422,6 +4422,7 @@ let pendingModifications = new Map();
     if (!pendingModifications.has(blockId)) {
       pendingModifications.set(blockId, []);
     }
+    pendingModifications.get(blockId).push({ css, tagType });
   }
 
   function moveWidgetToDesktop() {
@@ -4504,4 +4505,39 @@ let pendingModifications = new Map();
       showNotification(error.message, "error");
     }
   }
+
+  // Add publish button event listener
+  function initPublishButton() {
+    const publishButton = document.getElementById("publish");
+    if (!publishButton) {
+      console.warn("Publish button not found");
+      return;
+    }
+
+    publishButton.addEventListener("click", async () => {
+      try {
+        // Show loading state
+        publishButton.disabled = true;
+        publishButton.textContent = "Publishing...";
+
+        await handlePublish();
+      } catch (error) {
+        showNotification(error.message, "error");
+      } finally {
+        // Reset button state
+        publishButton.disabled = false;
+        publishButton.textContent = "Publish";
+      }
+    });
+  }
+
+  // Initialize publish button when widget is created
+  function initializePublishButton() {
+    setTimeout(() => {
+      initPublishButton();
+    }, 1000);
+  }
+
+  // Call this when widget is created
+  initializePublishButton();
 })();
