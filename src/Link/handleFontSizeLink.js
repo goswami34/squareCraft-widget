@@ -1,4 +1,14 @@
+let colorPalette = null;
+let colorPickerContext = null;
 const linkTextStyleMap = new Map();
+
+// Helper function to log the current state of the style map
+function logStyleMapState(blockId, textType) {
+  const styleKey = `${blockId}-${textType}`;
+  const currentData = linkTextStyleMap.get(styleKey);
+  console.log("🔍 Current style map state for key:", styleKey, ":", currentData);
+  return currentData;
+}
 
 // ✅ mergeAndSaveLinkTextStyles function similar to mergeAndSaveImageStyles
 async function mergeAndSaveLinkTextStyles(
@@ -50,7 +60,10 @@ async function mergeAndSaveLinkTextStyles(
 
   // Save to map and database
   linkTextStyleMap.set(styleKey, finalData);
+  console.log("🔍 Updated linkTextStyleMap for key:", styleKey, "with data:", finalData);
+  
   await saveLinkTextModifications(blockId, finalData, "link");
+  console.log("✅ Database save completed for key:", styleKey);
 }
 
 function showNotification(message, type = "info") {
@@ -195,6 +208,9 @@ export async function handleFontSizeLink(event = null, context = null) {
   // Get existing styles from the map
   const styleKey = `${block.id}-${selectedSingleTextType}`;
   const existingStyles = linkTextStyleMap.get(styleKey)?.linkText?.styles || {};
+  
+  console.log("🔍 Font Size - Before saving, existing styles:", existingStyles);
+  logStyleMapState(block.id, selectedSingleTextType);
 
   // Save to database while preserving existing styles
   await mergeAndSaveLinkTextStyles(
@@ -211,6 +227,9 @@ export async function handleFontSizeLink(event = null, context = null) {
     },
     saveLinkTextModifications
   );
+  
+  console.log("🔍 Font Size - After saving:");
+  logStyleMapState(block.id, selectedSingleTextType);
 
   // Update Active Tab UI
   document.querySelectorAll('[id^="scFontSizeInputLink"]').forEach((el) => {
@@ -385,6 +404,9 @@ export async function handleTextTransformLinkClick(event = null, context = null)
   // Get existing styles from the map
   const styleKey = `${block.id}-${selectedSingleTextType}`;
   const existingStyles = linkTextStyleMap.get(styleKey)?.linkText?.styles || {};
+  
+  console.log("🔍 Text Transform - Before saving, existing styles:", existingStyles);
+  logStyleMapState(block.id, selectedSingleTextType);
 
   // Save to database while preserving existing styles
   await mergeAndSaveLinkTextStyles(
@@ -401,6 +423,10 @@ export async function handleTextTransformLinkClick(event = null, context = null)
     },
     saveLinkTextModifications
   );
+  
+  console.log("🔍 Text Transform - After saving:");
+  logStyleMapState(block.id, selectedSingleTextType);
+  
   console.log("✅ Saved modification");
 
   // Update Active Tab UI
@@ -579,6 +605,9 @@ export async function handleFontWeightLink(event, context) {
   // Get existing styles from the map
   const styleKey = `${block.id}-${selectedSingleTextType}`;
   const existingStyles = linkTextStyleMap.get(styleKey)?.linkText?.styles || {};
+  
+  console.log("🔍 Font Weight - Before saving, existing styles:", existingStyles);
+  logStyleMapState(block.id, selectedSingleTextType);
 
   // Save to database while preserving existing styles
   await mergeAndSaveLinkTextStyles(
@@ -595,6 +624,9 @@ export async function handleFontWeightLink(event, context) {
     },
     saveLinkTextModifications
   );
+  
+  console.log("🔍 Font Weight - After saving:");
+  logStyleMapState(block.id, selectedSingleTextType);
 
   console.log("✅ Saved font-weight to database");
 
@@ -604,5 +636,252 @@ export async function handleFontWeightLink(event, context) {
   );
   
   console.log("✅ handleFontWeightLink completed successfully. 🎉");
+}
+
+
+export function handleLinkTextHighlightClick(
+  event,
+  lastClickedElement,
+  applyStylesToElement,
+  context
+) {
+  // Check if we have a valid lastClickedElement
+  if (!lastClickedElement) {
+    context.showNotification("Please select a block first", "error");
+    return;
+  }
+
+  if (!event) {
+    event = {
+      target: document.getElementById("LinktextHighlightColorPalate"),
+    };
+  }
+
+  const LinktextHighlightColorPalate = event.target.closest(
+    "#LinktextHighlightColorPalate"
+  );
+  if (!LinktextHighlightColorPalate) return;
+
+  // Create fresh context
+  colorPickerContext = {
+    ...context,
+    lastClickedElement,
+    selectedSingleTextType: context.selectedSingleTextType,
+  };
+
+  // Create hidden color input if not already created
+  if (!colorPalette) {
+    colorPalette = document.createElement("input");
+    colorPalette.type = "color";
+    colorPalette.id = "scHighlightPalette";
+    colorPalette.style.opacity = "0";
+    colorPalette.style.width = "0px";
+    colorPalette.style.height = "0px";
+    colorPalette.style.marginTop = "14px";
+
+    const widgetContainer = document.getElementById("sc-widget-container");
+    if (widgetContainer) {
+      widgetContainer.appendChild(colorPalette);
+    } else {
+      document.body.appendChild(colorPalette);
+    }
+
+    colorPalette.addEventListener("input", async function (event) {
+      const selectedColor = event.target.value;
+
+      if (!colorPickerContext?.lastClickedElement) {
+        colorPickerContext.showNotification("Please select a block first", "error");
+        return;
+      }
+
+      // Update color palette display
+      const textHighlightPalate = document.getElementById(
+        "LinktextHighlightColorPalate"
+      );
+      if (textHighlightPalate) {
+        textHighlightPalate.style.backgroundColor = selectedColor;
+      }
+
+      const LinktextHighlightHtml = document.getElementById(
+        "LinktextHighlightHtml"
+      );
+      if (LinktextHighlightHtml) {
+        LinktextHighlightHtml.textContent = selectedColor;
+      }
+
+      // Get selected text type
+      const selectedTab = document.querySelector(".sc-selected-tab");
+      let selectedTextType = null;
+
+      if (selectedTab) {
+        if (selectedTab.id.startsWith("heading")) {
+          selectedTextType = `heading${selectedTab.id.replace("heading", "")}`;
+        } else if (selectedTab.id.startsWith("paragraph")) {
+          selectedTextType = `paragraph${selectedTab.id.replace(
+            "paragraph",
+            ""
+          )}`;
+        }
+      }
+
+      if (!selectedTextType && colorPickerContext?.selectedSingleTextType) {
+        selectedTextType = colorPickerContext.selectedSingleTextType;
+      }
+
+      // Validate that we have a selectedTextType before proceeding
+      if (!selectedTextType) {
+        colorPickerContext.showNotification("Please select a text type first", "error");
+        return;
+      }
+
+      // Find the block element
+      const block =
+        colorPickerContext.lastClickedElement.closest('[id^="block-"]');
+      if (!block) {
+        colorPickerContext.showNotification("Block not found", "error");
+        return;
+      }
+
+      // Define selectors for different text types
+      const selectorMap = {
+        paragraph1: "p.sqsrte-large",
+        paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
+        paragraph3: "p.sqsrte-small",
+        heading1: "h1",
+        heading2: "h2",
+        heading3: "h3",
+        heading4: "h4",
+      };
+
+      // Try to get the selector from the map, with fallback to a general selector
+      let paragraphSelector = selectorMap[selectedTextType];
+
+      // If no specific selector found, use a general fallback
+      if (!paragraphSelector) {
+        if (selectedTextType && selectedTextType.startsWith("heading")) {
+          paragraphSelector = selectedTextType; // Use the heading tag directly
+        } else if (
+          selectedTextType &&
+          selectedTextType.startsWith("paragraph")
+        ) {
+          paragraphSelector = "p"; // Use all paragraphs as fallback
+        } else {
+          paragraphSelector = "p, h1, h2, h3, h4"; // Ultimate fallback
+        }
+      }
+
+      // Validate that we have a valid selector before proceeding
+      if (!paragraphSelector) {
+        colorPickerContext.showNotification(
+          `Invalid text type: ${selectedTextType}. Please select a valid text type first.`,
+          "error"
+        );
+        return;
+      }
+
+      const targetElements = block.querySelectorAll(paragraphSelector);
+
+      if (!targetElements.length) {
+        colorPickerContext.showNotification(
+          `No ${selectedTextType} found in the block`,
+          "error"
+        );
+        return;
+      }
+
+      let LinkFound = false;
+      let LinkCount = 0;
+
+      // Find and highlight all bold text
+      targetElements.forEach((tag) => {
+        const boldElements = tag.querySelectorAll("a");
+        if (boldElements.length > 0) {
+          LinkFound = true;
+          LinkCount += boldElements.length;
+
+          // Create or update style tag for this block's Link tags
+          let styleTag = document.getElementById(
+            `style-${block.id}-Link-highlight`
+          );
+          if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = `style-${block.id}-Link-highlight`;
+            document.head.appendChild(styleTag);
+          }
+
+          // Remove any inline styles from parent elements
+          tag.style.backgroundColor = "";
+
+          // Apply highlight color to Link tags using linear gradient
+          const cssRule = `#${block.id} ${paragraphSelector} a {
+            background-image: linear-gradient(to top, ${selectedColor} 50%, transparent 50%) !important;
+          }`;
+
+          styleTag.innerHTML = cssRule;
+        }
+      });
+
+      if (!LinkFound) {
+        colorPickerContext.showNotification(
+          `No Link (<a>) text found in ${selectedTextType}. Please add some Link text first.`,
+          "info"
+        );
+        return;
+      }
+
+      // Create selector based on tag type
+      let linkSelector = "";
+      if (selectedTextType === "paragraph1") {
+        linkSelector = `#${block.id} p.sqsrte-large a`;
+      } else if (selectedTextType === "paragraph2") {
+        linkSelector = `#${block.id} p:not(.sqsrte-large):not(.sqsrte-small) a`;
+      } else if (selectedTextType === "paragraph3") {
+        linkSelector = `#${block.id} p.sqsrte-small a`;
+      } else if (selectedTextType.startsWith("heading")) {
+        const headingNumber = selectedTextType.replace("heading", "");
+        linkSelector = `#${block.id} h${headingNumber} a`;
+      } else {
+        linkSelector = `#${block.id} ${selectedTextType} a`;
+      }
+
+      // Get existing styles from the map
+      const styleKey = `${block.id}-${selectedTextType}`;
+      const existingStyles = linkTextStyleMap.get(styleKey)?.linkText?.styles || {};
+      
+      console.log("🔍 Link Text Highlight - Existing styles:", existingStyles);
+      console.log("🔍 Link Text Highlight - Style key:", styleKey);
+      logStyleMapState(block.id, selectedTextType);
+
+      // Save to database while preserving existing styles
+      await mergeAndSaveLinkTextStyles(
+        block.id,
+        selectedTextType,
+        {
+          linkText: {
+            selector: linkSelector,
+            styles: {
+              ...existingStyles, // Preserve existing styles
+              "background-color": selectedColor,
+            },
+          },
+        },
+        colorPickerContext.saveLinkTextModifications
+      );
+      
+      console.log("🔍 Link Text Highlight - After saving:");
+      logStyleMapState(block.id, selectedTextType);
+      console.log("✅ Link Text Highlight - Saved to database with preserved styles");
+
+      colorPickerContext.showNotification(
+        `✅ Text highlight applied to ${LinkCount} link word(s) in ${selectedTextType}`,
+        "success"
+      );
+    });
+  }
+
+  // Open color picker
+  setTimeout(() => {
+    colorPalette.click();
+  }, 50);
 }
 
