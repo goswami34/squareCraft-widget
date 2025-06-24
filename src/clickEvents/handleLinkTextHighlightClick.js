@@ -49,7 +49,7 @@ export function handleLinkTextHighlightClick(
       document.body.appendChild(colorPalette);
     }
 
-    colorPalette.addEventListener("input", function (event) {
+    colorPalette.addEventListener("input", async function (event) {
       const selectedColor = event.target.value;
 
       if (!colorPickerContext?.lastClickedElement) {
@@ -212,7 +212,7 @@ export function handleLinkTextHighlightClick(
         linkTextStyleMap.get(block.id)?.linkText?.styles || {};
 
       // Save to database while preserving existing styles
-      mergeAndSaveLinkTextStyles(
+      await mergeAndSaveLinkTextStyles(
         block.id,
         {
           linkText: {
@@ -240,7 +240,7 @@ export function handleLinkTextHighlightClick(
 }
 
 // ✅ mergeAndSaveLinkTextStyles function similar to mergeAndSaveImageStyles
-function mergeAndSaveLinkTextStyles(
+async function mergeAndSaveLinkTextStyles(
   blockId,
   newStyles,
   saveLinkTextModifications
@@ -275,5 +275,5 @@ function mergeAndSaveLinkTextStyles(
 
   // Save to map and database
   linkTextStyleMap.set(blockId, finalData);
-  saveLinkTextModifications(blockId, finalData, "link");
+  await saveLinkTextModifications(blockId, finalData, "link");
 }

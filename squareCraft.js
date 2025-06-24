@@ -3878,7 +3878,7 @@ let pendingModifications = new Map();
     }
   }
 
-  function handleAndDetect(clickedBlock) {
+  async function handleAndDetect(clickedBlock) {
     handleBlockClick(
       { target: clickedBlock },
       {

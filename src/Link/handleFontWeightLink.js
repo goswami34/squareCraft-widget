@@ -1,7 +1,7 @@
 const linkTextStyleMap = new Map();
 
 // ✅ mergeAndSaveLinkTextStyles function similar to mergeAndSaveImageStyles
-function mergeAndSaveLinkTextStyles(
+async function mergeAndSaveLinkTextStyles(
   blockId,
   newStyles,
   saveLinkTextModifications
@@ -36,7 +36,7 @@ function mergeAndSaveLinkTextStyles(
 
   // Save to map and database
   linkTextStyleMap.set(blockId, finalData);
-  saveLinkTextModifications(blockId, finalData, "link");
+  await saveLinkTextModifications(blockId, finalData, "link");
 }
 
 function showNotification(message, type = "info") {
@@ -67,7 +67,7 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
-export function handleFontWeightLink(event, context) {
+export async function handleFontWeightLink(event, context) {
   const {
     lastClickedElement,
     selectedSingleTextType,
@@ -188,7 +188,7 @@ export function handleFontWeightLink(event, context) {
   const existingStyles = linkTextStyleMap.get(block.id)?.linkText?.styles || {};
 
   // Save to database while preserving existing styles
-  mergeAndSaveLinkTextStyles(
+  await mergeAndSaveLinkTextStyles(
     block.id,
     {
       linkText: {

@@ -1,7 +1,7 @@
 const linkTextStyleMap = new Map();
 
 // ✅ mergeAndSaveLinkTextStyles function similar to mergeAndSaveImageStyles
-function mergeAndSaveLinkTextStyles(
+async function mergeAndSaveLinkTextStyles(
   blockId,
   newStyles,
   saveLinkTextModifications
@@ -36,10 +36,10 @@ function mergeAndSaveLinkTextStyles(
 
   // Save to map and database
   linkTextStyleMap.set(blockId, finalData);
-  saveLinkTextModifications(blockId, finalData, "link");
+  await saveLinkTextModifications(blockId, finalData, "link");
 }
 
-export function handleTextTransformLinkClick(event = null, context = null) {
+export async function handleTextTransformLinkClick(event = null, context = null) {
   console.log("🚀 handleTextTransformLinkClick called with:", {
     event,
     context,
@@ -199,7 +199,7 @@ export function handleTextTransformLinkClick(event = null, context = null) {
   const existingStyles = linkTextStyleMap.get(block.id)?.linkText?.styles || {};
 
   // Save to database while preserving existing styles
-  mergeAndSaveLinkTextStyles(
+  await mergeAndSaveLinkTextStyles(
     block.id,
     {
       linkText: {
