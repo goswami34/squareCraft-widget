@@ -1024,39 +1024,27 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
 
   const kebabStyles = toKebabCase(cleanedStyles);
 
-  // Construct payload in the same format as image modifications
-  // const payload = {
-  //   userId: validatedUserId,
-  //   token: validatedToken,
-  //   widgetId: validatedWidgetId,
-  //   modifications: [
-  //     {
-  //       pageId: validatedPageId,
-  //       elements: [
-  //         {
-  //           elementId: validatedBlockId,
-  //           css: {
-  //             linkText: {
-  //               selector,
-  //               styles: kebabStyles,
-  //             },
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // };
-
+  // Construct payload in the correct format to match database schema
   const payload = {
     userId: validatedUserId,
     token: validatedToken,
     widgetId: validatedWidgetId,
-    pageId: validatedPageId,
-    elementId: validatedBlockId,
-    css: {
-      target: css?.target || "p", // or dynamically detect from tabType
-      styles: kebabStyles
-    }
+    modifications: [
+      {
+        pageId: validatedPageId,
+        elements: [
+          {
+            elementId: validatedBlockId,
+            css: {
+              linkText: {
+                selector,
+                styles: kebabStyles,
+              },
+            },
+          },
+        ],
+      },
+    ],
   };
   console.log("payload", payload);
 

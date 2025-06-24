@@ -39,34 +39,6 @@ function mergeAndSaveLinkTextStyles(
   saveLinkTextModifications(blockId, finalData, "link");
 }
 
-function showNotification(message, type = "info") {
-  const notification = document.createElement("div");
-  notification.className = `sc-notification sc-notification-${type}`;
-  notification.textContent = message;
-
-  // Add styles
-  Object.assign(notification.style, {
-    position: "fixed",
-    top: "20px",
-    right: "20px",
-    padding: "10px 20px",
-    borderRadius: "4px",
-    color: "white",
-    zIndex: "9999",
-    animation: "fadeIn 0.3s ease-in-out",
-    backgroundColor:
-      type === "success" ? "#4CAF50" : type === "error" ? "#f44336" : "#2196F3",
-  });
-
-  document.body.appendChild(notification);
-
-  // Remove after 3 seconds
-  setTimeout(() => {
-    notification.style.animation = "fadeOut 0.3s ease-in-out";
-    setTimeout(() => notification.remove(), 300);
-  }, 3000);
-}
-
 export function handleTextTransformLinkClick(event = null, context = null) {
   console.log("🚀 handleTextTransformLinkClick called with:", {
     event,
@@ -78,7 +50,19 @@ export function handleTextTransformLinkClick(event = null, context = null) {
     selectedSingleTextType,
     addPendingModification,
     saveLinkTextModifications,
+    showNotification,
   } = context || {};
+
+  // Validate that we have the required functions
+  if (typeof saveLinkTextModifications !== "function") {
+    console.error("❌ saveLinkTextModifications is not a function");
+    return;
+  }
+
+  if (typeof showNotification !== "function") {
+    console.error("❌ showNotification is not a function");
+    return;
+  }
 
   if (!event) {
     const activeButton = document.querySelector(
@@ -141,7 +125,7 @@ export function handleTextTransformLinkClick(event = null, context = null) {
   }
   console.log("🔍 Using paragraph selector:", paragraphSelector);
 
-  // Check if there are any em tags in the selected elements
+  // Check if there are any a tags in the selected elements
   const targetElements = block.querySelectorAll(paragraphSelector);
   console.log("🔍 Found target elements:", targetElements.length);
   if (!targetElements.length) {
@@ -153,38 +137,38 @@ export function handleTextTransformLinkClick(event = null, context = null) {
     return;
   }
 
-  // Check for <em> tags in the selected tag
-  let hasEmTags = false;
+  // Check for <a> tags in the selected tag
+  let hasLinkTags = false;
   targetElements.forEach((element) => {
-    const emTags = element.querySelectorAll("a");
-    console.log("🔍 Found a tags in element:", emTags.length);
-    if (emTags.length > 0) {
-      hasEmTags = true;
+    const linkTags = element.querySelectorAll("a");
+    console.log("🔍 Found a tags in element:", linkTags.length);
+    if (linkTags.length > 0) {
+      hasLinkTags = true;
     }
   });
 
-  if (!hasEmTags) {
+  if (!hasLinkTags) {
     console.log("❌ No a tags found in selected tag");
     showNotification(
-      `No italic text (<a>) found in ${selectedSingleTextType}`,
+      `No link text (<a>) found in ${selectedSingleTextType}`,
       "info"
     );
     return;
   }
 
   // Dynamic CSS Inject
-  const italicStyleId = `style-${block.id}-${selectedSingleTextType}-italic-texttransform`;
-  console.log("🔍 Using style ID:", italicStyleId);
+  const linkStyleId = `style-${block.id}-${selectedSingleTextType}-link-texttransform`;
+  console.log("🔍 Using style ID:", linkStyleId);
 
   // Remove any old style tag for this block/tag
-  let oldStyleTag = document.getElementById(italicStyleId);
+  let oldStyleTag = document.getElementById(linkStyleId);
   if (oldStyleTag) oldStyleTag.remove();
 
-  // Create new style tag that only targets em tags
+  // Create new style tag that only targets a tags
   let styleTag = document.createElement("style");
-  styleTag.id = italicStyleId;
+  styleTag.id = linkStyleId;
 
-  // Only apply text-transform to em tags and their colored spans
+  // Only apply text-transform to a tags and their colored spans
   const cssRule = `
     #${block.id} ${paragraphSelector} a,
     #${block.id} ${paragraphSelector} a span[class^='sqsrte-text-color'] {
