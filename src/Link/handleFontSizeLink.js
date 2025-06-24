@@ -571,6 +571,6 @@ export async function handleFontWeightLink(event, context) {
     "success"
   );
   
-  console.log("✅ handleFontWeightLink completed successfully");
+  console.log("✅ handleFontWeightLink completed successfully. 🎉");
 }
 
