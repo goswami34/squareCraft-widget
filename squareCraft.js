@@ -584,6 +584,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { saveLinkTextModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   const themeColors = await getSquarespaceThemeStyles();
 
   // document.body.addEventListener("click", (event) => {
@@ -1049,6 +1053,7 @@ let pendingModifications = new Map();
     handleAlignmentClick(event, {
       lastClickedElement,
       getTextType,
+      getHoverTextType,
       applyStylesToElement,
       lastAppliedAlignment,
       setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
@@ -1097,6 +1102,7 @@ let pendingModifications = new Map();
     handleLinkBlockClick(event, {
       getTextType,
       selectedElement,
+      saveLinkTextModifications,
       setSelectedElement: (val) => (selectedElement = val),
       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
       setLastClickedElement: (val) => (lastClickedElement = val),
@@ -1255,6 +1261,7 @@ let pendingModifications = new Map();
       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
       token,
       widgetId,
+      saveLinkTextModifications,
       setSelectedElement: (val) => (selectedElement = val), // Add this line
       addPendingModification: (blockId, css, tagType) => {
         if (!pendingModifications.has(blockId)) {
@@ -2021,6 +2028,7 @@ let pendingModifications = new Map();
       event,
       lastClickedElement,
       applyStylesToElement,
+      saveLinkTextModifications,
       {
         handleAllTextColorClick,
         lastClickedElement,
@@ -2044,6 +2052,7 @@ let pendingModifications = new Map();
         event,
         lastClickedElement,
         applyStylesToElement,
+        saveLinkTextModifications,
         {
           handleAllTextColorClick,
           lastClickedElement,
@@ -3092,7 +3101,7 @@ let pendingModifications = new Map();
         handleFontSizeLink(null, {
           lastClickedElement,
           getTextType,
-          saveModifications,
+          saveLinkTextModifications,
           selectedElement,
           setSelectedElement: (val) => (selectedElement = val),
           setLastClickedBlockId: (val) => (lastClickedBlockId = val),
@@ -3173,6 +3182,7 @@ let pendingModifications = new Map();
           lastClickedElement: currentlySelectedBlock,
           selectedSingleTextType: selectedSingleTextType,
           addPendingModification,
+          saveLinkTextModifications,
           showNotification,
         });
       });
@@ -3735,6 +3745,7 @@ let pendingModifications = new Map();
             lastClickedElement,
             selectedSingleTextType,
             addPendingModification,
+            saveLinkTextModifications,
             showNotification,
           }
         );
@@ -4451,19 +4462,46 @@ let pendingModifications = new Map();
   // Find your publish button logic and update it to use the latest border styles
   // Example: in your publish handler (pseudo-code, adapt as needed)
   async function handlePublish() {
-    // ... existing code ...
-    // Save all pending modifications as before
-    for (const [blockId, modifications] of pendingModifications.entries()) {
-      for (const mod of modifications) {
-        // ... existing code for other types ...
-      }
+    if (pendingModifications.size === 0) {
+      showNotification("No changes to publish", "info");
+      return;
     }
-    // Now, always send the latest border styles for the selected element
-    if (selectedElement) {
-      const borderStyles = getLatestButtonBorderStyles(selectedElement);
-      if (borderStyles) {
-        await saveButtonBorderModifications(selectedElement.id, borderStyles);
+
+    try {
+      // Save each pending modification
+      for (const [blockId, modifications] of pendingModifications.entries()) {
+        for (const mod of modifications) {
+          if (mod.tagType === "link") {
+            // Handle link text modifications
+            const result = await saveLinkTextModifications(
+              blockId,
+              mod.css.target,
+              mod.css
+            );
+            if (!result.success) {
+              throw new Error(
+                `Failed to save link text changes for block ${blockId}`
+              );
+            }
+          } else {
+            // Handle other modifications (existing logic)
+            const result = await saveModifications(
+              blockId,
+              mod.css,
+              mod.tagType
+            );
+            if (!result.success) {
+              throw new Error(`Failed to save changes for block ${blockId}`);
+            }
+          }
+        }
       }
+
+      // Clear pending modifications after successful save
+      pendingModifications.clear();
+      showNotification("All changes published successfully!", "success");
+    } catch (error) {
+      showNotification(error.message, "error");
     }
   }
 })();

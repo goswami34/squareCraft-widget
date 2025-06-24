@@ -191,11 +191,15 @@ export function handleLinkTextHighlightClick(
         return;
       }
 
-      // Save to backend
-      context.addPendingModification(block.id, {
-        "background-color": selectedColor,
-        target: selectedTextType,
-      });
+      // Store in pending modifications instead of saving directly
+      context.addPendingModification(
+        block.id,
+        {
+          "background-color": selectedColor,
+          target: selectedTextType,
+        },
+        "link"
+      );
 
       context.showNotification(
         `✅ Text highlight applied to ${LinkCount} link word(s) in ${selectedTextType}`,

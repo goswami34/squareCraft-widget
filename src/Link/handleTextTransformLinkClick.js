@@ -151,14 +151,14 @@ export function handleTextTransformLinkClick(event = null, context = null) {
   document.head.appendChild(styleTag);
   console.log("🔍 Applying CSS rule:", cssRule);
 
-  // Save Modification (for API persistence)
+  // Store in pending modifications instead of saving directly
   addPendingModification(
     block.id,
     {
       "text-transform": textTransform,
       target: selectedSingleTextType,
     },
-    "a"
+    "link"
   );
   console.log("✅ Saved modification");
 

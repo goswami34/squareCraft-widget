@@ -37,6 +37,13 @@ export function handleTextHighLinghtLink(event, context) {
         applyStylesToElement,
         {
           ...context,
+          addPendingModification: (blockId, css, tagType) => {
+            // Store in pending modifications instead of saving directly
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType: "link" });
+          },
           showNotification: (message, type = "info") => {
             const notification = document.createElement("div");
             notification.className = `sc-notification sc-notification-${type}`;

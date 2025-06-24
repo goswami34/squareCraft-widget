@@ -122,7 +122,7 @@ export function handleFontSizeLink(event = null, context = null) {
       }
     `;
 
-  // Save Modification (for API persistence)
+  // Store in pending modifications instead of saving directly
   addPendingModification(
     block.id,
     {
