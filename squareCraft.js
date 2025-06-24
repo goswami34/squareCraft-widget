@@ -42,6 +42,7 @@ let pendingModifications = new Map();
 
   let selectedElement = null;
   let widgetContainer = null;
+  let selectedTextElement = null;
 
   let widgetLoaded = false;
   const widgetScript = document.getElementById("sc-script");
