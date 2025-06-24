@@ -979,9 +979,33 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     return { success: false, error: "Missing required data" };
   }
 
+  // Validate data types and ensure they are strings
+  const validatedUserId = String(userId).trim();
+  const validatedToken = String(token).trim();
+  const validatedWidgetId = String(widgetId).trim();
+  const validatedPageId = String(pageId).trim();
+  const validatedBlockId = String(blockId).trim();
+
+  if (
+    !validatedUserId ||
+    !validatedToken ||
+    !validatedWidgetId ||
+    !validatedPageId ||
+    !validatedBlockId
+  ) {
+    console.warn("❌ Invalid data types for link text styles", {
+      validatedUserId,
+      validatedToken,
+      validatedWidgetId,
+      validatedPageId,
+      validatedBlockId,
+    });
+    return { success: false, error: "Invalid data types" };
+  }
+
   // Check if css has nested `linkText` or is raw styles directly
   const rawCss = css?.linkText || css;
-  const selector = css?.linkText?.selector || `#${blockId} a`;
+  const selector = css?.linkText?.selector || `#${validatedBlockId} a`;
 
   // Clean styles
   const cleanedStyles = Object.fromEntries(
@@ -1002,15 +1026,15 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
 
   // Construct payload in the same format as image modifications
   const payload = {
-    userId,
-    token,
-    widgetId,
+    userId: validatedUserId,
+    token: validatedToken,
+    widgetId: validatedWidgetId,
     modifications: [
       {
-        pageId,
+        pageId: validatedPageId,
         elements: [
           {
-            elementId: blockId,
+            elementId: validatedBlockId,
             css: {
               linkText: {
                 selector,
@@ -1032,15 +1056,21 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${validatedToken}`,
         },
         body: JSON.stringify(payload),
       }
     );
 
     const result = await response.json();
+    console.log("📥 API Response:", result);
 
     if (!response.ok) {
+      console.error("❌ API Error Details:", {
+        status: response.status,
+        statusText: response.statusText,
+        result: result,
+      });
       throw new Error(result.message || `HTTP ${response.status}`);
     }
 
