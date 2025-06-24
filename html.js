@@ -1029,23 +1029,14 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     userId: validatedUserId,
     token: validatedToken,
     widgetId: validatedWidgetId,
-    modifications: [
-      {
-        pageId: validatedPageId,
-        elements: [
-          {
-            elementId: validatedBlockId,
-            css: {
-              linkText: {
-                selector,
-                styles: kebabStyles,
-              },
-            },
-          },
-        ],
-      },
-    ],
+    pageId: validatedPageId,
+    elementId: validatedBlockId,
+    css: {
+      target: tagType || "p", // or another value based on active tab
+      styles: kebabStyles,
+    },
   };
+  
   console.log("payload", payload);
 
   console.log("📤 Sending link text style payload:", payload);
