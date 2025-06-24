@@ -445,6 +445,8 @@ export async function handleFontWeightLink(event, context) {
   }
 
   const fontWeight = fontWeightSelect.value;
+  console.log("🔍 Selected font weight value:", fontWeight);
+  
   if (!fontWeight) {
     showNotification("Please select a font-weight.", "error");
     return;
@@ -494,21 +496,32 @@ export async function handleFontWeightLink(event, context) {
   }
 
   const elements = block.querySelectorAll(selector);
+  console.log("🔍 Found elements with selector:", selector, "Count:", elements.length);
+  
   if (!elements.length) {
     showNotification(`No ${normalizedType} elements found.`, "error");
     return;
   }
 
   let linkFound = false;
-  elements.forEach((el) => {
+  let totalLinks = 0;
+  
+  elements.forEach((el, index) => {
     const links = el.querySelectorAll("a");
+    console.log(`🔍 Element ${index}:`, el.tagName, "Links found:", links.length);
+    
     if (links.length > 0) {
       linkFound = true;
-      links.forEach((link) => {
+      totalLinks += links.length;
+      links.forEach((link, linkIndex) => {
+        // Apply font-weight directly to the link element
         link.style.fontWeight = fontWeight;
+        console.log(`🔍 Applied font-weight: ${fontWeight} to link ${linkIndex}:`, link.textContent.substring(0, 20));
       });
     }
   });
+
+  console.log("🔍 Total links processed:", totalLinks);
 
   if (!linkFound) {
     showNotification(
@@ -518,32 +531,42 @@ export async function handleFontWeightLink(event, context) {
     return;
   }
 
-  const styleId = `style-${block.id}-${normalizedType}-link-fontweight`;
+  // Create CSS style tag for persistent styling
+  const styleId = `style-${block.id}-${selectedSingleTextType}-link-fontweight`;
   let styleTag = document.getElementById(styleId);
-  if (!styleTag) {
-    styleTag = document.createElement("style");
-    styleTag.id = styleId;
-    document.head.appendChild(styleTag);
+  
+  // Remove existing style tag if it exists
+  if (styleTag) {
+    styleTag.remove();
   }
+  
+  // Create new style tag
+  styleTag = document.createElement("style");
+  styleTag.id = styleId;
+  
+  // Create the correct CSS selector based on the actual elements found
+  const cssSelector = `#${block.id} ${selector} a`;
+  const cssRule = `${cssSelector} { font-weight: ${fontWeight} !important; }`;
+  
+  styleTag.innerHTML = cssRule;
+  document.head.appendChild(styleTag);
+  
+  console.log("🔍 Injected CSS:", cssRule);
+  console.log("🔍 Style tag ID:", styleId);
 
-  styleTag.innerHTML = `
-    #${block.id} ${selector} a {
-      font-weight: ${fontWeight} !important;
-    }
-  `;
-
-  // Create selector based on tag type
+  // Create selector for database saving
   let linkSelector = "";
-  if (normalizedType === "p1") {
+  if (selectedSingleTextType === "paragraph1") {
     linkSelector = `#${block.id} p.sqsrte-large a`;
-  } else if (normalizedType === "p2") {
+  } else if (selectedSingleTextType === "paragraph2") {
     linkSelector = `#${block.id} p:not(.sqsrte-large):not(.sqsrte-small) a`;
-  } else if (normalizedType === "p3") {
+  } else if (selectedSingleTextType === "paragraph3") {
     linkSelector = `#${block.id} p.sqsrte-small a`;
-  } else if (normalizedType.startsWith("h")) {
-    linkSelector = `#${block.id} ${normalizedType} a`;
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    const headingNumber = selectedSingleTextType.replace("heading", "");
+    linkSelector = `#${block.id} h${headingNumber} a`;
   } else {
-    linkSelector = `#${block.id} ${normalizedType} a`;
+    linkSelector = `#${block.id} ${selectedSingleTextType} a`;
   }
 
   // Get existing styles from the map
@@ -566,8 +589,10 @@ export async function handleFontWeightLink(event, context) {
     saveLinkTextModifications
   );
 
+  console.log("✅ Saved font-weight to database");
+
   showNotification(
-    `✅ Font weight applied to link words in ${normalizedType}`,
+    `✅ Font weight applied to link words in ${selectedSingleTextType}`,
     "success"
   );
   
