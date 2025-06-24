@@ -21,6 +21,9 @@ async function mergeAndSaveLinkTextStyles(
     },
   };
 
+  // Use the new selector if provided, otherwise keep the existing one
+  const finalSelector = newStyles.linkText?.selector || prevStyles.linkText.selector;
+
   // Merge the new styles with existing styles
   const mergedLinkTextStyles = {
     ...prevStyles.linkText.styles, // Keep existing styles
@@ -29,10 +32,17 @@ async function mergeAndSaveLinkTextStyles(
 
   const finalData = {
     linkText: {
-      selector: prevStyles.linkText.selector,
+      selector: finalSelector,
       styles: mergedLinkTextStyles,
     },
   };
+
+  console.log("🔍 Merging styles:", {
+    prevStyles: prevStyles.linkText.styles,
+    newStyles: newStyles.linkText?.styles,
+    mergedStyles: mergedLinkTextStyles,
+    finalSelector
+  });
 
   // Save to map and database
   linkTextStyleMap.set(blockId, finalData);

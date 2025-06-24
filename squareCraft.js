@@ -343,7 +343,7 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleLinkBlockClick.js"
   );
   const { handleTextTransformLinkClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextTransformLinkClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontSizeLink.js"
   );
   const { handleFontWeightLink } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontWeightLink.js"
