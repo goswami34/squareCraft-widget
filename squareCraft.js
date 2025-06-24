@@ -458,7 +458,7 @@ let pendingModifications = new Map();
   );
 
   const { handleLinkTextHighlightClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleLinkTextHighlightClick.js"
+    "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontSizeLink.js"
   );
 
   const { handleTextHighLinghtLink } = await import(
