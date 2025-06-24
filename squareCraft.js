@@ -1289,6 +1289,7 @@ let pendingModifications = new Map();
       lastClickedBlockId,
       userId,
       saveModifications,
+      saveLinkTextModifications,
       handleBlockClick,
       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
       token,
