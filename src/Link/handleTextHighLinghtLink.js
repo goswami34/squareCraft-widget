@@ -33,7 +33,7 @@ export function handleTextHighLinghtLink(event, context) {
     saveLinkTextModifications,
   } = context;
   // Import and call the click event handler
-  import("../clickEvents/handleLinkTextHighlightClick.js")
+  import("../Link/handleFontSizeLink.js")
     .then((module) => {
       module.handleLinkTextHighlightClick(
         event,
