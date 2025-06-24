@@ -507,16 +507,21 @@ export async function handleFontWeightLink(event, context) {
   let totalLinks = 0;
   
   elements.forEach((el, index) => {
+    // Only look for <a> tags, not <em> or <strong> tags
     const links = el.querySelectorAll("a");
     console.log(`🔍 Element ${index}:`, el.tagName, "Links found:", links.length);
+    
+    // Debug: Show all child elements to verify we're not targeting em/strong
+    const allChildren = el.querySelectorAll("*");
+    console.log(`🔍 All child elements in element ${index}:`, Array.from(allChildren).map(child => child.tagName));
     
     if (links.length > 0) {
       linkFound = true;
       totalLinks += links.length;
       links.forEach((link, linkIndex) => {
-        // Apply font-weight directly to the link element
+        // Apply font-weight directly to the link element (a tag only)
         link.style.fontWeight = fontWeight;
-        console.log(`🔍 Applied font-weight: ${fontWeight} to link ${linkIndex}:`, link.textContent.substring(0, 20));
+        console.log(`🔍 Applied font-weight: ${fontWeight} to link ${linkIndex}:`, link.textContent.substring(0, 20), "Tag:", link.tagName);
       });
     }
   });
@@ -525,7 +530,7 @@ export async function handleFontWeightLink(event, context) {
 
   if (!linkFound) {
     showNotification(
-      `ℹ️ No links (<a>) found inside ${normalizedType}`,
+      `ℹ️ No links (<a>) found inside ${selectedSingleTextType}`,
       "info"
     );
     return;
@@ -544,7 +549,8 @@ export async function handleFontWeightLink(event, context) {
   styleTag = document.createElement("style");
   styleTag.id = styleId;
   
-  // Create the correct CSS selector based on the actual elements found
+  // Create the correct CSS selector that ONLY targets a tags, not em or strong tags
+  // This ensures font-weight is applied only to links, not to italic or bold text
   const cssSelector = `#${block.id} ${selector} a`;
   const cssRule = `${cssSelector} { font-weight: ${fontWeight} !important; }`;
   
@@ -553,6 +559,7 @@ export async function handleFontWeightLink(event, context) {
   
   console.log("🔍 Injected CSS:", cssRule);
   console.log("🔍 Style tag ID:", styleId);
+  console.log("🔍 Note: CSS only targets <a> tags, not <em> or <strong> tags");
 
   // Create selector for database saving
   let linkSelector = "";
