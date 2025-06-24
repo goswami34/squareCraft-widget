@@ -42,11 +42,8 @@ export function handleTextHighLinghtLink(event, context) {
         {
           ...context,
           addPendingModification: (blockId, css, tagType) => {
-            // Store in pending modifications instead of saving directly
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType: "link" });
+            // This will be handled by the main context
+            console.log("Pending modification added for link text highlight");
           },
           showNotification: (message, type = "info") => {
             const notification = document.createElement("div");

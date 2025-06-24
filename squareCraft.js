@@ -2050,12 +2050,10 @@ let pendingModifications = new Map();
     ) {
       handleTextHighLinghtLink(
         event,
-        lastClickedElement,
-        applyStylesToElement,
-        saveLinkTextModifications,
         {
-          handleAllTextColorClick,
           lastClickedElement,
+          applyStylesToElement,
+          saveLinkTextModifications,
           selectedSingleTextType,
           addPendingModification: (blockId, css, tagType) => {
             if (!pendingModifications.has(blockId)) {
@@ -3136,6 +3134,7 @@ let pendingModifications = new Map();
                 lastClickedElement,
                 selectedSingleTextType,
                 addPendingModification,
+                saveLinkTextModifications,
                 showNotification,
               });
             }
