@@ -1,5 +1,6 @@
 let colorPalette = null;
 let colorPickerContext = null;
+const linkTextStyleMap = new Map();
 
 export function handleLinkTextHighlightClick(
   event,
@@ -191,14 +192,38 @@ export function handleLinkTextHighlightClick(
         return;
       }
 
-      // Store in pending modifications instead of saving directly
-      context.addPendingModification(
+      // Create selector based on tag type
+      let linkSelector = "";
+      if (selectedTextType === "paragraph1") {
+        linkSelector = `#${block.id} p.sqsrte-large a`;
+      } else if (selectedTextType === "paragraph2") {
+        linkSelector = `#${block.id} p:not(.sqsrte-large):not(.sqsrte-small) a`;
+      } else if (selectedTextType === "paragraph3") {
+        linkSelector = `#${block.id} p.sqsrte-small a`;
+      } else if (selectedTextType.startsWith("heading")) {
+        const headingNumber = selectedTextType.replace("heading", "");
+        linkSelector = `#${block.id} h${headingNumber} a`;
+      } else {
+        linkSelector = `#${block.id} ${selectedTextType} a`;
+      }
+
+      // Get existing styles from the map
+      const existingStyles =
+        linkTextStyleMap.get(block.id)?.linkText?.styles || {};
+
+      // Save to database while preserving existing styles
+      mergeAndSaveLinkTextStyles(
         block.id,
         {
-          "background-color": selectedColor,
-          target: selectedTextType,
+          linkText: {
+            selector: linkSelector,
+            styles: {
+              ...existingStyles, // Preserve existing styles
+              "background-color": selectedColor,
+            },
+          },
         },
-        "link"
+        context.saveLinkTextModifications
       );
 
       context.showNotification(
@@ -212,4 +237,43 @@ export function handleLinkTextHighlightClick(
   setTimeout(() => {
     colorPalette.click();
   }, 50);
+}
+
+// ✅ mergeAndSaveLinkTextStyles function similar to mergeAndSaveImageStyles
+function mergeAndSaveLinkTextStyles(
+  blockId,
+  newStyles,
+  saveLinkTextModifications
+) {
+  if (typeof saveLinkTextModifications !== "function") {
+    console.warn(
+      "❌ saveLinkTextModifications is not a function in mergeAndSaveLinkTextStyles()"
+    );
+    return;
+  }
+
+  // Get existing styles from the map
+  const prevStyles = linkTextStyleMap.get(blockId) || {
+    linkText: {
+      selector: `#${blockId} a`,
+      styles: {},
+    },
+  };
+
+  // Merge the new styles with existing styles
+  const mergedLinkTextStyles = {
+    ...prevStyles.linkText.styles, // Keep existing styles
+    ...(newStyles.linkText?.styles || {}), // Add new styles
+  };
+
+  const finalData = {
+    linkText: {
+      selector: prevStyles.linkText.selector,
+      styles: mergedLinkTextStyles,
+    },
+  };
+
+  // Save to map and database
+  linkTextStyleMap.set(blockId, finalData);
+  saveLinkTextModifications(blockId, finalData, "link");
 }

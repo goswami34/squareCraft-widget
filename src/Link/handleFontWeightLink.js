@@ -1,3 +1,44 @@
+const linkTextStyleMap = new Map();
+
+// ✅ mergeAndSaveLinkTextStyles function similar to mergeAndSaveImageStyles
+function mergeAndSaveLinkTextStyles(
+  blockId,
+  newStyles,
+  saveLinkTextModifications
+) {
+  if (typeof saveLinkTextModifications !== "function") {
+    console.warn(
+      "❌ saveLinkTextModifications is not a function in mergeAndSaveLinkTextStyles()"
+    );
+    return;
+  }
+
+  // Get existing styles from the map
+  const prevStyles = linkTextStyleMap.get(blockId) || {
+    linkText: {
+      selector: `#${blockId} a`,
+      styles: {},
+    },
+  };
+
+  // Merge the new styles with existing styles
+  const mergedLinkTextStyles = {
+    ...prevStyles.linkText.styles, // Keep existing styles
+    ...(newStyles.linkText?.styles || {}), // Add new styles
+  };
+
+  const finalData = {
+    linkText: {
+      selector: prevStyles.linkText.selector,
+      styles: mergedLinkTextStyles,
+    },
+  };
+
+  // Save to map and database
+  linkTextStyleMap.set(blockId, finalData);
+  saveLinkTextModifications(blockId, finalData, "link");
+}
+
 function showNotification(message, type = "info") {
   const notification = document.createElement("div");
   notification.className = `sc-notification sc-notification-${type}`;
@@ -129,13 +170,36 @@ export function handleFontWeightLink(event, context) {
     }
   `;
 
-  addPendingModification(
+  // Create selector based on tag type
+  let linkSelector = "";
+  if (normalizedType === "p1") {
+    linkSelector = `#${block.id} p.sqsrte-large a`;
+  } else if (normalizedType === "p2") {
+    linkSelector = `#${block.id} p:not(.sqsrte-large):not(.sqsrte-small) a`;
+  } else if (normalizedType === "p3") {
+    linkSelector = `#${block.id} p.sqsrte-small a`;
+  } else if (normalizedType.startsWith("h")) {
+    linkSelector = `#${block.id} ${normalizedType} a`;
+  } else {
+    linkSelector = `#${block.id} ${normalizedType} a`;
+  }
+
+  // Get existing styles from the map
+  const existingStyles = linkTextStyleMap.get(block.id)?.linkText?.styles || {};
+
+  // Save to database while preserving existing styles
+  mergeAndSaveLinkTextStyles(
     block.id,
     {
-      "font-weight": fontWeight,
-      target: normalizedType,
+      linkText: {
+        selector: linkSelector,
+        styles: {
+          ...existingStyles, // Preserve existing styles
+          "font-weight": fontWeight,
+        },
+      },
     },
-    "link"
+    saveLinkTextModifications
   );
 
   showNotification(

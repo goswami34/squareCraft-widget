@@ -958,7 +958,7 @@ export async function saveButtonShadowModifications(blockId, css) {
 // button shadow save modification end here
 
 // link text save modificaiton code here
-export async function saveLinkTextModifications(blockId, tag, cssStyles) {
+export async function saveLinkTextModifications(blockId, css, tagType) {
   const pageId = document
     .querySelector("article[data-page-sections]")
     ?.getAttribute("data-page-sections");
@@ -967,30 +967,25 @@ export async function saveLinkTextModifications(blockId, tag, cssStyles) {
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  if (
-    !userId ||
-    !token ||
-    !widgetId ||
-    !pageId ||
-    !blockId ||
-    !tag ||
-    !cssStyles
-  ) {
+  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
     console.warn("❌ Missing required data to save link text styles", {
       userId,
       token,
       widgetId,
       pageId,
       blockId,
-      tag,
-      cssStyles,
+      css,
     });
     return { success: false, error: "Missing required data" };
   }
 
+  // Check if css has nested `linkText` or is raw styles directly
+  const rawCss = css?.linkText || css;
+  const selector = css?.linkText?.selector || `#${blockId} a`;
+
   // Clean styles
   const cleanedStyles = Object.fromEntries(
-    Object.entries(cssStyles).filter(
+    Object.entries(rawCss.styles || rawCss).filter(
       ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
     )
   );
@@ -1005,17 +1000,27 @@ export async function saveLinkTextModifications(blockId, tag, cssStyles) {
 
   const kebabStyles = toKebabCase(cleanedStyles);
 
-  // Construct payload
+  // Construct payload in the same format as image modifications
   const payload = {
     userId,
     token,
     widgetId,
-    pageId,
-    elementId: blockId,
-    css: {
-      target: tag, // example: h1, h2, p1, etc.
-      styles: kebabStyles,
-    },
+    modifications: [
+      {
+        pageId,
+        elements: [
+          {
+            elementId: blockId,
+            css: {
+              linkText: {
+                selector,
+                styles: kebabStyles,
+              },
+            },
+          },
+        ],
+      },
+    ],
   };
 
   console.log("📤 Sending link text style payload:", payload);
