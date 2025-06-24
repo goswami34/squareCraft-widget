@@ -90,10 +90,11 @@ export function handleLinkTextHighlightClick(
         selectedTextType = colorPickerContext.selectedSingleTextType;
       }
 
-      // if (!selectedTextType) {
-      //   context.showNotification("Please select a text type first", "error");
-      //   return;
-      // }
+      // Validate that we have a selectedTextType before proceeding
+      if (!selectedTextType) {
+        context.showNotification("Please select a text type first", "error");
+        return;
+      }
 
       // Find the block element
       const block =
@@ -114,7 +115,32 @@ export function handleLinkTextHighlightClick(
         heading4: "h4",
       };
 
-      const paragraphSelector = selectorMap[selectedTextType] || "";
+      // Try to get the selector from the map, with fallback to a general selector
+      let paragraphSelector = selectorMap[selectedTextType];
+
+      // If no specific selector found, use a general fallback
+      if (!paragraphSelector) {
+        if (selectedTextType && selectedTextType.startsWith("heading")) {
+          paragraphSelector = selectedTextType; // Use the heading tag directly
+        } else if (
+          selectedTextType &&
+          selectedTextType.startsWith("paragraph")
+        ) {
+          paragraphSelector = "p"; // Use all paragraphs as fallback
+        } else {
+          paragraphSelector = "p, h1, h2, h3, h4"; // Ultimate fallback
+        }
+      }
+
+      // Validate that we have a valid selector before proceeding
+      if (!paragraphSelector) {
+        context.showNotification(
+          `Invalid text type: ${selectedTextType}. Please select a valid text type first.`,
+          "error"
+        );
+        return;
+      }
+
       const targetElements = block.querySelectorAll(paragraphSelector);
 
       if (!targetElements.length) {
