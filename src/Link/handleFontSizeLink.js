@@ -462,6 +462,10 @@ export async function handleTextTransformLinkClick(
 }
 
 export async function handleFontWeightLink(event, context) {
+  console.log("🚀🚀🚀 handleFontWeightLink FUNCTION CALLED! 🚀🚀🚀");
+  console.log("🚀 Event:", event);
+  console.log("🚀 Context:", context);
+
   console.log("🚀 handleFontWeightLink called with:", { event, context });
 
   const {

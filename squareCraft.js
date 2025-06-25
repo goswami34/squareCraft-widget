@@ -3144,17 +3144,24 @@ let pendingModifications = new Map();
     const fontWeightLinkSelect = document.getElementById(
       "squareCraftLinkFontWeight"
     );
+    console.log("🔍 Font weight link select found:", !!fontWeightLinkSelect);
+    console.log(
+      "🔍 handleFontWeightLink function available:",
+      typeof handleFontWeightLink
+    );
+
     if (fontWeightLinkSelect && !fontWeightLinkSelect.dataset.initialized) {
-      console.log("Initializing font weight select for links");
+      console.log("✅ Initializing font weight select for links");
       fontWeightLinkSelect.dataset.initialized = "true";
 
       fontWeightLinkSelect.addEventListener("change", function (event) {
         event.preventDefault();
-        console.log("Font weight select changed");
+        console.log("🎯 Font weight select changed - event triggered!");
 
         const currentlySelectedBlock = document.querySelector(".sc-selected");
         const selectedFontWeight = this.value;
-        console.log("Selected font weight:", selectedFontWeight);
+        console.log("🎯 Selected font weight:", selectedFontWeight);
+        console.log("🎯 Currently selected block:", !!currentlySelectedBlock);
 
         if (!currentlySelectedBlock) {
           showNotification("❌ Please select a block first.", "error");
@@ -3163,6 +3170,8 @@ let pendingModifications = new Map();
         }
 
         const selectedTab = document.querySelector(".sc-selected-tab");
+        console.log("🎯 Selected tab:", !!selectedTab);
+
         if (!selectedTab) {
           showNotification(
             "❌ Please select a text type (h1, h2, p1 etc) first.",
@@ -3187,18 +3196,29 @@ let pendingModifications = new Map();
         }
 
         console.log(
-          "🔍 Current selected text type from tab:",
+          "🎯 Current selected text type from tab:",
           currentSelectedSingleTextType
         );
 
-        handleFontWeightLink(event, {
-          lastClickedElement: currentlySelectedBlock,
-          selectedSingleTextType: currentSelectedSingleTextType,
-          addPendingModification,
-          saveLinkTextModifications,
-          showNotification,
-        });
+        console.log("🎯 About to call handleFontWeightLink...");
+        console.log("🎯 Function type:", typeof handleFontWeightLink);
+
+        if (typeof handleFontWeightLink === "function") {
+          handleFontWeightLink(event, {
+            lastClickedElement: currentlySelectedBlock,
+            selectedSingleTextType: currentSelectedSingleTextType,
+            addPendingModification,
+            saveLinkTextModifications,
+            showNotification,
+          });
+        } else {
+          console.error("❌ handleFontWeightLink is not a function!");
+        }
       });
+    } else {
+      console.log(
+        "⚠️ Font weight link select not found or already initialized"
+      );
     }
 
     // handleLinkTextHighlightClick(
