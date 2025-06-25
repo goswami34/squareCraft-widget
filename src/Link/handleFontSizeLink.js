@@ -569,6 +569,7 @@ export async function handleFontWeightLink(event, context) {
   });
 
   console.log("🔍 Total links processed:", totalLinks);
+  console.log("target elements", targetElements);
 
   if (!linkFound) {
     showNotification(
