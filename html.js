@@ -958,6 +958,7 @@ export async function saveButtonShadowModifications(blockId, css) {
 // button shadow save modification end here
 
 // link text save modificaiton code here
+
 // export async function saveLinkTextModifications(blockId, css, tagType) {
 //   const pageId = document
 //     .querySelector("article[data-page-sections]")
@@ -979,103 +980,44 @@ export async function saveButtonShadowModifications(blockId, css) {
 //     return { success: false, error: "Missing required data" };
 //   }
 
-//   // Validate data types and ensure they are strings
-//   const validatedUserId = String(userId).trim();
-//   const validatedToken = String(token).trim();
-//   const validatedWidgetId = String(widgetId).trim();
-//   const validatedPageId = String(pageId).trim();
-//   const validatedBlockId = String(blockId).trim();
+//   // 🔍 Get raw styles & selector from css.linkText
+//   const rawStyles = css?.linkText?.styles || {};
+//   const rawSelector = css?.linkText?.selector || `#${blockId} a`;
 
-//   if (
-//     !validatedUserId ||
-//     !validatedToken ||
-//     !validatedWidgetId ||
-//     !validatedPageId ||
-//     !validatedBlockId
-//   ) {
-//     console.warn("❌ Invalid data types for link text styles", {
-//       validatedUserId,
-//       validatedToken,
-//       validatedWidgetId,
-//       validatedPageId,
-//       validatedBlockId,
-//     });
-//     return { success: false, error: "Invalid data types" };
+//   // Extract the tagType (like h2, h3, etc.) from selector if not given
+//   const detectedTag =
+//     tagType || rawSelector.match(/#.+?\s+([a-z0-9]+)/)?.[1] || "a";
+
+//   const cleanedStyles = Object.fromEntries(
+//     Object.entries(rawStyles).filter(
+//       ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+//     )
+//   );
+
+//   const kebabStyles = Object.fromEntries(
+//     Object.entries(cleanedStyles).map(([key, val]) => [
+//       key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+//       val,
+//     ])
+//   );
+
+//   if (Object.keys(kebabStyles).length === 0) {
+//     return { success: false, error: "No valid styles to save" };
 //   }
 
-//   // Check if css has nested `linkText` or is raw styles directly
-//   // const rawCss = css?.linkText || css;
-//   // const selector = css?.linkText?.selector || `#${validatedBlockId} a`;
-
-//   // // Clean styles
-//   // const cleanedStyles = Object.fromEntries(
-//   //   Object.entries(rawCss.styles || rawCss).filter(
-//   //     ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
-//   //   )
-//   // );
-
-//   // const toKebabCase = (obj = {}) =>
-//   //   Object.fromEntries(
-//   //     Object.entries(obj).map(([key, value]) => [
-//   //       key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-//   //       value,
-//   //     ])
-//   //   );
-
-//   // const kebabStyles = toKebabCase(cleanedStyles);
-
-//   // // Construct payload in the correct format to match database schema
-//   // const payload = {
-//   //   userId: validatedUserId,
-//   //   token: validatedToken,
-//   //   widgetId: validatedWidgetId,
-//   //   pageId: validatedPageId,
-//   //   elementId: validatedBlockId,
-//   //   css: {
-//   //     target: tagType || "p", // or another value based on active tab
-//   //     styles: kebabStyles,
-//   //   },
-//   // };
-
-//   // CLEAN linkText.styles safely
-//   if (css?.linkText?.styles) {
-//     css.linkText.styles = Object.fromEntries(
-//       Object.entries(css.linkText.styles).filter(
-//         ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
-//       )
-//     );
-
-//     css.linkText.styles = Object.fromEntries(
-//       Object.entries(css.linkText.styles).map(([key, value]) => [
-//         key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-//         value,
-//       ])
-//     );
-//   }
-
-//   // ✅ Final structured payload
 //   const payload = {
-//     userId: validatedUserId,
-//     token: validatedToken,
-//     widgetId: validatedWidgetId,
-//     modifications: [
-//       {
-//         pageId: validatedPageId,
-//         elements: [
-//           {
-//             elementId: validatedBlockId,
-//             css: {
-//               linkText: css?.linkText,
-//             },
-//           },
-//         ],
-//       },
-//     ],
+//     userId,
+//     token,
+//     widgetId,
+//     pageId,
+//     elementId: blockId,
+//     css: {
+//       target: detectedTag,
+//       styles: kebabStyles,
+//     },
 //   };
 
-//   console.log("payload", payload);
-
-//   console.log("📤 Sending link text style payload:", payload);
+//   console.log("📤 Sending final link text payload:", payload);
 
 //   try {
 //     const response = await fetch(
@@ -1084,14 +1026,13 @@ export async function saveButtonShadowModifications(blockId, css) {
 //         method: "POST",
 //         headers: {
 //           "Content-Type": "application/json",
-//           Authorization: `Bearer ${validatedToken}`,
+//           Authorization: `Bearer ${token}`,
 //         },
 //         body: JSON.stringify(payload),
 //       }
 //     );
 
 //     const result = await response.json();
-//     console.log("📥 API Response:", result);
 
 //     if (!response.ok) {
 //       console.error("❌ API Error Details:", {
@@ -1138,14 +1079,16 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     return { success: false, error: "Missing required data" };
   }
 
-  // 🔍 Get raw styles & selector from css.linkText
+  // Get full selector from css
+  const rawSelector = css?.linkText?.selector;
   const rawStyles = css?.linkText?.styles || {};
-  const rawSelector = css?.linkText?.selector || `#${blockId} a`;
 
-  // Extract the tagType (like h2, h3, etc.) from selector if not given
-  const detectedTag =
-    tagType || rawSelector.match(/#.+?\s+([a-z0-9]+)/)?.[1] || "a";
+  if (!rawSelector) {
+    console.warn("❌ Missing selector inside css.linkText");
+    return { success: false, error: "Missing selector" };
+  }
 
+  // Clean & convert styles to kebab-case
   const cleanedStyles = Object.fromEntries(
     Object.entries(rawStyles).filter(
       ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
@@ -1163,19 +1106,30 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     return { success: false, error: "No valid styles to save" };
   }
 
+  // Final payload that stores EXACT selector
   const payload = {
     userId,
     token,
     widgetId,
-    pageId,
-    elementId: blockId,
-    css: {
-      target: detectedTag,
-      styles: kebabStyles,
-    },
+    modifications: [
+      {
+        pageId,
+        elements: [
+          {
+            elementId: blockId,
+            css: {
+              linkText: {
+                selector: rawSelector, // e.g., "#block-xxx h2 a, #block-xxx h2 a span[class^='sqsrte-text-color']"
+                styles: kebabStyles,
+              },
+            },
+          },
+        ],
+      },
+    ],
   };
 
-  console.log("📤 Sending final link text payload:", payload);
+  console.log("📤 Final link text payload:", payload);
 
   try {
     const response = await fetch(
@@ -1193,11 +1147,6 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     const result = await response.json();
 
     if (!response.ok) {
-      console.error("❌ API Error Details:", {
-        status: response.status,
-        statusText: response.statusText,
-        result: result,
-      });
       throw new Error(result.message || `HTTP ${response.status}`);
     }
 
@@ -1211,7 +1160,6 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
       `Failed to save link text styles: ${error.message}`,
       "error"
     );
-
     return { success: false, error: error.message };
   }
 }
