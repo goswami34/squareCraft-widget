@@ -592,10 +592,14 @@ export async function handleFontWeightLink(event, context) {
   styleTag.id = styleId;
 
   // Create the correct CSS selector that ONLY targets a tags within the specific paragraph type
+  // Make it more specific to override the general sc-font-weight- rule
   const cssSelector = `#${block.id} ${paragraphSelector} a`;
   const cssRule = `${cssSelector} { font-weight: ${fontWeight} !important; }`;
 
-  styleTag.innerHTML = cssRule;
+  // Add an even more specific rule to ensure it overrides any sc-font-weight- classes
+  const moreSpecificRule = `${cssSelector}[class*="sc-font-weight-"] { font-weight: ${fontWeight} !important; }`;
+
+  styleTag.innerHTML = cssRule + "\n" + moreSpecificRule;
   document.head.appendChild(styleTag);
 
   console.log("🔍 Injected CSS:", cssRule);

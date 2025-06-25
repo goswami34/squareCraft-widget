@@ -194,31 +194,8 @@ export function handleLinkBlockClick(event, context) {
         fontSizeInput.focus();
       }
 
-      // Reset and attach font weight listener
-      const fwSelect = document.getElementById("squareCraftLinkFontWeight");
-      if (fwSelect) {
-        const cloned = fwSelect.cloneNode(true);
-        fwSelect.parentNode.replaceChild(cloned, fwSelect);
-
-        cloned.value = "400";
-        cloned.addEventListener("change", function (e) {
-          const currentlySelectedBlock = document.querySelector(".sc-selected");
-          if (!currentlySelectedBlock) {
-            showNotification("❌ Please select a block first.", "error");
-            return;
-          }
-
-          import("../Link/handleFontSizeLink.js").then((module) => {
-            module.handleFontWeightLink(e, {
-              lastClickedElement: currentlySelectedBlock,
-              selectedSingleTextType: clickedTag,
-              addPendingModification,
-              saveLinkTextModifications,
-              showNotification,
-            });
-          });
-        });
-      }
+      // Note: Font weight event listener is handled in main squareCraft.js
+      // No need to set up duplicate event listener here
     };
   });
 
