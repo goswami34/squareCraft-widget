@@ -958,6 +958,165 @@ export async function saveButtonShadowModifications(blockId, css) {
 // button shadow save modification end here
 
 // link text save modificaiton code here
+// export async function saveLinkTextModifications(blockId, css, tagType) {
+//   const pageId = document
+//     .querySelector("article[data-page-sections]")
+//     ?.getAttribute("data-page-sections");
+
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
+
+//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+//     console.warn("❌ Missing required data to save link text styles", {
+//       userId,
+//       token,
+//       widgetId,
+//       pageId,
+//       blockId,
+//       css,
+//     });
+//     return { success: false, error: "Missing required data" };
+//   }
+
+//   // Validate data types and ensure they are strings
+//   const validatedUserId = String(userId).trim();
+//   const validatedToken = String(token).trim();
+//   const validatedWidgetId = String(widgetId).trim();
+//   const validatedPageId = String(pageId).trim();
+//   const validatedBlockId = String(blockId).trim();
+
+//   if (
+//     !validatedUserId ||
+//     !validatedToken ||
+//     !validatedWidgetId ||
+//     !validatedPageId ||
+//     !validatedBlockId
+//   ) {
+//     console.warn("❌ Invalid data types for link text styles", {
+//       validatedUserId,
+//       validatedToken,
+//       validatedWidgetId,
+//       validatedPageId,
+//       validatedBlockId,
+//     });
+//     return { success: false, error: "Invalid data types" };
+//   }
+
+//   // Check if css has nested `linkText` or is raw styles directly
+//   // const rawCss = css?.linkText || css;
+//   // const selector = css?.linkText?.selector || `#${validatedBlockId} a`;
+
+//   // // Clean styles
+//   // const cleanedStyles = Object.fromEntries(
+//   //   Object.entries(rawCss.styles || rawCss).filter(
+//   //     ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+//   //   )
+//   // );
+
+//   // const toKebabCase = (obj = {}) =>
+//   //   Object.fromEntries(
+//   //     Object.entries(obj).map(([key, value]) => [
+//   //       key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+//   //       value,
+//   //     ])
+//   //   );
+
+//   // const kebabStyles = toKebabCase(cleanedStyles);
+
+//   // // Construct payload in the correct format to match database schema
+//   // const payload = {
+//   //   userId: validatedUserId,
+//   //   token: validatedToken,
+//   //   widgetId: validatedWidgetId,
+//   //   pageId: validatedPageId,
+//   //   elementId: validatedBlockId,
+//   //   css: {
+//   //     target: tagType || "p", // or another value based on active tab
+//   //     styles: kebabStyles,
+//   //   },
+//   // };
+
+//   // CLEAN linkText.styles safely
+//   if (css?.linkText?.styles) {
+//     css.linkText.styles = Object.fromEntries(
+//       Object.entries(css.linkText.styles).filter(
+//         ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+//       )
+//     );
+
+//     css.linkText.styles = Object.fromEntries(
+//       Object.entries(css.linkText.styles).map(([key, value]) => [
+//         key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+//         value,
+//       ])
+//     );
+//   }
+
+//   // ✅ Final structured payload
+//   const payload = {
+//     userId: validatedUserId,
+//     token: validatedToken,
+//     widgetId: validatedWidgetId,
+//     modifications: [
+//       {
+//         pageId: validatedPageId,
+//         elements: [
+//           {
+//             elementId: validatedBlockId,
+//             css: {
+//               linkText: css?.linkText,
+//             },
+//           },
+//         ],
+//       },
+//     ],
+//   };
+
+//   console.log("payload", payload);
+
+//   console.log("📤 Sending link text style payload:", payload);
+
+//   try {
+//     const response = await fetch(
+//       "https://admin.squareplugin.com/api/v1/save-link-text-modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${validatedToken}`,
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     const result = await response.json();
+//     console.log("📥 API Response:", result);
+
+//     if (!response.ok) {
+//       console.error("❌ API Error Details:", {
+//         status: response.status,
+//         statusText: response.statusText,
+//         result: result,
+//       });
+//       throw new Error(result.message || `HTTP ${response.status}`);
+//     }
+
+//     console.log("✅ Link text styles saved:", result);
+//     showNotification("Link text styles saved successfully!", "success");
+
+//     return { success: true, data: result };
+//   } catch (error) {
+//     console.error("❌ Error saving link text styles:", error);
+//     showNotification(
+//       `Failed to save link text styles: ${error.message}`,
+//       "error"
+//     );
+
+//     return { success: false, error: error.message };
+//   }
+// }
+
 export async function saveLinkTextModifications(blockId, css, tagType) {
   const pageId = document
     .querySelector("article[data-page-sections]")
@@ -979,7 +1138,7 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     return { success: false, error: "Missing required data" };
   }
 
-  // Validate data types and ensure they are strings
+  // ✅ Validate string formats
   const validatedUserId = String(userId).trim();
   const validatedToken = String(token).trim();
   const validatedWidgetId = String(widgetId).trim();
@@ -993,67 +1152,31 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     !validatedPageId ||
     !validatedBlockId
   ) {
-    console.warn("❌ Invalid data types for link text styles", {
-      validatedUserId,
-      validatedToken,
-      validatedWidgetId,
-      validatedPageId,
-      validatedBlockId,
-    });
-    return { success: false, error: "Invalid data types" };
+    return { success: false, error: "Invalid credentials or IDs" };
   }
 
-  // Check if css has nested `linkText` or is raw styles directly
-  // const rawCss = css?.linkText || css;
-  // const selector = css?.linkText?.selector || `#${validatedBlockId} a`;
+  // ✅ Clean and convert styles
+  const rawStyles = css?.linkText?.styles || {};
+  const selector = css?.linkText?.selector || `#${validatedBlockId} a`;
 
-  // // Clean styles
-  // const cleanedStyles = Object.fromEntries(
-  //   Object.entries(rawCss.styles || rawCss).filter(
-  //     ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
-  //   )
-  // );
+  const cleanedStyles = Object.fromEntries(
+    Object.entries(rawStyles).filter(
+      ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+    )
+  );
 
-  // const toKebabCase = (obj = {}) =>
-  //   Object.fromEntries(
-  //     Object.entries(obj).map(([key, value]) => [
-  //       key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-  //       value,
-  //     ])
-  //   );
+  const kebabCaseStyles = Object.fromEntries(
+    Object.entries(cleanedStyles).map(([key, val]) => [
+      key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+      val,
+    ])
+  );
 
-  // const kebabStyles = toKebabCase(cleanedStyles);
-
-  // // Construct payload in the correct format to match database schema
-  // const payload = {
-  //   userId: validatedUserId,
-  //   token: validatedToken,
-  //   widgetId: validatedWidgetId,
-  //   pageId: validatedPageId,
-  //   elementId: validatedBlockId,
-  //   css: {
-  //     target: tagType || "p", // or another value based on active tab
-  //     styles: kebabStyles,
-  //   },
-  // };
-
-  // CLEAN linkText.styles safely
-  if (css?.linkText?.styles) {
-    css.linkText.styles = Object.fromEntries(
-      Object.entries(css.linkText.styles).filter(
-        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
-      )
-    );
-
-    css.linkText.styles = Object.fromEntries(
-      Object.entries(css.linkText.styles).map(([key, value]) => [
-        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-        value,
-      ])
-    );
+  if (Object.keys(kebabCaseStyles).length === 0) {
+    return { success: false, error: "No valid styles to save" };
   }
 
-  // ✅ Final structured payload
+  // ✅ Final payload
   const payload = {
     userId: validatedUserId,
     token: validatedToken,
@@ -1065,7 +1188,10 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
           {
             elementId: validatedBlockId,
             css: {
-              linkText: css?.linkText,
+              linkText: {
+                selector: selector,
+                styles: kebabCaseStyles,
+              },
             },
           },
         ],
@@ -1073,9 +1199,7 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     ],
   };
 
-  console.log("payload", payload);
-
-  console.log("📤 Sending link text style payload:", payload);
+  console.log("📤 Sending payload:", payload);
 
   try {
     const response = await fetch(
@@ -1091,7 +1215,6 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     );
 
     const result = await response.json();
-    console.log("📥 API Response:", result);
 
     if (!response.ok) {
       console.error("❌ API Error Details:", {
