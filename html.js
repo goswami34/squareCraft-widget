@@ -1079,7 +1079,7 @@ export async function saveLinkTextModifications(blockId, css) {
     return { success: false, error: "Missing required data" };
   }
 
-  // ✅ Clean styles
+  // ✅ Clean and format styles
   const rawStyles = css?.linkText?.styles || {};
   const selector = css?.linkText?.selector || `#${blockId} a`;
 
@@ -1100,26 +1100,20 @@ export async function saveLinkTextModifications(blockId, css) {
     return { success: false, error: "No valid styles to save" };
   }
 
+  // ✅ Extract tagType from selector
+  const tagMatch = selector.match(/#.+?\s+(h[1-6]|p[1-3]|[a-z]+)/i);
+  const tagType = tagMatch ? tagMatch[1] : "a";
+
   const payload = {
     userId,
     token,
     widgetId,
-    modifications: [
-      {
-        pageId,
-        elements: [
-          {
-            elementId: blockId,
-            css: {
-              linkText: {
-                selector,
-                styles: kebabStyles,
-              },
-            },
-          },
-        ],
-      },
-    ],
+    pageId,
+    elementId: blockId,
+    css: {
+      target: tagType,
+      styles: kebabStyles,
+    },
   };
 
   console.log("📤 Sending final link text payload:", payload);
