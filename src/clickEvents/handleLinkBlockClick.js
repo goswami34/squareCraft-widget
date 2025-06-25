@@ -150,86 +150,49 @@ export function handleLinkBlockClick(event, context) {
     setSelectedSingleTextType(null);
   }
 
-  //Link section font size code start here
-  const innerTextElementsFont = block.querySelectorAll(
-    "h1,h2,h3,h4,p,p1,p2,p3"
-  );
-
+  // Consolidate all onclick handlers into one to prevent overriding
   visibleParts.forEach((partId) => {
     const typeId = partId.replace("Part", "");
     const tab = document.getElementById(typeId);
     if (!tab) return;
 
     tab.onclick = () => {
-      const clickedTag = typeId.startsWith("heading")
-        ? `h${typeId.replace("heading", "")}`
-        : typeId;
-      setSelectedSingleTextType(clickedTag);
-      console.log("✅ Now selected text type:", clickedTag);
-
-      const linkFontSizeInput = document.getElementById(
-        `scFontSizeInputLink-${typeId}`
-      );
-      if (linkFontSizeInput) {
-        linkFontSizeInput.focus(); // 👈 Focus Link font size input separately
-      }
-    };
-  });
-
-  //Link section font size code end here
-
-  //Link section text transform code start here
-  visibleParts.forEach((partId) => {
-    const typeId = partId.replace("Part", "");
-    const tab = document.getElementById(typeId);
-    if (!tab) return;
-
-    tab.onclick = () => {
-      let clickedTag = "";
-
-      if (typeId.startsWith("heading")) {
-        clickedTag = `heading${typeId.replace("heading", "")}`;
-      } else if (typeId.startsWith("paragraph")) {
-        clickedTag = `paragraph${typeId.replace("paragraph", "")}`;
-      }
-
-      console.log("✅ Clicked tab detected:", clickedTag);
-      setSelectedSingleTextType(clickedTag);
-
-      const fontSizeInput = document.getElementById(
-        `squareCraftLink-text-transform-${typeId}`
-      );
-      if (fontSizeInput) {
-        fontSizeInput.focus(); // auto focus
-      }
-    };
-  });
-
-  //Link section text transform code end here
-
-  visibleParts.forEach((partId) => {
-    const typeId = partId.replace("Part", "");
-    const tab = document.getElementById(typeId);
-    if (!tab) return;
-
-    tab.onclick = () => {
+      // Set the correct clickedTag format
       const clickedTag = typeId.startsWith("heading")
         ? `heading${typeId.replace("heading", "")}`
         : `paragraph${typeId.replace("paragraph", "")}`;
 
+      console.log("🔍 clickedTag:", clickedTag);
+      setSelectedSingleTextType(clickedTag);
+      console.log("✅ Now selected text type:", clickedTag);
+
       // Mark block as selected visually and logically
       const allBlocks = document.querySelectorAll('[id^="block-"]');
       allBlocks.forEach((b) => b.classList.remove("sc-selected"));
-
       block.classList.add("sc-selected");
-      setSelectedSingleTextType(clickedTag);
       setLastClickedElement(block);
 
-      // Also highlight active tab (optional UX)
+      // Highlight the selected tab for visual feedback
       document
         .querySelectorAll('[id^="heading"], [id^="paragraph"]')
         .forEach((t) => t.classList.remove("sc-selected-tab"));
       tab.classList.add("sc-selected-tab");
+
+      // Focus font size input
+      const linkFontSizeInput = document.getElementById(
+        `scFontSizeInputLink-${typeId}`
+      );
+      if (linkFontSizeInput) {
+        linkFontSizeInput.focus();
+      }
+
+      // Focus text transform input
+      const fontSizeInput = document.getElementById(
+        `squareCraftLink-text-transform-${typeId}`
+      );
+      if (fontSizeInput) {
+        fontSizeInput.focus();
+      }
 
       // Reset and attach font weight listener
       const fwSelect = document.getElementById("squareCraftLinkFontWeight");
@@ -261,31 +224,18 @@ export function handleLinkBlockClick(event, context) {
 
   //text high light code start here
 
-  visibleParts.forEach((partId) => {
-    const typeId = partId.replace("Part", "");
-    const tab = document.getElementById(typeId);
-    if (!tab) return;
+  //Link section font size code start here
+  // Removed duplicate loop - consolidated into main onclick handler above
 
-    tab.onclick = () => {
-      const clickedTag = typeId.startsWith("heading")
-        ? `heading${typeId.replace("heading", "")}`
-        : `paragraph${typeId.replace("paragraph", "")}`;
+  //Link section font size code end here
 
-      // Mark block as selected visually and logically
-      const allBlocks = document.querySelectorAll('[id^="block-"]');
-      allBlocks.forEach((b) => b.classList.remove("sc-selected"));
+  //Link section text transform code start here
+  // Removed duplicate loop - consolidated into main onclick handler above
 
-      block.classList.add("sc-selected");
-      setSelectedSingleTextType(clickedTag);
-      setLastClickedElement(block);
+  //Link section text transform code end here
 
-      // Also highlight active tab (optional UX)
-      document
-        .querySelectorAll('[id^="heading"], [id^="paragraph"]')
-        .forEach((t) => t.classList.remove("sc-selected-tab"));
-      tab.classList.add("sc-selected-tab");
-    };
-  });
+  //text high light code start here
+  // Removed duplicate loop - consolidated into main onclick handler above
 
   //Link section font weight code end here
 }

@@ -2049,22 +2049,19 @@ let pendingModifications = new Map();
       !activeLinkHighlightTab ||
       !activeLinkHighlightTab.id.includes("link")
     ) {
-      handleTextHighLinghtLink(
-        event,
-        {
-          lastClickedElement,
-          applyStylesToElement,
-          saveLinkTextModifications,
-          selectedSingleTextType,
-          addPendingModification: (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
-          showNotification,
-        }
-      );
+      handleTextHighLinghtLink(event, {
+        lastClickedElement,
+        applyStylesToElement,
+        saveLinkTextModifications,
+        selectedSingleTextType,
+        addPendingModification: (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification,
+      });
     }
     //link text highlight code end here
 
@@ -3160,10 +3157,7 @@ let pendingModifications = new Map();
         console.log("Selected font weight:", selectedFontWeight);
 
         if (!currentlySelectedBlock) {
-          showNotification(
-            // "❌ Please select a block first fsfgsfgsfgsgfsgsg.",
-            "error"
-          );
+          showNotification("❌ Please select a block first.", "error");
           this.value = "400";
           return;
         }
@@ -3171,16 +3165,35 @@ let pendingModifications = new Map();
         const selectedTab = document.querySelector(".sc-selected-tab");
         if (!selectedTab) {
           showNotification(
-            // "❌ Please select a text type (h1, h2, p1 etc) first.",
+            "❌ Please select a text type (h1, h2, p1 etc) first.",
             "error"
           );
           this.value = "400";
           return;
         }
 
+        // Get the correct selectedSingleTextType from the selected tab
+        let currentSelectedSingleTextType = null;
+        if (selectedTab.id.startsWith("heading")) {
+          currentSelectedSingleTextType = `heading${selectedTab.id.replace(
+            "heading",
+            ""
+          )}`;
+        } else if (selectedTab.id.startsWith("paragraph")) {
+          currentSelectedSingleTextType = `paragraph${selectedTab.id.replace(
+            "paragraph",
+            ""
+          )}`;
+        }
+
+        console.log(
+          "🔍 Current selected text type from tab:",
+          currentSelectedSingleTextType
+        );
+
         handleFontWeightLink(event, {
           lastClickedElement: currentlySelectedBlock,
-          selectedSingleTextType: selectedSingleTextType,
+          selectedSingleTextType: currentSelectedSingleTextType,
           addPendingModification,
           saveLinkTextModifications,
           showNotification,
