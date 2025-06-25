@@ -1079,7 +1079,6 @@ export async function saveLinkTextModifications(blockId, cssMap) {
     return { success: false, error: "Missing required data" };
   }
 
-  // ✅ Build final structure for css.linkText
   const linkText = {};
 
   for (const [tag, data] of Object.entries(cssMap)) {
@@ -1104,14 +1103,12 @@ export async function saveLinkTextModifications(blockId, cssMap) {
       ])
     );
 
-    // ✅ Always include selector and styles (even if styles is empty)
     linkText[tag] = {
       selector,
-      styles: kebab,
+      styles: kebab || {}, // ✅ Ensures styles always exists
     };
   }
 
-  // Double-check structure
   if (Object.keys(linkText).length === 0) {
     return { success: false, error: "No valid linkText styles to save" };
   }
