@@ -1099,12 +1099,11 @@ export async function saveLinkTextModifications(blockId, cssMap) {
       ])
     );
 
-    if (Object.keys(kebab).length > 0) {
-      linkText[tag] = {
-        selector,
-        styles: kebab,
-      };
-    }
+    // ✅ Always include styles (even if empty) to satisfy schema
+    linkText[tag] = {
+      selector,
+      styles: kebab, // will be {} if no styles
+    };
   }
 
   if (Object.keys(linkText).length === 0) {
