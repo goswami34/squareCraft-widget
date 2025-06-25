@@ -1088,7 +1088,12 @@ export async function saveLinkTextModifications(blockId, cssMap) {
 
     const cleaned = Object.fromEntries(
       Object.entries(rawStyles).filter(
-        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+        ([_, v]) =>
+          v !== null &&
+          v !== undefined &&
+          v !== "" &&
+          v !== "null" &&
+          !(typeof v === "string" && v.trim() === "")
       )
     );
 
@@ -1099,13 +1104,14 @@ export async function saveLinkTextModifications(blockId, cssMap) {
       ])
     );
 
-    // ✅ Always include styles (even if empty) to satisfy schema
+    // ✅ Always include selector and styles (even if styles is empty)
     linkText[tag] = {
       selector,
-      styles: kebab, // will be {} if no styles
+      styles: kebab,
     };
   }
 
+  // Double-check structure
   if (Object.keys(linkText).length === 0) {
     return { success: false, error: "No valid linkText styles to save" };
   }
