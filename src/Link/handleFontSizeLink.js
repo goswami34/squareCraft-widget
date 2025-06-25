@@ -73,7 +73,7 @@ async function mergeAndSaveLinkTextStyles(
     finalData
   );
 
-  await saveLinkTextModifications(blockId, finalData, "link");
+  await saveLinkTextModifications(blockId, finalData);
   console.log("✅ Database save completed for key:", styleKey);
 }
 

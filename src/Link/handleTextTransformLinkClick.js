@@ -36,6 +36,5 @@ async function mergeAndSaveLinkTextStyles(
 
   // Save to map and database
   linkTextStyleMap.set(blockId, finalData);
-  await saveLinkTextModifications(blockId, finalData, "link");
+  await saveLinkTextModifications(blockId, finalData);
 }
-

@@ -198,14 +198,32 @@ export async function saveModifications(blockId, css, tagType) {
       }
     );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+    let result;
+    try {
+      result = await response.json();
+    } catch (parseError) {
+      console.error("❌ Failed to parse response as JSON:", parseError);
+      const responseText = await response.text();
+      console.error("❌ Raw response text:", responseText);
+      throw new Error(`Failed to parse response: ${parseError.message}`);
     }
 
-    const result = await response.json();
+    console.log("🔍 API Response Status:", response.status);
+    console.log(
+      "🔍 API Response Headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+    console.log("🔍 API Response Body:", result);
+
+    if (!response.ok) {
+      console.error("❌ API Error Details:", {
+        status: response.status,
+        statusText: response.statusText,
+        result,
+      });
+      throw new Error(result.message || `HTTP ${response.status}`);
+    }
+
     console.log("✅ Changes Saved Successfully!", result);
 
     showNotification("Changes saved successfully!", "success");
@@ -440,9 +458,29 @@ export async function saveModificationsforImage(blockId, css, tagType) {
       }
     );
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (parseError) {
+      console.error("❌ Failed to parse response as JSON:", parseError);
+      const responseText = await response.text();
+      console.error("❌ Raw response text:", responseText);
+      throw new Error(`Failed to parse response: ${parseError.message}`);
+    }
+
+    console.log("🔍 API Response Status:", response.status);
+    console.log(
+      "🔍 API Response Headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+    console.log("🔍 API Response Body:", result);
 
     if (!response.ok) {
+      console.error("❌ API Error Details:", {
+        status: response.status,
+        statusText: response.statusText,
+        result,
+      });
       throw new Error(result.message || `HTTP ${response.status}`);
     }
 
@@ -526,9 +564,29 @@ export async function saveImageOverlayModifications(blockId, css) {
       }
     );
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (parseError) {
+      console.error("❌ Failed to parse response as JSON:", parseError);
+      const responseText = await response.text();
+      console.error("❌ Raw response text:", responseText);
+      throw new Error(`Failed to parse response: ${parseError.message}`);
+    }
+
+    console.log("🔍 API Response Status:", response.status);
+    console.log(
+      "🔍 API Response Headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+    console.log("🔍 API Response Body:", result);
 
     if (!response.ok) {
+      console.error("❌ API Error Details:", {
+        status: response.status,
+        statusText: response.statusText,
+        result,
+      });
       throw new Error(result.message || `HTTP ${response.status}`);
     }
 
@@ -614,9 +672,29 @@ export async function saveImageShadowModifications(blockId, css) {
       }
     );
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (parseError) {
+      console.error("❌ Failed to parse response as JSON:", parseError);
+      const responseText = await response.text();
+      console.error("❌ Raw response text:", responseText);
+      throw new Error(`Failed to parse response: ${parseError.message}`);
+    }
+
+    console.log("🔍 API Response Status:", response.status);
+    console.log(
+      "🔍 API Response Headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+    console.log("🔍 API Response Body:", result);
 
     if (!response.ok) {
+      console.error("❌ API Error Details:", {
+        status: response.status,
+        statusText: response.statusText,
+        result,
+      });
       throw new Error(result.message || `HTTP ${response.status}`);
     }
 
@@ -738,9 +816,29 @@ export async function saveButtonModifications(blockId, css) {
       }
     );
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (parseError) {
+      console.error("❌ Failed to parse response as JSON:", parseError);
+      const responseText = await response.text();
+      console.error("❌ Raw response text:", responseText);
+      throw new Error(`Failed to parse response: ${parseError.message}`);
+    }
+
+    console.log("🔍 API Response Status:", response.status);
+    console.log(
+      "🔍 API Response Headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+    console.log("🔍 API Response Body:", result);
 
     if (!response.ok) {
+      console.error("❌ API Error Details:", {
+        status: response.status,
+        statusText: response.statusText,
+        result,
+      });
       throw new Error(result.message || `HTTP ${response.status}`);
     }
 
@@ -836,9 +934,29 @@ export async function saveButtonBorderModifications(blockId, css) {
       }
     );
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (parseError) {
+      console.error("❌ Failed to parse response as JSON:", parseError);
+      const responseText = await response.text();
+      console.error("❌ Raw response text:", responseText);
+      throw new Error(`Failed to parse response: ${parseError.message}`);
+    }
+
+    console.log("🔍 API Response Status:", response.status);
+    console.log(
+      "🔍 API Response Headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+    console.log("🔍 API Response Body:", result);
 
     if (!response.ok) {
+      console.error("❌ API Error Details:", {
+        status: response.status,
+        statusText: response.statusText,
+        result,
+      });
       throw new Error(result.message || `HTTP ${response.status}`);
     }
 
@@ -936,9 +1054,29 @@ export async function saveButtonShadowModifications(blockId, css) {
       }
     );
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (parseError) {
+      console.error("❌ Failed to parse response as JSON:", parseError);
+      const responseText = await response.text();
+      console.error("❌ Raw response text:", responseText);
+      throw new Error(`Failed to parse response: ${parseError.message}`);
+    }
+
+    console.log("🔍 API Response Status:", response.status);
+    console.log(
+      "🔍 API Response Headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+    console.log("🔍 API Response Body:", result);
 
     if (!response.ok) {
+      console.error("❌ API Error Details:", {
+        status: response.status,
+        statusText: response.statusText,
+        result,
+      });
       throw new Error(result.message || `HTTP ${response.status}`);
     }
 
@@ -1081,9 +1219,42 @@ export async function saveLinkTextModifications(blockId, cssMap) {
 
   const linkText = {};
 
-  for (const [tag, data] of Object.entries(cssMap)) {
+  // Handle both old and new data structures
+  if (cssMap.linkText) {
+    // New structure: { linkText: { selector, styles } }
+    const data = cssMap.linkText;
     const rawStyles = data?.styles || {};
-    const selector = data?.selector || `#${blockId} ${tag} a`;
+    const selector = data?.selector || `#${blockId} a`;
+
+    // Extract tag name from selector and map to expected format
+    let tagName = "default";
+
+    // Handle different selector patterns
+    if (selector.includes("h1")) {
+      tagName = "h1";
+    } else if (selector.includes("h2")) {
+      tagName = "h2";
+    } else if (selector.includes("h3")) {
+      tagName = "h3";
+    } else if (selector.includes("h4")) {
+      tagName = "h4";
+    } else if (selector.includes("h5")) {
+      tagName = "h5";
+    } else if (selector.includes("h6")) {
+      tagName = "h6";
+    } else if (selector.includes("p.sqsrte-large")) {
+      tagName = "p1";
+    } else if (selector.includes("p.sqsrte-small")) {
+      tagName = "p3";
+    } else if (selector.includes("p:not(.sqsrte-large):not(.sqsrte-small)")) {
+      tagName = "p2";
+    } else if (selector.includes("p")) {
+      tagName = "p2"; // Default paragraph
+    } else {
+      // Fallback: try to extract from selector pattern
+      const tagMatch = selector.match(/#[^#\s]+\s+([^a\s]+)/);
+      tagName = tagMatch ? tagMatch[1] : "default";
+    }
 
     const cleaned = Object.fromEntries(
       Object.entries(rawStyles).filter(
@@ -1103,10 +1274,39 @@ export async function saveLinkTextModifications(blockId, cssMap) {
       ])
     );
 
-    linkText[tag] = {
+    linkText[tagName] = {
       selector,
-      styles: kebab || {}, // ✅ Ensures styles always exists
+      styles: kebab || {},
     };
+  } else {
+    // Old structure: { "h1": { selector, styles }, "h2": { selector, styles }, ... }
+    for (const [tag, data] of Object.entries(cssMap)) {
+      const rawStyles = data?.styles || {};
+      const selector = data?.selector || `#${blockId} ${tag} a`;
+
+      const cleaned = Object.fromEntries(
+        Object.entries(rawStyles).filter(
+          ([_, v]) =>
+            v !== null &&
+            v !== undefined &&
+            v !== "" &&
+            v !== "null" &&
+            !(typeof v === "string" && v.trim() === "")
+        )
+      );
+
+      const kebab = Object.fromEntries(
+        Object.entries(cleaned).map(([key, val]) => [
+          key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+          val,
+        ])
+      );
+
+      linkText[tag] = {
+        selector,
+        styles: kebab || {},
+      };
+    }
   }
 
   if (Object.keys(linkText).length === 0) {
@@ -1125,6 +1325,8 @@ export async function saveLinkTextModifications(blockId, cssMap) {
   };
 
   console.log("📤 Sending final link text payload:", payload);
+  console.log("🔍 Original cssMap:", cssMap);
+  console.log("🔍 Processed linkText:", linkText);
 
   try {
     const response = await fetch(
@@ -1139,7 +1341,22 @@ export async function saveLinkTextModifications(blockId, cssMap) {
       }
     );
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (parseError) {
+      console.error("❌ Failed to parse response as JSON:", parseError);
+      const responseText = await response.text();
+      console.error("❌ Raw response text:", responseText);
+      throw new Error(`Failed to parse response: ${parseError.message}`);
+    }
+
+    console.log("🔍 API Response Status:", response.status);
+    console.log(
+      "🔍 API Response Headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+    console.log("🔍 API Response Body:", result);
 
     if (!response.ok) {
       console.error("❌ API Error Details:", {

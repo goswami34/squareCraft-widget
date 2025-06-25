@@ -22,7 +22,8 @@ async function mergeAndSaveLinkTextStyles(
   };
 
   // Use the new selector if provided, otherwise keep the existing one
-  const finalSelector = newStyles.linkText?.selector || prevStyles.linkText.selector;
+  const finalSelector =
+    newStyles.linkText?.selector || prevStyles.linkText.selector;
 
   // Merge the new styles with existing styles
   const mergedLinkTextStyles = {
@@ -41,12 +42,12 @@ async function mergeAndSaveLinkTextStyles(
     prevStyles: prevStyles.linkText.styles,
     newStyles: newStyles.linkText?.styles,
     mergedStyles: mergedLinkTextStyles,
-    finalSelector
+    finalSelector,
   });
 
   // Save to map and database
   linkTextStyleMap.set(blockId, finalData);
-  await saveLinkTextModifications(blockId, finalData, "link");
+  await saveLinkTextModifications(blockId, finalData);
 }
 
 function showNotification(message, type = "info") {
@@ -76,5 +77,3 @@ function showNotification(message, type = "info") {
     setTimeout(() => notification.remove(), 300);
   }, 3000);
 }
-
-
