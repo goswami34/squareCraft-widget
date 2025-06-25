@@ -1004,39 +1004,75 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
   }
 
   // Check if css has nested `linkText` or is raw styles directly
-  const rawCss = css?.linkText || css;
-  const selector = css?.linkText?.selector || `#${validatedBlockId} a`;
+  // const rawCss = css?.linkText || css;
+  // const selector = css?.linkText?.selector || `#${validatedBlockId} a`;
 
-  // Clean styles
-  const cleanedStyles = Object.fromEntries(
-    Object.entries(rawCss.styles || rawCss).filter(
-      ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
-    )
-  );
+  // // Clean styles
+  // const cleanedStyles = Object.fromEntries(
+  //   Object.entries(rawCss.styles || rawCss).filter(
+  //     ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+  //   )
+  // );
 
-  const toKebabCase = (obj = {}) =>
-    Object.fromEntries(
-      Object.entries(obj).map(([key, value]) => [
+  // const toKebabCase = (obj = {}) =>
+  //   Object.fromEntries(
+  //     Object.entries(obj).map(([key, value]) => [
+  //       key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+  //       value,
+  //     ])
+  //   );
+
+  // const kebabStyles = toKebabCase(cleanedStyles);
+
+  // // Construct payload in the correct format to match database schema
+  // const payload = {
+  //   userId: validatedUserId,
+  //   token: validatedToken,
+  //   widgetId: validatedWidgetId,
+  //   pageId: validatedPageId,
+  //   elementId: validatedBlockId,
+  //   css: {
+  //     target: tagType || "p", // or another value based on active tab
+  //     styles: kebabStyles,
+  //   },
+  // };
+
+  // CLEAN linkText.styles safely
+  if (css?.linkText?.styles) {
+    css.linkText.styles = Object.fromEntries(
+      Object.entries(css.linkText.styles).filter(
+        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+      )
+    );
+
+    css.linkText.styles = Object.fromEntries(
+      Object.entries(css.linkText.styles).map(([key, value]) => [
         key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
         value,
       ])
     );
+  }
 
-  const kebabStyles = toKebabCase(cleanedStyles);
-
-  // Construct payload in the correct format to match database schema
+  // ✅ Final structured payload
   const payload = {
     userId: validatedUserId,
     token: validatedToken,
     widgetId: validatedWidgetId,
-    pageId: validatedPageId,
-    elementId: validatedBlockId,
-    css: {
-      target: tagType || "p", // or another value based on active tab
-      styles: kebabStyles,
-    },
+    modifications: [
+      {
+        pageId: validatedPageId,
+        elements: [
+          {
+            elementId: validatedBlockId,
+            css: {
+              linkText: css?.linkText,
+            },
+          },
+        ],
+      },
+    ],
   };
-  
+
   console.log("payload", payload);
 
   console.log("📤 Sending link text style payload:", payload);
