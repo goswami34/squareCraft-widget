@@ -243,8 +243,8 @@ export function handleLinkBlockClick(event, context) {
             return;
           }
 
-          import("../../handleFontWeightLink.js").then((module) => {
-            module.handleFontWeightLink(e, {
+          import("../Link/handleFontSizeLink.js").then((module) => {
+            module.handleFontSizeLink(e, {
               lastClickedElement: currentlySelectedBlock,
               selectedSingleTextType: clickedTag,
               addPendingModification,
