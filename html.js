@@ -1138,26 +1138,13 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     return { success: false, error: "Missing required data" };
   }
 
-  // ✅ Validate string formats
-  const validatedUserId = String(userId).trim();
-  const validatedToken = String(token).trim();
-  const validatedWidgetId = String(widgetId).trim();
-  const validatedPageId = String(pageId).trim();
-  const validatedBlockId = String(blockId).trim();
-
-  if (
-    !validatedUserId ||
-    !validatedToken ||
-    !validatedWidgetId ||
-    !validatedPageId ||
-    !validatedBlockId
-  ) {
-    return { success: false, error: "Invalid credentials or IDs" };
-  }
-
-  // ✅ Clean and convert styles
+  // 🔍 Get raw styles & selector from css.linkText
   const rawStyles = css?.linkText?.styles || {};
-  const selector = css?.linkText?.selector || `#${validatedBlockId} a`;
+  const rawSelector = css?.linkText?.selector || `#${blockId} a`;
+
+  // Extract the tagType (like h2, h3, etc.) from selector if not given
+  const detectedTag =
+    tagType || rawSelector.match(/#.+?\s+([a-z0-9]+)/)?.[1] || "a";
 
   const cleanedStyles = Object.fromEntries(
     Object.entries(rawStyles).filter(
@@ -1165,41 +1152,30 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     )
   );
 
-  const kebabCaseStyles = Object.fromEntries(
+  const kebabStyles = Object.fromEntries(
     Object.entries(cleanedStyles).map(([key, val]) => [
       key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
       val,
     ])
   );
 
-  if (Object.keys(kebabCaseStyles).length === 0) {
+  if (Object.keys(kebabStyles).length === 0) {
     return { success: false, error: "No valid styles to save" };
   }
 
-  // ✅ Final payload
   const payload = {
-    userId: validatedUserId,
-    token: validatedToken,
-    widgetId: validatedWidgetId,
-    modifications: [
-      {
-        pageId: validatedPageId,
-        elements: [
-          {
-            elementId: validatedBlockId,
-            css: {
-              linkText: {
-                selector: selector,
-                styles: kebabCaseStyles,
-              },
-            },
-          },
-        ],
-      },
-    ],
+    userId,
+    token,
+    widgetId,
+    pageId,
+    elementId: blockId,
+    css: {
+      target: detectedTag,
+      styles: kebabStyles,
+    },
   };
 
-  console.log("📤 Sending payload:", payload);
+  console.log("📤 Sending final link text payload:", payload);
 
   try {
     const response = await fetch(
@@ -1208,7 +1184,7 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${validatedToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       }
