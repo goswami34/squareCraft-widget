@@ -243,9 +243,7 @@ export function handleLinkBlockClick(event, context) {
             return;
           }
 
-          import(
-            "https://goswami34.github.io/squareCraft-widget/src/Link/handleFontWeightLink.js"
-          ).then((module) => {
+          import("../../handleFontWeightLink.js").then((module) => {
             module.handleFontWeightLink(e, {
               lastClickedElement: currentlySelectedBlock,
               selectedSingleTextType: clickedTag,
