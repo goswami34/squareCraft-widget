@@ -1058,7 +1058,7 @@ export async function saveButtonShadowModifications(blockId, css) {
 //   }
 // }
 
-export async function saveLinkTextModifications(blockId, css) {
+export async function saveLinkTextModifications(blockId, cssMap) {
   const pageId = document
     .querySelector("article[data-page-sections]")
     ?.getAttribute("data-page-sections");
@@ -1067,42 +1067,49 @@ export async function saveLinkTextModifications(blockId, css) {
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+  if (!userId || !token || !widgetId || !pageId || !blockId || !cssMap) {
     console.warn("❌ Missing required data to save link text styles", {
       userId,
       token,
       widgetId,
       pageId,
       blockId,
-      css,
+      cssMap,
     });
     return { success: false, error: "Missing required data" };
   }
 
-  // ✅ Clean and format styles
-  const rawStyles = css?.linkText?.styles || {};
-  const selector = css?.linkText?.selector || `#${blockId} a`;
+  // ✅ Build final structure for css.linkText
+  const linkText = {};
 
-  const cleanedStyles = Object.fromEntries(
-    Object.entries(rawStyles).filter(
-      ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
-    )
-  );
+  for (const [tag, data] of Object.entries(cssMap)) {
+    const rawStyles = data?.styles || {};
+    const selector = data?.selector || `#${blockId} ${tag} a`;
 
-  const kebabStyles = Object.fromEntries(
-    Object.entries(cleanedStyles).map(([key, val]) => [
-      key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-      val,
-    ])
-  );
+    const cleaned = Object.fromEntries(
+      Object.entries(rawStyles).filter(
+        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+      )
+    );
 
-  if (Object.keys(kebabStyles).length === 0) {
-    return { success: false, error: "No valid styles to save" };
+    const kebab = Object.fromEntries(
+      Object.entries(cleaned).map(([key, val]) => [
+        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        val,
+      ])
+    );
+
+    if (Object.keys(kebab).length > 0) {
+      linkText[tag] = {
+        selector,
+        styles: kebab,
+      };
+    }
   }
 
-  // ✅ Extract tagType from selector
-  const tagMatch = selector.match(/#.+?\s+(h[1-6]|p[1-3]|[a-z]+)/i);
-  const tagType = tagMatch ? tagMatch[1] : "a";
+  if (Object.keys(linkText).length === 0) {
+    return { success: false, error: "No valid linkText styles to save" };
+  }
 
   const payload = {
     userId,
@@ -1111,8 +1118,7 @@ export async function saveLinkTextModifications(blockId, css) {
     pageId,
     elementId: blockId,
     css: {
-      target: tagType,
-      styles: kebabStyles,
+      linkText,
     },
   };
 
