@@ -1058,7 +1058,7 @@ export async function saveButtonShadowModifications(blockId, css) {
 //   }
 // }
 
-export async function saveLinkTextModifications(blockId, css, tagType) {
+export async function saveLinkTextModifications(blockId, css) {
   const pageId = document
     .querySelector("article[data-page-sections]")
     ?.getAttribute("data-page-sections");
@@ -1079,16 +1079,10 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     return { success: false, error: "Missing required data" };
   }
 
-  // Get full selector from css
-  const rawSelector = css?.linkText?.selector;
+  // ✅ Clean styles
   const rawStyles = css?.linkText?.styles || {};
+  const selector = css?.linkText?.selector || `#${blockId} a`;
 
-  if (!rawSelector) {
-    console.warn("❌ Missing selector inside css.linkText");
-    return { success: false, error: "Missing selector" };
-  }
-
-  // Clean & convert styles to kebab-case
   const cleanedStyles = Object.fromEntries(
     Object.entries(rawStyles).filter(
       ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
@@ -1106,7 +1100,6 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     return { success: false, error: "No valid styles to save" };
   }
 
-  // Final payload that stores EXACT selector
   const payload = {
     userId,
     token,
@@ -1119,7 +1112,7 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
             elementId: blockId,
             css: {
               linkText: {
-                selector: rawSelector, // e.g., "#block-xxx h2 a, #block-xxx h2 a span[class^='sqsrte-text-color']"
+                selector,
                 styles: kebabStyles,
               },
             },
@@ -1129,7 +1122,7 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     ],
   };
 
-  console.log("📤 Final link text payload:", payload);
+  console.log("📤 Sending final link text payload:", payload);
 
   try {
     const response = await fetch(
@@ -1147,6 +1140,11 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
     const result = await response.json();
 
     if (!response.ok) {
+      console.error("❌ API Error Details:", {
+        status: response.status,
+        statusText: response.statusText,
+        result,
+      });
       throw new Error(result.message || `HTTP ${response.status}`);
     }
 
@@ -1160,6 +1158,7 @@ export async function saveLinkTextModifications(blockId, css, tagType) {
       `Failed to save link text styles: ${error.message}`,
       "error"
     );
+
     return { success: false, error: error.message };
   }
 }
