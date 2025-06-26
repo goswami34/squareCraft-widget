@@ -76,10 +76,10 @@ export async function handleAllFontWeightClick(event = null, context = null) {
     return;
   }
 
-  // Remove inline fontWeight from all children so CSS can take effect
+  // Remove inline fontWeight from all descendants so CSS can take effect
   targetElements.forEach((el) => {
     el.style.fontWeight = "";
-    el.querySelectorAll("strong, b, em, i, span").forEach((child) => {
+    el.querySelectorAll("*").forEach((child) => {
       child.style.fontWeight = "";
     });
   });
@@ -94,13 +94,11 @@ export async function handleAllFontWeightClick(event = null, context = null) {
     document.head.appendChild(styleTag);
   }
 
+  // Aggressive CSS injection to cover all descendants
   styleTag.innerHTML = `
     #${block.id} ${paragraphSelector},
-    #${block.id} ${paragraphSelector} strong,
-    #${block.id} ${paragraphSelector} b,
-    #${block.id} ${paragraphSelector} em,
-    #${block.id} ${paragraphSelector} i,
-    #${block.id} ${paragraphSelector} span {
+    #${block.id} ${paragraphSelector} *,
+    #${block.id} ${paragraphSelector} *:not([style*="font-weight"]) {
       font-weight: ${fontWeight} !important;
     }
   `;
