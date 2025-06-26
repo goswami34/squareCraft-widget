@@ -87,7 +87,27 @@ export function handleAllTextAlignClick(event = null, context = null) {
   console.log("✅ Applying text-transform for selector:", paragraphSelector);
 
   // Find target paragraphs or headings
-  const targetElements = block.querySelectorAll(paragraphSelector);
+  // const targetElements = block.querySelectorAll(paragraphSelector);
+  const allParagraphs = block.querySelectorAll("p");
+
+  const targetElements = Array.from(allParagraphs).filter((p) => {
+    if (selectedSingleTextType === "paragraph1") {
+      return p.classList.contains("sqsrte-large");
+    }
+    if (selectedSingleTextType === "paragraph2") {
+      return (
+        !p.classList.contains("sqsrte-large") &&
+        !p.classList.contains("sqsrte-small")
+      );
+    }
+    if (selectedSingleTextType === "paragraph3") {
+      return p.classList.contains("sqsrte-small");
+    }
+    return false;
+  });
+
+  console.log("targetElements", targetElements);
+
   if (!targetElements.length) {
     showNotification(`No text found for ${selectedSingleTextType}`, "error");
     return;
