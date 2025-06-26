@@ -27,6 +27,7 @@ function showNotification(message, type = "info") {
 }
 
 export function handleItalicFontWeightClick(event = null, context = null) {
+  console.log("handleItalicFontWeightClick");
   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
     context;
 
