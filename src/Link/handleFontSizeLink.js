@@ -181,7 +181,7 @@ export async function handleFontSizeLink(event = null, context = null) {
   });
 
   if (!linkFound) {
-    showNotification(`No link (<a>) inside ${selectedSingleTextType}`, "info");
+    // showNotification(`No link (<a>) inside ${selectedSingleTextType}`, "info");
     return;
   }
 

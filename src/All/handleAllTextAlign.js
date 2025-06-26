@@ -121,7 +121,7 @@ export function handleAllTextAlignClick(event = null, context = null) {
     el.style.textAlign = "";
   });
 
-  // 💡 Inject highly specific CSS
+  // 💡 Inject highly specific CSS using data attributes
   const styleId = `style-${block.id}-${selectedSingleTextType}-textalign`;
   let styleTag = document.getElementById(styleId);
   if (!styleTag) {
@@ -130,8 +130,11 @@ export function handleAllTextAlignClick(event = null, context = null) {
     document.head.appendChild(styleTag);
   }
 
+  // ✅ Use data-sc-text-type attribute for specific targeting
+  const specificSelector = `#${block.id} [data-sc-text-type="${selectedSingleTextType}"]`;
+
   styleTag.innerHTML = `
-    #${block.id} ${selector} {
+    ${specificSelector} {
       text-align: ${textAlign} !important;
     }
   `;
