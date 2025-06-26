@@ -27,15 +27,13 @@ function showNotification(message, type = "info") {
 }
 
 export function handleItalicFontWeightClick(event = null, context = null) {
-  console.log("handleItalicFontWeightClick");
-  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
-    context;
-
-  if (!event) {
-    event = { target: document.getElementById("squareCraftItalicFontWeight") };
-  }
-
-  const fontWeight = event.target.value;
+  console.log("handleItalicFontWeightClick called");
+  const {
+    lastClickedElement,
+    selectedSingleTextType,
+    addPendingModification,
+    showNotification,
+  } = context;
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
@@ -47,34 +45,28 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     return;
   }
 
-  const block = lastClickedElement.closest('[id^="block-"]');
-  if (!block) {
-    showNotification("Block not found", "error");
-    return;
-  }
+  const block = lastClickedElement;
+  const fontWeight = event?.target?.value || "400";
 
-  let paragraphSelector = "";
+  console.log("Block:", block);
+  console.log("Selected text type:", selectedSingleTextType);
+  console.log("Font weight:", fontWeight);
 
-  // 🎯 Correct mapping here
+  // Determine paragraph selector based on selectedSingleTextType
+  let paragraphSelector;
   if (selectedSingleTextType === "paragraph1") {
-    paragraphSelector = "p.sqsrte-large";
+    paragraphSelector = "p";
   } else if (selectedSingleTextType === "paragraph2") {
-    paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
+    paragraphSelector = "p";
   } else if (selectedSingleTextType === "paragraph3") {
-    paragraphSelector = "p.sqsrte-small";
-  } else if (selectedSingleTextType === "heading1") {
-    paragraphSelector = "h1";
-  } else if (selectedSingleTextType === "heading2") {
-    paragraphSelector = "h2";
-  } else if (selectedSingleTextType === "heading3") {
-    paragraphSelector = "h3";
-  } else if (selectedSingleTextType === "heading4") {
-    paragraphSelector = "h4";
+    paragraphSelector = "p";
+  } else if (selectedSingleTextType === "paragraph4") {
+    paragraphSelector = "p";
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    paragraphSelector = `h${selectedSingleTextType.replace("heading", "")}`;
   } else {
-    return;
+    paragraphSelector = selectedSingleTextType;
   }
-
-  console.log("✅ Applying font-weight for selector:", paragraphSelector);
 
   // Find target paragraphs or headings
   const targetElements = block.querySelectorAll(paragraphSelector);
@@ -84,10 +76,6 @@ export function handleItalicFontWeightClick(event = null, context = null) {
   }
 
   // First, remove any existing inline font-weight from all em/i elements
-  // block.querySelectorAll("em, i").forEach((el) => {
-  //   el.style.fontWeight = "";
-  // });
-
   targetElements.forEach((tag) => {
     tag.querySelectorAll("em, i").forEach((el) => {
       el.style.fontWeight = "";
@@ -100,7 +88,7 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     const italics = tag.querySelectorAll("em, i");
     if (italics.length > 0) {
       italicFound = true;
-      // Apply font-weight to ALL italic elements
+      // Apply font-weight to each italic element
       italics.forEach((el) => {
         el.style.fontWeight = fontWeight;
       });
@@ -109,13 +97,13 @@ export function handleItalicFontWeightClick(event = null, context = null) {
 
   if (!italicFound) {
     showNotification(
-      `No italic (<em> or <i>) inside ${selectedSingleTextType}`,
+      `No italic (<em> or <i>) found inside ${selectedSingleTextType}`,
       "info"
     );
     return;
   }
 
-  // Inject CSS for ALL <em> and <i> elements in the block
+  // Inject CSS to ensure the font-weight applies to all italic elements
   const styleId = `style-${block.id}-${selectedSingleTextType}-italic-fontWeight`;
   let styleTag = document.getElementById(styleId);
   if (!styleTag) {
@@ -124,30 +112,26 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     document.head.appendChild(styleTag);
   }
 
-  // More specific CSS to ensure it applies to all italic elements
-  // styleTag.innerHTML = `
-  //   #${block.id} ${paragraphSelector} em,
-  //   #${block.id} ${paragraphSelector} i,
-  //   #${block.id} em,
-  //   #${block.id} i {
-  //     font-weight: ${fontWeight} !important;
-  //   }
-  // `;
-
+  // More specific CSS to ensure it applies ONLY to italic elements
   styleTag.innerHTML = `
-  #${block.id} ${paragraphSelector} em,
-  #${block.id} ${paragraphSelector} i {
-    font-weight: ${fontWeight} !important;
-  }
-`;
+    #${block.id} ${paragraphSelector} em,
+    #${block.id} ${paragraphSelector} i {
+      font-weight: ${fontWeight} !important;
+    }
+  `;
 
-  addPendingModification(block.id, {
-    "font-weight": fontWeight,
-    target: selectedSingleTextType,
-  });
+  // Add to pending modifications
+  addPendingModification(
+    block.id,
+    {
+      target: selectedSingleTextType,
+      "font-weight": fontWeight,
+    },
+    "italic"
+  );
 
   showNotification(
-    `Font-weight applied to all italic words in: ${selectedSingleTextType}`,
+    `Font weight ${fontWeight} applied to italic text in ${selectedSingleTextType}`,
     "success"
   );
 }
