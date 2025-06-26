@@ -21,30 +21,50 @@ function showNotification(message, type = "info") {
 
   setTimeout(() => {
     notification.style.animation = "fadeOut 0.3s ease-in-out";
-    setTimeout(() => notification.remove(), 300);
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300);
   }, 3000);
 }
 
-// ✅ Apply data-sc-text-type to elements inside block
+// ✅ Apply data attributes to elements for better targeting
 function applyDataTextTypeAttributes(block) {
-  const allTextElements = block.querySelectorAll("h1, h2, h3, h4, p");
+  // Clear existing data attributes
+  block.querySelectorAll("[data-text-type]").forEach((el) => {
+    el.removeAttribute("data-text-type");
+  });
 
-  allTextElements.forEach((el) => {
-    if (el.classList.contains("sqsrte-large")) {
-      el.setAttribute("data-sc-text-type", "paragraph1");
-    } else if (el.classList.contains("sqsrte-small")) {
-      el.setAttribute("data-sc-text-type", "paragraph3");
-    } else if (el.tagName.toLowerCase() === "p") {
-      el.setAttribute("data-sc-text-type", "paragraph2");
-    } else if (el.tagName.toLowerCase() === "h1") {
-      el.setAttribute("data-sc-text-type", "heading1");
-    } else if (el.tagName.toLowerCase() === "h2") {
-      el.setAttribute("data-sc-text-type", "heading2");
-    } else if (el.tagName.toLowerCase() === "h3") {
-      el.setAttribute("data-sc-text-type", "heading3");
-    } else if (el.tagName.toLowerCase() === "h4") {
-      el.setAttribute("data-sc-text-type", "heading4");
-    }
+  // Apply data attributes based on element types
+  block.querySelectorAll("h1").forEach((el, index) => {
+    el.setAttribute("data-text-type", `heading1-${index}`);
+  });
+
+  block.querySelectorAll("h2").forEach((el, index) => {
+    el.setAttribute("data-text-type", `heading2-${index}`);
+  });
+
+  block.querySelectorAll("h3").forEach((el, index) => {
+    el.setAttribute("data-text-type", `heading3-${index}`);
+  });
+
+  block.querySelectorAll("h4").forEach((el, index) => {
+    el.setAttribute("data-text-type", `heading4-${index}`);
+  });
+
+  block.querySelectorAll("p.sqsrte-large").forEach((el, index) => {
+    el.setAttribute("data-text-type", `paragraph1-${index}`);
+  });
+
+  block
+    .querySelectorAll("p:not(.sqsrte-large):not(.sqsrte-small)")
+    .forEach((el, index) => {
+      el.setAttribute("data-text-type", `paragraph2-${index}`);
+    });
+
+  block.querySelectorAll("p.sqsrte-small").forEach((el, index) => {
+    el.setAttribute("data-text-type", `paragraph3-${index}`);
   });
 }
 
@@ -71,21 +91,9 @@ export function handleAllTextAlignClick(event = null, context = null) {
       showNotification("Please select a text alignment option", "error");
       return;
     }
-    event = { target: activeButton };
   }
 
-  const clickedElement = event.target.closest('[id^="scTextAlign"]');
-  if (!clickedElement) {
-    showNotification("Please select a text alignment option", "error");
-    return;
-  }
-
-  const textAlign = clickedElement.dataset.align;
-  if (!textAlign) {
-    showNotification("Invalid text alignment value", "error");
-    return;
-  }
-
+  const textAlign = event?.target?.getAttribute("data-align") || "left";
   const block = lastClickedElement;
 
   applyDataTextTypeAttributes(block);
@@ -110,7 +118,10 @@ export function handleAllTextAlignClick(event = null, context = null) {
     return;
   }
 
-  const elements = block.querySelectorAll(selector);
+  // ✅ Find elements with the specific data attribute pattern
+  const elements = block.querySelectorAll(
+    `[data-text-type^="${selectedSingleTextType}-"]`
+  );
   if (!elements.length) {
     showNotification(`No text found for ${selectedSingleTextType}`, "error");
     return;
@@ -121,7 +132,7 @@ export function handleAllTextAlignClick(event = null, context = null) {
     el.style.textAlign = "";
   });
 
-  // 💡 Inject highly specific CSS
+  // 💡 Inject highly specific CSS using data attributes
   const styleId = `style-${block.id}-${selectedSingleTextType}-textalign`;
   let styleTag = document.getElementById(styleId);
   if (!styleTag) {
@@ -130,28 +141,33 @@ export function handleAllTextAlignClick(event = null, context = null) {
     document.head.appendChild(styleTag);
   }
 
+  // Create specific CSS selector using data attributes
+  const specificSelector = `#${block.id} [data-text-type^="${selectedSingleTextType}-"]`;
+
   styleTag.innerHTML = `
-    #${block.id} ${selector} {
+    ${specificSelector} {
       text-align: ${textAlign} !important;
     }
   `;
 
+  // ✅ Add to pending modifications
   addPendingModification(
     block.id,
     {
+      target: specificSelector,
       "text-align": textAlign,
-      target: selectedSingleTextType,
     },
-    "all"
+    selectedSingleTextType
   );
 
   // UI state
   document.querySelectorAll('[id^="scTextAlign"]').forEach((el) => {
     el.classList.remove("sc-activeTab-border");
-    el.classList.add("sc-inActiveTab-border");
   });
-  clickedElement.classList.remove("sc-inActiveTab-border");
-  clickedElement.classList.add("sc-activeTab-border");
+
+  if (event?.target) {
+    event.target.classList.add("sc-activeTab-border");
+  }
 
   showNotification(
     `Text-align "${textAlign}" applied to ${selectedSingleTextType}`,
