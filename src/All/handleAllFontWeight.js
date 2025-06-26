@@ -76,7 +76,15 @@ export async function handleAllFontWeightClick(event = null, context = null) {
     return;
   }
 
-  // ✅ Dynamic CSS injection
+  // Remove inline fontWeight from all children so CSS can take effect
+  targetElements.forEach((el) => {
+    el.style.fontWeight = "";
+    el.querySelectorAll("strong, b, em, i, span").forEach((child) => {
+      child.style.fontWeight = "";
+    });
+  });
+
+  // ✅ Dynamic CSS injection - apply to all relevant children
   const styleId = `style-${block.id}-${selectedSingleTextType}-all-fontWeight`;
   let styleTag = document.getElementById(styleId);
 
@@ -87,7 +95,12 @@ export async function handleAllFontWeightClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-    #${block.id} ${paragraphSelector} {
+    #${block.id} ${paragraphSelector},
+    #${block.id} ${paragraphSelector} strong,
+    #${block.id} ${paragraphSelector} b,
+    #${block.id} ${paragraphSelector} em,
+    #${block.id} ${paragraphSelector} i,
+    #${block.id} ${paragraphSelector} span {
       font-weight: ${fontWeight} !important;
     }
   `;
