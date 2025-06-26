@@ -88,28 +88,42 @@ export function handleAllTextAlignClick(event = null, context = null) {
 
   const block = lastClickedElement;
 
-  // ✅ Re-apply correct type attributes before selecting
   applyDataTextTypeAttributes(block);
 
-  // ✅ Select only elements with matching data-sc-text-type
-  const targetElements = block.querySelectorAll(
-    `[data-sc-text-type="${selectedSingleTextType}"]`
-  );
+  // 🔍 Define tag + attribute mapping
+  const typeToTag = {
+    paragraph1: "p.sqsrte-large",
+    paragraph2: "p:not(.sqsrte-large):not(.sqsrte-small)",
+    paragraph3: "p.sqsrte-small",
+    heading1: "h1",
+    heading2: "h2",
+    heading3: "h3",
+    heading4: "h4",
+  };
 
-  if (!targetElements.length) {
+  const selector = typeToTag[selectedSingleTextType];
+  if (!selector) {
+    showNotification(
+      "Unsupported text type: " + selectedSingleTextType,
+      "error"
+    );
+    return;
+  }
+
+  const elements = block.querySelectorAll(selector);
+  if (!elements.length) {
     showNotification(`No text found for ${selectedSingleTextType}`, "error");
     return;
   }
 
-  // Clear inline styles if needed
-  targetElements.forEach((el) => {
+  // Clear inline style
+  elements.forEach((el) => {
     el.style.textAlign = "";
   });
 
-  // ✅ Inject scoped CSS
+  // 💡 Inject highly specific CSS
   const styleId = `style-${block.id}-${selectedSingleTextType}-textalign`;
   let styleTag = document.getElementById(styleId);
-
   if (!styleTag) {
     styleTag = document.createElement("style");
     styleTag.id = styleId;
@@ -117,12 +131,11 @@ export function handleAllTextAlignClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-    #${block.id} [data-sc-text-type="${selectedSingleTextType}"] {
+    #${block.id} ${selector} {
       text-align: ${textAlign} !important;
     }
   `;
 
-  // Save to backend modifications map
   addPendingModification(
     block.id,
     {
@@ -132,7 +145,7 @@ export function handleAllTextAlignClick(event = null, context = null) {
     "all"
   );
 
-  // Active tab UI state
+  // UI state
   document.querySelectorAll('[id^="scTextAlign"]').forEach((el) => {
     el.classList.remove("sc-activeTab-border");
     el.classList.add("sc-inActiveTab-border");
