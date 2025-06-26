@@ -82,12 +82,18 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     return;
   }
 
+  // First, remove any existing inline font-weight from all em/i elements
+  block.querySelectorAll("em, i").forEach((el) => {
+    el.style.fontWeight = "";
+  });
+
   let italicFound = false;
   targetElements.forEach((tag) => {
-    // Only target <em> and <i>
+    // Find ALL <em> and <i> elements within this tag
     const italics = tag.querySelectorAll("em, i");
     if (italics.length > 0) {
       italicFound = true;
+      // Apply font-weight to ALL italic elements
       italics.forEach((el) => {
         el.style.fontWeight = fontWeight;
       });
@@ -102,7 +108,7 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     return;
   }
 
-  // Inject CSS for <em> and <i> only
+  // Inject CSS for ALL <em> and <i> elements in the block
   const styleId = `style-${block.id}-${selectedSingleTextType}-italic-fontWeight`;
   let styleTag = document.getElementById(styleId);
   if (!styleTag) {
@@ -110,9 +116,13 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     styleTag.id = styleId;
     document.head.appendChild(styleTag);
   }
+
+  // More specific CSS to ensure it applies to all italic elements
   styleTag.innerHTML = `
     #${block.id} ${paragraphSelector} em,
-    #${block.id} ${paragraphSelector} i {
+    #${block.id} ${paragraphSelector} i,
+    #${block.id} em,
+    #${block.id} i {
       font-weight: ${fontWeight} !important;
     }
   `;
@@ -122,16 +132,8 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     target: selectedSingleTextType,
   });
 
-  // Update active button
-  document.querySelectorAll('[id^="scFontWeight"]').forEach((el) => {
-    el.classList.remove("sc-activeTab-border");
-    el.classList.add("sc-inActiveTab-border");
-  });
-  //   clickedElement.classList.remove("sc-inActiveTab-border");
-  //   clickedElement.classList.add("sc-activeTab-border");
-
-  //   showNotification(
-  //     `Font-weight applied to bold words in: ${selectedSingleTextType}`,
-  //     "success"
-  //   );
+  showNotification(
+    `Font-weight applied to all italic words in: ${selectedSingleTextType}`,
+    "success"
+  );
 }
