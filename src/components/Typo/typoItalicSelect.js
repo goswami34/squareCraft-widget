@@ -84,15 +84,15 @@ export function typoItalicSelect(fontSizes) {
                            z-index: 1;
                         "
                   >
-                        <option value="100">Thin (100)</option>
-                        <option value="200">Extra Light (200)</option>
-                        <option value="300">Light (300)</option>
-                        <option value="400" selected>Regular (400)</option>
-                        <option value="500">Medium (500)</option>
-                        <option value="600">Semi Bold (600)</option>
-                        <option value="700">Bold (700)</option>
-                        <option value="800">Extra Bold (800)</option>
-                        <option value="900">Black (900)</option>
+                        <option id="scItalicFontWeight100" value="100">Thin (100)</option>
+                        <option id="scItalicFontWeight200" value="200">Extra Light (200)</option>
+                        <option id="scItalicFontWeight300" value="300">Light (300)</option>
+                        <option id="scItalicFontWeight400" value="400" selected>Regular (400)</option>
+                        <option id="scItalicFontWeight500" value="500">Medium (500)</option>
+                        <option id="scItalicFontWeight600" value="600">Semi Bold (600)</option>
+                        <option id="scItalicFontWeight700" value="700">Bold (700)</option>
+                        <option id="scItalicFontWeight800" value="800">Extra Bold (800)</option>
+                        <option id="scItalicFontWeight900" value="900">Black (900)</option>
                   </select>
                </div>
             </div>

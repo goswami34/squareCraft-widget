@@ -1824,6 +1824,28 @@ let pendingModifications = new Map();
     // });
     //italic font weight code end here
 
+    setTimeout(() => {
+      const italicFontWeightSelect = document.getElementById(
+        "squareCraftItalicFontWeight"
+      );
+
+      if (
+        italicFontWeightSelect &&
+        !italicFontWeightSelect.dataset.initialized
+      ) {
+        italicFontWeightSelect.dataset.initialized = "true";
+
+        italicFontWeightSelect.addEventListener("change", (event) => {
+          handleItalicFontWeightClick(event, {
+            lastClickedElement,
+            selectedSingleTextType,
+            addPendingModification,
+            showNotification,
+          });
+        });
+      }
+    }, 0);
+
     //italic text transform code start here
     handleItalicTextTransformClick(event, {
       lastClickedElement,
@@ -3594,28 +3616,28 @@ let pendingModifications = new Map();
 
     //italic font weight code start here
 
-    const ItalicFontWeightSelect = document.getElementById(
-      "squareCraftItalicFontWeight"
-    );
-    if (ItalicFontWeightSelect && !ItalicFontWeightSelect.dataset.initialized) {
-      ItalicFontWeightSelect.dataset.initialized = "true";
+    // const ItalicFontWeightSelect = document.getElementById(
+    //   "squareCraftItalicFontWeight"
+    // );
+    // if (ItalicFontWeightSelect && !ItalicFontWeightSelect.dataset.initialized) {
+    //   ItalicFontWeightSelect.dataset.initialized = "true";
 
-      ItalicFontWeightSelect.addEventListener("change", (event) => {
-        handleItalicFontWeightClick(event, {
-          lastClickedElement,
-          selectedSingleTextType,
-          addPendingModification,
-          showNotification,
-        });
+    //   ItalicFontWeightSelect.addEventListener("change", (event) => {
+    //     handleItalicFontWeightClick(event, {
+    //       lastClickedElement,
+    //       selectedSingleTextType,
+    //       addPendingModification,
+    //       showNotification,
+    //     });
 
-        if (selectedSingleTextType) {
-          showNotification(
-            `Font weight applied to: ${selectedSingleTextType}`,
-            "success"
-          );
-        }
-      });
-    }
+    //     if (selectedSingleTextType) {
+    //       showNotification(
+    //         `Font weight applied to: ${selectedSingleTextType}`,
+    //         "success"
+    //       );
+    //     }
+    //   });
+    // }
 
     //italic font weight code end here
 
