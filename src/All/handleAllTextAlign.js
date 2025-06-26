@@ -74,50 +74,27 @@ export function handleAllTextAlignClick(event = null, context = null) {
 
   // Determine paragraph selector based on selectedSingleTextType
   let paragraphSelector;
+
   if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = "p.sqsrte-large";
   } else if (selectedSingleTextType === "paragraph2") {
     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
   } else if (selectedSingleTextType === "paragraph3") {
     paragraphSelector = "p.sqsrte-small";
-  } else if (selectedSingleTextType.startsWith("heading")) {
-    paragraphSelector = `h${selectedSingleTextType.replace("heading", "")}`;
-  } else {
-    showNotification(
-      "Unknown selected type: " + selectedSingleTextType,
-      "error"
-    );
-    return;
+  } else if (selectedSingleTextType === "heading1") {
+    paragraphSelector = "h1";
+  } else if (selectedSingleTextType === "heading2") {
+    paragraphSelector = "h2";
+  } else if (selectedSingleTextType === "heading3") {
+    paragraphSelector = "h3";
+  } else if (selectedSingleTextType === "heading4") {
+    paragraphSelector = "h4";
   }
 
   console.log("✅ Applying text-align for selector:", paragraphSelector);
 
   // Find target paragraphs or headings
-  // const targetElements = block.querySelectorAll(paragraphSelector);
-  let targetElements = [];
-
-  if (selectedSingleTextType.startsWith("paragraph")) {
-    const allParagraphs = block.querySelectorAll("p");
-
-    targetElements = Array.from(allParagraphs).filter((p) => {
-      if (selectedSingleTextType === "paragraph1") {
-        return p.classList.contains("sqsrte-large");
-      }
-      if (selectedSingleTextType === "paragraph2") {
-        return (
-          !p.classList.contains("sqsrte-large") &&
-          !p.classList.contains("sqsrte-small")
-        );
-      }
-      if (selectedSingleTextType === "paragraph3") {
-        return p.classList.contains("sqsrte-small");
-      }
-      return false;
-    });
-  } else {
-    targetElements = block.querySelectorAll(paragraphSelector);
-  }
-
+  const targetElements = block.querySelectorAll(paragraphSelector);
   if (!targetElements.length) {
     showNotification(`No text found for ${selectedSingleTextType}`, "error");
     return;
