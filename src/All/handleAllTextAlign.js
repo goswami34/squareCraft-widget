@@ -93,7 +93,31 @@ export function handleAllTextAlignClick(event = null, context = null) {
   console.log("✅ Applying text-align for selector:", paragraphSelector);
 
   // Find target paragraphs or headings
-  const targetElements = block.querySelectorAll(paragraphSelector);
+  // const targetElements = block.querySelectorAll(paragraphSelector);
+  let targetElements = [];
+
+  if (selectedSingleTextType.startsWith("paragraph")) {
+    const allParagraphs = block.querySelectorAll("p");
+
+    targetElements = Array.from(allParagraphs).filter((p) => {
+      if (selectedSingleTextType === "paragraph1") {
+        return p.classList.contains("sqsrte-large");
+      }
+      if (selectedSingleTextType === "paragraph2") {
+        return (
+          !p.classList.contains("sqsrte-large") &&
+          !p.classList.contains("sqsrte-small")
+        );
+      }
+      if (selectedSingleTextType === "paragraph3") {
+        return p.classList.contains("sqsrte-small");
+      }
+      return false;
+    });
+  } else {
+    targetElements = block.querySelectorAll(paragraphSelector);
+  }
+
   if (!targetElements.length) {
     showNotification(`No text found for ${selectedSingleTextType}`, "error");
     return;
