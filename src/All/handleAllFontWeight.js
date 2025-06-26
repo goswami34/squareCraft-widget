@@ -26,7 +26,7 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
-export function handleAllFontWeightClick(event = null, context = null) {
+export async function handleAllFontWeightClick(event = null, context = null) {
   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
     context;
 
@@ -54,23 +54,17 @@ export function handleAllFontWeightClick(event = null, context = null) {
 
   let paragraphSelector = "";
 
-  // 🎯 Correct mapping here
+  // 🎯 Correct mapping here - Fixed to handle all text types properly
   if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = "p.sqsrte-large";
   } else if (selectedSingleTextType === "paragraph2") {
     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
   } else if (selectedSingleTextType === "paragraph3") {
     paragraphSelector = "p.sqsrte-small";
-  } else if (selectedSingleTextType === "heading1") {
-    paragraphSelector = "h1";
-  } else if (selectedSingleTextType === "heading2") {
-    paragraphSelector = "h2";
-  } else if (selectedSingleTextType === "heading3") {
-    paragraphSelector = "h3";
-  } else if (selectedSingleTextType === "heading4") {
-    paragraphSelector = "h4";
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    paragraphSelector = `h${selectedSingleTextType.replace("heading", "")}`;
   } else {
-    return;
+    paragraphSelector = selectedSingleTextType; // fallback for h1, h2, h3, h4
   }
 
   console.log("✅ Applying font-weight for selector:", paragraphSelector);
@@ -93,26 +87,45 @@ export function handleAllFontWeightClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-              #${block.id} ${paragraphSelector} {
-                font-weight: ${fontWeight} !important;
-              }
-            `;
+    #${block.id} ${paragraphSelector} {
+      font-weight: ${fontWeight} !important;
+    }
+  `;
+
+  // Create specific selector for better targeting
+  let specificSelector = "";
+  if (selectedSingleTextType === "paragraph1") {
+    specificSelector = `#${block.id} p.sqsrte-large`;
+  } else if (selectedSingleTextType === "paragraph2") {
+    specificSelector = `#${block.id} p:not(.sqsrte-large):not(.sqsrte-small)`;
+  } else if (selectedSingleTextType === "paragraph3") {
+    specificSelector = `#${block.id} p.sqsrte-small`;
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    const headingNumber = selectedSingleTextType.replace("heading", "");
+    specificSelector = `#${block.id} h${headingNumber}`;
+  } else {
+    specificSelector = `#${block.id} ${selectedSingleTextType}`;
+  }
 
   addPendingModification(block.id, {
     "font-weight": fontWeight,
     target: selectedSingleTextType,
+    selector: specificSelector,
   });
 
-  // Update active button
-  document.querySelectorAll('[id^="scFontWeight"]').forEach((el) => {
-    el.classList.remove("sc-activeTab-border");
-    el.classList.add("sc-inActiveTab-border");
-  });
-  //   clickedElement.classList.remove("sc-inActiveTab-border");
-  //   clickedElement.classList.add("sc-activeTab-border");
+  // Update active button - Fixed to target the correct element
+  const clickedElement = event.target.closest('[id^="scFontWeight"]');
+  if (clickedElement) {
+    document.querySelectorAll('[id^="scFontWeight"]').forEach((el) => {
+      el.classList.remove("sc-activeTab-border");
+      el.classList.add("sc-inActiveTab-border");
+    });
+    clickedElement.classList.remove("sc-inActiveTab-border");
+    clickedElement.classList.add("sc-activeTab-border");
+  }
 
-  //   showNotification(
-  //     `Font-weight applied to bold words in: ${selectedSingleTextType}`,
-  //     "success"
-  //   );
+  showNotification(
+    `✅ Font-weight applied to: ${selectedSingleTextType}`,
+    "success"
+  );
 }

@@ -3444,20 +3444,13 @@ let pendingModifications = new Map();
     if (AllFontWeightSelect && !AllFontWeightSelect.dataset.initialized) {
       AllFontWeightSelect.dataset.initialized = "true";
 
-      AllFontWeightSelect.addEventListener("change", (event) => {
-        handleAllFontWeightClick(event, {
+      AllFontWeightSelect.addEventListener("change", async (event) => {
+        await handleAllFontWeightClick(event, {
           lastClickedElement,
           selectedSingleTextType,
           addPendingModification,
           showNotification,
         });
-
-        if (selectedSingleTextType) {
-          showNotification(
-            `Font weight applied to: ${selectedSingleTextType}`,
-            "success"
-          );
-        }
       });
     }
 
