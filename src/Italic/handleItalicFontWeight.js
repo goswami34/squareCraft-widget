@@ -83,8 +83,14 @@ export function handleItalicFontWeightClick(event = null, context = null) {
   }
 
   // First, remove any existing inline font-weight from all em/i elements
-  block.querySelectorAll("em, i").forEach((el) => {
-    el.style.fontWeight = "";
+  // block.querySelectorAll("em, i").forEach((el) => {
+  //   el.style.fontWeight = "";
+  // });
+
+  targetElements.forEach((tag) => {
+    tag.querySelectorAll("em, i").forEach((el) => {
+      el.style.fontWeight = "";
+    });
   });
 
   let italicFound = false;
@@ -118,14 +124,21 @@ export function handleItalicFontWeightClick(event = null, context = null) {
   }
 
   // More specific CSS to ensure it applies to all italic elements
+  // styleTag.innerHTML = `
+  //   #${block.id} ${paragraphSelector} em,
+  //   #${block.id} ${paragraphSelector} i,
+  //   #${block.id} em,
+  //   #${block.id} i {
+  //     font-weight: ${fontWeight} !important;
+  //   }
+  // `;
+
   styleTag.innerHTML = `
-    #${block.id} ${paragraphSelector} em,
-    #${block.id} ${paragraphSelector} i,
-    #${block.id} em,
-    #${block.id} i {
-      font-weight: ${fontWeight} !important;
-    }
-  `;
+  #${block.id} ${paragraphSelector} em,
+  #${block.id} ${paragraphSelector} i {
+    font-weight: ${fontWeight} !important;
+  }
+`;
 
   addPendingModification(block.id, {
     "font-weight": fontWeight,
