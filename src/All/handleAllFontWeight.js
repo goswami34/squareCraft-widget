@@ -76,29 +76,24 @@ export async function handleAllFontWeightClick(event = null, context = null) {
     return;
   }
 
-  // Remove inline fontWeight from all descendants so CSS can take effect
-  targetElements.forEach((el) => {
+  // Remove all inline fontWeight from block and descendants
+  block.querySelectorAll("*").forEach((el) => {
     el.style.fontWeight = "";
-    el.querySelectorAll("*").forEach((child) => {
-      child.style.fontWeight = "";
-    });
   });
+  // Also clear on the block itself
+  block.style.fontWeight = "";
 
-  // ✅ Dynamic CSS injection - apply to all relevant children
+  // Inject CSS to apply font-weight to all text in the block/paragraph/heading
   const styleId = `style-${block.id}-${selectedSingleTextType}-all-fontWeight`;
   let styleTag = document.getElementById(styleId);
-
   if (!styleTag) {
     styleTag = document.createElement("style");
     styleTag.id = styleId;
     document.head.appendChild(styleTag);
   }
-
-  // Aggressive CSS injection to cover all descendants
   styleTag.innerHTML = `
     #${block.id} ${paragraphSelector},
-    #${block.id} ${paragraphSelector} *,
-    #${block.id} ${paragraphSelector} *:not([style*="font-weight"]) {
+    #${block.id} ${paragraphSelector} * {
       font-weight: ${fontWeight} !important;
     }
   `;

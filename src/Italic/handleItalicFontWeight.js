@@ -82,38 +82,40 @@ export function handleItalicFontWeightClick(event = null, context = null) {
     return;
   }
 
-  let linkFound = false;
-
+  let italicFound = false;
   targetElements.forEach((tag) => {
-    const links = tag.querySelectorAll("em");
-    if (links.length > 0) {
-      linkFound = true;
-      links.forEach((link) => {
-        link.style.fontWeight = fontWeight;
+    // Only target <em> and <i>
+    const italics = tag.querySelectorAll("em, i");
+    if (italics.length > 0) {
+      italicFound = true;
+      italics.forEach((el) => {
+        el.style.fontWeight = fontWeight;
       });
     }
   });
 
-  if (!linkFound) {
-    showNotification(`No link (<em>) inside ${selectedSingleTextType}`, "info");
+  if (!italicFound) {
+    showNotification(
+      `No italic (<em> or <i>) inside ${selectedSingleTextType}`,
+      "info"
+    );
     return;
   }
 
-  // ✅ Dynamic CSS injection
-  const styleId = `style-${block.id}-${selectedSingleTextType}-all-fontWeight`;
+  // Inject CSS for <em> and <i> only
+  const styleId = `style-${block.id}-${selectedSingleTextType}-italic-fontWeight`;
   let styleTag = document.getElementById(styleId);
-
   if (!styleTag) {
     styleTag = document.createElement("style");
     styleTag.id = styleId;
     document.head.appendChild(styleTag);
   }
-
   styleTag.innerHTML = `
-                #${block.id} ${paragraphSelector} em{
-                  font-weight: ${fontWeight} !important;
-                }
-              `;
+    #${block.id} ${paragraphSelector} em,
+    #${block.id} ${paragraphSelector} i {
+      font-weight: ${fontWeight} !important;
+    }
+  `;
 
   addPendingModification(block.id, {
     "font-weight": fontWeight,
@@ -133,6 +135,3 @@ export function handleItalicFontWeightClick(event = null, context = null) {
   //     "success"
   //   );
 }
-
-
-
