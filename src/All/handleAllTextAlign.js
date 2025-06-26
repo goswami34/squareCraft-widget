@@ -25,6 +25,29 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// ✅ Apply data-sc-text-type to all elements in block
+function applyDataTextTypeAttributes(block) {
+  const allTextElements = block.querySelectorAll("h1, h2, h3, h4, p");
+
+  allTextElements.forEach((el) => {
+    if (el.classList.contains("sqsrte-large")) {
+      el.setAttribute("data-sc-text-type", "paragraph1");
+    } else if (el.classList.contains("sqsrte-small")) {
+      el.setAttribute("data-sc-text-type", "paragraph3");
+    } else if (el.tagName.toLowerCase() === "p") {
+      el.setAttribute("data-sc-text-type", "paragraph2");
+    } else if (el.tagName.toLowerCase() === "h1") {
+      el.setAttribute("data-sc-text-type", "heading1");
+    } else if (el.tagName.toLowerCase() === "h2") {
+      el.setAttribute("data-sc-text-type", "heading2");
+    } else if (el.tagName.toLowerCase() === "h3") {
+      el.setAttribute("data-sc-text-type", "heading3");
+    } else if (el.tagName.toLowerCase() === "h4") {
+      el.setAttribute("data-sc-text-type", "heading4");
+    }
+  });
+}
+
 // ✅ Main align handler
 export function handleAllTextAlignClick(event = null, context = null) {
   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
