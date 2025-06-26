@@ -27,21 +27,12 @@ function showNotification(message, type = "info") {
 }
 
 export function handleAllTextAlignClick(event = null, context = null) {
-  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
-    context;
-
-  if (!event) {
-    const activeButton = document.querySelector(
-      '[id^="scTextAlign"].sc-activeTab-border'
-    );
-    if (!activeButton) return;
-    event = { target: activeButton };
-  }
-
-  const clickedElement = event.target.closest('[id^="scTextAlign"]');
-  if (!clickedElement) return;
-
-  const textAlign = clickedElement.dataset.align;
+  const {
+    lastClickedElement,
+    selectedSingleTextType,
+    addPendingModification,
+    showNotification,
+  } = context;
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
@@ -53,29 +44,44 @@ export function handleAllTextAlignClick(event = null, context = null) {
     return;
   }
 
-  const block = lastClickedElement.closest('[id^="block-"]');
-  if (!block) {
-    showNotification("Block not found", "error");
+  if (!event) {
+    const activeButton = document.querySelector(
+      '[id^="scTextAlign"].sc-activeTab-border'
+    );
+    if (!activeButton) {
+      showNotification("Please select a text alignment option", "error");
+      return;
+    }
+    event = { target: activeButton };
+  }
+
+  const clickedElement = event.target.closest('[id^="scTextAlign"]');
+  if (!clickedElement) {
+    showNotification("Please select a text alignment option", "error");
     return;
   }
 
-  let paragraphSelector = "";
+  const textAlign = clickedElement.dataset.align;
+  if (!textAlign) {
+    showNotification("Invalid text alignment value", "error");
+    return;
+  }
 
-  // 🎯 Correct mapping here
+  const block = lastClickedElement;
+  console.log("Block:", block);
+  console.log("Selected text type:", selectedSingleTextType);
+  console.log("Text align:", textAlign);
+
+  // Determine paragraph selector based on selectedSingleTextType
+  let paragraphSelector;
   if (selectedSingleTextType === "paragraph1") {
     paragraphSelector = "p.sqsrte-large";
   } else if (selectedSingleTextType === "paragraph2") {
     paragraphSelector = "p:not(.sqsrte-large):not(.sqsrte-small)";
   } else if (selectedSingleTextType === "paragraph3") {
     paragraphSelector = "p.sqsrte-small";
-  } else if (selectedSingleTextType === "heading1") {
-    paragraphSelector = "h1";
-  } else if (selectedSingleTextType === "heading2") {
-    paragraphSelector = "h2";
-  } else if (selectedSingleTextType === "heading3") {
-    paragraphSelector = "h3";
-  } else if (selectedSingleTextType === "heading4") {
-    paragraphSelector = "h4";
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    paragraphSelector = `h${selectedSingleTextType.replace("heading", "")}`;
   } else {
     showNotification(
       "Unknown selected type: " + selectedSingleTextType,
@@ -84,7 +90,7 @@ export function handleAllTextAlignClick(event = null, context = null) {
     return;
   }
 
-  console.log("✅ Applying text-transform for selector:", paragraphSelector);
+  console.log("✅ Applying text-align for selector:", paragraphSelector);
 
   // Find target paragraphs or headings
   const targetElements = block.querySelectorAll(paragraphSelector);
@@ -93,7 +99,12 @@ export function handleAllTextAlignClick(event = null, context = null) {
     return;
   }
 
-  // ✅ Dynamic CSS injection
+  // Remove any existing inline text-align from target elements
+  targetElements.forEach((el) => {
+    el.style.textAlign = "";
+  });
+
+  // ✅ Dynamic CSS injection - apply to specific elements only
   const styleId = `style-${block.id}-${selectedSingleTextType}-all-textalign`;
   let styleTag = document.getElementById(styleId);
 
@@ -103,16 +114,21 @@ export function handleAllTextAlignClick(event = null, context = null) {
     document.head.appendChild(styleTag);
   }
 
+  // More specific CSS selector to target only the selected text type
   styleTag.innerHTML = `
-        #${block.id} ${paragraphSelector} {
-          text-align: ${textAlign} !important;
-        }
-      `;
+    #${block.id} ${paragraphSelector} {
+      text-align: ${textAlign} !important;
+    }
+  `;
 
-  addPendingModification(block.id, {
-    "text-align": textAlign,
-    target: selectedSingleTextType,
-  });
+  addPendingModification(
+    block.id,
+    {
+      "text-align": textAlign,
+      target: selectedSingleTextType,
+    },
+    "all"
+  );
 
   // Update active button
   document.querySelectorAll('[id^="scTextAlign"]').forEach((el) => {
@@ -123,7 +139,7 @@ export function handleAllTextAlignClick(event = null, context = null) {
   clickedElement.classList.add("sc-activeTab-border");
 
   showNotification(
-    `Text-align applied to bold words in: ${selectedSingleTextType}`,
+    `Text-align ${textAlign} applied to ${selectedSingleTextType}`,
     "success"
   );
 }
