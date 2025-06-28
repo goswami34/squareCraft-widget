@@ -668,8 +668,8 @@
 //          `;
 // }
 
-import { WidgetImageNormalState } from "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetImageSection/WidgetImageNormalState/WidgetImageNormalState.js";
-import { WidgetImageHoverState } from "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetImageSection/WidgetImageHoverState/WidgetImageHoverState.js";
+import { WidgetImageNormalState } from "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/WidgetImageNormalState/WidgetImageNormalState.js";
+import { WidgetImageHoverState } from "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/WidgetImageHoverState/WidgetImageHoverState.js";
 
 export function WidgetImageSection(id) {
   return `
