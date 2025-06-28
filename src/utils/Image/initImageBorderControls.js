@@ -1,49 +1,3 @@
-// ✅ Declare global style cache map
-// const imageStyleMap = new Map();
-
-// function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
-//   const prevStyles = imageStyleMap.get(blockId) || {
-//     image: { selector: `#${blockId} div.sqs-image-content`, styles: {} },
-//     imageTag: {
-//       selector: `#${blockId} .sqs-image-content img`,
-//       styles: {
-//         "box-sizing": "border-box",
-//         "object-fit": "cover",
-//       },
-//     },
-//   };
-
-//   const mergedImageStyles = {
-//     ...prevStyles.image.styles,
-//     ...(newStyles.image?.styles || {}),
-//     ...Object.fromEntries(
-//       Object.entries(newStyles).filter(
-//         ([key, val]) =>
-//           typeof key === "string" &&
-//           typeof val === "string" &&
-//           !["image", "imageTag"].includes(key)
-//       )
-//     ),
-//   };
-
-//   const finalData = {
-//     image: {
-//       selector: prevStyles.image.selector,
-//       styles: mergedImageStyles,
-//     },
-//     imageTag: {
-//       selector: prevStyles.imageTag.selector,
-//       styles: {
-//         ...prevStyles.imageTag.styles,
-//         ...(newStyles.imageTag?.styles || {}),
-//       },
-//     },
-//   };
-
-//   imageStyleMap.set(blockId, finalData);
-//   saveFn(blockId, finalData, "image");
-// }
-
 window.__scImageStyleMap = new Map();
 
 // Export the mergeAndSaveImageStyles function
@@ -278,12 +232,49 @@ export function initImageBorderControls(selectedElement, context = {}) {
     borderWidthDisplay.textContent = `${width}px`;
   }
 
+  function setSideButtonsReadonly(state) {
+    const readonlyClass = ["sc-blur-sm", "sc-pointer-events-none"];
+    [topButton, rightButton, leftButton, bottomButton].forEach((btn) => {
+      readonlyClass.forEach((cls) => btn.classList.toggle(cls, state));
+    });
+  }
+
+  // function setupButton(button, type) {
+  //   // setupButton(allButton, "all"); // keep thi
+
+  //   button.addEventListener("click", () => {
+  //     console.log(`${type} button clicked`);
+  //     window.__scActiveBorderType = type;
+
+  //     setActiveBorderButton(button);
+  //     setSideButtonsReadonly(true);
+
+  //     const imageContent = document.querySelector(".sc-selected-image");
+  //     if (!imageContent) return;
+
+  //     const blockElement = imageContent.closest('[id^="block-"]');
+  //     if (!blockElement) return;
+
+  //     const blockId = blockElement.id;
+
+  //     const currentPosition = parseFloat(borderWidthBullet.style.left) || 0;
+  //     const max = borderWidthSlider.offsetWidth;
+  //     const currentWidth = Math.round((currentPosition / max) * 100);
+
+  //     updateStyleElement(blockId, currentWidth);
+  //     updateSliderPosition(currentWidth);
+  //   });
+  // }
+
   function setupButton(button, type) {
     button.addEventListener("click", () => {
       console.log(`${type} button clicked`);
       window.__scActiveBorderType = type;
 
       setActiveBorderButton(button);
+
+      // If "all" is clicked, disable others; otherwise, re-enable all
+      setSideButtonsReadonly(type === "all");
 
       const imageContent = document.querySelector(".sc-selected-image");
       if (!imageContent) return;
