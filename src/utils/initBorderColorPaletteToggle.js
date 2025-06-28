@@ -1,5 +1,5 @@
 export function initBorderColorPaletteToggle(themeColors) {
-  const palette = document.getElementById("border-color-palette");
+  const palette = document.getElementById("color-palette");
   const container = document.getElementById("border-colors");
   const selectorField = document.getElementById("color-selection-field");
   const bullet = document.getElementById("color-selection-bar");
