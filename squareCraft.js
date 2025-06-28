@@ -205,7 +205,7 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleBlockClick.js"
   );
   const { initImageStateTabToggle } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetImageSection/initImageStateTabToggle/initImageStateTabToggle.js"
+    "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/initImageStateTabToggle/initImageStateTabToggle.js"
   );
   const { WidgetImageHoverToggleControls } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/components/WidgetImageSection/WidgetImageHoverToggleControls/WidgetImageHoverToggleControls.js"
