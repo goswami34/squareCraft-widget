@@ -239,6 +239,7 @@ export function initBorderColorPaletteToggle(themeColors) {
 
     swatch.addEventListener("click", () => {
       renderVerticalColorShades(color);
+      colorCode.textContent = color;
     });
 
     container.appendChild(swatch);
