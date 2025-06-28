@@ -476,27 +476,7 @@ export function initBorderColorPaletteToggle(themeColors) {
         const percentage = offsetY / rect.height;
         currentHSL = { h: Math.round(360 * percentage), s: 1, l: 0.5 };
 
-        const rgb = hslToRgb(currentHSL.h, currentHSL.s, currentHSL.l);
-        const finalColor = toRGBString(rgb.r, rgb.g, rgb.b);
-        colorCode.textContent = finalColor;
-
-        if (transparencyField) {
-          transparencyField.style.background = `linear-gradient(to bottom,
-            hsla(${currentHSL.h}, 100%, 50%, 1),
-            hsla(${currentHSL.h}, 100%, 50%, 0)
-          )`;
-        }
-
-        if (selectorField) {
-          selectorField.innerHTML = "";
-          selectorField.appendChild(bullet);
-          selectorField.style.background = `
-            linear-gradient(to right, hsl(${currentHSL.h}, 100%, 50%), white),
-            linear-gradient(to top, black, transparent)`;
-          selectorField.style.backgroundBlendMode = "multiply";
-          selectorField.style.backgroundSize = "100% 100%";
-          selectorField.style.backgroundRepeat = "no-repeat";
-        }
+        updateVisuals();
       };
       document.onmouseup = () =>
         (document.onmousemove = document.onmouseup = null);
@@ -530,8 +510,7 @@ export function initBorderColorPaletteToggle(themeColors) {
           Math.min(1, (lightness * darkness) / 100 / 100)
         );
 
-        const rgb = hslToRgb(currentHSL.h, currentHSL.s, currentHSL.l);
-        colorCode.textContent = toRGBString(rgb.r, rgb.g, rgb.b);
+        updateVisuals();
       };
       document.onmouseup = () =>
         (document.onmousemove = document.onmouseup = null);
@@ -583,25 +562,33 @@ export function initBorderColorPaletteToggle(themeColors) {
     swatch.addEventListener("click", () => {
       const hsl = rgbToHslFromAny(color);
       if (hsl) currentHSL = hsl;
-      const rgb = hslToRgb(hsl.h, hsl.s, hsl.l);
-      colorCode.textContent = toRGBString(rgb.r, rgb.g, rgb.b);
-      renderVerticalColorShades();
+      updateVisuals();
     });
     container.appendChild(swatch);
   });
 
-  renderVerticalColorShades();
+  updateVisuals();
 
-  function renderVerticalColorShades() {
-    if (!selectorField) return;
-    selectorField.innerHTML = "";
-    selectorField.appendChild(bullet);
-    selectorField.style.background = `
-      linear-gradient(to right, hsl(${currentHSL.h}, 100%, 50%), white),
-      linear-gradient(to top, black, transparent)`;
-    selectorField.style.backgroundBlendMode = "multiply";
-    selectorField.style.backgroundSize = "100% 100%";
-    selectorField.style.backgroundRepeat = "no-repeat";
+  function updateVisuals() {
+    const rgb = hslToRgb(currentHSL.h, currentHSL.s, currentHSL.l);
+    colorCode.textContent = toRGBString(rgb.r, rgb.g, rgb.b);
+
+    if (selectorField) {
+      selectorField.innerHTML = "";
+      selectorField.appendChild(bullet);
+      selectorField.style.background = `
+        linear-gradient(to right, hsl(${currentHSL.h}, 100%, 50%), white),
+        linear-gradient(to top, black, transparent)`;
+      selectorField.style.backgroundBlendMode = "multiply";
+      selectorField.style.backgroundSize = "100% 100%";
+      selectorField.style.backgroundRepeat = "no-repeat";
+    }
+
+    if (transparencyField) {
+      transparencyField.style.background = `linear-gradient(to bottom,
+        hsla(${currentHSL.h}, 100%, 50%, 1),
+        hsla(${currentHSL.h}, 100%, 50%, 0))`;
+    }
   }
 
   function toRGBString(r, g, b) {
