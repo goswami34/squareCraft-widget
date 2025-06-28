@@ -715,15 +715,15 @@ let pendingModifications = new Map();
     // if (selectedElement) {
     //   initButtonStyles(selectedElement);
     // }
-    const trigger = event.target.closest("#border-color-select");
+    // const trigger = event.target.closest("#border-color-select");
 
-    if (trigger) {
-      console.log("✅ border-color-select clicked");
-      setTimeout(() => {
-        initBorderColorPaletteToggle(themeColors);
-      }, 100);
-      return;
-    }
+    // if (trigger) {
+    //   console.log("✅ border-color-select clicked");
+    //   setTimeout(() => {
+    //     initBorderColorPaletteToggle(themeColors);
+    //   }, 100);
+    //   return;
+    // }
 
     const triggerOne = document.getElementById("buttonFontColorPalate");
     const paletteOne = document.getElementById("button-font-color-palette");
