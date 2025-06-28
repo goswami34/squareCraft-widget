@@ -699,6 +699,19 @@ let pendingModifications = new Map();
   // });
 
   document.body.addEventListener("click", (event) => {
+    // Border color palette trigger
+    const trigger = event.target.closest("#border-color-select");
+    if (trigger) {
+      console.log("Border color select clicked!"); // Debug log
+      setTimeout(() => {
+        initBorderColorPaletteToggle(themeColors);
+      }, 100);
+      return;
+    }
+    // ... existing code ...
+  });
+
+  document.body.addEventListener("click", (event) => {
     // if (selectedElement) {
     //   initButtonStyles(selectedElement);
     // }
