@@ -3,12 +3,12 @@ import {
   setToggleState,
 } from "https://goswami34.github.io/squareCraft-widget/toggleState.js";
 import { WidgetTypoSection } from "https://goswami34.github.io/squareCraft-widget/src/components/WidgetTypoSection/WidgetTypoSection.js";
-// import { WidgetImageSection } from "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/WidgetImageSection.js";
+import { WidgetImageSection } from "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/WidgetImageSection.js";
 import { WidgetTypoAdvanceSection } from "https://goswami34.github.io/squareCraft-widget/src/components/WidgetTypoSection/WidgetTypoAdvanceSection/WidgetTypoAdvanceSection.js";
-// import { WidgetImageAdvanceSection } from "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/WidgetImageAdvanceSection/WidgetImageAdvanceSection.js";
+import { WidgetImageAdvanceSection } from "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/WidgetImageAdvanceSection/WidgetImageAdvanceSection.js";
 import { WidgetButtonSection } from "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonSection/WidgetButtonSection.js";
 import { WidgetButtonPresetSection } from "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonSection/WidgetButtonPresetSection/WidgetButtonPresetSection.js";
-// import { WidgetImagePresetSection } from "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/WidgetImagePresetSection/WidgetImagePresetSection.js";
+import { WidgetImagePresetSection } from "https://goswami34.github.io/squareCraft-widget/src/components/WidgetImageSection/WidgetImagePresetSection/WidgetImagePresetSection.js";
 import { WidgetTypoPresetSection } from "https://goswami34.github.io/squareCraft-widget/src/components/WidgetTypoSection/WidgetTypoPresetSection/WidgetTypoPresetSection.js";
 import { WidgetButtonAdvanceSection } from "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonSection/WidgetButtonAdvanceSection/WidgetButtonAdvanceSection.js";
 
