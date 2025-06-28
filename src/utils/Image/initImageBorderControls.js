@@ -73,7 +73,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
   // color selection start here
   const colorCodeEl = document.getElementById("color-code");
-  const palette = document.getElementById("color-palette");
+  const palette = document.getElementById("border-color-palette");
   const borderColorSelect = document.getElementById("border-color-select");
 
   borderColorSelect?.addEventListener("click", () => {
