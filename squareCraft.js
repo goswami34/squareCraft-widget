@@ -76,6 +76,7 @@ let pendingModifications = new Map();
   let lastClickedElement = null;
   let lastAppliedAlignment = null;
   let lastActiveAlignmentElement = null;
+  let selectedSingleTextType = null;
 
   // Add showNotification function
   function showNotification(message, type = "info") {
