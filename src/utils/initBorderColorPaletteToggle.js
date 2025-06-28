@@ -86,9 +86,11 @@ export function initBorderColorPaletteToggle(themeColors) {
           b = hueToRgb(p, q, h - 1 / 3);
         }
 
-        const finalColor = `rgb(${Math.round(r * 255)}, ${Math.round(
-          g * 255
-        )}, ${Math.round(b * 255)})`;
+        // const finalColor = `rgb(${Math.round(r * 255)}, ${Math.round(
+        //   g * 255
+        // )}, ${Math.round(b * 255)})`;
+
+        const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
           colorCode.textContent = finalColor;
@@ -183,9 +185,10 @@ export function initBorderColorPaletteToggle(themeColors) {
           b = hueToRgb(p, q, h - 1 / 3);
         }
 
-        const finalColor = `rgb(${Math.round(r * 255)}, ${Math.round(
-          g * 255
-        )}, ${Math.round(b * 255)})`;
+        // const finalColor = `rgb(${Math.round(r * 255)}, ${Math.round(
+        //   g * 255
+        // )}, ${Math.round(b * 255)})`;
+        const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
           colorCode.textContent = finalColor;
@@ -307,8 +310,17 @@ export function initBorderColorPaletteToggle(themeColors) {
     return { h: Math.round(h), s, l };
   }
 
+  function toRGBString(r, g, b) {
+    return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+  }
+
   function renderVerticalColorShades(baseColor) {
     if (!selectorField) return;
+
+    const hsl = rgbToHslFromAny(baseColor);
+    if (hsl) {
+      dynamicHue = hsl.h;
+    }
 
     selectorField.innerHTML = "";
     selectorField.appendChild(bullet);
@@ -382,9 +394,11 @@ export function initBorderColorPaletteToggle(themeColors) {
           b = hueToRgb(p, q, h - 1 / 3);
         }
 
-        const finalColor = `rgb(${Math.round(r * 255)}, ${Math.round(
-          g * 255
-        )}, ${Math.round(b * 255)})`;
+        // const finalColor = `rgb(${Math.round(r * 255)}, ${Math.round(
+        //   g * 255
+        // )}, ${Math.round(b * 255)})`;
+
+        const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
           colorCode.textContent = finalColor;
