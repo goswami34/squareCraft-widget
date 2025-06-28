@@ -4848,3 +4848,14 @@
 [class*="sc-scroll-end-"] {
   --sc-scroll-end: attr(class data-end-percent);
 }
+
+/* add css for image by amit */
+
+/* Optional visual in your CSS */
+.sc-blur-sm {
+  filter: blur(1px);
+  opacity: 0.5;
+}
+.sc-pointer-events-none {
+  pointer-events: none;
+}
