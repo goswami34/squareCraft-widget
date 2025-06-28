@@ -31,7 +31,8 @@ export function initRadiusProgressbarControls() {
     if (!block) return;
 
     // Default to applying global radius
-    const blockSelector = `#${block.id} div.sqs-image-content`;
+    const blockSelector = `#${block.id} div.sqs-image-content img`;
+
     let styleTag = document.getElementById("sc-image-border-style");
     if (!styleTag) {
       styleTag = document.createElement("style");
