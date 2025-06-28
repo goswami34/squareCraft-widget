@@ -239,42 +239,12 @@ export function initImageBorderControls(selectedElement, context = {}) {
     });
   }
 
-  // function setupButton(button, type) {
-  //   // setupButton(allButton, "all"); // keep thi
-
-  //   button.addEventListener("click", () => {
-  //     console.log(`${type} button clicked`);
-  //     window.__scActiveBorderType = type;
-
-  //     setActiveBorderButton(button);
-  //     setSideButtonsReadonly(true);
-
-  //     const imageContent = document.querySelector(".sc-selected-image");
-  //     if (!imageContent) return;
-
-  //     const blockElement = imageContent.closest('[id^="block-"]');
-  //     if (!blockElement) return;
-
-  //     const blockId = blockElement.id;
-
-  //     const currentPosition = parseFloat(borderWidthBullet.style.left) || 0;
-  //     const max = borderWidthSlider.offsetWidth;
-  //     const currentWidth = Math.round((currentPosition / max) * 100);
-
-  //     updateStyleElement(blockId, currentWidth);
-  //     updateSliderPosition(currentWidth);
-  //   });
-  // }
-
   function setupButton(button, type) {
     button.addEventListener("click", () => {
       console.log(`${type} button clicked`);
       window.__scActiveBorderType = type;
 
       setActiveBorderButton(button);
-
-      // If "all" is clicked, disable others; otherwise, re-enable all
-      setSideButtonsReadonly(type === "all");
 
       const imageContent = document.querySelector(".sc-selected-image");
       if (!imageContent) return;
