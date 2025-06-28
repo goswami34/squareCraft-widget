@@ -229,7 +229,7 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/components/BlockType/detectBlockElementTypes.js"
   );
   const { initImageSectionControls } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initImageSectionControls.js" // image ar jaygay button ashe atai karon
+    "https://goswami34.github.io/squareCraft-widget/src/utils/initImageSectionControls.js" // image ar jaygay button ashe atai karon
   );
 
   // in the place of image show button this is responsibe import files end
