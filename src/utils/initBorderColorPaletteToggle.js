@@ -239,11 +239,73 @@ export function initBorderColorPaletteToggle(themeColors) {
 
     swatch.addEventListener("click", () => {
       renderVerticalColorShades(color);
+
+      // add color code to the color code from default page color field
+      const hsl = rgbToHslFromAny(color);
+      if (hsl) dynamicHue = hsl.h;
       colorCode.textContent = color;
     });
 
     container.appendChild(swatch);
   });
+
+  function rgbToHslFromAny(color) {
+    let r, g, b;
+
+    // Handle hex
+    if (color.startsWith("#")) {
+      const hex = color.replace("#", "");
+      if (hex.length === 3) {
+        r = parseInt(hex[0] + hex[0], 16);
+        g = parseInt(hex[1] + hex[1], 16);
+        b = parseInt(hex[2] + hex[2], 16);
+      } else {
+        r = parseInt(hex.slice(0, 2), 16);
+        g = parseInt(hex.slice(2, 4), 16);
+        b = parseInt(hex.slice(4, 6), 16);
+      }
+    }
+
+    // Handle rgb()
+    else if (color.startsWith("rgb")) {
+      const parts = color.match(/\d+/g);
+      if (!parts) return null;
+      r = parseInt(parts[0]);
+      g = parseInt(parts[1]);
+      b = parseInt(parts[2]);
+    } else return null;
+
+    // Normalize
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    const max = Math.max(r, g, b),
+      min = Math.min(r, g, b);
+    let h, s, l;
+
+    l = (max + min) / 2;
+    if (max === min) {
+      h = s = 0;
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+      h = h * 60; // degrees
+    }
+
+    return { h: Math.round(h), s, l };
+  }
 
   function renderVerticalColorShades(baseColor) {
     if (!selectorField) return;
