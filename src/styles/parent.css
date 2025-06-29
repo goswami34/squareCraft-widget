@@ -4859,3 +4859,9 @@
 .sc-pointer-events-none {
   pointer-events: none;
 }
+
+/* overlay position section start here */
+
+.overlay-position-section-one {
+  margin-bottom: 12px !important;
+}
