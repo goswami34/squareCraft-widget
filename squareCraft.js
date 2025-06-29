@@ -4113,12 +4113,12 @@ let pendingModifications = new Map();
         });
       }, 100);
       widgetLoaded = true;
-      // initImageSectionToggleControls();
+      initImageSectionToggleControls();
       ButtonAdvanceToggleControls();
       buttonTooltipControls();
       initButtonSectionToggleControls();
       WidgetTypoSectionStateControls();
-      // initImageStateTabToggle();
+      initImageStateTabToggle();
       WidgetImageHoverToggleControls();
       initHoverTypoTabControls([
         {
@@ -4156,7 +4156,7 @@ let pendingModifications = new Map();
       initImageUploadPreview(() => selectedElement);
       triggerLaunchAnimation();
       if (clickedBlock) {
-        waitForElement("#typoSection,  #buttonSection")
+        waitForElement("#typoSection, #imageSection, #buttonSection")
           .then(() => {
             handleBlockClick(
               { target: clickedBlock },
