@@ -817,22 +817,12 @@ let pendingModifications = new Map();
     //   initButtonFontColorPaletteToggle(themeColors, selectedElement);
     // }, 100);
 
-    // setTimeout(initImageSectionControls, 100);
-    // const clickedBlock = event.target.closest('[id^="block-"]');
-    // console.log("clickedBlock", clickedBlock);
+    setTimeout(initImageSectionControls, 100);
+    const clickedBlock = event.target.closest('[id^="block-"]');
+    console.log("clickedBlock", clickedBlock);
 
-    // // if (clickedBlock) {
-    // //   waitForElement("#typoSection, #imageSection,  #buttonSection")
-    // //     .then(() => {
-    // //       detectBlockElementTypes(clickedBlock);
-    // //     })
-    // //     .catch((error) => {
-    // //       console.error(error.message);
-    // //     });
-    // // }
-    // // const clickedBlock = event.target.closest('[id^="block-"]');
     // if (clickedBlock) {
-    //   waitForElement("#typoSection, #imageSection, #buttonSection")
+    //   waitForElement("#typoSection, #imageSection,  #buttonSection")
     //     .then(() => {
     //       detectBlockElementTypes(clickedBlock);
     //     })
@@ -840,6 +830,16 @@ let pendingModifications = new Map();
     //       console.error(error.message);
     //     });
     // }
+    // const clickedBlock = event.target.closest('[id^="block-"]');
+    if (clickedBlock) {
+      waitForElement("#typoSection, #imageSection, #buttonSection")
+        .then(() => {
+          detectBlockElementTypes(clickedBlock);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    }
 
     // const clickedBlockOne = event?.target?.closest('[id^="block-"]');
     // console.log("clickedBlockOne", clickedBlockOne);
@@ -4156,7 +4156,7 @@ let pendingModifications = new Map();
       initImageUploadPreview(() => selectedElement);
       triggerLaunchAnimation();
       if (clickedBlock) {
-        waitForElement("#typoSection, #buttonSection")
+        waitForElement("#typoSection, #imageSection, #buttonSection")
           .then(() => {
             handleBlockClick(
               { target: clickedBlock },
