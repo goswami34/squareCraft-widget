@@ -254,6 +254,9 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
       bullet.style.transform = "translate(-50%, -50%)";
     };
 
+    // Add custom event to reposition bullet
+    bullet.addEventListener("reposition", setBulletPosition);
+
     const updateStateAndUI = (pixelPos) => {
       const dimension = getDimension();
       const center = dimension / 2;
@@ -329,7 +332,16 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
 
   const initEventListeners = () => {
     document.querySelector("#overLayButton")?.addEventListener("click", () => {
-      document.querySelector("#overLaySection")?.classList.toggle("sc-hidden");
+      const section = document.querySelector("#overLaySection");
+      section?.classList.toggle("sc-hidden");
+
+      // Wait for the section to be visible and then update bullet positions
+      setTimeout(() => {
+        const xSlider = document.getElementById("xAxisBullet");
+        const ySlider = document.getElementById("yAxisBullet");
+        if (xSlider) xSlider.dispatchEvent(new Event("reposition"));
+        if (ySlider) ySlider.dispatchEvent(new Event("reposition"));
+      }, 100); // Adjust delay as needed
     });
 
     // Add click handler to the existing publish button
