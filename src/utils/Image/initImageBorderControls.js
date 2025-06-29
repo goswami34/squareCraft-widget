@@ -822,18 +822,24 @@ export function initImageBorderControls(selectedElement, context = {}) {
     bottomLeftRadiusButton,
   ];
 
-  function setRadiusButtonReadonly(state) {
-    const cls = ["sc-blur-sm", "sc-pointer-events-none"];
+  function setRadiusButtonReadonly(activeTarget) {
+    const disableAll = activeTarget !== "all";
+    const readonlyClasses = ["sc-blur-sm", "sc-pointer-events-none"];
+
+    // Disable "All" if any side is selected
+    if (allRadiusButton) {
+      readonlyClasses.forEach((cls) =>
+        allRadiusButton.classList.toggle(cls, disableAll)
+      );
+    }
+
+    // Disable sides if "All" is selected
     radiusButtons.forEach((btn) => {
       if (!btn) return;
-      cls.forEach((c) => btn.classList.toggle(c, state));
+      readonlyClasses.forEach(
+        (cls) => btn.classList.toggle(cls, !disableAll) // disable if All is active
+      );
     });
-
-    // Set All button state
-    if (allRadiusButton) {
-      allRadiusButton.classList.toggle("sc-blur-sm", !state);
-      allRadiusButton.classList.toggle("sc-pointer-events-none", !state);
-    }
   }
 
   function getRadiusValue() {
@@ -975,27 +981,27 @@ export function initImageBorderControls(selectedElement, context = {}) {
   // ✅ Radius button clicks
   allRadiusButton?.addEventListener("click", () => {
     activeRadiusTarget = "all";
-    setRadiusButtonReadonly(false);
+    setRadiusButtonReadonly("all");
     applyBorderRadius("all", getRadiusValue());
   });
   topLeftRadiusButton?.addEventListener("click", () => {
     activeRadiusTarget = "topLeft";
-    setRadiusButtonReadonly(true);
+    setRadiusButtonReadonly("topLeft");
     applyBorderRadius("topLeft", getRadiusValue());
   });
   topRightRadiusButton?.addEventListener("click", () => {
     activeRadiusTarget = "topRight";
-    setRadiusButtonReadonly(true);
+    setRadiusButtonReadonly("topRight");
     applyBorderRadius("topRight", getRadiusValue());
   });
   bottomRightRadiusButton?.addEventListener("click", () => {
     activeRadiusTarget = "bottomRight";
-    setRadiusButtonReadonly(true);
+    setRadiusButtonReadonly("topRight");
     applyBorderRadius("bottomRight", getRadiusValue());
   });
   bottomLeftRadiusButton?.addEventListener("click", () => {
     activeRadiusTarget = "bottomLeft";
-    setRadiusButtonReadonly(true);
+    setRadiusButtonReadonly("bottomLeft");
     applyBorderRadius("bottomLeft", getRadiusValue());
   });
 
