@@ -4865,3 +4865,9 @@
 .overlay-position-section-one {
   margin-bottom: 12px !important;
 }
+
+#overlay-color-selection-field {
+  width: 100% !important;
+  height: 100px !important;
+  border-radius: 6px !important;
+}
