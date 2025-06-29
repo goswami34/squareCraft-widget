@@ -4113,12 +4113,12 @@ let pendingModifications = new Map();
         });
       }, 100);
       widgetLoaded = true;
-      // initImageSectionToggleControls();
+      initImageSectionToggleControls();
       ButtonAdvanceToggleControls();
       buttonTooltipControls();
       initButtonSectionToggleControls();
       WidgetTypoSectionStateControls();
-      // initImageStateTabToggle();
+      initImageStateTabToggle();
       WidgetImageHoverToggleControls();
       initHoverTypoTabControls([
         {
