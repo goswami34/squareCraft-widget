@@ -678,7 +678,7 @@ export function WidgetImageSection(id) {
              <div class="sc-flex sc-gap-2 sc-items-center">
                 <img loading="lazy" src="https://fatin-webefo.github.io/squareCraft-plugin/public/iamgeicon.png"
                    alt="">
-                <p class="sc-universal sc-roboto">Image</p>
+                <p class="sc-universal sc-roboto">Imageeeeee</p>
              </div>
              <span  class="sc-arrow-placeholder"></span>
           </div>
