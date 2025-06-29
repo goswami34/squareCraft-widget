@@ -79,7 +79,7 @@ export function html() {
       <div id="tabContentWrapper" class="sc-rounded-4px sc-h-350 sc-scrollBar sc-mt-6 sc-border sc-border-solid sc-border-EF7C2F sc-bg-color-3d3d3d">
       <div id="designTab"> 
         ${WidgetTypoSection("typoSection")} 
-
+        ${WidgetImageSection("imageSection")} 
         ${WidgetButtonSection("buttonSection")} 
       </div>
 
