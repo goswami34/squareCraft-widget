@@ -4156,7 +4156,7 @@ let pendingModifications = new Map();
       initImageUploadPreview(() => selectedElement);
       triggerLaunchAnimation();
       if (clickedBlock) {
-        waitForElement("#typoSection, #imageSection, #buttonSection")
+        waitForElement("#typoSection,  #buttonSection")
           .then(() => {
             handleBlockClick(
               { target: clickedBlock },
