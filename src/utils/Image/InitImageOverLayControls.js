@@ -225,7 +225,96 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
   //   }, 150);
   // };
 
-  const initOverlaySlider = (selector, key, bulletId, isYAxis = false) => {
+  // const initOverlaySlider = (selector, key, bulletId, isYAxis = false) => {
+  //   const field = document.querySelector(selector);
+  //   const bullet = document.getElementById(bulletId);
+  //   const valueDisplay = document.getElementById(
+  //     key === "x" ? "xAxisValue" : "yAxisValue"
+  //   );
+
+  //   if (!field || !bullet || !valueDisplay) return;
+
+  //   const getDimension = () =>
+  //     isYAxis ? field.offsetHeight : field.offsetWidth;
+
+  //   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+  //   const setBulletPosition = () => {
+  //     const dimension = getDimension();
+  //     const center = dimension / 2;
+  //     const offset = overlayState[key];
+  //     const pos = clamp(center + offset, 0, dimension);
+
+  //     if (isYAxis) {
+  //       bullet.style.top = `${pos}px`;
+  //       bullet.style.left = "50%";
+  //       bullet.style.transform = "translate(-50%, -50%)";
+  //     } else {
+  //       bullet.style.left = `${pos}px`;
+  //       bullet.style.top = "50%";
+  //       bullet.style.transform = "translate(-50%, -50%)";
+  //     }
+  //   };
+
+  //   const updateStateAndUI = (pixelPos) => {
+  //     const dimension = getDimension();
+  //     const center = dimension / 2;
+
+  //     const offset = clamp(Math.round(pixelPos - center), -100, 100);
+  //     overlayState[key] = offset;
+  //     valueDisplay.textContent = `${offset}px`;
+  //     setBulletPosition();
+  //     updateOverlayStyles();
+  //   };
+
+  //   const drag = (e) => {
+  //     const clientPos = isYAxis
+  //       ? e.touches?.[0]?.clientY || e.clientY
+  //       : e.touches?.[0]?.clientX || e.clientX;
+
+  //     const rect = field.getBoundingClientRect();
+  //     const pos = isYAxis ? clientPos - rect.top : clientPos - rect.left;
+  //     updateStateAndUI(pos);
+  //   };
+
+  //   const startDrag = (e) => {
+  //     e.preventDefault();
+  //     document.addEventListener("mousemove", drag);
+  //     document.addEventListener("touchmove", drag);
+  //     document.addEventListener(
+  //       "mouseup",
+  //       () => {
+  //         document.removeEventListener("mousemove", drag);
+  //         document.removeEventListener("touchmove", drag);
+  //       },
+  //       { once: true }
+  //     );
+  //     document.addEventListener(
+  //       "touchend",
+  //       () => {
+  //         document.removeEventListener("mousemove", drag);
+  //         document.removeEventListener("touchmove", drag);
+  //       },
+  //       { once: true }
+  //     );
+  //   };
+
+  //   bullet.addEventListener("mousedown", startDrag);
+  //   bullet.addEventListener("touchstart", startDrag);
+
+  //   // Initial bullet position
+  //   setTimeout(() => {
+  //     setBulletPosition();
+  //     valueDisplay.textContent = `${overlayState[key]}px`;
+  //   }, 200);
+  // };
+
+  const initOverlaySlider = (
+    selector,
+    key,
+    bulletId,
+    treatAsVertical = false
+  ) => {
     const field = document.querySelector(selector);
     const bullet = document.getElementById(bulletId);
     const valueDisplay = document.getElementById(
@@ -234,46 +323,36 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
 
     if (!field || !bullet || !valueDisplay) return;
 
-    const getDimension = () =>
-      isYAxis ? field.offsetHeight : field.offsetWidth;
+    const getDimension = () => field.offsetWidth; // Always horizontal layout
 
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
     const setBulletPosition = () => {
       const dimension = getDimension();
       const center = dimension / 2;
-      const offset = overlayState[key];
+      const offset = overlayState[key]; // logical value
       const pos = clamp(center + offset, 0, dimension);
 
-      if (isYAxis) {
-        bullet.style.top = `${pos}px`;
-        bullet.style.left = "50%";
-        bullet.style.transform = "translate(-50%, -50%)";
-      } else {
-        bullet.style.left = `${pos}px`;
-        bullet.style.top = "50%";
-        bullet.style.transform = "translate(-50%, -50%)";
-      }
+      bullet.style.left = `${pos}px`;
+      bullet.style.top = "50%";
+      bullet.style.transform = "translate(-50%, -50%)";
     };
 
     const updateStateAndUI = (pixelPos) => {
       const dimension = getDimension();
       const center = dimension / 2;
-
       const offset = clamp(Math.round(pixelPos - center), -100, 100);
-      overlayState[key] = offset;
+
+      overlayState[key] = offset; // update logical Y or X
       valueDisplay.textContent = `${offset}px`;
       setBulletPosition();
       updateOverlayStyles();
     };
 
     const drag = (e) => {
-      const clientPos = isYAxis
-        ? e.touches?.[0]?.clientY || e.clientY
-        : e.touches?.[0]?.clientX || e.clientX;
-
+      const clientX = e.touches?.[0]?.clientX || e.clientX;
       const rect = field.getBoundingClientRect();
-      const pos = isYAxis ? clientPos - rect.top : clientPos - rect.left;
+      const pos = clientX - rect.left;
       updateStateAndUI(pos);
     };
 
@@ -302,7 +381,6 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     bullet.addEventListener("mousedown", startDrag);
     bullet.addEventListener("touchstart", startDrag);
 
-    // Initial bullet position
     setTimeout(() => {
       setBulletPosition();
       valueDisplay.textContent = `${overlayState[key]}px`;
