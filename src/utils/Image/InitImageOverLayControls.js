@@ -297,10 +297,16 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     bullet.addEventListener("mousedown", startDrag);
     bullet.addEventListener("touchstart", startDrag);
 
-    setTimeout(() => {
-      setBulletPosition();
-      valueDisplay.textContent = `${overlayState[key]}px`;
-    }, 200);
+    // setTimeout(() => {
+    //   setBulletPosition();
+    //   valueDisplay.textContent = `${overlayState[key]}px`;
+    // }, 200);
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        setBulletPosition();
+        valueDisplay.textContent = `${overlayState[key]}px`;
+      }, 50); // small delay to ensure DOM is painted
+    });
   };
 
   const setupIncrementControl = (controlId, valueId, key) => {
