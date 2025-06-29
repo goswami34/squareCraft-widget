@@ -297,16 +297,10 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     bullet.addEventListener("mousedown", startDrag);
     bullet.addEventListener("touchstart", startDrag);
 
-    // setTimeout(() => {
-    //   setBulletPosition();
-    //   valueDisplay.textContent = `${overlayState[key]}px`;
-    // }, 200);
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        setBulletPosition();
-        valueDisplay.textContent = `${overlayState[key]}px`;
-      }, 50); // small delay to ensure DOM is painted
-    });
+    setTimeout(() => {
+      setBulletPosition();
+      valueDisplay.textContent = `${overlayState[key]}px`;
+    }, 200);
   };
 
   const setupIncrementControl = (controlId, valueId, key) => {
@@ -374,8 +368,8 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     // initOverlaySlider("#xAxisSlider", "x", "xAxisBullet");
     // initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", true);
 
-    initOverlaySlider("#xAxisSlider", "x", "xAxisBullet", false);
-    initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", false);
+    initOverlaySlider("#xAxisSlider", "x", "xAxisBullet", true);
+    initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", true);
 
     // Color palette
     setTimeout(() => {
