@@ -823,22 +823,24 @@ export function initImageBorderControls(selectedElement, context = {}) {
   ];
 
   function setRadiusButtonReadonly(activeTarget) {
-    const disableAll = activeTarget !== "all";
     const readonlyClasses = ["sc-blur-sm", "sc-pointer-events-none"];
 
-    // Disable "All" if any side is selected
+    // ✅ Only disable "All" when a side is selected
+    const disableAll = activeTarget !== "all";
     if (allRadiusButton) {
-      readonlyClasses.forEach((cls) =>
-        allRadiusButton.classList.toggle(cls, disableAll)
-      );
+      readonlyClasses.forEach((cls) => {
+        if (disableAll) {
+          allRadiusButton.classList.add(cls);
+        } else {
+          allRadiusButton.classList.remove(cls);
+        }
+      });
     }
 
-    // Disable sides if "All" is selected
+    // ✅ Sides are NEVER disabled, so always remove readonly
     radiusButtons.forEach((btn) => {
       if (!btn) return;
-      readonlyClasses.forEach(
-        (cls) => btn.classList.toggle(cls, !disableAll) // disable if All is active
-      );
+      readonlyClasses.forEach((cls) => btn.classList.remove(cls));
     });
   }
 
