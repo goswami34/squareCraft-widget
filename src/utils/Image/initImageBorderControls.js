@@ -721,6 +721,23 @@ export function initImageBorderControls(selectedElement, context = {}) {
     const savedBorderWidth = prevStyles["border-width"] || "1px"; // fallback
 
     // ✅ Save to database with correct border-width
+    // mergeAndSaveImageStyles(
+    //   blockId,
+    //   {
+    //     image: {
+    //       styles: {
+    //         "border-width": savedBorderWidth,
+    //         ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+    //         "border-style": currentActiveBorderStyle,
+    //         ...(type === "all"
+    //           ? { "border-radius": `${radius}px` }
+    //           : { [currentProp]: `${radius}px` }),
+    //       },
+    //     },
+    //   },
+    //   saveModificationsforImage
+    // );
+
     mergeAndSaveImageStyles(
       blockId,
       {
@@ -732,6 +749,13 @@ export function initImageBorderControls(selectedElement, context = {}) {
             ...(type === "all"
               ? { "border-radius": `${radius}px` }
               : { [currentProp]: `${radius}px` }),
+          },
+        },
+        imageTag: {
+          styles: {
+            "border-radius": `${radius}px`, // ✅ add this line
+            "box-sizing": "border-box",
+            "object-fit": "cover",
           },
         },
       },
