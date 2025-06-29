@@ -3916,7 +3916,7 @@ let pendingModifications = new Map();
 
     if (!widgetLoaded) {
       await createWidget(clickedBlock);
-      waitForElement("#typoSection, #buttonSection", 4000)
+      waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
         .then(() => {
           handleAndDetect(clickedBlock);
         })
@@ -3926,7 +3926,7 @@ let pendingModifications = new Map();
     } else {
       widgetContainer.style.display =
         widgetContainer.style.display === "none" ? "block" : "none";
-      waitForElement("#typoSection, #buttonSection", 4000)
+      waitForElement("#typoSection, #imageSection, #buttonSection", 4000)
         .then(() => {
           handleAndDetect(clickedBlock);
         })
