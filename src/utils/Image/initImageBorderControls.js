@@ -975,27 +975,27 @@ export function initImageBorderControls(selectedElement, context = {}) {
   // ✅ Radius button clicks
   allRadiusButton?.addEventListener("click", () => {
     activeRadiusTarget = "all";
-    setRadiusButtonReadonly(true);
+    setRadiusButtonReadonly(false);
     applyBorderRadius("all", getRadiusValue());
   });
   topLeftRadiusButton?.addEventListener("click", () => {
     activeRadiusTarget = "topLeft";
-    setRadiusButtonReadonly(false);
+    setRadiusButtonReadonly(true);
     applyBorderRadius("topLeft", getRadiusValue());
   });
   topRightRadiusButton?.addEventListener("click", () => {
     activeRadiusTarget = "topRight";
-    setRadiusButtonReadonly(false);
+    setRadiusButtonReadonly(true);
     applyBorderRadius("topRight", getRadiusValue());
   });
   bottomRightRadiusButton?.addEventListener("click", () => {
     activeRadiusTarget = "bottomRight";
-    setRadiusButtonReadonly(false);
+    setRadiusButtonReadonly(true);
     applyBorderRadius("bottomRight", getRadiusValue());
   });
   bottomLeftRadiusButton?.addEventListener("click", () => {
     activeRadiusTarget = "bottomLeft";
-    setRadiusButtonReadonly(false);
+    setRadiusButtonReadonly(true);
     applyBorderRadius("bottomLeft", getRadiusValue());
   });
 
