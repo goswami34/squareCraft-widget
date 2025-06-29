@@ -15,22 +15,22 @@ export function initOverLayColorPalate(
     `${prefix}overlay-color-selection-bar`
   );
   const colorCode = document.getElementById(
-    `${prefix}overlay-button-color-code`
+    `${prefix}overlay-image-color-code`
   );
   const transparencyCount = document.getElementById(
-    `${prefix}overlay-button-color-transparency-count`
+    `${prefix}overlay-image-color-transparency-count`
   );
   const allColorField = document.getElementById(
-    `${prefix}overlay-button-all-color-selection-field`
+    `${prefix}overlay-image-all-color-selection-field`
   );
   const allColorBullet = document.getElementById(
-    `${prefix}overlay-button-all-color-selection-bar`
+    `${prefix}overlay-image-all-color-selection-bar`
   );
   const transparencyField = document.getElementById(
-    `${prefix}overlay-button-color-transparency-field`
+    `${prefix}overlay-image-color-transparency-field`
   );
   const transparencyBullet = document.getElementById(
-    `${prefix}overlay-button-color-transparency-bar`
+    `${prefix}overlay-image-color-transparency-bar`
   );
 
   function updateTransparencyField(hue) {
