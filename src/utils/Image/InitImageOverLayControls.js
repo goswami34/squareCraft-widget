@@ -150,81 +150,6 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     if (heightValue) heightValue.textContent = `${overlayState.height}%`;
   };
 
-  // const initOverlaySlider = (selector, key, bulletId, isYAxis = false) => {
-  //   const field = document.querySelector(selector);
-  //   const bullet = document.getElementById(bulletId); // Use unique bullet ID
-  //   const valueDisplay = document.getElementById(
-  //     key === "x" ? "xAxisValue" : "yAxisValue"
-  //   );
-
-  //   if (!field || !bullet || !valueDisplay) return;
-
-  //   const getDimension = () =>
-  //     isYAxis ? field.offsetHeight : field.offsetWidth;
-
-  //   const setBulletPosition = () => {
-  //     const dimension = getDimension();
-  //     const center = dimension / 2;
-  //     const offset = overlayState[key];
-  //     const pixel = center + offset;
-
-  //     if (isYAxis) {
-  //       bullet.style.top = `${pixel}px`;
-  //       bullet.style.left = "50%";
-  //       bullet.style.transform = "translate(-50%, -50%)";
-  //     } else {
-  //       bullet.style.left = `${pixel}px`;
-  //       bullet.style.top = "50%";
-  //       bullet.style.transform = "translate(-50%, -50%)";
-  //     }
-  //   };
-
-  //   const updateStateAndUI = (pixelPos) => {
-  //     const dimension = getDimension();
-  //     const center = dimension / 2;
-  //     const offset = Math.round(pixelPos - center);
-
-  //     overlayState[key] = offset;
-  //     valueDisplay.textContent = `${offset}px`;
-  //     setBulletPosition();
-
-  //     const overlayEl = selectedImage?.querySelector(".sc-custom-overlay");
-  //     if (overlayEl) {
-  //       overlayEl.style[key === "x" ? "left" : "top"] = `${offset}px`;
-  //     }
-
-  //     updateOverlayStyles();
-  //   };
-
-  //   const drag = (e) => {
-  //     const clientPos = isYAxis
-  //       ? e.clientY || e.touches?.[0]?.clientY
-  //       : e.clientX || e.touches?.[0]?.clientX;
-
-  //     const rect = field.getBoundingClientRect();
-  //     const pos = isYAxis ? clientPos - rect.top : clientPos - rect.left;
-
-  //     updateStateAndUI(pos);
-  //   };
-
-  //   bullet.addEventListener("mousedown", (e) => {
-  //     e.preventDefault();
-  //     document.addEventListener("mousemove", drag);
-  //     document.addEventListener(
-  //       "mouseup",
-  //       () => {
-  //         document.removeEventListener("mousemove", drag);
-  //       },
-  //       { once: true }
-  //     );
-  //   });
-
-  //   setTimeout(() => {
-  //     setBulletPosition();
-  //     valueDisplay.textContent = `${overlayState[key]}px`;
-  //   }, 150);
-  // };
-
   const initOverlaySlider = (
     selector,
     key,
@@ -306,6 +231,30 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     }, 200);
   };
 
+  // const setupIncrementControl = (controlId, valueId, key) => {
+  //   const control = document.getElementById(controlId);
+  //   const valueDisplay = document.getElementById(valueId);
+  //   if (!control || !valueDisplay) return;
+
+  //   const up = control.querySelector(".overlay-arrow-up");
+  //   const down = control.querySelector(".overlay-arrow-down");
+
+  //   const updateDisplay = () => {
+  //     valueDisplay.textContent = `${overlayState[key]}%`;
+  //     updateOverlayStyles();
+  //   };
+
+  //   up?.addEventListener("click", () => {
+  //     overlayState[key] = Math.min(100, overlayState[key] + 1);
+  //     updateDisplay();
+  //   });
+
+  //   down?.addEventListener("click", () => {
+  //     overlayState[key] = Math.max(0, overlayState[key] - 1);
+  //     updateDisplay();
+  //   });
+  // };
+
   const setupIncrementControl = (controlId, valueId, key) => {
     const control = document.getElementById(controlId);
     const valueDisplay = document.getElementById(valueId);
@@ -315,6 +264,8 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     const down = control.querySelector(".overlay-arrow-down");
 
     const updateDisplay = () => {
+      // Clamp to 0–100
+      overlayState[key] = Math.max(0, Math.min(100, overlayState[key]));
       valueDisplay.textContent = `${overlayState[key]}%`;
       updateOverlayStyles();
     };
