@@ -4871,3 +4871,10 @@
   height: 100px !important;
   border-radius: 6px !important;
 }
+
+#overLaySection {
+  overflow: visible;
+}
+#shadowButton {
+  z-index: 1 !important;
+}
