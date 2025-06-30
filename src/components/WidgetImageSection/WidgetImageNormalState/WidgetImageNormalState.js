@@ -278,12 +278,14 @@ export function WidgetImageNormalState() {
          </div>
          <div class="sc-flex sc-mt-2 sc-items-center">
             <div class="sc-bg-3f3f3f sc-py-1 sc-px-2 sc-rounded-l">
-               <select id="overlayVisibleDropdown" class="sc-universal sc-roboto sc-text-sm sc-bg-3f3f3f sc-text-white sc-border-none focus\:outline-none">
+               <select id="overlayVisibleDropdown" class="sc-universal sc-roboto sc-text-sm sc-bg-3f3f3f sc-text-white sc-border-none focus:outline-none">
                   <option value="yes" selected>Yes</option>
                   <option value="no">No</option>
                </select>
             </div>
-            <div class="sc-bg-454545 sc-flex sc-items-center sc-justify-center sc-px-2_5 sc-py-13px"><span  class="sc-arrow-placeholder sc-rotate-180"></span></div>
+            <div class="sc-bg-454545 sc-flex sc-items-center sc-justify-center sc-px-2_5 sc-py-13px">
+               <span class="sc-arrow-placeholder sc-rotate-180"></span>
+            </div>
          </div>
 
          <div class="sc-mt-4 sc-gap-2 sc-flex">

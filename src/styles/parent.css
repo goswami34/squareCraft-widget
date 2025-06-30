@@ -4878,3 +4878,18 @@
 #shadowButton {
   z-index: 1 !important;
 }
+
+#overlayVisibleDropdown {
+  /* Remove default arrow for Chrome, Safari, Edge */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+  border: none;
+  color: #fff; /* or your theme color */
+  padding-right: 20px; /* space for your custom arrow */
+  font-size: 12px;
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+}
