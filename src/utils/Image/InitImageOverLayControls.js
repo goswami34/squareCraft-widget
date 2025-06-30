@@ -425,9 +425,31 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     }
   };
 
+  function attachOverlayDropdownArrowHandler() {
+    const arrow = document.getElementById("overlayVisibleDropdownArrow");
+    const select = document.getElementById("overlayVisibleDropdown");
+    if (arrow && select) {
+      arrow.addEventListener("click", function () {
+        select.focus();
+        select.click();
+      });
+    }
+  }
+
   return {
     init,
     setSelectedImage,
     publishPendingModifications, // Export the publish function
   };
 };
+
+// document.addEventListener('DOMContentLoaded', function() {
+//   const arrow = document.getElementById('overlayVisibleDropdownArrow');
+//   const select = document.getElementById('overlayVisibleDropdown');
+//   if (arrow && select) {
+//     arrow.addEventListener('click', function() {
+//       select.focus();
+//       select.click();
+//     });
+//   }
+// });

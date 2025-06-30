@@ -284,10 +284,9 @@ export function WidgetImageNormalState() {
                </select>
             </div>
             <div class="sc-bg-454545 sc-flex sc-items-center sc-justify-center sc-px-2_5 sc-py-13px">
-               <span class="sc-arrow-placeholder sc-rotate-180"></span>
+               <span id="overlayVisibleDropdownArrow" class="sc-arrow-placeholder sc-rotate-180"></span>
             </div>
          </div>
-
          <div class="sc-mt-4 sc-gap-2 sc-flex">
 
          
