@@ -441,7 +441,7 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
         // Hide overlay
         styleTag.textContent += `
         #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
-          display: none !important;
+          visibility: hidden !important;
         }
       `;
       } else if (value === "yes") {
