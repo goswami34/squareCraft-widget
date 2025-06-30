@@ -333,6 +333,15 @@ export function initOverLayColorPalate(
 
         if (typeof saveFn === "function") {
           saveFn(finalColor, currentTransparency / 100);
+
+          const rgbaColor = finalColor.startsWith("rgb(")
+            ? finalColor
+                .replace("rgb(", "rgba(")
+                .replace(")", `, ${currentTransparency / 100})`)
+            : finalColor;
+
+          overlayState.color = rgbaColor;
+          updateOverlayStyles();
         }
       };
 
