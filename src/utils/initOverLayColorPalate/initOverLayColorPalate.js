@@ -507,31 +507,60 @@ export function initOverLayColorPalate(
   });
 
   // Initialize with first color
+  // if (container.children.length > 0) {
+  //   const firstSwatchColor = container.children[0].style.backgroundColor;
+  //   updateSelectorField(firstSwatchColor);
+
+  //   const rect = selectorField.getBoundingClientRect();
+  //   const defaultX = Math.round(rect.width * 0.5);
+  //   const defaultY = Math.round(rect.height * 0.5);
+  //   bullet.style.left = `${defaultX}px`;
+  //   bullet.style.top = `${defaultY}px`;
+
+  //   const canvas = selectorField.querySelector("canvas");
+  //   const ctx = canvas?.getContext("2d");
+  //   if (ctx) {
+  //     const data = ctx.getImageData(defaultX, defaultY, 1, 1).data;
+  //     const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
+  //     colorCode.textContent = rgb;
+  //   }
+
+  //   transparencyBullet.style.top = `0px`;
+  //   currentTransparency = 100;
+  //   transparencyCount.textContent = `100%`;
+
+  //   if (typeof saveFn === "function") {
+  //     saveFn(firstSwatchColor, 1);
+  //   }
+  // }
+
   if (container.children.length > 0) {
     const firstSwatchColor = container.children[0].style.backgroundColor;
-    updateSelectorField(firstSwatchColor);
 
-    const rect = selectorField.getBoundingClientRect();
-    const defaultX = Math.round(rect.width * 0.5);
-    const defaultY = Math.round(rect.height * 0.5);
-    bullet.style.left = `${defaultX}px`;
-    bullet.style.top = `${defaultY}px`;
+    requestAnimationFrame(() => {
+      updateSelectorField(firstSwatchColor);
 
-    const canvas = selectorField.querySelector("canvas");
-    const ctx = canvas?.getContext("2d");
-    if (ctx) {
-      const data = ctx.getImageData(defaultX, defaultY, 1, 1).data;
-      const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
-      colorCode.textContent = rgb;
-    }
+      const rect = selectorField.getBoundingClientRect();
+      const defaultX = Math.round(rect.width * 0.5);
+      const defaultY = Math.round(rect.height * 0.5);
+      bullet.style.left = `${defaultX}px`;
+      bullet.style.top = `${defaultY}px`;
 
-    transparencyBullet.style.top = `0px`;
-    currentTransparency = 100;
-    transparencyCount.textContent = `100%`;
+      const canvas = selectorField.querySelector("canvas");
+      const ctx = canvas?.getContext("2d");
+      if (ctx) {
+        const data = ctx.getImageData(defaultX, defaultY, 1, 1).data;
+        colorCode.textContent = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
+      }
 
-    if (typeof saveFn === "function") {
-      saveFn(firstSwatchColor, 1);
-    }
+      transparencyBullet.style.top = `0px`;
+      currentTransparency = 100;
+      transparencyCount.textContent = `100%`;
+
+      if (typeof saveFn === "function") {
+        saveFn(firstSwatchColor, 1);
+      }
+    });
   }
 
   function applyImageOverlayColor(color, alpha = 1) {
