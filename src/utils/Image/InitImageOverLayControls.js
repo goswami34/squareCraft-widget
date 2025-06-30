@@ -425,6 +425,32 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     }
   };
 
+  const overlayVisibilityDropdown = document.getElementById(
+    "overlayVisibleDropdown"
+  );
+  if (overlayVisibilityDropdown) {
+    overlayVisibilityDropdown.addEventListener("change", () => {
+      const value = overlayVisibilityDropdown.value;
+      const blockId = selectedImage?.closest('[id^="block-"]')?.id;
+      const styleTag = document.getElementById(`sc-overlay-style-${blockId}`);
+
+      if (!blockId || !styleTag) return;
+
+      // Modify style tag only if it's applied
+      if (value === "no") {
+        // Hide overlay
+        styleTag.textContent += `
+        #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
+          display: none !important;
+        }
+      `;
+      } else if (value === "yes") {
+        // Re-apply overlay with saved state
+        updateOverlayStyles(); // this will re-generate correct CSS
+      }
+    });
+  }
+
   function attachOverlayDropdownArrowHandler() {
     const arrow = document.getElementById("overlayVisibleDropdownArrow");
     const select = document.getElementById("overlayVisibleDropdown");
