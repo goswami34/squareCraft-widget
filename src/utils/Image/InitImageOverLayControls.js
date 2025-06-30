@@ -436,17 +436,16 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
 
       if (!blockId || !styleTag) return;
 
-      // Modify style tag only if it's applied
       if (value === "no") {
-        // Hide overlay
-        styleTag.textContent += `
+        // Only set visibility hidden, remove all other overlay styles
+        styleTag.textContent = `
         #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
           visibility: hidden !important;
         }
       `;
       } else if (value === "yes") {
-        // Re-apply overlay with saved state
-        updateOverlayStyles(); // this will re-generate correct CSS
+        // Restore overlay styles
+        updateOverlayStyles();
       }
     });
   }
