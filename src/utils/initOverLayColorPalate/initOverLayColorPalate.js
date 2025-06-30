@@ -409,7 +409,8 @@ export function initOverLayColorPalate(
           saveFn(rgb, currentTransparency / 100);
         }
 
-        applyOverlayColorSmart(finalColor, currentTransparency / 100);
+        // applyOverlayColorSmart(finalColor, currentTransparency / 100);
+        applyOverlayColorSmart(rgb, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
