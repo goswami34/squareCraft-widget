@@ -884,4 +884,3 @@ export function initOverLayColorPalate(themeColors, prefix = "", saveFn) {
     return { h: Math.round(h), s, l };
   }
 }
-a;
