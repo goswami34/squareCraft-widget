@@ -122,60 +122,60 @@ export function initOverLayColorPalate(
     updateTransparencyField(dynamicHue);
   }
 
-  function applyButtonBackgroundColor(color, alpha = 1) {
-    const currentElement = selectedElement?.();
-    if (!currentElement) return;
+  // function applyButtonBackgroundColor(color, alpha = 1) {
+  //   const currentElement = selectedElement?.();
+  //   if (!currentElement) return;
 
-    const buttonTypes = [
-      "sqs-button-element--primary",
-      "sqs-button-element--secondary",
-      "sqs-button-element--tertiary",
-    ];
+  //   const buttonTypes = [
+  //     "sqs-button-element--primary",
+  //     "sqs-button-element--secondary",
+  //     "sqs-button-element--tertiary",
+  //   ];
 
-    let buttonType = null;
-    for (let type of buttonTypes) {
-      if (currentElement.querySelector(`a.${type}`)) {
-        buttonType = type;
-        break;
-      }
-    }
+  //   let buttonType = null;
+  //   for (let type of buttonTypes) {
+  //     if (currentElement.querySelector(`a.${type}`)) {
+  //       buttonType = type;
+  //       break;
+  //     }
+  //   }
 
-    if (!buttonType) {
-      console.warn("⚠️ No Squarespace button found in block.");
-      return;
-    }
+  //   if (!buttonType) {
+  //     console.warn("⚠️ No Squarespace button found in block.");
+  //     return;
+  //   }
 
-    const rgbaColor = color.startsWith("rgb(")
-      ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-      : color;
+  //   const rgbaColor = color.startsWith("rgb(")
+  //     ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
+  //     : color;
 
-    const styleId = `sc-style-global-${buttonType}`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
-    }
+  //   const styleId = `sc-style-global-${buttonType}`;
+  //   let styleTag = document.getElementById(styleId);
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = styleId;
+  //     document.head.appendChild(styleTag);
+  //   }
 
-    styleTag.textContent = `
-      a.${buttonType},
-      button.${buttonType} {
-        background-color: ${rgbaColor} !important;
-      }
-      a.${buttonType}:hover,
-      button.${buttonType}:hover {
-        background-color: ${rgbaColor} !important;
-        filter: brightness(0.95);
-      }
-    `;
+  //   styleTag.textContent = `
+  //     a.${buttonType},
+  //     button.${buttonType} {
+  //       background-color: ${rgbaColor} !important;
+  //     }
+  //     a.${buttonType}:hover,
+  //     button.${buttonType}:hover {
+  //       background-color: ${rgbaColor} !important;
+  //       filter: brightness(0.95);
+  //     }
+  //   `;
 
-    const allButtons = currentElement.querySelectorAll(
-      `a.${buttonType}, button.${buttonType}`
-    );
-    allButtons.forEach((btn) => {
-      btn.dataset.scButtonBg = color;
-    });
-  }
+  //   const allButtons = currentElement.querySelectorAll(
+  //     `a.${buttonType}, button.${buttonType}`
+  //   );
+  //   allButtons.forEach((btn) => {
+  //     btn.dataset.scButtonBg = color;
+  //   });
+  // }
 
   // function applyOverlayColorSmart(color, alpha = 1) {
   //   const currentElement = selectedElement?.();
@@ -376,6 +376,8 @@ export function initOverLayColorPalate(
         if (typeof saveFn === "function") {
           saveFn(rgb, currentTransparency / 100);
         }
+
+        applyOverlayColorSmart(finalColor, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
@@ -613,265 +615,3 @@ export function initOverLayColorPalate(
 
   // applyImageOverlayColor("color", 1);
 }
-
-// export function initOverLayColorPalate(themeColors, prefix = "", saveFn) {
-//   const palette = document.getElementById(`${prefix}overLayFontColorPalate`);
-//   const container = document.getElementById(`${prefix}overlay-border-colors`);
-//   const selectorField = document.getElementById(
-//     `${prefix}overlay-color-selection-field`
-//   );
-//   const bullet = document.getElementById(
-//     `${prefix}overlay-color-selection-bar`
-//   );
-//   const colorCode = document.getElementById(
-//     `${prefix}overlay-image-color-code`
-//   );
-//   const transparencyCount = document.getElementById(
-//     `${prefix}overlay-image-color-transparency-count`
-//   );
-//   const allColorField = document.getElementById(
-//     `${prefix}overlay-image-all-color-selection-field`
-//   );
-//   const allColorBullet = document.getElementById(
-//     `${prefix}overlay-image-all-color-selection-bar`
-//   );
-//   const transparencyField = document.getElementById(
-//     `${prefix}overlay-image-color-transparency-field`
-//   );
-//   const transparencyBullet = document.getElementById(
-//     `${prefix}overlay-image-color-transparency-bar`
-//   );
-
-//   if (
-//     !palette ||
-//     !container ||
-//     !selectorField ||
-//     !bullet ||
-//     !colorCode ||
-//     !transparencyCount
-//   )
-//     return;
-
-//   let dynamicHue = 0;
-//   let currentTransparency = 100;
-
-//   const toRGBString = (r, g, b) =>
-//     `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
-
-//   const renderCanvas = (hue) => {
-//     selectorField.innerHTML = "";
-//     selectorField.style.position = "relative";
-//     const canvas = document.createElement("canvas");
-//     canvas.width = selectorField.offsetWidth;
-//     canvas.height = selectorField.offsetHeight;
-//     const ctx = canvas.getContext("2d");
-
-//     const gradientX = ctx.createLinearGradient(0, 0, canvas.width, 0);
-//     gradientX.addColorStop(0, `hsl(${hue}, 100%, 50%)`);
-//     gradientX.addColorStop(1, "#fff");
-
-//     ctx.fillStyle = gradientX;
-//     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-//     const gradientY = ctx.createLinearGradient(0, 0, 0, canvas.height);
-//     gradientY.addColorStop(0, "rgba(0,0,0,0)");
-//     gradientY.addColorStop(1, "rgba(0,0,0,1)");
-
-//     ctx.fillStyle = gradientY;
-//     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-//     canvas.style.position = "absolute";
-//     canvas.style.top = 0;
-//     canvas.style.left = 0;
-//     canvas.style.zIndex = 0;
-//     selectorField.appendChild(canvas);
-//     selectorField.appendChild(bullet);
-//   };
-
-//   if (allColorField) {
-//     allColorField.style.background = `linear-gradient(to bottom,
-//       hsl(0, 100%, 50%),
-//       hsl(60, 100%, 50%),
-//       hsl(120, 100%, 50%),
-//       hsl(180, 100%, 50%),
-//       hsl(240, 100%, 50%),
-//       hsl(300, 100%, 50%),
-//       hsl(360, 100%, 50%)
-//     )`;
-//   }
-
-//   if (transparencyField) {
-//     transparencyField.style.background = `linear-gradient(to bottom,
-//       hsla(0, 100%, 50%, 1),
-//       hsla(0, 100%, 50%, 0)
-//     )`;
-//   }
-
-//   if (allColorBullet) {
-//     allColorBullet.onmousedown = function (e) {
-//       e.preventDefault();
-//       document.onmousemove = function (e) {
-//         const rect = allColorField.getBoundingClientRect();
-//         let offsetY = Math.max(
-//           0,
-//           Math.min(
-//             rect.height - allColorBullet.offsetHeight,
-//             e.clientY - rect.top
-//           )
-//         );
-//         allColorBullet.style.top = `${offsetY}px`;
-
-//         dynamicHue = Math.round((offsetY / rect.height) * 360);
-//         renderCanvas(dynamicHue);
-
-//         transparencyField.style.background = `linear-gradient(to bottom,
-//           hsla(${dynamicHue}, 100%, 50%, 1),
-//           hsla(${dynamicHue}, 100%, 50%, 0)
-//         )`;
-//       };
-//       document.onmouseup = () => {
-//         document.onmousemove = null;
-//         document.onmouseup = null;
-//       };
-//     };
-//   }
-
-//   if (bullet && selectorField) {
-//     bullet.onmousedown = function (e) {
-//       e.preventDefault();
-//       document.onmousemove = function (e) {
-//         const rect = selectorField.getBoundingClientRect();
-//         let x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
-//         let y = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
-
-//         bullet.style.left = `${x}px`;
-//         bullet.style.top = `${y}px`;
-
-//         const canvas = selectorField.querySelector("canvas");
-//         const ctx = canvas.getContext("2d", { willReadFrequently: true });
-//         const data = ctx.getImageData(x, y, 1, 1).data;
-//         const rgb = toRGBString(data[0], data[1], data[2]);
-//         colorCode.textContent = rgb;
-//         if (typeof saveFn === "function")
-//           saveFn(rgb, currentTransparency / 100);
-//       };
-//       document.onmouseup = () => {
-//         document.onmousemove = null;
-//         document.onmouseup = null;
-//       };
-//     };
-//   }
-
-//   if (transparencyBullet) {
-//     transparencyBullet.onmousedown = function (e) {
-//       e.preventDefault();
-//       document.onmousemove = function (e) {
-//         const rect = transparencyField.getBoundingClientRect();
-//         let offsetY = Math.max(
-//           0,
-//           Math.min(
-//             rect.height - transparencyBullet.offsetHeight,
-//             e.clientY - rect.top
-//           )
-//         );
-//         transparencyBullet.style.top = `${offsetY}px`;
-//         currentTransparency = 100 - Math.round((offsetY / rect.height) * 100);
-//         transparencyCount.textContent = `${currentTransparency}%`;
-
-//         const currentColor = colorCode.textContent;
-//         if (currentColor && typeof saveFn === "function") {
-//           saveFn(currentColor, currentTransparency / 100);
-//         }
-//       };
-//       document.onmouseup = () => {
-//         document.onmousemove = null;
-//         document.onmouseup = null;
-//       };
-//     };
-//   }
-
-//   palette.classList.toggle("sc-hidden");
-
-//   if (container.innerHTML.trim() !== "") return;
-
-//   Object.values(themeColors).forEach((color) => {
-//     const swatch = document.createElement("div");
-//     swatch.className = "sc-border-colors sc-cursor-pointer";
-//     swatch.style.backgroundColor = color;
-//     swatch.style.width = "18px";
-//     swatch.style.height = "18px";
-//     swatch.style.borderRadius = "6px";
-//     swatch.title = color;
-
-//     swatch.addEventListener("click", () => {
-//       const hsl = rgbToHslFromAny(color);
-//       if (hsl) dynamicHue = hsl.h;
-//       renderCanvas(dynamicHue);
-//       colorCode.textContent = color;
-//       if (typeof saveFn === "function")
-//         saveFn(color, currentTransparency / 100);
-//     });
-
-//     container.appendChild(swatch);
-//   });
-
-//   const firstColor = Object.values(themeColors)[0];
-//   if (firstColor) {
-//     const hsl = rgbToHslFromAny(firstColor);
-//     if (hsl) dynamicHue = hsl.h;
-//     renderCanvas(dynamicHue);
-//     colorCode.textContent = firstColor;
-//     if (typeof saveFn === "function") saveFn(firstColor, 1);
-//   }
-
-//   function rgbToHslFromAny(color) {
-//     let r, g, b;
-//     if (color.startsWith("#")) {
-//       const hex = color.replace("#", "");
-//       if (hex.length === 3) {
-//         r = parseInt(hex[0] + hex[0], 16);
-//         g = parseInt(hex[1] + hex[1], 16);
-//         b = parseInt(hex[2] + hex[2], 16);
-//       } else {
-//         r = parseInt(hex.slice(0, 2), 16);
-//         g = parseInt(hex.slice(2, 4), 16);
-//         b = parseInt(hex.slice(4, 6), 16);
-//       }
-//     } else if (color.startsWith("rgb")) {
-//       const parts = color.match(/\d+/g);
-//       if (!parts) return null;
-//       r = parseInt(parts[0]);
-//       g = parseInt(parts[1]);
-//       b = parseInt(parts[2]);
-//     } else return null;
-
-//     r /= 255;
-//     g /= 255;
-//     b /= 255;
-//     const max = Math.max(r, g, b),
-//       min = Math.min(r, g, b);
-//     let h,
-//       s,
-//       l = (max + min) / 2;
-
-//     if (max === min) {
-//       h = s = 0;
-//     } else {
-//       const d = max - min;
-//       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-//       switch (max) {
-//         case r:
-//           h = (g - b) / d + (g < b ? 6 : 0);
-//           break;
-//         case g:
-//           h = (b - r) / d + 2;
-//           break;
-//         case b:
-//           h = (r - g) / d + 4;
-//           break;
-//       }
-//       h *= 60;
-//     }
-//     return { h: Math.round(h), s, l };
-//   }
-// }
