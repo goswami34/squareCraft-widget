@@ -122,155 +122,6 @@ export function initOverLayColorPalate(
     updateTransparencyField(dynamicHue);
   }
 
-  function applyButtonBackgroundColor(color, alpha = 1) {
-    const currentElement = selectedElement?.();
-    if (!currentElement) return;
-
-    const buttonTypes = [
-      "sqs-button-element--primary",
-      "sqs-button-element--secondary",
-      "sqs-button-element--tertiary",
-    ];
-
-    let buttonType = null;
-    for (let type of buttonTypes) {
-      if (currentElement.querySelector(`a.${type}`)) {
-        buttonType = type;
-        break;
-      }
-    }
-
-    if (!buttonType) {
-      console.warn("⚠️ No Squarespace button found in block.");
-      return;
-    }
-
-    const rgbaColor = color.startsWith("rgb(")
-      ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-      : color;
-
-    const styleId = `sc-style-global-${buttonType}`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
-    }
-
-    styleTag.textContent = `
-      a.${buttonType},
-      button.${buttonType} {
-        background-color: ${rgbaColor} !important;
-      }
-      a.${buttonType}:hover,
-      button.${buttonType}:hover {
-        background-color: ${rgbaColor} !important;
-        filter: brightness(0.95);
-      }
-    `;
-
-    const allButtons = currentElement.querySelectorAll(
-      `a.${buttonType}, button.${buttonType}`
-    );
-    allButtons.forEach((btn) => {
-      btn.dataset.scButtonBg = color;
-    });
-  }
-
-  // function applyOverlayColorSmart(color, alpha = 1) {
-  //   const currentElement = selectedElement?.();
-  //   if (!currentElement) return;
-
-  //   const isImage = currentElement.querySelector(".sqs-image-content");
-  //   if (isImage) {
-  //     const overlay = currentElement.querySelector(".sc-custom-overlay");
-  //     if (overlay) {
-  //       const rgbaColor = color.startsWith("rgb(")
-  //         ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-  //         : color;
-  //       overlay.style.backgroundColor = rgbaColor;
-  //     }
-  //   }
-  // }
-
-  // function applyOverlayColorSmart(color, alpha = 1) {
-  //   const currentElement = selectedElement?.();
-  //   if (!currentElement) return;
-
-  //   const blockId = currentElement.closest('[id^="block-"]')?.id;
-  //   if (!blockId) return;
-
-  //   const rgbaColor = color.startsWith("rgb(")
-  //     ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-  //     : color;
-
-  //   const styleId = `sc-overlay-style-${blockId}`;
-  //   let styleTag = document.getElementById(styleId);
-  //   if (!styleTag) {
-  //     styleTag = document.createElement("style");
-  //     styleTag.id = styleId;
-  //     document.head.appendChild(styleTag);
-  //   }
-
-  //   styleTag.textContent = `
-  //     #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
-  //       content: '';
-  //       position: absolute;
-  //       top: 0;
-  //       left: 0;
-  //       width: 100%;
-  //       height: 100%;
-  //       background-color: ${rgbaColor};
-  //       z-index: 5;
-  //       pointer-events: none;
-  //       display: block;
-  //     }
-
-  //     #${blockId} .sqs-image-content > .imageEffectContainer {
-  //       position: relative;
-  //     }
-  //   `;
-  // }
-
-  function applyOverlayColorSmart(color, alpha = 1) {
-    const currentElement = selectedElement?.();
-    if (!currentElement) return;
-
-    const blockId = currentElement.closest('[id^="block-"]')?.id;
-    if (!blockId) return;
-
-    const rgbaColor = color.startsWith("rgb(")
-      ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-      : color;
-
-    const styleId = `sc-overlay-style-${blockId}`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
-    }
-
-    styleTag.textContent = `
-      #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: ${rgbaColor};
-        z-index: 5;
-        pointer-events: none;
-        display: block;
-      }
-  
-      #${blockId} .sqs-image-content > .imageEffectContainer {
-        position: relative;
-      }
-    `;
-  }
-
   if (
     !palette ||
     !container ||
@@ -280,6 +131,23 @@ export function initOverLayColorPalate(
     !transparencyCount
   )
     return;
+
+  // Add palette toggle functionality
+  const colorPicker = document.getElementById(
+    `${prefix}overLayFontColorPalate`
+  );
+  if (colorPicker) {
+    colorPicker.addEventListener("click", () => {
+      palette.classList.toggle("sc-hidden");
+    });
+  }
+
+  // Close palette when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!palette.contains(e.target) && !colorPicker?.contains(e.target)) {
+      palette.classList.add("sc-hidden");
+    }
+  });
 
   let dynamicHue = 0;
 
@@ -333,15 +201,6 @@ export function initOverLayColorPalate(
 
         if (typeof saveFn === "function") {
           saveFn(finalColor, currentTransparency / 100);
-
-          const rgbaColor = finalColor.startsWith("rgb(")
-            ? finalColor
-                .replace("rgb(", "rgba(")
-                .replace(")", `, ${currentTransparency / 100})`)
-            : finalColor;
-
-          overlayState.color = rgbaColor;
-          updateOverlayStyles();
         }
       };
 
@@ -433,8 +292,6 @@ export function initOverLayColorPalate(
     const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
 
     colorCode.textContent = rgb;
-    // applyButtonBackgroundColor(rgb);
-    // applyOverlayColorSmart(rgb, currentTransparency / 100);
   }
 
   if (transparencyField && transparencyBullet) {
@@ -458,7 +315,6 @@ export function initOverLayColorPalate(
         const currentColor = colorCode?.textContent;
         if (currentColor && typeof saveFn === "function") {
           saveFn(currentColor, currentTransparency / 100);
-          // applyOverlayColorSmart(rgb, currentTransparency / 100);
         }
       };
       document.onmouseup = () => {
@@ -596,29 +452,4 @@ export function initOverLayColorPalate(
       }
     });
   }
-
-  function applyImageOverlayColor(color, alpha = 1) {
-    const selected = selectedElement?.();
-    if (!selected) return;
-
-    const blockId = selected.closest('[id^="block-"]')?.id;
-    if (!blockId) return;
-
-    // Compose the color in hex with alpha if needed
-    let rgbaColor = color.startsWith("rgb(")
-      ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-      : color;
-
-    // If you want to convert rgb to hex with alpha, add a helper function
-
-    const styleId = `sc-overlay-style-${blockId}`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
-    }
-  }
-
-  // applyImageOverlayColor("color", 1);
 }
