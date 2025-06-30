@@ -340,7 +340,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
       if (side === "right") rightBorderWidth = borderWidth;
     }
 
-    mergeAndSaveImageStyles(blockId, cssProps, saveModificationsforImage);
+    // mergeAndSaveImageStyles(blockId, cssProps, saveModificationsforImage);
 
     // ✅ Also inject image-level styles like object-fit into database
     const imageTagSelector = `#${blockId} .sqs-image-content img`;
@@ -357,31 +357,31 @@ export function initImageBorderControls(selectedElement, context = {}) {
       object-fit: cover !important;
     }`;
 
-    mergeAndSaveImageStyles(
-      blockId,
-      {
-        image: {
-          selector: `#${blockId} div.sqs-image-content`,
-          styles: {
-            ...cssProps,
-            ...(selectedBorderColor
-              ? { "border-color": selectedBorderColor }
-              : {}),
-            ...(currentRadiusAll > 0
-              ? { "border-radius": `${currentRadiusAll}px` }
-              : {}),
-          },
-        },
-        imageTag: {
-          selector: `#${blockId} .sqs-image-content img`,
-          styles: {
-            "box-sizing": "border-box",
-            "object-fit": "cover",
-          },
-        },
-      },
-      saveModificationsforImage
-    );
+    // mergeAndSaveImageStyles(
+    //   blockId,
+    //   {
+    //     image: {
+    //       selector: `#${blockId} div.sqs-image-content`,
+    //       styles: {
+    //         ...cssProps,
+    //         ...(selectedBorderColor
+    //           ? { "border-color": selectedBorderColor }
+    //           : {}),
+    //         ...(currentRadiusAll > 0
+    //           ? { "border-radius": `${currentRadiusAll}px` }
+    //           : {}),
+    //       },
+    //     },
+    //     imageTag: {
+    //       selector: `#${blockId} .sqs-image-content img`,
+    //       styles: {
+    //         "box-sizing": "border-box",
+    //         "object-fit": "cover",
+    //       },
+    //     },
+    //   },
+    //   saveModificationsforImage
+    // );
 
     // image modify code end here
   }
@@ -461,22 +461,22 @@ export function initImageBorderControls(selectedElement, context = {}) {
       styleTag.textContent = currentCSS;
 
       // ✅ Save with correct border-width, not 0
-      mergeAndSaveImageStyles(
-        blockId,
-        {
-          image: {
-            styles: {
-              "border-width": savedBorderWidth,
-              "border-style": currentActiveBorderStyle,
-              "border-color": newColor,
-              ...(currentRadiusAll > 0 && {
-                "border-radius": `${currentRadiusAll}px`,
-              }),
-            },
-          },
-        },
-        saveModificationsforImage
-      );
+      // mergeAndSaveImageStyles(
+      //   blockId,
+      //   {
+      //     image: {
+      //       styles: {
+      //         "border-width": savedBorderWidth,
+      //         "border-style": currentActiveBorderStyle,
+      //         "border-color": newColor,
+      //         ...(currentRadiusAll > 0 && {
+      //           "border-radius": `${currentRadiusAll}px`,
+      //         }),
+      //       },
+      //     },
+      //   },
+      //   saveModificationsforImage
+      // );
     });
 
     observer.observe(colorCode, { childList: true });
@@ -556,20 +556,19 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
     // Add pending modification for the style change itself
     if (block) {
-      mergeAndSaveImageStyles(
-        block.id,
-        {
-          "border-width": `${allBorderWidth}px`,
-          "box-sizing": "border-box",
-          ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-          "border-style": currentActiveBorderStyle,
-          ...(currentRadiusAll > 0 && {
-            "border-radius": `${currentRadiusAll}px`,
-          }),
-        },
-        saveModificationsforImage
-      );
-
+      // mergeAndSaveImageStyles(
+      //   block.id,
+      //   {
+      //     "border-width": `${allBorderWidth}px`,
+      //     "box-sizing": "border-box",
+      //     ...(selectedBorderColor && { "border-color": selectedBorderColor }),
+      //     "border-style": currentActiveBorderStyle,
+      //     ...(currentRadiusAll > 0 && {
+      //       "border-radius": `${currentRadiusAll}px`,
+      //     }),
+      //   },
+      //   saveModificationsforImage
+      // );
       //save to database
       // saveModificationsforImage(block, addPendingModification, "image");
     }
@@ -677,26 +676,26 @@ export function initImageBorderControls(selectedElement, context = {}) {
     styleTag.textContent = css;
 
     // 🔄 persist
-    mergeAndSaveImageStyles(
-      blockId,
-      {
-        image: {
-          styles: {
-            ...(type === "all"
-              ? { "border-radius": `${radius}px` }
-              : { [cssProp]: `${radius}px` }),
-          },
-        },
-        imageTag: {
-          styles: {
-            "border-radius": `${radius}px`,
-            "box-sizing": "border-box",
-            "object-fit": "cover",
-          },
-        },
-      },
-      saveModificationsforImage
-    );
+    // mergeAndSaveImageStyles(
+    //   blockId,
+    //   {
+    //     image: {
+    //       styles: {
+    //         ...(type === "all"
+    //           ? { "border-radius": `${radius}px` }
+    //           : { [cssProp]: `${radius}px` }),
+    //       },
+    //     },
+    //     imageTag: {
+    //       styles: {
+    //         "border-radius": `${radius}px`,
+    //         "box-sizing": "border-box",
+    //         "object-fit": "cover",
+    //       },
+    //     },
+    //   },
+    //   saveModificationsforImage
+    // );
   }
 
   // ✅ Radius slider logic
