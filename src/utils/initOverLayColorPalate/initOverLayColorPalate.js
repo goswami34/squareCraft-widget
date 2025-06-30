@@ -671,6 +671,27 @@ export function initOverLayColorPalate(
     )})`;
   }
 
+  function setSelectorCanvas(hue) {
+    if (!selectorField) return;
+
+    selectorField.innerHTML = "";
+
+    const canvas = getGradientCanvas(
+      hue,
+      selectorField.offsetWidth,
+      selectorField.offsetHeight
+    );
+
+    canvas.style.position = "absolute";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.style.zIndex = "0";
+
+    selectorField.style.position = "relative";
+    selectorField.appendChild(canvas);
+    selectorField.appendChild(bullet);
+  }
+
   function applyOverlayColorSmart(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
