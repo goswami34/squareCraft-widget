@@ -649,6 +649,16 @@ export function initOverLayColorPalate(
     `${prefix}overlay-image-color-transparency-bar`
   );
 
+  function updateTransparencyField(hue) {
+    if (!transparencyField) return;
+
+    transparencyField.style.background = `linear-gradient(to bottom,
+      rgba(0, 0, 0, 1),
+      hsla(${hue}, 100%, 50%, 1),
+      hsla(${hue}, 100%, 50%, 0)
+    )`;
+  }
+
   function hslToRgb(h, s = 1, l = 0.5) {
     function hueToRgb(p, q, t) {
       if (t < 0) t += 1;
