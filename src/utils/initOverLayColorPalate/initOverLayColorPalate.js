@@ -307,6 +307,35 @@ export function initOverLayColorPalate(
     allColorBullet.onmousedown = function (e) {
       e.preventDefault();
 
+      // document.onmousemove = function (e) {
+      //   const rect = allColorField.getBoundingClientRect();
+      //   let offsetY = e.clientY - rect.top;
+      //   offsetY = Math.max(
+      //     0,
+      //     Math.min(rect.height - allColorBullet.offsetHeight, offsetY)
+      //   );
+      //   allColorBullet.style.top = `${offsetY}px`;
+
+      //   const percentage = offsetY / rect.height;
+      //   dynamicHue = Math.round(360 * percentage);
+
+      //   const finalColor = hslToRgb(dynamicHue / 360);
+
+      //   if (colorCode) {
+      //     colorCode.textContent = finalColor;
+      //   }
+
+      //   if (selectorField) {
+      //     setSelectorCanvas(dynamicHue);
+      //   }
+
+      //   updateTransparencyField(dynamicHue);
+
+      //   if (typeof saveFn === "function") {
+      //     saveFn(finalColor, currentTransparency / 100);
+      //   }
+      // };
+
       document.onmousemove = function (e) {
         const rect = allColorField.getBoundingClientRect();
         let offsetY = e.clientY - rect.top;
@@ -334,6 +363,9 @@ export function initOverLayColorPalate(
         if (typeof saveFn === "function") {
           saveFn(finalColor, currentTransparency / 100);
         }
+
+        // ✅ ✅ ✅ Add this line:
+        applyOverlayColorSmart(finalColor, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
