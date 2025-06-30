@@ -377,12 +377,11 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     if (!isNaN(width)) overlayState.width = width;
     if (!isNaN(height)) overlayState.height = height;
 
-    if (!overlayState.color) {
-      overlayState.color = "rgba(0,0,0,0.5)";
-    }
-
+    // Do NOT set a default color here
     createOverlay();
-    updateOverlayStyles();
+    if (overlayState.color) {
+      updateOverlayStyles();
+    }
   };
 
   const init = (imageElement) => {
