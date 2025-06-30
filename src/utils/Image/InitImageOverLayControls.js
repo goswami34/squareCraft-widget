@@ -428,6 +428,8 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
   const overlayVisibilityDropdown = document.getElementById(
     "overlayVisibleDropdown"
   );
+
+  console.log(overlayVisibilityDropdown);
   if (overlayVisibilityDropdown) {
     overlayVisibilityDropdown.addEventListener("change", () => {
       const value = overlayVisibilityDropdown.value;
