@@ -330,22 +330,9 @@ export function initOverLayColorPalate(
         }
 
         updateTransparencyField(dynamicHue);
-        // if (typeof saveFn === "function") {
-        //   saveFn(finalColor, currentTransparency / 100);
-        //   applyOverlayColorSmart(rgb, currentTransparency / 100);
-        // }
-
-        // if (typeof saveFn === "function") {
-        //   const rgbaColor = finalColor
-        //     .replace("rgb(", "rgba(")
-        //     .replace(")", `, ${currentTransparency / 100})`);
-        //   saveFn(finalColor, currentTransparency / 100); // <-- already updates overlay
-        //   applyOverlayColorSmart(finalColor, currentTransparency / 100); // REMOVE THIS
-        // }
 
         if (typeof saveFn === "function") {
-          saveFn(finalColor, currentTransparency / 100); // this already triggers updateOverlayStyles()
-          applyOverlayColorSmart(finalColor, currentTransparency / 100);
+          saveFn(finalColor, currentTransparency / 100);
         }
       };
 
@@ -388,7 +375,6 @@ export function initOverLayColorPalate(
 
         if (typeof saveFn === "function") {
           saveFn(rgb, currentTransparency / 100);
-          applyOverlayColorSmart(finalColor, currentTransparency / 100);
         }
       };
 
@@ -498,7 +484,6 @@ export function initOverLayColorPalate(
 
       if (typeof saveFn === "function") {
         saveFn(color, currentTransparency / 100);
-        applyOverlayColorSmart(finalColor, currentTransparency / 100);
       }
 
       requestAnimationFrame(() => {
@@ -599,7 +584,6 @@ export function initOverLayColorPalate(
 
       if (typeof saveFn === "function") {
         saveFn(firstSwatchColor, 1);
-        applyOverlayColorSmart(finalColor, currentTransparency / 100);
       }
     });
   }
