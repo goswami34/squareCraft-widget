@@ -377,8 +377,11 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     if (!isNaN(width)) overlayState.width = width;
     if (!isNaN(height)) overlayState.height = height;
 
-    // Do NOT set a default color here
+    // Reset overlay color when selecting a new image
+    overlayState.color = "";
+
     createOverlay();
+    // Only apply overlay if color is set
     if (overlayState.color) {
       updateOverlayStyles();
     }
