@@ -279,7 +279,7 @@ export function WidgetImageNormalState() {
          <div class="sc-flex sc-mt-2 sc-items-center">
             <div class="sc-bg-3f3f3f sc-py-1 sc-px-2 sc-rounded-l">
                <select id="overlayVisibleDropdown" class="sc-universal sc-roboto sc-text-sm sc-bg-3f3f3f sc-text-white sc-border-none focus:outline-none">
-                  <option value="yes" selected>Yes</option>
+                  <option value="yes">Yes</option>
                   <option value="no">No</option>
                </select>
             </div>
