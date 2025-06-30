@@ -432,6 +432,7 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
   console.log(overlayVisibilityDropdown);
   if (overlayVisibilityDropdown) {
     overlayVisibilityDropdown.addEventListener("change", () => {
+      console.log("change");
       const value = overlayVisibilityDropdown.value;
       const blockId = selectedImage?.closest('[id^="block-"]')?.id;
       const styleTag = document.getElementById(`sc-overlay-style-${blockId}`);
