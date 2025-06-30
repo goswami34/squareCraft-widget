@@ -292,6 +292,10 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
         const ySlider = document.getElementById("yAxisBullet");
         if (xSlider) xSlider.dispatchEvent(new Event("reposition"));
         if (ySlider) ySlider.dispatchEvent(new Event("reposition"));
+
+        // Attach dropdown handlers after overlay section is visible
+        attachOverlayVisibilityDropdownHandler();
+        attachOverlayDropdownArrowHandler();
       }, 100); // Adjust delay as needed
     });
 
@@ -326,11 +330,6 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     );
 
     // X/Y bullet sliders
-    // initOverlaySlider("#xAxisSlider", "x");
-    // initOverlaySlider("#yAxisSlider", "y", true);
-    // initOverlaySlider("#xAxisSlider", "x", "xAxisBullet");
-    // initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", true);
-
     initOverlaySlider("#xAxisSlider", "x", "xAxisBullet", false);
     initOverlaySlider("#yAxisSlider", "y", "yAxisBullet", false);
 
@@ -425,27 +424,32 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     }
   };
 
-  const overlayVisibilityDropdown = document.getElementById(
-    "overlayVisibleDropdown"
-  );
+  function attachOverlayVisibilityDropdownHandler() {
+    const overlayVisibilityDropdown = document.getElementById(
+      "overlayVisibleDropdown"
+    );
+    if (!overlayVisibilityDropdown) return;
 
-  console.log(overlayVisibilityDropdown);
-  if (overlayVisibilityDropdown) {
     overlayVisibilityDropdown.addEventListener("change", () => {
-      console.log("change");
       const value = overlayVisibilityDropdown.value;
       const blockId = selectedImage?.closest('[id^="block-"]')?.id;
-      const styleTag = document.getElementById(`sc-overlay-style-${blockId}`);
+      if (!blockId) return;
 
-      if (!blockId || !styleTag) return;
+      // Always ensure the style tag exists
+      let styleTag = document.getElementById(`sc-overlay-style-${blockId}`);
+      if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = `sc-overlay-style-${blockId}`;
+        document.head.appendChild(styleTag);
+      }
 
       if (value === "no") {
-        // Only set visibility hidden, remove all other overlay styles
+        // Remove all overlay styles (hide overlay)
         styleTag.textContent = `
-        #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
-          visibility: hidden !important;
-        }
-      `;
+          #${blockId} .sqs-image-content > :nth-child(-n+2)::before {
+            visibility: hidden !important;
+          }
+        `;
       } else if (value === "yes") {
         // Restore overlay styles
         updateOverlayStyles();
@@ -463,8 +467,6 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
       });
     }
   }
-
-  attachOverlayDropdownArrowHandler();
 
   return {
     init,
