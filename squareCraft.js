@@ -4517,6 +4517,50 @@ let pendingModifications = new Map();
 
   // Find your publish button logic and update it to use the latest border styles
   // Example: in your publish handler (pseudo-code, adapt as needed)
+  // async function handlePublish() {
+  //   if (pendingModifications.size === 0) {
+  //     showNotification("No changes to publish", "info");
+  //     return;
+  //   }
+
+  //   try {
+  //     // Save each pending modification
+  //     for (const [blockId, modifications] of pendingModifications.entries()) {
+  //       for (const mod of modifications) {
+  //         if (mod.tagType === "link") {
+  //           // Handle link text modifications
+  //           const result = await saveLinkTextModifications(
+  //             blockId,
+  //             mod.css.target,
+  //             mod.css
+  //           );
+  //           if (!result.success) {
+  //             throw new Error(
+  //               `Failed to save link text changes for block ${blockId}`
+  //             );
+  //           }
+  //         } else {
+  //           // Handle other modifications (existing logic)
+  //           const result = await saveModifications(
+  //             blockId,
+  //             mod.css,
+  //             mod.tagType
+  //           );
+  //           if (!result.success) {
+  //             throw new Error(`Failed to save changes for block ${blockId}`);
+  //           }
+  //         }
+  //       }
+  //     }
+
+  //     // Clear pending modifications after successful save
+  //     pendingModifications.clear();
+  //     showNotification("All changes published successfully!", "success");
+  //   } catch (error) {
+  //     showNotification(error.message, "error");
+  //   }
+  // }
+
   async function handlePublish() {
     if (pendingModifications.size === 0) {
       showNotification("No changes to publish", "info");
@@ -4524,36 +4568,37 @@ let pendingModifications = new Map();
     }
 
     try {
-      // Save each pending modification
       for (const [blockId, modifications] of pendingModifications.entries()) {
         for (const mod of modifications) {
-          if (mod.tagType === "link") {
-            // Handle link text modifications
-            const result = await saveLinkTextModifications(
-              blockId,
-              mod.css.target,
-              mod.css
-            );
-            if (!result.success) {
-              throw new Error(
-                `Failed to save link text changes for block ${blockId}`
-              );
-            }
-          } else {
-            // Handle other modifications (existing logic)
-            const result = await saveModifications(
-              blockId,
-              mod.css,
-              mod.tagType
-            );
-            if (!result.success) {
-              throw new Error(`Failed to save changes for block ${blockId}`);
-            }
+          let result;
+          switch (mod.tagType) {
+            case "image":
+              result = await saveImageShadowModifications(blockId, mod.css);
+              break;
+            case "imageOverlay":
+              result = await saveImageOverlayModifications(blockId, mod.css);
+              break;
+            case "button":
+              result = await saveButtonModifications(blockId, mod.css);
+              break;
+            case "buttonShadow":
+              result = await saveButtonShadowModifications(blockId, mod.css);
+              break;
+            case "buttonBorder":
+              result = await saveButtonBorderModifications(blockId, mod.css);
+              break;
+            case "link":
+            case "linkText":
+              result = await saveLinkTextModifications(blockId, mod.css);
+              break;
+            default:
+              result = await saveModifications(blockId, mod.css, mod.tagType);
+          }
+          if (!result?.success) {
+            throw new Error(`Failed to save changes for block ${blockId}`);
           }
         }
       }
-
-      // Clear pending modifications after successful save
       pendingModifications.clear();
       showNotification("All changes published successfully!", "success");
     } catch (error) {
