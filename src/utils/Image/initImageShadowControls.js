@@ -2,6 +2,9 @@ const imageStyleMap = new Map();
 
 // ✅ initImageShadowControls.js
 
+// Store pending modifications locally (like overlay)
+const pendingShadowModifications = new Map();
+
 function mergeAndSaveImageStyles(blockId, newStyles) {
   // Get existing styles from the map
   const prevStyles = imageStyleMap.get(blockId) || {
@@ -41,17 +44,8 @@ function mergeAndSaveImageStyles(blockId, newStyles) {
   // Save to map only (no DB call)
   imageStyleMap.set(blockId, finalData);
 
-  // Store in window.pendingModifications for publish
-  if (typeof window !== "undefined") {
-    if (!window.pendingModifications) window.pendingModifications = new Map();
-    if (!window.pendingModifications.has(blockId)) {
-      window.pendingModifications.set(blockId, []);
-    }
-    window.pendingModifications.get(blockId).push({
-      css: finalData,
-      tagType: "image",
-    });
-  }
+  // Store in local pendingModifications (like overlay)
+  pendingShadowModifications.set(blockId, finalData);
 }
 
 const shadowState = {
@@ -263,6 +257,32 @@ function applyShadowColorFromPalette(color, alpha = 1, getSelectedElement) {
   updateShadowCSS(blockId);
 }
 
+// Function to publish all pending shadow modifications (like overlay)
+const publishPendingShadowModifications = async (
+  saveImageShadowModifications
+) => {
+  if (pendingShadowModifications.size === 0) {
+    console.log("No shadow changes to publish");
+    return;
+  }
+
+  try {
+    for (const [blockId, shadowData] of pendingShadowModifications) {
+      if (typeof saveImageShadowModifications === "function") {
+        console.log("Publishing shadow for block:", blockId, shadowData);
+        await saveImageShadowModifications(blockId, shadowData);
+      }
+    }
+
+    // Clear pending modifications after successful publish
+    pendingShadowModifications.clear();
+    console.log("All shadow changes published successfully!");
+  } catch (error) {
+    console.error("Failed to publish shadow modifications:", error);
+    throw error;
+  }
+};
+
 export function initImageShadowControls(
   getSelectedElement,
   saveImageShadowModifications
@@ -271,6 +291,28 @@ export function initImageShadowControls(
   initShadowSlider("shadowYSlider", "y", getSelectedElement); // ✅ -100 to +100
   initShadowSlider("shadowBlurSlider", "blur", getSelectedElement); // ✅ 0 to 100
   initShadowSlider("shadowSpreadSlider", "spread", getSelectedElement); // ✅ 0 to 100
+
+  // Add publish button handler (like overlay)
+  const publishButton = document.getElementById("publish");
+  if (publishButton) {
+    // Remove existing listener to avoid duplicates
+    publishButton.removeEventListener(
+      "click",
+      publishButton.shadowPublishHandler
+    );
+
+    // Create new handler
+    publishButton.shadowPublishHandler = async () => {
+      try {
+        await publishPendingShadowModifications(saveImageShadowModifications);
+      } catch (error) {
+        console.error("Shadow publish error:", error);
+      }
+    };
+
+    // Add the handler
+    publishButton.addEventListener("click", publishButton.shadowPublishHandler);
+  }
 }
 
-export { applyShadowColorFromPalette };
+export { applyShadowColorFromPalette, publishPendingShadowModifications };
