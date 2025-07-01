@@ -8,28 +8,27 @@ export function initShadowColorPalate(
   saveImageShadowModifications
 ) {
   // Use image-specific IDs instead of relying on prefix
-  const palette = document.getElementById("imageFontColorPalate");
-  const container = document.getElementById("image-border-colors");
-  const selectorField = document.getElementById("image-color-selection-field");
-  const bullet = document.getElementById("image-color-selection-bar");
-  const colorCode = document.getElementById("image-color-code");
+  const palette = document.getElementById("ShadowFontColorPalate");
+  const container = document.getElementById("shadow-border-colors");
+  const selectorField = document.getElementById("shadow-color-selection-field");
+  const bullet = document.getElementById("shadow-color-selection-bar");
+  const colorCode = document.getElementById("shadow-image-color-code");
   const transparencyCount = document.getElementById(
-    "image-color-transparency-count"
+    "shadow-image-color-transparency-count"
   );
   const allColorField = document.getElementById(
-    "image-all-color-selection-field"
+    "shadow-image-all-color-selection-field"
   );
   const allColorBullet = document.getElementById(
-    "image-all-color-selection-bar"
+    "shadow-image-all-color-selection-bar"
   );
   const transparencyField = document.getElementById(
-    "image-color-transparency-field"
+    "shadow-image-color-transparency-field"
   );
   const transparencyBullet = document.getElementById(
-    "image-color-transparency-bar"
+    "shadow-image-color-transparency-bar"
   );
-  const paletteContainer = document.getElementById("image-font-color-palette");
-
+  const paletteContainer = document.getElementById("shadow-color-palette");
   function updateTransparencyField(hue) {
     if (transparencyField) {
       transparencyField.style.background = `linear-gradient(to bottom, 
