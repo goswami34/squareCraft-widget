@@ -2,6 +2,12 @@ const imageStyleMap = new Map();
 
 // ✅ initImageShadowControls.js
 
+// Track previous saved values to avoid unnecessary database calls
+const previousSavedValues = new Map();
+
+// Debounce mechanism for color changes
+let colorChangeTimeout = null;
+
 function mergeAndSaveImageStyles(
   blockId,
   newStyles,
@@ -49,8 +55,18 @@ function mergeAndSaveImageStyles(
     },
   };
 
+  // Check if values have actually changed
+  const currentShadowValue = finalData.image.styles["box-shadow"];
+  const previousShadowValue = previousSavedValues.get(blockId);
+
+  if (currentShadowValue === previousShadowValue) {
+    console.log("🔄 Shadow values unchanged, skipping database save");
+    return;
+  }
+
   // Save to map and database
   imageStyleMap.set(blockId, finalData);
+  previousSavedValues.set(blockId, currentShadowValue);
   saveImageShadowModifications(blockId, finalData, "image");
 }
 
@@ -176,6 +192,8 @@ function initShadowSlider(
 
   const startDrag = (e) => {
     e.preventDefault();
+    let isDragging = true;
+
     const moveHandler = (ev) => {
       const clientX = ev.clientX || ev.touches?.[0]?.clientX;
       const rect = field.getBoundingClientRect();
@@ -187,12 +205,22 @@ function initShadowSlider(
       const selected = getSelectedElement?.();
       const blockId = selected?.closest('[id^="block-"]')?.id;
       if (blockId) {
-        updateShadowCSS(blockId, saveImageShadowModifications);
+        // Only update live CSS during dragging, don't save to database
+        updateShadowCSSLive(blockId);
         if (key === "blur") applyOverflowVisible(blockId);
       }
     };
 
     const stopDrag = () => {
+      isDragging = false;
+
+      // Save to database only when dragging stops
+      const selected = getSelectedElement?.();
+      const blockId = selected?.closest('[id^="block-"]')?.id;
+      if (blockId) {
+        updateShadowCSS(blockId, saveImageShadowModifications);
+      }
+
       document.removeEventListener("mousemove", moveHandler);
       document.removeEventListener("mouseup", stopDrag);
       document.removeEventListener("touchmove", moveHandler);
@@ -207,6 +235,33 @@ function initShadowSlider(
 
   bullet.addEventListener("mousedown", startDrag);
   bullet.addEventListener("touchstart", startDrag);
+}
+
+// New function to update CSS without saving to database
+function updateShadowCSSLive(blockId) {
+  const { x, y, blur, spread, color } = shadowState;
+  const selector = `#${blockId} div.sqs-image-content`;
+  const styleId = `sc-shadow-style-${blockId}`;
+  let styleTag = document.getElementById(styleId);
+  if (!styleTag) {
+    styleTag = document.createElement("style");
+    styleTag.id = styleId;
+    document.head.appendChild(styleTag);
+  }
+
+  // Get existing styles from the map
+  const existingStyles = imageStyleMap.get(blockId)?.image?.styles || {};
+
+  // Update live style only (no database save)
+  styleTag.textContent = `
+      ${selector} {
+        ${Object.entries(existingStyles)
+          .map(([key, value]) => `${key}: ${value} !important;`)
+          .join("\n        ")}
+        box-shadow: ${x}px ${y}px ${blur}px ${spread}px ${color} !important;
+        -webkit-mask-image: none !important;
+      }
+    `;
 }
 
 function applyShadowColorFromPalette(
@@ -253,23 +308,31 @@ function applyShadowColorFromPalette(
   shadowState.color = rgbaColor;
   const { x, y, blur, spread } = shadowState;
 
-  // Save to database while preserving existing styles
-  mergeAndSaveImageStyles(
-    blockId,
-    {
-      image: {
-        styles: {
-          ...existingStyles, // Preserve existing styles
-          "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${rgbaColor}`,
-          "-webkit-mask-image": "none",
+  // Update live style immediately for visual feedback
+  updateShadowCSSLive(blockId);
+
+  // Clear existing timeout
+  if (colorChangeTimeout) {
+    clearTimeout(colorChangeTimeout);
+  }
+
+  // Debounce the database save
+  colorChangeTimeout = setTimeout(() => {
+    // Save to database while preserving existing styles
+    mergeAndSaveImageStyles(
+      blockId,
+      {
+        image: {
+          styles: {
+            ...existingStyles, // Preserve existing styles
+            "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${rgbaColor}`,
+            "-webkit-mask-image": "none",
+          },
         },
       },
-    },
-    saveImageShadowModifications
-  );
-
-  // Update live style
-  updateShadowCSS(blockId, saveImageShadowModifications);
+      saveImageShadowModifications
+    );
+  }, 300); // Wait 300ms after last color change
 }
 
 export function initImageShadowControls(
