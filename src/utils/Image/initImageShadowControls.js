@@ -152,84 +152,35 @@ function initShadowSlider(
   const initial = shadowState[key];
   const initialPercent = isCentered ? (initial + 100) / 2 : initial;
 
-  // const setUI = (percent) => {
-  //   const sliderWidth = field.offsetWidth;
-  //   const px = (percent / 100) * sliderWidth;
-  //   bullet.style.left = `${px}px`;
-  //   bullet.style.transform = "translateX(-50%)";
-
-  //   if (fill) fill.style.width = `${px}px`;
-
-  //   const rawVal = isCentered
-  //     ? (percent / 100) * 200 - 100
-  //     : (percent / 100) * 100;
-  //   const displayVal = Math.round(rawVal);
-
-  //   if (label) label.textContent = `${displayVal}px`;
-  //   if (externalValueLabel) externalValueLabel.textContent = `${displayVal}px`;
-  //   shadowState[key] = displayVal;
-  // };
-
-  // const setUI = (percent) => {
-  //   const sliderWidth = field.offsetWidth;
-  //   const px = (percent / 100) * sliderWidth;
-
-  //   // Move bullet
-  //   bullet.style.left = `${px}px`;
-  //   bullet.style.transform = "translateX(-50%)";
-
-  //   // Calculate real value
-  //   const rawVal = isCentered
-  //     ? (percent / 100) * 200 - 100
-  //     : (percent / 100) * 100;
-  //   const displayVal = Math.round(rawVal);
-  //   shadowState[key] = displayVal;
-
-  //   // Update fill from center
-  //   if (fill) {
-  //     if (isCentered) {
-  //       const center = sliderWidth / 2;
-  //       const fillWidth = Math.abs((displayVal / 200) * sliderWidth);
-  //       fill.style.left = `${center}px`;
-  //       fill.style.width = `${fillWidth}px`;
-  //       fill.style.transform =
-  //         displayVal < 0 ? "translateX(-100%)" : "translateX(0%)";
-  //     } else {
-  //       fill.style.left = "0px";
-  //       fill.style.width = `${px}px`;
-  //       fill.style.transform = "translateX(0%)";
-  //     }
-  //   }
-
-  //   // Update external labels
-  //   if (label) label.textContent = `${displayVal}px`;
-  //   if (externalValueLabel) externalValueLabel.textContent = `${displayVal}px`;
-  // };
-
   const setUI = (percent) => {
     const sliderWidth = field.offsetWidth;
-    const px = (percent / 100) * sliderWidth;
+    let displayVal, px;
+    if (isCentered) {
+      // Map percent (0-100) to value (-100 to +100)
+      const value = percent * 2 - 100;
+      displayVal = Math.round(value);
+      shadowState[key] = displayVal;
+      // Map value (-100 to +100) to px (0 to sliderWidth)
+      px = ((value + 100) / 200) * sliderWidth;
+    } else {
+      // For blur/spread (0-100)
+      displayVal = Math.round((percent / 100) * 100);
+      shadowState[key] = displayVal;
+      px = (percent / 100) * sliderWidth;
+    }
 
     // Move bullet
     bullet.style.left = `${px}px`;
     bullet.style.transform = "translateX(-50%)";
 
-    // Calculate real value
-    const rawVal = isCentered
-      ? (percent / 100) * 200 - 100
-      : (percent / 100) * 100;
-    const displayVal = Math.round(rawVal);
-    shadowState[key] = displayVal;
-
-    // Update fill from center
+    // Update fill from center for X/Y
     if (fill && isCentered) {
       const center = sliderWidth / 2;
       const fillWidth = Math.abs((displayVal / 200) * sliderWidth);
       const isNegative = displayVal < 0;
-
       fill.style.width = `${fillWidth}px`;
       fill.style.left = isNegative ? `${center - fillWidth}px` : `${center}px`;
-      fill.style.transform = "translateX(0%)"; // ✅ no shifting needed
+      fill.style.transform = "translateX(0%)";
     }
 
     // For blur/spread (not centered)
