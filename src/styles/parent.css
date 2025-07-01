@@ -4897,3 +4897,9 @@
 .sc-bg-color-EF7C2F {
   transition: width 0.2s ease, left 0.2s ease;
 }
+
+#shadow-color-selection-field {
+  width: 100% !important;
+  height: 100px !important;
+  border-radius: 6px !important;
+}
