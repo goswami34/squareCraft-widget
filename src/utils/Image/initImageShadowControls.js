@@ -78,50 +78,7 @@ const shadowState = {
   color: "rgba(0,0,0,0.5)",
 };
 
-// function updateShadowCSS(blockId, saveImageShadowModifications) {
-//   const { x, y, blur, spread, color } = shadowState;
-//   const selector = `#${blockId} div.sqs-image-content`;
-//   const styleId = `sc-shadow-style-${blockId}`;
-//   let styleTag = document.getElementById(styleId);
-//   if (!styleTag) {
-//     styleTag = document.createElement("style");
-//     styleTag.id = styleId;
-//     document.head.appendChild(styleTag);
-//   }
-
-//   // Get existing styles from the map
-//   const existingStyles = imageStyleMap.get(blockId)?.image?.styles || {};
-
-//   // Update live style
-//   styleTag.textContent = `
-//       ${selector} {
-//         ${Object.entries(existingStyles)
-//           .map(([key, value]) => `${key}: ${value} !important;`)
-//           .join("\n        ")}
-//         box-shadow: ${x}px ${y}px ${blur}px ${spread}px ${color} !important;
-//         -webkit-mask-image: none !important;
-//       }
-//     `;
-
-//   // Save to database while preserving existing styles
-//   if (typeof saveImageShadowModifications === "function") {
-//     mergeAndSaveImageStyles(
-//       blockId,
-//       {
-//         image: {
-//           styles: {
-//             ...existingStyles, // Preserve existing styles
-//             "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${color}`,
-//             "-webkit-mask-image": "none",
-//           },
-//         },
-//       },
-//       saveImageShadowModifications
-//     );
-//   }
-// }
-
-function updateShadowCSS(blockId) {
+function updateShadowCSS(blockId, saveImageShadowModifications) {
   const { x, y, blur, spread, color } = shadowState;
   const selector = `#${blockId} div.sqs-image-content`;
   const styleId = `sc-shadow-style-${blockId}`;
@@ -132,39 +89,36 @@ function updateShadowCSS(blockId) {
     document.head.appendChild(styleTag);
   }
 
+  // Get existing styles from the map
+  const existingStyles = imageStyleMap.get(blockId)?.image?.styles || {};
+
   // Update live style
   styleTag.textContent = `
-    ${selector} {
-      box-shadow: ${x}px ${y}px ${blur}px ${spread}px ${color} !important;
-      -webkit-mask-image: none !important;
-    }
-  `;
+      ${selector} {
+        ${Object.entries(existingStyles)
+          .map(([key, value]) => `${key}: ${value} !important;`)
+          .join("\n        ")}
+        box-shadow: ${x}px ${y}px ${blur}px ${spread}px ${color} !important;
+        -webkit-mask-image: none !important;
+      }
+    `;
 
-  // ✅ Store to pendingModifications instead of saving
-  const cssPayload = {
-    image: {
-      selector,
-      styles: {
-        "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${color}`,
-        "-webkit-mask-image": "none",
+  // Save to database while preserving existing styles
+  if (typeof saveImageShadowModifications === "function") {
+    mergeAndSaveImageStyles(
+      blockId,
+      {
+        image: {
+          styles: {
+            ...existingStyles, // Preserve existing styles
+            "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${color}`,
+            "-webkit-mask-image": "none",
+          },
+        },
       },
-    },
-    imageTag: {
-      selector: `#siteWrapper #${blockId} .intrinsic, #siteWrapper #${blockId} .sqs-image`,
-      styles: {
-        overflow: "visible",
-      },
-    },
-  };
-
-  if (!pendingModifications.has(blockId)) {
-    pendingModifications.set(blockId, []);
+      saveImageShadowModifications
+    );
   }
-
-  pendingModifications.get(blockId).push({
-    css: cssPayload,
-    tagType: "image",
-  });
 }
 
 function applyOverflowVisible(blockId) {
@@ -310,93 +264,75 @@ function updateShadowCSSLive(blockId) {
     `;
 }
 
-// function applyShadowColorFromPalette(
-//   color,
-//   alpha = 1,
-//   getSelectedElement,
-//   saveImageShadowModifications
-// ) {
-//   if (typeof saveImageShadowModifications !== "function") {
-//     console.warn(
-//       "❌ saveImageShadowModifications is not a function in applyShadowColorFromPalette()"
-//     );
-//     return;
-//   }
+function applyShadowColorFromPalette(
+  color,
+  alpha = 1,
+  getSelectedElement,
+  saveImageShadowModifications
+) {
+  if (typeof saveImageShadowModifications !== "function") {
+    console.warn(
+      "❌ saveImageShadowModifications is not a function in applyShadowColorFromPalette()"
+    );
+    return;
+  }
 
-//   const selected = getSelectedElement?.();
-//   if (!selected) return;
-
-//   const blockId = selected.closest('[id^="block-"]')?.id;
-//   if (!blockId) return;
-
-//   // Get existing styles
-//   const existingStyles = imageStyleMap.get(blockId)?.image?.styles || {};
-
-//   // Convert color to rgba
-//   let rgbaColor;
-//   if (color.startsWith("rgb(")) {
-//     rgbaColor = color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
-//   } else if (color.startsWith("rgba(")) {
-//     rgbaColor = color.replace(
-//       /rgba\(([^,]+),([^,]+),([^,]+),([^)]+)\)/,
-//       (_, r, g, b) => `rgba(${r},${g},${b},${alpha})`
-//     );
-//   } else {
-//     const tempDiv = document.createElement("div");
-//     tempDiv.style.color = color;
-//     document.body.appendChild(tempDiv);
-//     const rgb = getComputedStyle(tempDiv).color;
-//     document.body.removeChild(tempDiv);
-//     rgbaColor = rgb.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
-//   }
-
-//   // Update shadow state
-//   shadowState.color = rgbaColor;
-//   const { x, y, blur, spread } = shadowState;
-
-//   // Update live style immediately for visual feedback
-//   updateShadowCSSLive(blockId);
-
-//   // Clear existing timeout
-//   if (colorChangeTimeout) {
-//     clearTimeout(colorChangeTimeout);
-//   }
-
-//   // Debounce the database save
-//   colorChangeTimeout = setTimeout(() => {
-//     // Save to database while preserving existing styles
-//     mergeAndSaveImageStyles(
-//       blockId,
-//       {
-//         image: {
-//           styles: {
-//             ...existingStyles, // Preserve existing styles
-//             "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${rgbaColor}`,
-//             "-webkit-mask-image": "none",
-//           },
-//         },
-//       },
-//       saveImageShadowModifications
-//     );
-//   }, 300); // Wait 300ms after last color change
-// }
-
-function applyShadowColorFromPalette(color, alpha = 1, getSelectedElement) {
   const selected = getSelectedElement?.();
   if (!selected) return;
 
   const blockId = selected.closest('[id^="block-"]')?.id;
   if (!blockId) return;
 
-  // Convert color to rgba
-  const rgbaColor = convertToRgba(color, alpha);
-  shadowState.color = rgbaColor;
+  // Get existing styles
+  const existingStyles = imageStyleMap.get(blockId)?.image?.styles || {};
 
-  // Visual live update
+  // Convert color to rgba
+  let rgbaColor;
+  if (color.startsWith("rgb(")) {
+    rgbaColor = color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+  } else if (color.startsWith("rgba(")) {
+    rgbaColor = color.replace(
+      /rgba\(([^,]+),([^,]+),([^,]+),([^)]+)\)/,
+      (_, r, g, b) => `rgba(${r},${g},${b},${alpha})`
+    );
+  } else {
+    const tempDiv = document.createElement("div");
+    tempDiv.style.color = color;
+    document.body.appendChild(tempDiv);
+    const rgb = getComputedStyle(tempDiv).color;
+    document.body.removeChild(tempDiv);
+    rgbaColor = rgb.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+  }
+
+  // Update shadow state
+  shadowState.color = rgbaColor;
+  const { x, y, blur, spread } = shadowState;
+
+  // Update live style immediately for visual feedback
   updateShadowCSSLive(blockId);
 
-  // Trigger `updateShadowCSS` to update styles and queue pending modification
-  updateShadowCSS(blockId);
+  // Clear existing timeout
+  if (colorChangeTimeout) {
+    clearTimeout(colorChangeTimeout);
+  }
+
+  // Debounce the database save
+  colorChangeTimeout = setTimeout(() => {
+    // Save to database while preserving existing styles
+    mergeAndSaveImageStyles(
+      blockId,
+      {
+        image: {
+          styles: {
+            ...existingStyles, // Preserve existing styles
+            "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${rgbaColor}`,
+            "-webkit-mask-image": "none",
+          },
+        },
+      },
+      saveImageShadowModifications
+    );
+  }, 300); // Wait 300ms after last color change
 }
 
 export function initImageShadowControls(
