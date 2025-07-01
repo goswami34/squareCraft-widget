@@ -1,4 +1,6 @@
 let pendingModifications = new Map();
+// Make pendingModifications available globally
+window.pendingModifications = pendingModifications;
 
 (async function squareCraft() {
   let isSameOrigin = true;
@@ -4476,10 +4478,10 @@ let pendingModifications = new Map();
   // window.addEventListener("resize", checkView);
 
   function addPendingModification(blockId, css, tagType) {
-    if (!pendingModifications.has(blockId)) {
-      pendingModifications.set(blockId, []);
+    if (!window.pendingModifications.has(blockId)) {
+      window.pendingModifications.set(blockId, []);
     }
-    pendingModifications.get(blockId).push({ css, tagType });
+    window.pendingModifications.get(blockId).push({ css, tagType });
   }
 
   function moveWidgetToDesktop() {
@@ -4520,14 +4522,17 @@ let pendingModifications = new Map();
   // Find your publish button logic and update it to use the latest border styles
   // Example: in your publish handler (pseudo-code, adapt as needed)
   async function handlePublish() {
-    if (pendingModifications.size === 0) {
+    if (window.pendingModifications.size === 0) {
       showNotification("No changes to publish", "info");
       return;
     }
 
     try {
       // Save each pending modification
-      for (const [blockId, modifications] of pendingModifications.entries()) {
+      for (const [
+        blockId,
+        modifications,
+      ] of window.pendingModifications.entries()) {
         for (const mod of modifications) {
           if (mod.tagType === "link") {
             // Handle link text modifications
@@ -4583,7 +4588,7 @@ let pendingModifications = new Map();
       }
 
       // Clear pending modifications after successful save
-      pendingModifications.clear();
+      window.pendingModifications.clear();
       showNotification("All changes published successfully!", "success");
     } catch (error) {
       showNotification(error.message, "error");
