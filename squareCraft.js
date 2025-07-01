@@ -752,10 +752,8 @@ let pendingModifications = new Map();
     });
 
     // Add trigger for image shadow color palette
-    const triggerShadowOne = document.getElementById("imageFontColorPalate");
-    const paletteShadowOne = document.getElementById(
-      "image-font-color-palette"
-    );
+    const triggerShadowOne = document.getElementById("ShadowFontColorPalate");
+    const paletteShadowOne = document.getElementById("shadow-color-palette");
 
     if (triggerShadowOne && paletteShadowOne) {
       triggerShadowOne.addEventListener("click", () => {
