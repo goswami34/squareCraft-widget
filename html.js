@@ -285,67 +285,67 @@ export function initToggleSwitch() {
 }
 
 // Add this new function to handle publish button click
-async function handlePublish() {
-  if (typeof window !== "undefined" && window.pendingModifications) {
-    if (window.pendingModifications.size === 0) {
-      showNotification("No changes to publish", "info");
-      return;
+
+// In html.js
+// async function handlePublish() {
+//   if (pendingModifications.size === 0) {
+//     showNotification("No changes to publish", "info");
+//     return;
+//   }
+
+//   try {
+//     // Save each pending modification
+//     for (const [blockId, modifications] of pendingModifications.entries()) {
+//       for (const mod of modifications) {
+//         const result = await saveModifications(blockId, mod.css, mod.tagType);
+//         if (!result.success) {
+//           throw new Error(`Failed to save changes for block ${blockId}`);
+//         }
+//       }
+//     }
+
+//     // Clear pending modifications after successful save
+//     pendingModifications.clear();
+//     showNotification("All changes published successfully!", "success");
+//   } catch (error) {
+//     showNotification(error.message, "error");
+//   }
+// }
+
+for (const [blockId, modifications] of pendingModifications.entries()) {
+  for (const mod of modifications) {
+    let result;
+
+    switch (mod.tagType) {
+      case "image":
+        result = await saveImageShadowModifications(blockId, mod.css);
+        break;
+      case "strong":
+      case "linkText":
+      case "typography":
+        result = await saveModifications(blockId, mod.css, mod.tagType);
+        break;
+      case "button":
+        result = await saveButtonModifications(blockId, mod.css);
+        break;
+      case "buttonShadow":
+        result = await saveButtonShadowModifications(blockId, mod.css);
+        break;
+      case "buttonBorder":
+        result = await saveButtonBorderModifications(blockId, mod.css);
+        break;
+      // add more cases as needed
+      default:
+        console.warn(
+          "❌ Unknown tagType in pendingModifications:",
+          mod.tagType
+        );
+        continue;
     }
 
-    try {
-      // Save each pending modification
-      for (const [
-        blockId,
-        modifications,
-      ] of window.pendingModifications.entries()) {
-        for (const mod of modifications) {
-          let result;
-
-          switch (mod.tagType) {
-            case "image":
-              result = await saveImageShadowModifications(blockId, mod.css);
-              break;
-            case "imageOverlay":
-              result = await saveImageOverlayModifications(blockId, mod.css);
-              break;
-            case "link":
-              result = await saveLinkTextModifications(
-                blockId,
-                mod.css.target,
-                mod.css
-              );
-              break;
-            case "button":
-              result = await saveButtonModifications(blockId, mod.css);
-              break;
-            case "buttonShadow":
-              result = await saveButtonShadowModifications(blockId, mod.css);
-              break;
-            case "buttonBorder":
-              result = await saveButtonBorderModifications(blockId, mod.css);
-              break;
-            case "strong":
-            case "linkText":
-            case "typography":
-            default:
-              result = await saveModifications(blockId, mod.css, mod.tagType);
-              break;
-          }
-
-          if (!result?.success) {
-            throw new Error(`Failed to save changes for block ${blockId}`);
-          }
-        }
-      }
-
-      // Clear pending modifications after successful save
-      window.pendingModifications.clear();
-      showNotification("All changes published successfully!", "success");
-    } catch (error) {
-      showNotification(error.message, "error");
+    if (!result?.success) {
+      throw new Error(`Failed to save changes for block ${blockId}`);
     }
-  } else {
-    showNotification("No pending modifications found", "info");
   }
 }
 

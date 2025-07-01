@@ -1,6 +1,4 @@
 let pendingModifications = new Map();
-// Make pendingModifications available globally
-window.pendingModifications = pendingModifications;
 
 (async function squareCraft() {
   let isSameOrigin = true;
@@ -4478,10 +4476,10 @@ window.pendingModifications = pendingModifications;
   // window.addEventListener("resize", checkView);
 
   function addPendingModification(blockId, css, tagType) {
-    if (!window.pendingModifications.has(blockId)) {
-      window.pendingModifications.set(blockId, []);
+    if (!pendingModifications.has(blockId)) {
+      pendingModifications.set(blockId, []);
     }
-    window.pendingModifications.get(blockId).push({ css, tagType });
+    pendingModifications.get(blockId).push({ css, tagType });
   }
 
   function moveWidgetToDesktop() {
@@ -4522,17 +4520,14 @@ window.pendingModifications = pendingModifications;
   // Find your publish button logic and update it to use the latest border styles
   // Example: in your publish handler (pseudo-code, adapt as needed)
   async function handlePublish() {
-    if (window.pendingModifications.size === 0) {
+    if (pendingModifications.size === 0) {
       showNotification("No changes to publish", "info");
       return;
     }
 
     try {
       // Save each pending modification
-      for (const [
-        blockId,
-        modifications,
-      ] of window.pendingModifications.entries()) {
+      for (const [blockId, modifications] of pendingModifications.entries()) {
         for (const mod of modifications) {
           if (mod.tagType === "link") {
             // Handle link text modifications
@@ -4544,33 +4539,6 @@ window.pendingModifications = pendingModifications;
             if (!result.success) {
               throw new Error(
                 `Failed to save link text changes for block ${blockId}`
-              );
-            }
-          } else if (mod.tagType === "image") {
-            // Handle image shadow modifications
-            const result = await saveImageShadowModifications(blockId, mod.css);
-            if (!result.success) {
-              throw new Error(
-                `Failed to save image shadow changes for block ${blockId}`
-              );
-            }
-          } else if (mod.tagType === "imageOverlay") {
-            // Handle image overlay modifications
-            const result = await saveImageOverlayModifications(
-              blockId,
-              mod.css
-            );
-            if (!result.success) {
-              throw new Error(
-                `Failed to save image overlay changes for block ${blockId}`
-              );
-            }
-          } else if (mod.tagType === "button") {
-            // Handle button modifications
-            const result = await saveButtonModifications(blockId, mod.css);
-            if (!result.success) {
-              throw new Error(
-                `Failed to save button changes for block ${blockId}`
               );
             }
           } else {
@@ -4588,7 +4556,7 @@ window.pendingModifications = pendingModifications;
       }
 
       // Clear pending modifications after successful save
-      window.pendingModifications.clear();
+      pendingModifications.clear();
       showNotification("All changes published successfully!", "success");
     } catch (error) {
       showNotification(error.message, "error");
