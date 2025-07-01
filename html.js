@@ -580,6 +580,10 @@ export async function saveImageOverlayModifications(blockId, css) {
 // ✅ Image Overlay Controls end here
 
 export async function saveImageShadowModifications(blockId, css) {
+  console.log("[API] saveImageShadowModifications called with:", {
+    blockId,
+    css,
+  });
   const pageId = document
     .querySelector("article[data-page-sections]")
     ?.getAttribute("data-page-sections");

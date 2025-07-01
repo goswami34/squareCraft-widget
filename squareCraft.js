@@ -4548,6 +4548,12 @@ let pendingModifications = new Map();
       // Save each pending modification
       for (const [blockId, modifications] of pendingModifications.entries()) {
         for (const mod of modifications) {
+          if (mod.tagType === "image") {
+            console.log("[PUBLISH] Publishing image shadow:", {
+              blockId,
+              css: mod.css,
+            });
+          }
           if (mod.tagType === "link") {
             // Handle link text modifications
             const result = await saveLinkTextModifications(
