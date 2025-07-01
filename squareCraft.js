@@ -4475,30 +4475,11 @@ let pendingModifications = new Map();
   // checkView();
   // window.addEventListener("resize", checkView);
 
-  // function addPendingModification(blockId, css, tagType) {
-  //   if (!pendingModifications.has(blockId)) {
-  //     pendingModifications.set(blockId, []);
-  //   }
-  //   pendingModifications.get(blockId).push({ css, tagType });
-  // }
-
   function addPendingModification(blockId, css, tagType) {
     if (!pendingModifications.has(blockId)) {
       pendingModifications.set(blockId, []);
     }
-
-    const existingMods = pendingModifications.get(blockId);
-    const existingIndex = existingMods.findIndex(
-      (mod) => mod.tagType === tagType
-    );
-
-    if (existingIndex !== -1) {
-      // Replace the existing entry for the same tagType
-      existingMods[existingIndex] = { css, tagType };
-    } else {
-      // Otherwise, add a new one
-      existingMods.push({ css, tagType });
-    }
+    pendingModifications.get(blockId).push({ css, tagType });
   }
 
   function moveWidgetToDesktop() {
@@ -4548,12 +4529,6 @@ let pendingModifications = new Map();
       // Save each pending modification
       for (const [blockId, modifications] of pendingModifications.entries()) {
         for (const mod of modifications) {
-          if (mod.tagType === "image") {
-            console.log("[PUBLISH] Publishing image shadow:", {
-              blockId,
-              css: mod.css,
-            });
-          }
           if (mod.tagType === "link") {
             // Handle link text modifications
             const result = await saveLinkTextModifications(
