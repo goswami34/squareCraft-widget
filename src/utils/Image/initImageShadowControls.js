@@ -170,6 +170,42 @@ function initShadowSlider(
   //   shadowState[key] = displayVal;
   // };
 
+  // const setUI = (percent) => {
+  //   const sliderWidth = field.offsetWidth;
+  //   const px = (percent / 100) * sliderWidth;
+
+  //   // Move bullet
+  //   bullet.style.left = `${px}px`;
+  //   bullet.style.transform = "translateX(-50%)";
+
+  //   // Calculate real value
+  //   const rawVal = isCentered
+  //     ? (percent / 100) * 200 - 100
+  //     : (percent / 100) * 100;
+  //   const displayVal = Math.round(rawVal);
+  //   shadowState[key] = displayVal;
+
+  //   // Update fill from center
+  //   if (fill) {
+  //     if (isCentered) {
+  //       const center = sliderWidth / 2;
+  //       const fillWidth = Math.abs((displayVal / 200) * sliderWidth);
+  //       fill.style.left = `${center}px`;
+  //       fill.style.width = `${fillWidth}px`;
+  //       fill.style.transform =
+  //         displayVal < 0 ? "translateX(-100%)" : "translateX(0%)";
+  //     } else {
+  //       fill.style.left = "0px";
+  //       fill.style.width = `${px}px`;
+  //       fill.style.transform = "translateX(0%)";
+  //     }
+  //   }
+
+  //   // Update external labels
+  //   if (label) label.textContent = `${displayVal}px`;
+  //   if (externalValueLabel) externalValueLabel.textContent = `${displayVal}px`;
+  // };
+
   const setUI = (percent) => {
     const sliderWidth = field.offsetWidth;
     const px = (percent / 100) * sliderWidth;
@@ -186,22 +222,24 @@ function initShadowSlider(
     shadowState[key] = displayVal;
 
     // Update fill from center
-    if (fill) {
-      if (isCentered) {
-        const center = sliderWidth / 2;
-        const fillWidth = Math.abs((displayVal / 200) * sliderWidth);
-        fill.style.left = `${center}px`;
-        fill.style.width = `${fillWidth}px`;
-        fill.style.transform =
-          displayVal < 0 ? "translateX(-100%)" : "translateX(0%)";
-      } else {
-        fill.style.left = "0px";
-        fill.style.width = `${px}px`;
-        fill.style.transform = "translateX(0%)";
-      }
+    if (fill && isCentered) {
+      const center = sliderWidth / 2;
+      const fillWidth = Math.abs((displayVal / 200) * sliderWidth);
+      const isNegative = displayVal < 0;
+
+      fill.style.width = `${fillWidth}px`;
+      fill.style.left = isNegative ? `${center - fillWidth}px` : `${center}px`;
+      fill.style.transform = "translateX(0%)"; // ✅ no shifting needed
     }
 
-    // Update external labels
+    // For blur/spread (not centered)
+    if (fill && !isCentered) {
+      fill.style.left = `0px`;
+      fill.style.width = `${px}px`;
+      fill.style.transform = `translateX(0%)`;
+    }
+
+    // Update text labels
     if (label) label.textContent = `${displayVal}px`;
     if (externalValueLabel) externalValueLabel.textContent = `${displayVal}px`;
   };

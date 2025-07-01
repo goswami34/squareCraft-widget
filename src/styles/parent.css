@@ -4893,3 +4893,7 @@
   box-shadow: none;
   cursor: pointer;
 }
+
+.sc-bg-color-EF7C2F {
+  transition: width 0.2s ease, left 0.2s ease;
+}
