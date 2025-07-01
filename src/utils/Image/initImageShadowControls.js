@@ -263,7 +263,10 @@ function applyShadowColorFromPalette(color, alpha = 1, getSelectedElement) {
   updateShadowCSS(blockId);
 }
 
-export function initImageShadowControls(getSelectedElement) {
+export function initImageShadowControls(
+  getSelectedElement,
+  saveImageShadowModifications
+) {
   initShadowSlider("shadowXSlider", "x", getSelectedElement); // ✅ -100 to +100
   initShadowSlider("shadowYSlider", "y", getSelectedElement); // ✅ -100 to +100
   initShadowSlider("shadowBlurSlider", "blur", getSelectedElement); // ✅ 0 to 100
