@@ -4541,6 +4541,33 @@ let pendingModifications = new Map();
                 `Failed to save link text changes for block ${blockId}`
               );
             }
+          } else if (mod.tagType === "image") {
+            // Handle image shadow modifications
+            const result = await saveImageShadowModifications(blockId, mod.css);
+            if (!result.success) {
+              throw new Error(
+                `Failed to save image shadow changes for block ${blockId}`
+              );
+            }
+          } else if (mod.tagType === "imageOverlay") {
+            // Handle image overlay modifications
+            const result = await saveImageOverlayModifications(
+              blockId,
+              mod.css
+            );
+            if (!result.success) {
+              throw new Error(
+                `Failed to save image overlay changes for block ${blockId}`
+              );
+            }
+          } else if (mod.tagType === "button") {
+            // Handle button modifications
+            const result = await saveButtonModifications(blockId, mod.css);
+            if (!result.success) {
+              throw new Error(
+                `Failed to save button changes for block ${blockId}`
+              );
+            }
           } else {
             // Handle other modifications (existing logic)
             const result = await saveModifications(
