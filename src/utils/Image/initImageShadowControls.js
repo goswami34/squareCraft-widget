@@ -2,18 +2,7 @@ const imageStyleMap = new Map();
 
 // ✅ initImageShadowControls.js
 
-function mergeAndSaveImageStyles(
-  blockId,
-  newStyles,
-  saveImageShadowModifications
-) {
-  if (typeof saveImageShadowModifications !== "function") {
-    console.warn(
-      "❌ saveImageShadowModifications is not a function in mergeAndSaveImageStyles()"
-    );
-    return;
-  }
-
+function mergeAndSaveImageStyles(blockId, newStyles) {
   // Get existing styles from the map
   const prevStyles = imageStyleMap.get(blockId) || {
     image: {
@@ -49,9 +38,20 @@ function mergeAndSaveImageStyles(
     },
   };
 
-  // Save to map and database
+  // Save to map only (no DB call)
   imageStyleMap.set(blockId, finalData);
-  saveImageShadowModifications(blockId, finalData, "image");
+
+  // Store in window.pendingModifications for publish
+  if (typeof window !== "undefined") {
+    if (!window.pendingModifications) window.pendingModifications = new Map();
+    if (!window.pendingModifications.has(blockId)) {
+      window.pendingModifications.set(blockId, []);
+    }
+    window.pendingModifications.get(blockId).push({
+      css: finalData,
+      tagType: "image",
+    });
+  }
 }
 
 const shadowState = {
@@ -62,7 +62,7 @@ const shadowState = {
   color: "rgba(0,0,0,0.5)",
 };
 
-function updateShadowCSS(blockId, saveImageShadowModifications) {
+function updateShadowCSS(blockId) {
   const { x, y, blur, spread, color } = shadowState;
   const selector = `#${blockId} div.sqs-image-content`;
   const styleId = `sc-shadow-style-${blockId}`;
@@ -87,22 +87,16 @@ function updateShadowCSS(blockId, saveImageShadowModifications) {
       }
     `;
 
-  // Save to database while preserving existing styles
-  if (typeof saveImageShadowModifications === "function") {
-    mergeAndSaveImageStyles(
-      blockId,
-      {
-        image: {
-          styles: {
-            ...existingStyles, // Preserve existing styles
-            "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${color}`,
-            "-webkit-mask-image": "none",
-          },
-        },
+  // Save to map and pendingModifications only
+  mergeAndSaveImageStyles(blockId, {
+    image: {
+      styles: {
+        ...existingStyles, // Preserve existing styles
+        "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${color}`,
+        "-webkit-mask-image": "none",
       },
-      saveImageShadowModifications
-    );
-  }
+    },
+  });
 }
 
 function applyOverflowVisible(blockId) {
@@ -123,19 +117,7 @@ function applyOverflowVisible(blockId) {
     `;
 }
 
-function initShadowSlider(
-  controlId,
-  key,
-  getSelectedElement,
-  saveImageShadowModifications
-) {
-  if (typeof saveImageShadowModifications !== "function") {
-    console.warn(
-      "❌ saveImageShadowModifications is not a function in initShadowSlider()"
-    );
-    return;
-  }
-
+function initShadowSlider(controlId, key, getSelectedElement) {
   const field = document.getElementById(controlId);
   const bullet = field?.querySelector(".shadow-bullet");
   const label = field?.previousElementSibling?.querySelector("p.sc-text-xs");
@@ -212,7 +194,7 @@ function initShadowSlider(
       const selected = getSelectedElement?.();
       const blockId = selected?.closest('[id^="block-"]')?.id;
       if (blockId) {
-        updateShadowCSS(blockId, saveImageShadowModifications);
+        updateShadowCSS(blockId);
         if (key === "blur") applyOverflowVisible(blockId);
       }
     };
@@ -234,19 +216,7 @@ function initShadowSlider(
   bullet.addEventListener("touchstart", startDrag);
 }
 
-function applyShadowColorFromPalette(
-  color,
-  alpha = 1,
-  getSelectedElement,
-  saveImageShadowModifications
-) {
-  if (typeof saveImageShadowModifications !== "function") {
-    console.warn(
-      "❌ saveImageShadowModifications is not a function in applyShadowColorFromPalette()"
-    );
-    return;
-  }
-
+function applyShadowColorFromPalette(color, alpha = 1, getSelectedElement) {
   const selected = getSelectedElement?.();
   if (!selected) return;
 
@@ -278,60 +248,26 @@ function applyShadowColorFromPalette(
   shadowState.color = rgbaColor;
   const { x, y, blur, spread } = shadowState;
 
-  // Save to database while preserving existing styles
-  mergeAndSaveImageStyles(
-    blockId,
-    {
-      image: {
-        styles: {
-          ...existingStyles, // Preserve existing styles
-          "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${rgbaColor}`,
-          "-webkit-mask-image": "none",
-        },
+  // Save to map and pendingModifications only
+  mergeAndSaveImageStyles(blockId, {
+    image: {
+      styles: {
+        ...existingStyles, // Preserve existing styles
+        "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${rgbaColor}`,
+        "-webkit-mask-image": "none",
       },
     },
-    saveImageShadowModifications
-  );
+  });
 
   // Update live style
-  updateShadowCSS(blockId, saveImageShadowModifications);
+  updateShadowCSS(blockId);
 }
 
-export function initImageShadowControls(
-  getSelectedElement,
-  saveImageShadowModifications
-) {
-  if (typeof saveImageShadowModifications !== "function") {
-    console.warn(
-      "❌ saveImageShadowModifications is not a function in initImageShadowControls()"
-    );
-    return;
-  }
-
-  initShadowSlider(
-    "shadowXSlider",
-    "x",
-    getSelectedElement,
-    saveImageShadowModifications
-  ); // ✅ -100 to +100
-  initShadowSlider(
-    "shadowYSlider",
-    "y",
-    getSelectedElement,
-    saveImageShadowModifications
-  ); // ✅ -100 to +100
-  initShadowSlider(
-    "shadowBlurSlider",
-    "blur",
-    getSelectedElement,
-    saveImageShadowModifications
-  ); // ✅ 0 to 100
-  initShadowSlider(
-    "shadowSpreadSlider",
-    "spread",
-    getSelectedElement,
-    saveImageShadowModifications
-  ); // ✅ 0 to 100
+export function initImageShadowControls(getSelectedElement) {
+  initShadowSlider("shadowXSlider", "x", getSelectedElement); // ✅ -100 to +100
+  initShadowSlider("shadowYSlider", "y", getSelectedElement); // ✅ -100 to +100
+  initShadowSlider("shadowBlurSlider", "blur", getSelectedElement); // ✅ 0 to 100
+  initShadowSlider("shadowSpreadSlider", "spread", getSelectedElement); // ✅ 0 to 100
 }
 
 export { applyShadowColorFromPalette };
