@@ -508,7 +508,7 @@ export function WidgetImageNormalState() {
       </p>
       <div class="sc-col-span-5 sc-mt-2 sc-z-99999 sc-relative ">
          <div class="sc-flex sc-w-30 sc-justify-between sc-items-center sc-px-1 sc-bg-3f3f3f sc-inActiveTab-border sc-rounded-4px sc-py-4px">
-         <p  class="sc-font-size-12 sc-roboto sc-universal">Select</p>
+         <p  class="sc-font-size-12 sc-roboto sc-universal">Select--------</p>
          <div id="overLayFontColorPalate" class="sc-square-6 sc-border-colors sc-cursor-pointer"></div>
          </div>
          <div id="overlay-color-palette"
@@ -597,9 +597,9 @@ export function WidgetImageNormalState() {
                   class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-2 sc-px-2 sc-py-0_5 sc-bg sc-bg-454545">
                   <p class="sc-font-thin sc-roboto sc-universal sc-text-xs">0px</p>
                   <div class="sc-flex sc-flex-col sc-items-center sc-gap-1">
-<span  class="sc-arrow-placeholder"></span>
-<span class="sc-arrow-placeholder sc-rotate-180"></span>
-</div>
+                     <span  class="sc-arrow-placeholder"></span>
+                     <span class="sc-arrow-placeholder sc-rotate-180"></span>
+                  </div>
                </div>
             </div>
             <div class="sc-rounded-15px sc-mt-3 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6" id="shadowSpreadSlider">
