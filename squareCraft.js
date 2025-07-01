@@ -4475,11 +4475,30 @@ let pendingModifications = new Map();
   // checkView();
   // window.addEventListener("resize", checkView);
 
+  // function addPendingModification(blockId, css, tagType) {
+  //   if (!pendingModifications.has(blockId)) {
+  //     pendingModifications.set(blockId, []);
+  //   }
+  //   pendingModifications.get(blockId).push({ css, tagType });
+  // }
+
   function addPendingModification(blockId, css, tagType) {
     if (!pendingModifications.has(blockId)) {
       pendingModifications.set(blockId, []);
     }
-    pendingModifications.get(blockId).push({ css, tagType });
+
+    const existingMods = pendingModifications.get(blockId);
+    const existingIndex = existingMods.findIndex(
+      (mod) => mod.tagType === tagType
+    );
+
+    if (existingIndex !== -1) {
+      // Replace the existing entry for the same tagType
+      existingMods[existingIndex] = { css, tagType };
+    } else {
+      // Otherwise, add a new one
+      existingMods.push({ css, tagType });
+    }
   }
 
   function moveWidgetToDesktop() {
