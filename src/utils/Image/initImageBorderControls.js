@@ -7,6 +7,12 @@ export function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
     return;
   }
 
+  console.log("🔄 mergeAndSaveImageStyles called with:", {
+    blockId,
+    newStyles,
+    saveFnName: saveFn.name,
+  });
+
   const prevStyles = window.__scImageStyleMap.get(blockId) || {
     image: {
       selector: `#${blockId} div.sqs-image-content`,
@@ -41,6 +47,11 @@ export function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
 
   // Save to map and database
   window.__scImageStyleMap.set(blockId, finalData);
+  console.log("💾 Saving to database:", {
+    blockId,
+    finalData,
+    tagType: "image",
+  });
   saveFn(blockId, finalData, "image");
 }
 
@@ -212,7 +223,11 @@ export function initImageBorderControls(selectedElement, context = {}) {
         ${blockSelector} {
           ${property}: ${widthVar}px !important;
           box-sizing: border-box;
-          border-color: ${newColor} !important;
+          ${
+            selectedBorderColor
+              ? `border-color: ${selectedBorderColor} !important;`
+              : ""
+          }
         }`;
     }
 
@@ -465,6 +480,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
         blockId,
         {
           image: {
+            selector: `#${blockId} div.sqs-image-content`,
             styles: {
               "border-width": savedBorderWidth,
               "border-style": currentActiveBorderStyle,
@@ -472,6 +488,13 @@ export function initImageBorderControls(selectedElement, context = {}) {
               ...(currentRadiusAll > 0 && {
                 "border-radius": `${currentRadiusAll}px`,
               }),
+            },
+          },
+          imageTag: {
+            selector: `#${blockId} .sqs-image-content img`,
+            styles: {
+              "box-sizing": "border-box",
+              "object-fit": "cover",
             },
           },
         },
@@ -574,22 +597,45 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
     // Add pending modification for the style change itself
     if (block) {
+      // Get the current border width from the slider or default to 1px
+      const currentPosition = parseFloat(borderWidthBullet.style.left) || 0;
+      const max = borderWidthSlider.offsetWidth;
+      const currentWidth = Math.round((currentPosition / max) * 100) || 1;
+
+      console.log("🔧 Saving border style:", {
+        style: currentActiveBorderStyle,
+        width: currentWidth,
+        color: selectedBorderColor,
+        blockId: block.id,
+      });
+
       mergeAndSaveImageStyles(
         block.id,
         {
-          "border-width": `${allBorderWidth}px`,
-          "box-sizing": "border-box",
-          ...(selectedBorderColor && { "border-color": selectedBorderColor }),
-          "border-style": currentActiveBorderStyle,
-          ...(currentRadiusAll > 0 && {
-            "border-radius": `${currentRadiusAll}px`,
-          }),
+          image: {
+            selector: `#${block.id} div.sqs-image-content`,
+            styles: {
+              "border-width": `${currentWidth}px`,
+              "box-sizing": "border-box",
+              ...(selectedBorderColor && {
+                "border-color": selectedBorderColor,
+              }),
+              "border-style": currentActiveBorderStyle,
+              ...(currentRadiusAll > 0 && {
+                "border-radius": `${currentRadiusAll}px`,
+              }),
+            },
+          },
+          imageTag: {
+            selector: `#${block.id} .sqs-image-content img`,
+            styles: {
+              "box-sizing": "border-box",
+              "object-fit": "cover",
+            },
+          },
         },
         saveModificationsforImage
       );
-
-      //save to database
-      // saveModificationsforImage(block, addPendingModification, "image");
     }
   }
 
