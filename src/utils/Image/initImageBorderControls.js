@@ -505,15 +505,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
       selectedBorderColor = newColor;
 
-      // Update currentActiveBorderStyle to maintain consistency
-      if (savedBorderStyle && savedBorderStyle !== currentActiveBorderStyle) {
-        currentActiveBorderStyle = savedBorderStyle;
-        console.log(
-          "🔄 Updated currentActiveBorderStyle to:",
-          savedBorderStyle
-        );
-      }
-
       const selected = document.querySelector(".sc-selected-image");
       if (!selected) return;
 
@@ -528,6 +519,15 @@ export function initImageBorderControls(selectedElement, context = {}) {
       const savedBorderWidth = prevStyles["border-width"] || "1px"; // fallback
       const savedBorderStyle =
         prevStyles["border-style"] || currentActiveBorderStyle || "solid"; // fallback
+
+      // Update currentActiveBorderStyle to maintain consistency
+      if (savedBorderStyle && savedBorderStyle !== currentActiveBorderStyle) {
+        currentActiveBorderStyle = savedBorderStyle;
+        console.log(
+          "🔄 Updated currentActiveBorderStyle to:",
+          savedBorderStyle
+        );
+      }
 
       console.log("🎨 Color change - Current state:", {
         newColor,
