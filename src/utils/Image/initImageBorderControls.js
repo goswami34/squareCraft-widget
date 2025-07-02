@@ -660,13 +660,10 @@ export function initImageBorderControls(selectedElement, context = {}) {
     const match = blockRegex.exec(currentCSS);
 
     if (match) {
-      // let declarations = match[2]
-      //   .replace(/border-style\s*:\s*[^;]+;?/g, "")
-      //   .trim();
-      // declarations += `\n  border-style: ${style}`;
-
       let declarations = match[2]
         .replace(/border-style\s*:\s*[^;]+;?/g, "")
+        .replace(/border-width\s*:\s*[^;]+;?/g, "")
+        .replace(/border-color\s*:\s*[^;]+;?/g, "")
         .trim();
 
       // 🔁 Preserve existing border-color and border-width if not explicitly set
