@@ -4063,7 +4063,9 @@ let pendingModifications = new Map();
       widgetContainer.style.display = "block";
       document.body.appendChild(widgetContainer);
 
-      initImageMaskControls(() => selectedElement);
+      initImageMaskControls(() => selectedElement, {
+        saveModificationsforImage,
+      });
       makeWidgetDraggable();
       setTimeout(() => {
         const placeholders = widgetContainer.querySelectorAll(
