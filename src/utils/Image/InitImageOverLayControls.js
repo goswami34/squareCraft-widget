@@ -99,9 +99,16 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     if (!blockId) return;
 
     const rgbaColor = overlayState.color;
-
     const styleId = `sc-overlay-style-${blockId}`;
     let styleTag = document.getElementById(styleId);
+
+    // Only inject overlay CSS if a color is set
+    if (!rgbaColor) {
+      // If no color, remove overlay style tag if it exists
+      if (styleTag) styleTag.remove();
+      return;
+    }
+
     if (!styleTag) {
       styleTag = document.createElement("style");
       styleTag.id = styleId;
