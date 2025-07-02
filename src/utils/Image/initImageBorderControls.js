@@ -53,9 +53,6 @@ export function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
     tagType: "image",
   });
   saveFn(blockId, finalData, "image");
-
-  // Sync UI after saving
-  setTimeout(() => syncUIWithRestoredStyles(blockId), 50);
 }
 
 export function initImageBorderControls(selectedElement, context = {}) {
