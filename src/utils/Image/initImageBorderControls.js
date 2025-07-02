@@ -514,15 +514,22 @@ export function initImageBorderControls(selectedElement, context = {}) {
       const prevStyles =
         window.__scImageStyleMap.get(blockId)?.image?.styles || {};
       const savedBorderWidth = prevStyles["border-width"] || "1px"; // fallback
+      const savedBorderStyle =
+        prevStyles["border-style"] || currentActiveBorderStyle || "solid"; // fallback
 
-      // Always use the current active border style, not just the saved one
-      // This ensures that if user changes style to dashed/dotted, it stays that way
-      const borderStyleToUse = currentActiveBorderStyle || "solid";
+      // Update currentActiveBorderStyle to maintain consistency
+      if (savedBorderStyle && savedBorderStyle !== currentActiveBorderStyle) {
+        currentActiveBorderStyle = savedBorderStyle;
+        console.log(
+          "🔄 Updated currentActiveBorderStyle to:",
+          savedBorderStyle
+        );
+      }
 
       console.log("🎨 Color change - Current state:", {
         newColor,
         currentActiveBorderStyle,
-        borderStyleToUse,
+        savedBorderStyle,
         savedBorderWidth,
         blockId,
       });
@@ -551,7 +558,9 @@ export function initImageBorderControls(selectedElement, context = {}) {
         const prevWidthMatch = match[2].match(/border-width\s*:\s*([^;]+);?/);
 
         const borderStyleToKeep =
-          borderStyleToUse || (prevStyleMatch ? prevStyleMatch[1] : "solid");
+          savedBorderStyle ||
+          currentActiveBorderStyle ||
+          (prevStyleMatch ? prevStyleMatch[1] : "solid");
         const borderWidthToKeep =
           savedBorderWidth || (prevWidthMatch ? prevWidthMatch[1] : "1px");
 
@@ -566,7 +575,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
         currentCSS += `
           ${blockSelector} {
             border-width: ${savedBorderWidth} !important;
-            border-style: ${borderStyleToUse} !important;
+            border-style: ${savedBorderStyle} !important;
             border-color: ${newColor} !important;
           }`;
       }
@@ -586,7 +595,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
         solid: "borderStyleSolid",
         dashed: "borderStyleDashed",
         dotted: "borderStyleDotted",
-      }[borderStyleToUse];
+      }[savedBorderStyle];
 
       const activeBtn = document.getElementById(currentBtnId);
       activeBtn?.classList.add("sc-bg-454545");
@@ -599,7 +608,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
             selector: `#${blockId} div.sqs-image-content`,
             styles: {
               "border-width": savedBorderWidth,
-              "border-style": borderStyleToUse,
+              "border-style": savedBorderStyle,
               "border-color": newColor,
               ...(currentRadiusAll > 0 && {
                 "border-radius": `${currentRadiusAll}px`,
