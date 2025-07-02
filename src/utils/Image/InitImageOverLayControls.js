@@ -387,6 +387,15 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     overlayState.color = "";
 
     createOverlay();
+
+    // Always remove overlay style tag if no color is set
+    const blockId = selectedImage?.closest('[id^="block-"]')?.id;
+    if (blockId) {
+      const styleId = `sc-overlay-style-${blockId}`;
+      const styleTag = document.getElementById(styleId);
+      if (styleTag) styleTag.remove();
+    }
+
     // Only apply overlay if color is set
     if (overlayState.color) {
       updateOverlayStyles();
