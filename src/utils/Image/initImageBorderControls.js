@@ -548,6 +548,143 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
   //color selection start here
 
+  // const colorCode = document.getElementById("color-code");
+  // if (colorCode) {
+  //   const observer = new MutationObserver(() => {
+  //     const newColor = colorCode.textContent.trim();
+  //     if (!newColor || newColor.toLowerCase() === "select") return;
+
+  //     selectedBorderColor = newColor;
+
+  //     const selected = document.querySelector(".sc-selected-image");
+  //     if (!selected) return;
+
+  //     const block = selected.closest('[id^="block-"]');
+  //     if (!block) return;
+
+  //     const blockId = block.id;
+
+  //     // ✅ Get previously saved border-width and border-style values
+  //     const prevStyles =
+  //       window.__scImageStyleMap.get(blockId)?.image?.styles || {};
+  //     const savedBorderWidth = prevStyles["border-width"] || "1px"; // fallback
+  //     const savedBorderStyle =
+  //       prevStyles["border-style"] || currentActiveBorderStyle || "solid"; // fallback
+
+  //     // Update currentActiveBorderStyle to maintain consistency
+  //     if (savedBorderStyle && savedBorderStyle !== currentActiveBorderStyle) {
+  //       currentActiveBorderStyle = savedBorderStyle;
+  //       console.log(
+  //         "🔄 Updated currentActiveBorderStyle to:",
+  //         savedBorderStyle
+  //       );
+  //     }
+
+  //     console.log("🎨 Color change - Current state:", {
+  //       newColor,
+  //       currentActiveBorderStyle,
+  //       savedBorderStyle,
+  //       savedBorderWidth,
+  //       blockId,
+  //     });
+
+  //     const blockSelector = `#${blockId} div.sqs-image-content`;
+  //     let styleTag = document.getElementById("sc-image-border-style");
+  //     if (!styleTag) {
+  //       styleTag = document.createElement("style");
+  //       styleTag.id = "sc-image-border-style";
+  //       document.head.appendChild(styleTag);
+  //     }
+
+  //     let currentCSS = styleTag.textContent;
+  //     const blockRegex = new RegExp(
+  //       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+  //       "g"
+  //     );
+  //     const match = blockRegex.exec(currentCSS);
+  //     if (match) {
+  //       let declarations = match[2]
+  //         .replace(/border-style\s*:\s*[^;]+;?/g, "")
+  //         .replace(/border-width\s*:\s*[^;]+;?/g, "")
+  //         .replace(/border-color\s*:\s*[^;]+;?/g, "")
+  //         .trim();
+
+  //       // 🔁 Preserve existing border-style and border-width
+  //       const prevStyleMatch = match[2].match(/border-style\s*:\s*([^;]+);?/);
+  //       const prevWidthMatch = match[2].match(/border-width\s*:\s*([^;]+);?/);
+  //       const prevColorMatch = match[2].match(/border-color\s*:\s*([^;]+);?/);
+
+  //       const borderStyleToKeep =
+  //         savedBorderStyle ||
+  //         currentActiveBorderStyle ||
+  //         (prevStyleMatch ? prevStyleMatch[1] : "solid");
+  //       const borderWidthToKeep =
+  //         savedBorderWidth || (prevWidthMatch ? prevWidthMatch[1] : "1px");
+  //       const borderColorToKeep =
+  //         selectedBorderColor || (prevColorMatch ? prevColorMatch[1] : "#000");
+
+  //       // Add all border properties to maintain consistency
+  //       declarations += `\n  border-width: ${borderWidthToKeep} !important;`;
+  //       declarations += `\n  border-style: ${borderStyleToKeep} !important;`;
+  //       declarations += `\n  border-color: ${borderColorToKeep} !important;`;
+
+  //       const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
+  //       currentCSS = currentCSS.replace(blockRegex, updated);
+  //     } else {
+  //       currentCSS += `
+  //         ${blockSelector} {
+  //           border-width: ${savedBorderWidth} !important;
+  //           border-style: ${savedBorderStyle} !important;
+  //           border-color: ${borderColorToKeep} !important;
+  //         }`;
+  //     }
+
+  //     styleTag.textContent = currentCSS;
+
+  //     // 👉 Update active button UI state to reflect the current border style
+  //     const solidBtn = document.getElementById("borderStyleSolid");
+  //     const dashedBtn = document.getElementById("borderStyleDashed");
+  //     const dottedBtn = document.getElementById("borderStyleDotted");
+
+  //     [solidBtn, dashedBtn, dottedBtn].forEach((btn) =>
+  //       btn.classList.remove("sc-bg-454545")
+  //     );
+
+  //     const currentBtnId = {
+  //       solid: "borderStyleSolid",
+  //       dashed: "borderStyleDashed",
+  //       dotted: "borderStyleDotted",
+  //     }[savedBorderStyle];
+
+  //     const activeBtn = document.getElementById(currentBtnId);
+  //     activeBtn?.classList.add("sc-bg-454545");
+
+  //     // ✅ Save with correct border-width, not 0
+  //     mergeAndSaveImageStyles(blockId, {
+  //       image: {
+  //         selector: `#${blockId} div.sqs-image-content`,
+  //         styles: {
+  //           "border-width": savedBorderWidth,
+  //           "border-style": savedBorderStyle,
+  //           "border-color": borderColorToKeep,
+  //           ...(currentRadiusAll > 0 && {
+  //             "border-radius": `${currentRadiusAll}px`,
+  //           }),
+  //         },
+  //       },
+  //       imageTag: {
+  //         selector: `#${blockId} .sqs-image-content img`,
+  //         styles: {
+  //           "box-sizing": "border-box",
+  //           "object-fit": "cover",
+  //         },
+  //       },
+  //     });
+  //   });
+
+  //   observer.observe(colorCode, { childList: true });
+  // }
+
   const colorCode = document.getElementById("color-code");
   if (colorCode) {
     const observer = new MutationObserver(() => {
@@ -563,32 +700,8 @@ export function initImageBorderControls(selectedElement, context = {}) {
       if (!block) return;
 
       const blockId = block.id;
-
-      // ✅ Get previously saved border-width and border-style values
-      const prevStyles =
-        window.__scImageStyleMap.get(blockId)?.image?.styles || {};
-      const savedBorderWidth = prevStyles["border-width"] || "1px"; // fallback
-      const savedBorderStyle =
-        prevStyles["border-style"] || currentActiveBorderStyle || "solid"; // fallback
-
-      // Update currentActiveBorderStyle to maintain consistency
-      if (savedBorderStyle && savedBorderStyle !== currentActiveBorderStyle) {
-        currentActiveBorderStyle = savedBorderStyle;
-        console.log(
-          "🔄 Updated currentActiveBorderStyle to:",
-          savedBorderStyle
-        );
-      }
-
-      console.log("🎨 Color change - Current state:", {
-        newColor,
-        currentActiveBorderStyle,
-        savedBorderStyle,
-        savedBorderWidth,
-        blockId,
-      });
-
       const blockSelector = `#${blockId} div.sqs-image-content`;
+
       let styleTag = document.getElementById("sc-image-border-style");
       if (!styleTag) {
         styleTag = document.createElement("style");
@@ -602,6 +715,11 @@ export function initImageBorderControls(selectedElement, context = {}) {
         "g"
       );
       const match = blockRegex.exec(currentCSS);
+
+      const borderWidthToKeep = allBorderWidth ? `${allBorderWidth}px` : "1px";
+      const borderStyleToKeep = currentActiveBorderStyle || "solid";
+      const borderColorToKeep = selectedBorderColor || "#000";
+
       if (match) {
         let declarations = match[2]
           .replace(/border-style\s*:\s*[^;]+;?/g, "")
@@ -609,21 +727,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
           .replace(/border-color\s*:\s*[^;]+;?/g, "")
           .trim();
 
-        // 🔁 Preserve existing border-style and border-width
-        const prevStyleMatch = match[2].match(/border-style\s*:\s*([^;]+);?/);
-        const prevWidthMatch = match[2].match(/border-width\s*:\s*([^;]+);?/);
-        const prevColorMatch = match[2].match(/border-color\s*:\s*([^;]+);?/);
-
-        const borderStyleToKeep =
-          savedBorderStyle ||
-          currentActiveBorderStyle ||
-          (prevStyleMatch ? prevStyleMatch[1] : "solid");
-        const borderWidthToKeep =
-          savedBorderWidth || (prevWidthMatch ? prevWidthMatch[1] : "1px");
-        const borderColorToKeep =
-          selectedBorderColor || (prevColorMatch ? prevColorMatch[1] : "#000");
-
-        // Add all border properties to maintain consistency
         declarations += `\n  border-width: ${borderWidthToKeep} !important;`;
         declarations += `\n  border-style: ${borderStyleToKeep} !important;`;
         declarations += `\n  border-color: ${borderColorToKeep} !important;`;
@@ -632,40 +735,21 @@ export function initImageBorderControls(selectedElement, context = {}) {
         currentCSS = currentCSS.replace(blockRegex, updated);
       } else {
         currentCSS += `
-          ${blockSelector} {
-            border-width: ${savedBorderWidth} !important;
-            border-style: ${savedBorderStyle} !important;
-            border-color: ${borderColorToKeep} !important;
-          }`;
+        ${blockSelector} {
+          border-width: ${borderWidthToKeep} !important;
+          border-style: ${borderStyleToKeep} !important;
+          border-color: ${borderColorToKeep} !important;
+        }`;
       }
 
       styleTag.textContent = currentCSS;
 
-      // 👉 Update active button UI state to reflect the current border style
-      const solidBtn = document.getElementById("borderStyleSolid");
-      const dashedBtn = document.getElementById("borderStyleDashed");
-      const dottedBtn = document.getElementById("borderStyleDotted");
-
-      [solidBtn, dashedBtn, dottedBtn].forEach((btn) =>
-        btn.classList.remove("sc-bg-454545")
-      );
-
-      const currentBtnId = {
-        solid: "borderStyleSolid",
-        dashed: "borderStyleDashed",
-        dotted: "borderStyleDotted",
-      }[savedBorderStyle];
-
-      const activeBtn = document.getElementById(currentBtnId);
-      activeBtn?.classList.add("sc-bg-454545");
-
-      // ✅ Save with correct border-width, not 0
       mergeAndSaveImageStyles(blockId, {
         image: {
-          selector: `#${blockId} div.sqs-image-content`,
+          selector: blockSelector,
           styles: {
-            "border-width": savedBorderWidth,
-            "border-style": savedBorderStyle,
+            "border-width": borderWidthToKeep,
+            "border-style": borderStyleToKeep,
             "border-color": borderColorToKeep,
             ...(currentRadiusAll > 0 && {
               "border-radius": `${currentRadiusAll}px`,
@@ -698,8 +782,131 @@ export function initImageBorderControls(selectedElement, context = {}) {
     .getElementById("borderStyleDotted")
     ?.addEventListener("click", () => applyBorderStyle("dotted"));
 
+  // function applyBorderStyle(style) {
+  //   currentActiveBorderStyle = style; // Update the active border style
+
+  //   const selected = document.querySelector(".sc-selected-image");
+  //   if (!selected) return;
+
+  //   const block = selected.closest('[id^="block-"]');
+  //   if (!block) return;
+
+  //   const blockSelector = `#${block.id} div.sqs-image-content`;
+  //   let styleTag = document.getElementById("sc-image-border-style");
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = "sc-image-border-style";
+  //     document.head.appendChild(styleTag);
+  //   }
+
+  //   let currentCSS = styleTag.textContent;
+
+  //   const blockRegex = new RegExp(
+  //     `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+  //     "g"
+  //   );
+  //   const match = blockRegex.exec(currentCSS);
+
+  //   if (match) {
+  //     let declarations = match[2]
+  //       .replace(/border-style\s*:\s*[^;]+;?/g, "")
+  //       .replace(/border-width\s*:\s*[^;]+;?/g, "")
+  //       .replace(/border-color\s*:\s*[^;]+;?/g, "")
+  //       .trim();
+
+  //     // 🔁 Preserve existing border-style and border-width
+  //     const prevStyleMatch = match[2].match(/border-style\s*:\s*([^;]+);?/);
+  //     const prevWidthMatch = match[2].match(/border-width\s*:\s*([^;]+);?/);
+  //     const prevColorMatch = match[2].match(/border-color\s*:\s*([^;]+);?/);
+
+  //     const borderStyleToKeep =
+  //       selectedBorderColor ||
+  //       currentActiveBorderStyle ||
+  //       (prevStyleMatch ? prevStyleMatch[1] : "solid");
+  //     const borderWidthToKeep =
+  //       allBorderWidth || (prevWidthMatch ? prevWidthMatch[1] : "1px");
+  //     const borderColorToKeep =
+  //       selectedBorderColor || (prevColorMatch ? prevColorMatch[1] : "#000");
+
+  //     declarations += `\n  border-width: ${borderWidthToKeep} !important;`;
+  //     declarations += `\n  border-style: ${borderStyleToKeep} !important;`;
+  //     declarations += `\n  border-color: ${borderColorToKeep} !important;`;
+
+  //     const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
+  //     currentCSS = currentCSS.replace(blockRegex, updated);
+  //   } else {
+  //     currentCSS += `
+  //     ${blockSelector} {
+  //       border-style: ${style};
+  //     }`;
+  //   }
+
+  //   styleTag.textContent = currentCSS;
+
+  //   // 👉 Update active button UI state
+  //   const solidBtn = document.getElementById("borderStyleSolid");
+  //   const dashedBtn = document.getElementById("borderStyleDashed");
+  //   const dottedBtn = document.getElementById("borderStyleDotted");
+
+  //   [solidBtn, dashedBtn, dottedBtn].forEach((btn) =>
+  //     btn.classList.remove("sc-bg-454545")
+  //   );
+
+  //   const currentBtnId = {
+  //     solid: "borderStyleSolid",
+  //     dashed: "borderStyleDashed",
+  //     dotted: "borderStyleDotted",
+  //   }[style];
+
+  //   const activeBtn = document.getElementById(currentBtnId);
+  //   activeBtn?.classList.add("sc-bg-454545");
+
+  //   // Add pending modification for the style change itself
+  //   if (block) {
+  //     // Get the current border width from the slider or default to 1px
+  //     const currentPosition = parseFloat(borderWidthBullet.style.left) || 0;
+  //     const max = borderWidthSlider.offsetWidth;
+  //     const currentWidth = Math.round((currentPosition / max) * 100) || 1;
+
+  //     console.log("🔧 Saving border style:", {
+  //       style: currentActiveBorderStyle,
+  //       width: currentWidth,
+  //       color: selectedBorderColor,
+  //       blockId: block.id,
+  //     });
+
+  //     mergeAndSaveImageStyles(block.id, {
+  //       image: {
+  //         selector: `#${block.id} div.sqs-image-content`,
+  //         styles: {
+  //           "border-width": `${currentWidth}px`,
+  //           "box-sizing": "border-box",
+  //           ...(selectedBorderColor && {
+  //             "border-color": selectedBorderColor,
+  //           }),
+  //           "border-style": currentActiveBorderStyle,
+  //           ...(currentRadiusAll > 0 && {
+  //             "border-radius": `${currentRadiusAll}px`,
+  //           }),
+  //         },
+  //       },
+  //       imageTag: {
+  //         selector: `#${block.id} .sqs-image-content img`,
+  //         styles: {
+  //           "box-sizing": "border-box",
+  //           "object-fit": "cover",
+  //         },
+  //       },
+  //     });
+  //   }
+  // }
+
+  //border style end here
+
+  //  border radius start here
+
   function applyBorderStyle(style) {
-    currentActiveBorderStyle = style; // Update the active border style
+    currentActiveBorderStyle = style;
 
     const selected = document.querySelector(".sc-selected-image");
     if (!selected) return;
@@ -707,7 +914,9 @@ export function initImageBorderControls(selectedElement, context = {}) {
     const block = selected.closest('[id^="block-"]');
     if (!block) return;
 
-    const blockSelector = `#${block.id} div.sqs-image-content`;
+    const blockId = block.id;
+    const blockSelector = `#${blockId} div.sqs-image-content`;
+
     let styleTag = document.getElementById("sc-image-border-style");
     if (!styleTag) {
       styleTag = document.createElement("style");
@@ -723,26 +932,16 @@ export function initImageBorderControls(selectedElement, context = {}) {
     );
     const match = blockRegex.exec(currentCSS);
 
+    const borderWidthToKeep = allBorderWidth ? `${allBorderWidth}px` : "1px";
+    const borderColorToKeep = selectedBorderColor || "#000";
+    const borderStyleToKeep = currentActiveBorderStyle || "solid";
+
     if (match) {
       let declarations = match[2]
         .replace(/border-style\s*:\s*[^;]+;?/g, "")
         .replace(/border-width\s*:\s*[^;]+;?/g, "")
         .replace(/border-color\s*:\s*[^;]+;?/g, "")
         .trim();
-
-      // 🔁 Preserve existing border-style and border-width
-      const prevStyleMatch = match[2].match(/border-style\s*:\s*([^;]+);?/);
-      const prevWidthMatch = match[2].match(/border-width\s*:\s*([^;]+);?/);
-      const prevColorMatch = match[2].match(/border-color\s*:\s*([^;]+);?/);
-
-      const borderStyleToKeep =
-        selectedBorderColor ||
-        currentActiveBorderStyle ||
-        (prevStyleMatch ? prevStyleMatch[1] : "solid");
-      const borderWidthToKeep =
-        allBorderWidth || (prevWidthMatch ? prevWidthMatch[1] : "1px");
-      const borderColorToKeep =
-        selectedBorderColor || (prevColorMatch ? prevColorMatch[1] : "#000");
 
       declarations += `\n  border-width: ${borderWidthToKeep} !important;`;
       declarations += `\n  border-style: ${borderStyleToKeep} !important;`;
@@ -752,14 +951,16 @@ export function initImageBorderControls(selectedElement, context = {}) {
       currentCSS = currentCSS.replace(blockRegex, updated);
     } else {
       currentCSS += `
-      ${blockSelector} {
-        border-style: ${style};
-      }`;
+        ${blockSelector} {
+          border-width: ${borderWidthToKeep} !important;
+          border-style: ${borderStyleToKeep} !important;
+          border-color: ${borderColorToKeep} !important;
+        }`;
     }
 
     styleTag.textContent = currentCSS;
 
-    // 👉 Update active button UI state
+    // UI Highlight
     const solidBtn = document.getElementById("borderStyleSolid");
     const dashedBtn = document.getElementById("borderStyleDashed");
     const dottedBtn = document.getElementById("borderStyleDotted");
@@ -767,59 +968,36 @@ export function initImageBorderControls(selectedElement, context = {}) {
     [solidBtn, dashedBtn, dottedBtn].forEach((btn) =>
       btn.classList.remove("sc-bg-454545")
     );
-
     const currentBtnId = {
       solid: "borderStyleSolid",
       dashed: "borderStyleDashed",
       dotted: "borderStyleDotted",
     }[style];
-
     const activeBtn = document.getElementById(currentBtnId);
     activeBtn?.classList.add("sc-bg-454545");
 
-    // Add pending modification for the style change itself
-    if (block) {
-      // Get the current border width from the slider or default to 1px
-      const currentPosition = parseFloat(borderWidthBullet.style.left) || 0;
-      const max = borderWidthSlider.offsetWidth;
-      const currentWidth = Math.round((currentPosition / max) * 100) || 1;
-
-      console.log("🔧 Saving border style:", {
-        style: currentActiveBorderStyle,
-        width: currentWidth,
-        color: selectedBorderColor,
-        blockId: block.id,
-      });
-
-      mergeAndSaveImageStyles(block.id, {
-        image: {
-          selector: `#${block.id} div.sqs-image-content`,
-          styles: {
-            "border-width": `${currentWidth}px`,
-            "box-sizing": "border-box",
-            ...(selectedBorderColor && {
-              "border-color": selectedBorderColor,
-            }),
-            "border-style": currentActiveBorderStyle,
-            ...(currentRadiusAll > 0 && {
-              "border-radius": `${currentRadiusAll}px`,
-            }),
-          },
+    // Persist
+    mergeAndSaveImageStyles(blockId, {
+      image: {
+        selector: blockSelector,
+        styles: {
+          "border-width": borderWidthToKeep,
+          "border-style": borderStyleToKeep,
+          "border-color": borderColorToKeep,
+          ...(currentRadiusAll > 0 && {
+            "border-radius": `${currentRadiusAll}px`,
+          }),
         },
-        imageTag: {
-          selector: `#${block.id} .sqs-image-content img`,
-          styles: {
-            "box-sizing": "border-box",
-            "object-fit": "cover",
-          },
+      },
+      imageTag: {
+        selector: `#${blockId} .sqs-image-content img`,
+        styles: {
+          "box-sizing": "border-box",
+          "object-fit": "cover",
         },
-      });
-    }
+      },
+    });
   }
-
-  //border style end here
-
-  //  border radius start here
 
   let activeRadiusTarget = null;
 
