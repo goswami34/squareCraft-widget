@@ -1,16 +1,19 @@
 window.__scImageStyleMap = new Map();
 
-// Export the mergeAndSaveImageStyles function
-export function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
-  if (typeof saveFn !== "function") {
-    console.warn("❌ saveFn is not a function in mergeAndSaveImageStyles()");
-    return;
-  }
+// Store pending modifications locally (like shadow controls)
+const pendingBorderModifications = new Map();
 
+// Global state for border controls
+let currentActiveBorderType = "all";
+let currentActiveBorderStyle = "solid";
+let selectedBorderColor = null;
+let currentRadiusAll = 0;
+
+// Export the mergeAndSaveImageStyles function
+export function mergeAndSaveImageStyles(blockId, newStyles) {
   console.log("🔄 mergeAndSaveImageStyles called with:", {
     blockId,
     newStyles,
-    saveFnName: saveFn.name,
   });
 
   const prevStyles = window.__scImageStyleMap.get(blockId) || {
@@ -27,10 +30,17 @@ export function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
     },
   };
 
+  // Merge the new styles with existing styles
   const mergedImageStyles = {
-    ...prevStyles.image.styles,
-    ...(newStyles.image?.styles || {}),
+    ...prevStyles.image.styles, // Keep existing styles
+    ...(newStyles.image?.styles || {}), // Add new styles
   };
+
+  const mergedImageTagStyles = {
+    ...prevStyles.imageTag.styles, // Keep existing styles
+    ...(newStyles.imageTag?.styles || {}), // Add new styles
+  };
+
   const finalData = {
     image: {
       selector: prevStyles.image.selector,
@@ -38,25 +48,44 @@ export function mergeAndSaveImageStyles(blockId, newStyles, saveFn) {
     },
     imageTag: {
       selector: prevStyles.imageTag.selector,
-      styles: {
-        ...prevStyles.imageTag.styles,
-        ...(newStyles.imageTag?.styles || {}),
-      },
+      styles: mergedImageTagStyles,
     },
   };
 
-  // Save to map and database
+  // Save to map and pendingModifications only (no DB call)
   window.__scImageStyleMap.set(blockId, finalData);
-  console.log("💾 Saving to database:", {
+  pendingBorderModifications.set(blockId, finalData);
+
+  console.log("💾 Saved to pending modifications:", {
     blockId,
     finalData,
-    tagType: "image",
+    pendingCount: pendingBorderModifications.size,
   });
-  saveFn(blockId, finalData, "image");
-
-  // Sync UI after saving
-  setTimeout(() => syncUIWithRestoredStyles(blockId), 50);
 }
+
+// Function to publish all pending border modifications
+const publishPendingBorderModifications = async (saveModificationsforImage) => {
+  if (pendingBorderModifications.size === 0) {
+    console.log("No border changes to publish");
+    return;
+  }
+
+  try {
+    for (const [blockId, borderData] of pendingBorderModifications) {
+      if (typeof saveModificationsforImage === "function") {
+        console.log("Publishing border for block:", blockId, borderData);
+        await saveModificationsforImage(blockId, borderData, "image");
+      }
+    }
+
+    // Clear pending modifications after successful publish
+    pendingBorderModifications.clear();
+    console.log("All border changes published successfully!");
+  } catch (error) {
+    console.error("Failed to publish border modifications:", error);
+    throw error;
+  }
+};
 
 export function initImageBorderControls(selectedElement, context = {}) {
   const {
@@ -123,6 +152,28 @@ export function initImageBorderControls(selectedElement, context = {}) {
   let bottomBorderWidth = 0;
   let leftBorderWidth = 0;
   let rightBorderWidth = 0;
+
+  // Add publish button handler (like shadow controls)
+  const publishButton = document.getElementById("publish");
+  if (publishButton) {
+    // Remove existing listener to avoid duplicates
+    publishButton.removeEventListener(
+      "click",
+      publishButton.borderPublishHandler
+    );
+
+    // Create new handler
+    publishButton.borderPublishHandler = async () => {
+      try {
+        await publishPendingBorderModifications(saveModificationsforImage);
+      } catch (error) {
+        console.error("Border publish error:", error);
+      }
+    };
+
+    // Add the handler
+    publishButton.addEventListener("click", publishButton.borderPublishHandler);
+  }
 
   // Function to sync UI controls with restored styles
   function syncUIWithRestoredStyles(blockId) {
@@ -422,7 +473,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
       if (side === "right") rightBorderWidth = borderWidth;
     }
 
-    mergeAndSaveImageStyles(blockId, cssProps, saveModificationsforImage);
+    mergeAndSaveImageStyles(blockId, cssProps);
 
     // ✅ Also inject image-level styles like object-fit into database
     const imageTagSelector = `#${blockId} .sqs-image-content img`;
@@ -604,30 +655,26 @@ export function initImageBorderControls(selectedElement, context = {}) {
       activeBtn?.classList.add("sc-bg-454545");
 
       // ✅ Save with correct border-width, not 0
-      mergeAndSaveImageStyles(
-        blockId,
-        {
-          image: {
-            selector: `#${blockId} div.sqs-image-content`,
-            styles: {
-              "border-width": savedBorderWidth,
-              "border-style": savedBorderStyle,
-              "border-color": newColor,
-              ...(currentRadiusAll > 0 && {
-                "border-radius": `${currentRadiusAll}px`,
-              }),
-            },
-          },
-          imageTag: {
-            selector: `#${blockId} .sqs-image-content img`,
-            styles: {
-              "box-sizing": "border-box",
-              "object-fit": "cover",
-            },
+      mergeAndSaveImageStyles(blockId, {
+        image: {
+          selector: `#${blockId} div.sqs-image-content`,
+          styles: {
+            "border-width": savedBorderWidth,
+            "border-style": savedBorderStyle,
+            "border-color": newColor,
+            ...(currentRadiusAll > 0 && {
+              "border-radius": `${currentRadiusAll}px`,
+            }),
           },
         },
-        saveModificationsforImage
-      );
+        imageTag: {
+          selector: `#${blockId} .sqs-image-content img`,
+          styles: {
+            "box-sizing": "border-box",
+            "object-fit": "cover",
+          },
+        },
+      });
     });
 
     observer.observe(colorCode, { childList: true });
@@ -737,33 +784,29 @@ export function initImageBorderControls(selectedElement, context = {}) {
         blockId: block.id,
       });
 
-      mergeAndSaveImageStyles(
-        block.id,
-        {
-          image: {
-            selector: `#${block.id} div.sqs-image-content`,
-            styles: {
-              "border-width": `${currentWidth}px`,
-              "box-sizing": "border-box",
-              ...(selectedBorderColor && {
-                "border-color": selectedBorderColor,
-              }),
-              "border-style": currentActiveBorderStyle,
-              ...(currentRadiusAll > 0 && {
-                "border-radius": `${currentRadiusAll}px`,
-              }),
-            },
-          },
-          imageTag: {
-            selector: `#${block.id} .sqs-image-content img`,
-            styles: {
-              "box-sizing": "border-box",
-              "object-fit": "cover",
-            },
+      mergeAndSaveImageStyles(block.id, {
+        image: {
+          selector: `#${block.id} div.sqs-image-content`,
+          styles: {
+            "border-width": `${currentWidth}px`,
+            "box-sizing": "border-box",
+            ...(selectedBorderColor && {
+              "border-color": selectedBorderColor,
+            }),
+            "border-style": currentActiveBorderStyle,
+            ...(currentRadiusAll > 0 && {
+              "border-radius": `${currentRadiusAll}px`,
+            }),
           },
         },
-        saveModificationsforImage
-      );
+        imageTag: {
+          selector: `#${block.id} .sqs-image-content img`,
+          styles: {
+            "box-sizing": "border-box",
+            "object-fit": "cover",
+          },
+        },
+      });
     }
   }
 
@@ -869,26 +912,22 @@ export function initImageBorderControls(selectedElement, context = {}) {
     styleTag.textContent = css;
 
     // 🔄 persist
-    mergeAndSaveImageStyles(
-      blockId,
-      {
-        image: {
-          styles: {
-            ...(type === "all"
-              ? { "border-radius": `${radius}px` }
-              : { [cssProp]: `${radius}px` }),
-          },
-        },
-        imageTag: {
-          styles: {
-            "border-radius": `${radius}px`,
-            "box-sizing": "border-box",
-            "object-fit": "cover",
-          },
+    mergeAndSaveImageStyles(blockId, {
+      image: {
+        styles: {
+          ...(type === "all"
+            ? { "border-radius": `${radius}px` }
+            : { [cssProp]: `${radius}px` }),
         },
       },
-      saveModificationsforImage
-    );
+      imageTag: {
+        styles: {
+          "border-radius": `${radius}px`,
+          "box-sizing": "border-box",
+          "object-fit": "cover",
+        },
+      },
+    });
   }
 
   // ✅ Radius slider logic
