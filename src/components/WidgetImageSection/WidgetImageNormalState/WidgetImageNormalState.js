@@ -31,9 +31,7 @@ export function WidgetImageNormalState() {
                    <span  class="sc-arrow-placeholder"></span>
                    <span class="sc-arrow-placeholder sc-rotate-180"></span>
                  </div>
-                                      </div>
-
-
+         </div>
       </div>
 
 
