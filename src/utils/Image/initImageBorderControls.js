@@ -609,18 +609,23 @@ export function initImageBorderControls(selectedElement, context = {}) {
           .replace(/border-color\s*:\s*[^;]+;?/g, "")
           .trim();
 
-        // 🔁 Preserve existing border-color and border-width if not explicitly set
-        const prevColorMatch = match[2].match(/border-color\s*:\s*([^;]+);?/);
+        // 🔁 Preserve existing border-style and border-width
+        const prevStyleMatch = match[2].match(/border-style\s*:\s*([^;]+);?/);
         const prevWidthMatch = match[2].match(/border-width\s*:\s*([^;]+);?/);
+        const prevColorMatch = match[2].match(/border-color\s*:\s*([^;]+);?/);
 
-        const borderColorToKeep =
-          savedBorderColor || (prevColorMatch ? prevColorMatch[1] : "#000");
+        const borderStyleToKeep =
+          savedBorderStyle ||
+          currentActiveBorderStyle ||
+          (prevStyleMatch ? prevStyleMatch[1] : "solid");
         const borderWidthToKeep =
           savedBorderWidth || (prevWidthMatch ? prevWidthMatch[1] : "1px");
+        const borderColorToKeep =
+          selectedBorderColor || (prevColorMatch ? prevColorMatch[1] : "#000");
 
         // Add all border properties to maintain consistency
         declarations += `\n  border-width: ${borderWidthToKeep} !important;`;
-        declarations += `\n  border-style: ${savedBorderStyle} !important;`;
+        declarations += `\n  border-style: ${borderStyleToKeep} !important;`;
         declarations += `\n  border-color: ${borderColorToKeep} !important;`;
 
         const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
@@ -725,18 +730,23 @@ export function initImageBorderControls(selectedElement, context = {}) {
         .replace(/border-color\s*:\s*[^;]+;?/g, "")
         .trim();
 
-      // 🔁 Preserve existing border-color and border-width if not explicitly set
-      const prevColorMatch = match[2].match(/border-color\s*:\s*([^;]+);?/);
+      // 🔁 Preserve existing border-style and border-width
+      const prevStyleMatch = match[2].match(/border-style\s*:\s*([^;]+);?/);
       const prevWidthMatch = match[2].match(/border-width\s*:\s*([^;]+);?/);
+      const prevColorMatch = match[2].match(/border-color\s*:\s*([^;]+);?/);
 
-      const borderColorToKeep =
-        selectedBorderColor || (prevColorMatch ? prevColorMatch[1] : "#000");
+      const borderStyleToKeep =
+        selectedBorderColor ||
+        currentActiveBorderStyle ||
+        (prevStyleMatch ? prevStyleMatch[1] : "solid");
       const borderWidthToKeep =
         allBorderWidth || (prevWidthMatch ? prevWidthMatch[1] : "1px");
+      const borderColorToKeep =
+        selectedBorderColor || (prevColorMatch ? prevColorMatch[1] : "#000");
 
       declarations += `\n  border-width: ${borderWidthToKeep} !important;`;
+      declarations += `\n  border-style: ${borderStyleToKeep} !important;`;
       declarations += `\n  border-color: ${borderColorToKeep} !important;`;
-      declarations += `\n  border-style: ${style} !important;`;
 
       const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
       currentCSS = currentCSS.replace(blockRegex, updated);
