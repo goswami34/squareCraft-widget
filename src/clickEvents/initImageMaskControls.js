@@ -8,7 +8,8 @@ function mergeAndSaveMaskStyles(blockId, newStyles) {
     newStyles,
   });
 
-  const prevStyles = window.__scImageStyleMap.get(blockId) || {
+  // --- Merge with existing styles to prevent overwriting border/overlay ---
+  const prevData = window.__scImageStyleMap.get(blockId) || {
     image: {
       selector: `#${blockId} div.sqs-image-content`,
       styles: {},
@@ -22,24 +23,24 @@ function mergeAndSaveMaskStyles(blockId, newStyles) {
     },
   };
 
-  // Merge the new styles with existing styles
+  // Merge the new mask styles with existing styles
   const mergedImageStyles = {
-    ...prevStyles.image.styles, // Keep existing styles
-    ...(newStyles.image?.styles || {}), // Add new styles
+    ...prevData.image.styles, // Keep existing styles (border, overlay, etc.)
+    ...(newStyles.image?.styles || {}), // Add/overwrite with new mask styles
   };
 
   const mergedImageTagStyles = {
-    ...prevStyles.imageTag.styles, // Keep existing styles
-    ...(newStyles.imageTag?.styles || {}), // Add new styles
+    ...prevData.imageTag.styles, // Keep existing styles
+    ...(newStyles.imageTag?.styles || {}), // Add new styles if any
   };
 
   const finalData = {
     image: {
-      selector: prevStyles.image.selector,
+      selector: prevData.image.selector,
       styles: mergedImageStyles,
     },
     imageTag: {
-      selector: prevStyles.imageTag.selector,
+      selector: prevData.imageTag.selector,
       styles: mergedImageTagStyles,
     },
   };
@@ -48,7 +49,7 @@ function mergeAndSaveMaskStyles(blockId, newStyles) {
   window.__scImageStyleMap.set(blockId, finalData);
   pendingMaskModifications.set(blockId, finalData);
 
-  console.log("💾 Saved mask to pending modifications:", {
+  console.log("💾 Saved mask to pending modifications (merged):", {
     blockId,
     finalData,
     pendingCount: pendingMaskModifications.size,
