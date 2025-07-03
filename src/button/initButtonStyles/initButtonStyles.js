@@ -71,6 +71,19 @@ function mergeAndSaveButtonStyles(
     // Store in pending modifications (like shadow controls)
     pendingButtonModifications.set(blockId, merged);
 
+    // ALSO add to global pending modifications for publish button
+    if (typeof addPendingModification === "function") {
+      addPendingModification(blockId, merged, tagType);
+      console.log("✅ Added to global pending modifications:", {
+        blockId,
+        tagType,
+        merged,
+        globalPendingCount: window.pendingModifications?.size || 0,
+      });
+    } else {
+      console.warn("❌ addPendingModification function not available");
+    }
+
     // Show success notification
     if (typeof showNotification === "function") {
       showNotification("Button style updated locally!", "info");
@@ -83,6 +96,7 @@ function mergeAndSaveButtonStyles(
       newStyles,
       merged,
       pendingCount: pendingButtonModifications.size,
+      tagType,
     });
   } catch (error) {
     console.error("❌ Error merging button styles:", error);
@@ -2332,30 +2346,50 @@ setTimeout(() => {
 }, 100);
 
 // Add publish button handler for button controls (like shadow controls)
-const publishButton = document.getElementById("publish");
-if (publishButton) {
-  // Remove existing listener to avoid duplicates
-  publishButton.removeEventListener(
-    "click",
-    publishButton.buttonPublishHandler
-  );
+// Remove button-specific publish handler - use global system instead
+// Button font data is now added to window.pendingModifications via addPendingModification
+// and will be handled by the global handlePublish function in html.js
+// This ensures button font data gets published when the publish button is clicked
+// const publishButton = document.getElementById("publish");
+// if (publishButton) {
+//   // Remove existing listener to avoid duplicates
+//   publishButton.removeEventListener(
+//     "click",
+//     publishButton.buttonPublishHandler
+//   );
 
-  // Create new handler
-  publishButton.buttonPublishHandler = async () => {
-    try {
-      // Import the save function dynamically
-      const { saveButtonModifications } = await import(
-        "https://goswami34.github.io/squareCraft-widget/html.js"
-      );
-      await publishPendingButtonModifications(saveButtonModifications);
-    } catch (error) {
-      console.error("Button publish error:", error);
-    }
-  };
+//   // Create new handler
+//   publishButton.buttonPublishHandler = async () => {
+//     try {
+//       console.log("🔄 Button publish handler triggered");
+//       console.log("📊 Current pending modifications:", {
+//         buttonPending: pendingButtonModifications.size,
+//         globalPending: window.pendingModifications?.size || 0,
+//       });
 
-  // Add the handler
-  publishButton.addEventListener("click", publishButton.buttonPublishHandler);
-}
+//       // Import the save function dynamically
+//       const { saveButtonModifications } = await import(
+//         "https://goswami34.github.io/squareCraft-widget/html.js"
+//       );
+
+//       // Publish button-specific modifications
+//       await publishPendingButtonModifications(saveButtonModifications);
+
+//       // Also call global publish function to handle any global pending modifications
+//       if (typeof window.handlePublish === "function") {
+//         console.log("🔄 Calling global handlePublish function");
+//         await window.handlePublish();
+//       } else {
+//         console.warn("❌ window.handlePublish function not available");
+//       }
+//     } catch (error) {
+//       console.error("Button publish error:", error);
+//     }
+//   };
+
+//   // Add the handler
+//   publishButton.addEventListener("click", publishButton.buttonPublishHandler);
+// }
 
 // import { initButtonFontColorPaletteToggle } from "https://goswami34.github.io/squareCraft-widget/src/button/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js";
 

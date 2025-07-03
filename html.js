@@ -385,6 +385,9 @@ async function handlePublish() {
   }
 }
 
+// Make handlePublish available globally
+window.handlePublish = handlePublish;
+
 export function initPublishButton() {
   const publishButton = document.getElementById("publish");
   if (!publishButton) {
