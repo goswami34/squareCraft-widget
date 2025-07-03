@@ -116,9 +116,6 @@ const publishPendingButtonModifications = async (saveButtonModifications) => {
   }
 };
 
-// Make the function available globally
-window.publishPendingButtonModifications = publishPendingButtonModifications;
-
 export function initButtonFontFamilyControls(
   getSelectedElement,
   addPendingModification,

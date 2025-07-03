@@ -285,81 +285,67 @@ export function initToggleSwitch() {
 }
 
 // Add this new function to handle publish button click
-async function handlePublish() {
-  // Check if there are any pending modifications
-  if (
-    typeof window.pendingModifications === "undefined" ||
-    window.pendingModifications.size === 0
-  ) {
-    showNotification("No changes to publish", "info");
-    return;
-  }
 
-  try {
-    console.log(
-      "🔄 Publishing pending modifications:",
-      window.pendingModifications
-    );
+// In html.js
+// async function handlePublish() {
+//   if (pendingModifications.size === 0) {
+//     showNotification("No changes to publish", "info");
+//     return;
+//   }
 
-    // Save each pending modification
-    for (const [
-      blockId,
-      modifications,
-    ] of window.pendingModifications.entries()) {
-      for (const mod of modifications) {
-        let result;
+//   try {
+//     // Save each pending modification
+//     for (const [blockId, modifications] of pendingModifications.entries()) {
+//       for (const mod of modifications) {
+//         const result = await saveModifications(blockId, mod.css, mod.tagType);
+//         if (!result.success) {
+//           throw new Error(`Failed to save changes for block ${blockId}`);
+//         }
+//       }
+//     }
 
-        switch (mod.tagType) {
-          case "image":
-            result = await saveModificationsforImage(
-              blockId,
-              mod.css,
-              mod.tagType
-            );
-            break;
-          case "imageShadow":
-            result = await saveImageShadowModifications(blockId, mod.css);
-            break;
-          case "imageOverlay":
-            result = await saveImageOverlayModifications(blockId, mod.css);
-            break;
-          case "strong":
-          case "linkText":
-          case "typography":
-            result = await saveModifications(blockId, mod.css, mod.tagType);
-            break;
-          case "button":
-            result = await saveButtonModifications(blockId, mod.css);
-            break;
-          case "buttonShadow":
-            result = await saveButtonShadowModifications(blockId, mod.css);
-            break;
-          case "buttonBorder":
-            result = await saveButtonBorderModifications(blockId, mod.css);
-            break;
-          case "linkText":
-            result = await saveLinkTextModifications(blockId, mod.css);
-            break;
-          default:
-            console.warn(
-              "❌ Unknown tagType in pendingModifications:",
-              mod.tagType
-            );
-            continue;
-        }
+//     // Clear pending modifications after successful save
+//     pendingModifications.clear();
+//     showNotification("All changes published successfully!", "success");
+//   } catch (error) {
+//     showNotification(error.message, "error");
+//   }
+// }
 
-        if (!result?.success) {
-          throw new Error(`Failed to save changes for block ${blockId}`);
-        }
-      }
+for (const [blockId, modifications] of pendingModifications.entries()) {
+  for (const mod of modifications) {
+    let result;
+
+    switch (mod.tagType) {
+      case "image":
+        result = await saveImageShadowModifications(blockId, mod.css);
+        break;
+      case "strong":
+      case "linkText":
+      case "typography":
+        result = await saveModifications(blockId, mod.css, mod.tagType);
+        break;
+      case "button":
+        result = await saveButtonModifications(blockId, mod.css);
+        break;
+      case "buttonShadow":
+        result = await saveButtonShadowModifications(blockId, mod.css);
+        break;
+      case "buttonBorder":
+        result = await saveButtonBorderModifications(blockId, mod.css);
+        break;
+      // add more cases as needed
+      default:
+        console.warn(
+          "❌ Unknown tagType in pendingModifications:",
+          mod.tagType
+        );
+        continue;
     }
 
-    // Clear pending modifications after successful save
-    window.pendingModifications.clear();
-    showNotification("All changes published successfully!", "success");
-  } catch (error) {
-    console.error("❌ Error in handlePublish:", error);
-    showNotification(error.message, "error");
+    if (!result?.success) {
+      throw new Error(`Failed to save changes for block ${blockId}`);
+    }
   }
 }
 
@@ -376,26 +362,8 @@ export function initPublishButton() {
       publishButton.disabled = true;
       publishButton.textContent = "Publishing...";
 
-      // Call the main publish handler
       await handlePublish();
-
-      // Also call button-specific publish handlers if they exist
-      if (typeof window.publishPendingButtonModifications === "function") {
-        console.log("🔄 Publishing pending button modifications...");
-        await window.publishPendingButtonModifications();
-      }
-
-      if (typeof window.publishPendingBorderModifications === "function") {
-        console.log("🔄 Publishing pending border modifications...");
-        await window.publishPendingBorderModifications();
-      }
-
-      if (typeof window.publishPendingShadowModifications === "function") {
-        console.log("🔄 Publishing pending shadow modifications...");
-        await window.publishPendingShadowModifications();
-      }
     } catch (error) {
-      console.error("❌ Error in publish button:", error);
       showNotification(error.message, "error");
     } finally {
       // Reset button state
