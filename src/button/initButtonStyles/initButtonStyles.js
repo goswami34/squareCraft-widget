@@ -11,6 +11,9 @@ setTimeout(() => {
   }
 }, 200);
 
+// Store pending button modifications locally (like shadow controls)
+const pendingButtonModifications = new Map();
+
 // Add a map to track button styles by block/type
 const buttonStyleMap = new Map();
 
@@ -65,22 +68,21 @@ function mergeAndSaveButtonStyles(
     // Store in map
     buttonStyleMap.set(blockId, merged);
 
-    // Add to pending modifications
-    if (typeof addPendingModification === "function") {
-      addPendingModification(blockId, merged, tagType);
-    }
+    // Store in pending modifications (like shadow controls)
+    pendingButtonModifications.set(blockId, merged);
 
     // Show success notification
     if (typeof showNotification === "function") {
-      showNotification("Button style updated!", "success");
+      showNotification("Button style updated locally!", "info");
     }
 
     // Log for debugging
-    console.log("✅ Button styles merged:", {
+    console.log("✅ Button styles merged and stored locally:", {
       blockId,
       typeClass,
       newStyles,
       merged,
+      pendingCount: pendingButtonModifications.size,
     });
   } catch (error) {
     console.error("❌ Error merging button styles:", error);
@@ -89,6 +91,30 @@ function mergeAndSaveButtonStyles(
     }
   }
 }
+
+// Function to publish all pending button modifications (like shadow controls)
+const publishPendingButtonModifications = async (saveButtonModifications) => {
+  if (pendingButtonModifications.size === 0) {
+    console.log("No button changes to publish");
+    return;
+  }
+
+  try {
+    for (const [blockId, buttonData] of pendingButtonModifications) {
+      if (typeof saveButtonModifications === "function") {
+        console.log("Publishing button for block:", blockId, buttonData);
+        await saveButtonModifications(blockId, buttonData);
+      }
+    }
+
+    // Clear pending modifications after successful publish
+    pendingButtonModifications.clear();
+    console.log("All button changes published successfully!");
+  } catch (error) {
+    console.error("Failed to publish button modifications:", error);
+    throw error;
+  }
+};
 
 export function initButtonFontFamilyControls(
   getSelectedElement,
@@ -2092,6 +2118,8 @@ export function resetAllButtonStyles(
   });
 }
 
+export { publishPendingButtonModifications };
+
 export function initButtonBorderResetHandlers(
   getSelectedElement,
   addPendingModification,
@@ -2302,6 +2330,28 @@ setTimeout(() => {
   }
   document.getElementById("buttonBorderTypeSolid")?.click();
 }, 100);
+
+// Add publish button handler for button controls (like shadow controls)
+const publishButton = document.getElementById("publish");
+if (publishButton) {
+  // Remove existing listener to avoid duplicates
+  publishButton.removeEventListener(
+    "click",
+    publishButton.buttonPublishHandler
+  );
+
+  // Create new handler
+  publishButton.buttonPublishHandler = async () => {
+    try {
+      await publishPendingButtonModifications(saveButtonModifications);
+    } catch (error) {
+      console.error("Button publish error:", error);
+    }
+  };
+
+  // Add the handler
+  publishButton.addEventListener("click", publishButton.buttonPublishHandler);
+}
 
 // import { initButtonFontColorPaletteToggle } from "https://goswami34.github.io/squareCraft-widget/src/button/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js";
 
