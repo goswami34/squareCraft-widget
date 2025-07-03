@@ -1,5 +1,3 @@
-import { applyShadowColorFromPalette } from "../../utils/applyStyles.js";
-
 export function buttonShadowColorPalate(
   themeColors,
   selectedElement,
@@ -28,6 +26,94 @@ export function buttonShadowColorPalate(
   const transparencyBullet = document.getElementById(
     "button-shadow-color-transparency-bar"
   );
+
+  // Button-specific shadow color application function
+  function applyButtonShadowColorFromPalette(color, alpha = 1) {
+    const currentElement = selectedElement?.();
+    if (!currentElement) return;
+
+    const btn = currentElement.querySelector(
+      ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const typeClass = [...btn.classList].find((cls) =>
+      cls.startsWith("sqs-button-element--")
+    );
+    if (!typeClass) return;
+
+    // Get existing shadow state
+    if (!window.shadowStatesByType) {
+      window.shadowStatesByType = new Map();
+    }
+
+    if (!window.shadowStatesByType.has(typeClass)) {
+      window.shadowStatesByType.set(typeClass, {
+        Xaxis: 0,
+        Yaxis: 0,
+        Blur: 0,
+        Spread: 0,
+        Color: "rgba(0,0,0,0.3)",
+      });
+    }
+
+    const shadowState = window.shadowStatesByType.get(typeClass);
+
+    // Convert color to rgba
+    let rgbaColor;
+    if (color.startsWith("rgb(")) {
+      rgbaColor = color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+    } else if (color.startsWith("rgba(")) {
+      rgbaColor = color.replace(
+        /rgba\(([^,]+),([^,]+),([^,]+),([^)]+)\)/,
+        (_, r, g, b) => `rgba(${r},${g},${b},${alpha})`
+      );
+    } else {
+      const tempDiv = document.createElement("div");
+      tempDiv.style.color = color;
+      document.body.appendChild(tempDiv);
+      const rgb = getComputedStyle(tempDiv).color;
+      document.body.removeChild(tempDiv);
+      rgbaColor = rgb.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+    }
+
+    // Update shadow state with new color
+    shadowState.Color = rgbaColor;
+
+    // Apply shadow to button
+    const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${rgbaColor}`;
+
+    const styleId = `sc-button-shadow-${typeClass}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+
+    styleTag.innerHTML = `
+      .${typeClass} {
+        box-shadow: ${value} !important;
+      }
+      .${typeClass}:hover {
+        box-shadow: ${value} !important;
+      }
+    `;
+
+    // Save to database if function provided
+    if (typeof saveButtonShadowModifications === "function") {
+      const blockId = currentElement.id;
+      if (blockId) {
+        const stylePayload = {
+          buttonPrimary: {
+            selector: `.${typeClass}`,
+            styles: { boxShadow: value },
+          },
+        };
+        saveButtonShadowModifications(blockId, stylePayload);
+      }
+    }
+  }
 
   function updateTransparencyField(hue) {
     if (transparencyField) {
@@ -168,12 +254,9 @@ export function buttonShadowColorPalate(
         }
 
         updateTransparencyField(dynamicHue);
-        // applyImageShadowColor(finalColor, currentTransparency / 100);
-        applyShadowColorFromPalette(
+        applyButtonShadowColorFromPalette(
           finalColor,
-          currentTransparency / 100,
-          selectedElement,
-          saveButtonShadowModifications
+          currentTransparency / 100
         );
       };
 
@@ -181,7 +264,6 @@ export function buttonShadowColorPalate(
         document.onmousemove = null;
         document.onmouseup = null;
       };
-      console.log("🎨 Updated dynamicHue from palette:", dynamicHue);
     };
   }
 
@@ -216,13 +298,7 @@ export function buttonShadowColorPalate(
           colorCode.textContent = rgb;
         }
 
-        // applyImageShadowColor(rgb, currentTransparency / 100);
-        applyShadowColorFromPalette(
-          rgb,
-          currentTransparency / 100,
-          selectedElement,
-          saveButtonShadowModifications
-        );
+        applyButtonShadowColorFromPalette(rgb, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
@@ -270,16 +346,8 @@ export function buttonShadowColorPalate(
     const data = ctx.getImageData(offsetX, offsetY, 1, 1).data;
     const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
 
-    // colorCode.textContent = rgb;
-    // applyImageShadowColor(rgb);
-
     colorCode.textContent = rgb;
-    applyShadowColorFromPalette(
-      rgb,
-      currentTransparency / 100,
-      selectedElement,
-      saveButtonShadowModifications
-    );
+    applyButtonShadowColorFromPalette(rgb, currentTransparency / 100);
   }
 
   if (transparencyField && transparencyBullet) {
@@ -302,11 +370,9 @@ export function buttonShadowColorPalate(
         }
         const currentColor = colorCode?.textContent;
         if (currentColor) {
-          applyShadowColorFromPalette(
+          applyButtonShadowColorFromPalette(
             currentColor,
-            currentTransparency / 100,
-            selectedElement,
-            saveButtonShadowModifications
+            currentTransparency / 100
           );
         }
       };
@@ -341,13 +407,7 @@ export function buttonShadowColorPalate(
         allColorBullet.style.top = `${bulletTop}px`;
       }
 
-      // applyImageShadowColor(color, currentTransparency / 100);
-      applyShadowColorFromPalette(
-        color,
-        currentTransparency / 100,
-        selectedElement,
-        saveButtonShadowModifications
-      );
+      applyButtonShadowColorFromPalette(color, currentTransparency / 100);
 
       requestAnimationFrame(() => {
         const canvas = selectorField.querySelector("canvas");
@@ -391,12 +451,7 @@ export function buttonShadowColorPalate(
         }
       });
 
-      applyShadowColorFromPalette(
-        color,
-        currentTransparency / 100,
-        selectedElement,
-        saveButtonShadowModifications
-      );
+      applyButtonShadowColorFromPalette(color, currentTransparency / 100);
     };
 
     container.appendChild(swatch);
