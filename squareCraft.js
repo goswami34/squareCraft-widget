@@ -589,6 +589,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { initImageResetHandler } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   const themeColors = await getSquarespaceThemeStyles();
 
   // document.body.addEventListener("click", (event) => {
@@ -3017,6 +3021,9 @@ let pendingModifications = new Map();
       fetchButtonShadowModifications(elementId);
     }
 
+    // Initialize image reset handler
+    initImageResetHandler();
+
     const fontWeightSelect = document.getElementById("squareCraftFontWeight");
     if (fontWeightSelect && !fontWeightSelect.dataset.initialized) {
       console.log("Initializing font weight select");
@@ -4126,6 +4133,7 @@ let pendingModifications = new Map();
       // hoverTypoTabSelect();
       initHoverButtonEffectDropdowns();
       initImageUploadPreview(() => selectedElement);
+      initImageResetHandler();
       triggerLaunchAnimation();
       if (clickedBlock) {
         waitForElement("#typoSection, #imageSection, #buttonSection")

@@ -1000,105 +1000,6 @@ export async function saveButtonShadowModifications(blockId, css) {
 
 // link text save modificaiton code here
 
-// export async function saveLinkTextModifications(blockId, css, tagType) {
-//   const pageId = document
-//     .querySelector("article[data-page-sections]")
-//     ?.getAttribute("data-page-sections");
-
-//   const userId = localStorage.getItem("sc_u_id");
-//   const token = localStorage.getItem("sc_auth_token");
-//   const widgetId = localStorage.getItem("sc_w_id");
-
-//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-//     console.warn("❌ Missing required data to save link text styles", {
-//       userId,
-//       token,
-//       widgetId,
-//       pageId,
-//       blockId,
-//       css,
-//     });
-//     return { success: false, error: "Missing required data" };
-//   }
-
-//   // 🔍 Get raw styles & selector from css.linkText
-//   const rawStyles = css?.linkText?.styles || {};
-//   const rawSelector = css?.linkText?.selector || `#${blockId} a`;
-
-//   // Extract the tagType (like h2, h3, etc.) from selector if not given
-//   const detectedTag =
-//     tagType || rawSelector.match(/#.+?\s+([a-z0-9]+)/)?.[1] || "a";
-
-//   const cleanedStyles = Object.fromEntries(
-//     Object.entries(rawStyles).filter(
-//       ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
-//     )
-//   );
-
-//   const kebabStyles = Object.fromEntries(
-//     Object.entries(cleanedStyles).map(([key, val]) => [
-//       key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-//       val,
-//     ])
-//   );
-
-//   if (Object.keys(kebabStyles).length === 0) {
-//     return { success: false, error: "No valid styles to save" };
-//   }
-
-//   const payload = {
-//     userId,
-//     token,
-//     widgetId,
-//     pageId,
-//     elementId: blockId,
-//     css: {
-//       target: detectedTag,
-//       styles: kebabStyles,
-//     },
-//   };
-
-//   console.log("📤 Sending final link text payload:", payload);
-
-//   try {
-//     const response = await fetch(
-//       "https://admin.squareplugin.com/api/v1/save-link-text-modifications",
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify(payload),
-//       }
-//     );
-
-//     const result = await response.json();
-
-//     if (!response.ok) {
-//       console.error("❌ API Error Details:", {
-//         status: response.status,
-//         statusText: response.statusText,
-//         result: result,
-//       });
-//       throw new Error(result.message || `HTTP ${response.status}`);
-//     }
-
-//     console.log("✅ Link text styles saved:", result);
-//     showNotification("Link text styles saved successfully!", "success");
-
-//     return { success: true, data: result };
-//   } catch (error) {
-//     console.error("❌ Error saving link text styles:", error);
-//     showNotification(
-//       `Failed to save link text styles: ${error.message}`,
-//       "error"
-//     );
-
-//     return { success: false, error: error.message };
-//   }
-// }
-
 export async function saveLinkTextModifications(blockId, cssMap) {
   const pageId = document
     .querySelector("article[data-page-sections]")
@@ -1209,3 +1110,67 @@ export async function saveLinkTextModifications(blockId, cssMap) {
   }
 }
 // link text save modificaiton code end here
+
+// reset all image modification code start here
+export function initImageResetHandler() {
+  const resetBtn = document.querySelector("#buttonResetAll-icon");
+  if (!resetBtn) {
+    console.warn("❌ Reset button not found!");
+    return;
+  }
+
+  resetBtn.addEventListener("click", async () => {
+    const confirmReset = confirm(
+      "⚠️ Are you sure you want to reset? This will permanently delete all image styling data from the database for this page."
+    );
+
+    if (!confirmReset) return;
+
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!userId || !token || !widgetId || !pageId) {
+      showNotification("❌ Missing required data to reset", "error");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "https://admin.squareplugin.com/api/v1/delete-image-modifications",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            userId,
+            widgetId,
+            pageId,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || `HTTP ${response.status}`);
+      }
+
+      console.log("✅ Reset successful:", result);
+      showNotification("✅ Image styles reset successfully!", "success");
+
+      // Optional: clean up UI or styles
+      // document.querySelector(`#${blockId}`)?.removeAttribute("style");
+    } catch (err) {
+      console.error("❌ Reset failed:", err);
+      showNotification(`❌ Reset failed: ${err.message}`, "error");
+    }
+  });
+}
+
+// end reset all image modification code
