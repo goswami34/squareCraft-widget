@@ -1212,28 +1212,36 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
   // Add reset button event listeners
   document.addEventListener("click", (e) => {
-    // Border reset button - look for reset icon or button with specific attributes
-    if (
-      e.target.closest('[data-reset="border"]') ||
-      e.target.closest('[data-reset="border-width"]') ||
-      e.target.closest(".border-reset-button") ||
-      (e.target.tagName === "IMG" &&
-        e.target.alt === "reset" &&
-        e.target.closest(".border-section"))
-    ) {
-      resetBorderStyles();
-    }
+    // Check if the clicked element is the reset button
+    const resetButton =
+      e.target.closest("#buttonResetAll-icon") ||
+      (e.target.tagName === "IMG" && e.target.alt === "reset");
 
-    // Border-radius reset button
-    if (
-      e.target.closest('[data-reset="border-radius"]') ||
-      e.target.closest('[data-reset="radius"]') ||
-      e.target.closest(".radius-reset-button") ||
-      (e.target.tagName === "IMG" &&
-        e.target.alt === "reset" &&
-        e.target.closest(".radius-section"))
-    ) {
-      resetBorderRadiusStyles();
+    if (resetButton) {
+      console.log("🔄 Reset button clicked:", resetButton);
+
+      // Check which section is currently active by looking at specific elements
+      const borderWidthSlider = document.getElementById("radiousField");
+      const radiusSlider = document.getElementById("radiusField");
+
+      // If border width slider is visible, reset border styles
+      if (borderWidthSlider && borderWidthSlider.offsetParent !== null) {
+        console.log("🎯 Border section active - resetting border styles");
+        resetBorderStyles();
+      }
+      // If radius slider is visible, reset border-radius styles
+      else if (radiusSlider && radiusSlider.offsetParent !== null) {
+        console.log(
+          "🎯 Radius section active - resetting border-radius styles"
+        );
+        resetBorderRadiusStyles();
+      }
+      // If neither is visible, reset both (fallback)
+      else {
+        console.log("🎯 No specific section detected - resetting both");
+        resetBorderStyles();
+        resetBorderRadiusStyles();
+      }
     }
   });
 
