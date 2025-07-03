@@ -1212,35 +1212,42 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
   // Add reset button event listeners
   document.addEventListener("click", (e) => {
-    // Check if the clicked element is the reset button
-    const resetButton =
-      e.target.closest("#buttonResetAll-icon") ||
-      (e.target.tagName === "IMG" && e.target.alt === "reset");
+    // Check if the clicked element is a reset icon
+    if (e.target.tagName === "IMG" && e.target.alt === "reset") {
+      console.log("🔄 Reset icon clicked:", e.target);
 
-    if (resetButton) {
-      console.log("🔄 Reset button clicked:", resetButton);
+      // Check which section the reset icon is in by looking at its parent containers
+      const borderSection = e.target.closest("#borderSection");
+      const radiusSection = e.target.closest('[id*="radius"]');
 
-      // Check which section is currently active by looking at specific elements
-      const borderWidthSlider = document.getElementById("radiousField");
-      const radiusSlider = document.getElementById("radiusField");
-
-      // If border width slider is visible, reset border styles
-      if (borderWidthSlider && borderWidthSlider.offsetParent !== null) {
-        console.log("🎯 Border section active - resetting border styles");
-        resetBorderStyles();
-      }
-      // If radius slider is visible, reset border-radius styles
-      else if (radiusSlider && radiusSlider.offsetParent !== null) {
+      if (borderSection) {
         console.log(
-          "🎯 Radius section active - resetting border-radius styles"
+          "🎯 Reset icon in border section - resetting border styles"
+        );
+        resetBorderStyles();
+      } else if (radiusSection) {
+        console.log(
+          "🎯 Reset icon in radius section - resetting border-radius styles"
         );
         resetBorderRadiusStyles();
-      }
-      // If neither is visible, reset both (fallback)
-      else {
-        console.log("🎯 No specific section detected - resetting both");
-        resetBorderStyles();
-        resetBorderRadiusStyles();
+      } else {
+        // Fallback: check which sliders are visible
+        const borderWidthSlider = document.getElementById("radiousField");
+        const radiusSlider = document.getElementById("radiusField");
+
+        if (borderWidthSlider && borderWidthSlider.offsetParent !== null) {
+          console.log("🎯 Border section active - resetting border styles");
+          resetBorderStyles();
+        } else if (radiusSlider && radiusSlider.offsetParent !== null) {
+          console.log(
+            "🎯 Radius section active - resetting border-radius styles"
+          );
+          resetBorderRadiusStyles();
+        } else {
+          console.log("🎯 No specific section detected - resetting both");
+          resetBorderStyles();
+          resetBorderRadiusStyles();
+        }
       }
     }
   });
