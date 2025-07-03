@@ -1164,13 +1164,68 @@ export function initImageResetHandler() {
       console.log("✅ Reset successful:", result);
       showNotification("✅ Image styles reset successfully!", "success");
 
-      // Optional: clean up UI or styles
-      // document.querySelector(`#${blockId}`)?.removeAttribute("style");
+      // ✅ Immediately remove all applied image styles from DOM
+      removeAllImageStyles();
     } catch (err) {
       console.error("❌ Reset failed:", err);
       showNotification(`❌ Reset failed: ${err.message}`, "error");
     }
   });
+}
+
+// ✅ Function to remove all applied image styles from DOM
+function removeAllImageStyles() {
+  try {
+    // Remove all style tags that were added by the plugin
+    const styleTagsToRemove = [
+      ...document.querySelectorAll('style[id^="sc-style-"]'),
+      ...document.querySelectorAll('style[id^="sc-img-style-"]'),
+      ...document.querySelectorAll('style[id^="sc-overlay-style-"]'),
+      ...document.querySelectorAll('style[id^="sc-shadow-style-"]'),
+      ...document.querySelectorAll('style[id^="sc-image-tag-style-"]'),
+      ...document.querySelectorAll('style[id^="sc-overflow-style-"]'),
+    ];
+
+    styleTagsToRemove.forEach((styleTag) => {
+      console.log(`🗑️ Removing style tag: ${styleTag.id}`);
+      styleTag.remove();
+    });
+
+    // Remove applied classes from image elements
+    const imageElements = document.querySelectorAll(
+      ".sc-image-styled, .sc-font-modified"
+    );
+    imageElements.forEach((element) => {
+      element.classList.remove("sc-image-styled", "sc-font-modified");
+    });
+
+    // Reset any inline styles on image content elements
+    const imageContentElements =
+      document.querySelectorAll(".sqs-image-content");
+    imageContentElements.forEach((element) => {
+      // Remove specific styles that might have been applied
+      element.style.removeProperty("border");
+      element.style.removeProperty("border-radius");
+      element.style.removeProperty("box-shadow");
+      element.style.removeProperty("overflow");
+    });
+
+    // Reset img tag styles
+    const imgElements = document.querySelectorAll(".sqs-image-content img");
+    imgElements.forEach((img) => {
+      img.style.removeProperty("object-fit");
+      img.style.removeProperty("box-sizing");
+    });
+
+    console.log("✅ All image styles removed from DOM");
+    showNotification("✅ All image styles have been reset!", "success");
+  } catch (error) {
+    console.error("❌ Error removing image styles:", error);
+    showNotification(
+      "⚠️ Styles removed from database but some DOM cleanup failed",
+      "warning"
+    );
+  }
 }
 
 // end reset all image modification code
