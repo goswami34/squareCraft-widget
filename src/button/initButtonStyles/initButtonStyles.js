@@ -2357,9 +2357,6 @@ if (publishButton) {
   publishButton.addEventListener("click", publishButton.buttonPublishHandler);
 }
 
-// Export the publish function
-export { publishPendingButtonModifications };
-
 // import { initButtonFontColorPaletteToggle } from "https://goswami34.github.io/squareCraft-widget/src/button/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js";
 
 // // Example themeColors object (replace with your actual theme colors)
