@@ -2343,6 +2343,10 @@ if (publishButton) {
   // Create new handler
   publishButton.buttonPublishHandler = async () => {
     try {
+      // Import the save function dynamically
+      const { saveButtonModifications } = await import(
+        "https://goswami34.github.io/squareCraft-widget/html.js"
+      );
       await publishPendingButtonModifications(saveButtonModifications);
     } catch (error) {
       console.error("Button publish error:", error);
@@ -2352,6 +2356,9 @@ if (publishButton) {
   // Add the handler
   publishButton.addEventListener("click", publishButton.buttonPublishHandler);
 }
+
+// Export the publish function
+export { publishPendingButtonModifications };
 
 // import { initButtonFontColorPaletteToggle } from "https://goswami34.github.io/squareCraft-widget/src/button/initButtonFontColorPaletteToggle/initButtonFontColorPaletteToggle.js";
 
