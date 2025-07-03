@@ -336,7 +336,19 @@ async function handlePublish() {
           case "textTransform":
           case "textHighlight":
           case "font":
-            result = await saveModifications(blockId, mod.css, mod.tagType);
+            // Check if this is button font data by looking at the CSS structure
+            if (
+              mod.css &&
+              (mod.css.buttonPrimary ||
+                mod.css.buttonSecondary ||
+                mod.css.buttonTertiary)
+            ) {
+              // This is button font data - use button-specific save function
+              result = await saveButtonModifications(blockId, mod.css);
+            } else {
+              // This is general font data - use general save function
+              result = await saveModifications(blockId, mod.css, mod.tagType);
+            }
             break;
           case "button":
             result = await saveButtonModifications(blockId, mod.css);
