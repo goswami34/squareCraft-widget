@@ -189,8 +189,8 @@ export function WidgetImageNormalState() {
                Border Radius
                </p>
                <div
-               class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-1 sc-p-1_5 sc-bg sc-bg-454545">
-               <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/reset.svg" width="10" alt="reset" />
+                  class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-1 sc-p-1_5 sc-bg sc-bg-454545" id="border-radius-reset">
+                  <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/reset.svg" width="10" alt="reset" />
                </div>
             </div>
             <div

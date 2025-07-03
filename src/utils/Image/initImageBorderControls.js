@@ -1218,16 +1218,16 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
       // Check which section the reset icon is in by looking at its parent containers
       const borderSection = e.target.closest("#borderSection");
-      const radiusSection = e.target.closest('[id*="radius"]');
+      const borderRadiusReset = e.target.closest("#border-radius-reset");
 
-      if (borderSection) {
+      if (borderSection && !borderRadiusReset) {
         console.log(
           "🎯 Reset icon in border section - resetting border styles"
         );
         resetBorderStyles();
-      } else if (radiusSection) {
+      } else if (borderRadiusReset) {
         console.log(
-          "🎯 Reset icon in radius section - resetting border-radius styles"
+          "🎯 Reset icon in border-radius section - resetting border-radius styles"
         );
         resetBorderRadiusStyles();
       } else {
