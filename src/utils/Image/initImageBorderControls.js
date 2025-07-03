@@ -983,6 +983,260 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
   // border radius end here
 
+  // ✅ Reset functionality for border and border-radius
+  function resetBorderStyles() {
+    const selected = document.querySelector(".sc-selected-image");
+    if (!selected) {
+      console.warn("❌ No image selected for border reset");
+      return;
+    }
+
+    const block = selected.closest('[id^="block-"]');
+    if (!block) return;
+
+    const blockId = block.id;
+    const blockSelector = `#${blockId} div.sqs-image-content`;
+
+    // Remove border styles from style tag
+    let styleTag = document.getElementById("sc-image-border-style");
+    if (styleTag) {
+      let currentCSS = styleTag.textContent;
+      const blockRegex = new RegExp(
+        `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+        "g"
+      );
+      const match = blockRegex.exec(currentCSS);
+
+      if (match) {
+        let declarations = match[2];
+        // Remove all border-related properties
+        declarations = declarations
+          .replace(/border-width\s*:\s*[^;]+;?/g, "")
+          .replace(/border-style\s*:\s*[^;]+;?/g, "")
+          .replace(/border-color\s*:\s*[^;]+;?/g, "")
+          .replace(/border-top-width\s*:\s*[^;]+;?/g, "")
+          .replace(/border-bottom-width\s*:\s*[^;]+;?/g, "")
+          .replace(/border-left-width\s*:\s*[^;]+;?/g, "")
+          .replace(/border-right-width\s*:\s*[^;]+;?/g, "")
+          .trim();
+
+        if (declarations) {
+          const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
+          currentCSS = currentCSS.replace(blockRegex, updated);
+        } else {
+          // If no declarations left, remove the entire block
+          currentCSS = currentCSS.replace(blockRegex, "");
+        }
+        styleTag.textContent = currentCSS;
+      }
+    }
+
+    // Reset UI controls
+    // Reset border width slider
+    if (
+      borderWidthSlider &&
+      borderWidthBullet &&
+      borderWidthFill &&
+      borderWidthDisplay
+    ) {
+      borderWidthBullet.style.left = "0px";
+      borderWidthBullet.style.transform = "translateX(-50%)";
+      borderWidthFill.style.width = "0px";
+      borderWidthDisplay.textContent = "0px";
+      allBorderWidth = 0;
+      topBorderWidth = 0;
+      bottomBorderWidth = 0;
+      leftBorderWidth = 0;
+      rightBorderWidth = 0;
+    }
+
+    // Reset border color
+    selectedBorderColor = null;
+    if (colorCode) {
+      colorCode.textContent = "Select";
+    }
+
+    // Reset border style buttons
+    const solidBtn = document.getElementById("borderStyleSolid");
+    const dashedBtn = document.getElementById("borderStyleDashed");
+    const dottedBtn = document.getElementById("borderStyleDotted");
+    [solidBtn, dashedBtn, dottedBtn].forEach((btn) => {
+      if (btn) btn.classList.remove("sc-bg-454545");
+    });
+
+    // Reset active border type
+    window.__scActiveBorderType = "all";
+    setActiveBorderButton(allButton);
+
+    // Update map and pending modifications
+    const currentStyles = window.__scImageStyleMap.get(blockId) || {};
+    const updatedStyles = {
+      ...currentStyles,
+      image: {
+        ...currentStyles.image,
+        styles: {
+          ...currentStyles.image?.styles,
+          // Remove border properties
+          "border-width": undefined,
+          "border-style": undefined,
+          "border-color": undefined,
+          "border-top-width": undefined,
+          "border-bottom-width": undefined,
+          "border-left-width": undefined,
+          "border-right-width": undefined,
+        },
+      },
+    };
+
+    // Clean up undefined values
+    Object.keys(updatedStyles.image.styles).forEach((key) => {
+      if (updatedStyles.image.styles[key] === undefined) {
+        delete updatedStyles.image.styles[key];
+      }
+    });
+
+    window.__scImageStyleMap.set(blockId, updatedStyles);
+    pendingBorderModifications.set(blockId, updatedStyles);
+
+    console.log("✅ Border styles reset locally");
+  }
+
+  function resetBorderRadiusStyles() {
+    const selected = document.querySelector(".sc-selected-image");
+    if (!selected) {
+      console.warn("❌ No image selected for border-radius reset");
+      return;
+    }
+
+    const block = selected.closest('[id^="block-"]');
+    if (!block) return;
+
+    const blockId = block.id;
+    const blockSelector = `#${blockId} div.sqs-image-content`;
+
+    // Remove border-radius styles from style tag
+    let styleTag = document.getElementById("sc-image-border-style");
+    if (styleTag) {
+      let currentCSS = styleTag.textContent;
+      const blockRegex = new RegExp(
+        `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+        "g"
+      );
+      const match = blockRegex.exec(currentCSS);
+
+      if (match) {
+        let declarations = match[2];
+        // Remove all border-radius properties
+        declarations = declarations
+          .replace(/border-radius\s*:\s*[^;]+;?/g, "")
+          .replace(/border-top-left-radius\s*:\s*[^;]+;?/g, "")
+          .replace(/border-top-right-radius\s*:\s*[^;]+;?/g, "")
+          .replace(/border-bottom-right-radius\s*:\s*[^;]+;?/g, "")
+          .replace(/border-bottom-left-radius\s*:\s*[^;]+;?/g, "")
+          .trim();
+
+        if (declarations) {
+          const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
+          currentCSS = currentCSS.replace(blockRegex, updated);
+        } else {
+          // If no declarations left, remove the entire block
+          currentCSS = currentCSS.replace(blockRegex, "");
+        }
+        styleTag.textContent = currentCSS;
+      }
+    }
+
+    // Reset radius slider
+    const radiusSlider = document.getElementById("radiusField");
+    const radiusBullet = document.getElementById("radiusBullet");
+    const radiusFill = document.getElementById("radiusFill");
+    const radiusDisplay = document.getElementById("radiusCountAnother");
+
+    if (radiusSlider && radiusBullet && radiusFill && radiusDisplay) {
+      radiusBullet.style.left = "0px";
+      radiusBullet.style.transform = "translateX(-50%)";
+      radiusFill.style.width = "0px";
+      radiusDisplay.textContent = "0px";
+    }
+
+    // Reset radius buttons
+    const allRadiusBtn = document.getElementById("allradiusBorder");
+    const topLeftBtn = document.getElementById("topLeftradiusBorder");
+    const topRightBtn = document.getElementById("topRightradiusBorder");
+    const bottomRightBtn = document.getElementById("bottomRightradiusBorder");
+    const bottomLeftBtn = document.getElementById("bottomLeftradiusBorder");
+
+    [
+      allRadiusBtn,
+      topLeftBtn,
+      topRightBtn,
+      bottomRightBtn,
+      bottomLeftBtn,
+    ].forEach((btn) => {
+      if (btn) btn.classList.remove("sc-bg-454545");
+    });
+
+    // Reset active radius target
+    activeRadiusTarget = null;
+
+    // Update map and pending modifications
+    const currentStyles = window.__scImageStyleMap.get(blockId) || {};
+    const updatedStyles = {
+      ...currentStyles,
+      image: {
+        ...currentStyles.image,
+        styles: {
+          ...currentStyles.image?.styles,
+          // Remove border-radius properties
+          "border-radius": undefined,
+          "border-top-left-radius": undefined,
+          "border-top-right-radius": undefined,
+          "border-bottom-right-radius": undefined,
+          "border-bottom-left-radius": undefined,
+        },
+      },
+    };
+
+    // Clean up undefined values
+    Object.keys(updatedStyles.image.styles).forEach((key) => {
+      if (updatedStyles.image.styles[key] === undefined) {
+        delete updatedStyles.image.styles[key];
+      }
+    });
+
+    window.__scImageStyleMap.set(blockId, updatedStyles);
+    pendingBorderModifications.set(blockId, updatedStyles);
+
+    console.log("✅ Border-radius styles reset locally");
+  }
+
+  // Add reset button event listeners
+  document.addEventListener("click", (e) => {
+    // Border reset button - look for reset icon or button with specific attributes
+    if (
+      e.target.closest('[data-reset="border"]') ||
+      e.target.closest('[data-reset="border-width"]') ||
+      e.target.closest(".border-reset-button") ||
+      (e.target.tagName === "IMG" &&
+        e.target.alt === "reset" &&
+        e.target.closest(".border-section"))
+    ) {
+      resetBorderStyles();
+    }
+
+    // Border-radius reset button
+    if (
+      e.target.closest('[data-reset="border-radius"]') ||
+      e.target.closest('[data-reset="radius"]') ||
+      e.target.closest(".radius-reset-button") ||
+      (e.target.tagName === "IMG" &&
+        e.target.alt === "reset" &&
+        e.target.closest(".radius-section"))
+    ) {
+      resetBorderRadiusStyles();
+    }
+  });
+
   // Add publish button handler (like shadow controls)
   const publishButton = document.getElementById("publish");
   if (publishButton) {
