@@ -1,9 +1,8 @@
-import { WidgetButtonNormalState } from 'https://fatin-webefo.github.io/squareCraft-plugin/src/button/WidgetButtonNormalState/WidgetButtonNormalState.js'
-import { WidgetButtonHoverState } from 'https://fatin-webefo.github.io/squareCraft-plugin/src/button/WidgetButtonHoverState/WidgetButtonHoverState.js'
+import { WidgetButtonNormalState } from "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonNormalState/WidgetButtonNormalState.js";
+import { WidgetButtonHoverState } from "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonHoverState/WidgetButtonHoverState.js";
 
 export function WidgetButtonSection() {
-
-   return `
+  return `
     <div id="buttonSection">
          <div class="sc-flex sc-p-2 sc-items-center sc-justify-between">
             <div class="sc-flex sc-gap-2 sc-items-center">

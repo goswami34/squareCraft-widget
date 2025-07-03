@@ -1678,6 +1678,15 @@ export function initButtonShadowControls(
   setupShadowControl("Yaxis", 30);
   setupShadowControl("Blur", 50);
   setupShadowControl("Spread", 30);
+
+  // Initialize the button shadow color palette
+  // You may need to pass themeColors from your context or config
+  const themeColors = window.themeColors || {};
+  buttonShadowColorPalate(
+    themeColors,
+    getSelectedElement,
+    saveButtonShadowModifications
+  );
 }
 
 window.syncButtonStylesFromElement = function (selectedElement) {
