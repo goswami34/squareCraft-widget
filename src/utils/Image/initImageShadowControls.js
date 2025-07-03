@@ -77,7 +77,6 @@ function updateShadowCSS(blockId) {
           .map(([key, value]) => `${key}: ${value} !important;`)
           .join("\n        ")}
         box-shadow: ${x}px ${y}px ${blur}px ${spread}px ${color} !important;
-        -webkit-mask-image: none !important;
       }
     `;
 
@@ -87,7 +86,6 @@ function updateShadowCSS(blockId) {
       styles: {
         ...existingStyles, // Preserve existing styles
         "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${color}`,
-        "-webkit-mask-image": "none",
       },
     },
   });
@@ -248,7 +246,6 @@ function applyShadowColorFromPalette(color, alpha = 1, getSelectedElement) {
       styles: {
         ...existingStyles, // Preserve existing styles
         "box-shadow": `${x}px ${y}px ${blur}px ${spread}px ${rgbaColor}`,
-        "-webkit-mask-image": "none",
       },
     },
   });
