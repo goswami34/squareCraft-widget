@@ -1270,6 +1270,14 @@ export function initButtonBorderRadiusControl(
   showNotification,
   saveButtonBorderModifications
 ) {
+  // --- State Management (like image controls) ---
+  if (!window.__scButtonStyleMap) {
+    window.__scButtonStyleMap = new Map();
+  }
+
+  // Store pending modifications locally (like image controls)
+  const pendingBorderRadiusModifications = new Map();
+
   // --- State ---
   let activeRadiusTarget = "all";
   let radiusValues = {
@@ -1293,9 +1301,9 @@ export function initButtonBorderRadiusControl(
   const valueText = document.getElementById("buttonBorderradiusCount");
   const incBtn = document.getElementById("buttonBorderradiusIncrease");
   const decBtn = document.getElementById("buttonBorderradiusDecrease");
-  const resetBtn = valueText
-    ?.closest(".sc-flex")
-    ?.querySelector('img[alt="reset"]');
+  const resetBtn = document.querySelector(
+    '#border-radius-reset img[alt="reset"]'
+  );
 
   if (
     !fillField ||
@@ -1319,78 +1327,47 @@ export function initButtonBorderRadiusControl(
     return "sqs-button-element--primary";
   }
 
+  // --- Merge and Save Button Styles (like image controls) ---
+  function mergeAndSaveButtonRadiusStyles(blockId, typeClass, newStyles) {
+    console.log("🔄 mergeAndSaveButtonRadiusStyles called with:", {
+      blockId,
+      typeClass,
+      newStyles,
+    });
+
+    const prevStyles = window.__scButtonStyleMap.get(blockId) || {
+      [typeClass]: {
+        selector: `.${typeClass}`,
+        styles: {},
+      },
+    };
+
+    const mergedStyles = {
+      ...prevStyles[typeClass]?.styles,
+      ...(newStyles || {}),
+    };
+
+    const finalData = {
+      [typeClass]: {
+        selector: `.${typeClass}`,
+        styles: mergedStyles,
+      },
+    };
+
+    // Save to map only (no DB call)
+    window.__scButtonStyleMap.set(blockId, finalData);
+
+    // Store in local pendingModifications (like image controls)
+    pendingBorderRadiusModifications.set(blockId, finalData);
+
+    console.log("💾 Added to pending radius modifications:", {
+      blockId,
+      finalData,
+      pendingCount: pendingBorderRadiusModifications.size,
+    });
+  }
+
   // --- Apply Border Radius to Button ---
-  // function applyBorderRadius(type, value) {
-  //   const selected = getSelectedElement?.();
-  //   const btn = selected?.querySelector(
-  //     ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-  //   );
-  //   if (!btn) return;
-
-  //   const typeClass = getButtonTypeClass(btn);
-  //   const styleId = `sc-normal-radius-${typeClass.replace(/--/g, "-")}`;
-  //   let styleTag = document.getElementById(styleId);
-  //   if (!styleTag) {
-  //     styleTag = document.createElement("style");
-  //     styleTag.id = styleId;
-  //     document.head.appendChild(styleTag);
-  //   }
-
-  //   // Compose CSS
-  //   let css = `.${typeClass} {`;
-  //   if (type === "all") {
-  //     css += `border-radius: ${value}px !important;`;
-  //   } else {
-  //     css += `border-radius: ${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px !important;`;
-  //     // Also set individual corners for extra specificity
-  //     if (radiusValues.topLeft)
-  //       css += `border-top-left-radius: ${radiusValues.topLeft}px !important;`;
-  //     if (radiusValues.topRight)
-  //       css += `border-top-right-radius: ${radiusValues.topRight}px !important;`;
-  //     if (radiusValues.bottomRight)
-  //       css += `border-bottom-right-radius: ${radiusValues.bottomRight}px !important;`;
-  //     if (radiusValues.bottomLeft)
-  //       css += `border-bottom-left-radius: ${radiusValues.bottomLeft}px !important;`;
-  //   }
-  //   css += "overflow: hidden !important;}";
-  //   css += `
-  //     .${typeClass} span,
-  //     .${typeClass} .sqs-add-to-cart-button-inner {
-  //       border-radius: inherit !important;
-  //     }
-  //     .${typeClass}:hover {
-  //       border-radius: inherit !important;
-  //       overflow: hidden !important;
-  //     }
-  //     .${typeClass}:hover span,
-  //     .${typeClass}:hover .sqs-add-to-cart-button-inner {
-  //       border-radius: inherit !important;
-  //     }
-  //   `;
-  //   styleTag.textContent = css;
-
-  //   // Save to local state (optional: add DB logic if needed)
-  //   const blockId = selected.id;
-  //   if (blockId && blockId !== "block-id") {
-  //     const stylePayload = {
-  //       buttonPrimary: {
-  //         selector: ".sqs-button-element--primary",
-  //         styles: {
-  //           borderRadius:
-  //             type === "all"
-  //               ? `${value}px`
-  //               : `${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px`,
-  //           overflow: "hidden",
-  //         },
-  //       },
-  //     };
-  //     addPendingModification(blockId, stylePayload, "button", "border");
-  //     if (typeof showNotification === "function") {
-  //       showNotification("Border radius updated locally!", "info");
-  //     }
-  //   }
-  // }
-
   function applyBorderRadius(type, value) {
     const selected = getSelectedElement?.();
     const btn = selected?.querySelector(
@@ -1399,7 +1376,7 @@ export function initButtonBorderRadiusControl(
     if (!btn) return;
 
     const typeClass = getButtonTypeClass(btn);
-    const styleId = `sc-normal-radius-${typeClass.replace(/--/g, "-")}`;
+    const styleId = `sc-button-radius-${typeClass.replace(/--/g, "-")}`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
       styleTag = document.createElement("style");
@@ -1441,22 +1418,19 @@ export function initButtonBorderRadiusControl(
 
     styleTag.textContent = css;
 
-    // ✅ ✅ FIXED this section:
+    // Save to local state and pending modifications
     const blockId = selected.id;
     if (blockId && blockId !== "block-id") {
-      const stylePayload = {
-        [typeClass]: {
-          selector: `.${typeClass}`,
-          styles: {
-            borderRadius:
-              type === "all"
-                ? `${value}px`
-                : `${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px`,
-            overflow: "hidden",
-          },
-        },
-      };
-      addPendingModification(blockId, stylePayload, "button", "border");
+      const borderRadiusValue =
+        type === "all"
+          ? `${value}px`
+          : `${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px`;
+
+      mergeAndSaveButtonRadiusStyles(blockId, typeClass, {
+        "border-radius": borderRadiusValue,
+        overflow: "hidden",
+      });
+
       if (typeof showNotification === "function") {
         showNotification("Border radius updated locally!", "info");
       }
@@ -1481,6 +1455,34 @@ export function initButtonBorderRadiusControl(
     bullet.style.left = `${percent}%`;
     fill.style.width = `${percent}%`;
     valueText.textContent = `${value}px`;
+  }
+
+  // --- Function to sync UI controls with restored styles ---
+  function syncUIWithRestoredStyles(blockId, typeClass) {
+    const prevStyles =
+      window.__scButtonStyleMap.get(blockId)?.[typeClass]?.styles || {};
+    const borderRadius = prevStyles["border-radius"];
+
+    if (borderRadius) {
+      // Parse border-radius value
+      let values = borderRadius.split(" ").map((v) => parseInt(v));
+      if (values.length === 1)
+        values = [values[0], values[0], values[0], values[0]];
+      if (values.length === 2)
+        values = [values[0], values[1], values[0], values[1]];
+      if (values.length === 3)
+        values = [values[0], values[1], values[2], values[1]];
+      if (values.length === 4) values = values;
+
+      radiusValues.topLeft = values[0] || 0;
+      radiusValues.topRight = values[1] || 0;
+      radiusValues.bottomRight = values[2] || 0;
+      radiusValues.bottomLeft = values[3] || 0;
+      radiusValues.all = values[0] || 0;
+
+      updateUIForTarget(activeRadiusTarget);
+      console.log("🔄 Synced border radius UI:", borderRadius);
+    }
   }
 
   // --- Slider/Field Events ---
@@ -1549,18 +1551,6 @@ export function initButtonBorderRadiusControl(
     applyBorderRadius(activeRadiusTarget, value);
   });
 
-  resetBtn?.addEventListener("click", () => {
-    radiusValues[activeRadiusTarget] = 0;
-    if (activeRadiusTarget === "all") {
-      radiusValues.topLeft = 0;
-      radiusValues.topRight = 0;
-      radiusValues.bottomRight = 0;
-      radiusValues.bottomLeft = 0;
-    }
-    updateUIForTarget(activeRadiusTarget);
-    applyBorderRadius(activeRadiusTarget, 0);
-  });
-
   // --- Corner Button Events ---
   allBtn.addEventListener("click", () => {
     activeRadiusTarget = "all";
@@ -1583,6 +1573,74 @@ export function initButtonBorderRadiusControl(
     updateUIForTarget("bottomLeft");
   });
 
+  // --- Reset functionality ---
+  function resetBorderRadiusStyles() {
+    const selected = getSelectedElement?.();
+    if (!selected) {
+      console.warn("❌ No button selected for border-radius reset");
+      return;
+    }
+
+    const btn = selected.querySelector(
+      ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const typeClass = getButtonTypeClass(btn);
+    const blockId = selected.id;
+
+    // Remove border-radius styles from style tag
+    const styleId = `sc-button-radius-${typeClass.replace(/--/g, "-")}`;
+    const styleTag = document.getElementById(styleId);
+    if (styleTag) {
+      styleTag.remove();
+    }
+
+    // Reset radius values
+    radiusValues = {
+      all: 0,
+      topLeft: 0,
+      topRight: 0,
+      bottomRight: 0,
+      bottomLeft: 0,
+    };
+
+    // Reset UI
+    updateUIForTarget(activeRadiusTarget);
+
+    // Update map and pending modifications
+    const currentStyles = window.__scButtonStyleMap.get(blockId) || {};
+    const updatedStyles = {
+      ...currentStyles,
+      [typeClass]: {
+        ...currentStyles[typeClass],
+        styles: {
+          ...currentStyles[typeClass]?.styles,
+          "border-radius": undefined,
+          overflow: undefined,
+        },
+      },
+    };
+
+    // Clean up undefined values
+    Object.keys(updatedStyles[typeClass].styles).forEach((key) => {
+      if (updatedStyles[typeClass].styles[key] === undefined) {
+        delete updatedStyles[typeClass].styles[key];
+      }
+    });
+
+    window.__scButtonStyleMap.set(blockId, updatedStyles);
+    pendingBorderRadiusModifications.set(blockId, updatedStyles);
+
+    console.log("✅ Border-radius styles reset locally");
+  }
+
+  // --- Reset button event listener ---
+  resetBtn?.addEventListener("click", () => {
+    console.log("🔄 Reset button clicked for border-radius");
+    resetBorderRadiusStyles();
+  });
+
   // --- Initialize UI with current button border radius ---
   setTimeout(() => {
     const selected = getSelectedElement?.();
@@ -1590,22 +1648,34 @@ export function initButtonBorderRadiusControl(
       ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
     );
     if (!btn) return;
-    // Try to parse per-corner border-radius
-    const computed = window.getComputedStyle(btn).borderRadius || "0";
-    let values = computed.split(" ").map((v) => parseInt(v));
-    if (values.length === 1)
-      values = [values[0], values[0], values[0], values[0]];
-    if (values.length === 2)
-      values = [values[0], values[1], values[0], values[1]];
-    if (values.length === 3)
-      values = [values[0], values[1], values[2], values[1]];
-    if (values.length === 4) values = values;
-    radiusValues.topLeft = values[0] || 0;
-    radiusValues.topRight = values[1] || 0;
-    radiusValues.bottomRight = values[2] || 0;
-    radiusValues.bottomLeft = values[3] || 0;
-    radiusValues.all = values[0] || 0;
-    updateUIForTarget(activeRadiusTarget);
+
+    const typeClass = getButtonTypeClass(btn);
+    const blockId = selected.id;
+
+    // Try to sync with restored styles first
+    if (blockId) {
+      syncUIWithRestoredStyles(blockId, typeClass);
+    }
+
+    // Fallback to computed styles if no restored data
+    if (radiusValues.all === 0) {
+      const computed = window.getComputedStyle(btn).borderRadius || "0";
+      let values = computed.split(" ").map((v) => parseInt(v));
+      if (values.length === 1)
+        values = [values[0], values[0], values[0], values[0]];
+      if (values.length === 2)
+        values = [values[0], values[1], values[0], values[1]];
+      if (values.length === 3)
+        values = [values[0], values[1], values[2], values[1]];
+      if (values.length === 4) values = values;
+
+      radiusValues.topLeft = values[0] || 0;
+      radiusValues.topRight = values[1] || 0;
+      radiusValues.bottomRight = values[2] || 0;
+      radiusValues.bottomLeft = values[3] || 0;
+      radiusValues.all = values[0] || 0;
+      updateUIForTarget(activeRadiusTarget);
+    }
   }, 50);
 }
 
