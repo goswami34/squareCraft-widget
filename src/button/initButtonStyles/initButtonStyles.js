@@ -1450,8 +1450,11 @@ export function initButtonBorderRadiusControl(
     if (target === "bottomLeft") bottomLeftBtn.classList.add("sc-bg-454545");
 
     // Update slider and value
-    const value = radiusValues[target];
+    // const value = radiusValues[target];
+    // const percent = (value / max) * 100;
+    const value = Math.min(max, radiusValues[target]);
     const percent = (value / max) * 100;
+
     bullet.style.left = `${percent}%`;
     fill.style.width = `${percent}%`;
     valueText.textContent = `${value}px`;
@@ -1490,8 +1493,11 @@ export function initButtonBorderRadiusControl(
     e.preventDefault();
     const move = (eMove) => {
       const rect = fillField.getBoundingClientRect();
+      // const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
+      // const value = Math.round((x / rect.width) * max);
       const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
-      const value = Math.round((x / rect.width) * max);
+      const value = Math.min(max, Math.round((x / rect.width) * max));
+
       radiusValues[activeRadiusTarget] = value;
       if (activeRadiusTarget === "all") {
         radiusValues.topLeft = value;
@@ -1512,8 +1518,11 @@ export function initButtonBorderRadiusControl(
 
   fillField.addEventListener("click", (e) => {
     const rect = fillField.getBoundingClientRect();
+    // const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
+    // const value = Math.round((x / rect.width) * max);
     const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
-    const value = Math.round((x / rect.width) * max);
+    const value = Math.min(max, Math.round((x / rect.width) * max));
+
     radiusValues[activeRadiusTarget] = value;
     if (activeRadiusTarget === "all") {
       radiusValues.topLeft = value;
