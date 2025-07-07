@@ -1391,15 +1391,27 @@ export function initButtonBorderRadiusControl(
     if (type === "all") {
       css += `border-radius: ${value}px !important;`;
     } else {
-      css += `border-radius: ${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px !important;`;
-      if (radiusValues.topLeft)
-        css += `border-top-left-radius: ${radiusValues.topLeft}px !important;`;
-      if (radiusValues.topRight)
-        css += `border-top-right-radius: ${radiusValues.topRight}px !important;`;
-      if (radiusValues.bottomRight)
-        css += `border-bottom-right-radius: ${radiusValues.bottomRight}px !important;`;
-      if (radiusValues.bottomLeft)
-        css += `border-bottom-left-radius: ${radiusValues.bottomLeft}px !important;`;
+      // css += `border-radius: ${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px !important;`;
+      // if (radiusValues.topLeft)
+      //   css += `border-top-left-radius: ${radiusValues.topLeft}px !important;`;
+      // if (radiusValues.topRight)
+      //   css += `border-top-right-radius: ${radiusValues.topRight}px !important;`;
+      // if (radiusValues.bottomRight)
+      //   css += `border-bottom-right-radius: ${radiusValues.bottomRight}px !important;`;
+      // if (radiusValues.bottomLeft)
+      //   css += `border-bottom-left-radius: ${radiusValues.bottomLeft}px !important;`;
+
+      const topLeft = type === "topLeft" ? value : 0;
+      const topRight = type === "topRight" ? value : 0;
+      const bottomRight = type === "bottomRight" ? value : 0;
+      const bottomLeft = type === "bottomLeft" ? value : 0;
+
+      css += `border-radius: ${topLeft}px ${topRight}px ${bottomRight}px ${bottomLeft}px !important;`;
+
+      css += `border-top-left-radius: ${topLeft}px !important;`;
+      css += `border-top-right-radius: ${topRight}px !important;`;
+      css += `border-bottom-right-radius: ${bottomRight}px !important;`;
+      css += `border-bottom-left-radius: ${bottomLeft}px !important;`;
     }
     css += "overflow: hidden !important;}";
 
