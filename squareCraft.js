@@ -182,9 +182,9 @@ let pendingModifications = new Map();
   const { initButtonAdvanceStyles } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonSection/WidgetButtonAdvanceStyles/WidgetButtonAdvanceStyles.js"
   );
-  const { handleSectionFind } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/section/handleSectionFind.js"
-  );
+  // const { handleSectionFind } = await import(
+  //   "https://fatin-webefo.github.io/squareCraft-plugin/src/section/handleSectionFind.js"
+  // );
   const { ButtonAdvanceToggleControls } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/button/ButtonAdvanceToggleControls/ButtonAdvanceToggleControls.js"
   );
@@ -4397,7 +4397,7 @@ let pendingModifications = new Map();
   }
 
   waitForNavBar();
-  handleSectionFind();
+  // handleSectionFind();
   function checkView() {
     const isMobile = window.innerWidth <= 768;
 
