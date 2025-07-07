@@ -191,9 +191,9 @@ let pendingModifications = new Map();
   const { getTextType } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/utils/getTextType.js"
   );
-  const { getHoverTextType } = await import(
-    "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/getHoverTextType.js"
-  );
+  // const { getHoverTextType } = await import(
+  //   "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/getHoverTextType.js"
+  // );
 
   const { handleFontWeightDropdownClick } = await import(
     "https://fatin-webefo.github.io/squareCraft-plugin/src/clickEvents/handleFontWeightDropdownClick.js"
@@ -1069,7 +1069,7 @@ let pendingModifications = new Map();
     handleAlignmentClick(event, {
       lastClickedElement,
       getTextType,
-      getHoverTextType,
+      // getHoverTextType,
       applyStylesToElement,
       lastAppliedAlignment,
       setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
@@ -3918,7 +3918,7 @@ let pendingModifications = new Map();
       { target: clickedBlock },
       {
         getTextType,
-        getHoverTextType,
+        // getHoverTextType,
         selectedElement,
         setSelectedElement: (val) => (selectedElement = val),
         setLastClickedBlockId: (val) => (lastClickedBlockId = val),
@@ -4142,7 +4142,7 @@ let pendingModifications = new Map();
               { target: clickedBlock },
               {
                 getTextType,
-                getHoverTextType,
+                // getHoverTextType,
                 selectedElement,
                 setSelectedElement: (val) => (selectedElement = val),
                 setLastClickedBlockId: (val) => (lastClickedBlockId = val),
