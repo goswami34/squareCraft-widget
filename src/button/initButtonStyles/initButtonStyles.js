@@ -1370,86 +1370,6 @@ export function initButtonBorderRadiusControl(
   }
 
   // --- Apply Border Radius to Button ---
-  // function applyBorderRadius(type, value) {
-  //   const selected = getSelectedElement?.();
-  //   const btn = selected?.querySelector(
-  //     ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-  //   );
-  //   if (!btn) return;
-
-  //   const typeClass = getButtonTypeClass(btn);
-  //   const styleId = `sc-button-radius-${typeClass.replace(/--/g, "-")}`;
-  //   let styleTag = document.getElementById(styleId);
-  //   if (!styleTag) {
-  //     styleTag = document.createElement("style");
-  //     styleTag.id = styleId;
-  //     document.head.appendChild(styleTag);
-  //   }
-
-  //   // Compose CSS
-  //   let css = `.${typeClass} {`;
-  //   if (type === "all") {
-  //     css += `border-radius: ${value}px !important;`;
-  //   } else {
-  //     // css += `border-radius: ${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px !important;`;
-  //     // if (radiusValues.topLeft)
-  //     //   css += `border-top-left-radius: ${radiusValues.topLeft}px !important;`;
-  //     // if (radiusValues.topRight)
-  //     //   css += `border-top-right-radius: ${radiusValues.topRight}px !important;`;
-  //     // if (radiusValues.bottomRight)
-  //     //   css += `border-bottom-right-radius: ${radiusValues.bottomRight}px !important;`;
-  //     // if (radiusValues.bottomLeft)
-  //     //   css += `border-bottom-left-radius: ${radiusValues.bottomLeft}px !important;`;
-
-  //     const topLeft = type === "topLeft" ? value : 0;
-  //     const topRight = type === "topRight" ? value : 0;
-  //     const bottomRight = type === "bottomRight" ? value : 0;
-  //     const bottomLeft = type === "bottomLeft" ? value : 0;
-
-  //     css += `border-radius: ${topLeft}px ${topRight}px ${bottomRight}px ${bottomLeft}px !important;`;
-
-  //     css += `border-top-left-radius: ${topLeft}px !important;`;
-  //     css += `border-top-right-radius: ${topRight}px !important;`;
-  //     css += `border-bottom-right-radius: ${bottomRight}px !important;`;
-  //     css += `border-bottom-left-radius: ${bottomLeft}px !important;`;
-  //   }
-  //   css += "overflow: hidden !important;}";
-
-  //   css += `
-  //     .${typeClass} span,
-  //     .${typeClass} .sqs-add-to-cart-button-inner {
-  //       border-radius: inherit !important;
-  //     }
-  //     .${typeClass}:hover {
-  //       border-radius: inherit !important;
-  //       overflow: hidden !important;
-  //     }
-  //     .${typeClass}:hover span,
-  //     .${typeClass}:hover .sqs-add-to-cart-button-inner {
-  //       border-radius: inherit !important;
-  //     }
-  //   `;
-
-  //   styleTag.textContent = css;
-
-  //   // Save to local state and pending modifications
-  //   const blockId = selected.id;
-  //   if (blockId && blockId !== "block-id") {
-  //     const borderRadiusValue =
-  //       type === "all"
-  //         ? `${value}px`
-  //         : `${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px`;
-
-  //     mergeAndSaveButtonRadiusStyles(blockId, typeClass, {
-  //       "border-radius": borderRadiusValue,
-  //       overflow: "hidden",
-  //     });
-
-  //     if (typeof showNotification === "function") {
-  //       showNotification("Border radius updated locally!", "info");
-  //     }
-  //   }
-  // }
 
   // function applyBorderRadius(type, value) {
   //   const selected = getSelectedElement?.();
@@ -1525,6 +1445,65 @@ export function initButtonBorderRadiusControl(
   //   }
   // }
 
+  // function applyBorderRadius(type, value) {
+  //   const selected = getSelectedElement?.();
+  //   const btn = selected?.querySelector(
+  //     ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+  //   );
+  //   if (!btn) return;
+
+  //   const typeClass = getButtonTypeClass(btn);
+  //   const styleId = `sc-button-radius-${typeClass.replace(/--/g, "-")}`;
+  //   let styleTag = document.getElementById(styleId);
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = styleId;
+  //     document.head.appendChild(styleTag);
+  //   }
+
+  //   let css = `.${typeClass} {\n`;
+
+  //   if (type === "all") {
+  //     css += `  border-radius: ${value}px !important;\n`;
+  //   } else {
+  //     css += `  border-radius: ${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px !important;\n`;
+  //     if (radiusValues.topLeft)
+  //       css += `  border-top-left-radius: ${radiusValues.topLeft}px !important;\n`;
+  //     if (radiusValues.topRight)
+  //       css += `  border-top-right-radius: ${radiusValues.topRight}px !important;\n`;
+  //     if (radiusValues.bottomRight)
+  //       css += `  border-bottom-right-radius: ${radiusValues.bottomRight}px !important;\n`;
+  //     if (radiusValues.bottomLeft)
+  //       css += `  border-bottom-left-radius: ${radiusValues.bottomLeft}px !important;\n`;
+  //   }
+
+  //   css += `  overflow: hidden !important;\n`;
+  //   css += `}\n`;
+  //   css += `.${typeClass} span,\n.${typeClass} .sqs-add-to-cart-button-inner {\n  border-radius: inherit !important;\n}\n`;
+  //   css += `.${typeClass}:hover {\n  border-radius: inherit !important;\n  overflow: hidden !important;\n}\n`;
+  //   css += `.${typeClass}:hover span,\n.${typeClass}:hover .sqs-add-to-cart-button-inner {\n  border-radius: inherit !important;\n}`;
+
+  //   styleTag.textContent = css;
+
+  //   // Save to local map and pending
+  //   const blockId = selected.id;
+  //   if (blockId && blockId !== "block-id") {
+  //     const borderRadiusValue =
+  //       type === "all"
+  //         ? `${value}px`
+  //         : `${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px`;
+
+  //     mergeAndSaveButtonRadiusStyles(blockId, typeClass, {
+  //       "border-radius": borderRadiusValue,
+  //       overflow: "hidden",
+  //     });
+
+  //     if (typeof showNotification === "function") {
+  //       showNotification("Border radius updated locally!", "info");
+  //     }
+  //   }
+  // }
+
   function applyBorderRadius(type, value) {
     const selected = getSelectedElement?.();
     const btn = selected?.querySelector(
@@ -1544,17 +1523,26 @@ export function initButtonBorderRadiusControl(
     let css = `.${typeClass} {\n`;
 
     if (type === "all") {
+      radiusValues.all = value;
+      radiusValues.topLeft = value;
+      radiusValues.topRight = value;
+      radiusValues.bottomRight = value;
+      radiusValues.bottomLeft = value;
+
       css += `  border-radius: ${value}px !important;\n`;
     } else {
-      css += `  border-radius: ${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px !important;\n`;
-      if (radiusValues.topLeft)
-        css += `  border-top-left-radius: ${radiusValues.topLeft}px !important;\n`;
-      if (radiusValues.topRight)
-        css += `  border-top-right-radius: ${radiusValues.topRight}px !important;\n`;
-      if (radiusValues.bottomRight)
-        css += `  border-bottom-right-radius: ${radiusValues.bottomRight}px !important;\n`;
-      if (radiusValues.bottomLeft)
-        css += `  border-bottom-left-radius: ${radiusValues.bottomLeft}px !important;\n`;
+      radiusValues.all = 0;
+      radiusValues[type] = value;
+
+      // Only update the selected corner
+      const cornerMap = {
+        topLeft: "border-top-left-radius",
+        topRight: "border-top-right-radius",
+        bottomRight: "border-bottom-right-radius",
+        bottomLeft: "border-bottom-left-radius",
+      };
+
+      css += `  ${cornerMap[type]}: ${value}px !important;\n`;
     }
 
     css += `  overflow: hidden !important;\n`;
@@ -1565,18 +1553,30 @@ export function initButtonBorderRadiusControl(
 
     styleTag.textContent = css;
 
-    // Save to local map and pending
     const blockId = selected.id;
     if (blockId && blockId !== "block-id") {
-      const borderRadiusValue =
-        type === "all"
-          ? `${value}px`
-          : `${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px`;
+      let cssData;
 
-      mergeAndSaveButtonRadiusStyles(blockId, typeClass, {
-        "border-radius": borderRadiusValue,
-        overflow: "hidden",
-      });
+      if (type === "all") {
+        cssData = {
+          "border-radius": `${value}px`,
+          overflow: "hidden",
+        };
+      } else {
+        const cornerProp = {
+          topLeft: "border-top-left-radius",
+          topRight: "border-top-right-radius",
+          bottomRight: "border-bottom-right-radius",
+          bottomLeft: "border-bottom-left-radius",
+        }[type];
+
+        cssData = {
+          [cornerProp]: `${value}px`,
+          overflow: "hidden",
+        };
+      }
+
+      mergeAndSaveButtonRadiusStyles(blockId, typeClass, cssData);
 
       if (typeof showNotification === "function") {
         showNotification("Border radius updated locally!", "info");
