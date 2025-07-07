@@ -1320,6 +1320,77 @@ export function initButtonBorderRadiusControl(
   }
 
   // --- Apply Border Radius to Button ---
+  // function applyBorderRadius(type, value) {
+  //   const selected = getSelectedElement?.();
+  //   const btn = selected?.querySelector(
+  //     ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+  //   );
+  //   if (!btn) return;
+
+  //   const typeClass = getButtonTypeClass(btn);
+  //   const styleId = `sc-normal-radius-${typeClass.replace(/--/g, "-")}`;
+  //   let styleTag = document.getElementById(styleId);
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = styleId;
+  //     document.head.appendChild(styleTag);
+  //   }
+
+  //   // Compose CSS
+  //   let css = `.${typeClass} {`;
+  //   if (type === "all") {
+  //     css += `border-radius: ${value}px !important;`;
+  //   } else {
+  //     css += `border-radius: ${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px !important;`;
+  //     // Also set individual corners for extra specificity
+  //     if (radiusValues.topLeft)
+  //       css += `border-top-left-radius: ${radiusValues.topLeft}px !important;`;
+  //     if (radiusValues.topRight)
+  //       css += `border-top-right-radius: ${radiusValues.topRight}px !important;`;
+  //     if (radiusValues.bottomRight)
+  //       css += `border-bottom-right-radius: ${radiusValues.bottomRight}px !important;`;
+  //     if (radiusValues.bottomLeft)
+  //       css += `border-bottom-left-radius: ${radiusValues.bottomLeft}px !important;`;
+  //   }
+  //   css += "overflow: hidden !important;}";
+  //   css += `
+  //     .${typeClass} span,
+  //     .${typeClass} .sqs-add-to-cart-button-inner {
+  //       border-radius: inherit !important;
+  //     }
+  //     .${typeClass}:hover {
+  //       border-radius: inherit !important;
+  //       overflow: hidden !important;
+  //     }
+  //     .${typeClass}:hover span,
+  //     .${typeClass}:hover .sqs-add-to-cart-button-inner {
+  //       border-radius: inherit !important;
+  //     }
+  //   `;
+  //   styleTag.textContent = css;
+
+  //   // Save to local state (optional: add DB logic if needed)
+  //   const blockId = selected.id;
+  //   if (blockId && blockId !== "block-id") {
+  //     const stylePayload = {
+  //       buttonPrimary: {
+  //         selector: ".sqs-button-element--primary",
+  //         styles: {
+  //           borderRadius:
+  //             type === "all"
+  //               ? `${value}px`
+  //               : `${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px`,
+  //           overflow: "hidden",
+  //         },
+  //       },
+  //     };
+  //     addPendingModification(blockId, stylePayload, "button", "border");
+  //     if (typeof showNotification === "function") {
+  //       showNotification("Border radius updated locally!", "info");
+  //     }
+  //   }
+  // }
+
   function applyBorderRadius(type, value) {
     const selected = getSelectedElement?.();
     const btn = selected?.querySelector(
@@ -1342,7 +1413,6 @@ export function initButtonBorderRadiusControl(
       css += `border-radius: ${value}px !important;`;
     } else {
       css += `border-radius: ${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px !important;`;
-      // Also set individual corners for extra specificity
       if (radiusValues.topLeft)
         css += `border-top-left-radius: ${radiusValues.topLeft}px !important;`;
       if (radiusValues.topRight)
@@ -1353,6 +1423,7 @@ export function initButtonBorderRadiusControl(
         css += `border-bottom-left-radius: ${radiusValues.bottomLeft}px !important;`;
     }
     css += "overflow: hidden !important;}";
+
     css += `
       .${typeClass} span,
       .${typeClass} .sqs-add-to-cart-button-inner {
@@ -1367,14 +1438,15 @@ export function initButtonBorderRadiusControl(
         border-radius: inherit !important;
       }
     `;
+
     styleTag.textContent = css;
 
-    // Save to local state (optional: add DB logic if needed)
+    // ✅ ✅ FIXED this section:
     const blockId = selected.id;
     if (blockId && blockId !== "block-id") {
       const stylePayload = {
-        buttonPrimary: {
-          selector: ".sqs-button-element--primary",
+        [typeClass]: {
+          selector: `.${typeClass}`,
           styles: {
             borderRadius:
               type === "all"
