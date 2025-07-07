@@ -1387,80 +1387,6 @@ export function initButtonBorderRadiusControl(
   //     document.head.appendChild(styleTag);
   //   }
 
-  //   // Live CSS build
-  //   const props = {
-  //     all: "border-radius",
-  //     topLeft: "border-top-left-radius",
-  //     topRight: "border-top-right-radius",
-  //     bottomRight: "border-bottom-right-radius",
-  //     bottomLeft: "border-bottom-left-radius",
-  //   };
-  //   const cssProp = props[type];
-  //   let css = `.${typeClass} {\n`;
-
-  //   // Reset full-radius if targeting individual side
-  //   if (type !== "all") {
-  //     css += `  border-radius: 0px !important;\n`;
-  //   }
-
-  //   css += `  ${cssProp}: ${value}px !important;\n`;
-  //   css += `  overflow: hidden !important;\n`;
-
-  //   css += `}\n.${typeClass} span,\n.${typeClass} .sqs-add-to-cart-button-inner {\n  border-radius: inherit !important;\n}\n`;
-  //   css += `.${typeClass}:hover {\n  border-radius: inherit !important;\n  overflow: hidden !important;\n}\n`;
-  //   css += `.${typeClass}:hover span,\n.${typeClass}:hover .sqs-add-to-cart-button-inner {\n  border-radius: inherit !important;\n}`;
-
-  //   styleTag.textContent = css;
-
-  //   // Update radiusValues object correctly
-  //   if (type === "all") {
-  //     radiusValues.all = value;
-  //     radiusValues.topLeft = value;
-  //     radiusValues.topRight = value;
-  //     radiusValues.bottomRight = value;
-  //     radiusValues.bottomLeft = value;
-  //   } else {
-  //     radiusValues.all = 0;
-  //     ["topLeft", "topRight", "bottomRight", "bottomLeft"].forEach((key) => {
-  //       radiusValues[key] = key === type ? value : 0;
-  //     });
-  //   }
-
-  //   // Save to local map and pending
-  //   const blockId = selected.id;
-  //   if (blockId && blockId !== "block-id") {
-  //     const cssData =
-  //       type === "all"
-  //         ? { "border-radius": `${value}px`, overflow: "hidden" }
-  //         : {
-  //             [`${cssProp}`]: `${value}px`,
-  //             overflow: "hidden",
-  //           };
-
-  //     mergeAndSaveButtonRadiusStyles(blockId, typeClass, cssData);
-
-  //     if (typeof showNotification === "function") {
-  //       showNotification("Border radius updated locally!", "info");
-  //     }
-  //   }
-  // }
-
-  // function applyBorderRadius(type, value) {
-  //   const selected = getSelectedElement?.();
-  //   const btn = selected?.querySelector(
-  //     ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-  //   );
-  //   if (!btn) return;
-
-  //   const typeClass = getButtonTypeClass(btn);
-  //   const styleId = `sc-button-radius-${typeClass.replace(/--/g, "-")}`;
-  //   let styleTag = document.getElementById(styleId);
-  //   if (!styleTag) {
-  //     styleTag = document.createElement("style");
-  //     styleTag.id = styleId;
-  //     document.head.appendChild(styleTag);
-  //   }
-
   //   let css = `.${typeClass} {\n`;
 
   //   if (type === "all") {
@@ -1520,29 +1446,39 @@ export function initButtonBorderRadiusControl(
       document.head.appendChild(styleTag);
     }
 
-    let css = `.${typeClass} {\n`;
+    const cornerProps = {
+      topLeft: "border-top-left-radius",
+      topRight: "border-top-right-radius",
+      bottomRight: "border-bottom-right-radius",
+      bottomLeft: "border-bottom-left-radius",
+    };
 
+    // Update radiusValues
     if (type === "all") {
       radiusValues.all = value;
       radiusValues.topLeft = value;
       radiusValues.topRight = value;
       radiusValues.bottomRight = value;
       radiusValues.bottomLeft = value;
-
-      css += `  border-radius: ${value}px !important;\n`;
     } else {
       radiusValues.all = 0;
       radiusValues[type] = value;
+    }
 
-      // Only update the selected corner
-      const cornerMap = {
-        topLeft: "border-top-left-radius",
-        topRight: "border-top-right-radius",
-        bottomRight: "border-bottom-right-radius",
-        bottomLeft: "border-bottom-left-radius",
-      };
+    // ✅ Generate CSS string exactly as seen in your video
+    let css = `.${typeClass} {\n`;
 
-      css += `  ${cornerMap[type]}: ${value}px !important;\n`;
+    if (type === "all") {
+      css += `  border-radius: ${value}px !important;\n`;
+    } else {
+      if (radiusValues.topLeft)
+        css += `  border-top-left-radius: ${radiusValues.topLeft}px !important;\n`;
+      if (radiusValues.topRight)
+        css += `  border-top-right-radius: ${radiusValues.topRight}px !important;\n`;
+      if (radiusValues.bottomRight)
+        css += `  border-bottom-right-radius: ${radiusValues.bottomRight}px !important;\n`;
+      if (radiusValues.bottomLeft)
+        css += `  border-bottom-left-radius: ${radiusValues.bottomLeft}px !important;\n`;
     }
 
     css += `  overflow: hidden !important;\n`;
@@ -1555,28 +1491,18 @@ export function initButtonBorderRadiusControl(
 
     const blockId = selected.id;
     if (blockId && blockId !== "block-id") {
-      let cssData;
+      const styleObj = {
+        overflow: "hidden",
+      };
 
       if (type === "all") {
-        cssData = {
-          "border-radius": `${value}px`,
-          overflow: "hidden",
-        };
+        styleObj["border-radius"] = `${value}px`;
       } else {
-        const cornerProp = {
-          topLeft: "border-top-left-radius",
-          topRight: "border-top-right-radius",
-          bottomRight: "border-bottom-right-radius",
-          bottomLeft: "border-bottom-left-radius",
-        }[type];
-
-        cssData = {
-          [cornerProp]: `${value}px`,
-          overflow: "hidden",
-        };
+        const prop = cornerProps[type];
+        styleObj[prop] = `${value}px`;
       }
 
-      mergeAndSaveButtonRadiusStyles(blockId, typeClass, cssData);
+      mergeAndSaveButtonRadiusStyles(blockId, typeClass, styleObj);
 
       if (typeof showNotification === "function") {
         showNotification("Border radius updated locally!", "info");
