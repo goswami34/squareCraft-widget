@@ -1682,9 +1682,6 @@ export function initButtonBorderRadiusControl(
     // Set only topLeft to its value, others to 0
     const value = radiusValues.topLeft;
     radiusValues.topLeft = value;
-    radiusValues.topRight = 0;
-    radiusValues.bottomRight = 0;
-    radiusValues.bottomLeft = 0;
     radiusValues.all = 0;
     updateUIForTarget("topLeft");
     applyBorderRadius("topLeft", value);
@@ -1692,10 +1689,7 @@ export function initButtonBorderRadiusControl(
   topRightBtn.addEventListener("click", () => {
     activeRadiusTarget = "topRight";
     const value = radiusValues.topRight;
-    radiusValues.topLeft = 0;
     radiusValues.topRight = value;
-    radiusValues.bottomRight = 0;
-    radiusValues.bottomLeft = 0;
     radiusValues.all = 0;
     updateUIForTarget("topRight");
     applyBorderRadius("topRight", value);
@@ -1703,10 +1697,7 @@ export function initButtonBorderRadiusControl(
   bottomRightBtn.addEventListener("click", () => {
     activeRadiusTarget = "bottomRight";
     const value = radiusValues.bottomRight;
-    radiusValues.topLeft = 0;
-    radiusValues.topRight = 0;
     radiusValues.bottomRight = value;
-    radiusValues.bottomLeft = 0;
     radiusValues.all = 0;
     updateUIForTarget("bottomRight");
     applyBorderRadius("bottomRight", value);
@@ -1714,9 +1705,6 @@ export function initButtonBorderRadiusControl(
   bottomLeftBtn.addEventListener("click", () => {
     activeRadiusTarget = "bottomLeft";
     const value = radiusValues.bottomLeft;
-    radiusValues.topLeft = 0;
-    radiusValues.topRight = 0;
-    radiusValues.bottomRight = 0;
     radiusValues.bottomLeft = value;
     radiusValues.all = 0;
     updateUIForTarget("bottomLeft");
