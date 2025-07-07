@@ -1711,7 +1711,7 @@ export function initButtonBorderRadiusControl(
     bottomRight: 0,
     bottomLeft: 0,
   };
-  const max = 50;
+  const max = 100;
 
   // --- UI Elements (matching your HTML) ---
   const allBtn = document.getElementById("allradiusBorder");
