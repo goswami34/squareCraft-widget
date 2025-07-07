@@ -1291,10 +1291,12 @@ export function initButtonBorderRadiusControl(
 
   // --- UI Elements (matching your HTML) ---
   const allBtn = document.getElementById("allradiusBorder");
-  const topLeftBtn = document.getElementById("topLeftradiusBorder");
-  const topRightBtn = document.getElementById("topRightradiusBorder");
-  const bottomRightBtn = document.getElementById("bottomRightradiusBorder");
-  const bottomLeftBtn = document.getElementById("bottomLeftradiusBorder");
+  const topLeftBtn = document.getElementById("buttontopLeftradiusBorder");
+  const topRightBtn = document.getElementById("buttontopRightradiusBorder");
+  const bottomRightBtn = document.getElementById(
+    "buttonbottomRightradiusBorder"
+  );
+  const bottomLeftBtn = document.getElementById("buttonbottomLeftradiusBorder");
   const fillField = document.getElementById("buttonBorderradiusField");
   const bullet = document.getElementById("buttonBorderradiusBullet");
   const fill = document.getElementById("buttonBorderradiusFill");

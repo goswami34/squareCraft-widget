@@ -682,25 +682,25 @@ export function WidgetButtonNormalState() {
                         </div>
 
                         <div
-                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="topLeftradiusBorder">
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="buttontopLeftradiusBorder">
                            <img src="https://goswami34.github.io/squareCraft-widget/public/Vector.svg" loading="lazy"
                               alt="top-left-radius">
                         </div>
 
                         <div
-                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="topRightradiusBorder">
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="buttontopRightradiusBorder">
                            <img src="https://goswami34.github.io/squareCraft-widget/public/TopRight.svg" loading="lazy"
                               alt="top-right-radius">
                         </div>
 
                         <div
-                           class="sc-flex sc-px-1_5 sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomRightradiusBorder">
+                           class="sc-flex sc-px-1_5 sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="buttonbottomRightradiusBorder">
                            <img src="https://goswami34.github.io/squareCraft-widget/public/Bottom Right.svg" loading="lazy"
                               alt="bottom-right-radius">
                         </div>
 
                         <div
-                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomLeftradiusBorder">
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="buttonbottomLeftradiusBorder">
                            <img src="https://goswami34.github.io/squareCraft-widget/public/left-bottom.svg" loading="lazy"
                               alt="left-bottom-radius">
                         </div>
