@@ -1971,116 +1971,134 @@ export function initButtonShadowControls(
 }
 
 window.syncButtonStylesFromElement = function (selectedElement) {
-  if (!selectedElement) return;
+  try {
+    if (!selectedElement) return;
 
-  const sampleButton = selectedElement.querySelector(
-    "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
-  );
-  if (!sampleButton) return;
+    const sampleButton = selectedElement.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
+    if (!sampleButton) return;
 
-  const icon = sampleButton.querySelector(
-    ".sqscraft-button-icon, .sqscraft-image-icon"
-  );
+    const icon = sampleButton.querySelector(
+      ".sqscraft-button-icon, .sqscraft-image-icon"
+    );
 
-  const getPercent = (val, max) => `${(val / max) * 100}%`;
-  const set = (id, value, max) => {
-    const count = document.getElementById(id + "Count");
-    const fill = document.getElementById(id + "Fill");
-    const bullet = document.getElementById(id + "Bullet");
-    if (!count || !fill || !bullet) return;
-    count.textContent = `${value}px`;
-    fill.style.width = getPercent(value, max);
-    bullet.style.left = getPercent(value, max);
-  };
-
-  set("buttonBorder", parseInt(sampleButton.style.borderWidth || "0"), 10);
-
-  window.__squareCraftBorderStyle = sampleButton.style.borderStyle || "solid";
-  [
-    "buttonBorderTypeSolid",
-    "buttonBorderTypeDashed",
-    "buttonBorderTypeDotted",
-  ].forEach((id) => {
-    const btn = document.getElementById(id);
-    if (btn)
-      btn.classList.toggle(
-        "sc-bg-454545",
-        id.includes(window.__squareCraftBorderStyle)
-      );
-  });
-
-  set(
-    "buttonBorderradius",
-    parseInt(sampleButton.style.borderRadius || "0"),
-    50
-  );
-
-  const size = parseInt(icon?.style.width || "0");
-  set("buttonIconSizeradius", size, 50);
-
-  const transformMatch = icon?.style.transform?.match(
-    /rotate\((-?\d+(?:\.\d+)?)deg\)/
-  );
-  if (transformMatch) {
-    const rotation = parseFloat(transformMatch[1]);
-    const percent = ((rotation + 180) / 360) * 100;
-    document.getElementById(
-      "buttoniconRotationradiusCount"
-    ).textContent = `${rotation}deg`;
-    document.getElementById(
-      "buttonIconRotationradiusBullet"
-    ).style.left = `${percent}%`;
-    document.getElementById(
-      "buttonIconRotationradiusFill"
-    ).style.left = `${Math.min(percent, 50)}%`;
-    document.getElementById(
-      "buttonIconRotationradiusFill"
-    ).style.width = `${Math.abs(percent - 50)}%`;
-  }
-
-  const spacing = {
-    top: parseInt(icon?.style.marginTop || "0"),
-    bottom: parseInt(icon?.style.marginBottom || "0"),
-    left: parseInt(icon?.style.marginLeft || "0"),
-    right: parseInt(icon?.style.marginRight || "0"),
-  };
-  const spacingValue = Math.max(...Object.values(spacing));
-  const spacingPercent = getPercent(spacingValue, 30);
-  document.getElementById(
-    "buttoniconSpacingradiusCount"
-  ).textContent = `${spacingValue}px`;
-  document.getElementById("buttonIconSpacingradiusFill").style.width =
-    spacingPercent;
-  document.getElementById("buttonIconSpacingradiusBullet").style.left =
-    spacingPercent;
-  ["Top", "Bottom", "Left", "Right"].forEach((dir) => {
-    const el = document.getElementById(`buttonIconSpacing${dir}`);
-    if (el) el.classList.toggle("sc-bg-454545", spacing[dir.toLowerCase()] > 0);
-  });
-
-  const shadow = sampleButton.style.boxShadow || "";
-  const match = shadow.match(/(-?\d+)px\s+(-?\d+)px\s+(\d+)px\s+(\d+)px/);
-  if (match) {
-    const [x, y, blur, spread] = match.slice(1).map(Number);
-    const props = {
-      Xaxis: [x, 30],
-      Yaxis: [y, 30],
-      Blur: [blur, 50],
-      Spread: [spread, 30],
+    const getPercent = (val, max) => `${(val / max) * 100}%`;
+    const set = (id, value, max) => {
+      const count = document.getElementById(id + "Count");
+      const fill = document.getElementById(id + "Fill");
+      const bullet = document.getElementById(id + "Bullet");
+      if (!count || !fill || !bullet) return;
+      count.textContent = `${value}px`;
+      fill.style.width = getPercent(value, max);
+      bullet.style.left = getPercent(value, max);
     };
-    Object.entries(props).forEach(([type, [val, max]]) => {
-      const count = document.getElementById(`buttonShadow${type}Count`);
-      const bullet = document.getElementById(`buttonShadow${type}Bullet`);
-      const fill = document.querySelector(
-        `#buttonShadow${type}Field .sc-shadow-fill`
-      );
-      if (count) count.textContent = `${val}px`;
-      if (bullet) bullet.style.left = getPercent(val, max);
-      if (fill) fill.style.width = getPercent(val, max);
-    });
-  }
 
-  window.updateActiveButtonBars?.();
+    set("buttonBorder", parseInt(sampleButton.style.borderWidth || "0"), 10);
+
+    window.__squareCraftBorderStyle = sampleButton.style.borderStyle || "solid";
+    [
+      "buttonBorderTypeSolid",
+      "buttonBorderTypeDashed",
+      "buttonBorderTypeDotted",
+    ].forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn)
+        btn.classList.toggle(
+          "sc-bg-454545",
+          id.includes(window.__squareCraftBorderStyle)
+        );
+    });
+
+    set(
+      "buttonBorderradius",
+      parseInt(sampleButton.style.borderRadius || "0"),
+      50
+    );
+
+    const size = parseInt(icon?.style.width || "0");
+    set("buttonIconSizeradius", size, 50);
+
+    const transformMatch = icon?.style.transform?.match(
+      /rotate\((-?\d+(?:\.\d+)?)deg\)/
+    );
+    if (transformMatch) {
+      const rotation = parseFloat(transformMatch[1]);
+      const percent = ((rotation + 180) / 360) * 100;
+
+      const rotationCountEl = document.getElementById(
+        "buttoniconRotationradiusCount"
+      );
+      const rotationBulletEl = document.getElementById(
+        "buttonIconRotationradiusBullet"
+      );
+      const rotationFillEl = document.getElementById(
+        "buttonIconRotationradiusFill"
+      );
+
+      if (rotationCountEl) rotationCountEl.textContent = `${rotation}deg`;
+      if (rotationBulletEl) rotationBulletEl.style.left = `${percent}%`;
+      if (rotationFillEl) {
+        rotationFillEl.style.left = `${Math.min(percent, 50)}%`;
+        rotationFillEl.style.width = `${Math.abs(percent - 50)}%`;
+      }
+    }
+
+    const spacing = {
+      top: parseInt(icon?.style.marginTop || "0"),
+      bottom: parseInt(icon?.style.marginBottom || "0"),
+      left: parseInt(icon?.style.marginLeft || "0"),
+      right: parseInt(icon?.style.marginRight || "0"),
+    };
+    const spacingValue = Math.max(...Object.values(spacing));
+    const spacingPercent = getPercent(spacingValue, 30);
+
+    const spacingCountEl = document.getElementById(
+      "buttoniconSpacingradiusCount"
+    );
+    const spacingFillEl = document.getElementById(
+      "buttonIconSpacingradiusFill"
+    );
+    const spacingBulletEl = document.getElementById(
+      "buttonIconSpacingradiusBullet"
+    );
+
+    if (spacingCountEl) spacingCountEl.textContent = `${spacingValue}px`;
+    if (spacingFillEl) spacingFillEl.style.width = spacingPercent;
+    if (spacingBulletEl) spacingBulletEl.style.left = spacingPercent;
+
+    ["Top", "Bottom", "Left", "Right"].forEach((dir) => {
+      const el = document.getElementById(`buttonIconSpacing${dir}`);
+      if (el)
+        el.classList.toggle("sc-bg-454545", spacing[dir.toLowerCase()] > 0);
+    });
+
+    const shadow = sampleButton.style.boxShadow || "";
+    const match = shadow.match(/(-?\d+)px\s+(-?\d+)px\s+(\d+)px\s+(\d+)px/);
+    if (match) {
+      const [x, y, blur, spread] = match.slice(1).map(Number);
+      const props = {
+        Xaxis: [x, 30],
+        Yaxis: [y, 30],
+        Blur: [blur, 50],
+        Spread: [spread, 30],
+      };
+      Object.entries(props).forEach(([type, [val, max]]) => {
+        const count = document.getElementById(`buttonShadow${type}Count`);
+        const bullet = document.getElementById(`buttonShadow${type}Bullet`);
+        const fill = document.querySelector(
+          `#buttonShadow${type}Field .sc-shadow-fill`
+        );
+        if (count) count.textContent = `${val}px`;
+        if (bullet) bullet.style.left = getPercent(val, max);
+        if (fill) fill.style.width = getPercent(val, max);
+      });
+    }
+
+    window.updateActiveButtonBars?.();
+  } catch (error) {
+    console.warn("❌ Error syncing button styles from element:", error);
+  }
 };
 
 export function resetAllButtonStyles(
