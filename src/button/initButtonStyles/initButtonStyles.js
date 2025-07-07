@@ -1438,24 +1438,35 @@ export function initButtonBorderRadiusControl(
   }
 
   // --- UI Update ---
+  // function updateUIForTarget(target) {
+  //   // Highlight selected button
+  //   [allBtn, topLeftBtn, topRightBtn, bottomRightBtn, bottomLeftBtn].forEach(
+  //     (btn) => btn.classList.remove("sc-bg-454545")
+  //   );
+  //   if (target === "all") allBtn.classList.add("sc-bg-454545");
+  //   if (target === "topLeft") topLeftBtn.classList.add("sc-bg-454545");
+  //   if (target === "topRight") topRightBtn.classList.add("sc-bg-454545");
+  //   if (target === "bottomRight") bottomRightBtn.classList.add("sc-bg-454545");
+  //   if (target === "bottomLeft") bottomLeftBtn.classList.add("sc-bg-454545");
+
+  //   // Update slider and value
+  //   // const value = radiusValues[target];
+  //   // const percent = (value / max) * 100;
+  //   const value = Math.min(max, radiusValues[target]);
+  //   const percent = (value / max) * 100;
+
+  //   bullet.style.left = `${percent}%`;
+  //   fill.style.width = `${percent}%`;
+  //   valueText.textContent = `${value}px`;
+  // }
+
   function updateUIForTarget(target) {
-    // Highlight selected button
-    [allBtn, topLeftBtn, topRightBtn, bottomRightBtn, bottomLeftBtn].forEach(
-      (btn) => btn.classList.remove("sc-bg-454545")
-    );
-    if (target === "all") allBtn.classList.add("sc-bg-454545");
-    if (target === "topLeft") topLeftBtn.classList.add("sc-bg-454545");
-    if (target === "topRight") topRightBtn.classList.add("sc-bg-454545");
-    if (target === "bottomRight") bottomRightBtn.classList.add("sc-bg-454545");
-    if (target === "bottomLeft") bottomLeftBtn.classList.add("sc-bg-454545");
-
-    // Update slider and value
-    // const value = radiusValues[target];
-    // const percent = (value / max) * 100;
     const value = Math.min(max, radiusValues[target]);
-    const percent = (value / max) * 100;
 
-    bullet.style.left = `${percent}%`;
+    // Map 0–50px to 0–100% fill
+    const percent = (value / max) * 100; // this becomes 0–100%
+
+    bullet.style.left = `calc(${percent}% - 6px)`; // adjusted for bullet size
     fill.style.width = `${percent}%`;
     valueText.textContent = `${value}px`;
   }
