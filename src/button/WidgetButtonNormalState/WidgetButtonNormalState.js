@@ -637,10 +637,15 @@ export function WidgetButtonNormalState() {
                      </div>
                   </div>
 
+
+
+
                   <div class="sc-mt-4">
                      <div class="  sc-flex sc-items-center sc-justify-between">
                         <div class="sc-flex sc-gap-2 sc-items-center">
                            <p class="sc-roboto sc-font-thin sc-universal  sc-font-size-12 sc-font-thin sc-text-gray-300">
+
+
                               Border radius
                            </p>
                            <div id="border-radius-reset"
@@ -660,13 +665,48 @@ export function WidgetButtonNormalState() {
                         </div>
                      </div>
                     <div id="buttonBorderradiusField" class="sc-rounded-15px sc-mt-2 sc-relative sc-w-full sc-h-2 sc-bg-F6F6F6">
-                   <div id="buttonBorderradiusFill" class="sc-absolute sc-bg-color-EF7C2F sc-h-2 sc-rounded-l-full"></div>
-                   <div id="buttonBorderradiusBullet"
-                       class="sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
-                   </div>
-                   </div>
-                   
+                        <div id="buttonBorderradiusFill" class="sc-absolute sc-bg-color-EF7C2F sc-h-2 sc-rounded-l-full"></div>
+                        <div id="buttonBorderradiusBullet"
+                           class="sc-absolute sc-bg-color-EF7C2F sc-w-3 sc-h-3 sc-rounded-full sc-cursor-pointer sc-top-half">
+                        </div>
+                     </div>
+                  </div>
 
+                     <div style="padding: 2px 0px; margin-top: 15px; margin-left: 30px;"
+                        class="sc-bg-3f3f3f sc-flex sc-col-span-11 sc-text-sm sc-font-thin   sc-border sc-border-solid sc-border-3f3f3f   sc-justify-center  sc-px-1 sc-rounded-6px">
+
+                        <div
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px sc-items-center sc-gap-1 sc-bg-454545"  id="allradiusBorder">
+                           <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/all.svg" loading="lazy"
+                              alt="all-radious">
+                           <p class="sc-font-thin sc-roboto sc-universal">All</p>
+                        </div>
+
+                        <div
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="topLeftradiusBorder">
+                           <img src="https://goswami34.github.io/squareCraft-widget/public/Vector.svg" loading="lazy"
+                              alt="top-left-radius">
+                        </div>
+
+                        <div
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="topRightradiusBorder">
+                           <img src="https://goswami34.github.io/squareCraft-widget/public/TopRight.svg" loading="lazy"
+                              alt="top-right-radius">
+                        </div>
+
+                        <div
+                           class="sc-flex sc-px-1_5 sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomRightradiusBorder">
+                           <img src="https://goswami34.github.io/squareCraft-widget/public/Bottom Right.svg" loading="lazy"
+                              alt="bottom-right-radius">
+                        </div>
+
+                        <div
+                           class="sc-flex sc-px-1_5 sc-justify-center sc-w-full sc-cursor-pointer sc-py-0_5 sc-rounded-6px  sc-items-center sc-gap-1" id="bottomLeftradiusBorder">
+                           <img src="https://goswami34.github.io/squareCraft-widget/public/left-bottom.svg" loading="lazy"
+                              alt="left-bottom-radius">
+                        </div>
+
+                     </div>
                   </div>
                </div>
             </div>
