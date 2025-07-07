@@ -1270,7 +1270,16 @@ export function initButtonBorderRadiusControl(
   showNotification,
   saveButtonBorderModifications
 ) {
-  const borderRadiusMap = new Map();
+  // --- New state for per-corner radius ---
+  let borderRadiusState = {
+    all: 0,
+    topLeft: 0,
+    topRight: 0,
+    bottomRight: 0,
+    bottomLeft: 0,
+  };
+  let selectedCorner = "all"; // 'all', 'topLeft', 'topRight', 'bottomRight', 'bottomLeft'
+  const max = 50;
 
   function getButtonTypeClass(btn) {
     if (btn.classList.contains("sqs-button-element--secondary"))
@@ -1296,22 +1305,25 @@ export function initButtonBorderRadiusControl(
       document.head.appendChild(styleTag);
     }
 
+    // Compose border-radius string
+    const br = borderRadiusState;
+    const borderRadiusString = `${br.topLeft}px ${br.topRight}px ${br.bottomRight}px ${br.bottomLeft}px`;
     styleTag.textContent = `
 .${typeClass} {
-  border-radius: ${radiusValue}px !important;
+  border-radius: ${borderRadiusString} !important;
   overflow: hidden !important;
 }
 .${typeClass} span,
 .${typeClass} .sqs-add-to-cart-button-inner {
-  border-radius: ${radiusValue}px !important;
+  border-radius: ${borderRadiusString} !important;
 }
 .${typeClass}:hover {
-  border-radius: ${radiusValue}px !important;
+  border-radius: ${borderRadiusString} !important;
   overflow: hidden !important;
 }
 .${typeClass}:hover span,
 .${typeClass}:hover .sqs-add-to-cart-button-inner {
-  border-radius: ${radiusValue}px !important;
+  border-radius: ${borderRadiusString} !important;
 }
     `;
 
@@ -1327,7 +1339,7 @@ export function initButtonBorderRadiusControl(
         borderRightWidth: computed.borderRightWidth,
         borderBottomWidth: computed.borderBottomWidth,
         borderLeftWidth: computed.borderLeftWidth,
-        borderRadius: `${radiusValue}px`,
+        borderRadius: borderRadiusString,
         overflow: "hidden",
       };
       const stylePayload = {
@@ -1346,6 +1358,7 @@ export function initButtonBorderRadiusControl(
     }
   }
 
+  // --- UI Elements ---
   const fillField = document.getElementById("buttonBorderradiusField");
   const bullet = document.getElementById("buttonBorderradiusBullet");
   const fill = document.getElementById("buttonBorderradiusFill");
@@ -1356,22 +1369,84 @@ export function initButtonBorderRadiusControl(
     ?.closest(".sc-flex")
     ?.querySelector('img[alt="reset"]');
 
+  // --- Corner buttons ---
+  const allBtn = document.getElementById("allradiusBorder");
+  const topLeftBtn = document.getElementById("topLeftradiusBorder");
+  const topRightBtn = document.getElementById("topRightradiusBorder");
+  const bottomRightBtn = document.getElementById("bottomRightradiusBorder");
+  const bottomLeftBtn = document.getElementById("bottomLeftradiusBorder");
+
   if (!fillField || !bullet || !fill || !valueText) return;
 
-  const max = 50;
-  let radiusValue = 0;
-
+  // --- UI update logic ---
   function updateUIFromValue(value) {
-    radiusValue = Math.max(0, Math.min(max, value));
-    const percent = (radiusValue / max) * 100;
-
+    value = Math.max(0, Math.min(max, value));
+    borderRadiusState[selectedCorner] = value;
+    // If 'all' is selected, update all corners
+    if (selectedCorner === "all") {
+      borderRadiusState.topLeft = value;
+      borderRadiusState.topRight = value;
+      borderRadiusState.bottomRight = value;
+      borderRadiusState.bottomLeft = value;
+    }
+    // Update slider and fill
+    const percent = (value / max) * 100;
     bullet.style.left = `${percent}%`;
     fill.style.width = `${percent}%`;
-    valueText.textContent = `${radiusValue}px`;
-
+    valueText.textContent = `${value}px`;
     applyBorderRadius();
   }
 
+  // --- Corner selection logic ---
+  function updateUIForSelectedCorner() {
+    // Highlight selected button (optional, add your own class for active state)
+    [allBtn, topLeftBtn, topRightBtn, bottomRightBtn, bottomLeftBtn].forEach(
+      (btn, idx) => {
+        if (!btn) return;
+        btn.classList.remove("sc-bg-454545");
+      }
+    );
+    if (selectedCorner === "all" && allBtn)
+      allBtn.classList.add("sc-bg-454545");
+    if (selectedCorner === "topLeft" && topLeftBtn)
+      topLeftBtn.classList.add("sc-bg-454545");
+    if (selectedCorner === "topRight" && topRightBtn)
+      topRightBtn.classList.add("sc-bg-454545");
+    if (selectedCorner === "bottomRight" && bottomRightBtn)
+      bottomRightBtn.classList.add("sc-bg-454545");
+    if (selectedCorner === "bottomLeft" && bottomLeftBtn)
+      bottomLeftBtn.classList.add("sc-bg-454545");
+    // Update slider/value for selected corner
+    updateUIFromValue(borderRadiusState[selectedCorner]);
+  }
+
+  if (allBtn)
+    allBtn.addEventListener("click", () => {
+      selectedCorner = "all";
+      updateUIForSelectedCorner();
+    });
+  if (topLeftBtn)
+    topLeftBtn.addEventListener("click", () => {
+      selectedCorner = "topLeft";
+      updateUIForSelectedCorner();
+    });
+  if (topRightBtn)
+    topRightBtn.addEventListener("click", () => {
+      selectedCorner = "topRight";
+      updateUIForSelectedCorner();
+    });
+  if (bottomRightBtn)
+    bottomRightBtn.addEventListener("click", () => {
+      selectedCorner = "bottomRight";
+      updateUIForSelectedCorner();
+    });
+  if (bottomLeftBtn)
+    bottomLeftBtn.addEventListener("click", () => {
+      selectedCorner = "bottomLeft";
+      updateUIForSelectedCorner();
+    });
+
+  // --- Slider/field events ---
   bullet.addEventListener("mousedown", (e) => {
     e.preventDefault();
     const move = (eMove) => {
@@ -1395,19 +1470,37 @@ export function initButtonBorderRadiusControl(
     updateUIFromValue(value);
   });
 
-  incBtn?.addEventListener("click", () => updateUIFromValue(radiusValue + 1));
-  decBtn?.addEventListener("click", () => updateUIFromValue(radiusValue - 1));
+  incBtn?.addEventListener("click", () =>
+    updateUIFromValue(borderRadiusState[selectedCorner] + 1)
+  );
+  decBtn?.addEventListener("click", () =>
+    updateUIFromValue(borderRadiusState[selectedCorner] - 1)
+  );
   resetBtn?.addEventListener("click", () => updateUIFromValue(0));
 
+  // --- Initialize UI with current button border radius ---
   setTimeout(() => {
     const selected = getSelectedElement?.();
     const btn = selected?.querySelector(
       ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
     );
     if (!btn) return;
-
-    const computed = parseInt(window.getComputedStyle(btn).borderRadius || "0");
-    if (!isNaN(computed)) updateUIFromValue(computed);
+    // Try to parse per-corner border-radius
+    const computed = window.getComputedStyle(btn).borderRadius || "0";
+    let values = computed.split(" ").map((v) => parseInt(v));
+    if (values.length === 1)
+      values = [values[0], values[0], values[0], values[0]];
+    if (values.length === 2)
+      values = [values[0], values[1], values[0], values[1]];
+    if (values.length === 3)
+      values = [values[0], values[1], values[2], values[1]];
+    if (values.length === 4) values = values;
+    borderRadiusState.topLeft = values[0] || 0;
+    borderRadiusState.topRight = values[1] || 0;
+    borderRadiusState.bottomRight = values[2] || 0;
+    borderRadiusState.bottomLeft = values[3] || 0;
+    borderRadiusState.all = values[0] || 0;
+    updateUIForSelectedCorner();
   }, 50);
 }
 
