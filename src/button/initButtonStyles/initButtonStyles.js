@@ -1387,42 +1387,65 @@ export function initButtonBorderRadiusControl(
   //     document.head.appendChild(styleTag);
   //   }
 
-  //   let css = `.${typeClass} {\n`;
+  //   // Force all others to 0 if specific corner is selected
+  //   if (type !== "all") {
+  //     radiusValues = {
+  //       all: 0,
+  //       topLeft: 0,
+  //       topRight: 0,
+  //       bottomRight: 0,
+  //       bottomLeft: 0,
+  //     };
+  //     radiusValues[type] = value;
+  //   } else {
+  //     radiusValues = {
+  //       all: value,
+  //       topLeft: value,
+  //       topRight: value,
+  //       bottomRight: value,
+  //       bottomLeft: value,
+  //     };
+  //   }
 
+  //   // --- Compose CSS
+  //   let css = `.${typeClass} {\n`;
   //   if (type === "all") {
   //     css += `  border-radius: ${value}px !important;\n`;
   //   } else {
-  //     css += `  border-radius: ${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px !important;\n`;
-  //     if (radiusValues.topLeft)
-  //       css += `  border-top-left-radius: ${radiusValues.topLeft}px !important;\n`;
-  //     if (radiusValues.topRight)
-  //       css += `  border-top-right-radius: ${radiusValues.topRight}px !important;\n`;
-  //     if (radiusValues.bottomRight)
-  //       css += `  border-bottom-right-radius: ${radiusValues.bottomRight}px !important;\n`;
-  //     if (radiusValues.bottomLeft)
-  //       css += `  border-bottom-left-radius: ${radiusValues.bottomLeft}px !important;\n`;
+  //     css += `  border-top-left-radius: ${radiusValues.topLeft}px !important;\n`;
+  //     css += `  border-top-right-radius: ${radiusValues.topRight}px !important;\n`;
+  //     css += `  border-bottom-right-radius: ${radiusValues.bottomRight}px !important;\n`;
+  //     css += `  border-bottom-left-radius: ${radiusValues.bottomLeft}px !important;\n`;
   //   }
-
   //   css += `  overflow: hidden !important;\n`;
   //   css += `}\n`;
+
   //   css += `.${typeClass} span,\n.${typeClass} .sqs-add-to-cart-button-inner {\n  border-radius: inherit !important;\n}\n`;
   //   css += `.${typeClass}:hover {\n  border-radius: inherit !important;\n  overflow: hidden !important;\n}\n`;
   //   css += `.${typeClass}:hover span,\n.${typeClass}:hover .sqs-add-to-cart-button-inner {\n  border-radius: inherit !important;\n}`;
 
   //   styleTag.textContent = css;
 
-  //   // Save to local map and pending
   //   const blockId = selected.id;
   //   if (blockId && blockId !== "block-id") {
-  //     const borderRadiusValue =
-  //       type === "all"
-  //         ? `${value}px`
-  //         : `${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px`;
-
-  //     mergeAndSaveButtonRadiusStyles(blockId, typeClass, {
-  //       "border-radius": borderRadiusValue,
+  //     const cssData = {
   //       overflow: "hidden",
-  //     });
+  //     };
+
+  //     if (type === "all") {
+  //       cssData["border-radius"] = `${value}px`;
+  //     } else {
+  //       // Apply only the active corner style
+  //       const cornerMap = {
+  //         topLeft: "border-top-left-radius",
+  //         topRight: "border-top-right-radius",
+  //         bottomRight: "border-bottom-right-radius",
+  //         bottomLeft: "border-bottom-left-radius",
+  //       };
+  //       cssData[cornerMap[type]] = `${value}px`;
+  //     }
+
+  //     mergeAndSaveButtonRadiusStyles(blockId, typeClass, cssData);
 
   //     if (typeof showNotification === "function") {
   //       showNotification("Border radius updated locally!", "info");
@@ -1446,27 +1469,19 @@ export function initButtonBorderRadiusControl(
       document.head.appendChild(styleTag);
     }
 
-    // Force all others to 0 if specific corner is selected
-    if (type !== "all") {
-      radiusValues = {
-        all: 0,
-        topLeft: 0,
-        topRight: 0,
-        bottomRight: 0,
-        bottomLeft: 0,
-      };
-      radiusValues[type] = value;
+    // ✅ Just update value (DO NOT reset other corners)
+    if (type === "all") {
+      radiusValues.all = value;
+      radiusValues.topLeft = value;
+      radiusValues.topRight = value;
+      radiusValues.bottomRight = value;
+      radiusValues.bottomLeft = value;
     } else {
-      radiusValues = {
-        all: value,
-        topLeft: value,
-        topRight: value,
-        bottomRight: value,
-        bottomLeft: value,
-      };
+      radiusValues.all = 0;
+      radiusValues[type] = value;
     }
 
-    // --- Compose CSS
+    // ✅ Compose CSS with current state
     let css = `.${typeClass} {\n`;
     if (type === "all") {
       css += `  border-radius: ${value}px !important;\n`;
@@ -1487,24 +1502,22 @@ export function initButtonBorderRadiusControl(
 
     const blockId = selected.id;
     if (blockId && blockId !== "block-id") {
-      const cssData = {
+      const styleData = {
         overflow: "hidden",
       };
 
       if (type === "all") {
-        cssData["border-radius"] = `${value}px`;
+        styleData["border-radius"] = `${value}px`;
       } else {
-        // Apply only the active corner style
-        const cornerMap = {
-          topLeft: "border-top-left-radius",
-          topRight: "border-top-right-radius",
-          bottomRight: "border-bottom-right-radius",
-          bottomLeft: "border-bottom-left-radius",
-        };
-        cssData[cornerMap[type]] = `${value}px`;
+        styleData["border-top-left-radius"] = `${radiusValues.topLeft}px`;
+        styleData["border-top-right-radius"] = `${radiusValues.topRight}px`;
+        styleData[
+          "border-bottom-right-radius"
+        ] = `${radiusValues.bottomRight}px`;
+        styleData["border-bottom-left-radius"] = `${radiusValues.bottomLeft}px`;
       }
 
-      mergeAndSaveButtonRadiusStyles(blockId, typeClass, cssData);
+      mergeAndSaveButtonRadiusStyles(blockId, typeClass, styleData);
 
       if (typeof showNotification === "function") {
         showNotification("Border radius updated locally!", "info");
