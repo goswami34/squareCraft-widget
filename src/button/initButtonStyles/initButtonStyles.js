@@ -1449,7 +1449,7 @@ export function initButtonBorderRadiusControl(
     if (target === "bottomRight") bottomRightBtn.classList.add("sc-bg-454545");
     if (target === "bottomLeft") bottomLeftBtn.classList.add("sc-bg-454545");
 
-    // Update slider and value
+    // Update slider and value to match the active target
     const value = Math.min(max, radiusValues[target]);
     const percent = (value / max) * 100;
     bullet.style.left = `${percent}%`;
@@ -1580,7 +1580,7 @@ export function initButtonBorderRadiusControl(
   // --- Corner Button Events ---
   allBtn.addEventListener("click", () => {
     activeRadiusTarget = "all";
-    // Set all corners to the current value
+    // Set all corners to the current value of 'all'
     const value = radiusValues.all;
     radiusValues.topLeft = value;
     radiusValues.topRight = value;
