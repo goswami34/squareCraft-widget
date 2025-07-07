@@ -1688,7 +1688,7 @@ export function initButtonBorderTypeToggle(
 //   }, 50);
 // }
 
-export function initButtonBorderRadiusControls(
+export function initButtonBorderRadiusControl(
   getSelectedElement,
   addPendingModification,
   showNotification,
