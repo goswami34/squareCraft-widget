@@ -1501,9 +1501,9 @@ export function initButtonBorderRadiusControl(
       } else {
         radiusValues[activeRadiusTarget] = value;
         // Set all other corners to 0
-        ["topLeft", "topRight", "bottomRight", "bottomLeft"].forEach((side) => {
-          if (side !== activeRadiusTarget) radiusValues[side] = 0;
-        });
+        // ["topLeft", "topRight", "bottomRight", "bottomLeft"].forEach((side) => {
+        //   if (side !== activeRadiusTarget) radiusValues[side] = 0;
+        // });
         radiusValues.all = 0;
       }
       updateUIForTarget(activeRadiusTarget);
@@ -1530,9 +1530,9 @@ export function initButtonBorderRadiusControl(
     } else {
       radiusValues[activeRadiusTarget] = value;
       // Set all other corners to 0
-      ["topLeft", "topRight", "bottomRight", "bottomLeft"].forEach((side) => {
-        if (side !== activeRadiusTarget) radiusValues[side] = 0;
-      });
+      // ["topLeft", "topRight", "bottomRight", "bottomLeft"].forEach((side) => {
+      //   if (side !== activeRadiusTarget) radiusValues[side] = 0;
+      // });
       radiusValues.all = 0;
     }
     updateUIForTarget(activeRadiusTarget);
@@ -1549,9 +1549,9 @@ export function initButtonBorderRadiusControl(
       radiusValues.bottomLeft = value;
     } else {
       radiusValues[activeRadiusTarget] = value;
-      ["topLeft", "topRight", "bottomRight", "bottomLeft"].forEach((side) => {
-        if (side !== activeRadiusTarget) radiusValues[side] = 0;
-      });
+      // ["topLeft", "topRight", "bottomRight", "bottomLeft"].forEach((side) => {
+      //   if (side !== activeRadiusTarget) radiusValues[side] = 0;
+      // });
       radiusValues.all = 0;
     }
     updateUIForTarget(activeRadiusTarget);
