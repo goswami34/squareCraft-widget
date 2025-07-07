@@ -1386,51 +1386,36 @@ export function initButtonBorderRadiusControl(
       document.head.appendChild(styleTag);
     }
 
-    // Get existing CSS content
-    let currentCSS = styleTag.textContent;
-    const blockSelector = `.${typeClass}`;
-
-    // Define the CSS property based on type (like image controls)
-    const props = {
-      all: "border-radius",
-      topLeft: "border-top-left-radius",
-      topRight: "border-top-right-radius",
-      bottomRight: "border-bottom-right-radius",
-      bottomLeft: "border-bottom-left-radius",
-    };
-    const cssProp = props[type];
-    if (!cssProp) return;
-
-    // Update or create CSS rule (like image controls)
-    const regex = new RegExp(`(${blockSelector}\\s*{)([\\s\\S]*?)(})`, "g");
-    const match = regex.exec(currentCSS);
-
-    if (match) {
-      let declarations = match[2];
-
-      // Remove existing border-radius properties
-      declarations = declarations.replace(
-        new RegExp(`${cssProp}\\s*:\\s*[^;]+;?`, "g"),
-        ""
-      );
-
-      // If it's not "all", also remove the general border-radius
-      if (type !== "all") {
-        declarations = declarations.replace(/border-radius\s*:\s*[^;]+;?/g, "");
-      }
-
-      // Add the new property
-      declarations += `\n  ${cssProp}: ${value}px !important;`;
-
-      const updated = `${match[1]}${declarations}\n${match[3]}`;
-      currentCSS = currentCSS.replace(regex, updated);
+    // Compose CSS
+    let css = `.${typeClass} {`;
+    if (type === "all") {
+      css += `border-radius: ${value}px !important;`;
     } else {
-      // Create new CSS block
-      currentCSS += `\n${blockSelector} {\n  ${cssProp}: ${value}px !important;\n  overflow: hidden !important;\n}`;
-    }
+      // css += `border-radius: ${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px !important;`;
+      // if (radiusValues.topLeft)
+      //   css += `border-top-left-radius: ${radiusValues.topLeft}px !important;`;
+      // if (radiusValues.topRight)
+      //   css += `border-top-right-radius: ${radiusValues.topRight}px !important;`;
+      // if (radiusValues.bottomRight)
+      //   css += `border-bottom-right-radius: ${radiusValues.bottomRight}px !important;`;
+      // if (radiusValues.bottomLeft)
+      //   css += `border-bottom-left-radius: ${radiusValues.bottomLeft}px !important;`;
 
-    // Add hover and inner element styles
-    currentCSS += `
+      const topLeft = type === "topLeft" ? value : 0;
+      const topRight = type === "topRight" ? value : 0;
+      const bottomRight = type === "bottomRight" ? value : 0;
+      const bottomLeft = type === "bottomLeft" ? value : 0;
+
+      css += `border-radius: ${topLeft}px ${topRight}px ${bottomRight}px ${bottomLeft}px !important;`;
+
+      css += `border-top-left-radius: ${topLeft}px !important;`;
+      css += `border-top-right-radius: ${topRight}px !important;`;
+      css += `border-bottom-right-radius: ${bottomRight}px !important;`;
+      css += `border-bottom-left-radius: ${bottomLeft}px !important;`;
+    }
+    css += "overflow: hidden !important;}";
+
+    css += `
       .${typeClass} span,
       .${typeClass} .sqs-add-to-cart-button-inner {
         border-radius: inherit !important;
@@ -1445,18 +1430,20 @@ export function initButtonBorderRadiusControl(
       }
     `;
 
-    styleTag.textContent = currentCSS;
+    styleTag.textContent = css;
 
     // Save to local state and pending modifications
     const blockId = selected.id;
     if (blockId && blockId !== "block-id") {
-      // Save the specific property (like image controls)
-      const saveData = {
-        [cssProp]: `${value}px`,
-        overflow: "hidden",
-      };
+      const borderRadiusValue =
+        type === "all"
+          ? `${value}px`
+          : `${radiusValues.topLeft}px ${radiusValues.topRight}px ${radiusValues.bottomRight}px ${radiusValues.bottomLeft}px`;
 
-      mergeAndSaveButtonRadiusStyles(blockId, typeClass, saveData);
+      mergeAndSaveButtonRadiusStyles(blockId, typeClass, {
+        "border-radius": borderRadiusValue,
+        overflow: "hidden",
+      });
 
       if (typeof showNotification === "function") {
         showNotification("Border radius updated locally!", "info");
