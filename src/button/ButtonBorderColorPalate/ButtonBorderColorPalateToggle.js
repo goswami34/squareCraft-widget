@@ -1,4 +1,10 @@
-export function ButtonBorderColorPalateToggle(themeColors, selectedElement) {
+export function ButtonBorderColorPalateToggle(
+  themeColors,
+  selectedElement,
+  saveButtonModifications,
+  addPendingModification,
+  showNotification
+) {
   const palette = document.getElementById("button-border-color-palette");
   const container = document.getElementById("button-border-colors-palette");
   const selectorField = document.getElementById(
@@ -89,6 +95,26 @@ export function ButtonBorderColorPalateToggle(themeColors, selectedElement) {
       btn.dataset.scButtonBorderColor = color;
     });
     console.log("🖌️ APPLYING BORDER COLOR:", rgbaColor, "on", buttonType);
+
+    // Save modifications if functions are provided
+    if (
+      typeof saveButtonModifications === "function" &&
+      typeof addPendingModification === "function"
+    ) {
+      const blockId = currentElement.id;
+      if (blockId) {
+        const stylePayload = {
+          buttonPrimary: {
+            selector: `.${buttonType}`,
+            styles: { borderColor: rgbaColor },
+          },
+        };
+        addPendingModification(blockId, stylePayload, "button");
+        if (showNotification) {
+          showNotification(`Border color applied to ${buttonType}`, "success");
+        }
+      }
+    }
   }
 
   if (allColorField) {

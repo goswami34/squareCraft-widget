@@ -760,34 +760,35 @@ let pendingModifications = new Map();
     });
 
     // Button border color palette trigger
-    const triggerButtonBorderColor = document.getElementById(
-      "button-border-color-select"
+    const triggerButtonBorderColor = event.target.closest(
+      "#button-border-color-select"
     );
     const paletteButtonBorderColor = document.getElementById(
       "button-border-color-palette"
     );
 
-    if (!triggerButtonBorderColor || !paletteButtonBorderColor) return;
-
-    triggerButtonBorderColor.addEventListener("click", () => {
+    if (triggerButtonBorderColor && paletteButtonBorderColor) {
       paletteButtonBorderColor.classList.toggle("sc-hidden");
 
       // Load palette after toggle
-      setTimeout(() => {
-        ButtonBorderColorPalateToggle(
-          themeColors,
-          () => selectedElement,
-          saveButtonModifications,
-          (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
-          showNotification
-        );
-      }, 50);
-    });
+      if (!paletteButtonBorderColor.classList.contains("sc-hidden")) {
+        setTimeout(() => {
+          ButtonBorderColorPalateToggle(
+            themeColors,
+            () => selectedElement,
+            saveButtonModifications,
+            (blockId, css, tagType) => {
+              if (!pendingModifications.has(blockId)) {
+                pendingModifications.set(blockId, []);
+              }
+              pendingModifications.get(blockId).push({ css, tagType });
+            },
+            showNotification
+          );
+        }, 50);
+      }
+      return;
+    }
 
     // Button border color palette trigger end here
 
