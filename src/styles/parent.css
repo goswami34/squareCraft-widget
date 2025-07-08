@@ -4926,4 +4926,8 @@
   box-sizing: border-box;
 }
 
+.button-shadow-color-palette {
+  z-index: 999999 !important;
+}
+
 /* button shadow color palette end here */
