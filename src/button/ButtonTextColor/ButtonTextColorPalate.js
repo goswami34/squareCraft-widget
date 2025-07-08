@@ -44,23 +44,6 @@ export function ButtonTextColorPalate(
     );
     if (!typeClass) return;
 
-    // Get existing shadow state
-    if (!window.shadowStatesByType) {
-      window.shadowStatesByType = new Map();
-    }
-
-    if (!window.shadowStatesByType.has(typeClass)) {
-      window.shadowStatesByType.set(typeClass, {
-        Xaxis: 0,
-        Yaxis: 0,
-        Blur: 0,
-        Spread: 0,
-        Color: "rgba(0,0,0,0.3)",
-      });
-    }
-
-    const shadowState = window.shadowStatesByType.get(typeClass);
-
     // Convert color to rgba
     let rgbaColor;
     if (color.startsWith("rgb(")) {
@@ -79,16 +62,8 @@ export function ButtonTextColorPalate(
       rgbaColor = rgb.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
     }
 
-    // Update shadow state with new color
-    shadowState.Color = rgbaColor;
-
-    // Apply shadow to button
-    // const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${rgbaColor}`;
-
-    const color = shadowState.Color || "rgba(0,0,0,0.3)";
-    const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${color}`;
-
-    const styleId = `sc-button-shadow-${typeClass}`;
+    // Apply text color to button
+    const styleId = `sc-button-text-color-${typeClass}`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
       styleTag = document.createElement("style");
@@ -114,7 +89,7 @@ export function ButtonTextColorPalate(
       `;
 
     // Save to database if function provided
-    if (typeof saveButtonTextModifications === "function") {
+    if (typeof saveButtonShadowModifications === "function") {
       const blockId = currentElement.id;
       if (blockId) {
         const stylePayload = {
@@ -123,7 +98,7 @@ export function ButtonTextColorPalate(
             styles: { color: rgbaColor },
           },
         };
-        saveButtonTextModifications(blockId, stylePayload);
+        saveButtonShadowModifications(blockId, stylePayload);
       }
     }
   }
