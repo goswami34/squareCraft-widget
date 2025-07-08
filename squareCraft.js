@@ -596,13 +596,12 @@ let pendingModifications = new Map();
   const { ButtonBorderColorPalateToggle } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/button/ButtonBorderColorPalate/ButtonBorderColorPalateToggle.js"
   );
+  const { ButtonTextColorPalate } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/ButtonTextColor/ButtonTextColorPalate.js"
+  );
 
   const { buttonShadowColorPalate } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/button/ButtonShadowColorPalate/buttonShadowColorPalate.js"
-  );
-
-  const { ButtonTextColorPalate } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/button/ButtonTextColor/ButtonTextColorPalate.js"
   );
 
   const themeColors = await getSquarespaceThemeStyles();

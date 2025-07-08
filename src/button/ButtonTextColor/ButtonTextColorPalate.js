@@ -29,8 +29,8 @@ export function ButtonTextColorPalate(
     "button-text-border-color-transparency-bar"
   );
 
-  // Button-specific shadow color application function
-  function applyButtonShadowColorFromPalette(color, alpha = 1) {
+  // Button-specific text color application function
+  function applyButtonTextColorFromPalette(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
 
@@ -95,24 +95,32 @@ export function ButtonTextColorPalate(
 
     styleTag.innerHTML = `
         .${typeClass} {
-          box-shadow: ${value} !important;
+          color: ${rgbaColor} !important;
+        }
+        .${typeClass} span,
+        .${typeClass} .sqs-add-to-cart-button-inner {
+          color: ${rgbaColor} !important;
         }
         .${typeClass}:hover {
-          box-shadow: ${value} !important;
+          color: ${rgbaColor} !important;
+        }
+        .${typeClass}:hover span,
+        .${typeClass}:hover .sqs-add-to-cart-button-inner {
+          color: ${rgbaColor} !important;
         }
       `;
 
     // Save to database if function provided
-    if (typeof saveButtonShadowModifications === "function") {
+    if (typeof saveButtonTextModifications === "function") {
       const blockId = currentElement.id;
       if (blockId) {
         const stylePayload = {
           buttonPrimary: {
             selector: `.${typeClass}`,
-            styles: { boxShadow: value },
+            styles: { color: rgbaColor },
           },
         };
-        saveButtonShadowModifications(blockId, stylePayload);
+        saveButtonTextModifications(blockId, stylePayload);
       }
     }
   }
@@ -256,10 +264,7 @@ export function ButtonTextColorPalate(
         }
 
         updateTransparencyField(dynamicHue);
-        applyButtonShadowColorFromPalette(
-          finalColor,
-          currentTransparency / 100
-        );
+        applyButtonTextColorFromPalette(finalColor, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
@@ -300,7 +305,7 @@ export function ButtonTextColorPalate(
           colorCode.textContent = rgb;
         }
 
-        applyButtonShadowColorFromPalette(rgb, currentTransparency / 100);
+        applyButtonTextColorFromPalette(rgb, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
@@ -349,7 +354,7 @@ export function ButtonTextColorPalate(
     const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
 
     colorCode.textContent = rgb;
-    applyButtonShadowColorFromPalette(rgb, currentTransparency / 100);
+    applyButtonTextColorFromPalette(rgb, currentTransparency / 100);
   }
 
   if (transparencyField && transparencyBullet) {
@@ -372,7 +377,7 @@ export function ButtonTextColorPalate(
         }
         const currentColor = colorCode?.textContent;
         if (currentColor) {
-          applyButtonShadowColorFromPalette(
+          applyButtonTextColorFromPalette(
             currentColor,
             currentTransparency / 100
           );
@@ -409,7 +414,7 @@ export function ButtonTextColorPalate(
         allColorBullet.style.top = `${bulletTop}px`;
       }
 
-      applyButtonShadowColorFromPalette(color, currentTransparency / 100);
+      applyButtonTextColorFromPalette(color, currentTransparency / 100);
 
       requestAnimationFrame(() => {
         const canvas = selectorField.querySelector("canvas");
@@ -453,7 +458,7 @@ export function ButtonTextColorPalate(
         }
       });
 
-      applyButtonShadowColorFromPalette(color, currentTransparency / 100);
+      applyButtonTextColorFromPalette(color, currentTransparency / 100);
     };
 
     container.appendChild(swatch);
@@ -521,42 +526,4 @@ export function ButtonTextColorPalate(
       transparencyCount.textContent = `100%`;
     }
   }
-
-  //color pallete code start here
-  function applyImageShadowColor(color, alpha = 1) {
-    const selected = selectedElement?.(); // from your context
-    if (!selected) return;
-
-    const blockId = selected.closest('[id^="block-"]')?.id;
-    const imageWrapper = selected.querySelector(".sqs-image-content");
-    if (!blockId || !imageWrapper) return;
-
-    const rgbaColor = color.startsWith("rgb(")
-      ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
-      : color;
-
-    const overlayId = `sc-image-overlay-${blockId}`;
-    let overlay = document.getElementById(overlayId);
-
-    if (!overlay) {
-      overlay = document.createElement("div");
-      overlay.id = overlayId;
-      overlay.style.position = "absolute";
-      overlay.style.top = "0";
-      overlay.style.left = "0";
-      overlay.style.width = "100%";
-      overlay.style.height = "100%";
-      overlay.style.pointerEvents = "none";
-      overlay.style.zIndex = "1";
-      overlay.style.borderRadius = "inherit";
-
-      imageWrapper.style.position = "relative";
-      imageWrapper.appendChild(overlay);
-    }
-
-    overlay.style.backgroundColor = rgbaColor;
-  }
-
-  // applyImageShadowColor("rgba(0,0,0,0.5)");
 }
-//color pallete code end here
