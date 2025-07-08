@@ -4930,4 +4930,10 @@
   z-index: 999999 !important;
 }
 
+.button-shadow-border-color-selection-field {
+  width: 100% !important;
+  height: 100px !important;
+  border-radius: 6px !important;
+}
+
 /* button shadow color palette end here */
