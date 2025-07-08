@@ -601,6 +601,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/button/ButtonShadowColorPalate/buttonShadowColorPalate.js"
   );
 
+  const { ButtonTextColorPalate } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/ButtonTextColor/ButtonTextColorPalate.js"
+  );
+
   const themeColors = await getSquarespaceThemeStyles();
 
   // document.body.addEventListener("click", (event) => {
@@ -828,6 +832,39 @@ let pendingModifications = new Map();
     }
 
     // button shadow color palette trigger end here
+
+    // button text color palette trigger start here
+    const triggerButtonTextColor = event.target.closest(
+      "#button-text-color-select"
+    );
+    const paletteButtonTextColor = document.getElementById(
+      "button-text-color-palette"
+    );
+
+    if (triggerButtonTextColor && paletteButtonTextColor) {
+      paletteButtonTextColor.classList.toggle("sc-hidden");
+
+      // Load palette after toggle
+      if (!paletteButtonTextColor.classList.contains("sc-hidden")) {
+        setTimeout(() => {
+          ButtonTextColorPalate(
+            themeColors,
+            () => selectedElement,
+            saveButtonModifications,
+            (blockId, css, tagType) => {
+              if (!pendingModifications.has(blockId)) {
+                pendingModifications.set(blockId, []);
+              }
+              pendingModifications.get(blockId).push({ css, tagType });
+            },
+            showNotification
+          );
+        }, 50);
+      }
+      return;
+    }
+
+    // button text color palette trigger end here
 
     // Add trigger for image shadow color palette
     const triggerShadowOne = document.getElementById("ShadowFontColorPalate");
