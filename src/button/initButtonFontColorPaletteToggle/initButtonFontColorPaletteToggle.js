@@ -676,22 +676,4 @@ export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
       transparencyCount.textContent = `100%`;
     }
   }
-
-  // Add click event listener to toggle color palette visibility
-  const paletteSwatch = document.getElementById("buttonFontColorPalate");
-  const paletteDropdown = document.getElementById("button-font-color-palette");
-
-  if (paletteSwatch && paletteDropdown) {
-    paletteSwatch.addEventListener("click", (e) => {
-      e.stopPropagation();
-      paletteDropdown.classList.toggle("sc-hidden");
-    });
-
-    // Hide palette when clicking outside
-    document.addEventListener("click", (e) => {
-      if (!paletteDropdown.contains(e.target) && e.target !== paletteSwatch) {
-        paletteDropdown.classList.add("sc-hidden");
-      }
-    });
-  }
 }

@@ -545,6 +545,8 @@ export function WidgetButtonNormalState() {
                   </div>
 
                   <div class="sc-mt-4 sc-gap-2 sc-grid sc-grid-cols-12">
+
+
                      <div class="sc-col-span-5">
                         <p class="sc-roboto sc-font-thin sc-universal  sc-font-size-12 sc-font-thin sc-text-gray-300">
                            Border
@@ -554,7 +556,7 @@ export function WidgetButtonNormalState() {
                         <div
                            class="sc-py-4px sc-relative sc-mt-2 sc-bg-3f3f3f sc-inActiveTab-border  sc-flex sc-justify-between sc-items-center sc-px-1 sc-rounded-4px">
                            <p class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select</p>
-                           <div class="sc-square-6  sc-cursor-pointer">
+                           <div id="border-color-select" class="sc-square-6  sc-cursor-pointer">
                            </div>
 
                            <div id="color-palette"
@@ -605,6 +607,8 @@ export function WidgetButtonNormalState() {
 
                         </div>
                      </div>
+
+                     
                      <div class="sc-col-span-7">
                         <p class="sc-roboto sc-font-thin sc-universal  sc-font-size-12 sc-font-thin sc-text-gray-300">
                            Border
