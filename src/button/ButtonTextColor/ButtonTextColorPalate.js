@@ -83,7 +83,10 @@ export function ButtonTextColorPalate(
     shadowState.Color = rgbaColor;
 
     // Apply shadow to button
-    const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${rgbaColor}`;
+    // const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${rgbaColor}`;
+
+    const color = shadowState.Color || "rgba(0,0,0,0.3)";
+    const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${color}`;
 
     const styleId = `sc-button-shadow-${typeClass}`;
     let styleTag = document.getElementById(styleId);
