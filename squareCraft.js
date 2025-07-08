@@ -798,10 +798,10 @@ let pendingModifications = new Map();
 
     // button shadow color palette trigger start here
     const triggerButtonShadowColor = event.target.closest(
-      "#button-border-color-select"
+      "#button-shadow-color-select"
     );
     const paletteButtonShadowColor = document.getElementById(
-      "button-border-color-palette"
+      "button-shadow-color-palette"
     );
 
     if (triggerButtonShadowColor && paletteButtonShadowColor) {
