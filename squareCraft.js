@@ -703,51 +703,57 @@ let pendingModifications = new Map();
   //   hoverTypoTabSelect(event);
   // });
 
-  // Border color palette trigger - separate event listener
   document.body.addEventListener("click", (event) => {
+    // Border color palette trigger
     const trigger = event.target.closest("#border-color-select");
     if (trigger) {
       console.log("Border color select clicked!"); // Debug log
-      const palette = document.getElementById("color-palette");
-      if (palette) {
-        palette.classList.toggle("sc-hidden");
-        if (!palette.classList.contains("sc-hidden")) {
-          setTimeout(() => {
-            initBorderColorPaletteToggle(themeColors);
-          }, 100);
-        }
-      }
+      setTimeout(() => {
+        initBorderColorPaletteToggle(themeColors);
+      }, 100);
       return;
     }
+    // ... existing code ...
   });
 
   document.body.addEventListener("click", (event) => {
-    // Button font color palette trigger
-    const triggerOne = event.target.closest("#buttonFontColorPalate");
+    // if (selectedElement) {
+    //   initButtonStyles(selectedElement);
+    // }
+    // const trigger = event.target.closest("#border-color-select");
+
+    // if (trigger) {
+    //   console.log("✅ border-color-select clicked");
+    //   setTimeout(() => {
+    //     initBorderColorPaletteToggle(themeColors);
+    //   }, 100);
+    //   return;
+    // }
+
+    const triggerOne = document.getElementById("buttonFontColorPalate");
     const paletteOne = document.getElementById("button-font-color-palette");
 
-    if (triggerOne && paletteOne) {
+    if (!triggerOne || !paletteOne) return;
+
+    triggerOne.addEventListener("click", () => {
       paletteOne.classList.toggle("sc-hidden");
 
       // Load palette after toggle
-      if (!paletteOne.classList.contains("sc-hidden")) {
-        setTimeout(() => {
-          initButtonFontColorPaletteToggle(
-            themeColors,
-            () => selectedElement,
-            saveButtonModifications,
-            (blockId, css, tagType) => {
-              if (!pendingModifications.has(blockId)) {
-                pendingModifications.set(blockId, []);
-              }
-              pendingModifications.get(blockId).push({ css, tagType });
-            },
-            showNotification
-          );
-        }, 50);
-      }
-      return;
-    }
+      setTimeout(() => {
+        initButtonFontColorPaletteToggle(
+          themeColors,
+          () => selectedElement,
+          saveButtonModifications,
+          (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification
+        );
+      }, 50);
+    });
 
     // Add trigger for image shadow color palette
     const triggerShadowOne = document.getElementById("ShadowFontColorPalate");
@@ -814,56 +820,6 @@ let pendingModifications = new Map();
     // }, 100);
 
     setTimeout(initImageSectionControls, 100);
-  });
-
-  // Close palettes when clicking outside
-  document.addEventListener("click", (e) => {
-    // Close border color palette
-    const borderPalette = document.getElementById("color-palette");
-    const borderTrigger = document.getElementById("border-color-select");
-    if (
-      borderPalette &&
-      !borderPalette.contains(e.target) &&
-      e.target !== borderTrigger
-    ) {
-      borderPalette.classList.add("sc-hidden");
-    }
-
-    // Close button font color palette
-    const buttonPalette = document.getElementById("button-font-color-palette");
-    const buttonTrigger = document.getElementById("buttonFontColorPalate");
-    if (
-      buttonPalette &&
-      !buttonPalette.contains(e.target) &&
-      e.target !== buttonTrigger
-    ) {
-      buttonPalette.classList.add("sc-hidden");
-    }
-
-    // Close shadow color palette
-    const shadowPalette = document.getElementById("shadow-color-palette");
-    const shadowTrigger = document.getElementById("ShadowFontColorPalate");
-    if (
-      shadowPalette &&
-      !shadowPalette.contains(e.target) &&
-      e.target !== shadowTrigger
-    ) {
-      shadowPalette.classList.add("sc-hidden");
-    }
-
-    // Close overlay color palette
-    const overlayPalette = document.getElementById("overlay-color-palette");
-    const overlayTrigger = document.getElementById("overLayFontColorPalate");
-    if (
-      overlayPalette &&
-      !overlayPalette.contains(e.target) &&
-      e.target !== overlayTrigger
-    ) {
-      overlayPalette.classList.add("sc-hidden");
-    }
-  });
-
-  document.body.addEventListener("click", (event) => {
     const clickedBlock = event.target.closest('[id^="block-"]');
     console.log("clickedBlock", clickedBlock);
 
