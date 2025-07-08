@@ -4917,3 +4917,13 @@
   height: 100px !important;
   border-radius: 6px !important;
 }
+
+/* button shadow color palette start here */
+.sc-button-shadow-color-palette {
+  width: 160px !important;
+  min-width: 160px !important;
+  max-width: 160px !important;
+  box-sizing: border-box;
+}
+
+/* button shadow color palette end here */

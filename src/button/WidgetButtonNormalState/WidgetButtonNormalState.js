@@ -790,7 +790,7 @@ export function WidgetButtonNormalState() {
                         </p>
 
                         <div
-                           class="sc-py-4px sc-relative sc-mt-2 sc-bg-3f3f3f sc-inActiveTab-border  sc-flex sc-justify-between sc-items-center sc-px-1 sc-rounded-4px">
+                           class="sc-py-4px sc-relative sc-mt-2 sc-bg-3f3f3f sc-inActiveTab-border  sc-flex sc-justify-between sc-items-center sc-px-1 sc-rounded-4px sc-button-shadow-color-palette">
                            <p class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select</p>
                            <div id="button-shadow-color-select" class="sc-square-6  sc-cursor-pointer">
                            </div>
