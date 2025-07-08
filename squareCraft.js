@@ -761,10 +761,10 @@ let pendingModifications = new Map();
 
     // Button border color palette trigger
     const triggerButtonBorderColor = document.getElementById(
-      "buttonFontColorPalate"
+      "button-border-color-select"
     );
     const paletteButtonBorderColor = document.getElementById(
-      "button-font-color-palette"
+      "button-border-color-palette"
     );
 
     if (!triggerButtonBorderColor || !paletteButtonBorderColor) return;
