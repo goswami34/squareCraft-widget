@@ -4,29 +4,29 @@ export function ButtonTextColorPalate(
   saveButtonShadowModifications
 ) {
   // Use correct IDs matching the HTML
-  const palette = document.getElementById("button-shadow-color-palette");
-  const container = document.getElementById("button-shadow-colors-palette");
+  const palette = document.getElementById("button-text-color-palette");
+  const container = document.getElementById("button-text-colors-palette");
   const selectorField = document.getElementById(
-    "button-shadow-border-color-selection-field"
+    "button-text-border-color-selection-field"
   );
   const bullet = document.getElementById(
-    "button-shadow-border-color-selection-bar"
+    "button-text-border-color-selection-bar"
   );
-  const colorCode = document.getElementById("button-shadow-border-color-code");
+  const colorCode = document.getElementById("button-text-border-color-code");
   const transparencyCount = document.getElementById(
-    "button-shadow-border-color-transparency-count"
+    "button-text-border-color-transparency-count"
   );
   const allColorField = document.getElementById(
-    "button-shadow-border-color-all-color-selction-field"
+    "button-text-border-color-all-color-selction-field"
   );
   const allColorBullet = document.getElementById(
-    "button-shadow-border-color-all-color-selction-bar"
+    "button-text-border-color-all-color-selction-bar"
   );
   const transparencyField = document.getElementById(
-    "button-shadow-border-color-transparency-field"
+    "button-text-border-color-transparency-field"
   );
   const transparencyBullet = document.getElementById(
-    "button-shadow-border-color-transparency-bar"
+    "button-text-border-color-transparency-bar"
   );
 
   // Button-specific shadow color application function

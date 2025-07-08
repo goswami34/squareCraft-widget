@@ -4937,3 +4937,16 @@
 }
 
 /* button shadow color palette end here */
+
+/* button text color palate start here */
+#button-text-color-palette {
+  z-index: 999999 !important;
+}
+
+#button-text-border-color-selection-field {
+  width: 100% !important;
+  height: 100px !important;
+  border-radius: 6px !important;
+}
+
+/* button text color palate end here */
