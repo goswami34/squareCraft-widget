@@ -597,6 +597,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/button/ButtonBorderColorPalate/ButtonBorderColorPalateToggle.js"
   );
 
+  const { buttonShadowColorPalate } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/ButtonShadowColorPalate/buttonShadowColorPalate.js"
+  );
+
   const themeColors = await getSquarespaceThemeStyles();
 
   // document.body.addEventListener("click", (event) => {
@@ -791,6 +795,39 @@ let pendingModifications = new Map();
     }
 
     // Button border color palette trigger end here
+
+    // button shadow color palette trigger start here
+    const triggerButtonShadowColor = event.target.closest(
+      "#button-border-color-select"
+    );
+    const paletteButtonShadowColor = document.getElementById(
+      "button-border-color-palette"
+    );
+
+    if (triggerButtonShadowColor && paletteButtonShadowColor) {
+      paletteButtonShadowColor.classList.toggle("sc-hidden");
+
+      // Load palette after toggle
+      if (!paletteButtonShadowColor.classList.contains("sc-hidden")) {
+        setTimeout(() => {
+          buttonShadowColorPalate(
+            themeColors,
+            () => selectedElement,
+            saveButtonModifications,
+            (blockId, css, tagType) => {
+              if (!pendingModifications.has(blockId)) {
+                pendingModifications.set(blockId, []);
+              }
+              pendingModifications.get(blockId).push({ css, tagType });
+            },
+            showNotification
+          );
+        }, 50);
+      }
+      return;
+    }
+
+    // button shadow color palette trigger end here
 
     // Add trigger for image shadow color palette
     const triggerShadowOne = document.getElementById("ShadowFontColorPalate");
