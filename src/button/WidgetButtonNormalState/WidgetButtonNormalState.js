@@ -559,11 +559,11 @@ export function WidgetButtonNormalState() {
                            <div id="border-color-select" class="sc-square-6  sc-cursor-pointer">
                            </div>
 
-                           <div id="color-palette"
+                           <div id="button-border-color-palette"
                               class="sc-absolute sc-hidden sc-border sc-border-solid sc-border-EF7C2F sc-top-12 sc-bg-3f3f3f sc-left-0 sc-p-1 sc-rounded-4px ">
                               <div class="sc-color-arrow"></div>
                               <div class="sc-flex sc-items-center sc-justify-between">
-                                 <div id="border-colors" class="sc-flex sc-relative sc-items-center sc-gap-1">
+                                 <div id="button-border-colors-palette" class="sc-flex sc-relative sc-items-center sc-gap-1">
 
 
                                  </div>
@@ -578,29 +578,29 @@ export function WidgetButtonNormalState() {
 
                               <div class="sc-h-1px sc-mt-2 sc-bg-color-gray"></div>
                               <div class="sc-flex color-h-selection sc-mt-2 sc-items-center sc-gap-2">
-                                 <div id="color-selection-field" class="sc-relative">
-                                    <div id="color-selection-bar"
+                                 <div id="button-border-color-selection-field" class="sc-relative">
+                                    <div id="button-border-color-selection-bar"
                                        class="sc-w-2 sc-h-2 sc-absolute sc-cursor-pointer sc-rounded-full sc-border sc-border-solid sc-border-white">
                                     </div>
                                  </div>
-                                 <div id="color-transparency-field"
+                                 <div id="button-border-color-transparency-field"
                                     class="sc-h-full sc-w-3 sc-relative  sc-rounded-15px ">
-                                    <div id="color-transparency-bar"
+                                    <div id="button-border-color-transparency-bar"
                                        class="sc-absolute  sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px  sc-cursor-grabbing  sc-h-2 sc-bg-color-f2f2f2">
                                     </div>
                                  </div>
-                                 <div id="all-color-selction-field"
+                                 <div id="button-border-color-all-color-selction-field"
                                     class="sc-h-full sc-w-3 sc-relative sc-rounded-15px">
-                                    <div id="all-color-selction-bar"
+                                    <div id="button-border-color-all-color-selction-bar"
                                        class="sc-absolute  sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px sc-cursor-grabbing sc-h-2 sc-bg-color-f2f2f2">
                                     </div>
                                  </div>
                               </div>
                               <div
                                  class="sc-flex sc-justify-between sc-mt-2 sc-px-2 sc-py-0_5 sc-rounded-4px sc-bg-454545">
-                                 <p id="color-code" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select
+                                 <p id="button-border-color-code" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select
                                  </p>
-                                 <p id="color-transparency-count"
+                                 <p id="button-border-color-transparency-count"
                                     class="sc-font-size-12 sc-roboto sc-font-light sc-universal">100%</p>
                               </div>
                            </div>

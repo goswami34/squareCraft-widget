@@ -593,6 +593,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { ButtonBorderColorPalateToggle } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/ButtonBorderColorPalate/ButtonBorderColorPalateToggle.js"
+  );
+
   const themeColors = await getSquarespaceThemeStyles();
 
   // document.body.addEventListener("click", (event) => {
@@ -754,6 +758,38 @@ let pendingModifications = new Map();
         );
       }, 50);
     });
+
+    // Button border color palette trigger
+    const triggerButtonBorderColor = document.getElementById(
+      "buttonFontColorPalate"
+    );
+    const paletteButtonBorderColor = document.getElementById(
+      "button-font-color-palette"
+    );
+
+    if (!triggerButtonBorderColor || !paletteButtonBorderColor) return;
+
+    triggerButtonBorderColor.addEventListener("click", () => {
+      paletteButtonBorderColor.classList.toggle("sc-hidden");
+
+      // Load palette after toggle
+      setTimeout(() => {
+        ButtonBorderColorPalateToggle(
+          themeColors,
+          () => selectedElement,
+          saveButtonModifications,
+          (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification
+        );
+      }, 50);
+    });
+
+    // Button border color palette trigger end here
 
     // Add trigger for image shadow color palette
     const triggerShadowOne = document.getElementById("ShadowFontColorPalate");
