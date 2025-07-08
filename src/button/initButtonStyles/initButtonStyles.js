@@ -1863,8 +1863,9 @@ export function initButtonShadowControls(
     }
 
     const shadowState = window.shadowStatesByType.get(typeClass);
-    const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
-
+    // const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
+    const color = shadowState.Color || "rgba(0,0,0,0.3)";
+    const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${color}`;
     // Apply to DOM
     const styleId = `sc-button-shadow-${typeClass}`;
     let styleTag = document.getElementById(styleId);
