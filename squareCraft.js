@@ -2946,92 +2946,123 @@ let pendingModifications = new Map();
     const pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
-  
+
     if (!userId || !token || !widgetId || !pageId) {
       console.warn("⚠️ Missing credentials or page ID");
       return;
     }
-  
-    let url = `https://admin.squareplugin.com/api/v1/get-button-color-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-  
+
+    let url = `https://admin.squareplugin.com/api/v1/fetch-button-color-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+    if (blockId) url += `&elementId=${blockId}`;
+
     try {
-      const response = await fetch(url, {
+      const res = await fetch(url, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Failed to fetch`);
-      }
-  
-      const result = await response.json();
-      console.log("✅ Button color modifications fetched:", result);
-      console.log("🔍 Response structure:", {
-        hasModifications: !!result.modifications,
-        modificationsLength: result.modifications?.length || 0,
-        firstModification: result.modifications?.[0],
-        firstElement: result.modifications?.[0]?.elements?.[0]
-      });
-  
-      // Apply the fetched button color styles
-      // Handle the nested structure: modifications[].elements[]
-      const modifications = result.modifications || [];
-      modifications.forEach((mod) => {
-        const elements = mod.elements || [];
-        elements.forEach(({ elementId, css }) => {
-          // Apply button color styles as external CSS
-          const buttonPrimary = css?.buttonPrimary;
-          if (buttonPrimary?.selector && buttonPrimary?.styles) {
-            applyStylesAsExternalCSS(
-              buttonPrimary.selector,
-              buttonPrimary.styles,
-              "sc-btn-color-style"
-            );
-            console.log(
-              `✅ Applied button primary color styles to ${elementId}:`,
-              buttonPrimary.styles
-            );
-          }
-          
-          // Handle secondary button colors
-          const buttonSecondary = css?.buttonSecondary;
-          if (buttonSecondary?.selector && buttonSecondary?.styles) {
-            applyStylesAsExternalCSS(
-              buttonSecondary.selector,
-              buttonSecondary.styles,
-              "sc-btn-color-style"
-            );
-            console.log(
-              `✅ Applied button secondary color styles to ${elementId}:`,
-              buttonSecondary.styles
-            );
-          }
-          
-          // Handle tertiary button colors
-          const buttonTertiary = css?.buttonTertiary;
-          if (buttonTertiary?.selector && buttonTertiary?.styles) {
-            applyStylesAsExternalCSS(
-              buttonTertiary.selector,
-              buttonTertiary.styles,
-              "sc-btn-color-style"
-            );
-            console.log(
-              `✅ Applied button tertiary color styles to ${elementId}:`,
-              buttonTertiary.styles
-            );
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message);
+
+      const elements = result.elements || [];
+      elements.forEach(({ elementId, selector, styles }) => {
+        if (!selector || !styles) return;
+
+        const styleId = `sc-btn-shadow-style-${elementId}`;
+        let styleTag = document.getElementById(styleId);
+        if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = styleId;
+          document.head.appendChild(styleTag);
+        }
+
+        let cssText = `${selector} {`;
+        Object.entries(styles).forEach(([prop, val]) => {
+          if (val !== null && val !== undefined && val !== "null") {
+            cssText += `${prop}: ${val} !important; `;
           }
         });
+        cssText += "}";
+
+        styleTag.textContent = cssText;
+
+        console.log(
+          `✅ Applied button shadow styles for ${elementId}:`,
+          styles
+        );
       });
-  
-      console.log("✅ All button color modifications applied (external CSS)");
-      return modifications;
+
+      console.log("✅ All button shadow modifications applied (external CSS)");
     } catch (error) {
-      console.error("❌ Error fetching button color modifications:", error.message);
-      showNotification(`Failed to fetch button colors: ${error.message}`, "error");
-      return null;
+      console.error(
+        "❌ Failed to fetch button shadow modifications:",
+        error.message
+      );
+    }
+  }
+
+  // Fetch button shadow modifications from the backend
+  async function fetchButtonShadowModifications(blockId = null) {
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
+      return;
+    }
+
+    let url = `https://admin.squareplugin.com/api/v1/get-button-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+    if (blockId) url += `&elementId=${blockId}`;
+
+    try {
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message);
+
+      const elements = result.elements || [];
+      elements.forEach(({ elementId, selector, styles }) => {
+        if (!selector || !styles) return;
+
+        const styleId = `sc-btn-shadow-style-${elementId}`;
+        let styleTag = document.getElementById(styleId);
+        if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = styleId;
+          document.head.appendChild(styleTag);
+        }
+
+        let cssText = `${selector} {`;
+        Object.entries(styles).forEach(([prop, val]) => {
+          if (val !== null && val !== undefined && val !== "null") {
+            cssText += `${prop}: ${val} !important; `;
+          }
+        });
+        cssText += "}";
+
+        styleTag.textContent = cssText;
+
+        console.log(
+          `✅ Applied button shadow styles for ${elementId}:`,
+          styles
+        );
+      });
+
+      console.log("✅ All button shadow modifications applied (external CSS)");
+    } catch (error) {
+      console.error(
+        "❌ Failed to fetch button shadow modifications:",
+        error.message
+      );
     }
   }
   
