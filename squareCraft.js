@@ -2940,95 +2940,163 @@ let pendingModifications = new Map();
 
     // fetch button color modifications from the backend
   async function fetchButtonColorModifications(blockId = null) {
+    console.log("🚀 Starting fetchButtonColorModifications...");
+    console.log("📋 Parameters:", { blockId });
+    
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
     const pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
+    
+    console.log("🔑 Credentials check:", {
+      userId: userId ? "✅ Present" : "❌ Missing",
+      token: token ? "✅ Present" : "❌ Missing", 
+      widgetId: widgetId ? "✅ Present" : "❌ Missing",
+      pageId: pageId ? "✅ Present" : "❌ Missing"
+    });
   
     if (!userId || !token || !widgetId || !pageId) {
       console.warn("⚠️ Missing credentials or page ID");
+      console.log("❌ Missing data:", {
+        userId: !userId,
+        token: !token,
+        widgetId: !widgetId,
+        pageId: !pageId
+      });
       return;
     }
   
     let url = `https://admin.squareplugin.com/api/v1/get-button-color-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
     if (blockId) url += `&elementId=${blockId}`;
+    
+    console.log("🌐 API URL:", url);
+    console.log("📤 Request headers:", {
+      Authorization: `Bearer ${token.substring(0, 20)}...`
+    });
   
     try {
+      console.log("📡 Making API request...");
       const res = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      
+      console.log("📥 Response received:", {
+        status: res.status,
+        statusText: res.statusText,
+        ok: res.ok,
+        headers: Object.fromEntries(res.headers.entries())
+      });
   
       const result = await res.json();
-      if (!res.ok) throw new Error(result.message);
+      console.log("📄 Raw API response:", result);
+      
+      if (!res.ok) {
+        console.error("❌ API request failed:", result);
+        throw new Error(result.message || `HTTP ${res.status}`);
+      }
   
-      console.log("✅ Button color modifications fetched:", result);
-      console.log("🔍 Response structure:", {
+      console.log("✅ Button color modifications fetched successfully");
+      console.log("🔍 Response structure analysis:", {
         hasElements: !!result.elements,
         elementsLength: result.elements?.length || 0,
         firstElement: result.elements?.[0],
         hasModifications: !!result.modifications,
-        modificationsLength: result.modifications?.length || 0
+        modificationsLength: result.modifications?.length || 0,
+        responseKeys: Object.keys(result)
       });
   
       // Handle both possible response structures
       let elements = [];
       
+      console.log("🔍 Processing response structure...");
+      
       // Try direct structure first: elements[]
       if (result.elements && Array.isArray(result.elements)) {
         elements = result.elements;
         console.log("📋 Using direct elements structure");
+        console.log("📋 Elements found:", elements);
       }
       // Try nested structure: modifications[].elements[]
       else if (result.modifications && Array.isArray(result.modifications)) {
-        result.modifications.forEach((mod) => {
+        console.log("📋 Using nested modifications structure");
+        result.modifications.forEach((mod, index) => {
+          console.log(`📋 Processing modification ${index}:`, mod);
           if (mod.elements && Array.isArray(mod.elements)) {
             elements = elements.concat(mod.elements);
+            console.log(`📋 Added ${mod.elements.length} elements from modification ${index}`);
           }
         });
-        console.log("📋 Using nested modifications structure");
+      } else {
+        console.log("⚠️ No recognized structure found in response");
+        console.log("📋 Available keys:", Object.keys(result));
       }
       
-      console.log(`🔍 Found ${elements.length} elements to process`);
+      console.log(`🔍 Total elements found: ${elements.length}`);
+      console.log("📋 All elements:", elements);
       
-      elements.forEach(({ elementId, selector, styles, css }) => {
+      elements.forEach((element, index) => {
+        console.log(`🎨 Processing element ${index}:`, element);
+        
+        const { elementId, selector, styles, css } = element;
+        
         // Handle both flat structure (selector, styles) and nested structure (css)
         let buttonStyles = null;
         let buttonSelector = null;
+        
+        console.log("🔍 Element structure analysis:", {
+          hasSelector: !!selector,
+          hasStyles: !!styles,
+          hasCss: !!css,
+          elementId
+        });
         
         if (selector && styles) {
           // Direct structure
           buttonSelector = selector;
           buttonStyles = styles;
+          console.log("📋 Using direct structure:", { selector, styles });
         } else if (css) {
           // Nested structure - try to get primary button styles
+          console.log("📋 CSS object found:", css);
           const buttonPrimary = css.buttonPrimary;
           if (buttonPrimary?.selector && buttonPrimary?.styles) {
             buttonSelector = buttonPrimary.selector;
             buttonStyles = buttonPrimary.styles;
+            console.log("📋 Using nested structure - buttonPrimary:", buttonPrimary);
+          } else {
+            console.log("⚠️ No valid buttonPrimary found in css object");
           }
+        } else {
+          console.log("⚠️ No valid structure found for this element");
         }
         
         // Apply button color styles as external CSS
         if (buttonSelector && buttonStyles) {
+          console.log("🎨 Applying styles:", { buttonSelector, buttonStyles });
           applyStylesAsExternalCSS(buttonSelector, buttonStyles, "sc-btn-color-style");
           console.log(
             `✅ Applied button color styles to ${elementId}:`,
             buttonStyles
           );
+        } else {
+          console.log("❌ No valid styles to apply for element:", elementId);
         }
       });
       console.log(
         "✅ Applied button color styles to all elements (external CSS)"
       );
+      console.log("🏁 fetchButtonColorModifications completed successfully");
     } catch (error) {
       console.error(
         "❌ Failed to fetch button color modifications:",
         error.message
       );
+      console.error("❌ Full error details:", error);
+      console.error("❌ Error stack:", error.stack);
     }
   }
 
@@ -3238,7 +3306,9 @@ let pendingModifications = new Map();
     }
 
     // Fetch button color modifications on page load
+    console.log("🌅 Window load: About to fetch button color modifications");
     await fetchButtonColorModifications();
+    console.log("🌅 Window load: Button color modifications fetch completed");
   });
 
   async function addHeadingEventListeners() {
@@ -3299,9 +3369,13 @@ let pendingModifications = new Map();
     }
 
     // Fetch button color modifications
+    console.log("🔄 Observer: About to fetch button color modifications");
+    console.log("🔄 Observer: elementId =", elementId);
     if (elementId) {
+      console.log("🔄 Observer: Calling fetchButtonColorModifications with elementId");
       fetchButtonColorModifications(elementId);
     } else {
+      console.log("🔄 Observer: Calling fetchButtonColorModifications without elementId");
       fetchButtonColorModifications();
     }
 
