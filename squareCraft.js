@@ -2947,10 +2947,9 @@ let pendingModifications = new Map();
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
   
-    if (!userId || !widgetId || !pageId) {
-      console.warn("⚠️ Missing userId, widgetId, or pageId (required)");
-      showNotification("Page ID, user ID or widget ID is missing.", "error");
-      return null;
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
+      return;
     }
   
     const url = new URL(
@@ -2958,7 +2957,7 @@ let pendingModifications = new Map();
     );
     url.searchParams.append("userId", userId);
     url.searchParams.append("widgetId", widgetId);
-    url.searchParams.append("pageId", pageId); // ✅ required now
+    url.searchParams.append("pageId", pageId);
   
     try {
       const response = await fetch(url.toString(), {
@@ -2976,7 +2975,37 @@ let pendingModifications = new Map();
       const result = await response.json();
       console.log("✅ Button color modifications fetched:", result);
   
-      return result.modifications || [];
+      // Apply the fetched button color styles
+      const modifications = result.modifications || [];
+      modifications.forEach(({ elementId, selector, styles }) => {
+        if (!selector || !styles) return;
+  
+        const styleId = `sc-btn-color-style-${elementId}`;
+        let styleTag = document.getElementById(styleId);
+        if (!styleTag) {
+          styleTag = document.createElement("style");
+          styleTag.id = styleId;
+          document.head.appendChild(styleTag);
+        }
+  
+        let cssText = `${selector} {`;
+        Object.entries(styles).forEach(([prop, val]) => {
+          if (val !== null && val !== undefined && val !== "null") {
+            cssText += `${prop}: ${val} !important; `;
+          }
+        });
+        cssText += "}";
+  
+        styleTag.textContent = cssText;
+  
+        console.log(
+          `✅ Applied button color styles for ${elementId}:`,
+          styles
+        );
+      });
+  
+      console.log("✅ All button color modifications applied (external CSS)");
+      return modifications;
     } catch (error) {
       console.error("❌ Error fetching button color modifications:", error.message);
       showNotification(`Failed to fetch button colors: ${error.message}`, "error");
@@ -3124,6 +3153,9 @@ let pendingModifications = new Map();
       await fetchImageOverlayModifications(lastClickedBlockId);
       await fetchImageShadowModifications(lastClickedBlockId);
     }
+
+    // Fetch button color modifications on page load
+    await fetchButtonColorModifications();
   });
 
   async function addHeadingEventListeners() {
