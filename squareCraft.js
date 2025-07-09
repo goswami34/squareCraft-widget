@@ -604,6 +604,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/button/ButtonShadowColorPalate/buttonShadowColorPalate.js"
   );
 
+  const { saveButtonColorModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   const themeColors = await getSquarespaceThemeStyles();
 
   // document.body.addEventListener("click", (event) => {
@@ -849,7 +853,14 @@ let pendingModifications = new Map();
           ButtonTextColorPalate(
             themeColors,
             () => selectedElement,
-            saveButtonModifications
+            saveButtonColorModifications,
+            (blockId, css, tagType) => {
+              if (!pendingModifications.has(blockId)) {
+                pendingModifications.set(blockId, []);
+              }
+              pendingModifications.get(blockId).push({ css, tagType });
+            },
+            showNotification
           );
         }, 50);
       }
