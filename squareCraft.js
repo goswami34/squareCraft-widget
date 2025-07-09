@@ -2952,15 +2952,10 @@ let pendingModifications = new Map();
       return;
     }
   
-    const url = new URL(
-      "https://admin.squareplugin.com/api/v1/fetch-button-color-modifications"
-    );
-    url.searchParams.append("userId", userId);
-    url.searchParams.append("widgetId", widgetId);
-    url.searchParams.append("pageId", pageId);
+    let url = `https://admin.squareplugin.com/api/v1/get-button-color-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
   
     try {
-      const response = await fetch(url.toString(), {
+      const response = await fetch(url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -2974,34 +2969,61 @@ let pendingModifications = new Map();
   
       const result = await response.json();
       console.log("✅ Button color modifications fetched:", result);
+      console.log("🔍 Response structure:", {
+        hasModifications: !!result.modifications,
+        modificationsLength: result.modifications?.length || 0,
+        firstModification: result.modifications?.[0],
+        firstElement: result.modifications?.[0]?.elements?.[0]
+      });
   
       // Apply the fetched button color styles
+      // Handle the nested structure: modifications[].elements[]
       const modifications = result.modifications || [];
-      modifications.forEach(({ elementId, selector, styles }) => {
-        if (!selector || !styles) return;
-  
-        const styleId = `sc-btn-color-style-${elementId}`;
-        let styleTag = document.getElementById(styleId);
-        if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = styleId;
-          document.head.appendChild(styleTag);
-        }
-  
-        let cssText = `${selector} {`;
-        Object.entries(styles).forEach(([prop, val]) => {
-          if (val !== null && val !== undefined && val !== "null") {
-            cssText += `${prop}: ${val} !important; `;
+      modifications.forEach((mod) => {
+        const elements = mod.elements || [];
+        elements.forEach(({ elementId, css }) => {
+          // Apply button color styles as external CSS
+          const buttonPrimary = css?.buttonPrimary;
+          if (buttonPrimary?.selector && buttonPrimary?.styles) {
+            applyStylesAsExternalCSS(
+              buttonPrimary.selector,
+              buttonPrimary.styles,
+              "sc-btn-color-style"
+            );
+            console.log(
+              `✅ Applied button primary color styles to ${elementId}:`,
+              buttonPrimary.styles
+            );
+          }
+          
+          // Handle secondary button colors
+          const buttonSecondary = css?.buttonSecondary;
+          if (buttonSecondary?.selector && buttonSecondary?.styles) {
+            applyStylesAsExternalCSS(
+              buttonSecondary.selector,
+              buttonSecondary.styles,
+              "sc-btn-color-style"
+            );
+            console.log(
+              `✅ Applied button secondary color styles to ${elementId}:`,
+              buttonSecondary.styles
+            );
+          }
+          
+          // Handle tertiary button colors
+          const buttonTertiary = css?.buttonTertiary;
+          if (buttonTertiary?.selector && buttonTertiary?.styles) {
+            applyStylesAsExternalCSS(
+              buttonTertiary.selector,
+              buttonTertiary.styles,
+              "sc-btn-color-style"
+            );
+            console.log(
+              `✅ Applied button tertiary color styles to ${elementId}:`,
+              buttonTertiary.styles
+            );
           }
         });
-        cssText += "}";
-  
-        styleTag.textContent = cssText;
-  
-        console.log(
-          `✅ Applied button color styles for ${elementId}:`,
-          styles
-        );
       });
   
       console.log("✅ All button color modifications applied (external CSS)");
