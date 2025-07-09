@@ -1,7 +1,7 @@
 export function ButtonTextColorPalate(
   themeColors,
   selectedElement,
-  saveButtonShadowModifications
+  saveButtonColorModifications
 ) {
   // Use correct IDs matching the HTML
   const palette = document.getElementById("button-text-color-palette");
@@ -89,7 +89,7 @@ export function ButtonTextColorPalate(
       `;
 
     // Save to database if function provided
-    if (typeof saveButtonShadowModifications === "function") {
+    if (typeof saveButtonColorModifications === "function") {
       const blockId = currentElement.id;
       if (blockId) {
         const stylePayload = {
@@ -98,7 +98,7 @@ export function ButtonTextColorPalate(
             styles: { color: rgbaColor },
           },
         };
-        saveButtonShadowModifications(blockId, stylePayload);
+        saveButtonColorModifications(blockId, stylePayload);
       }
     }
   }
