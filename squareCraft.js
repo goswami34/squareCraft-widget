@@ -3183,6 +3183,9 @@ let pendingModifications = new Map();
       fetchButtonShadowModifications(elementId);
     }
 
+    // Fetch button color modifications (no parameters needed)
+    fetchButtonColorModifications();
+
     // Initialize image reset handler
     initImageResetHandler();
 
