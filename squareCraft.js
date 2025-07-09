@@ -2927,6 +2927,54 @@ let pendingModifications = new Map();
     }
   }
 
+  // fetch button color modifications from the backend
+  async function fetchButtonColorModifications() {
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+  
+    if (!userId || !widgetId || !pageId) {
+      console.warn("⚠️ Missing userId, widgetId, or pageId (required)");
+      showNotification("Page ID, user ID or widget ID is missing.", "error");
+      return null;
+    }
+  
+    const url = new URL(
+      "https://admin.squareplugin.com/api/v1/fetch-button-color-modifications"
+    );
+    url.searchParams.append("userId", userId);
+    url.searchParams.append("widgetId", widgetId);
+    url.searchParams.append("pageId", pageId); // ✅ required now
+  
+    try {
+      const response = await fetch(url.toString(), {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Failed to fetch`);
+      }
+  
+      const result = await response.json();
+      console.log("✅ Button color modifications fetched:", result);
+  
+      return result.modifications || [];
+    } catch (error) {
+      console.error("❌ Error fetching button color modifications:", error.message);
+      showNotification(`Failed to fetch button colors: ${error.message}`, "error");
+      return null;
+    }
+  }
+  
+  
+
   // Fetch and apply button border modifications from the backend
   async function fetchButtonBorderModifications(blockId = null) {
     const userId = localStorage.getItem("sc_u_id");
