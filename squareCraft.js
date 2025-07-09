@@ -2938,65 +2938,95 @@ let pendingModifications = new Map();
     }
   }
 
-  // fetch button color modifications from the backend
-  async function fetchButtonColorModifications() {
+    // fetch button color modifications from the backend
+  async function fetchButtonColorModifications(blockId = null) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
     const pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
-
+  
     if (!userId || !token || !widgetId || !pageId) {
       console.warn("⚠️ Missing credentials or page ID");
       return;
     }
-
-    let url = `https://admin.squareplugin.com/api/v1/fetch-button-color-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+  
+    let url = `https://admin.squareplugin.com/api/v1/get-button-color-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
     if (blockId) url += `&elementId=${blockId}`;
-
+  
     try {
       const res = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
+  
       const result = await res.json();
       if (!res.ok) throw new Error(result.message);
-
-      const elements = result.elements || [];
-      elements.forEach(({ elementId, selector, styles }) => {
-        if (!selector || !styles) return;
-
-        const styleId = `sc-btn-shadow-style-${elementId}`;
-        let styleTag = document.getElementById(styleId);
-        if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = styleId;
-          document.head.appendChild(styleTag);
-        }
-
-        let cssText = `${selector} {`;
-        Object.entries(styles).forEach(([prop, val]) => {
-          if (val !== null && val !== undefined && val !== "null") {
-            cssText += `${prop}: ${val} !important; `;
+  
+      console.log("✅ Button color modifications fetched:", result);
+      console.log("🔍 Response structure:", {
+        hasElements: !!result.elements,
+        elementsLength: result.elements?.length || 0,
+        firstElement: result.elements?.[0],
+        hasModifications: !!result.modifications,
+        modificationsLength: result.modifications?.length || 0
+      });
+  
+      // Handle both possible response structures
+      let elements = [];
+      
+      // Try direct structure first: elements[]
+      if (result.elements && Array.isArray(result.elements)) {
+        elements = result.elements;
+        console.log("📋 Using direct elements structure");
+      }
+      // Try nested structure: modifications[].elements[]
+      else if (result.modifications && Array.isArray(result.modifications)) {
+        result.modifications.forEach((mod) => {
+          if (mod.elements && Array.isArray(mod.elements)) {
+            elements = elements.concat(mod.elements);
           }
         });
-        cssText += "}";
-
-        styleTag.textContent = cssText;
-
-        console.log(
-          `✅ Applied button shadow styles for ${elementId}:`,
-          styles
-        );
+        console.log("📋 Using nested modifications structure");
+      }
+      
+      console.log(`🔍 Found ${elements.length} elements to process`);
+      
+      elements.forEach(({ elementId, selector, styles, css }) => {
+        // Handle both flat structure (selector, styles) and nested structure (css)
+        let buttonStyles = null;
+        let buttonSelector = null;
+        
+        if (selector && styles) {
+          // Direct structure
+          buttonSelector = selector;
+          buttonStyles = styles;
+        } else if (css) {
+          // Nested structure - try to get primary button styles
+          const buttonPrimary = css.buttonPrimary;
+          if (buttonPrimary?.selector && buttonPrimary?.styles) {
+            buttonSelector = buttonPrimary.selector;
+            buttonStyles = buttonPrimary.styles;
+          }
+        }
+        
+        // Apply button color styles as external CSS
+        if (buttonSelector && buttonStyles) {
+          applyStylesAsExternalCSS(buttonSelector, buttonStyles, "sc-btn-color-style");
+          console.log(
+            `✅ Applied button color styles to ${elementId}:`,
+            buttonStyles
+          );
+        }
       });
-
-      console.log("✅ All button shadow modifications applied (external CSS)");
+      console.log(
+        "✅ Applied button color styles to all elements (external CSS)"
+      );
     } catch (error) {
       console.error(
-        "❌ Failed to fetch button shadow modifications:",
+        "❌ Failed to fetch button color modifications:",
         error.message
       );
     }
@@ -3268,8 +3298,12 @@ let pendingModifications = new Map();
       fetchButtonShadowModifications(elementId);
     }
 
-    // Fetch button color modifications (no parameters needed)
-    fetchButtonColorModifications();
+    // Fetch button color modifications
+    if (elementId) {
+      fetchButtonColorModifications(elementId);
+    } else {
+      fetchButtonColorModifications();
+    }
 
     // Initialize image reset handler
     initImageResetHandler();
