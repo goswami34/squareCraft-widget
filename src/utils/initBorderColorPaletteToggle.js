@@ -20,6 +20,45 @@ export function initBorderColorPaletteToggle(themeColors) {
   )
     return;
 
+  // ✅ Function to apply border color to selected image
+  function applyBorderColorToImage(color, alpha = 1) {
+    const selectedImage = document.querySelector(".sc-selected-image");
+    if (!selectedImage) {
+      console.warn("⚠️ No image selected for border color application");
+      return;
+    }
+
+    const blockId = selectedImage.closest('[id^="block-"]')?.id;
+    if (!blockId) {
+      console.warn("⚠️ No block ID found for image");
+      return;
+    }
+
+    // Convert rgb to rgba if needed
+    let rgbaColor = color;
+    if (color.startsWith("rgb(") && !color.startsWith("rgba(")) {
+      rgbaColor = color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+    }
+
+    // Create or update style tag
+    const styleId = `sc-border-color-style-${blockId}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+
+    // Apply border color to image
+    styleTag.textContent = `
+      #${blockId} .sqs-image-content {
+        border-color: ${rgbaColor} !important;
+      }
+    `;
+
+    console.log("🖌️ Applied border color:", rgbaColor, "to block:", blockId);
+  }
+
   let dynamicHue = 0;
 
   if (allColorField) {
@@ -96,11 +135,23 @@ export function initBorderColorPaletteToggle(themeColors) {
           colorCode.textContent = finalColor;
         }
 
+        // ✅ Apply border color to selected image
+        applyBorderColorToImage(finalColor, 1);
+
         if (transparencyField) {
           transparencyField.style.background = `linear-gradient(to bottom,
             hsla(${dynamicHue}, 100%, 50%, 1),
             hsla(${dynamicHue}, 100%, 50%, 0)
           )`;
+        }
+
+        // ✅ Apply border color with current transparency to selected image
+        if (colorCode && colorCode.textContent) {
+          const transparencyPercent = parseInt(
+            transparencyCount?.textContent?.replace("%", "") || "100"
+          );
+          const alpha = transparencyPercent / 100;
+          applyBorderColorToImage(colorCode.textContent, alpha);
         }
 
         if (selectorField) {
@@ -219,6 +270,12 @@ export function initBorderColorPaletteToggle(themeColors) {
         if (transparencyCount) {
           transparencyCount.textContent = `${transparencyPercent}%`;
         }
+
+        // ✅ Apply border color with transparency to selected image
+        if (colorCode && colorCode.textContent) {
+          const alpha = transparencyPercent / 100;
+          applyBorderColorToImage(colorCode.textContent, alpha);
+        }
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -247,6 +304,9 @@ export function initBorderColorPaletteToggle(themeColors) {
       const hsl = rgbToHslFromAny(color);
       if (hsl) dynamicHue = hsl.h;
       colorCode.textContent = color;
+
+      // ✅ Apply border color to selected image
+      applyBorderColorToImage(color, 1);
     });
 
     container.appendChild(swatch);
@@ -403,6 +463,9 @@ export function initBorderColorPaletteToggle(themeColors) {
         if (colorCode) {
           colorCode.textContent = finalColor;
         }
+
+        // ✅ Apply border color to selected image
+        applyBorderColorToImage(finalColor, 1);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -414,6 +477,8 @@ export function initBorderColorPaletteToggle(themeColors) {
   const firstColor = Object.values(themeColors)[0];
   if (firstColor) {
     renderVerticalColorShades(firstColor);
+    // ✅ Apply the first color to the selected image
+    applyBorderColorToImage(firstColor, 1);
   }
 }
 
