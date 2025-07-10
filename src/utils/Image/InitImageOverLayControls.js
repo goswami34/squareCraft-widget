@@ -431,8 +431,13 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
       if (styleTag) styleTag.remove();
     }
 
-    // Only apply overlay if color is set
-    if (overlayState.color) {
+    // Only apply overlay if color is valid
+    if (
+      overlayState.color &&
+      overlayState.color !== "transparent" &&
+      overlayState.color !== "rgba(0, 0, 0, 0)" &&
+      overlayState.color !== "null"
+    ) {
       updateOverlayStyles();
     }
   };
