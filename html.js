@@ -838,6 +838,91 @@ export async function saveButtonModifications(blockId, css) {
 
 //button save modification end here
 
+
+// button color save modification start here
+export async function saveButtonColorModifications(blockId, css) {
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+    console.warn("❌ Missing required data to save button color modifications", {
+      userId,
+      token,
+      widgetId,
+      pageId,
+      blockId,
+      css,
+    });
+    return { success: false, error: "Missing required data" };
+  }
+
+  const cleanCss = (block) => ({
+    selector: block?.selector || null,
+    styles: Object.fromEntries(
+      Object.entries(block?.styles || {}).filter(
+        ([_, val]) =>
+          val !== null &&
+          val !== undefined &&
+          val !== "" &&
+          val !== "null"
+      )
+    ),
+  });
+
+  const payload = {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    elementId: blockId,
+    css: {
+      buttonPrimary: cleanCss(css.buttonPrimary),
+      buttonSecondary: cleanCss(css.buttonSecondary),
+      buttonTertiary: cleanCss(css.buttonTertiary),
+    },
+  };
+
+  console.log("📤 Sending button color payload:", payload);
+
+  try {
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/save-button-color-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || `HTTP ${response.status}`);
+    }
+
+    console.log("✅ Button color modifications saved:", result);
+    showNotification("Button colors saved successfully!", "success");
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("❌ Error saving button color modifications:", error);
+    showNotification(`Failed to save button colors: ${error.message}`, "error");
+
+    return { success: false, error: error.message };
+  }
+}
+
+
+// button color save modification end here
+
 //button border save modification start here
 export async function saveButtonBorderModifications(blockId, css) {
   const pageId = document
@@ -1036,6 +1121,7 @@ export async function saveButtonShadowModifications(blockId, css) {
   }
 }
 // button shadow save modification end here
+
 
 // link text save modificaiton code here
 
