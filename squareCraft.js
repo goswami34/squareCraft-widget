@@ -4871,28 +4871,28 @@ let pendingModifications = new Map();
       // Save each pending modification
       for (const [blockId, modifications] of pendingModifications.entries()) {
         for (const mod of modifications) {
-          if (mod.tagType === "link") {
-            // Handle link text modifications
-            const result = await saveLinkTextModifications(
-              blockId,
-              mod.css.target,
-              mod.css
-            );
-            if (!result.success) {
-              throw new Error(
-                `Failed to save link text changes for block ${blockId}`
+          let result;
+
+          switch (mod.tagType) {
+            case "link":
+              // Handle link text modifications
+              result = await saveLinkTextModifications(
+                blockId,
+                mod.css.target,
+                mod.css
               );
-            }
-          } else {
-            // Handle other modifications (existing logic)
-            const result = await saveModifications(
-              blockId,
-              mod.css,
-              mod.tagType
-            );
-            if (!result.success) {
-              throw new Error(`Failed to save changes for block ${blockId}`);
-            }
+              break;
+            case "buttonColor":
+              result = await saveButtonColorModifications(blockId, mod.css);
+              break;
+            default:
+              // Handle other modifications (existing logic)
+              result = await saveModifications(blockId, mod.css, mod.tagType);
+              break;
+          }
+
+          if (!result?.success) {
+            throw new Error(`Failed to save changes for block ${blockId}`);
           }
         }
       }

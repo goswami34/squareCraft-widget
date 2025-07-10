@@ -359,6 +359,9 @@ async function handlePublish() {
           case "buttonBorder":
             result = await saveButtonBorderModifications(blockId, mod.css);
             break;
+          case "buttonColor":
+            result = await saveButtonColorModifications(blockId, mod.css);
+            break;
           case "linkText":
             result = await saveLinkTextModifications(blockId, mod.css);
             break;
@@ -838,7 +841,6 @@ export async function saveButtonModifications(blockId, css) {
 
 //button save modification end here
 
-
 // button color save modification start here
 export async function saveButtonColorModifications(blockId, css) {
   const pageId = document
@@ -850,14 +852,17 @@ export async function saveButtonColorModifications(blockId, css) {
   const widgetId = localStorage.getItem("sc_w_id");
 
   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-    console.warn("❌ Missing required data to save button color modifications", {
-      userId,
-      token,
-      widgetId,
-      pageId,
-      blockId,
-      css,
-    });
+    console.warn(
+      "❌ Missing required data to save button color modifications",
+      {
+        userId,
+        token,
+        widgetId,
+        pageId,
+        blockId,
+        css,
+      }
+    );
     return { success: false, error: "Missing required data" };
   }
 
@@ -866,10 +871,7 @@ export async function saveButtonColorModifications(blockId, css) {
     styles: Object.fromEntries(
       Object.entries(block?.styles || {}).filter(
         ([_, val]) =>
-          val !== null &&
-          val !== undefined &&
-          val !== "" &&
-          val !== "null"
+          val !== null && val !== undefined && val !== "" && val !== "null"
       )
     ),
   });
@@ -919,7 +921,6 @@ export async function saveButtonColorModifications(blockId, css) {
     return { success: false, error: error.message };
   }
 }
-
 
 // button color save modification end here
 
@@ -1121,7 +1122,6 @@ export async function saveButtonShadowModifications(blockId, css) {
   }
 }
 // button shadow save modification end here
-
 
 // link text save modificaiton code here
 

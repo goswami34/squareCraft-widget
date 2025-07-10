@@ -1,4 +1,10 @@
-export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
+export function initButtonFontColorPaletteToggle(
+  themeColors,
+  selectedElement,
+  saveButtonShadowModifications,
+  addPendingModification,
+  showNotification
+) {
   let isFirstBulletMove = true;
   let dynamicHue = 0;
   let currentTransparency = 100;
@@ -279,6 +285,29 @@ export function initButtonFontColorPaletteToggle(themeColors, selectedElement) {
       btn.dataset.scButtonBg = color;
     });
     console.log("🖌️ APPLYING COLOR:", rgbaColor, "on", buttonType);
+
+    // Save to database if functions are provided
+    if (
+      typeof saveButtonShadowModifications === "function" &&
+      typeof addPendingModification === "function"
+    ) {
+      const blockId = currentElement.id;
+      if (blockId) {
+        const stylePayload = {
+          buttonPrimary: {
+            selector: `.${buttonType}`,
+            styles: { backgroundColor: rgbaColor },
+          },
+        };
+        addPendingModification(blockId, stylePayload, "buttonColor");
+        if (showNotification) {
+          showNotification(
+            `Button background color applied to ${buttonType}`,
+            "success"
+          );
+        }
+      }
+    }
   }
 
   if (
