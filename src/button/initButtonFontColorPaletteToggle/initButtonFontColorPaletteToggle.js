@@ -299,6 +299,11 @@ export function initButtonFontColorPaletteToggle(
             styles: { backgroundColor: rgbaColor },
           },
         };
+        console.log("💾 Saving button background color to database:", {
+          blockId,
+          stylePayload,
+          tagType: "buttonColor",
+        });
         addPendingModification(blockId, stylePayload, "buttonColor");
         if (showNotification) {
           showNotification(
@@ -306,7 +311,14 @@ export function initButtonFontColorPaletteToggle(
             "success"
           );
         }
+      } else {
+        console.warn("❌ No block ID found for selected element");
       }
+    } else {
+      console.warn("❌ Required functions not available:", {
+        saveButtonColorModifications: typeof saveButtonColorModifications,
+        addPendingModification: typeof addPendingModification,
+      });
     }
   }
 

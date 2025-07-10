@@ -866,14 +866,25 @@ export async function saveButtonColorModifications(blockId, css) {
     return { success: false, error: "Missing required data" };
   }
 
+  // Clean & normalize button styles and convert to kebab-case
+  const cleanCssObject = (obj = {}) =>
+    Object.fromEntries(
+      Object.entries(obj).filter(
+        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+      )
+    );
+
+  const toKebabCaseStyleObject = (obj = {}) =>
+    Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [
+        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        value,
+      ])
+    );
+
   const cleanCss = (block) => ({
     selector: block?.selector || null,
-    styles: Object.fromEntries(
-      Object.entries(block?.styles || {}).filter(
-        ([_, val]) =>
-          val !== null && val !== undefined && val !== "" && val !== "null"
-      )
-    ),
+    styles: toKebabCaseStyleObject(cleanCssObject(block?.styles || {})),
   });
 
   const payload = {
@@ -890,6 +901,7 @@ export async function saveButtonColorModifications(blockId, css) {
   };
 
   console.log("📤 Sending button color payload:", payload);
+  console.log("🔍 Original CSS received:", css);
 
   try {
     const response = await fetch(
