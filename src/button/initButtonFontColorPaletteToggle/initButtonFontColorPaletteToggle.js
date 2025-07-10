@@ -1,7 +1,7 @@
 export function initButtonFontColorPaletteToggle(
   themeColors,
   selectedElement,
-  saveButtonShadowModifications,
+  saveButtonColorModifications,
   addPendingModification,
   showNotification
 ) {
@@ -288,7 +288,7 @@ export function initButtonFontColorPaletteToggle(
 
     // Save to database if functions are provided
     if (
-      typeof saveButtonShadowModifications === "function" &&
+      typeof saveButtonColorModifications === "function" &&
       typeof addPendingModification === "function"
     ) {
       const blockId = currentElement.id;

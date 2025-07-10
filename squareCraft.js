@@ -1003,7 +1003,7 @@ let pendingModifications = new Map();
       initButtonFontColorPaletteToggle(
         themeColors,
         () => selectedElement,
-        saveButtonShadowModifications,
+        saveButtonColorModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
