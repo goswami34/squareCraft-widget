@@ -1009,6 +1009,155 @@ export function initImageBorderControls(selectedElement, context = {}) {
   // border radius end here
 
   // ✅ Reset functionality for border and border-radius
+  // function resetBorderStyles() {
+  //   const selected = document.querySelector(".sc-selected-image");
+  //   if (!selected) {
+  //     console.warn("❌ No image selected for border reset");
+  //     return;
+  //   }
+
+  //   const block = selected.closest('[id^="block-"]');
+  //   if (!block) return;
+
+  //   const blockId = block.id;
+  //   const blockSelector = `#${blockId} div.sqs-image-content`;
+
+  //   // Remove border styles from style tag
+  //   let styleTag = document.getElementById("sc-image-border-style");
+  //   if (styleTag) {
+  //     let currentCSS = styleTag.textContent;
+  //     const blockRegex = new RegExp(
+  //       `(${blockSelector}\\s*{)([\\s\\S]*?)(})`,
+  //       "g"
+  //     );
+  //     const match = blockRegex.exec(currentCSS);
+
+  //     if (match) {
+  //       let declarations = match[2];
+  //       // Remove all border-related properties
+  //       declarations = declarations
+  //         .replace(/border-width\s*:\s*[^;]+;?/g, "")
+  //         .replace(/border-style\s*:\s*[^;]+;?/g, "")
+  //         .replace(/border-color\s*:\s*[^;]+;?/g, "")
+  //         .replace(/border-top-width\s*:\s*[^;]+;?/g, "")
+  //         .replace(/border-bottom-width\s*:\s*[^;]+;?/g, "")
+  //         .replace(/border-left-width\s*:\s*[^;]+;?/g, "")
+  //         .replace(/border-right-width\s*:\s*[^;]+;?/g, "")
+  //         .trim();
+
+  //       if (declarations) {
+  //         const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
+  //         currentCSS = currentCSS.replace(blockRegex, updated);
+  //       } else {
+  //         // If no declarations left, remove the entire block
+  //         currentCSS = currentCSS.replace(blockRegex, "");
+  //       }
+  //       styleTag.textContent = currentCSS;
+  //     }
+  //   }
+
+  //   // Reset UI controls
+  //   // Reset border width slider
+  //   if (
+  //     borderWidthSlider &&
+  //     borderWidthBullet &&
+  //     borderWidthFill &&
+  //     borderWidthDisplay
+  //   ) {
+  //     borderWidthBullet.style.left = "0px";
+  //     borderWidthBullet.style.transform = "translateX(-50%)";
+  //     borderWidthFill.style.width = "0px";
+  //     borderWidthDisplay.textContent = "0px";
+  //     allBorderWidth = 0;
+  //     topBorderWidth = 0;
+  //     bottomBorderWidth = 0;
+  //     leftBorderWidth = 0;
+  //     rightBorderWidth = 0;
+  //   }
+
+  //   // Reset border color
+  //   selectedBorderColor = null;
+  //   if (colorCode) {
+  //     colorCode.textContent = "Select";
+  //   }
+
+  //   // Reset border style buttons
+  //   const solidBtn = document.getElementById("borderStyleSolid");
+  //   const dashedBtn = document.getElementById("borderStyleDashed");
+  //   const dottedBtn = document.getElementById("borderStyleDotted");
+  //   [solidBtn, dashedBtn, dottedBtn].forEach((btn) => {
+  //     if (btn) btn.classList.remove("sc-bg-454545");
+  //   });
+
+  //   // Reset active border type and state
+  //   window.__scActiveBorderType = "all";
+  //   currentActiveBorderStyle = "solid"; // Reset to default
+
+  //   // Reset border buttons to initial state
+  //   setActiveBorderButton(allButton);
+
+  //   // Remove readonly state from all side buttons
+  //   setSideButtonsReadonly(false);
+
+  //   // Update map and pending modifications
+  //   const currentStyles = window.__scImageStyleMap.get(blockId) || {};
+  //   const updatedStyles = {
+  //     ...currentStyles,
+  //     image: {
+  //       ...currentStyles.image,
+  //       styles: {
+  //         ...currentStyles.image?.styles,
+  //         // Remove border properties
+  //         "border-width": undefined,
+  //         "border-style": undefined,
+  //         "border-color": undefined,
+  //         "border-top-width": undefined,
+  //         "border-bottom-width": undefined,
+  //         "border-left-width": undefined,
+  //         "border-right-width": undefined,
+  //       },
+  //     },
+  //   };
+
+  //   // Clean up undefined values
+  //   Object.keys(updatedStyles.image.styles).forEach((key) => {
+  //     if (updatedStyles.image.styles[key] === undefined) {
+  //       delete updatedStyles.image.styles[key];
+  //     }
+  //   });
+
+  //   window.__scImageStyleMap.set(blockId, updatedStyles);
+  //   pendingBorderModifications.set(blockId, updatedStyles);
+
+  //   console.log("✅ Border styles reset locally");
+
+  //   // Reinitialize controls to ensure they work properly after reset
+  //   setTimeout(() => {
+  //     // Force reinitialize the border controls
+  //     if (
+  //       borderWidthSlider &&
+  //       borderWidthBullet &&
+  //       borderWidthFill &&
+  //       borderWidthDisplay
+  //     ) {
+  //       // Ensure slider is properly positioned
+  //       borderWidthBullet.style.left = "0px";
+  //       borderWidthBullet.style.transform = "translateX(-50%)";
+  //       borderWidthFill.style.width = "0px";
+  //       borderWidthDisplay.textContent = "0px";
+  //     }
+
+  //     // Ensure border buttons are in correct state
+  //     setActiveBorderButton(allButton);
+  //     setSideButtonsReadonly(false);
+
+  //     // Reattach drag handlers
+  //     reattachDragHandlers();
+
+  //     console.log("🔄 Border controls reinitialized after reset");
+  //   }, 100);
+  // }
+
   function resetBorderStyles() {
     const selected = document.querySelector(".sc-selected-image");
     if (!selected) {
@@ -1022,7 +1171,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
     const blockId = block.id;
     const blockSelector = `#${blockId} div.sqs-image-content`;
 
-    // Remove border styles from style tag
+    // Remove border styles from <style> tag
     let styleTag = document.getElementById("sc-image-border-style");
     if (styleTag) {
       let currentCSS = styleTag.textContent;
@@ -1034,7 +1183,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
       if (match) {
         let declarations = match[2];
-        // Remove all border-related properties
         declarations = declarations
           .replace(/border-width\s*:\s*[^;]+;?/g, "")
           .replace(/border-style\s*:\s*[^;]+;?/g, "")
@@ -1049,15 +1197,14 @@ export function initImageBorderControls(selectedElement, context = {}) {
           const updated = `${match[1]}\n  ${declarations}\n${match[3]}`;
           currentCSS = currentCSS.replace(blockRegex, updated);
         } else {
-          // If no declarations left, remove the entire block
           currentCSS = currentCSS.replace(blockRegex, "");
         }
+
         styleTag.textContent = currentCSS;
       }
     }
 
     // Reset UI controls
-    // Reset border width slider
     if (
       borderWidthSlider &&
       borderWidthBullet &&
@@ -1085,21 +1232,18 @@ export function initImageBorderControls(selectedElement, context = {}) {
     const solidBtn = document.getElementById("borderStyleSolid");
     const dashedBtn = document.getElementById("borderStyleDashed");
     const dottedBtn = document.getElementById("borderStyleDotted");
-    [solidBtn, dashedBtn, dottedBtn].forEach((btn) => {
-      if (btn) btn.classList.remove("sc-bg-454545");
-    });
+    [solidBtn, dashedBtn, dottedBtn].forEach((btn) =>
+      btn?.classList.remove("sc-bg-454545")
+    );
 
-    // Reset active border type and state
+    // Reset state
     window.__scActiveBorderType = "all";
-    currentActiveBorderStyle = "solid"; // Reset to default
+    currentActiveBorderStyle = "solid";
 
-    // Reset border buttons to initial state
     setActiveBorderButton(allButton);
-
-    // Remove readonly state from all side buttons
     setSideButtonsReadonly(false);
 
-    // Update map and pending modifications
+    // Update map & modifications
     const currentStyles = window.__scImageStyleMap.get(blockId) || {};
     const updatedStyles = {
       ...currentStyles,
@@ -1107,7 +1251,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
         ...currentStyles.image,
         styles: {
           ...currentStyles.image?.styles,
-          // Remove border properties
           "border-width": undefined,
           "border-style": undefined,
           "border-color": undefined,
@@ -1119,7 +1262,6 @@ export function initImageBorderControls(selectedElement, context = {}) {
       },
     };
 
-    // Clean up undefined values
     Object.keys(updatedStyles.image.styles).forEach((key) => {
       if (updatedStyles.image.styles[key] === undefined) {
         delete updatedStyles.image.styles[key];
@@ -1131,28 +1273,39 @@ export function initImageBorderControls(selectedElement, context = {}) {
 
     console.log("✅ Border styles reset locally");
 
-    // Reinitialize controls to ensure they work properly after reset
+    // Reinitialize UI + force re-apply base CSS block to allow slider usage again
     setTimeout(() => {
-      // Force reinitialize the border controls
       if (
         borderWidthSlider &&
         borderWidthBullet &&
         borderWidthFill &&
         borderWidthDisplay
       ) {
-        // Ensure slider is properly positioned
         borderWidthBullet.style.left = "0px";
         borderWidthBullet.style.transform = "translateX(-50%)";
         borderWidthFill.style.width = "0px";
         borderWidthDisplay.textContent = "0px";
       }
 
-      // Ensure border buttons are in correct state
       setActiveBorderButton(allButton);
       setSideButtonsReadonly(false);
-
-      // Reattach drag handlers
       reattachDragHandlers();
+
+      // ✅ FIX: Insert minimal fallback CSS block if missing
+      let styleTag = document.getElementById("sc-image-border-style");
+      if (styleTag && !styleTag.textContent.includes(blockSelector)) {
+        styleTag.textContent += `
+          ${blockSelector} {
+            border-width: 0px !important;
+            border-style: solid !important;
+            box-sizing: border-box;
+          }
+        `;
+        console.log(
+          "🛠️ Inserted fallback style block after reset for:",
+          blockSelector
+        );
+      }
 
       console.log("🔄 Border controls reinitialized after reset");
     }, 100);
