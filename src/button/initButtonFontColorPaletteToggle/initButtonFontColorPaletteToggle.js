@@ -739,7 +739,7 @@ export function initButtonFontColorPaletteToggle(
   );
 
   // Button-specific text color application function
-  function applyButtonBackgroundColorFromPalette(color, alpha = 1) {
+  function applyButtonTextColorFromPalette(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
 
@@ -753,7 +753,7 @@ export function initButtonFontColorPaletteToggle(
     );
     if (!typeClass) return;
 
-    // Convert to rgba
+    // Convert color to rgba
     let rgbaColor;
     if (color.startsWith("rgb(")) {
       rgbaColor = color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
@@ -771,8 +771,8 @@ export function initButtonFontColorPaletteToggle(
       rgbaColor = rgb.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
     }
 
-    // Apply background color to the button type class
-    const styleId = `sc-button-background-color-${typeClass}`;
+    // Apply text color to button
+    const styleId = `sc-button-text-color-${typeClass}`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
       styleTag = document.createElement("style");
@@ -781,22 +781,30 @@ export function initButtonFontColorPaletteToggle(
     }
 
     styleTag.innerHTML = `
-      .${typeClass} {
-        background-color: ${rgbaColor} !important;
-      }
-      .${typeClass}:hover {
-        background-color: ${rgbaColor} !important;
-      }
-    `;
+        .${typeClass} {
+          color: ${rgbaColor} !important;
+        }
+        .${typeClass} span,
+        .${typeClass} .sqs-add-to-cart-button-inner {
+          color: ${rgbaColor} !important;
+        }
+        .${typeClass}:hover {
+          color: ${rgbaColor} !important;
+        }
+        .${typeClass}:hover span,
+        .${typeClass}:hover .sqs-add-to-cart-button-inner {
+          color: ${rgbaColor} !important;
+        }
+      `;
 
-    // Save to DB if needed
+    // Save to database if function provided
     if (typeof saveButtonColorModifications === "function") {
       const blockId = currentElement.id;
       if (blockId) {
         const stylePayload = {
           buttonPrimary: {
             selector: `.${typeClass}`,
-            styles: { backgroundColor: rgbaColor },
+            styles: { color: rgbaColor },
           },
         };
         saveButtonColorModifications(blockId, stylePayload);
@@ -943,10 +951,7 @@ export function initButtonFontColorPaletteToggle(
         }
 
         updateTransparencyField(dynamicHue);
-        applyButtonBackgroundColorFromPalette(
-          finalColor,
-          currentTransparency / 100
-        );
+        applyButtonTextColorFromPalette(finalColor, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
@@ -987,7 +992,7 @@ export function initButtonFontColorPaletteToggle(
           colorCode.textContent = rgb;
         }
 
-        applyButtonBackgroundColorFromPalette(rgb, currentTransparency / 100);
+        applyButtonTextColorFromPalette(rgb, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
@@ -1036,7 +1041,7 @@ export function initButtonFontColorPaletteToggle(
     const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
 
     colorCode.textContent = rgb;
-    applyButtonBackgroundColorFromPalette(rgb, currentTransparency / 100);
+    applyButtonTextColorFromPalette(rgb, currentTransparency / 100);
   }
 
   if (transparencyField && transparencyBullet) {
@@ -1059,7 +1064,7 @@ export function initButtonFontColorPaletteToggle(
         }
         const currentColor = colorCode?.textContent;
         if (currentColor) {
-          applyButtonBackgroundColorFromPalette(
+          applyButtonTextColorFromPalette(
             currentColor,
             currentTransparency / 100
           );
@@ -1096,7 +1101,7 @@ export function initButtonFontColorPaletteToggle(
         allColorBullet.style.top = `${bulletTop}px`;
       }
 
-      applyButtonBackgroundColorFromPalette(color, currentTransparency / 100);
+      applyButtonTextColorFromPalette(color, currentTransparency / 100);
 
       requestAnimationFrame(() => {
         const canvas = selectorField.querySelector("canvas");
@@ -1140,7 +1145,7 @@ export function initButtonFontColorPaletteToggle(
         }
       });
 
-      applyButtonBackgroundColorFromPalette(color, currentTransparency / 100);
+      applyButtonTextColorFromPalette(color, currentTransparency / 100);
     };
 
     container.appendChild(swatch);
