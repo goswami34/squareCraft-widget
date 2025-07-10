@@ -2657,6 +2657,21 @@ let pendingModifications = new Map();
                   !!targetElem
                 );
 
+                // ✅ CRITICAL FIX: Only apply overlay if there's a valid background-color
+                const backgroundColor = styles["background-color"];
+                if (
+                  !backgroundColor ||
+                  backgroundColor === "transparent" ||
+                  backgroundColor === "rgba(0, 0, 0, 0)" ||
+                  backgroundColor === "null"
+                ) {
+                  console.log(
+                    "[Overlay Injection] Skipping overlay - no valid background color:",
+                    backgroundColor
+                  );
+                  return;
+                }
+
                 let cssText = `${selector} {`;
                 cssText += "position: absolute !important; "; // Always add position: absolute
                 Object.entries(styles).forEach(([prop, value]) => {

@@ -54,6 +54,17 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
   function storeOverlayStyles(blockId) {
     if (!blockId) return;
 
+    // ✅ Only store styles if there's a valid color
+    if (
+      !overlayState.color ||
+      overlayState.color === "transparent" ||
+      overlayState.color === "rgba(0, 0, 0, 0)" ||
+      overlayState.color === "null"
+    ) {
+      console.log("[Overlay Store] No valid color, skipping style storage");
+      return;
+    }
+
     const pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
@@ -102,10 +113,16 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
     const styleId = `sc-overlay-style-${blockId}`;
     let styleTag = document.getElementById(styleId);
 
-    // Only inject overlay CSS if a color is set
-    if (!rgbaColor) {
+    // ✅ CRITICAL FIX: Only inject overlay CSS if a color is set
+    if (
+      !rgbaColor ||
+      rgbaColor === "transparent" ||
+      rgbaColor === "rgba(0, 0, 0, 0)" ||
+      rgbaColor === "null"
+    ) {
       // If no color, remove overlay style tag if it exists
       if (styleTag) styleTag.remove();
+      console.log("[Overlay CSS] No valid color set, removing overlay styles");
       return;
     }
 
@@ -197,7 +214,16 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
       overlayState[key] = offset; // update logical Y or X
       valueDisplay.textContent = `${offset}px`;
       setBulletPosition();
-      updateOverlayStyles();
+
+      // ✅ Only update overlay styles if a color is selected
+      if (
+        overlayState.color &&
+        overlayState.color !== "transparent" &&
+        overlayState.color !== "rgba(0, 0, 0, 0)" &&
+        overlayState.color !== "null"
+      ) {
+        updateOverlayStyles();
+      }
     };
 
     const drag = (e) => {
@@ -274,7 +300,16 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
       // Clamp to 0–100
       overlayState[key] = Math.max(0, Math.min(100, overlayState[key]));
       valueDisplay.textContent = `${overlayState[key]}%`;
-      updateOverlayStyles();
+
+      // ✅ Only update overlay styles if a color is selected
+      if (
+        overlayState.color &&
+        overlayState.color !== "transparent" &&
+        overlayState.color !== "rgba(0, 0, 0, 0)" &&
+        overlayState.color !== "null"
+      ) {
+        updateOverlayStyles();
+      }
     };
 
     up?.addEventListener("click", () => {
@@ -467,8 +502,18 @@ export const InitImageOverLayControls = (themeColors, context = {}) => {
           }
         `;
       } else if (value === "yes") {
-        // Restore overlay styles
-        updateOverlayStyles();
+        // ✅ Only restore overlay styles if a color is selected
+        if (
+          overlayState.color &&
+          overlayState.color !== "transparent" &&
+          overlayState.color !== "rgba(0, 0, 0, 0)" &&
+          overlayState.color !== "null"
+        ) {
+          updateOverlayStyles();
+        } else {
+          // If no color is selected, just remove the style tag
+          styleTag.remove();
+        }
       }
     });
   }
