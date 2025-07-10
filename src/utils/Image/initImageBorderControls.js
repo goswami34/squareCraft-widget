@@ -493,8 +493,19 @@ export function initImageBorderControls(selectedElement, context = {}) {
     document.removeEventListener("touchend", stopDrag);
   }
 
-  borderWidthBullet.addEventListener("mousedown", startDrag);
-  borderWidthBullet.addEventListener("touchstart", startDrag);
+  // Function to reattach drag handlers
+  function reattachDragHandlers() {
+    // Remove existing listeners to avoid duplicates
+    borderWidthBullet.removeEventListener("mousedown", startDrag);
+    borderWidthBullet.removeEventListener("touchstart", startDrag);
+
+    // Reattach listeners
+    borderWidthBullet.addEventListener("mousedown", startDrag);
+    borderWidthBullet.addEventListener("touchstart", startDrag);
+  }
+
+  // Initial attachment
+  reattachDragHandlers();
 
   document.addEventListener("click", (e) => {
     const imageContent = e.target.closest(".sqs-image-content");
@@ -948,8 +959,22 @@ export function initImageBorderControls(selectedElement, context = {}) {
       document.removeEventListener("touchend", stop);
     };
 
-    bullet.addEventListener("mousedown", start);
-    bullet.addEventListener("touchstart", start);
+    // Function to reattach radius drag handlers
+    function reattachRadiusDragHandlers() {
+      // Remove existing listeners to avoid duplicates
+      bullet.removeEventListener("mousedown", start);
+      bullet.removeEventListener("touchstart", start);
+
+      // Reattach listeners
+      bullet.addEventListener("mousedown", start);
+      bullet.addEventListener("touchstart", start);
+    }
+
+    // Initial attachment
+    reattachRadiusDragHandlers();
+
+    // Make the reattach function available globally for reset
+    window.reattachRadiusDragHandlers = reattachRadiusDragHandlers;
   }
 
   initRadiusSlider();
@@ -1064,9 +1089,15 @@ export function initImageBorderControls(selectedElement, context = {}) {
       if (btn) btn.classList.remove("sc-bg-454545");
     });
 
-    // Reset active border type
+    // Reset active border type and state
     window.__scActiveBorderType = "all";
+    currentActiveBorderStyle = "solid"; // Reset to default
+
+    // Reset border buttons to initial state
     setActiveBorderButton(allButton);
+
+    // Remove readonly state from all side buttons
+    setSideButtonsReadonly(false);
 
     // Update map and pending modifications
     const currentStyles = window.__scImageStyleMap.get(blockId) || {};
@@ -1099,6 +1130,32 @@ export function initImageBorderControls(selectedElement, context = {}) {
     pendingBorderModifications.set(blockId, updatedStyles);
 
     console.log("✅ Border styles reset locally");
+
+    // Reinitialize controls to ensure they work properly after reset
+    setTimeout(() => {
+      // Force reinitialize the border controls
+      if (
+        borderWidthSlider &&
+        borderWidthBullet &&
+        borderWidthFill &&
+        borderWidthDisplay
+      ) {
+        // Ensure slider is properly positioned
+        borderWidthBullet.style.left = "0px";
+        borderWidthBullet.style.transform = "translateX(-50%)";
+        borderWidthFill.style.width = "0px";
+        borderWidthDisplay.textContent = "0px";
+      }
+
+      // Ensure border buttons are in correct state
+      setActiveBorderButton(allButton);
+      setSideButtonsReadonly(false);
+
+      // Reattach drag handlers
+      reattachDragHandlers();
+
+      console.log("🔄 Border controls reinitialized after reset");
+    }, 100);
   }
 
   function resetBorderRadiusStyles() {
@@ -1176,8 +1233,12 @@ export function initImageBorderControls(selectedElement, context = {}) {
       if (btn) btn.classList.remove("sc-bg-454545");
     });
 
-    // Reset active radius target
-    activeRadiusTarget = null;
+    // Reset active radius target and state
+    activeRadiusTarget = "all"; // Set to default instead of null
+    currentRadiusAll = 0; // Reset the radius value
+
+    // Reset radius button readonly state
+    setRadiusButtonReadonly("all");
 
     // Update map and pending modifications
     const currentStyles = window.__scImageStyleMap.get(blockId) || {};
@@ -1208,6 +1269,32 @@ export function initImageBorderControls(selectedElement, context = {}) {
     pendingBorderModifications.set(blockId, updatedStyles);
 
     console.log("✅ Border-radius styles reset locally");
+
+    // Reinitialize radius controls to ensure they work properly after reset
+    setTimeout(() => {
+      // Force reinitialize the radius controls
+      const radiusSlider = document.getElementById("radiusField");
+      const radiusBullet = document.getElementById("radiusBullet");
+      const radiusFill = document.getElementById("radiusFill");
+      const radiusDisplay = document.getElementById("radiusCountAnother");
+
+      if (radiusSlider && radiusBullet && radiusFill && radiusDisplay) {
+        radiusBullet.style.left = "0px";
+        radiusBullet.style.transform = "translateX(-50%)";
+        radiusFill.style.width = "0px";
+        radiusDisplay.textContent = "0px";
+      }
+
+      // Ensure radius buttons are in correct state
+      setRadiusButtonReadonly("all");
+
+      // Reattach radius drag handlers
+      if (window.reattachRadiusDragHandlers) {
+        window.reattachRadiusDragHandlers();
+      }
+
+      console.log("🔄 Border-radius controls reinitialized after reset");
+    }, 100);
   }
 
   // Add reset button event listeners
