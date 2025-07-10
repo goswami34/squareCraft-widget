@@ -755,7 +755,7 @@ let pendingModifications = new Map();
 
       // Load palette after toggle
       setTimeout(() => {
-        initButtonFontColorPaletteToggle(
+        saveButtonShadowModifications(
           themeColors,
           () => selectedElement,
           saveButtonModifications,
