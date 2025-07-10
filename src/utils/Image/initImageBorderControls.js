@@ -1274,7 +1274,43 @@ export function initImageBorderControls(selectedElement, context = {}) {
     console.log("✅ Border styles reset locally");
 
     // Reinitialize UI + force re-apply base CSS block to allow slider usage again
+    // setTimeout(() => {
+    //   if (
+    //     borderWidthSlider &&
+    //     borderWidthBullet &&
+    //     borderWidthFill &&
+    //     borderWidthDisplay
+    //   ) {
+    //     borderWidthBullet.style.left = "0px";
+    //     borderWidthBullet.style.transform = "translateX(-50%)";
+    //     borderWidthFill.style.width = "0px";
+    //     borderWidthDisplay.textContent = "0px";
+    //   }
+
+    //   setActiveBorderButton(allButton);
+    //   setSideButtonsReadonly(false);
+    //   reattachDragHandlers();
+
+    //   // ✅ FIX: Insert minimal fallback CSS block if missing
+    //   let styleTag = document.getElementById("sc-image-border-style");
+    //   if (styleTag && !styleTag.textContent.includes(blockSelector)) {
+    //     styleTag.textContent += `
+    //       ${blockSelector} {
+    //         border-width: 0px !important;
+    //         border-style: solid !important;
+    //         box-sizing: border-box;
+    //       }
+    //     `;
+    //     console.log(
+    //       "🛠️ Inserted fallback style block after reset for:",
+    //       blockSelector
+    //     );
+    //   }
+
+    //   console.log("🔄 Border controls reinitialized after reset");
+    // }, 100);
     setTimeout(() => {
+      // Existing reinitialization code...
       if (
         borderWidthSlider &&
         borderWidthBullet &&
@@ -1291,8 +1327,8 @@ export function initImageBorderControls(selectedElement, context = {}) {
       setSideButtonsReadonly(false);
       reattachDragHandlers();
 
-      // ✅ FIX: Insert minimal fallback CSS block if missing
-      let styleTag = document.getElementById("sc-image-border-style");
+      // ✅ Ensure the blockSelector exists in <style> after reset
+      const styleTag = document.getElementById("sc-image-border-style");
       if (styleTag && !styleTag.textContent.includes(blockSelector)) {
         styleTag.textContent += `
           ${blockSelector} {
@@ -1302,7 +1338,7 @@ export function initImageBorderControls(selectedElement, context = {}) {
           }
         `;
         console.log(
-          "🛠️ Inserted fallback style block after reset for:",
+          "🛠️ Re-inserted fallback border style after reset:",
           blockSelector
         );
       }
