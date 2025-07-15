@@ -530,7 +530,7 @@ export function initButtonStyles(
 
 async function replaceImgWithInlineSVG(imgElement) {
   const src = imgElement.getAttribute("src");
-  if (!src || !src.endsWith(".svg")) return;
+  if (!src || !src.endsWith(".svg")) return null;
 
   try {
     const res = await fetch(src);
@@ -539,9 +539,8 @@ async function replaceImgWithInlineSVG(imgElement) {
     const svgDoc = parser.parseFromString(svgText, "image/svg+xml");
     const svgElement = svgDoc.querySelector("svg");
 
-    if (!svgElement) return;
+    if (!svgElement) return null;
 
-    // Copy class and size
     svgElement.classList.add(...imgElement.classList);
     svgElement.setAttribute("width", imgElement.getAttribute("width") || "20");
     svgElement.setAttribute(
@@ -549,7 +548,6 @@ async function replaceImgWithInlineSVG(imgElement) {
       imgElement.getAttribute("height") || "20"
     );
 
-    // 🧽 Remove inline styling from all children
     svgElement.querySelectorAll("*").forEach((el) => {
       el.removeAttribute("fill");
       el.removeAttribute("stroke");
@@ -557,16 +555,15 @@ async function replaceImgWithInlineSVG(imgElement) {
       el.removeAttribute("style");
     });
 
-    // Also remove from <svg> itself
     svgElement.removeAttribute("fill");
     svgElement.removeAttribute("stroke");
     svgElement.removeAttribute("color");
     svgElement.removeAttribute("style");
 
-    imgElement.replaceWith(svgElement);
-    console.log("✅ Replaced <img> with inline <svg> and cleaned styles.");
+    return svgElement;
   } catch (err) {
     console.error("❌ Failed to inline SVG:", err);
+    return null;
   }
 }
 
@@ -661,18 +658,35 @@ export function initButtonIconPositionToggle(
 
           if (!icon || !textDiv) return;
 
-          replaceImgWithInlineSVG(icon); // ✅ Add this here
+          // replaceImgWithInlineSVG(icon); // ✅ Add this here
 
-          icon.style.marginLeft = "";
-          icon.style.marginRight = "";
+          // icon.style.marginLeft = "";
+          // icon.style.marginRight = "";
 
-          if (value === "after") {
-            icon.style.marginLeft = "8px";
-            buttonLink.insertBefore(icon, textDiv.nextSibling);
-          } else {
-            icon.style.marginRight = "8px";
-            buttonLink.insertBefore(icon, textDiv);
-          }
+          // if (value === "after") {
+          //   icon.style.marginLeft = "8px";
+          //   buttonLink.insertBefore(icon, textDiv.nextSibling);
+          // } else {
+          //   icon.style.marginRight = "8px";
+          //   buttonLink.insertBefore(icon, textDiv);
+          // }
+
+          (async () => {
+            const svgIcon = await replaceImgWithInlineSVG(icon);
+            if (!svgIcon) return;
+
+            svgIcon.classList.add("sqscraft-button-icon");
+            svgIcon.style.marginLeft = "";
+            svgIcon.style.marginRight = "";
+
+            if (value === "after") {
+              svgIcon.style.marginLeft = "8px";
+              buttonLink.insertBefore(svgIcon, textDiv.nextSibling);
+            } else {
+              svgIcon.style.marginRight = "8px";
+              buttonLink.insertBefore(svgIcon, textDiv);
+            }
+          })();
         });
       };
     });
