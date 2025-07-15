@@ -1,7 +1,9 @@
 export function ButtonIconColorPalate(
   themeColors,
   selectedElement,
-  saveButtonColorModifications
+  saveButtonModifications,
+  addPendingModification,
+  showNotification
 ) {
   // Use correct IDs matching the HTML
   const palette = document.getElementById("button-icon-color-palette");
@@ -83,7 +85,7 @@ export function ButtonIconColorPalate(
         `;
 
     // Save to database if function provided
-    if (typeof saveButtonColorModifications === "function") {
+    if (typeof saveButtonModifications === "function") {
       const blockId = currentElement.id;
       if (blockId) {
         const stylePayload = {
@@ -92,7 +94,7 @@ export function ButtonIconColorPalate(
             styles: { color: rgbaColor, fill: rgbaColor },
           },
         };
-        saveButtonColorModifications(blockId, stylePayload);
+        saveButtonModifications(blockId, stylePayload);
       }
     }
   }

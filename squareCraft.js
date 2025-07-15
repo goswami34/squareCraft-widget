@@ -608,6 +608,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { initButtonIconColorPalate } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonStyles.js"
+  );
+
   const themeColors = await getSquarespaceThemeStyles();
 
   // document.body.addEventListener("click", (event) => {
@@ -802,6 +806,37 @@ let pendingModifications = new Map();
     }
 
     // Button border color palette trigger end here
+
+    // button icon color palette trigger start here
+    const triggerButtonIconColor = event.target.closest(
+      "#button-icon-color-select"
+    );
+    const paletteButtonIconColor = document.getElementById(
+      "button-icon-color-palette"
+    );
+
+    if (triggerButtonIconColor && paletteButtonIconColor) {
+      paletteButtonIconColor.classList.toggle("sc-hidden");
+
+      // Load palette after toggle
+      if (!paletteButtonIconColor.classList.contains("sc-hidden")) {
+        setTimeout(() => {
+          initButtonIconColorPalate(
+            themeColors,
+            () => selectedElement,
+            saveButtonModifications,
+            (blockId, css, tagType) => {
+              if (!pendingModifications.has(blockId)) {
+                pendingModifications.set(blockId, []);
+              }
+              pendingModifications.get(blockId).push({ css, tagType });
+            },
+            showNotification
+          );
+        }, 50);
+      }
+      return;
+    }
 
     // button shadow color palette trigger start here
     const triggerButtonShadowColor = event.target.closest(

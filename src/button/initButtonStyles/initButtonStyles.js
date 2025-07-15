@@ -912,7 +912,9 @@ export function initButtonIconSpacingControl(getSelectedElement) {
 export function initButtonIconColorPalate(
   themeColors,
   selectedElement,
-  saveButtonColorModifications
+  saveButtonModifications,
+  addPendingModification,
+  showNotification
 ) {
   // Use correct IDs matching the HTML
   const palette = document.getElementById("button-icon-color-palette");
@@ -994,7 +996,7 @@ export function initButtonIconColorPalate(
         `;
 
     // Save to database if function provided
-    if (typeof saveButtonColorModifications === "function") {
+    if (typeof saveButtonModifications === "function") {
       const blockId = currentElement.id;
       if (blockId) {
         const stylePayload = {
@@ -1003,7 +1005,7 @@ export function initButtonIconColorPalate(
             styles: { color: rgbaColor, fill: rgbaColor },
           },
         };
-        saveButtonColorModifications(blockId, stylePayload);
+        saveButtonModifications(blockId, stylePayload);
       }
     }
   }
