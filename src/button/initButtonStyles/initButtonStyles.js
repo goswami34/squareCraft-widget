@@ -997,46 +997,36 @@ export function initButtonIconColorPalate(
     }
 
     const cssRules = `
-          .${typeClass} svg,
-          .${typeClass} img,
-          .${typeClass} svg *,
-          .${typeClass} img *,
-          .${typeClass} .sqs-button-element--icon svg,
-          .${typeClass} .sqs-button-element--icon img,
-          .${typeClass} .sqs-button-element--icon svg *,
-          .${typeClass} .sqs-button-element--icon img *,
-          .${typeClass} [data-icon] svg,
-          .${typeClass} [data-icon] img,
-          .${typeClass} [data-icon] svg *,
-          .${typeClass} [data-icon] img * {
-            color: ${rgbaColor} !important;
-            fill: ${rgbaColor} !important;
-            stroke: ${rgbaColor} !important;
-          }
-          .${typeClass}:hover svg,
-          .${typeClass}:hover img,
-          .${typeClass}:hover svg *,
-          .${typeClass}:hover img *,
-          .${typeClass}:hover .sqs-button-element--icon svg,
-          .${typeClass}:hover .sqs-button-element--icon img,
-          .${typeClass}:hover .sqs-button-element--icon svg *,
-          .${typeClass}:hover .sqs-button-element--icon img *,
-          .${typeClass}:hover [data-icon] svg,
-          .${typeClass}:hover [data-icon] img,
-          .${typeClass}:hover [data-icon] svg *,
-          .${typeClass}:hover [data-icon] img * {
-            color: ${rgbaColor} !important;
-            fill: ${rgbaColor} !important;
-            stroke: ${rgbaColor} !important;
-          }
-        `;
+  .${typeClass} svg,
+  .${typeClass} svg *,
+  .${typeClass} .sqs-button-element--icon svg,
+  .${typeClass} .sqs-button-element--icon svg *,
+  .${typeClass} [data-icon] svg,
+  .${typeClass} [data-icon] svg * {
+    color: ${rgbaColor} !important;
+    fill: ${rgbaColor} !important;
+    stroke: ${rgbaColor} !important;
+  }
+
+  .${typeClass}:hover svg,
+  .${typeClass}:hover svg *,
+  .${typeClass}:hover .sqs-button-element--icon svg,
+  .${typeClass}:hover .sqs-button-element--icon svg *,
+  .${typeClass}:hover [data-icon] svg,
+  .${typeClass}:hover [data-icon] svg * {
+    color: ${rgbaColor} !important;
+    fill: ${rgbaColor} !important;
+    stroke: ${rgbaColor} !important;
+  }
+`;
 
     styleTag.innerHTML = cssRules;
     console.log("🎨 Applied CSS rules:", cssRules);
     console.log("🎨 Style tag ID:", styleId);
 
     // Check for icons in the button
-    const icons = btn.querySelectorAll("svg, img");
+    const icons = btn.querySelectorAll("svg");
+
     console.log("🔍 Found icons:", icons.length);
     icons.forEach((icon, index) => {
       console.log(
