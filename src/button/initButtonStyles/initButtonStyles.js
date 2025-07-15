@@ -528,6 +528,41 @@ export function initButtonStyles(
   });
 }
 
+async function replaceImgWithInlineSVG(imgElement) {
+  const src = imgElement.getAttribute("src");
+  if (!src || !src.endsWith(".svg")) return;
+
+  try {
+    const res = await fetch(src);
+    const svgText = await res.text();
+    const parser = new DOMParser();
+    const svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+    const svgElement = svgDoc.querySelector("svg");
+
+    if (!svgElement) return;
+
+    // Copy over the original img's classes and dimensions
+    svgElement.classList.add(...imgElement.classList);
+    svgElement.setAttribute("width", imgElement.getAttribute("width") || "20");
+    svgElement.setAttribute(
+      "height",
+      imgElement.getAttribute("height") || "20"
+    );
+
+    // Clean inline styles for full CSS control
+    svgElement.removeAttribute("fill");
+    svgElement.removeAttribute("stroke");
+    svgElement.querySelectorAll("*").forEach((child) => {
+      child.removeAttribute("fill");
+      child.removeAttribute("stroke");
+    });
+
+    imgElement.replaceWith(svgElement);
+  } catch (err) {
+    console.error("❌ Failed to inline SVG:", err);
+  }
+}
+
 export function initButtonIconPositionToggle(
   getSelectedElement,
   addPendingModification,
@@ -614,10 +649,12 @@ export function initButtonIconPositionToggle(
 
         const allButtons = document.querySelectorAll(`a.${typeClass}`);
         allButtons.forEach((buttonLink) => {
-          const icon = buttonLink.querySelector(".sqscraft-button-icon");
+          const icon = buttonLink.querySelector("img.sqscraft-button-icon");
           const textDiv = buttonLink.querySelector(".sqs-html");
 
           if (!icon || !textDiv) return;
+
+          replaceImgWithInlineSVG(icon); // ✅ Add this here
 
           icon.style.marginLeft = "";
           icon.style.marginRight = "";
