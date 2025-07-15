@@ -539,7 +539,7 @@ export function WidgetButtonNormalState() {
                         </div>
 
                      </div>
-                  </div>
+                  
             </div>
 
             <div class=" sc-mt-2 sc-flex sc-items-center sc-justify-between">
