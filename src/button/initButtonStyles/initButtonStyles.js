@@ -541,7 +541,7 @@ async function replaceImgWithInlineSVG(imgElement) {
 
     if (!svgElement) return;
 
-    // Copy over the original img's classes and dimensions
+    // Copy class and size
     svgElement.classList.add(...imgElement.classList);
     svgElement.setAttribute("width", imgElement.getAttribute("width") || "20");
     svgElement.setAttribute(
@@ -549,15 +549,22 @@ async function replaceImgWithInlineSVG(imgElement) {
       imgElement.getAttribute("height") || "20"
     );
 
-    // Clean inline styles for full CSS control
-    svgElement.removeAttribute("fill");
-    svgElement.removeAttribute("stroke");
-    svgElement.querySelectorAll("*").forEach((child) => {
-      child.removeAttribute("fill");
-      child.removeAttribute("stroke");
+    // 🧽 Remove inline styling from all children
+    svgElement.querySelectorAll("*").forEach((el) => {
+      el.removeAttribute("fill");
+      el.removeAttribute("stroke");
+      el.removeAttribute("color");
+      el.removeAttribute("style");
     });
 
+    // Also remove from <svg> itself
+    svgElement.removeAttribute("fill");
+    svgElement.removeAttribute("stroke");
+    svgElement.removeAttribute("color");
+    svgElement.removeAttribute("style");
+
     imgElement.replaceWith(svgElement);
+    console.log("✅ Replaced <img> with inline <svg> and cleaned styles.");
   } catch (err) {
     console.error("❌ Failed to inline SVG:", err);
   }
