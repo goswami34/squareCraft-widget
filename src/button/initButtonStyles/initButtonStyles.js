@@ -942,18 +942,32 @@ export function initButtonIconColorPalate(
 
   // Button-specific icon color application function
   function applyButtonIconColorFromPalette(color, alpha = 1) {
+    console.log("🎨 Applying icon color:", color, "with alpha:", alpha);
+
     const currentElement = selectedElement?.();
-    if (!currentElement) return;
+    if (!currentElement) {
+      console.log("❌ No current element found");
+      return;
+    }
+    console.log("📍 Current element:", currentElement);
 
     const btn = currentElement.querySelector(
       ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
     );
-    if (!btn) return;
+    if (!btn) {
+      console.log("❌ No button element found");
+      return;
+    }
+    console.log("🔘 Button element:", btn);
 
     const typeClass = [...btn.classList].find((cls) =>
       cls.startsWith("sqs-button-element--")
     );
-    if (!typeClass) return;
+    if (!typeClass) {
+      console.log("❌ No button type class found");
+      return;
+    }
+    console.log("🏷️ Button type class:", typeClass);
 
     // Convert color to rgba
     let rgbaColor;
@@ -982,18 +996,56 @@ export function initButtonIconColorPalate(
       document.head.appendChild(styleTag);
     }
 
-    styleTag.innerHTML = `
+    const cssRules = `
           .${typeClass} svg,
-          .${typeClass} img {
+          .${typeClass} img,
+          .${typeClass} svg *,
+          .${typeClass} img *,
+          .${typeClass} .sqs-button-element--icon svg,
+          .${typeClass} .sqs-button-element--icon img,
+          .${typeClass} .sqs-button-element--icon svg *,
+          .${typeClass} .sqs-button-element--icon img *,
+          .${typeClass} [data-icon] svg,
+          .${typeClass} [data-icon] img,
+          .${typeClass} [data-icon] svg *,
+          .${typeClass} [data-icon] img * {
             color: ${rgbaColor} !important;
             fill: ${rgbaColor} !important;
+            stroke: ${rgbaColor} !important;
           }
           .${typeClass}:hover svg,
-          .${typeClass}:hover img {
+          .${typeClass}:hover img,
+          .${typeClass}:hover svg *,
+          .${typeClass}:hover img *,
+          .${typeClass}:hover .sqs-button-element--icon svg,
+          .${typeClass}:hover .sqs-button-element--icon img,
+          .${typeClass}:hover .sqs-button-element--icon svg *,
+          .${typeClass}:hover .sqs-button-element--icon img *,
+          .${typeClass}:hover [data-icon] svg,
+          .${typeClass}:hover [data-icon] img,
+          .${typeClass}:hover [data-icon] svg *,
+          .${typeClass}:hover [data-icon] img * {
             color: ${rgbaColor} !important;
             fill: ${rgbaColor} !important;
+            stroke: ${rgbaColor} !important;
           }
         `;
+
+    styleTag.innerHTML = cssRules;
+    console.log("🎨 Applied CSS rules:", cssRules);
+    console.log("🎨 Style tag ID:", styleId);
+
+    // Check for icons in the button
+    const icons = btn.querySelectorAll("svg, img");
+    console.log("🔍 Found icons:", icons.length);
+    icons.forEach((icon, index) => {
+      console.log(
+        `🔍 Icon ${index + 1}:`,
+        icon.tagName,
+        icon.className,
+        icon.getAttribute("src")
+      );
+    });
 
     // Save to database if function provided
     if (typeof saveButtonModifications === "function") {
@@ -1001,8 +1053,8 @@ export function initButtonIconColorPalate(
       if (blockId) {
         const stylePayload = {
           buttonIcon: {
-            selector: `.${typeClass} svg, .${typeClass} img`,
-            styles: { color: rgbaColor, fill: rgbaColor },
+            selector: `.${typeClass} svg, .${typeClass} img, .${typeClass} svg *, .${typeClass} img *, .${typeClass} .sqs-button-element--icon svg, .${typeClass} .sqs-button-element--icon img, .${typeClass} .sqs-button-element--icon svg *, .${typeClass} .sqs-button-element--icon img *, .${typeClass} [data-icon] svg, .${typeClass} [data-icon] img, .${typeClass} [data-icon] svg *, .${typeClass} [data-icon] img *`,
+            styles: { color: rgbaColor, fill: rgbaColor, stroke: rgbaColor },
           },
         };
         saveButtonModifications(blockId, stylePayload);
