@@ -4950,3 +4950,16 @@
 }
 
 /* button text color palate end here */
+
+/* button icon color palate start here */
+#button-icon-color-palette {
+  z-index: 999999 !important;
+}
+
+#button-icon-color-select {
+  width: 100% !important;
+  height: 100px !important;
+  border-radius: 6px !important;
+}
+
+/* button icon color palate end here */
