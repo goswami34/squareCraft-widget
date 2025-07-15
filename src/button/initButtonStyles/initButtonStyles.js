@@ -548,6 +548,7 @@ async function replaceImgWithInlineSVG(imgElement) {
       imgElement.getAttribute("height") || "20"
     );
 
+    // Remove all fill, stroke, color, and style attributes to make it colorable
     svgElement.querySelectorAll("*").forEach((el) => {
       el.removeAttribute("fill");
       el.removeAttribute("stroke");
@@ -564,6 +565,29 @@ async function replaceImgWithInlineSVG(imgElement) {
   } catch (err) {
     console.error("❌ Failed to inline SVG:", err);
     return null;
+  }
+}
+
+// Function to convert all img icons to SVG in a button
+async function convertButtonIconsToSVG(buttonElement) {
+  const imgIcons = buttonElement.querySelectorAll("img.sqscraft-button-icon");
+
+  for (const imgIcon of imgIcons) {
+    const svgIcon = await replaceImgWithInlineSVG(imgIcon);
+    if (svgIcon) {
+      // Replace the img with the SVG
+      imgIcon.parentNode.replaceChild(svgIcon, imgIcon);
+      console.log("✅ Converted img icon to SVG:", svgIcon);
+    }
+  }
+}
+
+// Function to convert all img icons to SVG in all buttons of a specific type
+async function convertAllButtonIconsToSVG(typeClass) {
+  const buttons = document.querySelectorAll(`a.${typeClass}`);
+
+  for (const button of buttons) {
+    await convertButtonIconsToSVG(button);
   }
 }
 
@@ -678,6 +702,9 @@ export function initButtonIconPositionToggle(
             svgIcon.classList.add("sqscraft-button-icon");
             svgIcon.style.marginLeft = "";
             svgIcon.style.marginRight = "";
+
+            // Replace the original img with the SVG
+            icon.parentNode.replaceChild(svgIcon, icon);
 
             if (value === "after") {
               svgIcon.style.marginLeft = "8px";
@@ -1027,6 +1054,15 @@ export function initButtonIconColorPalate(
     }
     console.log("🏷️ Button type class:", typeClass);
 
+    // Convert any img icons to SVG first (fire and forget)
+    convertAllButtonIconsToSVG(typeClass)
+      .then(() => {
+        console.log("✅ Icon conversion completed");
+      })
+      .catch((err) => {
+        console.error("❌ Icon conversion failed:", err);
+      });
+
     // Convert color to rgba
     let rgbaColor;
     if (color.startsWith("rgb(")) {
@@ -1094,6 +1130,16 @@ export function initButtonIconColorPalate(
         icon.getAttribute("src")
       );
     });
+
+    // Also check for img icons that need conversion
+    const imgIcons = btn.querySelectorAll("img.sqscraft-button-icon");
+    console.log("🖼️ Found img icons:", imgIcons.length);
+    if (imgIcons.length > 0) {
+      console.log("🔄 Converting img icons to SVG...");
+      convertButtonIconsToSVG(btn).then(() => {
+        console.log("✅ Icon conversion completed for this button");
+      });
+    }
 
     // Save to database if function provided
     if (typeof saveButtonModifications === "function") {
