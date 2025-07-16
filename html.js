@@ -362,6 +362,9 @@ async function handlePublish() {
           case "buttonColor":
             result = await saveButtonColorModifications(blockId, mod.css);
             break;
+          case "buttonIcon":
+            result = await saveButtonIconModifications(blockId, mod.css);
+            break;
           case "linkText":
             result = await saveLinkTextModifications(blockId, mod.css);
             break;
@@ -1034,6 +1037,113 @@ export async function saveButtonBorderModifications(blockId, css) {
   }
 }
 //button border save modification end here
+
+// button icon save modification start here
+export async function saveButtonIconModifications(blockId, css) {
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+    console.warn("❌ Missing required data to save button icon modifications", {
+      userId,
+      token,
+      widgetId,
+      pageId,
+      blockId,
+      css,
+    });
+    return { success: false, error: "Missing required data" };
+  }
+
+  // Clean & normalize CSS
+  const cleanCssObject = (obj = {}) =>
+    Object.fromEntries(
+      Object.entries(obj).filter(
+        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+      )
+    );
+
+  const toKebabCaseStyleObject = (obj = {}) =>
+    Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [
+        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        value,
+      ])
+    );
+
+  // Extract icon properties from CSS
+  const iconProperties = {
+    selector:
+      css?.icon?.selector ||
+      ".sqs-button-element--tertiary .sqscraft-button-icon",
+    styles: toKebabCaseStyleObject(cleanCssObject(css?.icon?.styles || {})),
+  };
+
+  // Determine button type from the CSS structure
+  let buttonType = "tertiary"; // default
+  if (css?.buttonPrimary) {
+    buttonType = "primary";
+  } else if (css?.buttonSecondary) {
+    buttonType = "secondary";
+  } else if (css?.buttonTertiary) {
+    buttonType = "tertiary";
+  }
+
+  // Check if we should apply to all types
+  const applyAllTypes = css?.applyAllTypes !== false; // default to true
+
+  const payload = {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    elementId: blockId,
+    iconProperties,
+    buttonType,
+    applyToAllTypes: applyAllTypes,
+  };
+
+  console.log("📤 Sending button icon payload:", payload);
+
+  try {
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/save-button-icon-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || `HTTP ${response.status}`);
+    }
+
+    console.log("✅ Button icon modifications saved:", result);
+    showNotification("Button icon styles saved successfully!", "success");
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("❌ Error saving button icon modifications:", error);
+    showNotification(
+      `Failed to save button icon styles: ${error.message}`,
+      "error"
+    );
+
+    return { success: false, error: error.message };
+  }
+}
+// button icon save modification end here
 
 // button shadow save modification start here
 export async function saveButtonShadowModifications(blockId, css) {

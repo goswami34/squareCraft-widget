@@ -624,15 +624,23 @@ export function initButtonIconPositionToggle(
         }
       `;
 
-      mergeAndSaveButtonStyles(
-        blockId,
-        typeClass,
-        { flexDirection },
-        saveButtonModifications,
-        addPendingModification,
-        showNotification,
-        "icon"
-      );
+      // Save icon position modifications
+      const iconPayload = {
+        icon: {
+          selector: `.${typeClass}`,
+          styles: { flexDirection },
+        },
+        buttonType: typeClass.replace("sqs-button-element--", ""),
+        applyAllTypes: false,
+      };
+
+      if (typeof addPendingModification === "function") {
+        addPendingModification(blockId, iconPayload, "buttonIcon");
+      }
+
+      if (typeof showNotification === "function") {
+        showNotification("Icon position updated locally!", "info");
+      }
     } catch (error) {
       console.error("❌ Error updating icon position:", error);
       if (typeof showNotification === "function") {
@@ -750,6 +758,27 @@ export function initButtonIconRotationControl(getSelectedElement) {
       if (icon) {
         icon.style.transform = `rotate(${currentRotation}deg)`;
       }
+
+      // Save icon rotation modifications
+      const selectedElement = getSelectedElement?.();
+      if (selectedElement && selectedElement.id) {
+        const iconPayload = {
+          icon: {
+            selector: `.${typeClass} .sqscraft-button-icon, .${typeClass} .sqscraft-image-icon`,
+            styles: { transform: `rotate(${currentRotation}deg)` },
+          },
+          buttonType: typeClass.replace("sqs-button-element--", ""),
+          applyAllTypes: false,
+        };
+
+        if (typeof window.addPendingModification === "function") {
+          window.addPendingModification(
+            selectedElement.id,
+            iconPayload,
+            "buttonIcon"
+          );
+        }
+      }
     });
   }
   function updateUI(clientX) {
@@ -859,6 +888,27 @@ export function initButtonIconSizeControl(getSelectedElement) {
         icon.style.width = `${currentSize}px`;
         icon.style.height = "auto";
       });
+
+      // Save icon size modifications
+      const selectedElement = getSelectedElement?.();
+      if (selectedElement && selectedElement.id) {
+        const iconPayload = {
+          icon: {
+            selector: `.${typeClass} .sqscraft-button-icon, .${typeClass} .sqscraft-image-icon`,
+            styles: { width: `${currentSize}px`, height: "auto" },
+          },
+          buttonType: typeClass.replace("sqs-button-element--", ""),
+          applyAllTypes: false,
+        };
+
+        if (typeof window.addPendingModification === "function") {
+          window.addPendingModification(
+            selectedElement.id,
+            iconPayload,
+            "buttonIcon"
+          );
+        }
+      }
     });
   }
   function updateFromSizeValue(value) {
@@ -947,6 +997,27 @@ export function initButtonIconSpacingControl(getSelectedElement) {
       } else {
         el.classList.remove("sc-flex", "sc-items-center");
         el.style.gap = "";
+      }
+
+      // Save icon spacing modifications
+      const selectedElement = getSelectedElement?.();
+      if (selectedElement && selectedElement.id) {
+        const iconPayload = {
+          icon: {
+            selector: `.${btnClass}`,
+            styles: { gap: `${gapValue}px` },
+          },
+          buttonType: btnClass.replace("sqs-button-element--", ""),
+          applyAllTypes: false,
+        };
+
+        if (typeof window.addPendingModification === "function") {
+          window.addPendingModification(
+            selectedElement.id,
+            iconPayload,
+            "buttonIcon"
+          );
+        }
       }
     });
   }
@@ -1146,10 +1217,12 @@ export function initButtonIconColorPalate(
       const blockId = currentElement.id;
       if (blockId) {
         const stylePayload = {
-          buttonIcon: {
+          icon: {
             selector: `.${typeClass} svg, .${typeClass} img, .${typeClass} svg *, .${typeClass} img *, .${typeClass} .sqs-button-element--icon svg, .${typeClass} .sqs-button-element--icon img, .${typeClass} .sqs-button-element--icon svg *, .${typeClass} .sqs-button-element--icon img *, .${typeClass} [data-icon] svg, .${typeClass} [data-icon] img, .${typeClass} [data-icon] svg *, .${typeClass} [data-icon] img *`,
             styles: { color: rgbaColor, fill: rgbaColor, stroke: rgbaColor },
           },
+          buttonType: typeClass.replace("sqs-button-element--", ""),
+          applyAllTypes: false,
         };
         saveButtonModifications(blockId, stylePayload);
       }
