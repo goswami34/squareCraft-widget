@@ -612,6 +612,10 @@ let pendingModifications = new Map();
     "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonStyles.js"
   );
 
+  const { saveButtonIconModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   const themeColors = await getSquarespaceThemeStyles();
 
   // document.body.addEventListener("click", (event) => {
@@ -824,7 +828,7 @@ let pendingModifications = new Map();
           initButtonIconColorPalate(
             themeColors,
             () => selectedElement,
-            saveButtonModifications,
+            saveButtonIconModifications,
             (blockId, css, tagType) => {
               if (!pendingModifications.has(blockId)) {
                 pendingModifications.set(blockId, []);
