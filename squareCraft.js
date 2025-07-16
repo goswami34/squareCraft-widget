@@ -1106,6 +1106,22 @@ let pendingModifications = new Map();
         },
         showNotification
       );
+
+      // Initialize icon upload functionality
+      import(
+        "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonStyles.js"
+      ).then(({ initButtonIconUpload }) => {
+        initButtonIconUpload(
+          () => selectedElement,
+          (blockId, css, tagType) => {
+            if (!pendingModifications.has(blockId)) {
+              pendingModifications.set(blockId, []);
+            }
+            pendingModifications.get(blockId).push({ css, tagType });
+          },
+          showNotification
+        );
+      });
       initButtonBorderControl(
         () => selectedElement,
         saveButtonBorderModifications,
@@ -3375,6 +3391,37 @@ let pendingModifications = new Map();
               `✅ Applied button icon styles (primary) to ${elementId}:`,
               icon.buttonPrimary.styles
             );
+
+            // Handle uploaded icons
+            if (
+              icon.buttonPrimary.iconData &&
+              icon.buttonPrimary.iconData.type === "uploaded"
+            ) {
+              const buttons = document.querySelectorAll(
+                icon.buttonPrimary.selector.replace(
+                  /\.sqscraft-button-icon.*$/,
+                  ""
+                )
+              );
+              buttons.forEach((button) => {
+                // Remove existing icons
+                const existingIcons = button.querySelectorAll(
+                  ".sqscraft-button-icon, .sqscraft-image-icon"
+                );
+                existingIcons.forEach((icon) => icon.remove());
+
+                // Add uploaded icon
+                const iconElement = document.createElement("img");
+                iconElement.src = icon.buttonPrimary.iconData.base64;
+                iconElement.className = "sqscraft-button-icon";
+                iconElement.style.width =
+                  icon.buttonPrimary.styles.width || "20px";
+                iconElement.style.height =
+                  icon.buttonPrimary.styles.height || "auto";
+                iconElement.alt = "Button Icon";
+                button.appendChild(iconElement);
+              });
+            }
           }
 
           if (
@@ -3390,6 +3437,37 @@ let pendingModifications = new Map();
               `✅ Applied button icon styles (secondary) to ${elementId}:`,
               icon.buttonSecondary.styles
             );
+
+            // Handle uploaded icons
+            if (
+              icon.buttonSecondary.iconData &&
+              icon.buttonSecondary.iconData.type === "uploaded"
+            ) {
+              const buttons = document.querySelectorAll(
+                icon.buttonSecondary.selector.replace(
+                  /\.sqscraft-button-icon.*$/,
+                  ""
+                )
+              );
+              buttons.forEach((button) => {
+                // Remove existing icons
+                const existingIcons = button.querySelectorAll(
+                  ".sqscraft-button-icon, .sqscraft-image-icon"
+                );
+                existingIcons.forEach((icon) => icon.remove());
+
+                // Add uploaded icon
+                const iconElement = document.createElement("img");
+                iconElement.src = icon.buttonSecondary.iconData.base64;
+                iconElement.className = "sqscraft-button-icon";
+                iconElement.style.width =
+                  icon.buttonSecondary.styles.width || "20px";
+                iconElement.style.height =
+                  icon.buttonSecondary.styles.height || "auto";
+                iconElement.alt = "Button Icon";
+                button.appendChild(iconElement);
+              });
+            }
           }
 
           if (icon?.buttonTertiary?.selector && icon?.buttonTertiary?.styles) {
@@ -3402,6 +3480,37 @@ let pendingModifications = new Map();
               `✅ Applied button icon styles (tertiary) to ${elementId}:`,
               icon.buttonTertiary.styles
             );
+
+            // Handle uploaded icons
+            if (
+              icon.buttonTertiary.iconData &&
+              icon.buttonTertiary.iconData.type === "uploaded"
+            ) {
+              const buttons = document.querySelectorAll(
+                icon.buttonTertiary.selector.replace(
+                  /\.sqscraft-button-icon.*$/,
+                  ""
+                )
+              );
+              buttons.forEach((button) => {
+                // Remove existing icons
+                const existingIcons = button.querySelectorAll(
+                  ".sqscraft-button-icon, .sqscraft-image-icon"
+                );
+                existingIcons.forEach((icon) => icon.remove());
+
+                // Add uploaded icon
+                const iconElement = document.createElement("img");
+                iconElement.src = icon.buttonTertiary.iconData.base64;
+                iconElement.className = "sqscraft-button-icon";
+                iconElement.style.width =
+                  icon.buttonTertiary.styles.width || "20px";
+                iconElement.style.height =
+                  icon.buttonTertiary.styles.height || "auto";
+                iconElement.alt = "Button Icon";
+                button.appendChild(iconElement);
+              });
+            }
           }
         });
       });

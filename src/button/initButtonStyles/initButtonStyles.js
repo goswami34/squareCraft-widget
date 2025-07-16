@@ -631,7 +631,7 @@ export function initButtonIconPositionToggle(
           styles: { flexDirection },
         },
         buttonType: typeClass.replace("sqs-button-element--", ""),
-        applyAllTypes: false,
+        applyToAllTypes: false,
       };
 
       if (typeof addPendingModification === "function") {
@@ -768,7 +768,7 @@ export function initButtonIconRotationControl(getSelectedElement) {
             styles: { transform: `rotate(${currentRotation}deg)` },
           },
           buttonType: typeClass.replace("sqs-button-element--", ""),
-          applyAllTypes: false,
+          applyToAllTypes: false,
         };
 
         if (typeof window.addPendingModification === "function") {
@@ -898,7 +898,7 @@ export function initButtonIconSizeControl(getSelectedElement) {
             styles: { width: `${currentSize}px`, height: "auto" },
           },
           buttonType: typeClass.replace("sqs-button-element--", ""),
-          applyAllTypes: false,
+          applyToAllTypes: false,
         };
 
         if (typeof window.addPendingModification === "function") {
@@ -1008,7 +1008,7 @@ export function initButtonIconSpacingControl(getSelectedElement) {
             styles: { gap: `${gapValue}px` },
           },
           buttonType: btnClass.replace("sqs-button-element--", ""),
-          applyAllTypes: false,
+          applyToAllTypes: false,
         };
 
         if (typeof window.addPendingModification === "function") {
@@ -1222,9 +1222,12 @@ export function initButtonIconColorPalate(
             styles: { color: rgbaColor, fill: rgbaColor, stroke: rgbaColor },
           },
           buttonType: typeClass.replace("sqs-button-element--", ""),
-          applyAllTypes: false,
+          applyToAllTypes: false,
         };
-        saveButtonModifications(blockId, stylePayload);
+
+        if (typeof window.addPendingModification === "function") {
+          window.addPendingModification(blockId, stylePayload, "buttonIcon");
+        }
       }
     }
   }
@@ -3465,3 +3468,104 @@ setTimeout(() => {
   }
   document.getElementById("buttonBorderTypeSolid")?.click();
 }, 100);
+
+// Function to handle icon upload and save to database
+export function initButtonIconUpload(
+  getSelectedElement,
+  addPendingModification,
+  showNotification
+) {
+  const iconUploadInput = document.getElementById("buttonIconUpload");
+  if (!iconUploadInput) return;
+
+  iconUploadInput.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const selectedElement = getSelectedElement?.();
+    if (!selectedElement) {
+      showNotification("No button selected", "error");
+      return;
+    }
+
+    const btn = selectedElement.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
+    if (!btn) {
+      showNotification("No button found in selected element", "error");
+      return;
+    }
+
+    const typeClass = [...btn.classList].find((cls) =>
+      cls.startsWith("sqs-button-element--")
+    );
+    if (!typeClass) {
+      showNotification("No button type class found", "error");
+      return;
+    }
+
+    try {
+      // Convert file to base64
+      const base64 = await fileToBase64(file);
+
+      // Create icon element
+      const iconElement = document.createElement("img");
+      iconElement.src = base64;
+      iconElement.className = "sqscraft-button-icon";
+      iconElement.style.width = "20px";
+      iconElement.style.height = "auto";
+      iconElement.alt = "Button Icon";
+
+      // Remove existing icons
+      const existingIcons = btn.querySelectorAll(
+        ".sqscraft-button-icon, .sqscraft-image-icon"
+      );
+      existingIcons.forEach((icon) => icon.remove());
+
+      // Add new icon
+      btn.appendChild(iconElement);
+
+      // Save icon data to database
+      const blockId = selectedElement.id;
+      if (blockId) {
+        const iconPayload = {
+          icon: {
+            selector: `.${typeClass} .sqscraft-button-icon`,
+            styles: {
+              src: base64,
+              width: "20px",
+              height: "auto",
+            },
+            iconData: {
+              type: "uploaded",
+              base64: base64,
+              fileName: file.name,
+              fileSize: file.size,
+              mimeType: file.type,
+            },
+          },
+          buttonType: typeClass.replace("sqs-button-element--", ""),
+          applyToAllTypes: false,
+        };
+
+        if (typeof addPendingModification === "function") {
+          addPendingModification(blockId, iconPayload, "buttonIcon");
+          showNotification("Icon uploaded and saved locally!", "success");
+        }
+      }
+    } catch (error) {
+      console.error("Error uploading icon:", error);
+      showNotification("Failed to upload icon", "error");
+    }
+  });
+}
+
+// Helper function to convert file to base64
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+}
