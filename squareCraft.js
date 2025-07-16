@@ -1053,7 +1053,7 @@ let pendingModifications = new Map();
       );
       initButtonIconPositionToggle(
         () => selectedElement,
-        saveButtonModifications,
+        saveButtonIconModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
@@ -1075,7 +1075,7 @@ let pendingModifications = new Map();
       );
       initButtonIconRotationControl(
         () => selectedElement,
-        saveButtonModifications,
+        saveButtonIconModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
@@ -1086,7 +1086,7 @@ let pendingModifications = new Map();
       );
       initButtonIconSizeControl(
         () => selectedElement,
-        saveButtonModifications,
+        saveButtonIconModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
@@ -1097,7 +1097,7 @@ let pendingModifications = new Map();
       );
       initButtonIconSpacingControl(
         () => selectedElement,
-        saveButtonModifications,
+        saveButtonIconModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
@@ -3333,6 +3333,89 @@ let pendingModifications = new Map();
     }
   }
 
+  // Fetch button icon modifications from the backend
+  async function fetchButtonIconModifications(blockId = null) {
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
+      return;
+    }
+
+    let url = `https://admin.squareplugin.com/api/v1/fetch-button-icon-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+    if (blockId) url += `&elementId=${blockId}`;
+
+    try {
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message);
+
+      // Handle the nested structure: modifications[].elements[]
+      const modifications = result.modifications || [];
+      modifications.forEach((mod) => {
+        const elements = mod.elements || [];
+        elements.forEach(({ elementId, icon }) => {
+          // Apply icon styles for each button type
+          if (icon?.buttonPrimary?.selector && icon?.buttonPrimary?.styles) {
+            applyStylesAsExternalCSS(
+              icon.buttonPrimary.selector,
+              icon.buttonPrimary.styles,
+              "sc-btn-icon-style"
+            );
+            console.log(
+              `✅ Applied button icon styles (primary) to ${elementId}:`,
+              icon.buttonPrimary.styles
+            );
+          }
+
+          if (
+            icon?.buttonSecondary?.selector &&
+            icon?.buttonSecondary?.styles
+          ) {
+            applyStylesAsExternalCSS(
+              icon.buttonSecondary.selector,
+              icon.buttonSecondary.styles,
+              "sc-btn-icon-style"
+            );
+            console.log(
+              `✅ Applied button icon styles (secondary) to ${elementId}:`,
+              icon.buttonSecondary.styles
+            );
+          }
+
+          if (icon?.buttonTertiary?.selector && icon?.buttonTertiary?.styles) {
+            applyStylesAsExternalCSS(
+              icon.buttonTertiary.selector,
+              icon.buttonTertiary.styles,
+              "sc-btn-icon-style"
+            );
+            console.log(
+              `✅ Applied button icon styles (tertiary) to ${elementId}:`,
+              icon.buttonTertiary.styles
+            );
+          }
+        });
+      });
+      console.log(
+        "✅ Applied button icon styles to all elements (external CSS)"
+      );
+    } catch (error) {
+      console.error(
+        "❌ Failed to fetch button icon modifications:",
+        error.message
+      );
+    }
+  }
+
   // Fetch button border modifications from the backend end here
 
   window.addEventListener("load", async () => {
@@ -3420,6 +3503,7 @@ let pendingModifications = new Map();
       fetchButtonModifications(elementId);
       fetchButtonBorderModifications(elementId);
       fetchButtonShadowModifications(elementId);
+      fetchButtonIconModifications(elementId);
     }
 
     // Fetch button color modifications
@@ -4938,6 +5022,9 @@ let pendingModifications = new Map();
               break;
             case "buttonColor":
               result = await saveButtonColorModifications(blockId, mod.css);
+              break;
+            case "buttonIcon":
+              result = await saveButtonIconModifications(blockId, mod.css);
               break;
             default:
               // Handle other modifications (existing logic)
