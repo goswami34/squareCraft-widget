@@ -1040,6 +1040,8 @@ export async function saveButtonBorderModifications(blockId, css) {
 
 // button icon save modification start here
 export async function saveButtonIconModifications(blockId, css) {
+  console.log("🚀 saveButtonIconModifications called with:", { blockId, css });
+
   const pageId = document
     .querySelector("article[data-page-sections]")
     ?.getAttribute("data-page-sections");
@@ -1076,26 +1078,33 @@ export async function saveButtonIconModifications(blockId, css) {
       ])
     );
 
+  // Determine button type from the CSS structure
+  let buttonType = "tertiary"; // default
+  if (css?.buttonType) {
+    buttonType = css.buttonType;
+  } else if (css?.icon?.selector?.includes("primary")) {
+    buttonType = "primary";
+  } else if (css?.icon?.selector?.includes("secondary")) {
+    buttonType = "secondary";
+  } else if (css?.icon?.selector?.includes("tertiary")) {
+    buttonType = "tertiary";
+  }
+
   // Extract icon properties from CSS
   const iconProperties = {
     selector:
       css?.icon?.selector ||
-      ".sqs-button-element--tertiary .sqscraft-button-icon",
+      `.sqs-button-element--${buttonType} .sqscraft-button-icon`,
     styles: toKebabCaseStyleObject(cleanCssObject(css?.icon?.styles || {})),
   };
 
-  // Determine button type from the CSS structure
-  let buttonType = "tertiary"; // default
-  if (css?.buttonPrimary) {
-    buttonType = "primary";
-  } else if (css?.buttonSecondary) {
-    buttonType = "secondary";
-  } else if (css?.buttonTertiary) {
-    buttonType = "tertiary";
+  // Add iconData if it exists (for uploaded icons)
+  if (css?.icon?.iconData) {
+    iconProperties.iconData = css.icon.iconData;
   }
 
   // Check if we should apply to all types
-  const applyAllTypes = css?.applyAllTypes !== false; // default to true
+  const applyToAllTypes = css?.applyToAllTypes !== false; // default to true
 
   const payload = {
     userId,
@@ -1105,8 +1114,22 @@ export async function saveButtonIconModifications(blockId, css) {
     elementId: blockId,
     iconProperties,
     buttonType,
-    applyToAllTypes: applyAllTypes,
+    applyToAllTypes: applyToAllTypes,
   };
+
+  // Validate that we have valid icon properties to save
+  console.log("🔍 Icon properties to validate:", iconProperties);
+  console.log("🔍 CSS received:", css);
+
+  // Check if we have either styles or iconData to save
+  const hasStyles = Object.keys(iconProperties.styles).length > 0;
+  const hasIconData =
+    iconProperties.iconData && Object.keys(iconProperties.iconData).length > 0;
+
+  if (!iconProperties.selector || (!hasStyles && !hasIconData)) {
+    console.warn("⚠️ No valid icon properties to save:", iconProperties);
+    return { success: false, error: "No valid icon properties to save" };
+  }
 
   console.log("📤 Sending button icon payload:", payload);
 
@@ -1476,3 +1499,22 @@ function removeAllImageStyles() {
 }
 
 // end reset all image modification code
+
+// Test function to verify saveButtonIconModifications is working
+export function testSaveButtonIconModifications() {
+  const testData = {
+    icon: {
+      selector:
+        ".sqs-button-element--primary svg, .sqs-button-element--primary img",
+      styles: { color: "rgba(255, 0, 0, 1)", fill: "rgba(255, 0, 0, 1)" },
+    },
+    buttonType: "primary",
+    applyToAllTypes: false,
+  };
+
+  console.log("🧪 Testing saveButtonIconModifications with:", testData);
+  saveButtonIconModifications("test-block-id", testData);
+}
+
+// Make test function available globally
+window.testSaveButtonIconModifications = testSaveButtonIconModifications;
