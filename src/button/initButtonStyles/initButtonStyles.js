@@ -626,7 +626,7 @@ export function initButtonIconPositionToggle(
 
       // Save icon position modifications with proper structure
       const iconPayload = {
-        icon: {
+        iconProperties: {
           selector: `.${typeClass}`,
           styles: { flexDirection },
         },
@@ -763,7 +763,7 @@ export function initButtonIconRotationControl(getSelectedElement) {
       const selectedElement = getSelectedElement?.();
       if (selectedElement && selectedElement.id) {
         const iconPayload = {
-          icon: {
+          iconProperties: {
             selector: `.${typeClass} .sqscraft-button-icon, .${typeClass} .sqscraft-image-icon`,
             styles: { transform: `rotate(${currentRotation}deg)` },
           },
@@ -893,7 +893,7 @@ export function initButtonIconSizeControl(getSelectedElement) {
       const selectedElement = getSelectedElement?.();
       if (selectedElement && selectedElement.id) {
         const iconPayload = {
-          icon: {
+          iconProperties: {
             selector: `.${typeClass} .sqscraft-button-icon, .${typeClass} .sqscraft-image-icon`,
             styles: { width: `${currentSize}px`, height: "auto" },
           },
@@ -1003,7 +1003,7 @@ export function initButtonIconSpacingControl(getSelectedElement) {
       const selectedElement = getSelectedElement?.();
       if (selectedElement && selectedElement.id) {
         const iconPayload = {
-          icon: {
+          iconProperties: {
             selector: `.${btnClass}`,
             styles: { gap: `${gapValue}px` },
           },
@@ -1217,7 +1217,7 @@ export function initButtonIconColorPalate(
       const blockId = currentElement.id;
       if (blockId) {
         const stylePayload = {
-          icon: {
+          iconProperties: {
             selector: `.${typeClass} svg, .${typeClass} img, .${typeClass} svg *, .${typeClass} img *, .${typeClass} .sqs-button-element--icon svg, .${typeClass} .sqs-button-element--icon img, .${typeClass} .sqs-button-element--icon svg *, .${typeClass} .sqs-button-element--icon img *, .${typeClass} [data-icon] svg, .${typeClass} [data-icon] img, .${typeClass} [data-icon] svg *, .${typeClass} [data-icon] img *`,
             styles: { color: rgbaColor, fill: rgbaColor, stroke: rgbaColor },
           },

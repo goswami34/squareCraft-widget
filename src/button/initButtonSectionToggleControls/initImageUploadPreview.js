@@ -103,7 +103,7 @@ export function initImageUploadPreview(getSelectedElement) {
     }
     
     const iconPayload = {
-      icon: {
+      iconProperties: {
         selector: `.${typeClass} .sqscraft-button-icon`,
         styles: {
           width: "20px",

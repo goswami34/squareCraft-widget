@@ -1082,24 +1082,27 @@ export async function saveButtonIconModifications(blockId, css) {
   let buttonType = "tertiary"; // default
   if (css?.buttonType) {
     buttonType = css.buttonType;
-  } else if (css?.icon?.selector?.includes("primary")) {
+  } else if (css?.iconProperties?.selector?.includes("primary") || css?.icon?.selector?.includes("primary")) {
     buttonType = "primary";
-  } else if (css?.icon?.selector?.includes("secondary")) {
+  } else if (css?.iconProperties?.selector?.includes("secondary") || css?.icon?.selector?.includes("secondary")) {
     buttonType = "secondary";
-  } else if (css?.icon?.selector?.includes("tertiary")) {
+  } else if (css?.iconProperties?.selector?.includes("tertiary") || css?.icon?.selector?.includes("tertiary")) {
     buttonType = "tertiary";
   }
 
   // Extract icon properties from CSS
   const iconProperties = {
     selector:
+      css?.iconProperties?.selector ||
       css?.icon?.selector ||
       `.sqs-button-element--${buttonType} .sqscraft-button-icon`,
-    styles: toKebabCaseStyleObject(cleanCssObject(css?.icon?.styles || {})),
+    styles: toKebabCaseStyleObject(cleanCssObject(css?.iconProperties?.styles || css?.icon?.styles || {})),
   };
 
   // Add iconData if it exists (for uploaded icons)
-  if (css?.icon?.iconData) {
+  if (css?.iconProperties?.iconData) {
+    iconProperties.iconData = css.iconProperties.iconData;
+  } else if (css?.icon?.iconData) {
     iconProperties.iconData = css.icon.iconData;
   }
 
