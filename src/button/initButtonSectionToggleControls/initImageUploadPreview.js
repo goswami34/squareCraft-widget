@@ -89,6 +89,33 @@ export function initImageUploadPreview(getSelectedElement) {
   const uploadButton = document.getElementById("imageupload");
   if (!uploadButton || uploadButton.dataset.listener === "true") return;
   uploadButton.dataset.listener = "true"; // :white_check_mark: prevent double binding
+  
+  // Function to save icon to database
+  function saveIconToDatabase(selected, typeClass, iconData, isUploaded = false) {
+    const blockId = selected.id;
+    if (!blockId) return;
+    
+    const iconPayload = {
+      icon: {
+        selector: `.${typeClass} .sqscraft-button-icon`,
+        styles: {
+          width: "20px",
+          height: "auto",
+        },
+        iconData: iconData,
+      },
+      buttonType: typeClass.replace("sqs-button-element--", ""),
+      applyToAllTypes: false,
+    };
+
+    // Use window.addPendingModification if available
+    if (typeof window.addPendingModification === "function") {
+      window.addPendingModification(blockId, iconPayload, "buttonIcon");
+      console.log("✅ Icon saved to pending modifications:", iconPayload);
+    } else {
+      console.warn("⚠️ window.addPendingModification not available");
+    }
+  }
   function applyIconToButtons(iconNode) {
     const selected = getSelectedElement?.();
     if (!selected || !iconNode) return;
@@ -129,6 +156,25 @@ export function initImageUploadPreview(getSelectedElement) {
         image.height = 20;
         image.classList.add("sqscraft-button-icon");
         applyIconToButtons(image);
+        
+        // Save uploaded icon to database
+        const selected = getSelectedElement?.();
+        const btn = selected?.querySelector("a");
+        const typeClass = btn ? [...btn.classList].find((c) =>
+          c.startsWith("sqs-button-element--")
+        ) : null;
+        
+        if (selected && typeClass) {
+          const iconData = {
+            type: "uploaded",
+            base64: e.target.result,
+            fileName: file.name,
+            fileSize: file.size,
+            mimeType: file.type,
+          };
+          saveIconToDatabase(selected, typeClass, iconData, true);
+        }
+        
         input.remove();
       };
       reader.onerror = () => input.remove();
@@ -150,6 +196,22 @@ export function initImageUploadPreview(getSelectedElement) {
       image.height = 20;
       image.classList.add("sqscraft-button-icon");
       applyIconToButtons(image);
+      
+      // Save library icon to database
+      const selected = getSelectedElement?.();
+      const btn = selected?.querySelector("a");
+      const typeClass = btn ? [...btn.classList].find((c) =>
+        c.startsWith("sqs-button-element--")
+      ) : null;
+      
+      if (selected && typeClass) {
+        const iconData = {
+          type: "library",
+          src: imgURL,
+          fileName: imgURL.split("/").pop(),
+        };
+        saveIconToDatabase(selected, typeClass, iconData, false);
+      }
     });
   });
 }

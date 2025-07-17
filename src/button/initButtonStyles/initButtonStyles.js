@@ -3475,10 +3475,28 @@ export function initButtonIconUpload(
   addPendingModification,
   showNotification
 ) {
-  const iconUploadInput = document.getElementById("buttonIconUpload");
-  if (!iconUploadInput) return;
+  const iconUploadInput = document.getElementById("imageupload");
+  if (!iconUploadInput) {
+    console.warn("❌ Icon upload input not found: imageupload");
+    return;
+  }
 
-  iconUploadInput.addEventListener("change", async (event) => {
+  // Create a hidden file input
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/*";
+  fileInput.style.display = "none";
+  document.body.appendChild(fileInput);
+
+  // Handle click on upload button
+  iconUploadInput.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    fileInput.click();
+  });
+
+  // Handle file selection
+  fileInput.addEventListener("change", async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -3556,8 +3574,18 @@ export function initButtonIconUpload(
     } catch (error) {
       console.error("Error uploading icon:", error);
       showNotification("Failed to upload icon", "error");
+    } finally {
+      // Clean up file input
+      fileInput.value = "";
     }
   });
+
+  // Clean up file input when function is destroyed
+  return () => {
+    if (fileInput && fileInput.parentNode) {
+      fileInput.parentNode.removeChild(fileInput);
+    }
+  };
 }
 
 // Helper function to convert file to base64
