@@ -1053,14 +1053,14 @@ let pendingModifications = new Map();
       );
       initButtonIconPositionToggle(
         () => selectedElement,
-        saveButtonIconModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
           }
           pendingModifications.get(blockId).push({ css, tagType });
         },
-        showNotification
+        showNotification,
+        saveButtonIconModifications
       );
       initHoverButtonShadowControls(
         () => selectedElement,
@@ -1074,37 +1074,13 @@ let pendingModifications = new Map();
         showNotification
       );
       initButtonIconRotationControl(
-        () => selectedElement,
-        saveButtonIconModifications,
-        (blockId, css, tagType) => {
-          if (!pendingModifications.has(blockId)) {
-            pendingModifications.set(blockId, []);
-          }
-          pendingModifications.get(blockId).push({ css, tagType });
-        },
-        showNotification
+        () => selectedElement
       );
       initButtonIconSizeControl(
-        () => selectedElement,
-        saveButtonIconModifications,
-        (blockId, css, tagType) => {
-          if (!pendingModifications.has(blockId)) {
-            pendingModifications.set(blockId, []);
-          }
-          pendingModifications.get(blockId).push({ css, tagType });
-        },
-        showNotification
+        () => selectedElement
       );
       initButtonIconSpacingControl(
-        () => selectedElement,
-        saveButtonIconModifications,
-        (blockId, css, tagType) => {
-          if (!pendingModifications.has(blockId)) {
-            pendingModifications.set(blockId, []);
-          }
-          pendingModifications.get(blockId).push({ css, tagType });
-        },
-        showNotification
+        () => selectedElement
       );
 
       // Initialize icon upload functionality

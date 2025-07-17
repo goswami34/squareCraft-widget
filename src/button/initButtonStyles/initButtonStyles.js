@@ -595,7 +595,7 @@ export function initButtonIconPositionToggle(
   getSelectedElement,
   addPendingModification,
   showNotification,
-  saveButtonModifications
+  saveButtonIconModifications
 ) {
   const iconPositionMap = new Map();
 
@@ -624,7 +624,7 @@ export function initButtonIconPositionToggle(
         }
       `;
 
-      // Save icon position modifications
+      // Save icon position modifications with proper structure
       const iconPayload = {
         icon: {
           selector: `.${typeClass}`,
@@ -759,7 +759,7 @@ export function initButtonIconRotationControl(getSelectedElement) {
         icon.style.transform = `rotate(${currentRotation}deg)`;
       }
 
-      // Save icon rotation modifications
+      // Save icon rotation modifications with proper structure
       const selectedElement = getSelectedElement?.();
       if (selectedElement && selectedElement.id) {
         const iconPayload = {
@@ -889,7 +889,7 @@ export function initButtonIconSizeControl(getSelectedElement) {
         icon.style.height = "auto";
       });
 
-      // Save icon size modifications
+      // Save icon size modifications with proper structure
       const selectedElement = getSelectedElement?.();
       if (selectedElement && selectedElement.id) {
         const iconPayload = {
@@ -999,7 +999,7 @@ export function initButtonIconSpacingControl(getSelectedElement) {
         el.style.gap = "";
       }
 
-      // Save icon spacing modifications
+      // Save icon spacing modifications with proper structure
       const selectedElement = getSelectedElement?.();
       if (selectedElement && selectedElement.id) {
         const iconPayload = {

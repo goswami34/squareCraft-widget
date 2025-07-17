@@ -1126,16 +1126,23 @@ export async function saveButtonIconModifications(blockId, css) {
   const hasIconData =
     iconProperties.iconData && Object.keys(iconProperties.iconData).length > 0;
 
-  if (!iconProperties.selector || (!hasStyles && !hasIconData)) {
-    console.warn("⚠️ No valid icon properties to save:", iconProperties);
-    return { success: false, error: "No valid icon properties to save" };
+  // More lenient validation - allow saving even with minimal data
+  if (!iconProperties.selector) {
+    console.warn("⚠️ No selector found in icon properties:", iconProperties);
+    return { success: false, error: "No selector found in icon properties" };
+  }
+
+  // If we have no styles and no iconData, still allow the save but log a warning
+  if (!hasStyles && !hasIconData) {
+    console.warn("⚠️ No styles or iconData found, but proceeding with save:", iconProperties);
   }
 
   console.log("📤 Sending button icon payload:", payload);
 
   try {
+    console.log("🌐 Making API request to save button icon modifications...");
     const response = await fetch(
-      "https://admin.squareplugin.com/api/v1/save-button-icon-modifications",
+      "http://0.0.0.0:8001/api/v1/save-button-icon-modifications",
       {
         method: "POST",
         headers: {
@@ -1145,6 +1152,9 @@ export async function saveButtonIconModifications(blockId, css) {
         body: JSON.stringify(payload),
       }
     );
+
+    console.log("📡 Response status:", response.status);
+    console.log("📡 Response headers:", Object.fromEntries(response.headers.entries()));
 
     const result = await response.json();
 
