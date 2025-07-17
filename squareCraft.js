@@ -5047,6 +5047,12 @@ let pendingModifications = new Map();
     pendingModifications.get(blockId).push({ css, tagType });
   }
 
+  // Make addPendingModification available globally for icon functions
+  window.addPendingModification = addPendingModification;
+  
+  // Make pendingModifications available globally for debugging
+  window.pendingModifications = pendingModifications;
+
   function moveWidgetToDesktop() {
     if (!widgetContainer) return;
 

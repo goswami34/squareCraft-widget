@@ -1068,7 +1068,7 @@ export function initButtonIconSpacingControl(getSelectedElement) {
 export function initButtonIconColorPalate(
   themeColors,
   selectedElement,
-  saveButtonModifications,
+  saveButtonIconModifications,
   addPendingModification,
   showNotification
 ) {
@@ -1213,7 +1213,7 @@ export function initButtonIconColorPalate(
     }
 
     // Save to database if function provided
-    if (typeof saveButtonModifications === "function") {
+    if (typeof saveButtonIconModifications === "function") {
       const blockId = currentElement.id;
       if (blockId) {
         const stylePayload = {
