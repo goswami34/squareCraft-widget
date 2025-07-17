@@ -90,10 +90,17 @@ export function initImageUploadPreview(getSelectedElement) {
   if (!uploadButton || uploadButton.dataset.listener === "true") return;
   uploadButton.dataset.listener = "true"; // :white_check_mark: prevent double binding
   
+  console.log("🔧 initImageUploadPreview initialized");
+  
   // Function to save icon to database
   function saveIconToDatabase(selected, typeClass, iconData, isUploaded = false) {
+    console.log("💾 saveIconToDatabase called with:", { selected, typeClass, iconData, isUploaded });
+    
     const blockId = selected.id;
-    if (!blockId) return;
+    if (!blockId) {
+      console.warn("⚠️ No blockId found for selected element");
+      return;
+    }
     
     const iconPayload = {
       icon: {
@@ -110,10 +117,12 @@ export function initImageUploadPreview(getSelectedElement) {
 
     // Use window.addPendingModification if available
     if (typeof window.addPendingModification === "function") {
+      console.log("✅ Calling window.addPendingModification with:", { blockId, iconPayload, tagType: "buttonIcon" });
       window.addPendingModification(blockId, iconPayload, "buttonIcon");
       console.log("✅ Icon saved to pending modifications:", iconPayload);
     } else {
-      console.warn("⚠️ window.addPendingModification not available");
+      console.error("❌ window.addPendingModification not available");
+      console.log("🔍 Available window functions:", Object.keys(window).filter(key => key.includes('addPendingModification')));
     }
   }
   function applyIconToButtons(iconNode) {
@@ -158,11 +167,17 @@ export function initImageUploadPreview(getSelectedElement) {
         applyIconToButtons(image);
         
         // Save uploaded icon to database
+        console.log("📁 File uploaded, attempting to save to database...");
         const selected = getSelectedElement?.();
+        console.log("🔍 Selected element:", selected);
+        
         const btn = selected?.querySelector("a");
+        console.log("🔍 Button element:", btn);
+        
         const typeClass = btn ? [...btn.classList].find((c) =>
           c.startsWith("sqs-button-element--")
         ) : null;
+        console.log("🔍 Button type class:", typeClass);
         
         if (selected && typeClass) {
           const iconData = {
@@ -172,7 +187,10 @@ export function initImageUploadPreview(getSelectedElement) {
             fileSize: file.size,
             mimeType: file.type,
           };
+          console.log("💾 Saving uploaded icon to database...");
           saveIconToDatabase(selected, typeClass, iconData, true);
+        } else {
+          console.error("❌ Cannot save to database - missing selected element or type class");
         }
         
         input.remove();
@@ -198,11 +216,17 @@ export function initImageUploadPreview(getSelectedElement) {
       applyIconToButtons(image);
       
       // Save library icon to database
+      console.log("📚 Library icon selected, attempting to save to database...");
       const selected = getSelectedElement?.();
+      console.log("🔍 Selected element:", selected);
+      
       const btn = selected?.querySelector("a");
+      console.log("🔍 Button element:", btn);
+      
       const typeClass = btn ? [...btn.classList].find((c) =>
         c.startsWith("sqs-button-element--")
       ) : null;
+      console.log("🔍 Button type class:", typeClass);
       
       if (selected && typeClass) {
         const iconData = {
@@ -210,7 +234,10 @@ export function initImageUploadPreview(getSelectedElement) {
           src: imgURL,
           fileName: imgURL.split("/").pop(),
         };
+        console.log("💾 Saving library icon to database...");
         saveIconToDatabase(selected, typeClass, iconData, false);
+      } else {
+        console.error("❌ Cannot save to database - missing selected element or type class");
       }
     });
   });
