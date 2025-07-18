@@ -5144,7 +5144,7 @@ let pendingModifications = new Map();
 
   // Add publish button event listener
   function initPublishButton() {
-    const publishButton = document.getElementById("publishButton");
+    const publishButton = document.getElementById("publish");
     if (publishButton) {
       publishButton.addEventListener("click", handlePublish);
       console.log("✅ Publish button event listener added");
