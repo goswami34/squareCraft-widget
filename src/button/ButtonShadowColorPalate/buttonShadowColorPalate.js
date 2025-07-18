@@ -1,7 +1,8 @@
 export function buttonShadowColorPalate(
   themeColors,
   selectedElement,
-  saveButtonShadowModifications
+  addPendingModification,
+  showNotification
 ) {
   // Use correct IDs matching the HTML
   const palette = document.getElementById("button-shadow-color-palette");
@@ -102,8 +103,8 @@ export function buttonShadowColorPalate(
       }
     `;
 
-    // Save to database if function provided
-    if (typeof saveButtonShadowModifications === "function") {
+    // Add to pending modifications if function provided
+    if (typeof addPendingModification === "function") {
       const blockId = currentElement.id;
       if (blockId) {
         const stylePayload = {
@@ -112,7 +113,13 @@ export function buttonShadowColorPalate(
             styles: { boxShadow: value },
           },
         };
-        saveButtonShadowModifications(blockId, stylePayload);
+        addPendingModification(blockId, stylePayload, "buttonShadow");
+        if (showNotification) {
+          showNotification(
+            `Button shadow color applied to ${typeClass}`,
+            "success"
+          );
+        }
       }
     }
   }

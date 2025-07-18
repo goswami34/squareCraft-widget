@@ -859,7 +859,6 @@ let pendingModifications = new Map();
           buttonShadowColorPalate(
             themeColors,
             () => selectedElement,
-            saveButtonModifications,
             (blockId, css, tagType) => {
               if (!pendingModifications.has(blockId)) {
                 pendingModifications.set(blockId, []);
@@ -892,7 +891,13 @@ let pendingModifications = new Map();
           ButtonTextColorPalate(
             themeColors,
             () => selectedElement,
-            saveButtonColorModifications
+            (blockId, css, tagType) => {
+              if (!pendingModifications.has(blockId)) {
+                pendingModifications.set(blockId, []);
+              }
+              pendingModifications.get(blockId).push({ css, tagType });
+            },
+            showNotification
           );
         }, 50);
       }

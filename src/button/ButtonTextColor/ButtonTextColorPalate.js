@@ -1,7 +1,8 @@
 export function ButtonTextColorPalate(
   themeColors,
   selectedElement,
-  saveButtonColorModifications
+  addPendingModification,
+  showNotification
 ) {
   // Use correct IDs matching the HTML
   const palette = document.getElementById("button-text-color-palette");
@@ -88,8 +89,8 @@ export function ButtonTextColorPalate(
         }
       `;
 
-    // Save to database if function provided
-    if (typeof saveButtonColorModifications === "function") {
+    // Add to pending modifications if function provided
+    if (typeof addPendingModification === "function") {
       const blockId = currentElement.id;
       if (blockId) {
         const stylePayload = {
@@ -98,7 +99,13 @@ export function ButtonTextColorPalate(
             styles: { color: rgbaColor },
           },
         };
-        saveButtonColorModifications(blockId, stylePayload);
+        addPendingModification(blockId, stylePayload, "buttonColor");
+        if (showNotification) {
+          showNotification(
+            `Button text color applied to ${typeClass}`,
+            "success"
+          );
+        }
       }
     }
   }
