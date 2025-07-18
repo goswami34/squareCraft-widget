@@ -5141,4 +5141,21 @@ let pendingModifications = new Map();
       showNotification(error.message, "error");
     }
   }
+
+  // Add publish button event listener
+  function initPublishButton() {
+    const publishButton = document.getElementById("publishButton");
+    if (publishButton) {
+      publishButton.addEventListener("click", handlePublish);
+      console.log("✅ Publish button event listener added");
+    } else {
+      console.warn("⚠️ Publish button not found");
+    }
+  }
+
+  // Initialize publish button when widget is ready
+  setTimeout(initPublishButton, 1000);
+
+  // Make handlePublish available globally
+  window.handlePublish = handlePublish;
 })();
