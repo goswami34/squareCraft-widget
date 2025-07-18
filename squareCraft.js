@@ -892,7 +892,7 @@ let pendingModifications = new Map();
           ButtonTextColorPalate(
             themeColors,
             () => selectedElement,
-            saveButtonShadowModifications
+            saveButtonColorModifications
           );
         }, 50);
       }

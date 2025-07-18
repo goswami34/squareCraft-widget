@@ -4938,6 +4938,26 @@
 
 /* button shadow color palette end here */
 
+/* button text color palette start here */
+.sc-button-text-color-palette {
+  width: 160px !important;
+  min-width: 160px !important;
+  max-width: 160px !important;
+  box-sizing: border-box;
+}
+
+/* button text color palette end here */
+
+/* button icon color palette start here */
+.sc-button-icon-color-palette {
+  width: 160px !important;
+  min-width: 160px !important;
+  max-width: 160px !important;
+  box-sizing: border-box;
+}
+
+/* button icon color palette end here */
+
 /* button text color palate start here */
 #button-text-color-palette {
   z-index: 999999 !important;

@@ -239,7 +239,7 @@ export function WidgetButtonNormalState() {
                   <p class="sc-font-size-11 sc-font-thin sc-mt-4 sc-universal sc-text-gray-300 sc-roboto">Text Color
                   </p>
                      <div
-                        class="sc-py-4px sc-relative sc-mt-2 sc-bg-3f3f3f sc-inActiveTab-border  sc-flex sc-justify-between sc-items-center sc-px-1 sc-rounded-4px sc-button-shadow-color-palette">
+                        class="sc-py-4px sc-relative sc-mt-2 sc-bg-3f3f3f sc-inActiveTab-border  sc-flex sc-justify-between sc-items-center sc-px-1 sc-rounded-4px sc-button-text-color-palette">
                         <p class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select</p>
                         <div id="button-text-color-select" class="sc-square-6  sc-cursor-pointer">
                         </div>
@@ -487,7 +487,7 @@ export function WidgetButtonNormalState() {
                <p class="sc-font-size-11 sc-font-thin sc-mt-4 sc-universal sc-text-gray-300 sc-roboto">Icon Color
                </p>
                <div
-                        class="sc-py-4px sc-relative sc-mt-2 sc-bg-3f3f3f sc-inActiveTab-border  sc-flex sc-justify-between sc-items-center sc-px-1 sc-rounded-4px sc-button-shadow-color-palette">
+                        class="sc-py-4px sc-relative sc-mt-2 sc-bg-3f3f3f sc-inActiveTab-border  sc-flex sc-justify-between sc-items-center sc-px-1 sc-rounded-4px sc-button-icon-color-palette">
                         <p class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select</p>
                         <div id="button-icon-color-select" class="sc-square-6  sc-cursor-pointer">
                         </div>
