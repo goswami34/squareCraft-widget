@@ -317,17 +317,7 @@ export function initImageUploadPreview(getSelectedElement) {
   if (!uploadButton || uploadButton.dataset.listener === "true") return;
   uploadButton.dataset.listener = "true";
 
-  function applyIconToButtons(iconNode) {
-    const selected = getSelectedElement?.();
-    if (!selected || !iconNode) return;
-    const btn = selected.querySelector("a");
-    if (!btn) return;
-
-    const typeClass = [...btn.classList].find((c) =>
-      c.startsWith("sqs-button-element--")
-    );
-    if (!typeClass) return;
-
+  function applyIconToButtons(iconNode, buttonType, typeClass) {
     document.querySelectorAll(`a.${typeClass}`).forEach((b) => {
       b.querySelector(".sqscraft-button-icon")?.remove();
       b.insertBefore(
@@ -354,6 +344,18 @@ export function initImageUploadPreview(getSelectedElement) {
         return;
       }
 
+      const btn = selected.querySelector("a");
+      if (!btn) return;
+
+      const typeClass = [...btn.classList].find((c) =>
+        c.startsWith("sqs-button-element--")
+      );
+      const buttonType = typeClass?.includes("primary")
+        ? "primary"
+        : typeClass?.includes("secondary")
+        ? "secondary"
+        : "tertiary";
+
       const reader = new FileReader();
       reader.onload = async (e) => {
         const image = document.createElement("img");
@@ -362,14 +364,14 @@ export function initImageUploadPreview(getSelectedElement) {
         image.height = 20;
         image.classList.add("sqscraft-button-icon");
 
-        // Apply icon visually
-        applyIconToButtons(image);
+        // ✅ Apply icon only to selected button type
+        applyIconToButtons(image, buttonType, typeClass);
 
-        // Save icon in DB
+        // ✅ Save icon to DB only for selected type
         const blockId = selected.getAttribute("id");
         await saveButtonIconModifications(blockId, {
           iconProperties: {
-            selector: ".sqscraft-button-icon",
+            selector: `.sqs-button-element--${buttonType} .sqscraft-button-icon`,
             styles: {
               src: image.src,
               width: "20px",
@@ -377,7 +379,8 @@ export function initImageUploadPreview(getSelectedElement) {
               transform: "rotate(0deg)",
             },
           },
-          applyToAllTypes: true,
+          buttonType: buttonType,
+          applyToAllTypes: false,
         });
 
         input.remove();
@@ -400,6 +403,18 @@ export function initImageUploadPreview(getSelectedElement) {
       const selected = getSelectedElement?.();
       if (!selected) return;
 
+      const btn = selected.querySelector("a");
+      if (!btn) return;
+
+      const typeClass = [...btn.classList].find((c) =>
+        c.startsWith("sqs-button-element--")
+      );
+      const buttonType = typeClass?.includes("primary")
+        ? "primary"
+        : typeClass?.includes("secondary")
+        ? "secondary"
+        : "tertiary";
+
       const imgURL = icon.getAttribute("src");
       const image = document.createElement("img");
       image.src = imgURL;
@@ -407,12 +422,12 @@ export function initImageUploadPreview(getSelectedElement) {
       image.height = 20;
       image.classList.add("sqscraft-button-icon");
 
-      applyIconToButtons(image);
+      applyIconToButtons(image, buttonType, typeClass);
 
       const blockId = selected.getAttribute("id");
       await saveButtonIconModifications(blockId, {
         iconProperties: {
-          selector: ".sqscraft-button-icon",
+          selector: `.sqs-button-element--${buttonType} .sqscraft-button-icon`,
           styles: {
             src: imgURL,
             width: "20px",
@@ -420,7 +435,8 @@ export function initImageUploadPreview(getSelectedElement) {
             transform: "rotate(0deg)",
           },
         },
-        applyToAllTypes: true,
+        buttonType: buttonType,
+        applyToAllTypes: false,
       });
     });
   });
