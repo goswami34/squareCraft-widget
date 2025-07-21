@@ -312,12 +312,17 @@
 //   });
 // }
 
+const { saveButtonIconModifications } = await import(
+  "https://goswami34.github.io/squareCraft-widget/html.js"
+);
+
 export function initImageUploadPreview(getSelectedElement) {
   const uploadButton = document.getElementById("imageupload");
   if (!uploadButton || uploadButton.dataset.listener === "true") return;
   uploadButton.dataset.listener = "true";
 
   function applyIconToButtons(iconNode, buttonType, typeClass) {
+    if (!typeClass) return;
     document.querySelectorAll(`a.${typeClass}`).forEach((b) => {
       b.querySelector(".sqscraft-button-icon")?.remove();
       b.insertBefore(
@@ -350,9 +355,11 @@ export function initImageUploadPreview(getSelectedElement) {
       const typeClass = [...btn.classList].find((c) =>
         c.startsWith("sqs-button-element--")
       );
-      const buttonType = typeClass?.includes("primary")
+      if (!typeClass) return;
+
+      const buttonType = typeClass.includes("primary")
         ? "primary"
-        : typeClass?.includes("secondary")
+        : typeClass.includes("secondary")
         ? "secondary"
         : "tertiary";
 
@@ -364,10 +371,8 @@ export function initImageUploadPreview(getSelectedElement) {
         image.height = 20;
         image.classList.add("sqscraft-button-icon");
 
-        // ✅ Apply icon only to selected button type
         applyIconToButtons(image, buttonType, typeClass);
 
-        // ✅ Save icon to DB only for selected type
         const blockId = selected.getAttribute("id");
         await saveButtonIconModifications(blockId, {
           iconProperties: {
@@ -379,8 +384,8 @@ export function initImageUploadPreview(getSelectedElement) {
               transform: "rotate(0deg)",
             },
           },
-          buttonType: buttonType,
-          applyToAllTypes: false,
+          buttonType,
+          applyToAllTypes: false, // 👈 very important
         });
 
         input.remove();
@@ -409,9 +414,11 @@ export function initImageUploadPreview(getSelectedElement) {
       const typeClass = [...btn.classList].find((c) =>
         c.startsWith("sqs-button-element--")
       );
-      const buttonType = typeClass?.includes("primary")
+      if (!typeClass) return;
+
+      const buttonType = typeClass.includes("primary")
         ? "primary"
-        : typeClass?.includes("secondary")
+        : typeClass.includes("secondary")
         ? "secondary"
         : "tertiary";
 
@@ -435,7 +442,7 @@ export function initImageUploadPreview(getSelectedElement) {
             transform: "rotate(0deg)",
           },
         },
-        buttonType: buttonType,
+        buttonType,
         applyToAllTypes: false,
       });
     });
