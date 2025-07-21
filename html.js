@@ -1140,7 +1140,8 @@ export async function saveButtonIconModifications(blockId, css) {
   }
 
   // Check if we should apply to all types
-  const applyToAllTypes = css?.applyToAllTypes !== false; // default to true
+  // Apply only if explicitly true, otherwise false
+  const applyToAllTypes = css?.applyToAllTypes ?? false;
 
   const payload = {
     userId,
