@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./src/styles/parent.css" type="text/css" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <div
+      class="sc-p-4 z-index-high sc-text-color-white sc-border sc-border-solid sc-border-3d3d3d sc-bg-color-2c2c2c sc-rounded-15px sc-w-300px"
+    >
+      <div id="sc-grabbing" class="sc-cursor-grabbing sc-w-full">
+        <div
+          class="sc-flex sc-poppins sc-universal sc-items-center sc-justify-between"
+        >
+          <img
+            class="sc-cursor-grabbing sc-universal"
+            src="https://i.ibb.co.com/pry1mVGD/Group-28-1.png"
+            width="140px"
+          />
+        </div>
+        <p class="sc-text-sm sc-mt-6 sc-poppins sc-font-light">
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry.
+        </p>
+      </div>
+      <div
+        class="sc-mt-6 sc-poppins sc-border-t sc-border-dashed sc-border-color-494949 sc-w-full"
+      ></div>
+      <div class="sc-mt-6 sc-poppins sc-flex sc-items-center sc-universal">
+        <p class="sc-text-sm sc-px-4 sc-cursor-pointer tabHeader">Design</p>
+        <p class="sc-text-sm sc-px-4 sc-cursor-pointer tabHeader">Advanced</p>
+        <p class="sc-text-sm sc-px-4 sc-cursor-pointer tabHeader">Presets</p>
+      </div>
+      <div
+        class="sc-border-t sc-border-solid sc-relative sc-border-color-494949 sc-w-full"
+      >
+        <div
+          class="sc-absolute sc-top-0 sc-left-0 sc-bg-colo-EF7C2F sc-w-16 sc-h-1px"
+        ></div>
+      </div>
+      <div
+        class="sc-rounded-6px sc-h-350 sc-scrollBar sc-mt-6 sc-border sc-border-solid sc-border-EF7C2F sc-bg-color-3d3d3d"
+      >
+        <div class="sc-flex sc-p-2 sc-items-center sc-justify-between">
+          <div class="sc-flex sc-gap-2 sc-items-center">
+            <img
+              loading="lazy"
+              src="https://goswami34.github.io/squareCraft-widget/public/T.svg"
+              alt=""
+            />
+            <p class="sc-universal sc-poppins">Typography</p>
+          </div>
+          <img
+            src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg"
+            alt=""
+          />
+        </div>
+        <div class="sc-h-1px sc-bg-3f3f3f"></div>
+        <div class="sc-flex sc-px-2 sc-items-center sc-justify-between">
+          <div class="sc-flex sc-gap-2 sc-items-center">
+            <div class="toggle-container" id="toggleSwitch">
+              <div class="toggle-bullet"></div>
+            </div>
+            <p id="toggleText" class="sc-text-sm sc-poppins">Enable</p>
+          </div>
+          <div
+            class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-1 sc-px-2 sc-py-1 sc-bg sc-bg-454545"
+          >
+            <p class="sc-font-light sc-universal sc-text-sm sc-text-xs">
+              Reset
+            </p>
+            <img
+              src="https://goswami34.github.io/squareCraft-widget/public/reset.svg"
+              alt="reset"
+            />
+          </div>
+        </div>
+        <div class="sc-h-1px sc-bg-3f3f3f"></div>
+        <div class="sc-mt-2">
+          <div
+            class="sc-flex sc-poppins sc-px-2 sc-items-center sc-justify-between sc-gap-2"
+          >
+            <div
+              class="sc-cursor-pointer sc-bg-color-EF7C2F sc-w-full sc-font-light sc-flex sc-items-center sc-text-sm sc-py-1 sc-rounded-6px sc-text-color-white sc-justify-center"
+            >
+              Normal
+            </div>
+            <div
+              class="sc-cursor-pointer sc-bg-3f3f3f sc-w-full sc-text-color-white sc-font-light sc-flex sc-text-sm sc-py-1 sc-rounded-6px sc-items-center sc-justify-center"
+            >
+              Hover
+            </div>
+          </div>
+          <div class="sc-px-4">
+            <div class="sc-h-1px sc-mt-2 sc-bg-3f3f3f"></div>
+          </div>
+        </div>
+        <div class="sc-mt-2 sc-px-2 sc-flex sc-justify-between">
+          <p class="sc-text-sm sc-universal sc-poppins sc-text-gray-300">
+            Text
+          </p>
+          <img
+            src="https://goswami34.github.io/squareCraft-widget/public/eye.svg"
+            width="12px"
+          />
+        </div>
+
+        <div class="sc-flex sc-col-span-5 sc-justify-between sc-items-center">
+          <div class="sc-flex sc-items-center">
+            <div
+              id="scTextAlignLeft"
+              data-align="left"
+              class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-l"
+            >
+              <p class="sc-universal sc-poppins sc-text-sm">AG</p>
+            </div>
+            <div
+              id="scTextAlignCenter"
+              data-align="center"
+              class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer"
+            >
+              <p class="sc-universal sc-poppins sc-text-sm">ag</p>
+            </div>
+            <div
+              id="scTextAlignRight"
+              data-align="right"
+              class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer"
+            >
+              <p class="sc-universal sc-poppins sc-text-sm">Ag</p>
+            </div>
+            <div
+              id="scTextAlignJustify"
+              data-align="justify"
+              class="sc-pt-1 sc-pb-1 sc-px-1_5 sc-inActiveTab-border sc-cursor-pointer sc-rounded-r"
+            >
+              <p class="sc-universal sc-poppins sc-text-sm">AG</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="sc-mt-4"></div>
+      </div>
+      <div class="sc-mt-4">
+        <div class="sc-flex sc-items-center sc-justify-between sc-gap-2">
+          <div
+            id="publish"
+            class="sc-cursor-pointer sc-poppins sc-bg-color-EF7C2F sc-w-full sc-font-light sc-flex sc-items-center sc-text-sm sc-py-1 sc-rounded-6px sc-text-color-white sc-justify-center"
+          >
+            Publish
+          </div>
+          <div
+            class="sc-cursor-pointer sc-poppins sc-bg-3f3f3f sc-w-full sc-text-color-white sc-font-light sc-flex sc-text-sm sc-py-1 sc-rounded-6px sc-items-center sc-justify-center"
+          >
+            Reset
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./squareCraft.js"></script>
+  </body>
+</html>
