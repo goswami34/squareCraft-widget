@@ -2,6 +2,10 @@ const { buttonShadowColorPalate } = await import(
   "https://goswami34.github.io/squareCraft-widget/src/button/ButtonShadowColorPalate/buttonShadowColorPalate.js"
 );
 
+const { saveButtonIconModifications } = await import(
+  "https://goswami34.github.io/squareCraft-widget/html.js"
+);
+
 setTimeout(() => {
   let selectedElement = null;
   function getSelectedElement() {
