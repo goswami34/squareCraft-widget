@@ -645,6 +645,26 @@ export function initButtonIconPositionToggle(getSelectedElement) {
             buttonLink.insertBefore(icon, textDiv);
           }
         });
+
+        // ✅ Save to database
+        if (typeof saveButtonIconModifications === "function") {
+          const blockId = getSelectedElement()?.id;
+          if (blockId) {
+            const marginStyle =
+              value === "after"
+                ? { marginLeft: "8px", marginRight: "" }
+                : { marginRight: "8px", marginLeft: "" };
+
+            saveButtonIconModifications(blockId, {
+              iconProperties: {
+                selector: `.${typeClass} .sqscraft-button-icon`,
+                styles: marginStyle,
+              },
+              buttonType: typeClass.replace("sqs-button-element--", ""),
+              applyToAllTypes: false,
+            });
+          }
+        }
       };
     });
 }
@@ -687,6 +707,25 @@ export function initButtonIconRotationControl(getSelectedElement) {
         icon.style.transform = `rotate(${currentRotation}deg)`;
       }
     });
+
+    // ✅ Save to database
+    const blockId = selectedElement?.id;
+    if (blockId && typeof window.addPendingModification === "function") {
+      window.addPendingModification(
+        blockId,
+        {
+          iconProperties: {
+            selector: `.${typeClass} .sqscraft-button-icon`,
+            styles: {
+              transform: `rotate(${currentRotation}deg)`,
+            },
+          },
+          buttonType: typeClass.replace("sqs-button-element--", ""),
+          applyToAllTypes: false,
+        },
+        "buttonIcon"
+      );
+    }
   }
 
   function updateUI(clientX) {
@@ -821,6 +860,24 @@ export function initButtonIconSizeControl(getSelectedElement) {
         icon.style.height = "auto";
       });
     });
+
+    // ✅ Save to database
+    if (typeof saveButtonIconModifications === "function") {
+      const blockId = getSelectedElement()?.id;
+      if (blockId) {
+        saveButtonIconModifications(blockId, {
+          iconProperties: {
+            selector: `.${typeClass} .sqscraft-button-icon`,
+            styles: {
+              width: `${currentSize}px`,
+              height: "auto",
+            },
+          },
+          buttonType: typeClass.replace("sqs-button-element--", ""),
+          applyToAllTypes: false,
+        });
+      }
+    }
   }
 
   function updateFromSizeValue(value) {
@@ -927,6 +984,23 @@ export function initButtonIconSpacingControl(getSelectedElement) {
         el.style.gap = "";
       }
     });
+
+    // ✅ Save to database
+    if (typeof saveButtonIconModifications === "function") {
+      const blockId = getSelectedElement()?.id;
+      if (blockId) {
+        saveButtonIconModifications(blockId, {
+          iconProperties: {
+            selector: `.${btnClass}`,
+            styles: {
+              gap: `${gapValue}px`,
+            },
+          },
+          buttonType: btnClass.replace("sqs-button-element--", ""),
+          applyToAllTypes: false,
+        });
+      }
+    }
   }
 
   function updateUI(val) {
