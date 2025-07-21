@@ -1182,7 +1182,7 @@ export async function saveButtonIconModifications(blockId, css) {
   try {
     console.log("🌐 Making API request to save button icon modifications...");
     const response = await fetch(
-      "http://0.0.0.0:8001/api/v1/save-button-icon-modifications",
+      "https://admin.squareplugin.com/api/v1/save-button-icon-modifications",
       {
         method: "POST",
         headers: {
