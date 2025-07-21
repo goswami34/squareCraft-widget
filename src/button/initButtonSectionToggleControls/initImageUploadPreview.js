@@ -381,7 +381,6 @@ export function initImageUploadPreview(getSelectedElement) {
               src: image.src,
               width: "20px",
               height: "20px",
-              transform: "rotate(0deg)",
             },
           },
           buttonType,
