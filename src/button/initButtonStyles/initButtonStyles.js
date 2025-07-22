@@ -66,20 +66,56 @@ async function updateIconStyles(blockId, typeClass, newStyles) {
       }
     } catch (fetchError) {
       console.warn(
-        "⚠️ Could not fetch existing styles, proceeding with new styles only:",
+        "⚠️ Could not fetch existing styles from database:",
         fetchError
       );
+    }
+
+    // Fallback: Get src from DOM if not found in database
+    if (!existingStyles.src) {
+      const selectedElement = document.getElementById(blockId);
+      if (selectedElement) {
+        const btn = selectedElement.querySelector(`a.${typeClass}`);
+        if (btn) {
+          const icon = btn.querySelector(
+            ".sqscraft-button-icon, .sqscraft-image-icon"
+          );
+          if (icon && icon.src) {
+            existingStyles.src = icon.src;
+            console.log("📥 Found src from DOM:", icon.src);
+          }
+        }
+      }
     }
 
     // Merge existing styles with new styles
     const mergedStyles = { ...existingStyles, ...newStyles };
 
-    // Ensure we have the src property if it exists in existing styles
-    if (existingStyles.src && !mergedStyles.src) {
+    // CRITICAL: Always preserve the src property from existing styles
+    // This prevents the icon from being removed when updating other properties
+    if (existingStyles.src) {
       mergedStyles.src = existingStyles.src;
+      console.log("🔒 Preserved src property:", existingStyles.src);
+    }
+
+    // Also preserve other essential icon properties
+    if (existingStyles.width && !mergedStyles.width) {
+      mergedStyles.width = existingStyles.width;
+    }
+    if (existingStyles.height && !mergedStyles.height) {
+      mergedStyles.height = existingStyles.height;
     }
 
     console.log("🔀 Merged styles:", mergedStyles);
+
+    // CRITICAL: Don't save if we don't have a src property
+    // This prevents the icon from being removed
+    if (!mergedStyles.src) {
+      console.warn(
+        "⚠️ No src property found, skipping save to prevent icon removal"
+      );
+      return { success: false, error: "No src property found" };
+    }
 
     // Call saveButtonIconModifications with the merged styles
     const result = await saveButtonIconModifications(blockId, {
@@ -3569,7 +3605,14 @@ export function testIconSaving(getSelectedElement) {
     return;
   }
 
-  console.log("🧪 Test data:", { blockId, typeClass });
+  // Check if icon exists
+  const icon = btn.querySelector(".sqscraft-button-icon, .sqscraft-image-icon");
+  if (!icon) {
+    console.error("❌ No icon found in button");
+    return;
+  }
+
+  console.log("🧪 Test data:", { blockId, typeClass, iconSrc: icon.src });
 
   // Test with minimal data first
   updateIconStyles(blockId, typeClass, {
