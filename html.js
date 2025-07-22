@@ -1139,6 +1139,9 @@ export async function saveButtonIconModifications(blockId, css) {
     iconProperties.iconData = css.icon.iconData;
   }
 
+  // Log the extracted properties for debugging
+  console.log("🔍 Extracted icon properties:", iconProperties);
+
   // Check if we should apply to all types
   // Apply only if explicitly true, otherwise false
   const applyToAllTypes = css?.applyToAllTypes ?? false;
@@ -1177,7 +1180,10 @@ export async function saveButtonIconModifications(blockId, css) {
     );
   }
 
-  console.log("📤 Sending button icon payload:", payload);
+  console.log(
+    "📤 Sending button icon payload:",
+    JSON.stringify(payload, null, 2)
+  );
 
   try {
     console.log("🌐 Making API request to save button icon modifications...");
@@ -1202,7 +1208,16 @@ export async function saveButtonIconModifications(blockId, css) {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || `HTTP ${response.status}`);
+      console.error("❌ Server error response:", result);
+      console.error("❌ Full error details:", {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        result: result,
+      });
+      throw new Error(
+        result.message || result.error || `HTTP ${response.status}`
+      );
     }
 
     console.log("✅ Button icon modifications saved:", result);

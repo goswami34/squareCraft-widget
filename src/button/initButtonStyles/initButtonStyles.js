@@ -73,6 +73,12 @@ async function updateIconStyles(blockId, typeClass, newStyles) {
 
     // Merge existing styles with new styles
     const mergedStyles = { ...existingStyles, ...newStyles };
+
+    // Ensure we have the src property if it exists in existing styles
+    if (existingStyles.src && !mergedStyles.src) {
+      mergedStyles.src = existingStyles.src;
+    }
+
     console.log("🔀 Merged styles:", mergedStyles);
 
     // Call saveButtonIconModifications with the merged styles
@@ -3531,134 +3537,6 @@ setTimeout(() => {
   document.getElementById("buttonBorderTypeSolid")?.click();
 }, 100);
 
-// export function initButtonIconUpload(
-//   getSelectedElement,
-//   addPendingModification,
-//   showNotification
-// ) {
-//   const iconUploadInput = document.getElementById("imageupload");
-//   if (!iconUploadInput) {
-//     console.warn("❌ Icon upload input not found: imageupload");
-//     return;
-//   }
-
-//   // Create a hidden file input
-//   const fileInput = document.createElement("input");
-//   fileInput.type = "file";
-//   fileInput.accept = "image/*";
-//   fileInput.style.display = "none";
-//   document.body.appendChild(fileInput);
-
-//   // Handle click on upload button
-//   iconUploadInput.addEventListener("click", (e) => {
-//     e.preventDefault();
-//     e.stopPropagation();
-//     fileInput.click();
-//   });
-
-//   // Handle file selection
-//   fileInput.addEventListener("change", async (event) => {
-//     const file = event.target.files[0];
-//     if (!file) return;
-
-//     const selectedElement = getSelectedElement?.();
-//     if (!selectedElement) {
-//       showNotification("No button selected", "error");
-//       return;
-//     }
-
-//     const btn = selectedElement.querySelector(
-//       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
-//     );
-//     if (!btn) {
-//       showNotification("No button found in selected element", "error");
-//       return;
-//     }
-
-//     const typeClass = [...btn.classList].find((cls) =>
-//       cls.startsWith("sqs-button-element--")
-//     );
-//     if (!typeClass) {
-//       showNotification("No button type class found", "error");
-//       return;
-//     }
-
-//     try {
-//       // Convert file to base64
-//       const base64 = await fileToBase64(file);
-
-//       // Create icon element
-//       const iconElement = document.createElement("img");
-//       iconElement.src = base64;
-//       iconElement.className = "sqscraft-button-icon";
-//       iconElement.style.width = "20px";
-//       iconElement.style.height = "auto";
-//       iconElement.alt = "Button Icon";
-
-//       // Remove existing icons
-//       const existingIcons = btn.querySelectorAll(
-//         ".sqscraft-button-icon, .sqscraft-image-icon"
-//       );
-//       existingIcons.forEach((icon) => icon.remove());
-
-//       // Add new icon
-//       btn.appendChild(iconElement);
-
-//       // Save icon data to database
-//       const blockId = selectedElement.id;
-//       if (blockId) {
-//         const iconPayload = {
-//           icon: {
-//             selector: `.${typeClass} .sqscraft-button-icon`,
-//             styles: {
-//               src: base64,
-//               width: "20px",
-//               height: "auto",
-//             },
-//             iconData: {
-//               type: "uploaded",
-//               base64: base64,
-//               fileName: file.name,
-//               fileSize: file.size,
-//               mimeType: file.type,
-//             },
-//           },
-//           buttonType: typeClass.replace("sqs-button-element--", ""),
-//           applyToAllTypes: false,
-//         };
-
-//         if (typeof addPendingModification === "function") {
-//           addPendingModification(blockId, iconPayload, "buttonIcon");
-//           showNotification("Icon uploaded and saved locally!", "success");
-//         }
-//       }
-//     } catch (error) {
-//       console.error("Error uploading icon:", error);
-//       showNotification("Failed to upload icon", "error");
-//     } finally {
-//       // Clean up file input
-//       fileInput.value = "";
-//     }
-//   });
-
-//   // Clean up file input when function is destroyed
-//   return () => {
-//     if (fileInput && fileInput.parentNode) {
-//       fileInput.parentNode.removeChild(fileInput);
-//     }
-//   };
-// }
-
-// // Helper function to convert file to base64
-// function fileToBase64(file) {
-//   return new Promise((resolve, reject) => {
-//     const reader = new FileReader();
-//     reader.readAsDataURL(file);
-//     reader.onload = () => resolve(reader.result);
-//     reader.onerror = (error) => reject(error);
-//   });
-// }
-
 // Test function to debug icon saving
 export function testIconSaving(getSelectedElement) {
   console.log("🧪 Testing icon saving...");
@@ -3693,15 +3571,79 @@ export function testIconSaving(getSelectedElement) {
 
   console.log("🧪 Test data:", { blockId, typeClass });
 
-  // Test saving rotation
+  // Test with minimal data first
   updateIconStyles(blockId, typeClass, {
     transform: "rotate(45deg)",
-    width: "25px",
-    height: "auto",
   }).then((result) => {
     console.log("🧪 Test result:", result);
   });
 }
 
-// Make the test function available globally for debugging
+// Test function to debug API directly
+export async function testAPIDirectly() {
+  console.log("🧪 Testing API directly...");
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  console.log("🧪 Credentials:", { userId, token, widgetId, pageId });
+
+  if (!userId || !token || !widgetId || !pageId) {
+    console.error("❌ Missing credentials");
+    return;
+  }
+
+  const testPayload = {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    elementId: "test-block-id",
+    iconProperties: {
+      selector: ".sqs-button-element--primary .sqscraft-button-icon",
+      styles: {
+        transform: "rotate(45deg)",
+        width: "25px",
+        height: "auto",
+      },
+    },
+    buttonType: "primary",
+    applyToAllTypes: false,
+  };
+
+  console.log("🧪 Test payload:", JSON.stringify(testPayload, null, 2));
+
+  try {
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/save-button-icon-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(testPayload),
+      }
+    );
+
+    console.log("🧪 Response status:", response.status);
+    const result = await response.json();
+    console.log("🧪 Response result:", result);
+
+    if (!response.ok) {
+      console.error("🧪 API test failed:", result);
+    } else {
+      console.log("🧪 API test successful:", result);
+    }
+  } catch (error) {
+    console.error("🧪 API test error:", error);
+  }
+}
+
+// Make the test functions available globally for debugging
 window.testIconSaving = testIconSaving;
+window.testAPIDirectly = testAPIDirectly;
