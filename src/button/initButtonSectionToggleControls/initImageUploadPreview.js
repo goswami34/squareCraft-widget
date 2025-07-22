@@ -316,6 +316,19 @@ const { saveButtonIconModifications } = await import(
   "https://goswami34.github.io/squareCraft-widget/html.js"
 );
 
+// Add this function to trigger publish after icon upload/selection
+function publishIconImmediately() {
+  const publishBtn = document.getElementById("publish");
+  if (publishBtn) {
+    publishBtn.click();
+    console.log(
+      "🚀 Programmatically triggered publish button after icon upload/selection"
+    );
+  } else {
+    console.warn("⚠️ Publish button not found!");
+  }
+}
+
 export function initImageUploadPreview(getSelectedElement) {
   const uploadButton = document.getElementById("imageupload");
   if (!uploadButton || uploadButton.dataset.listener === "true") return;
@@ -405,6 +418,9 @@ export function initImageUploadPreview(getSelectedElement) {
           blockId
         );
 
+        // Call publish after storing icon
+        publishIconImmediately();
+
         input.remove();
       };
       reader.onerror = () => input.remove();
@@ -480,6 +496,9 @@ export function initImageUploadPreview(getSelectedElement) {
         "📝 Icon library selection stored in pending modifications for block:",
         blockId
       );
+
+      // Call publish after storing icon
+      publishIconImmediately();
     });
   });
 }
