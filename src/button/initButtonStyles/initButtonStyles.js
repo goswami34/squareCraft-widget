@@ -71,8 +71,8 @@ async function updateIconStyles(blockId, typeClass, newStyles) {
       );
     }
 
-    // Fallback: Get src from DOM if not found in database
-    if (!existingStyles.src) {
+    // Fallback: Get ALL existing properties from DOM if not found in database
+    if (Object.keys(existingStyles).length === 0 || !existingStyles.src) {
       const selectedElement = document.getElementById(blockId);
       if (selectedElement) {
         const btn = selectedElement.querySelector(`a.${typeClass}`);
@@ -80,9 +80,37 @@ async function updateIconStyles(blockId, typeClass, newStyles) {
           const icon = btn.querySelector(
             ".sqscraft-button-icon, .sqscraft-image-icon"
           );
-          if (icon && icon.src) {
-            existingStyles.src = icon.src;
-            console.log("📥 Found src from DOM:", icon.src);
+          if (icon) {
+            // Get all computed styles from the icon
+            const computedStyles = window.getComputedStyle(icon);
+            const buttonComputedStyles = window.getComputedStyle(btn);
+
+            // Preserve essential properties
+            if (icon.src) existingStyles.src = icon.src;
+            if (icon.style.width) existingStyles.width = icon.style.width;
+            if (icon.style.height) existingStyles.height = icon.style.height;
+            if (icon.style.transform)
+              existingStyles.transform = icon.style.transform;
+            if (btn.style.gap) existingStyles.gap = btn.style.gap;
+
+            // Also get from computed styles if inline styles are not set
+            if (!existingStyles.width && computedStyles.width !== "auto") {
+              existingStyles.width = computedStyles.width;
+            }
+            if (!existingStyles.height && computedStyles.height !== "auto") {
+              existingStyles.height = computedStyles.height;
+            }
+            if (
+              !existingStyles.transform &&
+              computedStyles.transform !== "none"
+            ) {
+              existingStyles.transform = computedStyles.transform;
+            }
+            if (!existingStyles.gap && buttonComputedStyles.gap !== "normal") {
+              existingStyles.gap = buttonComputedStyles.gap;
+            }
+
+            console.log("📥 Found properties from DOM:", existingStyles);
           }
         }
       }
@@ -98,13 +126,16 @@ async function updateIconStyles(blockId, typeClass, newStyles) {
       console.log("🔒 Preserved src property:", existingStyles.src);
     }
 
-    // Also preserve other essential icon properties
-    if (existingStyles.width && !mergedStyles.width) {
-      mergedStyles.width = existingStyles.width;
-    }
-    if (existingStyles.height && !mergedStyles.height) {
-      mergedStyles.height = existingStyles.height;
-    }
+    // CRITICAL: Preserve ALL existing properties that are not being updated
+    // This prevents properties from being lost when updating other properties
+    Object.keys(existingStyles).forEach((key) => {
+      if (!newStyles.hasOwnProperty(key)) {
+        mergedStyles[key] = existingStyles[key];
+        console.log(
+          `🔒 Preserved existing property: ${key} = ${existingStyles[key]}`
+        );
+      }
+    });
 
     console.log("🔀 Merged styles:", mergedStyles);
 
@@ -3614,11 +3645,33 @@ export function testIconSaving(getSelectedElement) {
 
   console.log("🧪 Test data:", { blockId, typeClass, iconSrc: icon.src });
 
-  // Test with minimal data first
+  // Test with multiple properties to ensure they're all preserved
+  console.log("🧪 Testing with multiple properties...");
+
+  // First, set rotation
   updateIconStyles(blockId, typeClass, {
     transform: "rotate(45deg)",
   }).then((result) => {
-    console.log("🧪 Test result:", result);
+    console.log("🧪 Rotation test result:", result);
+
+    // Then, set size
+    setTimeout(() => {
+      updateIconStyles(blockId, typeClass, {
+        width: "30px",
+        height: "auto",
+      }).then((result2) => {
+        console.log("🧪 Size test result:", result2);
+
+        // Finally, set spacing
+        setTimeout(() => {
+          updateIconStyles(blockId, typeClass, {
+            gap: "15px",
+          }).then((result3) => {
+            console.log("🧪 Spacing test result:", result3);
+          });
+        }, 1000);
+      });
+    }, 1000);
   });
 }
 
