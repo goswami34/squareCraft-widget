@@ -148,6 +148,13 @@ async function updateIconStyles(blockId, typeClass, newStyles) {
       return { success: false, error: "No src property found" };
     }
 
+    // Debug: Log what we're sending to the database
+    console.log("🟢 Saving to DB:", {
+      blockId,
+      selector: `.${typeClass} .sqscraft-button-icon`,
+      mergedStyles,
+    });
+
     // Call saveButtonIconModifications with the merged styles
     const result = await saveButtonIconModifications(blockId, {
       iconProperties: {
