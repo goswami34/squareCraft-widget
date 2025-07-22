@@ -378,10 +378,9 @@ export function initImageUploadPreview(getSelectedElement) {
           iconProperties: {
             selector: `.sqs-button-element--${buttonType} .sqscraft-button-icon`,
             styles: {
-              src: imgURL,
+              src: image.src, // <-- Use image.src for uploaded files
               width: "20px",
               height: "20px",
-              transform: "rotate(0deg)",
             },
           },
           buttonType,
