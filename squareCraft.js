@@ -1034,21 +1034,8 @@ window.pendingModifications = pendingModifications;
       initButtonIconSizeControl(() => selectedElement);
       initButtonIconSpacingControl(() => selectedElement);
 
-      // Initialize icon upload functionality
-      import(
-        "https://goswami34.github.io/squareCraft-widget/src/button/initButtonStyles/initButtonStyles.js"
-      ).then(({ initButtonIconUpload }) => {
-        initButtonIconUpload(
-          () => selectedElement,
-          (blockId, css, tagType) => {
-            if (!pendingModifications.has(blockId)) {
-              pendingModifications.set(blockId, []);
-            }
-            pendingModifications.get(blockId).push({ css, tagType });
-          },
-          showNotification
-        );
-      });
+      // Icon upload functionality is handled by initImageUploadPreview.js
+      // No need to initialize it here as it's already handled elsewhere
       initButtonBorderControl(
         () => selectedElement,
         saveButtonBorderModifications,
