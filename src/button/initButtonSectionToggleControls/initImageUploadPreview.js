@@ -374,18 +374,36 @@ export function initImageUploadPreview(getSelectedElement) {
         applyIconToButtons(image, buttonType, typeClass);
 
         const blockId = selected.getAttribute("id");
-        await saveButtonIconModifications(blockId, {
-          iconProperties: {
-            selector: `.sqs-button-element--${buttonType} .sqscraft-button-icon`,
-            styles: {
-              src: image.src,
-              width: "20px",
-              height: "20px",
+
+        // Store in pending modifications instead of saving immediately
+        if (!window.pendingModifications) {
+          window.pendingModifications = new Map();
+        }
+
+        if (!window.pendingModifications.has(blockId)) {
+          window.pendingModifications.set(blockId, []);
+        }
+
+        window.pendingModifications.get(blockId).push({
+          tagType: "buttonIcon",
+          css: {
+            iconProperties: {
+              selector: `.sqs-button-element--${buttonType} .sqscraft-button-icon`,
+              styles: {
+                src: image.src,
+                width: "20px",
+                height: "20px",
+              },
             },
+            buttonType,
+            applyToAllTypes: false,
           },
-          buttonType,
-          applyToAllTypes: false, // 👈 very important
         });
+
+        console.log(
+          "📝 Icon upload stored in pending modifications for block:",
+          blockId
+        );
 
         input.remove();
       };
@@ -431,19 +449,37 @@ export function initImageUploadPreview(getSelectedElement) {
       applyIconToButtons(image, buttonType, typeClass);
 
       const blockId = selected.getAttribute("id");
-      await saveButtonIconModifications(blockId, {
-        iconProperties: {
-          selector: `.sqs-button-element--${buttonType} .sqscraft-button-icon`,
-          styles: {
-            src: imgURL,
-            width: "20px",
-            height: "20px",
-            transform: "rotate(0deg)",
+
+      // Store in pending modifications instead of saving immediately
+      if (!window.pendingModifications) {
+        window.pendingModifications = new Map();
+      }
+
+      if (!window.pendingModifications.has(blockId)) {
+        window.pendingModifications.set(blockId, []);
+      }
+
+      window.pendingModifications.get(blockId).push({
+        tagType: "buttonIcon",
+        css: {
+          iconProperties: {
+            selector: `.sqs-button-element--${buttonType} .sqscraft-button-icon`,
+            styles: {
+              src: imgURL,
+              width: "20px",
+              height: "20px",
+              transform: "rotate(0deg)",
+            },
           },
+          buttonType,
+          applyToAllTypes: false,
         },
-        buttonType,
-        applyToAllTypes: false,
       });
+
+      console.log(
+        "📝 Icon library selection stored in pending modifications for block:",
+        blockId
+      );
     });
   });
 }

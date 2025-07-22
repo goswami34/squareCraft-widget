@@ -363,6 +363,11 @@ async function handlePublish() {
             result = await saveButtonColorModifications(blockId, mod.css);
             break;
           case "buttonIcon":
+            console.log(
+              "🚀 Publishing button icon modifications for block:",
+              blockId
+            );
+            console.log("📤 Icon data being sent:", mod.css);
             result = await saveButtonIconModifications(blockId, mod.css);
             break;
           case "linkText":

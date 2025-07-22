@@ -155,34 +155,54 @@ async function updateIconStyles(blockId, typeClass, newStyles) {
       mergedStyles,
     });
 
-    // Call saveButtonIconModifications with the merged styles
-    const result = await saveButtonIconModifications(blockId, {
-      iconProperties: {
-        selector: `.${typeClass} .sqscraft-button-icon`,
-        styles: mergedStyles,
-      },
-      buttonType: typeClass.replace("sqs-button-element--", ""),
-      applyToAllTypes: false,
-    });
-
-    if (result.success) {
-      console.log("✅ Icon styles updated successfully:", mergedStyles);
-      // Show success notification
-      if (typeof window.showNotification === "function") {
-        window.showNotification("Icon styles updated successfully!", "success");
-      }
-    } else {
-      console.error("❌ Failed to update icon styles:", result.error);
-      // Show error notification
-      if (typeof window.showNotification === "function") {
-        window.showNotification(
-          `Failed to update icon styles: ${result.error}`,
-          "error"
-        );
-      }
+    // Store in pending modifications instead of saving immediately
+    if (!window.pendingModifications) {
+      window.pendingModifications = new Map();
     }
 
-    return result;
+    if (!window.pendingModifications.has(blockId)) {
+      window.pendingModifications.set(blockId, []);
+    }
+
+    // Remove any existing buttonIcon modifications for this block
+    const existingModifications = window.pendingModifications.get(blockId);
+    const filteredModifications = existingModifications.filter(
+      (mod) => mod.tagType !== "buttonIcon"
+    );
+
+    // Add the new modification
+    filteredModifications.push({
+      tagType: "buttonIcon",
+      css: {
+        iconProperties: {
+          selector: `.${typeClass} .sqscraft-button-icon`,
+          styles: mergedStyles,
+        },
+        buttonType: typeClass.replace("sqs-button-element--", ""),
+        applyToAllTypes: false,
+      },
+    });
+
+    window.pendingModifications.set(blockId, filteredModifications);
+
+    console.log(
+      "📝 Icon styles stored in pending modifications for block:",
+      blockId
+    );
+    console.log(
+      "📝 Current pending modifications:",
+      window.pendingModifications
+    );
+
+    // Show success notification
+    if (typeof window.showNotification === "function") {
+      window.showNotification(
+        "Icon styles updated! Click Publish to save.",
+        "success"
+      );
+    }
+
+    return { success: true, data: "Stored in pending modifications" };
   } catch (error) {
     console.error("❌ Error updating icon styles:", error);
     // Show error notification
