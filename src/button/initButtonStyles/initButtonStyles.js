@@ -1350,6 +1350,7 @@ export function initButtonIconColorPalate(
     // Save to database using updateIconStyles to merge color with all icon properties
     const blockId = currentElement.id;
     if (blockId) {
+      // Always use the icon selector for updateIconStyles
       updateIconStyles(blockId, typeClass, {
         color: rgbaColor,
         fill: rgbaColor,
