@@ -1347,23 +1347,14 @@ export function initButtonIconColorPalate(
       });
     }
 
-    // Save to database if function provided
-    if (typeof saveButtonIconModifications === "function") {
-      const blockId = currentElement.id;
-      if (blockId) {
-        const stylePayload = {
-          iconProperties: {
-            selector: `.${typeClass} svg, .${typeClass} img, .${typeClass} svg *, .${typeClass} img *, .${typeClass} .sqs-button-element--icon svg, .${typeClass} .sqs-button-element--icon img, .${typeClass} .sqs-button-element--icon svg *, .${typeClass} .sqs-button-element--icon img *, .${typeClass} [data-icon] svg, .${typeClass} [data-icon] img, .${typeClass} [data-icon] svg *, .${typeClass} [data-icon] img *`,
-            styles: { color: rgbaColor, fill: rgbaColor, stroke: rgbaColor },
-          },
-          buttonType: typeClass.replace("sqs-button-element--", ""),
-          applyToAllTypes: false,
-        };
-
-        if (typeof window.addPendingModification === "function") {
-          window.addPendingModification(blockId, stylePayload, "buttonIcon");
-        }
-      }
+    // Save to database using updateIconStyles to merge color with all icon properties
+    const blockId = currentElement.id;
+    if (blockId) {
+      updateIconStyles(blockId, typeClass, {
+        color: rgbaColor,
+        fill: rgbaColor,
+        stroke: rgbaColor,
+      });
     }
   }
 
