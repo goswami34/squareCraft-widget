@@ -6,6 +6,116 @@ const { saveButtonIconModifications } = await import(
   "https://goswami34.github.io/squareCraft-widget/html.js"
 );
 
+// Add this helper function after the imports and before the existing functions
+async function updateIconStyles(blockId, typeClass, newStyles) {
+  if (!blockId || !typeClass || !newStyles) {
+    console.warn("❌ Missing required data for icon styles update:", {
+      blockId,
+      typeClass,
+      newStyles,
+    });
+    return;
+  }
+
+  try {
+    console.log("🔄 Updating icon styles:", { blockId, typeClass, newStyles });
+
+    // First, try to fetch existing icon data to merge with
+    let existingStyles = {};
+    try {
+      const userId = localStorage.getItem("sc_u_id");
+      const token = localStorage.getItem("sc_auth_token");
+      const widgetId = localStorage.getItem("sc_w_id");
+      const pageId = document
+        .querySelector("article[data-page-sections]")
+        ?.getAttribute("data-page-sections");
+
+      if (userId && token && widgetId && pageId) {
+        const url = `https://admin.squareplugin.com/api/v1/fetch-button-icon-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${blockId}`;
+        const res = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.ok) {
+          const result = await res.json();
+          const modifications = result.modifications || [];
+          modifications.forEach((mod) => {
+            const elements = mod.elements || [];
+            elements.forEach(({ elementId, icon }) => {
+              if (elementId === blockId && icon) {
+                const buttonType = typeClass.replace(
+                  "sqs-button-element--",
+                  ""
+                );
+                const existingIconData =
+                  icon[
+                    `button${
+                      buttonType.charAt(0).toUpperCase() + buttonType.slice(1)
+                    }`
+                  ];
+                if (existingIconData && existingIconData.styles) {
+                  existingStyles = { ...existingIconData.styles };
+                  console.log("📥 Found existing styles:", existingStyles);
+                }
+              }
+            });
+          });
+        }
+      }
+    } catch (fetchError) {
+      console.warn(
+        "⚠️ Could not fetch existing styles, proceeding with new styles only:",
+        fetchError
+      );
+    }
+
+    // Merge existing styles with new styles
+    const mergedStyles = { ...existingStyles, ...newStyles };
+    console.log("🔀 Merged styles:", mergedStyles);
+
+    // Call saveButtonIconModifications with the merged styles
+    const result = await saveButtonIconModifications(blockId, {
+      iconProperties: {
+        selector: `.${typeClass} .sqscraft-button-icon`,
+        styles: mergedStyles,
+      },
+      buttonType: typeClass.replace("sqs-button-element--", ""),
+      applyToAllTypes: false,
+    });
+
+    if (result.success) {
+      console.log("✅ Icon styles updated successfully:", mergedStyles);
+      // Show success notification
+      if (typeof window.showNotification === "function") {
+        window.showNotification("Icon styles updated successfully!", "success");
+      }
+    } else {
+      console.error("❌ Failed to update icon styles:", result.error);
+      // Show error notification
+      if (typeof window.showNotification === "function") {
+        window.showNotification(
+          `Failed to update icon styles: ${result.error}`,
+          "error"
+        );
+      }
+    }
+
+    return result;
+  } catch (error) {
+    console.error("❌ Error updating icon styles:", error);
+    // Show error notification
+    if (typeof window.showNotification === "function") {
+      window.showNotification(
+        `Error updating icon styles: ${error.message}`,
+        "error"
+      );
+    }
+    return { success: false, error: error.message };
+  }
+}
+
 setTimeout(() => {
   let selectedElement = null;
   function getSelectedElement() {
@@ -651,23 +761,14 @@ export function initButtonIconPositionToggle(getSelectedElement) {
         });
 
         // ✅ Save to database
-        if (typeof saveButtonIconModifications === "function") {
-          const blockId = getSelectedElement()?.id;
-          if (blockId) {
-            const marginStyle =
-              value === "after"
-                ? { marginLeft: "8px", marginRight: "" }
-                : { marginRight: "8px", marginLeft: "" };
+        const blockId = getSelectedElement()?.id;
+        if (blockId) {
+          const marginStyle =
+            value === "after"
+              ? { marginLeft: "8px", marginRight: "" }
+              : { marginRight: "8px", marginLeft: "" };
 
-            saveButtonIconModifications(blockId, {
-              iconProperties: {
-                selector: `.${typeClass} .sqscraft-button-icon`,
-                styles: marginStyle,
-              },
-              buttonType: typeClass.replace("sqs-button-element--", ""),
-              applyToAllTypes: false,
-            });
-          }
+          updateIconStyles(blockId, typeClass, marginStyle);
         }
       };
     });
@@ -714,21 +815,10 @@ export function initButtonIconRotationControl(getSelectedElement) {
 
     // ✅ Save to database
     const blockId = selectedElement?.id;
-    if (blockId && typeof window.addPendingModification === "function") {
-      window.addPendingModification(
-        blockId,
-        {
-          iconProperties: {
-            selector: `.${typeClass} .sqscraft-button-icon`,
-            styles: {
-              transform: `rotate(${currentRotation}deg)`,
-            },
-          },
-          buttonType: typeClass.replace("sqs-button-element--", ""),
-          applyToAllTypes: false,
-        },
-        "buttonIcon"
-      );
+    if (blockId) {
+      updateIconStyles(blockId, typeClass, {
+        transform: `rotate(${currentRotation}deg)`,
+      });
     }
   }
 
@@ -866,21 +956,12 @@ export function initButtonIconSizeControl(getSelectedElement) {
     });
 
     // ✅ Save to database
-    if (typeof saveButtonIconModifications === "function") {
-      const blockId = getSelectedElement()?.id;
-      if (blockId) {
-        saveButtonIconModifications(blockId, {
-          iconProperties: {
-            selector: `.${typeClass} .sqscraft-button-icon`,
-            styles: {
-              width: `${currentSize}px`,
-              height: "auto",
-            },
-          },
-          buttonType: typeClass.replace("sqs-button-element--", ""),
-          applyToAllTypes: false,
-        });
-      }
+    const blockId = getSelectedElement()?.id;
+    if (blockId) {
+      updateIconStyles(blockId, typeClass, {
+        width: `${currentSize}px`,
+        height: "auto",
+      });
     }
   }
 
@@ -990,20 +1071,11 @@ export function initButtonIconSpacingControl(getSelectedElement) {
     });
 
     // ✅ Save to database
-    if (typeof saveButtonIconModifications === "function") {
-      const blockId = getSelectedElement()?.id;
-      if (blockId) {
-        saveButtonIconModifications(blockId, {
-          iconProperties: {
-            selector: `.${btnClass}`,
-            styles: {
-              gap: `${gapValue}px`,
-            },
-          },
-          buttonType: btnClass.replace("sqs-button-element--", ""),
-          applyToAllTypes: false,
-        });
-      }
+    const blockId = getSelectedElement()?.id;
+    if (blockId) {
+      updateIconStyles(blockId, btnClass, {
+        gap: `${gapValue}px`,
+      });
     }
   }
 
@@ -3586,3 +3658,50 @@ setTimeout(() => {
 //     reader.onerror = (error) => reject(error);
 //   });
 // }
+
+// Test function to debug icon saving
+export function testIconSaving(getSelectedElement) {
+  console.log("🧪 Testing icon saving...");
+
+  const selectedElement = getSelectedElement?.();
+  if (!selectedElement) {
+    console.error("❌ No element selected");
+    return;
+  }
+
+  const btn = selectedElement.querySelector(
+    "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+  );
+  if (!btn) {
+    console.error("❌ No button found");
+    return;
+  }
+
+  const typeClass = [...btn.classList].find((cls) =>
+    cls.startsWith("sqs-button-element--")
+  );
+  if (!typeClass) {
+    console.error("❌ No button type class found");
+    return;
+  }
+
+  const blockId = selectedElement.id;
+  if (!blockId) {
+    console.error("❌ No block ID found");
+    return;
+  }
+
+  console.log("🧪 Test data:", { blockId, typeClass });
+
+  // Test saving rotation
+  updateIconStyles(blockId, typeClass, {
+    transform: "rotate(45deg)",
+    width: "25px",
+    height: "auto",
+  }).then((result) => {
+    console.log("🧪 Test result:", result);
+  });
+}
+
+// Make the test function available globally for debugging
+window.testIconSaving = testIconSaving;
