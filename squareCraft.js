@@ -1010,14 +1010,14 @@ window.pendingModifications = pendingModifications;
       );
       initButtonIconPositionToggle(
         () => selectedElement,
+        saveButtonIconModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
           }
           pendingModifications.get(blockId).push({ css, tagType });
         },
-        showNotification,
-        saveButtonIconModifications
+        showNotification
       );
       initHoverButtonShadowControls(
         () => selectedElement,

@@ -885,19 +885,18 @@ export function initButtonIconPositionToggle(
             result.success &&
             typeof saveButtonIconModifications === "function"
           ) {
-            const iconData = {
-              iconProperties: {
-                selector: `.${typeClass} .sqscraft-button-icon`,
-                styles: marginStyle,
-              },
-              buttonType: typeClass.replace("sqs-button-element--", ""),
-              applyToAllTypes: false,
-            };
+            // Get the merged styles from the pending modifications
+            const pendingMods = window.pendingModifications?.get(blockId) || [];
+            const iconMod = pendingMods.find(
+              (mod) => mod.tagType === "buttonIcon"
+            );
 
-            await saveButtonIconModifications(blockId, iconData);
+            if (iconMod && iconMod.css.iconProperties.styles) {
+              await saveButtonIconModifications(blockId, iconMod.css);
 
-            if (typeof showNotification === "function") {
-              showNotification("Icon position saved!", "success");
+              if (typeof showNotification === "function") {
+                showNotification("Icon position saved!", "success");
+              }
             }
           }
         }
@@ -962,21 +961,16 @@ export function initButtonIconRotationControl(
         result.success &&
         typeof saveButtonIconModifications === "function"
       ) {
-        const iconData = {
-          iconProperties: {
-            selector: `.${typeClass} .sqscraft-button-icon`,
-            styles: {
-              transform: `rotate(${currentRotation}deg)`,
-            },
-          },
-          buttonType: typeClass.replace("sqs-button-element--", ""),
-          applyToAllTypes: false,
-        };
+        // Get the merged styles from the pending modifications
+        const pendingMods = window.pendingModifications?.get(blockId) || [];
+        const iconMod = pendingMods.find((mod) => mod.tagType === "buttonIcon");
 
-        await saveButtonIconModifications(blockId, iconData);
+        if (iconMod && iconMod.css.iconProperties.styles) {
+          await saveButtonIconModifications(blockId, iconMod.css);
 
-        if (typeof showNotification === "function") {
-          showNotification("Icon rotation saved!", "success");
+          if (typeof showNotification === "function") {
+            showNotification("Icon rotation saved!", "success");
+          }
         }
       }
     }
@@ -1134,22 +1128,16 @@ export function initButtonIconSizeControl(
         result.success &&
         typeof saveButtonIconModifications === "function"
       ) {
-        const iconData = {
-          iconProperties: {
-            selector: `.${typeClass} .sqscraft-button-icon`,
-            styles: {
-              width: `${currentSize}px`,
-              height: "auto",
-            },
-          },
-          buttonType: typeClass.replace("sqs-button-element--", ""),
-          applyToAllTypes: false,
-        };
+        // Get the merged styles from the pending modifications
+        const pendingMods = window.pendingModifications?.get(blockId) || [];
+        const iconMod = pendingMods.find((mod) => mod.tagType === "buttonIcon");
 
-        await saveButtonIconModifications(blockId, iconData);
+        if (iconMod && iconMod.css.iconProperties.styles) {
+          await saveButtonIconModifications(blockId, iconMod.css);
 
-        if (typeof showNotification === "function") {
-          showNotification("Icon size saved!", "success");
+          if (typeof showNotification === "function") {
+            showNotification("Icon size saved!", "success");
+          }
         }
       }
     }
@@ -1278,21 +1266,16 @@ export function initButtonIconSpacingControl(
         result.success &&
         typeof saveButtonIconModifications === "function"
       ) {
-        const iconData = {
-          iconProperties: {
-            selector: `.${btnClass} .sqscraft-button-icon`,
-            styles: {
-              gap: `${gapValue}px`,
-            },
-          },
-          buttonType: btnClass.replace("sqs-button-element--", ""),
-          applyToAllTypes: false,
-        };
+        // Get the merged styles from the pending modifications
+        const pendingMods = window.pendingModifications?.get(blockId) || [];
+        const iconMod = pendingMods.find((mod) => mod.tagType === "buttonIcon");
 
-        await saveButtonIconModifications(blockId, iconData);
+        if (iconMod && iconMod.css.iconProperties.styles) {
+          await saveButtonIconModifications(blockId, iconMod.css);
 
-        if (typeof showNotification === "function") {
-          showNotification("Icon spacing saved!", "success");
+          if (typeof showNotification === "function") {
+            showNotification("Icon spacing saved!", "success");
+          }
         }
       }
     }
@@ -1509,23 +1492,16 @@ export function initButtonIconColorPalate(
         result.success &&
         typeof saveButtonIconModifications === "function"
       ) {
-        const iconData = {
-          iconProperties: {
-            selector: `.${typeClass} .sqscraft-button-icon`,
-            styles: {
-              color: rgbaColor,
-              fill: rgbaColor,
-              stroke: rgbaColor,
-            },
-          },
-          buttonType: typeClass.replace("sqs-button-element--", ""),
-          applyToAllTypes: false,
-        };
+        // Get the merged styles from the pending modifications
+        const pendingMods = window.pendingModifications?.get(blockId) || [];
+        const iconMod = pendingMods.find((mod) => mod.tagType === "buttonIcon");
 
-        await saveButtonIconModifications(blockId, iconData);
+        if (iconMod && iconMod.css.iconProperties.styles) {
+          await saveButtonIconModifications(blockId, iconMod.css);
 
-        if (typeof showNotification === "function") {
-          showNotification("Icon color saved!", "success");
+          if (typeof showNotification === "function") {
+            showNotification("Icon color saved!", "success");
+          }
         }
       }
     }
