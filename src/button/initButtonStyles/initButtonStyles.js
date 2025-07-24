@@ -928,8 +928,10 @@ export function initButtonIconRotationControl(
 
   let currentRotation = 0;
   let userInteracted = false;
+  let saveTimeout = null; // For debouncing save operations
 
-  async function applyRotation() {
+  // Function to apply visual changes only (no database save)
+  function applyRotationVisualChanges() {
     const selectedElement = getSelectedElement?.();
     const btn = selectedElement?.querySelector(
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
@@ -950,6 +952,20 @@ export function initButtonIconRotationControl(
         icon.style.transform = `rotate(${currentRotation}deg)`;
       }
     });
+  }
+
+  // Function to save to database only
+  async function applyRotationSave() {
+    const selectedElement = getSelectedElement?.();
+    const btn = selectedElement?.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const typeClass = [...btn.classList].find((cls) =>
+      cls.startsWith("sqs-button-element--")
+    );
+    if (!typeClass) return;
 
     // ✅ Save to database
     const blockId = selectedElement?.id;
@@ -995,7 +1011,16 @@ export function initButtonIconRotationControl(
 
     label.textContent = `${currentRotation}deg`;
 
-    applyRotation().catch(console.error);
+    // Apply visual changes immediately
+    applyRotationVisualChanges();
+
+    // Debounce the save operation
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+    saveTimeout = setTimeout(() => {
+      applyRotationSave().catch(console.error);
+    }, 500); // Wait 500ms after last change before saving
   }
 
   function updateFromRotationValue(value) {
@@ -1010,7 +1035,17 @@ export function initButtonIconRotationControl(
     fill.style.width = `${Math.abs(percent - center)}%`;
 
     label.textContent = `${clamped}deg`;
-    applyRotation().catch(console.error);
+
+    // Apply visual changes immediately
+    applyRotationVisualChanges();
+
+    // Debounce the save operation
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+    saveTimeout = setTimeout(() => {
+      applyRotationSave().catch(console.error);
+    }, 500); // Wait 500ms after last change before saving
   }
 
   function syncFromIconRotation() {
@@ -1088,8 +1123,10 @@ export function initButtonIconSizeControl(
 
   const maxSize = 50;
   let currentSize = 0;
+  let saveTimeout = null; // For debouncing save operations
 
-  async function applySize() {
+  // Function to apply visual changes only (no database save)
+  function applySizeVisualChanges() {
     const selectedElement = getSelectedElement?.();
     if (!selectedElement) return;
 
@@ -1104,7 +1141,7 @@ export function initButtonIconSizeControl(
     );
     if (!typeClass) return;
 
-    console.log("📏 Icon size applySize called with:", {
+    console.log("📏 Icon size applySizeVisualChanges called with:", {
       currentSize: currentSize,
       sizeStyle: `${currentSize}px`,
       typeClass: typeClass,
@@ -1127,6 +1164,23 @@ export function initButtonIconSizeControl(
         });
       });
     });
+  }
+
+  // Function to save to database only
+  async function applySizeSave() {
+    const selectedElement = getSelectedElement?.();
+    if (!selectedElement) return;
+
+    const btn = selectedElement.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, " +
+        "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const typeClass = [...btn.classList].find((cls) =>
+      cls.startsWith("sqs-button-element--")
+    );
+    if (!typeClass) return;
 
     // ✅ Save to database
     const blockId = getSelectedElement()?.id;
@@ -1176,7 +1230,16 @@ export function initButtonIconSizeControl(
     fill.style.width = `${percent}%`;
     label.textContent = `${currentSize}px`;
 
-    applySize().catch(console.error);
+    // Apply visual changes immediately
+    applySizeVisualChanges();
+
+    // Debounce the save operation
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+    saveTimeout = setTimeout(() => {
+      applySizeSave().catch(console.error);
+    }, 500); // Wait 500ms after last change before saving
   }
 
   function updateUI(clientX) {
@@ -1252,8 +1315,10 @@ export function initButtonIconSpacingControl(
 
   const maxGap = 30;
   let gapValue = 0;
+  let saveTimeout = null; // For debouncing save operations
 
-  async function applyGap() {
+  // Function to apply visual changes only (no database save)
+  function applyGapVisualChanges() {
     const selected = getSelectedElement?.();
     const btn = selected?.querySelector(
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
@@ -1265,7 +1330,7 @@ export function initButtonIconSpacingControl(
     );
     if (!btnClass) return;
 
-    console.log("🎯 Icon spacing applyGap called with:", {
+    console.log("🎯 Icon spacing applyGapVisualChanges called with:", {
       gapValue: gapValue,
       gapStyle: `${gapValue}px`,
       btnClass: btnClass,
@@ -1288,6 +1353,20 @@ export function initButtonIconSpacingControl(
         el.style.gap = "";
       }
     });
+  }
+
+  // Function to save to database only
+  async function applyGapSave() {
+    const selected = getSelectedElement?.();
+    const btn = selected?.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const btnClass = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
+    );
+    if (!btnClass) return;
 
     // ✅ Save to database
     const blockId = getSelectedElement()?.id;
@@ -1342,7 +1421,16 @@ export function initButtonIconSpacingControl(
       percent: percent,
     });
 
-    applyGap().catch(console.error);
+    // Apply visual changes immediately
+    applyGapVisualChanges();
+
+    // Debounce the save operation
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+    saveTimeout = setTimeout(() => {
+      applyGapSave().catch(console.error);
+    }, 500); // Wait 500ms after last change before saving
   }
 
   bullet.addEventListener("mousedown", (e) => {
