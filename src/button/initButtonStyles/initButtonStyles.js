@@ -806,7 +806,12 @@ async function convertAllButtonIconsToSVG(typeClass) {
   }
 }
 
-export function initButtonIconPositionToggle(getSelectedElement) {
+export function initButtonIconPositionToggle(
+  getSelectedElement,
+  saveButtonIconModifications,
+  addPendingModification,
+  showNotification
+) {
   document.getElementById("buttoniconPositionSection").onclick = () => {
     document
       .getElementById("iconPositionDropdown")
@@ -816,7 +821,7 @@ export function initButtonIconPositionToggle(getSelectedElement) {
   document
     .querySelectorAll("#iconPositionDropdown [data-value]")
     .forEach((option) => {
-      option.onclick = () => {
+      option.onclick = async () => {
         const value = option.dataset.value;
         document.getElementById(
           "iconPositionLabel"
@@ -868,7 +873,33 @@ export function initButtonIconPositionToggle(getSelectedElement) {
               ? { marginLeft: "8px", marginRight: "" }
               : { marginRight: "8px", marginLeft: "" };
 
-          updateIconStyles(blockId, typeClass, marginStyle);
+          const result = await updateIconStyles(
+            blockId,
+            typeClass,
+            marginStyle
+          );
+
+          // If updateIconStyles was successful, save to database
+          if (
+            result &&
+            result.success &&
+            typeof saveButtonIconModifications === "function"
+          ) {
+            const iconData = {
+              iconProperties: {
+                selector: `.${typeClass} .sqscraft-button-icon`,
+                styles: marginStyle,
+              },
+              buttonType: typeClass.replace("sqs-button-element--", ""),
+              applyToAllTypes: false,
+            };
+
+            await saveButtonIconModifications(blockId, iconData);
+
+            if (typeof showNotification === "function") {
+              showNotification("Icon position saved!", "success");
+            }
+          }
         }
       };
     });
@@ -876,7 +907,12 @@ export function initButtonIconPositionToggle(getSelectedElement) {
 
 let normalRotationInitialized = false;
 
-export function initButtonIconRotationControl(getSelectedElement) {
+export function initButtonIconRotationControl(
+  getSelectedElement,
+  saveButtonIconModifications,
+  addPendingModification,
+  showNotification
+) {
   if (normalRotationInitialized) return;
   normalRotationInitialized = true;
 
@@ -891,7 +927,7 @@ export function initButtonIconRotationControl(getSelectedElement) {
   let currentRotation = 0;
   let userInteracted = false;
 
-  function applyRotation() {
+  async function applyRotation() {
     const selectedElement = getSelectedElement?.();
     const btn = selectedElement?.querySelector(
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
@@ -916,9 +952,33 @@ export function initButtonIconRotationControl(getSelectedElement) {
     // ✅ Save to database
     const blockId = selectedElement?.id;
     if (blockId) {
-      updateIconStyles(blockId, typeClass, {
+      const result = await updateIconStyles(blockId, typeClass, {
         transform: `rotate(${currentRotation}deg)`,
       });
+
+      // If updateIconStyles was successful, save to database
+      if (
+        result &&
+        result.success &&
+        typeof saveButtonIconModifications === "function"
+      ) {
+        const iconData = {
+          iconProperties: {
+            selector: `.${typeClass} .sqscraft-button-icon`,
+            styles: {
+              transform: `rotate(${currentRotation}deg)`,
+            },
+          },
+          buttonType: typeClass.replace("sqs-button-element--", ""),
+          applyToAllTypes: false,
+        };
+
+        await saveButtonIconModifications(blockId, iconData);
+
+        if (typeof showNotification === "function") {
+          showNotification("Icon rotation saved!", "success");
+        }
+      }
     }
   }
 
@@ -938,7 +998,7 @@ export function initButtonIconRotationControl(getSelectedElement) {
 
     label.textContent = `${currentRotation}deg`;
 
-    applyRotation();
+    applyRotation().catch(console.error);
   }
 
   function updateFromRotationValue(value) {
@@ -953,7 +1013,7 @@ export function initButtonIconRotationControl(getSelectedElement) {
     fill.style.width = `${Math.abs(percent - center)}%`;
 
     label.textContent = `${clamped}deg`;
-    applyRotation();
+    applyRotation().catch(console.error);
   }
 
   function syncFromIconRotation() {
@@ -1015,7 +1075,12 @@ export function initButtonIconRotationControl(getSelectedElement) {
   setTimeout(syncFromIconRotation, 50);
 }
 
-export function initButtonIconSizeControl(getSelectedElement) {
+export function initButtonIconSizeControl(
+  getSelectedElement,
+  saveButtonIconModifications,
+  addPendingModification,
+  showNotification
+) {
   const bullet = document.getElementById("buttonIconSizeradiusBullet");
   const fill = document.getElementById("buttonIconSizeradiusFill");
   const field = document.getElementById("buttonIconSizeradiusField");
@@ -1027,7 +1092,7 @@ export function initButtonIconSizeControl(getSelectedElement) {
   const maxSize = 50;
   let currentSize = 0;
 
-  function applySize() {
+  async function applySize() {
     const selectedElement = getSelectedElement?.();
     if (!selectedElement) return;
 
@@ -1058,10 +1123,35 @@ export function initButtonIconSizeControl(getSelectedElement) {
     // ✅ Save to database
     const blockId = getSelectedElement()?.id;
     if (blockId) {
-      updateIconStyles(blockId, typeClass, {
+      const result = await updateIconStyles(blockId, typeClass, {
         width: `${currentSize}px`,
         height: "auto",
       });
+
+      // If updateIconStyles was successful, save to database
+      if (
+        result &&
+        result.success &&
+        typeof saveButtonIconModifications === "function"
+      ) {
+        const iconData = {
+          iconProperties: {
+            selector: `.${typeClass} .sqscraft-button-icon`,
+            styles: {
+              width: `${currentSize}px`,
+              height: "auto",
+            },
+          },
+          buttonType: typeClass.replace("sqs-button-element--", ""),
+          applyToAllTypes: false,
+        };
+
+        await saveButtonIconModifications(blockId, iconData);
+
+        if (typeof showNotification === "function") {
+          showNotification("Icon size saved!", "success");
+        }
+      }
     }
   }
 
@@ -1073,7 +1163,7 @@ export function initButtonIconSizeControl(getSelectedElement) {
     fill.style.width = `${percent}%`;
     label.textContent = `${currentSize}px`;
 
-    applySize();
+    applySize().catch(console.error);
   }
 
   function updateUI(clientX) {
@@ -1130,7 +1220,12 @@ export function initButtonIconSizeControl(getSelectedElement) {
   setTimeout(syncFromIcon, 50);
 }
 
-export function initButtonIconSpacingControl(getSelectedElement) {
+export function initButtonIconSpacingControl(
+  getSelectedElement,
+  saveButtonIconModifications,
+  addPendingModification,
+  showNotification
+) {
   const fill = document.getElementById("buttonIconSpacingradiusFill");
   const bullet = document.getElementById("buttonIconSpacingradiusBullet");
   const field = document.getElementById("buttonIconSpacingradiusField");
@@ -1145,7 +1240,7 @@ export function initButtonIconSpacingControl(getSelectedElement) {
   const maxGap = 30;
   let gapValue = 0;
 
-  function applyGap() {
+  async function applyGap() {
     const selected = getSelectedElement?.();
     const btn = selected?.querySelector(
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
@@ -1173,9 +1268,33 @@ export function initButtonIconSpacingControl(getSelectedElement) {
     // ✅ Save to database
     const blockId = getSelectedElement()?.id;
     if (blockId) {
-      updateIconStyles(blockId, btnClass, {
+      const result = await updateIconStyles(blockId, btnClass, {
         gap: `${gapValue}px`,
       });
+
+      // If updateIconStyles was successful, save to database
+      if (
+        result &&
+        result.success &&
+        typeof saveButtonIconModifications === "function"
+      ) {
+        const iconData = {
+          iconProperties: {
+            selector: `.${btnClass} .sqscraft-button-icon`,
+            styles: {
+              gap: `${gapValue}px`,
+            },
+          },
+          buttonType: btnClass.replace("sqs-button-element--", ""),
+          applyToAllTypes: false,
+        };
+
+        await saveButtonIconModifications(blockId, iconData);
+
+        if (typeof showNotification === "function") {
+          showNotification("Icon spacing saved!", "success");
+        }
+      }
     }
   }
 
@@ -1185,7 +1304,7 @@ export function initButtonIconSpacingControl(getSelectedElement) {
     fill.style.width = `${percent}%`;
     bullet.style.left = `${percent}%`;
     valueText.textContent = `${gapValue}px`;
-    applyGap();
+    applyGap().catch(console.error);
   }
 
   bullet.addEventListener("mousedown", (e) => {
@@ -1259,7 +1378,7 @@ export function initButtonIconColorPalate(
   );
 
   // Button-specific icon color application function
-  function applyButtonIconColorFromPalette(color, alpha = 1) {
+  async function applyButtonIconColorFromPalette(color, alpha = 1) {
     console.log("🎨 Applying icon color:", color, "with alpha:", alpha);
 
     const currentElement = selectedElement?.();
@@ -1378,11 +1497,37 @@ export function initButtonIconColorPalate(
     const blockId = currentElement.id;
     if (blockId) {
       // Always use the icon selector for updateIconStyles
-      updateIconStyles(blockId, typeClass, {
+      const result = await updateIconStyles(blockId, typeClass, {
         color: rgbaColor,
         fill: rgbaColor,
         stroke: rgbaColor,
       });
+
+      // If updateIconStyles was successful, save to database
+      if (
+        result &&
+        result.success &&
+        typeof saveButtonIconModifications === "function"
+      ) {
+        const iconData = {
+          iconProperties: {
+            selector: `.${typeClass} .sqscraft-button-icon`,
+            styles: {
+              color: rgbaColor,
+              fill: rgbaColor,
+              stroke: rgbaColor,
+            },
+          },
+          buttonType: typeClass.replace("sqs-button-element--", ""),
+          applyToAllTypes: false,
+        };
+
+        await saveButtonIconModifications(blockId, iconData);
+
+        if (typeof showNotification === "function") {
+          showNotification("Icon color saved!", "success");
+        }
+      }
     }
   }
 
@@ -1525,7 +1670,10 @@ export function initButtonIconColorPalate(
         }
 
         updateTransparencyField(dynamicHue);
-        applyButtonIconColorFromPalette(finalColor, currentTransparency / 100);
+        applyButtonIconColorFromPalette(
+          finalColor,
+          currentTransparency / 100
+        ).catch(console.error);
       };
 
       document.onmouseup = () => {
@@ -1566,7 +1714,9 @@ export function initButtonIconColorPalate(
           colorCode.textContent = rgb;
         }
 
-        applyButtonIconColorFromPalette(rgb, currentTransparency / 100);
+        applyButtonIconColorFromPalette(rgb, currentTransparency / 100).catch(
+          console.error
+        );
       };
 
       document.onmouseup = () => {
@@ -1615,7 +1765,9 @@ export function initButtonIconColorPalate(
     const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
 
     colorCode.textContent = rgb;
-    applyButtonIconColorFromPalette(rgb, currentTransparency / 100);
+    applyButtonIconColorFromPalette(rgb, currentTransparency / 100).catch(
+      console.error
+    );
   }
 
   if (transparencyField && transparencyBullet) {
@@ -1641,7 +1793,7 @@ export function initButtonIconColorPalate(
           applyButtonIconColorFromPalette(
             currentColor,
             currentTransparency / 100
-          );
+          ).catch(console.error);
         }
       };
       document.onmouseup = () => {
@@ -1675,7 +1827,9 @@ export function initButtonIconColorPalate(
         allColorBullet.style.top = `${bulletTop}px`;
       }
 
-      applyButtonIconColorFromPalette(color, currentTransparency / 100);
+      applyButtonIconColorFromPalette(color, currentTransparency / 100).catch(
+        console.error
+      );
 
       requestAnimationFrame(() => {
         const canvas = selectorField.querySelector("canvas");
@@ -1719,7 +1873,9 @@ export function initButtonIconColorPalate(
         }
       });
 
-      applyButtonIconColorFromPalette(color, currentTransparency / 100);
+      applyButtonIconColorFromPalette(color, currentTransparency / 100).catch(
+        console.error
+      );
     };
 
     container.appendChild(swatch);

@@ -1030,9 +1030,40 @@ window.pendingModifications = pendingModifications;
         },
         showNotification
       );
-      initButtonIconRotationControl(() => selectedElement);
-      initButtonIconSizeControl(() => selectedElement);
-      initButtonIconSpacingControl(() => selectedElement);
+
+      initButtonIconRotationControl(
+        () => selectedElement,
+        saveButtonIconModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
+      );
+      initButtonIconSizeControl(
+        () => selectedElement,
+        saveButtonIconModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
+      );
+      initButtonIconSpacingControl(
+        () => selectedElement,
+        saveButtonIconModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
+      );
 
       // Icon upload functionality is handled by initImageUploadPreview.js
       // No need to initialize it here as it's already handled elsewhere
