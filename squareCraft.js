@@ -3743,37 +3743,78 @@ window.pendingModifications = pendingModifications;
 
   // Helper: Apply styles to button and icon
   function applyButtonIconStyles(button, styles, buttonType) {
-    if (!button || !styles) return;
+    if (!button || !styles) {
+      console.log("⚠️ Missing button or styles:", {
+        button: !!button,
+        styles: !!styles,
+      });
+      return;
+    }
+
+    console.log(`🎨 Applying ${buttonType} styles to button:`, button);
+    console.log("🎨 Styles to apply:", styles);
 
     // Apply gap
     if (styles.gap) {
       button.style.gap = styles.gap;
       button.classList.add("sc-flex", "sc-items-center");
+      console.log(`📏 Applied gap: ${styles.gap}`);
     }
 
-    // Remove any existing .sqscraft-button-icon (prevent duplicates)
-    button
-      .querySelectorAll(".sqscraft-button-icon, .sqscraft-image-icon")
-      .forEach((el) => el.remove());
+    // Check if icon already exists
+    const existingIcons = button.querySelectorAll(
+      ".sqscraft-button-icon, .sqscraft-image-icon"
+    );
+    console.log(`🔍 Found ${existingIcons.length} existing icons`);
 
-    // Add uploaded icon
-    if (styles.src?.startsWith("data:image")) {
-      const icon = document.createElement("img");
-      icon.src = styles.src;
-      icon.alt = "Button Icon";
-      icon.className = "sqscraft-button-icon";
-      icon.style.width = styles.width || "20px";
-      icon.style.height = styles.height || "auto";
-      if (styles.transform) icon.style.transform = styles.transform;
-      if (styles.color) icon.style.color = styles.color;
-      if (styles.fill) icon.style.fill = styles.fill;
-      if (styles.stroke) icon.style.stroke = styles.stroke;
-      button.appendChild(icon);
+    if (existingIcons.length > 0) {
+      // Update existing icons
+      existingIcons.forEach((icon) => {
+        console.log("🔄 Updating existing icon:", icon);
+        if (styles.width) icon.style.width = styles.width;
+        if (styles.height) icon.style.height = styles.height;
+        if (styles.transform) icon.style.transform = styles.transform;
+        if (styles.color) icon.style.color = styles.color;
+        if (styles.fill) icon.style.fill = styles.fill;
+        if (styles.stroke) icon.style.stroke = styles.stroke;
+        if (styles.src?.startsWith("data:image")) {
+          icon.src = styles.src;
+        }
+        console.log("✅ Updated existing icon");
+      });
+    } else {
+      // Remove any existing icons first (prevent duplicates)
+      button
+        .querySelectorAll(".sqscraft-button-icon, .sqscraft-image-icon")
+        .forEach((el) => el.remove());
+
+      // Add new uploaded icon
+      if (styles.src?.startsWith("data:image")) {
+        const icon = document.createElement("img");
+        icon.src = styles.src;
+        icon.alt = "Button Icon";
+        icon.className = "sqscraft-button-icon";
+        icon.style.width = styles.width || "20px";
+        icon.style.height = styles.height || "auto";
+        if (styles.transform) icon.style.transform = styles.transform;
+        if (styles.color) icon.style.color = styles.color;
+        if (styles.fill) icon.style.fill = styles.fill;
+        if (styles.stroke) icon.style.stroke = styles.stroke;
+        button.appendChild(icon);
+        console.log("✅ Added new icon to button");
+      }
     }
+
+    console.log(`✅ Finished applying ${buttonType} styles`);
   }
 
   // Main fetch function
   async function fetchButtonIconModifications(blockId = null) {
+    console.log(
+      "🚀 fetchButtonIconModifications called with blockId:",
+      blockId
+    );
+
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -3781,30 +3822,62 @@ window.pendingModifications = pendingModifications;
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
+    console.log("🔑 Credentials check:", {
+      userId: userId ? "✅ Present" : "❌ Missing",
+      token: token ? "✅ Present" : "❌ Missing",
+      widgetId: widgetId ? "✅ Present" : "❌ Missing",
+      pageId: pageId ? "✅ Present" : "❌ Missing",
+    });
+
     if (!userId || !token || !widgetId || !pageId) {
-      console.warn("Missing credentials or page ID");
+      console.warn("❌ Missing credentials or page ID");
       return;
     }
 
     const url = `https://admin.squareplugin.com/api/v1/fetch-button-icon-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+    console.log("🔗 API URL:", url);
 
     try {
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      console.log("📡 Response status:", res.status);
       const result = await res.json();
+      console.log("📡 Raw API response:", result);
+
       if (!res.ok) throw new Error(result.message);
 
       const modifications = result.data?.allModifications || [];
+      console.log("🔍 Fetched button icon modifications:", result);
+      console.log("📦 Processing modifications:", modifications);
+      console.log("📦 Number of modifications:", modifications.length);
 
       for (const mod of modifications) {
         for (const { elementId, icon } of mod.elements || []) {
-          if (blockId && elementId !== blockId) continue;
+          console.log(`🎯 Processing element ${elementId}:`, icon);
+
+          if (blockId && elementId !== blockId) {
+            console.log(
+              `⏭️ Skipping element ${elementId} - looking for ${blockId}`
+            );
+            continue;
+          }
 
           const types = ["buttonPrimary", "buttonSecondary", "buttonTertiary"];
           for (const type of types) {
             const styleObj = icon?.[type];
-            if (!styleObj?.selector || !styleObj?.styles) continue;
+            if (!styleObj?.selector || !styleObj?.styles) {
+              console.log(
+                `⚠️ No valid ${type} data found for element: ${elementId}`
+              );
+              continue;
+            }
+
+            console.log(
+              `🎨 Applying ${type} button styles for ${elementId}:`,
+              styleObj.styles
+            );
 
             const buttonSelector = styleObj.selector
               .replace(/\.sqscraft-button-icon.*$/, "")
@@ -3834,54 +3907,64 @@ window.pendingModifications = pendingModifications;
                 Array.from(allButtons).map((btn) => btn.className)
               );
             }
-            try {
-              const buttons = await waitForElement(buttonSelector);
-              // Convert NodeList to Array to use forEach
+
+            // Try to find buttons immediately first
+            let buttons = document.querySelectorAll(buttonSelector);
+            console.log(
+              `🔍 Immediate check: Found ${buttons.length} buttons with selector "${buttonSelector}"`
+            );
+
+            if (buttons.length === 0) {
+              // If no buttons found immediately, try waiting
+              try {
+                console.log(
+                  "⏳ No buttons found immediately, waiting for elements..."
+                );
+                buttons = await waitForElement(buttonSelector);
+                console.log(
+                  `⏳ Wait successful: Found ${buttons.length} buttons`
+                );
+              } catch (e) {
+                console.warn(
+                  `⛔ ${type} button not found in time for selector: ${buttonSelector}`,
+                  e
+                );
+                buttons = [];
+              }
+            }
+
+            if (buttons.length > 0) {
+              // Apply styles to found buttons
               const buttonArray = Array.from(buttons);
-              buttonArray.forEach((btn) =>
-                applyButtonIconStyles(btn, styleObj.styles, type)
-              );
+              buttonArray.forEach((btn) => {
+                console.log("🎨 Applying styles to button:", btn);
+                applyButtonIconStyles(btn, styleObj.styles, type);
+              });
               console.log(
                 `✅ Applied ${type} icon styles to ${buttonArray.length} button(s) for element ${elementId}`
               );
-            } catch (e) {
-              console.warn(
-                `⛔ ${type} button not found in time for selector: ${buttonSelector}`,
-                e
-              );
-
-              // Fallback: Check if buttons exist without waiting
-              const existingButtons = document.querySelectorAll(buttonSelector);
-              console.log(
-                `🔍 Fallback check: Found ${existingButtons.length} buttons with selector "${buttonSelector}"`
-              );
-
-              if (existingButtons.length > 0) {
-                const buttonArray = Array.from(existingButtons);
-                buttonArray.forEach((btn) =>
-                  applyButtonIconStyles(btn, styleObj.styles, type)
+            } else {
+              // Final fallback: Apply to any primary buttons if this is a primary button style
+              if (type === "buttonPrimary") {
+                const anyPrimaryButtons = document.querySelectorAll(
+                  ".sqs-button-element--primary"
                 );
-                console.log(
-                  `✅ Applied ${type} icon styles to ${buttonArray.length} button(s) via fallback for element ${elementId}`
-                );
-              } else {
-                // Final fallback: Apply to any primary buttons if this is a primary button style
-                if (type === "buttonPrimary") {
-                  const anyPrimaryButtons = document.querySelectorAll(
-                    ".sqs-button-element--primary"
+                if (anyPrimaryButtons.length > 0) {
+                  console.log(
+                    `🎯 Final fallback: Applying to ${anyPrimaryButtons.length} primary buttons`
                   );
-                  if (anyPrimaryButtons.length > 0) {
-                    console.log(
-                      `🎯 Final fallback: Applying to ${anyPrimaryButtons.length} primary buttons`
-                    );
-                    const buttonArray = Array.from(anyPrimaryButtons);
-                    buttonArray.forEach((btn) =>
-                      applyButtonIconStyles(btn, styleObj.styles, type)
-                    );
-                    console.log(
-                      `✅ Applied ${type} icon styles to ${buttonArray.length} button(s) via final fallback for element ${elementId}`
-                    );
-                  }
+                  const buttonArray = Array.from(anyPrimaryButtons);
+                  buttonArray.forEach((btn) => {
+                    console.log("🎨 Applying styles to primary button:", btn);
+                    applyButtonIconStyles(btn, styleObj.styles, type);
+                  });
+                  console.log(
+                    `✅ Applied ${type} icon styles to ${buttonArray.length} button(s) via final fallback for element ${elementId}`
+                  );
+                } else {
+                  console.warn(
+                    `❌ No primary buttons found on page for element ${elementId}`
+                  );
                 }
               }
             }
