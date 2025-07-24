@@ -3812,6 +3812,28 @@ window.pendingModifications = pendingModifications;
             console.log(
               `🔍 Looking for buttons with selector: "${buttonSelector}"`
             );
+
+            // Debug: Check what buttons actually exist on the page
+            const allButtons = document.querySelectorAll('[class*="button"]');
+            const primaryButtons = document.querySelectorAll(
+              ".sqs-button-element--primary"
+            );
+            const secondaryButtons = document.querySelectorAll(
+              ".sqs-button-element--secondary"
+            );
+
+            console.log(`🔍 Debug - All buttons: ${allButtons.length}`);
+            console.log(`🔍 Debug - Primary buttons: ${primaryButtons.length}`);
+            console.log(
+              `🔍 Debug - Secondary buttons: ${secondaryButtons.length}`
+            );
+
+            if (allButtons.length > 0) {
+              console.log(
+                "🔍 Debug - Button classes found:",
+                Array.from(allButtons).map((btn) => btn.className)
+              );
+            }
             try {
               const buttons = await waitForElement(buttonSelector);
               // Convert NodeList to Array to use forEach
@@ -3842,6 +3864,25 @@ window.pendingModifications = pendingModifications;
                 console.log(
                   `✅ Applied ${type} icon styles to ${buttonArray.length} button(s) via fallback for element ${elementId}`
                 );
+              } else {
+                // Final fallback: Apply to any primary buttons if this is a primary button style
+                if (type === "buttonPrimary") {
+                  const anyPrimaryButtons = document.querySelectorAll(
+                    ".sqs-button-element--primary"
+                  );
+                  if (anyPrimaryButtons.length > 0) {
+                    console.log(
+                      `🎯 Final fallback: Applying to ${anyPrimaryButtons.length} primary buttons`
+                    );
+                    const buttonArray = Array.from(anyPrimaryButtons);
+                    buttonArray.forEach((btn) =>
+                      applyButtonIconStyles(btn, styleObj.styles, type)
+                    );
+                    console.log(
+                      `✅ Applied ${type} icon styles to ${buttonArray.length} button(s) via final fallback for element ${elementId}`
+                    );
+                  }
+                }
               }
             }
           }
