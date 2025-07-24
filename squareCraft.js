@@ -3338,83 +3338,442 @@ window.pendingModifications = pendingModifications;
   }
 
   // Helper function to apply button icon styles
-  function applyButtonIconStyles(button, styles, buttonType) {
-    console.log(`🎨 Applying ${buttonType} button styles:`, styles);
+  // function applyButtonIconStyles(button, styles, buttonType) {
+  //   console.log(`🎨 Applying ${buttonType} button styles:`, styles);
 
-    // Apply gap to button element
+  //   // Apply gap to button element
+  //   if (styles.gap) {
+  //     button.style.gap = styles.gap;
+  //     button.classList.add("sc-flex", "sc-items-center");
+  //     console.log(`📏 Applied gap ${styles.gap} to button`);
+  //   }
+
+  //   // Apply icon styles
+  //   const iconElements = button.querySelectorAll(
+  //     ".sqscraft-button-icon, .sqscraft-image-icon"
+  //   );
+  //   console.log("🎨 Found icon elements:", iconElements.length);
+
+  //   iconElements.forEach((iconElement) => {
+  //     console.log("🎨 Applying styles to icon element:", iconElement);
+
+  //     // Apply width and height
+  //     if (styles.width) {
+  //       iconElement.style.width = styles.width;
+  //       console.log("📏 Applied width:", styles.width);
+  //     }
+  //     if (styles.height) {
+  //       iconElement.style.height = styles.height;
+  //       console.log("📏 Applied height:", styles.height);
+  //     }
+
+  //     // Apply transform (rotation)
+  //     if (styles.transform) {
+  //       iconElement.style.transform = styles.transform;
+  //       console.log("🔄 Applied transform:", styles.transform);
+  //     }
+
+  //     // Apply color properties
+  //     if (styles.color) {
+  //       iconElement.style.color = styles.color;
+  //     }
+  //     if (styles.fill) {
+  //       iconElement.style.fill = styles.fill;
+  //     }
+  //     if (styles.stroke) {
+  //       iconElement.style.stroke = styles.stroke;
+  //     }
+  //   });
+
+  //   // Handle uploaded icons
+  //   if (styles.src && styles.src.startsWith("data:image")) {
+  //     console.log(`🖼️ Handling uploaded icon for ${buttonType} button`);
+
+  //     // Remove existing icons
+  //     const existingIcons = button.querySelectorAll(
+  //       ".sqscraft-button-icon, .sqscraft-image-icon"
+  //     );
+  //     existingIcons.forEach((existingIcon) => existingIcon.remove());
+
+  //     // Add uploaded icon
+  //     const iconElement = document.createElement("img");
+  //     iconElement.src = styles.src;
+  //     iconElement.className = "sqscraft-button-icon";
+  //     iconElement.style.width = styles.width || "20px";
+  //     iconElement.style.height = styles.height || "auto";
+  //     iconElement.alt = "Button Icon";
+  //     button.appendChild(iconElement);
+
+  //     console.log(`✅ Added uploaded icon to ${buttonType} button`);
+  //   }
+  // }
+
+  // // Fetch button icon modifications from the backend
+  // async function fetchButtonIconModifications(blockId = null) {
+  //   console.log(
+  //     "🚀 fetchButtonIconModifications called with blockId:",
+  //     blockId
+  //   );
+
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
+
+  //   console.log("🔑 Credentials check:", {
+  //     userId: userId ? "✅ Present" : "❌ Missing",
+  //     token: token ? "✅ Present" : "❌ Missing",
+  //     widgetId: widgetId ? "✅ Present" : "❌ Missing",
+  //     pageId: pageId ? "✅ Present" : "❌ Missing",
+  //   });
+
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn("⚠️ Missing credentials or page ID");
+  //     return;
+  //   }
+
+  //   let url = `https://admin.squareplugin.com/api/v1/fetch-button-icon-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+  //   // Don't add elementId to URL - fetch all modifications and filter client-side
+  //   console.log("🔗 API URL:", url);
+
+  //   try {
+  //     console.log("📡 Making API call to:", url);
+  //     const res = await fetch(url, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     console.log("📡 Response status:", res.status);
+  //     console.log(
+  //       "📡 Response headers:",
+  //       Object.fromEntries(res.headers.entries())
+  //     );
+
+  //     const result = await res.json();
+  //     console.log("📡 Raw API response:", result);
+
+  //     if (!res.ok) throw new Error(result.message);
+
+  //     console.log("🔍 Fetched button icon modifications:", result);
+
+  //     // Handle the correct data structure: result.data.allModifications
+  //     const modifications = result.data?.allModifications || [];
+  //     console.log("📦 Processing modifications:", modifications);
+  //     console.log("📦 Number of modifications:", modifications.length);
+
+  //     modifications.forEach((mod) => {
+  //       const elements = mod.elements || [];
+  //       elements.forEach(({ elementId, icon }) => {
+  //         console.log(`🎯 Processing element ${elementId}:`, icon);
+
+  //         // If blockId is provided, only process that specific element
+  //         if (blockId && elementId !== blockId) {
+  //           console.log(
+  //             `⏭️ Skipping element ${elementId} - looking for ${blockId}`
+  //           );
+  //           return;
+  //         }
+
+  //         // Apply icon styles for each button type
+  //         if (icon?.buttonPrimary?.selector && icon?.buttonPrimary?.styles) {
+  //           console.log(
+  //             `🎨 Applying primary button styles for ${elementId}:`,
+  //             icon.buttonPrimary.styles
+  //           );
+
+  //           // Apply styles to the button element (for gap, etc.)
+  //           const buttonSelector = icon.buttonPrimary.selector.replace(
+  //             /\.sqscraft-button-icon.*$/,
+  //             ""
+  //           );
+  //           console.log("🔍 Original selector:", icon.buttonPrimary.selector);
+  //           console.log("🔍 Button selector:", buttonSelector);
+  //           const buttons = document.querySelectorAll(buttonSelector);
+  //           console.log("🔍 Buttons found with selector:", buttons.length);
+
+  //           // If no buttons found with the exact selector, try a broader search
+  //           if (buttons.length === 0) {
+  //             console.log("⚠️ No buttons found with selector:", buttonSelector);
+  //             console.log("🔍 Trying broader search for primary buttons...");
+  //             const allPrimaryButtons = document.querySelectorAll(
+  //               ".sqs-button-element--primary"
+  //             );
+  //             console.log(
+  //               "🔍 Found",
+  //               allPrimaryButtons.length,
+  //               "primary buttons on page"
+  //             );
+
+  //             // Apply styles to all primary buttons found
+  //             allPrimaryButtons.forEach((button) => {
+  //               console.log("🎨 Applying styles to primary button:", button);
+  //               applyButtonIconStyles(
+  //                 button,
+  //                 icon.buttonPrimary.styles,
+  //                 "primary"
+  //               );
+  //             });
+  //           } else {
+  //             // Apply styles to buttons found with the exact selector
+  //             console.log(
+  //               "🎯 Found buttons with exact selector:",
+  //               buttons.length
+  //             );
+  //             buttons.forEach((button) => {
+  //               console.log("🎨 Applying styles to button:", button);
+  //               applyButtonIconStyles(
+  //                 button,
+  //                 icon.buttonPrimary.styles,
+  //                 "primary"
+  //               );
+  //             });
+  //           }
+
+  //           console.log(
+  //             `✅ Applied button icon styles (primary) to ${elementId}`
+  //           );
+  //         }
+
+  //         if (
+  //           icon?.buttonSecondary?.selector &&
+  //           icon?.buttonSecondary?.styles
+  //         ) {
+  //           console.log(
+  //             `🎨 Applying secondary button styles for ${elementId}:`,
+  //             icon.buttonSecondary.styles
+  //           );
+
+  //           // Apply styles to the button element (for gap, etc.)
+  //           const buttonSelector = icon.buttonSecondary.selector.replace(
+  //             /\.sqscraft-button-icon.*$/,
+  //             ""
+  //           );
+  //           const buttons = document.querySelectorAll(buttonSelector);
+
+  //           buttons.forEach((button) => {
+  //             // Apply gap to button element
+  //             if (icon.buttonSecondary.styles.gap) {
+  //               button.style.gap = icon.buttonSecondary.styles.gap;
+  //               button.classList.add("sc-flex", "sc-items-center");
+  //               console.log(
+  //                 `📏 Applied gap ${icon.buttonSecondary.styles.gap} to button`
+  //               );
+  //             }
+
+  //             // Apply icon styles
+  //             const iconElements = button.querySelectorAll(
+  //               ".sqscraft-button-icon, .sqscraft-image-icon"
+  //             );
+  //             iconElements.forEach((iconElement) => {
+  //               // Apply width and height
+  //               if (icon.buttonSecondary.styles.width) {
+  //                 iconElement.style.width = icon.buttonSecondary.styles.width;
+  //               }
+  //               if (icon.buttonSecondary.styles.height) {
+  //                 iconElement.style.height = icon.buttonSecondary.styles.height;
+  //               }
+
+  //               // Apply transform (rotation)
+  //               if (icon.buttonSecondary.styles.transform) {
+  //                 iconElement.style.transform =
+  //                   icon.buttonSecondary.styles.transform;
+  //               }
+
+  //               // Apply color properties
+  //               if (icon.buttonSecondary.styles.color) {
+  //                 iconElement.style.color = icon.buttonSecondary.styles.color;
+  //               }
+  //               if (icon.buttonSecondary.styles.fill) {
+  //                 iconElement.style.fill = icon.buttonSecondary.styles.fill;
+  //               }
+  //               if (icon.buttonSecondary.styles.stroke) {
+  //                 iconElement.style.stroke = icon.buttonSecondary.styles.stroke;
+  //               }
+  //             });
+
+  //             // Handle uploaded icons
+  //             if (
+  //               icon.buttonSecondary.iconData &&
+  //               icon.buttonSecondary.iconData.type === "uploaded"
+  //             ) {
+  //               console.log(`🖼️ Handling uploaded icon for ${elementId}`);
+
+  //               // Remove existing icons
+  //               const existingIcons = button.querySelectorAll(
+  //                 ".sqscraft-button-icon, .sqscraft-image-icon"
+  //               );
+  //               existingIcons.forEach((existingIcon) => existingIcon.remove());
+
+  //               // Add uploaded icon
+  //               const iconElement = document.createElement("img");
+  //               iconElement.src = icon.buttonSecondary.iconData.base64;
+  //               iconElement.className = "sqscraft-button-icon";
+  //               iconElement.style.width =
+  //                 icon.buttonSecondary.styles.width || "20px";
+  //               iconElement.style.height =
+  //                 icon.buttonSecondary.styles.height || "auto";
+  //               iconElement.alt = "Button Icon";
+  //               button.appendChild(iconElement);
+
+  //               console.log(`✅ Added uploaded icon to button`);
+  //             }
+  //           });
+
+  //           console.log(
+  //             `✅ Applied button icon styles (secondary) to ${elementId}`
+  //           );
+  //         }
+
+  //         if (icon?.buttonTertiary?.selector && icon?.buttonTertiary?.styles) {
+  //           console.log(
+  //             `🎨 Applying tertiary button styles for ${elementId}:`,
+  //             icon.buttonTertiary.styles
+  //           );
+
+  //           // Apply styles to the button element (for gap, etc.)
+  //           const buttonSelector = icon.buttonTertiary.selector.replace(
+  //             /\.sqscraft-button-icon.*$/,
+  //             ""
+  //           );
+  //           const buttons = document.querySelectorAll(buttonSelector);
+
+  //           buttons.forEach((button) => {
+  //             // Apply gap to button element
+  //             if (icon.buttonTertiary.styles.gap) {
+  //               button.style.gap = icon.buttonTertiary.styles.gap;
+  //               button.classList.add("sc-flex", "sc-items-center");
+  //               console.log(
+  //                 `📏 Applied gap ${icon.buttonTertiary.styles.gap} to button`
+  //               );
+  //             }
+
+  //             // Apply icon styles
+  //             const iconElements = button.querySelectorAll(
+  //               ".sqscraft-button-icon, .sqscraft-image-icon"
+  //             );
+  //             iconElements.forEach((iconElement) => {
+  //               // Apply width and height
+  //               if (icon.buttonTertiary.styles.width) {
+  //                 iconElement.style.width = icon.buttonTertiary.styles.width;
+  //               }
+  //               if (icon.buttonTertiary.styles.height) {
+  //                 iconElement.style.height = icon.buttonTertiary.styles.height;
+  //               }
+
+  //               // Apply transform (rotation)
+  //               if (icon.buttonTertiary.styles.transform) {
+  //                 iconElement.style.transform =
+  //                   icon.buttonTertiary.styles.transform;
+  //               }
+
+  //               // Apply color properties
+  //               if (icon.buttonTertiary.styles.color) {
+  //                 iconElement.style.color = icon.buttonTertiary.styles.color;
+  //               }
+  //               if (icon.buttonTertiary.styles.fill) {
+  //                 iconElement.style.fill = icon.buttonTertiary.styles.fill;
+  //               }
+  //               if (icon.buttonTertiary.styles.stroke) {
+  //                 iconElement.style.stroke = icon.buttonTertiary.styles.stroke;
+  //               }
+  //             });
+
+  //             // Handle uploaded icons
+  //             if (
+  //               icon.buttonTertiary.iconData &&
+  //               icon.buttonTertiary.iconData.type === "uploaded"
+  //             ) {
+  //               console.log(`🖼️ Handling uploaded icon for ${elementId}`);
+
+  //               // Remove existing icons
+  //               const existingIcons = button.querySelectorAll(
+  //                 ".sqscraft-button-icon, .sqscraft-image-icon"
+  //               );
+  //               existingIcons.forEach((existingIcon) => existingIcon.remove());
+
+  //               // Add uploaded icon
+  //               const iconElement = document.createElement("img");
+  //               iconElement.src = icon.buttonTertiary.iconData.base64;
+  //               iconElement.className = "sqscraft-button-icon";
+  //               iconElement.style.width =
+  //                 icon.buttonTertiary.styles.width || "20px";
+  //               iconElement.style.height =
+  //                 icon.buttonTertiary.styles.height || "auto";
+  //               iconElement.alt = "Button Icon";
+  //               button.appendChild(iconElement);
+
+  //               console.log(`✅ Added uploaded icon to button`);
+  //             }
+  //           });
+
+  //           console.log(
+  //             `✅ Applied button icon styles (tertiary) to ${elementId}`
+  //           );
+  //         }
+  //       });
+  //     });
+  //     console.log("✅ Applied button icon styles to all elements");
+  //   } catch (error) {
+  //     console.error("❌ Error fetching button icon modifications:", error);
+  //     console.error(
+  //       "❌ Failed to fetch button icon modifications:",
+  //       error.message
+  //     );
+  //   }
+  // }
+
+  // Utility: Wait until selector appears in DOM
+  function waitForElement(selector, timeout = 3000) {
+    return new Promise((resolve, reject) => {
+      const interval = 100;
+      let elapsed = 0;
+      const check = () => {
+        const elements = document.querySelectorAll(selector);
+        if (elements.length > 0) return resolve(elements);
+        elapsed += interval;
+        if (elapsed >= timeout)
+          return reject(`⏰ Timeout: ${selector} not found`);
+        setTimeout(check, interval);
+      };
+      check();
+    });
+  }
+
+  // Helper: Apply styles to button and icon
+  function applyButtonIconStyles(button, styles, buttonType) {
+    if (!button || !styles) return;
+
+    // Apply gap
     if (styles.gap) {
       button.style.gap = styles.gap;
       button.classList.add("sc-flex", "sc-items-center");
-      console.log(`📏 Applied gap ${styles.gap} to button`);
     }
 
-    // Apply icon styles
-    const iconElements = button.querySelectorAll(
-      ".sqscraft-button-icon, .sqscraft-image-icon"
-    );
-    console.log("🎨 Found icon elements:", iconElements.length);
+    // Remove any existing .sqscraft-button-icon (prevent duplicates)
+    button
+      .querySelectorAll(".sqscraft-button-icon, .sqscraft-image-icon")
+      .forEach((el) => el.remove());
 
-    iconElements.forEach((iconElement) => {
-      console.log("🎨 Applying styles to icon element:", iconElement);
-
-      // Apply width and height
-      if (styles.width) {
-        iconElement.style.width = styles.width;
-        console.log("📏 Applied width:", styles.width);
-      }
-      if (styles.height) {
-        iconElement.style.height = styles.height;
-        console.log("📏 Applied height:", styles.height);
-      }
-
-      // Apply transform (rotation)
-      if (styles.transform) {
-        iconElement.style.transform = styles.transform;
-        console.log("🔄 Applied transform:", styles.transform);
-      }
-
-      // Apply color properties
-      if (styles.color) {
-        iconElement.style.color = styles.color;
-      }
-      if (styles.fill) {
-        iconElement.style.fill = styles.fill;
-      }
-      if (styles.stroke) {
-        iconElement.style.stroke = styles.stroke;
-      }
-    });
-
-    // Handle uploaded icons
-    if (styles.src && styles.src.startsWith("data:image")) {
-      console.log(`🖼️ Handling uploaded icon for ${buttonType} button`);
-
-      // Remove existing icons
-      const existingIcons = button.querySelectorAll(
-        ".sqscraft-button-icon, .sqscraft-image-icon"
-      );
-      existingIcons.forEach((existingIcon) => existingIcon.remove());
-
-      // Add uploaded icon
-      const iconElement = document.createElement("img");
-      iconElement.src = styles.src;
-      iconElement.className = "sqscraft-button-icon";
-      iconElement.style.width = styles.width || "20px";
-      iconElement.style.height = styles.height || "auto";
-      iconElement.alt = "Button Icon";
-      button.appendChild(iconElement);
-
-      console.log(`✅ Added uploaded icon to ${buttonType} button`);
+    // Add uploaded icon
+    if (styles.src?.startsWith("data:image")) {
+      const icon = document.createElement("img");
+      icon.src = styles.src;
+      icon.alt = "Button Icon";
+      icon.className = "sqscraft-button-icon";
+      icon.style.width = styles.width || "20px";
+      icon.style.height = styles.height || "auto";
+      if (styles.transform) icon.style.transform = styles.transform;
+      if (styles.color) icon.style.color = styles.color;
+      if (styles.fill) icon.style.fill = styles.fill;
+      if (styles.stroke) icon.style.stroke = styles.stroke;
+      button.appendChild(icon);
     }
   }
 
-  // Fetch button icon modifications from the backend
+  // Main fetch function
   async function fetchButtonIconModifications(blockId = null) {
-    console.log(
-      "🚀 fetchButtonIconModifications called with blockId:",
-      blockId
-    );
-
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -3422,287 +3781,57 @@ window.pendingModifications = pendingModifications;
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    console.log("🔑 Credentials check:", {
-      userId: userId ? "✅ Present" : "❌ Missing",
-      token: token ? "✅ Present" : "❌ Missing",
-      widgetId: widgetId ? "✅ Present" : "❌ Missing",
-      pageId: pageId ? "✅ Present" : "❌ Missing",
-    });
-
     if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
+      console.warn("Missing credentials or page ID");
       return;
     }
 
-    let url = `https://admin.squareplugin.com/api/v1/fetch-button-icon-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-    // Don't add elementId to URL - fetch all modifications and filter client-side
-    console.log("🔗 API URL:", url);
+    const url = `https://admin.squareplugin.com/api/v1/fetch-button-icon-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
 
     try {
-      console.log("📡 Making API call to:", url);
       const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("📡 Response status:", res.status);
-      console.log(
-        "📡 Response headers:",
-        Object.fromEntries(res.headers.entries())
-      );
-
       const result = await res.json();
-      console.log("📡 Raw API response:", result);
-
       if (!res.ok) throw new Error(result.message);
 
-      console.log("🔍 Fetched button icon modifications:", result);
-
-      // Handle the correct data structure: result.data.allModifications
       const modifications = result.data?.allModifications || [];
-      console.log("📦 Processing modifications:", modifications);
-      console.log("📦 Number of modifications:", modifications.length);
 
-      modifications.forEach((mod) => {
-        const elements = mod.elements || [];
-        elements.forEach(({ elementId, icon }) => {
-          console.log(`🎯 Processing element ${elementId}:`, icon);
+      for (const mod of modifications) {
+        for (const { elementId, icon } of mod.elements || []) {
+          if (blockId && elementId !== blockId) continue;
 
-          // If blockId is provided, only process that specific element
-          if (blockId && elementId !== blockId) {
-            console.log(
-              `⏭️ Skipping element ${elementId} - looking for ${blockId}`
-            );
-            return;
-          }
+          const types = ["buttonPrimary", "buttonSecondary", "buttonTertiary"];
+          for (const type of types) {
+            const styleObj = icon?.[type];
+            if (!styleObj?.selector || !styleObj?.styles) continue;
 
-          // Apply icon styles for each button type
-          if (icon?.buttonPrimary?.selector && icon?.buttonPrimary?.styles) {
-            console.log(
-              `🎨 Applying primary button styles for ${elementId}:`,
-              icon.buttonPrimary.styles
-            );
-
-            // Apply styles to the button element (for gap, etc.)
-            const buttonSelector = icon.buttonPrimary.selector.replace(
-              /\.sqscraft-button-icon.*$/,
-              ""
-            );
-            const buttons = document.querySelectorAll(buttonSelector);
-
-            // If no buttons found with the exact selector, try a broader search
-            if (buttons.length === 0) {
-              console.log("⚠️ No buttons found with selector:", buttonSelector);
-              console.log("🔍 Trying broader search for primary buttons...");
-              const allPrimaryButtons = document.querySelectorAll(
-                ".sqs-button-element--primary"
+            const buttonSelector = styleObj.selector
+              .replace(/\.sqscraft-button-icon.*$/, "")
+              .trim();
+            try {
+              const buttons = await waitForElement(buttonSelector);
+              buttons.forEach((btn) =>
+                applyButtonIconStyles(btn, styleObj.styles, type)
               );
               console.log(
-                "🔍 Found",
-                allPrimaryButtons.length,
-                "primary buttons on page"
+                `✅ Applied ${type} icon styles to ${buttons.length} button(s) for element ${elementId}`
               );
-
-              // Apply styles to all primary buttons found
-              allPrimaryButtons.forEach((button) => {
-                console.log("🎨 Applying styles to primary button:", button);
-                applyButtonIconStyles(
-                  button,
-                  icon.buttonPrimary.styles,
-                  "primary"
-                );
-              });
+            } catch (e) {
+              console.warn(
+                `⛔ ${type} button not found in time for selector: ${buttonSelector}`,
+                e
+              );
             }
-
-            console.log(
-              `✅ Applied button icon styles (primary) to ${elementId}`
-            );
           }
+        }
+      }
 
-          if (
-            icon?.buttonSecondary?.selector &&
-            icon?.buttonSecondary?.styles
-          ) {
-            console.log(
-              `🎨 Applying secondary button styles for ${elementId}:`,
-              icon.buttonSecondary.styles
-            );
-
-            // Apply styles to the button element (for gap, etc.)
-            const buttonSelector = icon.buttonSecondary.selector.replace(
-              /\.sqscraft-button-icon.*$/,
-              ""
-            );
-            const buttons = document.querySelectorAll(buttonSelector);
-
-            buttons.forEach((button) => {
-              // Apply gap to button element
-              if (icon.buttonSecondary.styles.gap) {
-                button.style.gap = icon.buttonSecondary.styles.gap;
-                button.classList.add("sc-flex", "sc-items-center");
-                console.log(
-                  `📏 Applied gap ${icon.buttonSecondary.styles.gap} to button`
-                );
-              }
-
-              // Apply icon styles
-              const iconElements = button.querySelectorAll(
-                ".sqscraft-button-icon, .sqscraft-image-icon"
-              );
-              iconElements.forEach((iconElement) => {
-                // Apply width and height
-                if (icon.buttonSecondary.styles.width) {
-                  iconElement.style.width = icon.buttonSecondary.styles.width;
-                }
-                if (icon.buttonSecondary.styles.height) {
-                  iconElement.style.height = icon.buttonSecondary.styles.height;
-                }
-
-                // Apply transform (rotation)
-                if (icon.buttonSecondary.styles.transform) {
-                  iconElement.style.transform =
-                    icon.buttonSecondary.styles.transform;
-                }
-
-                // Apply color properties
-                if (icon.buttonSecondary.styles.color) {
-                  iconElement.style.color = icon.buttonSecondary.styles.color;
-                }
-                if (icon.buttonSecondary.styles.fill) {
-                  iconElement.style.fill = icon.buttonSecondary.styles.fill;
-                }
-                if (icon.buttonSecondary.styles.stroke) {
-                  iconElement.style.stroke = icon.buttonSecondary.styles.stroke;
-                }
-              });
-
-              // Handle uploaded icons
-              if (
-                icon.buttonSecondary.iconData &&
-                icon.buttonSecondary.iconData.type === "uploaded"
-              ) {
-                console.log(`🖼️ Handling uploaded icon for ${elementId}`);
-
-                // Remove existing icons
-                const existingIcons = button.querySelectorAll(
-                  ".sqscraft-button-icon, .sqscraft-image-icon"
-                );
-                existingIcons.forEach((existingIcon) => existingIcon.remove());
-
-                // Add uploaded icon
-                const iconElement = document.createElement("img");
-                iconElement.src = icon.buttonSecondary.iconData.base64;
-                iconElement.className = "sqscraft-button-icon";
-                iconElement.style.width =
-                  icon.buttonSecondary.styles.width || "20px";
-                iconElement.style.height =
-                  icon.buttonSecondary.styles.height || "auto";
-                iconElement.alt = "Button Icon";
-                button.appendChild(iconElement);
-
-                console.log(`✅ Added uploaded icon to button`);
-              }
-            });
-
-            console.log(
-              `✅ Applied button icon styles (secondary) to ${elementId}`
-            );
-          }
-
-          if (icon?.buttonTertiary?.selector && icon?.buttonTertiary?.styles) {
-            console.log(
-              `🎨 Applying tertiary button styles for ${elementId}:`,
-              icon.buttonTertiary.styles
-            );
-
-            // Apply styles to the button element (for gap, etc.)
-            const buttonSelector = icon.buttonTertiary.selector.replace(
-              /\.sqscraft-button-icon.*$/,
-              ""
-            );
-            const buttons = document.querySelectorAll(buttonSelector);
-
-            buttons.forEach((button) => {
-              // Apply gap to button element
-              if (icon.buttonTertiary.styles.gap) {
-                button.style.gap = icon.buttonTertiary.styles.gap;
-                button.classList.add("sc-flex", "sc-items-center");
-                console.log(
-                  `📏 Applied gap ${icon.buttonTertiary.styles.gap} to button`
-                );
-              }
-
-              // Apply icon styles
-              const iconElements = button.querySelectorAll(
-                ".sqscraft-button-icon, .sqscraft-image-icon"
-              );
-              iconElements.forEach((iconElement) => {
-                // Apply width and height
-                if (icon.buttonTertiary.styles.width) {
-                  iconElement.style.width = icon.buttonTertiary.styles.width;
-                }
-                if (icon.buttonTertiary.styles.height) {
-                  iconElement.style.height = icon.buttonTertiary.styles.height;
-                }
-
-                // Apply transform (rotation)
-                if (icon.buttonTertiary.styles.transform) {
-                  iconElement.style.transform =
-                    icon.buttonTertiary.styles.transform;
-                }
-
-                // Apply color properties
-                if (icon.buttonTertiary.styles.color) {
-                  iconElement.style.color = icon.buttonTertiary.styles.color;
-                }
-                if (icon.buttonTertiary.styles.fill) {
-                  iconElement.style.fill = icon.buttonTertiary.styles.fill;
-                }
-                if (icon.buttonTertiary.styles.stroke) {
-                  iconElement.style.stroke = icon.buttonTertiary.styles.stroke;
-                }
-              });
-
-              // Handle uploaded icons
-              if (
-                icon.buttonTertiary.iconData &&
-                icon.buttonTertiary.iconData.type === "uploaded"
-              ) {
-                console.log(`🖼️ Handling uploaded icon for ${elementId}`);
-
-                // Remove existing icons
-                const existingIcons = button.querySelectorAll(
-                  ".sqscraft-button-icon, .sqscraft-image-icon"
-                );
-                existingIcons.forEach((existingIcon) => existingIcon.remove());
-
-                // Add uploaded icon
-                const iconElement = document.createElement("img");
-                iconElement.src = icon.buttonTertiary.iconData.base64;
-                iconElement.className = "sqscraft-button-icon";
-                iconElement.style.width =
-                  icon.buttonTertiary.styles.width || "20px";
-                iconElement.style.height =
-                  icon.buttonTertiary.styles.height || "auto";
-                iconElement.alt = "Button Icon";
-                button.appendChild(iconElement);
-
-                console.log(`✅ Added uploaded icon to button`);
-              }
-            });
-
-            console.log(
-              `✅ Applied button icon styles (tertiary) to ${elementId}`
-            );
-          }
-        });
-      });
-      console.log("✅ Applied button icon styles to all elements");
+      console.log("✅ All icon styles processed.");
     } catch (error) {
-      console.error("❌ Error fetching button icon modifications:", error);
       console.error(
-        "❌ Failed to fetch button icon modifications:",
-        error.message
+        "❌ Failed to fetch/apply button icon modifications:",
+        error
       );
     }
   }
