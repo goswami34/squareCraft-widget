@@ -91,6 +91,8 @@ async function updateIconStyles(blockId, typeClass, newStyles) {
             if (icon.style.height) existingStyles.height = icon.style.height;
             if (icon.style.transform)
               existingStyles.transform = icon.style.transform;
+
+            // Gap is applied to the button element, not the icon
             if (btn.style.gap) existingStyles.gap = btn.style.gap;
 
             // Also get from computed styles if inline styles are not set
@@ -106,6 +108,7 @@ async function updateIconStyles(blockId, typeClass, newStyles) {
             ) {
               existingStyles.transform = computedStyles.transform;
             }
+            // Gap is applied to the button element, not the icon
             if (!existingStyles.gap && buttonComputedStyles.gap !== "normal") {
               existingStyles.gap = buttonComputedStyles.gap;
             }
@@ -1101,6 +1104,12 @@ export function initButtonIconSizeControl(
     );
     if (!typeClass) return;
 
+    console.log("📏 Icon size applySize called with:", {
+      currentSize: currentSize,
+      sizeStyle: `${currentSize}px`,
+      typeClass: typeClass,
+    });
+
     const allButtons = document.querySelectorAll(
       `a.${typeClass}, button.${typeClass}`
     );
@@ -1111,12 +1120,24 @@ export function initButtonIconSizeControl(
       icons.forEach((icon) => {
         icon.style.width = `${currentSize}px`;
         icon.style.height = "auto";
+        console.log("📏 Applied size to icon:", {
+          icon: icon,
+          width: icon.style.width,
+          height: icon.style.height,
+        });
       });
     });
 
     // ✅ Save to database
     const blockId = getSelectedElement()?.id;
     if (blockId) {
+      console.log("📏 Saving size to database:", {
+        blockId: blockId,
+        typeClass: typeClass,
+        currentSize: currentSize,
+        sizeStyle: `${currentSize}px`,
+      });
+
       const result = await updateIconStyles(blockId, typeClass, {
         width: `${currentSize}px`,
         height: "auto",
@@ -1133,6 +1154,10 @@ export function initButtonIconSizeControl(
         const iconMod = pendingMods.find((mod) => mod.tagType === "buttonIcon");
 
         if (iconMod && iconMod.css.iconProperties.styles) {
+          console.log(
+            "📏 Final merged styles being saved:",
+            iconMod.css.iconProperties.styles
+          );
           await saveButtonIconModifications(blockId, iconMod.css);
 
           if (typeof showNotification === "function") {
@@ -1240,6 +1265,12 @@ export function initButtonIconSpacingControl(
     );
     if (!btnClass) return;
 
+    console.log("🎯 Icon spacing applyGap called with:", {
+      gapValue: gapValue,
+      gapStyle: `${gapValue}px`,
+      btnClass: btnClass,
+    });
+
     document.querySelectorAll(`a.${btnClass}`).forEach((el) => {
       const hasIcon = el.querySelector(
         ".sqscraft-button-icon, .sqscraft-image-icon"
@@ -1247,6 +1278,11 @@ export function initButtonIconSpacingControl(
       if (hasIcon) {
         el.classList.add("sc-flex", "sc-items-center");
         el.style.gap = `${gapValue}px`;
+        console.log("🎯 Applied gap to button:", {
+          button: el,
+          gap: el.style.gap,
+          classes: el.className,
+        });
       } else {
         el.classList.remove("sc-flex", "sc-items-center");
         el.style.gap = "";
@@ -1256,6 +1292,13 @@ export function initButtonIconSpacingControl(
     // ✅ Save to database
     const blockId = getSelectedElement()?.id;
     if (blockId) {
+      console.log("🎯 Saving gap to database:", {
+        blockId: blockId,
+        btnClass: btnClass,
+        gapValue: gapValue,
+        gapStyle: `${gapValue}px`,
+      });
+
       const result = await updateIconStyles(blockId, btnClass, {
         gap: `${gapValue}px`,
       });
@@ -1271,6 +1314,10 @@ export function initButtonIconSpacingControl(
         const iconMod = pendingMods.find((mod) => mod.tagType === "buttonIcon");
 
         if (iconMod && iconMod.css.iconProperties.styles) {
+          console.log(
+            "🎯 Final merged styles being saved:",
+            iconMod.css.iconProperties.styles
+          );
           await saveButtonIconModifications(blockId, iconMod.css);
 
           if (typeof showNotification === "function") {
@@ -1287,6 +1334,14 @@ export function initButtonIconSpacingControl(
     fill.style.width = `${percent}%`;
     bullet.style.left = `${percent}%`;
     valueText.textContent = `${gapValue}px`;
+
+    console.log("🎯 Icon spacing updateUI called with:", {
+      inputValue: val,
+      gapValue: gapValue,
+      displayValue: `${gapValue}px`,
+      percent: percent,
+    });
+
     applyGap().catch(console.error);
   }
 
@@ -1324,6 +1379,12 @@ export function initButtonIconSpacingControl(
     );
     if (btn) {
       const computedGap = parseInt(window.getComputedStyle(btn).gap);
+      console.log("🎯 Icon spacing syncFromIcon:", {
+        btn: btn,
+        computedGap: computedGap,
+        btnStyleGap: btn.style.gap,
+        isNaN: isNaN(computedGap),
+      });
       if (!isNaN(computedGap)) updateUI(computedGap);
     }
   }, 50);
