@@ -585,6 +585,15 @@ window.pendingModifications = pendingModifications;
   // Make saveButtonColorModifications available globally
   window.saveButtonColorModifications = saveButtonColorModifications;
 
+  // Make fetchButtonIconModifications available globally for testing
+  window.fetchButtonIconModifications = fetchButtonIconModifications;
+
+  // Test function to manually trigger button icon fetch
+  window.testButtonIconFetch = async () => {
+    console.log("🧪 Testing button icon fetch...");
+    await fetchButtonIconModifications();
+  };
+
   // Make applyStylesAsExternalCSS available globally
   window.applyStylesAsExternalCSS = applyStylesAsExternalCSS;
 
@@ -3286,12 +3295,24 @@ window.pendingModifications = pendingModifications;
 
   // Fetch button icon modifications from the backend
   async function fetchButtonIconModifications(blockId = null) {
+    console.log(
+      "🚀 fetchButtonIconModifications called with blockId:",
+      blockId
+    );
+
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
     const pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
+
+    console.log("🔑 Credentials check:", {
+      userId: userId ? "✅ Present" : "❌ Missing",
+      token: token ? "✅ Present" : "❌ Missing",
+      widgetId: widgetId ? "✅ Present" : "❌ Missing",
+      pageId: pageId ? "✅ Present" : "❌ Missing",
+    });
 
     if (!userId || !token || !widgetId || !pageId) {
       console.warn("⚠️ Missing credentials or page ID");
@@ -3302,12 +3323,21 @@ window.pendingModifications = pendingModifications;
     if (blockId) url += `&elementId=${blockId}`;
 
     try {
+      console.log("📡 Making API call to:", url);
       const res = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("📡 Response status:", res.status);
+      console.log(
+        "📡 Response headers:",
+        Object.fromEntries(res.headers.entries())
+      );
+
       const result = await res.json();
+      console.log("📡 Raw API response:", result);
+
       if (!res.ok) throw new Error(result.message);
 
       console.log("🔍 Fetched button icon modifications:", result);
@@ -3315,6 +3345,7 @@ window.pendingModifications = pendingModifications;
       // Handle the correct data structure: result.data.allModifications
       const modifications = result.data?.allModifications || [];
       console.log("📦 Processing modifications:", modifications);
+      console.log("📦 Number of modifications:", modifications.length);
 
       modifications.forEach((mod) => {
         const elements = mod.elements || [];
@@ -3334,6 +3365,27 @@ window.pendingModifications = pendingModifications;
               ""
             );
             const buttons = document.querySelectorAll(buttonSelector);
+            console.log(
+              "🎯 Found buttons for selector:",
+              buttonSelector,
+              "Count:",
+              buttons.length
+            );
+
+            // Debug: Check if any buttons exist with the primary class
+            const allPrimaryButtons = document.querySelectorAll(
+              ".sqs-button-element--primary"
+            );
+            console.log(
+              "🔍 All primary buttons found:",
+              allPrimaryButtons.length
+            );
+
+            // Debug: Check if any icons exist
+            const allIcons = document.querySelectorAll(
+              ".sqscraft-button-icon, .sqscraft-image-icon"
+            );
+            console.log("🔍 All icons found:", allIcons.length);
 
             buttons.forEach((button) => {
               // Apply gap to button element
@@ -3349,10 +3401,16 @@ window.pendingModifications = pendingModifications;
               const iconElements = button.querySelectorAll(
                 ".sqscraft-button-icon, .sqscraft-image-icon"
               );
+              console.log("🎨 Found icon elements:", iconElements.length);
               iconElements.forEach((iconElement) => {
+                console.log("🎨 Applying styles to icon element:", iconElement);
                 // Apply width and height
                 if (icon.buttonPrimary.styles.width) {
                   iconElement.style.width = icon.buttonPrimary.styles.width;
+                  console.log(
+                    "📏 Applied width:",
+                    icon.buttonPrimary.styles.width
+                  );
                 }
                 if (icon.buttonPrimary.styles.height) {
                   iconElement.style.height = icon.buttonPrimary.styles.height;
