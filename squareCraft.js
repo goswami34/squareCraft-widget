@@ -594,6 +594,36 @@ window.pendingModifications = pendingModifications;
     await fetchButtonIconModifications();
   };
 
+  // Test function to check if button elements exist
+  window.checkButtonElements = () => {
+    console.log("🔍 Checking button elements on page...");
+
+    const primaryButtons = document.querySelectorAll(
+      ".sqs-button-element--primary"
+    );
+    console.log("Primary buttons found:", primaryButtons.length);
+
+    const allButtons = document.querySelectorAll('[class*="button"]');
+    console.log("All buttons found:", allButtons.length);
+
+    const icons = document.querySelectorAll(
+      ".sqscraft-button-icon, .sqscraft-image-icon"
+    );
+    console.log("Icons found:", icons.length);
+
+    if (primaryButtons.length > 0) {
+      console.log("First primary button:", primaryButtons[0]);
+      console.log("Button HTML:", primaryButtons[0].outerHTML);
+    }
+
+    if (allButtons.length > 0) {
+      console.log(
+        "All button classes:",
+        Array.from(allButtons).map((btn) => btn.className)
+      );
+    }
+  };
+
   // Make applyStylesAsExternalCSS available globally
   window.applyStylesAsExternalCSS = applyStylesAsExternalCSS;
 
@@ -3387,6 +3417,13 @@ window.pendingModifications = pendingModifications;
             );
             console.log("🔍 All icons found:", allIcons.length);
 
+            // Debug: Log the actual button elements found
+            if (buttons.length > 0) {
+              console.log("🔍 First button found:", buttons[0]);
+              console.log("🔍 Button classes:", buttons[0].className);
+              console.log("🔍 Button HTML:", buttons[0].outerHTML);
+            }
+
             buttons.forEach((button) => {
               // Apply gap to button element
               if (icon.buttonPrimary.styles.gap) {
@@ -3420,6 +3457,10 @@ window.pendingModifications = pendingModifications;
                 if (icon.buttonPrimary.styles.transform) {
                   iconElement.style.transform =
                     icon.buttonPrimary.styles.transform;
+                  console.log(
+                    "🔄 Applied transform:",
+                    icon.buttonPrimary.styles.transform
+                  );
                 }
 
                 // Apply color properties
