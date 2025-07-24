@@ -1509,9 +1509,16 @@ export function initButtonIconColorPalate(
     "button-icon-color-transparency-bar"
   );
 
-  // Button-specific icon color application function
-  async function applyButtonIconColorFromPalette(color, alpha = 1) {
-    console.log("🎨 Applying icon color:", color, "with alpha:", alpha);
+  let saveTimeout = null; // For debouncing save operations
+
+  // Function to apply visual changes only (no database save)
+  function applyButtonIconColorVisualChanges(color, alpha = 1) {
+    console.log(
+      "🎨 Applying icon color visual changes:",
+      color,
+      "with alpha:",
+      alpha
+    );
 
     const currentElement = selectedElement?.();
     if (!currentElement) {
@@ -1624,10 +1631,66 @@ export function initButtonIconColorPalate(
         console.log("✅ Icon conversion completed for this button");
       });
     }
+  }
+
+  // Function to save to database only
+  async function applyButtonIconColorSave(color, alpha = 1) {
+    console.log(
+      "🎨 Saving icon color to database:",
+      color,
+      "with alpha:",
+      alpha
+    );
+
+    const currentElement = selectedElement?.();
+    if (!currentElement) {
+      console.log("❌ No current element found");
+      return;
+    }
+
+    const btn = currentElement.querySelector(
+      ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+    );
+    if (!btn) {
+      console.log("❌ No button element found");
+      return;
+    }
+
+    const typeClass = [...btn.classList].find((cls) =>
+      cls.startsWith("sqs-button-element--")
+    );
+    if (!typeClass) {
+      console.log("❌ No button type class found");
+      return;
+    }
+
+    // Convert color to rgba
+    let rgbaColor;
+    if (color.startsWith("rgb(")) {
+      rgbaColor = color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+    } else if (color.startsWith("rgba(")) {
+      rgbaColor = color.replace(
+        /rgba\(([^,]+),([^,]+),([^,]+),([^)]+)\)/,
+        (_, r, g, b) => `rgba(${r},${g},${b},${alpha})`
+      );
+    } else {
+      const tempDiv = document.createElement("div");
+      tempDiv.style.color = color;
+      document.body.appendChild(tempDiv);
+      const rgb = getComputedStyle(tempDiv).color;
+      document.body.removeChild(tempDiv);
+      rgbaColor = rgb.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
+    }
 
     // Save to database using updateIconStyles to merge color with all icon properties
     const blockId = currentElement.id;
     if (blockId) {
+      console.log("🎨 Saving color to database:", {
+        blockId: blockId,
+        typeClass: typeClass,
+        color: rgbaColor,
+      });
+
       // Always use the icon selector for updateIconStyles
       const result = await updateIconStyles(blockId, typeClass, {
         color: rgbaColor,
@@ -1646,6 +1709,10 @@ export function initButtonIconColorPalate(
         const iconMod = pendingMods.find((mod) => mod.tagType === "buttonIcon");
 
         if (iconMod && iconMod.css.iconProperties.styles) {
+          console.log(
+            "🎨 Final merged styles being saved:",
+            iconMod.css.iconProperties.styles
+          );
           await saveButtonIconModifications(blockId, iconMod.css);
 
           if (typeof showNotification === "function") {
@@ -1654,6 +1721,20 @@ export function initButtonIconColorPalate(
         }
       }
     }
+  }
+
+  // Main function that applies visual changes and debounces save
+  function applyButtonIconColorFromPalette(color, alpha = 1) {
+    // Apply visual changes immediately
+    applyButtonIconColorVisualChanges(color, alpha);
+
+    // Debounce the save operation
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+    saveTimeout = setTimeout(() => {
+      applyButtonIconColorSave(color, alpha).catch(console.error);
+    }, 500); // Wait 500ms after last change before saving
   }
 
   function updateTransparencyField(hue) {
@@ -1795,10 +1876,7 @@ export function initButtonIconColorPalate(
         }
 
         updateTransparencyField(dynamicHue);
-        applyButtonIconColorFromPalette(
-          finalColor,
-          currentTransparency / 100
-        ).catch(console.error);
+        applyButtonIconColorFromPalette(finalColor, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
@@ -1839,9 +1917,7 @@ export function initButtonIconColorPalate(
           colorCode.textContent = rgb;
         }
 
-        applyButtonIconColorFromPalette(rgb, currentTransparency / 100).catch(
-          console.error
-        );
+        applyButtonIconColorFromPalette(rgb, currentTransparency / 100);
       };
 
       document.onmouseup = () => {
@@ -1890,9 +1966,7 @@ export function initButtonIconColorPalate(
     const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
 
     colorCode.textContent = rgb;
-    applyButtonIconColorFromPalette(rgb, currentTransparency / 100).catch(
-      console.error
-    );
+    applyButtonIconColorFromPalette(rgb, currentTransparency / 100);
   }
 
   if (transparencyField && transparencyBullet) {
@@ -1918,7 +1992,7 @@ export function initButtonIconColorPalate(
           applyButtonIconColorFromPalette(
             currentColor,
             currentTransparency / 100
-          ).catch(console.error);
+          );
         }
       };
       document.onmouseup = () => {
@@ -1952,9 +2026,7 @@ export function initButtonIconColorPalate(
         allColorBullet.style.top = `${bulletTop}px`;
       }
 
-      applyButtonIconColorFromPalette(color, currentTransparency / 100).catch(
-        console.error
-      );
+      applyButtonIconColorFromPalette(color, currentTransparency / 100);
 
       requestAnimationFrame(() => {
         const canvas = selectorField.querySelector("canvas");
@@ -1998,9 +2070,7 @@ export function initButtonIconColorPalate(
         }
       });
 
-      applyButtonIconColorFromPalette(color, currentTransparency / 100).catch(
-        console.error
-      );
+      applyButtonIconColorFromPalette(color, currentTransparency / 100);
     };
 
     container.appendChild(swatch);
