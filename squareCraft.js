@@ -3809,19 +3809,40 @@ window.pendingModifications = pendingModifications;
             const buttonSelector = styleObj.selector
               .replace(/\.sqscraft-button-icon.*$/, "")
               .trim();
+            console.log(
+              `🔍 Looking for buttons with selector: "${buttonSelector}"`
+            );
             try {
               const buttons = await waitForElement(buttonSelector);
-              buttons.forEach((btn) =>
+              // Convert NodeList to Array to use forEach
+              const buttonArray = Array.from(buttons);
+              buttonArray.forEach((btn) =>
                 applyButtonIconStyles(btn, styleObj.styles, type)
               );
               console.log(
-                `✅ Applied ${type} icon styles to ${buttons.length} button(s) for element ${elementId}`
+                `✅ Applied ${type} icon styles to ${buttonArray.length} button(s) for element ${elementId}`
               );
             } catch (e) {
               console.warn(
                 `⛔ ${type} button not found in time for selector: ${buttonSelector}`,
                 e
               );
+
+              // Fallback: Check if buttons exist without waiting
+              const existingButtons = document.querySelectorAll(buttonSelector);
+              console.log(
+                `🔍 Fallback check: Found ${existingButtons.length} buttons with selector "${buttonSelector}"`
+              );
+
+              if (existingButtons.length > 0) {
+                const buttonArray = Array.from(existingButtons);
+                buttonArray.forEach((btn) =>
+                  applyButtonIconStyles(btn, styleObj.styles, type)
+                );
+                console.log(
+                  `✅ Applied ${type} icon styles to ${buttonArray.length} button(s) via fallback for element ${elementId}`
+                );
+              }
             }
           }
         }
