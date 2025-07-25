@@ -1196,7 +1196,7 @@ export async function saveButtonIconModifications(blockId, css) {
     return { success: false, error: error.message };
   }
 }
-// button icon save modification end here
+// button icon save modification code end here
 
 // button shadow save modification start here
 export async function saveButtonShadowModifications(blockId, css) {
