@@ -27,8 +27,10 @@ function showNotification(message, type = "info") {
 }
 
 export function handleAllFontFamilyClick(event = null, context = null) {
-  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
-    context;
+  // Use global variables from squareCraft.js if context is not provided
+  const lastClickedElement = context?.lastClickedElement || window.lastClickedElement;
+  const selectedSingleTextType = context?.selectedSingleTextType || window.selectedSingleTextType;
+  const addPendingModification = context?.addPendingModification || window.addPendingModification;
 
   // Toggle the font family dropdown
   const fontFamilyOptions = document.getElementById("scTypographyFontFamilyOptions");
@@ -54,7 +56,9 @@ export function handleAllFontFamilyClick(event = null, context = null) {
 
 // Function to initialize typography font family controls
 function initTypographyFontFamilyControlsIfNeeded(context) {
-  const { lastClickedElement, selectedSingleTextType, addPendingModification } = context;
+  const lastClickedElement = context?.lastClickedElement || window.lastClickedElement;
+  const selectedSingleTextType = context?.selectedSingleTextType || window.selectedSingleTextType;
+  const addPendingModification = context?.addPendingModification || window.addPendingModification;
   
   // Import and initialize the font family controls
   import('./initTypographyFontFamilyControls.js').then(module => {
@@ -82,7 +86,9 @@ function saveTypographyModifications(blockId, textType, styles) {
 
 // Function to handle font family selection from dropdown
 export function handleFontFamilySelection(fontFamily, context) {
-  const { lastClickedElement, selectedSingleTextType, addPendingModification } = context;
+  const lastClickedElement = context?.lastClickedElement || window.lastClickedElement;
+  const selectedSingleTextType = context?.selectedSingleTextType || window.selectedSingleTextType;
+  const addPendingModification = context?.addPendingModification || window.addPendingModification;
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");

@@ -8,7 +8,16 @@ export function initTypographyFontFamilyControls(
     "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPpLHcfY1Z1SfUIe78z6UvPe-wF31iwRk";
 
   const fontFamilyOptions = document.getElementById("scTypographyFontFamilyOptions");
-  if (!fontFamilyOptions) return;
+  if (!fontFamilyOptions) {
+    console.warn("❌ Typography font family options container not found");
+    return;
+  }
+
+  // Check if fonts are already loaded
+  if (fontFamilyOptions.children.length > 0) {
+    console.log("✅ Fonts already loaded, skipping initialization");
+    return;
+  }
 
   const loader = document.createElement("div");
   loader.id = "sc-typography-font-loader";
@@ -100,7 +109,7 @@ export function initTypographyFontFamilyControls(
           label.style.setProperty("font-family", fontFace, "important");
         }
 
-        // Get the selected text type from context
+        // Get the selected text type from global variables or active state
         const selectedTextType = getSelectedTextType();
         if (!selectedTextType) {
           showNotification("Please select a text type first", "error");
@@ -168,7 +177,9 @@ export function initTypographyFontFamilyControls(
             item.innerText = weight;
 
             item.onclick = () => {
-              fontWeightSelectedLabel.innerText = weight;
+              if (fontWeightSelectedLabel) {
+                fontWeightSelectedLabel.innerText = weight;
+              }
               fontWeightOptions.classList.add("sc-hidden");
 
               // Apply weight style to DOM
@@ -201,9 +212,11 @@ export function initTypographyFontFamilyControls(
             fontWeightOptions.appendChild(item);
           });
 
-          fontWeightSelectedLabel.innerText = variants.includes("400")
-            ? "400"
-            : variants[0] || "";
+          if (fontWeightSelectedLabel) {
+            fontWeightSelectedLabel.innerText = variants.includes("400")
+              ? "400"
+              : variants[0] || "";
+          }
         }
 
         // Close the dropdown
@@ -219,10 +232,29 @@ export function initTypographyFontFamilyControls(
 
 // Helper function to get selected text type
 function getSelectedTextType() {
-  // This should be implemented based on your text type selection logic
-  // You might need to track the selected text type in your context
-  const selectedTextType = document.querySelector('[data-text-type].sc-active')?.getAttribute('data-text-type');
-  return selectedTextType;
+  // Check for active text type buttons
+  const activeTextTypeButton = document.querySelector('[data-text-type].sc-active, [data-text-type].active');
+  if (activeTextTypeButton) {
+    return activeTextTypeButton.getAttribute('data-text-type');
+  }
+
+  // Check global variable
+  if (window.selectedSingleTextType) {
+    return window.selectedSingleTextType;
+  }
+
+  // Check for active heading buttons
+  const activeHeading = document.querySelector('#heading1.sc-active, #heading2.sc-active, #heading3.sc-active, #heading4.sc-active');
+  if (activeHeading) {
+    const headingId = activeHeading.id;
+    if (headingId === 'heading1') return 'heading1';
+    if (headingId === 'heading2') return 'heading2';
+    if (headingId === 'heading3') return 'heading3';
+    if (headingId === 'heading4') return 'heading4';
+  }
+
+  // Default to paragraph1 if nothing is selected
+  return 'paragraph1';
 }
 
 // Helper function to get CSS selector based on text type
@@ -243,7 +275,7 @@ function getTextTypeSelector(selectedTextType) {
     case "heading4":
       return "h4";
     default:
-      return null;
+      return "p"; // fallback
   }
 }
 

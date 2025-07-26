@@ -1,4 +1,5 @@
 import { createHeadingDropdown } from "https://goswami34.github.io/squareCraft-widget/generateHeadingDropdown.js";
+import { typoAllSelect } from "https://goswami34.github.io/squareCraft-widget/src/components/Typo/typoAllSelect.js";
 
 export function WidgetTypoSection(id) {
   const fontSizes = [
@@ -73,6 +74,11 @@ export function WidgetTypoSection(id) {
       <div class=" sc-mt-2 sc-px-2 sc-flex sc-justify-between">
          <p class="sc-text-sm sc-universal sc-roboto sc-text-gray-300">Text</p>
          <img src="https://goswami34.github.io/squareCraft-widget/public/eye.svg" width="12px" />
+      </div>
+
+      <!-- New Typography Font Family Dropdown -->
+      <div class="sc-px-2 sc-mt-2">
+        ${typoAllSelect(fontSizes, LetterSpacing)}
       </div>
 
       <div>

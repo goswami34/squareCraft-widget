@@ -48,6 +48,18 @@ window.pendingModifications = pendingModifications;
   let widgetContainer = null;
   let selectedTextElement = null;
 
+  // Wrapper function to update selectedElement and global variable
+  function setSelectedElement(val) {
+    selectedElement = val;
+    window.lastClickedElement = val;
+  }
+
+  // Wrapper function to update selectedSingleTextType and global variable
+  function setSelectedSingleTextType(tag) {
+    selectedSingleTextType = tag;
+    window.selectedSingleTextType = tag;
+  }
+
   let widgetLoaded = false;
   const widgetScript = document.getElementById("sc-script");
 
@@ -1217,8 +1229,8 @@ window.pendingModifications = pendingModifications;
     handleBlockClick(event, {
       getTextType,
       selectedElement,
-      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
-      setSelectedElement: (val) => (selectedElement = val),
+      setSelectedSingleTextType: setSelectedSingleTextType,
+      setSelectedElement: setSelectedElement,
       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
       setLastClickedElement: (val) => (lastClickedElement = val),
       setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
@@ -1246,14 +1258,14 @@ window.pendingModifications = pendingModifications;
     handleAllBlockClick(event, {
       getTextType,
       selectedElement,
-      setSelectedElement: (val) => (selectedElement = val),
+      setSelectedElement: setSelectedElement,
       setLastClickedBlockId: (val) => (lastClickedBlockId = val),
       setLastClickedElement: (val) => (lastClickedElement = val),
       setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
       setLastActiveAlignmentElement: (val) =>
         (lastActiveAlignmentElement = val),
       // setSelectedTextType: (tagsArray) => selectedTextType = tagsArray,
-      setSelectedSingleTextType: (tag) => (selectedSingleTextType = tag),
+      setSelectedSingleTextType: setSelectedSingleTextType,
       setSelectedTextElement: (clickedTag) =>
         (selectedTextElement = clickedTag),
       lastClickedBlockId,
@@ -4747,6 +4759,14 @@ window.pendingModifications = pendingModifications;
         "https://goswami34.github.io/squareCraft-widget/src/styles/parent.css";
       widgetContainer.appendChild(styleLink);
 
+      // Add typography font dropdown CSS
+      const typographyStyleLink = document.createElement("link");
+      typographyStyleLink.rel = "stylesheet";
+      typographyStyleLink.type = "text/css";
+      typographyStyleLink.href =
+        "https://goswami34.github.io/squareCraft-widget/src/styles/typography-font-dropdown.css";
+      widgetContainer.appendChild(typographyStyleLink);
+
       const contentWrapper = document.createElement("div");
       contentWrapper.innerHTML = htmlString;
       widgetContainer.appendChild(contentWrapper);
@@ -4819,6 +4839,10 @@ window.pendingModifications = pendingModifications;
       initImageUploadPreview(() => selectedElement);
       initImageResetHandler();
       triggerLaunchAnimation();
+
+      // Initialize Typography Font Family System
+      initTypographyFontFamilySystem();
+
       if (clickedBlock) {
         waitForElement("#typoSection, #imageSection, #buttonSection")
           .then(() => {
@@ -4828,7 +4852,7 @@ window.pendingModifications = pendingModifications;
                 getTextType,
                 // getHoverTextType,
                 selectedElement,
-                setSelectedElement: (val) => (selectedElement = val),
+                setSelectedElement: setSelectedElement,
                 setLastClickedBlockId: (val) => (lastClickedBlockId = val),
                 setLastClickedElement: (val) => (lastClickedElement = val),
                 setLastAppliedAlignment: (val) => (lastAppliedAlignment = val),
@@ -4842,6 +4866,44 @@ window.pendingModifications = pendingModifications;
             console.error(error.message);
           });
       }
+    }
+  }
+
+  // Typography Font Family System Initialization
+  async function initTypographyFontFamilySystem() {
+    try {
+      // Import the typography font family system
+      const { initTypographyFontFamilyControls } = await import('./src/All/initTypographyFontFamilyControls.js');
+      const { initTypographyFontFamilyEvents } = await import('./src/All/handleAllFontFamily.js');
+      
+      // Expose global variables for typography system
+      window.lastClickedElement = selectedElement;
+      window.selectedSingleTextType = selectedSingleTextType;
+      window.addPendingModification = addPendingModification;
+      
+      // Create context for typography system
+      const typographyContext = {
+        lastClickedElement: selectedElement,
+        selectedSingleTextType: selectedSingleTextType,
+        addPendingModification: (blockId, modifications) => {
+          addPendingModification(blockId, modifications);
+        }
+      };
+
+      // Initialize the typography font family events
+      initTypographyFontFamilyEvents(typographyContext);
+
+      // Wait for the typography section to be available
+      waitForElement("#scFontSelect, #scTypographyFontFamilyOptions")
+        .then(() => {
+          console.log("✅ Typography font family system initialized");
+        })
+        .catch((error) => {
+          console.warn("⚠️ Typography font family dropdown not found yet:", error.message);
+        });
+
+    } catch (error) {
+      console.error("❌ Failed to initialize typography font family system:", error);
     }
   }
 
