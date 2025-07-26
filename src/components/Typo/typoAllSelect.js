@@ -4,17 +4,26 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
       class="sc-mt-2 sc-relative sc-grid  sc-grid-cols-12 sc-gap-2 ">
  
       <div id="scFontSelect"
-         class="sc-flex sc-bg-494949 sc-h-9 sc-col-span-8 sc-rounded-6px sc-justify-between sc-border sc-border-solid sc-border-585858 sc-items-center">
+         class="sc-flex sc-bg-494949 sc-h-9 sc-col-span-8 sc-rounded-6px sc-justify-between sc-border sc-border-solid sc-border-585858 sc-items-center sc-relative">
          
-         <select class=" sc-text-sm sc-poppins sc-font-light" id="squareCraftAllFontFamily"
-            style="background: transparent; color: white; border: none; outline: none; appearance: none; cursor: pointer; padding: 0 8px;">
-            <option value="" selected disabled hidden>Select Font erer</option>
-         </select>
+         <div id="scTypographyFontName" class="sc-text-sm sc-poppins sc-font-light sc-px-2 sc-text-white sc-cursor-pointer">
+            Select Font
+         </div>
 
-         <div class="sc-bg-3f3f3f sc-px-2"
-            style="height: 27px; padding: 0 3px; pointer-events: none;">
+         <div class="sc-bg-3f3f3f sc-px-2 sc-cursor-pointer"
+            style="height: 27px; padding: 0 3px;">
             <img class="sc-rotate-180 sc-mt-3" width="12px"
                src="https://goswami34.github.io/squareCraft-widget/public/arrow.svg" alt="">
+         </div>
+
+         <!-- Font Family Dropdown Options -->
+         <div id="scTypographyFontFamilyOptions" class="sc-hidden sc-absolute sc-top-full sc-left-0 sc-right-0 sc-mt-1 sc-bg-3f3f3f sc-max-h-60 sc-overflow-y-auto sc-rounded-6px sc-border sc-border-585858 sc-z-50">
+            <!-- Fonts will be populated here -->
+         </div>
+
+         <!-- Font Weight Dropdown Options -->
+         <div id="scTypographyFontWeightOptions" class="sc-hidden sc-absolute sc-top-full sc-left-0 sc-right-0 sc-mt-1 sc-bg-3f3f3f sc-max-h-60 sc-overflow-y-auto sc-rounded-6px sc-border sc-border-585858 sc-z-50">
+            <!-- Font weights will be populated here -->
          </div>
       </div>
  

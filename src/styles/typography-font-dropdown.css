@@ -1,0 +1,153 @@
+/* Typography Font Family Dropdown Styles */
+
+.sc-dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #585858;
+  font-size: 12px;
+  color: white;
+}
+
+.sc-dropdown-item:hover {
+  background-color: #494949;
+}
+
+.sc-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+/* Font Family Options Container */
+#scTypographyFontFamilyOptions {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  scrollbar-width: thin;
+  scrollbar-color: #585858 #3f3f3f;
+}
+
+#scTypographyFontFamilyOptions::-webkit-scrollbar {
+  width: 6px;
+}
+
+#scTypographyFontFamilyOptions::-webkit-scrollbar-track {
+  background: #3f3f3f;
+  border-radius: 3px;
+}
+
+#scTypographyFontFamilyOptions::-webkit-scrollbar-thumb {
+  background: #585858;
+  border-radius: 3px;
+}
+
+#scTypographyFontFamilyOptions::-webkit-scrollbar-thumb:hover {
+  background: #666666;
+}
+
+/* Font Weight Options Container */
+#scTypographyFontWeightOptions {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  scrollbar-width: thin;
+  scrollbar-color: #585858 #3f3f3f;
+}
+
+#scTypographyFontWeightOptions::-webkit-scrollbar {
+  width: 6px;
+}
+
+#scTypographyFontWeightOptions::-webkit-scrollbar-track {
+  background: #3f3f3f;
+  border-radius: 3px;
+}
+
+#scTypographyFontWeightOptions::-webkit-scrollbar-thumb {
+  background: #585858;
+  border-radius: 3px;
+}
+
+#scTypographyFontWeightOptions::-webkit-scrollbar-thumb:hover {
+  background: #666666;
+}
+
+/* Font Name Display */
+#scTypographyFontName {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+#scTypographyFontName:hover {
+  color: #EF7C2F;
+}
+
+/* Dropdown Arrow Animation */
+#scFontSelect .sc-bg-3f3f3f img {
+  transition: transform 0.2s ease;
+}
+
+#scFontSelect:hover .sc-bg-3f3f3f img {
+  transform: rotate(180deg);
+}
+
+/* Loading Animation */
+#sc-typography-font-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Notification Styles */
+.sc-notification {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #scTypographyFontFamilyOptions,
+  #scTypographyFontWeightOptions {
+    max-height: 200px;
+    width: 100%;
+  }
+  
+  .sc-dropdown-item {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+}
+
+/* Focus States for Accessibility */
+.sc-dropdown-item:focus {
+  outline: 2px solid #EF7C2F;
+  outline-offset: -2px;
+}
+
+#scTypographyFontName:focus {
+  outline: 2px solid #EF7C2F;
+  outline-offset: 2px;
+} 

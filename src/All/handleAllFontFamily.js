@@ -30,23 +30,69 @@ export function handleAllFontFamilyClick(event = null, context = null) {
   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
     context;
 
-  if (!event) {
-    event = { target: document.getElementById("squareCraftAllFontFamily") };
+  // Toggle the font family dropdown
+  const fontFamilyOptions = document.getElementById("scTypographyFontFamilyOptions");
+  const fontSelect = document.getElementById("scFontSelect");
+  
+  if (fontFamilyOptions && fontSelect) {
+    const isHidden = fontFamilyOptions.classList.contains("sc-hidden");
+    
+    // Hide all other dropdowns first
+    document.querySelectorAll('.sc-dropdown-options').forEach(dropdown => {
+      dropdown.classList.add("sc-hidden");
+    });
+    
+    if (isHidden) {
+      fontFamilyOptions.classList.remove("sc-hidden");
+      // Initialize font family controls if not already done
+      initTypographyFontFamilyControlsIfNeeded(context);
+    } else {
+      fontFamilyOptions.classList.add("sc-hidden");
+    }
+  }
+}
+
+// Function to initialize typography font family controls
+function initTypographyFontFamilyControlsIfNeeded(context) {
+  const { lastClickedElement, selectedSingleTextType, addPendingModification } = context;
+  
+  // Import and initialize the font family controls
+  import('./initTypographyFontFamilyControls.js').then(module => {
+    const { initTypographyFontFamilyControls } = module;
+    
+    initTypographyFontFamilyControls(
+      () => lastClickedElement,
+      addPendingModification,
+      showNotification,
+      saveTypographyModifications
+    );
+  }).catch(err => {
+    console.error("Failed to load typography font family controls:", err);
+  });
+}
+
+// Function to save typography modifications
+function saveTypographyModifications(blockId, textType, styles) {
+  // This function should save the typography modifications to your storage system
+  console.log("Saving typography modifications:", { blockId, textType, styles });
+  
+  // You can implement your save logic here
+  // For example, save to localStorage, send to server, etc.
+}
+
+// Function to handle font family selection from dropdown
+export function handleFontFamilySelection(fontFamily, context) {
+  const { lastClickedElement, selectedSingleTextType, addPendingModification } = context;
+
+  if (!lastClickedElement) {
+    showNotification("Please select a block first", "error");
+    return;
   }
 
-  const selectedFontFamily = event.target.value;
-
-  // if (!lastClickedElement) {
-  //   showNotification("Please select a block first", "error");
-  //   return;
-  // }
-
-  // if (!selectedSingleTextType) {
-  //   showNotification("Please select a text type first", "error");
-  //   return;
-  // }
-
-  //   const block = lastClickedElement.closest('[id^="block-"]');
+  if (!selectedSingleTextType) {
+    showNotification("Please select a text type first", "error");
+    return;
+  }
 
   let block = lastClickedElement;
   if (!block || !block.id || !block.id.startsWith("block-")) {
@@ -75,35 +121,19 @@ export function handleAllFontFamilyClick(event = null, context = null) {
     paragraphSelector = "h4";
   }
 
-  // Check if paragraphSelector is empty
   if (!paragraphSelector) {
     showNotification("Please select a valid text type first", "error");
     return;
   }
 
-  // When a text type is selected
-  const selectedElements = block.querySelectorAll(paragraphSelector);
-  console.log("🔍 selectedElements:", selectedElements);
-  if (selectedElements.length > 0) {
-    const currentFontFamily = window.getComputedStyle(
-      selectedElements[0]
-    ).fontFamily;
-    console.log("🔍 currentFontFamily:", currentFontFamily);
-    // Update dropdown to show current font family
-    const fontFamilyDropdown = document.getElementById(
-      "squareCraftAllFontFamily"
-    );
-    if (fontFamilyDropdown) {
-      // Find and select the matching option
-      for (let i = 0; i < fontFamilyDropdown.options.length; i++) {
-        if (fontFamilyDropdown.options[i].value === currentFontFamily) {
-          fontFamilyDropdown.selectedIndex = i;
-          break;
-        }
-      }
-    }
+  // Update the font name display
+  const fontNameLabel = document.getElementById("scTypographyFontName");
+  if (fontNameLabel) {
+    fontNameLabel.innerText = fontFamily;
+    fontNameLabel.style.fontFamily = `"${fontFamily}", sans-serif`;
   }
 
+  // Apply style to DOM
   const styleId = `style-${block.id}-${selectedSingleTextType}-fontFamily`;
   let styleTag = document.getElementById(styleId);
 
@@ -114,17 +144,44 @@ export function handleAllFontFamilyClick(event = null, context = null) {
   }
 
   styleTag.innerHTML = `
-      #${block.id} ${paragraphSelector} {
-        font-family: '${selectedFontFamily}' !important;
-      }
-    `;
+    #${block.id} ${paragraphSelector} {
+      font-family: '${fontFamily}' !important;
+    }
+  `;
 
+  // Save to pending modifications
   addPendingModification(block.id, {
-    "font-family": selectedFontFamily,
+    "font-family": fontFamily,
     target: selectedSingleTextType,
   });
 
-  showNotification();
-  // `✅ Font family "${selectedFontFamily}" applied to ${selectedSingleTextType}`,
-  // "success"
+  showNotification(`✅ Font family "${fontFamily}" applied to ${selectedSingleTextType}`, "success");
+}
+
+// Add click event listener to font select container
+export function initTypographyFontFamilyEvents(context) {
+  const fontSelect = document.getElementById("scFontSelect");
+  if (fontSelect) {
+    fontSelect.addEventListener("click", (event) => {
+      // Don't trigger if clicking on dropdown options
+      if (event.target.closest('#scTypographyFontFamilyOptions') || 
+          event.target.closest('#scTypographyFontWeightOptions')) {
+        return;
+      }
+      
+      handleAllFontFamilyClick(event, context);
+    });
+  }
+
+  // Close dropdowns when clicking outside
+  document.addEventListener("click", (event) => {
+    const fontSelect = document.getElementById("scFontSelect");
+    const fontFamilyOptions = document.getElementById("scTypographyFontFamilyOptions");
+    const fontWeightOptions = document.getElementById("scTypographyFontWeightOptions");
+    
+    if (!fontSelect?.contains(event.target)) {
+      fontFamilyOptions?.classList.add("sc-hidden");
+      fontWeightOptions?.classList.add("sc-hidden");
+    }
+  });
 }
