@@ -8,7 +8,7 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
          
          <select class=" sc-text-sm sc-poppins sc-font-light" id="squareCraftAllFontFamily"
             style="background: transparent; color: white; border: none; outline: none; appearance: none; cursor: pointer; padding: 0 8px;">
-            <option value="" selected disabled hidden>Select Font</option>
+            <option value="" selected disabled hidden>Select Font erer</option>
          </select>
 
          <div class="sc-bg-3f3f3f sc-px-2"
