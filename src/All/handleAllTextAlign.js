@@ -145,7 +145,7 @@ export function handleAllTextAlignClick(event = null, context = null) {
       "text-align": textAlign,
       target: selectedSingleTextType,
     },
-    "all"
+    "typographyTextAlign"
   );
 
   // UI state

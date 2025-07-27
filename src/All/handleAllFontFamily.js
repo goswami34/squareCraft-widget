@@ -214,10 +214,14 @@ export function handleFontFamilySelection(fontFamily, context) {
   `;
 
   // Save to pending modifications
-  addPendingModification(block.id, {
-    "font-family": fontFamily,
-    target: selectedSingleTextType,
-  });
+  addPendingModification(
+    block.id,
+    {
+      "font-family": fontFamily,
+      target: selectedSingleTextType,
+    },
+    "typographyFontFamily"
+  );
 
   showNotification(
     `✅ Font family "${fontFamily}" applied to ${selectedSingleTextType}`,

@@ -116,10 +116,14 @@ export function handleAllFontSizeClick(event = null, context = null) {
       }
     `;
 
-  addPendingModification(block.id, {
-    "font-size": fontSize,
-    target: selectedSingleTextType,
-  });
+  addPendingModification(
+    block.id,
+    {
+      "font-size": fontSize,
+      target: selectedSingleTextType,
+    },
+    "typographyFontSize"
+  );
 
   // STEP 5️⃣: Update UI highlighting
   document.querySelectorAll('[id^="scAllFontSizeInput"]').forEach((el) => {

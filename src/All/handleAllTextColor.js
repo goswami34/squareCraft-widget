@@ -107,10 +107,14 @@ export function handleAllTextColorClick(event = null, context = null) {
       }
     `;
 
-  addPendingModification(block.id, {
-    color: textColor,
-    target: selectedSingleTextType,
-  });
+  addPendingModification(
+    block.id,
+    {
+      color: textColor,
+      target: selectedSingleTextType,
+    },
+    "typographyTextColor"
+  );
 
   showNotification(
     // `Text color applied to: ${selectedSingleTextType}`,

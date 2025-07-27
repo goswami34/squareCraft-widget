@@ -109,10 +109,14 @@ export function handleAllLetterSpacingClick(event = null, context = null) {
           }
         `;
 
-  addPendingModification(block.id, {
-    "letter-spacing": letterSpacing,
-    target: selectedSingleTextType,
-  });
+  addPendingModification(
+    block.id,
+    {
+      "letter-spacing": letterSpacing,
+      target: selectedSingleTextType,
+    },
+    "typographyLetterSpacing"
+  );
 
   // Update active button
   document.querySelectorAll('[id^="scLetterSpacing"]').forEach((el) => {

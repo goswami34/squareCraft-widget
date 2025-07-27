@@ -113,11 +113,15 @@ export async function handleAllFontWeightClick(event = null, context = null) {
     specificSelector = `#${block.id} ${selectedSingleTextType}`;
   }
 
-  addPendingModification(block.id, {
-    "font-weight": fontWeight,
-    target: selectedSingleTextType,
-    selector: specificSelector,
-  });
+  addPendingModification(
+    block.id,
+    {
+      "font-weight": fontWeight,
+      target: selectedSingleTextType,
+      selector: specificSelector,
+    },
+    "typographyFontWeight"
+  );
 
   // Update active button - Fixed to target the correct element
   const clickedElement = event.target.closest('[id^="scFontWeight"]');

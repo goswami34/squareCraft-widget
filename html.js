@@ -279,6 +279,24 @@ async function handlePublish() {
           case "imageOverlay":
             result = await saveImageOverlayModifications(blockId, mod.css);
             break;
+          // ✅ ADD TYPOGRAPHY CASES HERE
+          case "typographyAll":
+          case "typographyFontFamily":
+          case "typographyFontSize":
+          case "typographyFontWeight":
+          case "typographyLineHeight":
+          case "typographyTextAlign":
+          case "typographyTextColor":
+          case "typographyTextHighlight":
+          case "typographyTextTransform":
+          case "typographyLetterSpacing":
+            // Use the typography-specific save function
+            result = await saveTypographyAllModifications(
+              blockId,
+              mod.css,
+              mod.target || mod.textType
+            );
+            break;
           case "strong":
           case "linkText":
           case "typography":
@@ -1640,3 +1658,6 @@ export function testSaveButtonIconModifications() {
 
 // Make test function available globally
 window.testSaveButtonIconModifications = testSaveButtonIconModifications;
+
+// Make typography function available globally
+window.saveTypographyAllModifications = saveTypographyAllModifications;

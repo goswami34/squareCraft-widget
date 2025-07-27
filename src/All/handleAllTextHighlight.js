@@ -95,10 +95,14 @@ export function handleAllTextHighlightClick(event = null, context = null) {
       }
     `;
 
-  addPendingModification(block.id, {
-    "background-image": `linear-gradient(to top, ${selectedHighlightColor} 50%, transparent 0%)`,
-    target: selectedSingleTextType,
-  });
+  addPendingModification(
+    block.id,
+    {
+      "background-image": `linear-gradient(to top, ${selectedHighlightColor} 50%, transparent 0%)`,
+      target: selectedSingleTextType,
+    },
+    "typographyTextHighlight"
+  );
 
   showNotification(
     `Text highlight applied to: ${selectedSingleTextType}`,

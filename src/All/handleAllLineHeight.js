@@ -109,10 +109,14 @@ export function handleAllLineHeightClick(event = null, context = null) {
             }
           `;
 
-  addPendingModification(block.id, {
-    "line-height": lineHeight,
-    target: selectedSingleTextType,
-  });
+  addPendingModification(
+    block.id,
+    {
+      "line-height": lineHeight,
+      target: selectedSingleTextType,
+    },
+    "typographyLineHeight"
+  );
 
   // Update active button
   document.querySelectorAll('[id^="scLineHeight"]').forEach((el) => {

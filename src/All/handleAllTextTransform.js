@@ -113,10 +113,14 @@ export function handleAllTextTransformClick(event = null, context = null) {
       }
     `;
 
-  addPendingModification(block.id, {
-    "text-transform": textTransform,
-    target: selectedSingleTextType,
-  });
+  addPendingModification(
+    block.id,
+    {
+      "text-transform": textTransform,
+      target: selectedSingleTextType,
+    },
+    "typographyTextTransform"
+  );
 
   // Update active button
   document.querySelectorAll('[id^="scTextTransform"]').forEach((el) => {
