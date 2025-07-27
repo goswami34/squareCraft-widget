@@ -117,55 +117,57 @@ export async function handleAllFontWeightClick(event = null, context = null) {
     specificSelector = `#${block.id} ${selectedSingleTextType}`;
   }
 
-  // ✅ DIRECT SAVE TO DATABASE
-  if (saveTypographyAllModifications) {
-    console.log("🚀 Directly saving font-weight modification to database...");
+  // ✅ ADD TO PENDING MODIFICATIONS FOR PUBLISH BUTTON
+  console.log("📝 Adding font-weight modification to pending modifications...");
 
-    const cssData = {
+  addPendingModification(
+    block.id,
+    {
       "font-weight": fontWeight,
       target: selectedSingleTextType,
       selector: specificSelector,
-    };
+    },
+    "typographyFontWeight"
+  );
 
-    try {
-      const result = await saveTypographyAllModifications(
-        block.id,
-        cssData,
-        selectedSingleTextType
-      );
+  // ✅ TRIGGER PUBLISH BUTTON FUNCTIONALITY
+  if (window.handlePublish) {
+    console.log(
+      "🚀 Triggering publish functionality for font-weight modification..."
+    );
 
-      if (result?.success) {
-        console.log("✅ Font-weight modification saved successfully:", result);
-        showNotification(
-          `✅ Font-weight ${fontWeight} saved to database for ${selectedSingleTextType}`,
-          "success"
+    // Simulate publish button click
+    const publishButton = document.getElementById("publish");
+    if (publishButton) {
+      // Show loading state
+      publishButton.disabled = true;
+      publishButton.textContent = "Publishing...";
+
+      try {
+        await window.handlePublish();
+        console.log(
+          "✅ Publish completed successfully for font-weight modification"
         );
-      } else {
-        console.error(
-          "❌ Failed to save font-weight modification:",
-          result?.error
-        );
-        showNotification(
-          `❌ Failed to save: ${result?.error || "Unknown error"}`,
-          "error"
-        );
+      } catch (error) {
+        console.error("❌ Error during publish:", error);
+        showNotification(`❌ Publish error: ${error.message}`, "error");
+      } finally {
+        // Reset button state
+        publishButton.disabled = false;
+        publishButton.textContent = "Publish";
       }
-    } catch (error) {
-      console.error("❌ Error saving font-weight modification:", error);
-      showNotification(`❌ Save error: ${error.message}`, "error");
+    } else {
+      console.warn(
+        "⚠️ Publish button not found, calling handlePublish directly"
+      );
+      try {
+        await window.handlePublish();
+      } catch (error) {
+        console.error("❌ Error calling handlePublish directly:", error);
+      }
     }
   } else {
-    console.warn("⚠️ saveTypographyAllModifications function not available");
-    // Fallback to pending modifications
-    addPendingModification(
-      block.id,
-      {
-        "font-weight": fontWeight,
-        target: selectedSingleTextType,
-        selector: specificSelector,
-      },
-      "typographyFontWeight"
-    );
+    console.warn("⚠️ handlePublish function not available globally");
   }
 
   // Update active button - Fixed to target the correct element

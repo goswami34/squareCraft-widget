@@ -111,53 +111,56 @@ export async function handleAllTextColorClick(event = null, context = null) {
       }
     `;
 
-  // ✅ DIRECT SAVE TO DATABASE
-  if (saveTypographyAllModifications) {
-    console.log("🚀 Directly saving text color modification to database...");
+  // ✅ ADD TO PENDING MODIFICATIONS FOR PUBLISH BUTTON
+  console.log("📝 Adding text color modification to pending modifications...");
 
-    const cssData = {
+  addPendingModification(
+    block.id,
+    {
       color: textColor,
       target: selectedSingleTextType,
-    };
+    },
+    "typographyTextColor"
+  );
 
-    try {
-      const result = await saveTypographyAllModifications(
-        block.id,
-        cssData,
-        selectedSingleTextType
-      );
+  // ✅ TRIGGER PUBLISH BUTTON FUNCTIONALITY
+  if (window.handlePublish) {
+    console.log(
+      "🚀 Triggering publish functionality for text color modification..."
+    );
 
-      if (result?.success) {
-        console.log("✅ Text color modification saved successfully:", result);
-        showNotification(
-          `✅ Text color saved to database for ${selectedSingleTextType}`,
-          "success"
+    // Simulate publish button click
+    const publishButton = document.getElementById("publish");
+    if (publishButton) {
+      // Show loading state
+      publishButton.disabled = true;
+      publishButton.textContent = "Publishing...";
+
+      try {
+        await window.handlePublish();
+        console.log(
+          "✅ Publish completed successfully for text color modification"
         );
-      } else {
-        console.error(
-          "❌ Failed to save text color modification:",
-          result?.error
-        );
-        showNotification(
-          `❌ Failed to save: ${result?.error || "Unknown error"}`,
-          "error"
-        );
+      } catch (error) {
+        console.error("❌ Error during publish:", error);
+        showNotification(`❌ Publish error: ${error.message}`, "error");
+      } finally {
+        // Reset button state
+        publishButton.disabled = false;
+        publishButton.textContent = "Publish";
       }
-    } catch (error) {
-      console.error("❌ Error saving text color modification:", error);
-      showNotification(`❌ Save error: ${error.message}`, "error");
+    } else {
+      console.warn(
+        "⚠️ Publish button not found, calling handlePublish directly"
+      );
+      try {
+        await window.handlePublish();
+      } catch (error) {
+        console.error("❌ Error calling handlePublish directly:", error);
+      }
     }
   } else {
-    console.warn("⚠️ saveTypographyAllModifications function not available");
-    // Fallback to pending modifications
-    addPendingModification(
-      block.id,
-      {
-        color: textColor,
-        target: selectedSingleTextType,
-      },
-      "typographyTextColor"
-    );
+    console.warn("⚠️ handlePublish function not available globally");
   }
 
   showNotification(
