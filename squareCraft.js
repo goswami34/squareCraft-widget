@@ -1891,7 +1891,9 @@ window.pendingModifications = pendingModifications;
       );
 
       if (!fontFamilyDropdown) {
-        console.error("❌ Font family dropdown not found.");
+        console.warn(
+          "⚠️ Old font family dropdown not found - this is expected for new typography system."
+        );
         return;
       }
 
