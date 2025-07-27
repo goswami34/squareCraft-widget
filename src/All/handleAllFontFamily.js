@@ -140,7 +140,7 @@ function saveTypographyModifications(blockId, textType, styles) {
 }
 
 // Function to handle font family selection from dropdown
-export async function handleFontFamilySelection(fontFamily, context) {
+export function handleFontFamilySelection(fontFamily, context) {
   const lastClickedElement =
     context?.lastClickedElement || window.lastClickedElement;
   const selectedSingleTextType =
@@ -223,48 +223,12 @@ export async function handleFontFamilySelection(fontFamily, context) {
     "typographyFontFamily"
   );
 
-  // ✅ TRIGGER PUBLISH BUTTON FUNCTIONALITY
-  if (window.handlePublish) {
-    console.log(
-      "🚀 Triggering publish functionality for font-family modification..."
-    );
-
-    // Simulate publish button click
-    const publishButton = document.getElementById("publish");
-    if (publishButton) {
-      // Show loading state
-      publishButton.disabled = true;
-      publishButton.textContent = "Publishing...";
-
-      try {
-        await window.handlePublish();
-        console.log(
-          "✅ Publish completed successfully for font-family modification"
-        );
-      } catch (error) {
-        console.error("❌ Error during publish:", error);
-        showNotification(`❌ Publish error: ${error.message}`, "error");
-      } finally {
-        // Reset button state
-        publishButton.disabled = false;
-        publishButton.textContent = "Publish";
-      }
-    } else {
-      console.warn(
-        "⚠️ Publish button not found, calling handlePublish directly"
-      );
-      try {
-        await window.handlePublish();
-      } catch (error) {
-        console.error("❌ Error calling handlePublish directly:", error);
-      }
-    }
-  } else {
-    console.warn("⚠️ handlePublish function not available globally");
-  }
+  console.log(
+    "✅ Font family modification added to pending modifications. Click 'Publish' to save to database."
+  );
 
   showNotification(
-    `✅ Font family "${fontFamily}" applied to ${selectedSingleTextType}`,
+    `✅ Font family \"${fontFamily}\" applied to ${selectedSingleTextType}`,
     "success"
   );
 }

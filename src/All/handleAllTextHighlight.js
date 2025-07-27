@@ -26,10 +26,7 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
-export async function handleAllTextHighlightClick(
-  event = null,
-  context = null
-) {
+export function handleAllTextHighlightClick(event = null, context = null) {
   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
     context;
 
@@ -107,45 +104,9 @@ export async function handleAllTextHighlightClick(
     "typographyTextHighlight"
   );
 
-  // ✅ TRIGGER PUBLISH BUTTON FUNCTIONALITY
-  if (window.handlePublish) {
-    console.log(
-      "🚀 Triggering publish functionality for text highlight modification..."
-    );
-
-    // Simulate publish button click
-    const publishButton = document.getElementById("publish");
-    if (publishButton) {
-      // Show loading state
-      publishButton.disabled = true;
-      publishButton.textContent = "Publishing...";
-
-      try {
-        await window.handlePublish();
-        console.log(
-          "✅ Publish completed successfully for text highlight modification"
-        );
-      } catch (error) {
-        console.error("❌ Error during publish:", error);
-        showNotification(`❌ Publish error: ${error.message}`, "error");
-      } finally {
-        // Reset button state
-        publishButton.disabled = false;
-        publishButton.textContent = "Publish";
-      }
-    } else {
-      console.warn(
-        "⚠️ Publish button not found, calling handlePublish directly"
-      );
-      try {
-        await window.handlePublish();
-      } catch (error) {
-        console.error("❌ Error calling handlePublish directly:", error);
-      }
-    }
-  } else {
-    console.warn("⚠️ handlePublish function not available globally");
-  }
+  console.log(
+    "✅ Text highlight modification added to pending modifications. Click 'Publish' to save to database."
+  );
 
   showNotification(
     `Text highlight applied to: ${selectedSingleTextType}`,
