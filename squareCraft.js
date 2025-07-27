@@ -4894,20 +4894,10 @@ window.pendingModifications = pendingModifications;
         },
       };
 
-      // Initialize events immediately (like button implementation)
+      // Initialize events with waiting mechanism
       initTypographyFontFamilyEvents(typographyContext);
 
-      // Wait for the typography section to be available
-      waitForElement("#scFontSelect, #scTypographyFontFamilyOptions")
-        .then(() => {
-          console.log("✅ Typography elements found, system ready");
-        })
-        .catch((error) => {
-          console.warn(
-            "⚠️ Typography font family dropdown not found yet:",
-            error.message
-          );
-        });
+      console.log("✅ Typography font family system initialization started");
     } catch (error) {
       console.error(
         "❌ Failed to initialize typography font family system:",

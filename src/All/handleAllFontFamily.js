@@ -26,6 +26,33 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// Function to wait for typography elements to be available
+function waitForTypographyElements() {
+  return new Promise((resolve, reject) => {
+    const checkElements = () => {
+      const fontSelect = document.getElementById("scFontSelect");
+      const fontFamilyOptions = document.getElementById(
+        "scTypographyFontFamilyOptions"
+      );
+
+      if (fontSelect && fontFamilyOptions) {
+        console.log("✅ Typography elements found");
+        resolve({ fontSelect, fontFamilyOptions });
+      } else {
+        console.log("⏳ Waiting for typography elements...");
+        setTimeout(checkElements, 100);
+      }
+    };
+
+    checkElements();
+
+    // Timeout after 10 seconds
+    setTimeout(() => {
+      reject(new Error("Typography elements not found after 10 seconds"));
+    }, 10000);
+  });
+}
+
 // Main function to handle font family dropdown toggle
 export function handleAllFontFamilyClick(event = null, context = null) {
   const fontSelect = document.getElementById("scFontSelect");
@@ -187,29 +214,30 @@ export function handleFontFamilySelection(fontFamily, context) {
 
 // Initialize typography font family events (like button implementation)
 export function initTypographyFontFamilyEvents(context) {
-  const fontSelect = document.getElementById("scFontSelect");
-  const fontFamilyOptions = document.getElementById(
-    "scTypographyFontFamilyOptions"
-  );
+  // Wait for typography elements to be available
+  waitForTypographyElements()
+    .then(({ fontSelect, fontFamilyOptions }) => {
+      // Add click event listener to font select (like button implementation)
+      fontSelect.addEventListener("click", (event) => {
+        event.stopPropagation();
+        handleAllFontFamilyClick(event, context);
+      });
 
-  if (fontSelect && fontFamilyOptions) {
-    // Add click event listener to font select (like button implementation)
-    fontSelect.addEventListener("click", (event) => {
-      event.stopPropagation();
-      handleAllFontFamilyClick(event, context);
+      // Close dropdown when clicking outside (like button implementation)
+      document.addEventListener("click", (event) => {
+        if (!fontSelect.contains(event.target)) {
+          fontFamilyOptions.classList.add("sc-hidden");
+        }
+      });
+
+      console.log("✅ Typography font family events initialized");
+    })
+    .catch((error) => {
+      console.warn("⚠️ Could not initialize typography events:", error.message);
+
+      // Retry after a delay
+      setTimeout(() => {
+        initTypographyFontFamilyEvents(context);
+      }, 2000);
     });
-
-    // Close dropdown when clicking outside (like button implementation)
-    document.addEventListener("click", (event) => {
-      if (!fontSelect.contains(event.target)) {
-        fontFamilyOptions.classList.add("sc-hidden");
-      }
-    });
-
-    console.log("✅ Typography font family events initialized");
-  } else {
-    console.warn(
-      "⚠️ Typography font family elements not found for event initialization"
-    );
-  }
 }

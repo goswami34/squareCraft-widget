@@ -34,6 +34,53 @@ function checkElements() {
   return { fontSelect, fontFamilyOptions, fontNameLabel };
 }
 
+// Check widget loading
+function checkWidgetLoading() {
+  console.log("🔍 Checking widget loading...");
+
+  // Check if widget container exists
+  const widgetContainer = document.querySelector(
+    '[id*="widget"], [class*="widget"], [id*="squarecraft"], [class*="squarecraft"]'
+  );
+  console.log(
+    "- Widget container:",
+    widgetContainer ? "✅ Found" : "❌ Not found"
+  );
+
+  // Check for typography section
+  const typoSection = document.getElementById("typoSection");
+  console.log(
+    "- Typography section:",
+    typoSection ? "✅ Found" : "❌ Not found"
+  );
+
+  // Check for heading dropdowns
+  const headingDropdowns = document.querySelectorAll(
+    '[id*="heading"][id*="Dropdown"]'
+  );
+  console.log("- Heading dropdowns found:", headingDropdowns.length);
+
+  // Check for font select elements
+  const fontSelects = document.querySelectorAll(
+    '[id*="FontSelect"], [id*="fontSelect"]'
+  );
+  console.log("- Font select elements found:", fontSelects.length);
+
+  // Check for font family options
+  const fontFamilyOptions = document.querySelectorAll(
+    '[id*="FontFamilyOptions"], [id*="fontFamilyOptions"]'
+  );
+  console.log("- Font family options found:", fontFamilyOptions.length);
+
+  return {
+    widgetContainer,
+    typoSection,
+    headingDropdowns,
+    fontSelects,
+    fontFamilyOptions,
+  };
+}
+
 // Test dropdown toggle
 function testDropdownToggle() {
   const { fontSelect, fontFamilyOptions } = checkElements();
@@ -156,14 +203,40 @@ function testNewImplementation() {
     });
 }
 
+// Force widget reload
+function forceWidgetReload() {
+  console.log("🔄 Forcing widget reload...");
+
+  // Remove existing widget
+  const existingWidget = document.querySelector(
+    '[id*="widget"], [class*="widget"], [id*="squarecraft"], [class*="squarecraft"]'
+  );
+  if (existingWidget) {
+    existingWidget.remove();
+    console.log("✅ Removed existing widget");
+  }
+
+  // Trigger widget creation
+  if (window.squareCraft && typeof window.squareCraft === "function") {
+    window.squareCraft();
+    console.log("✅ Triggered widget creation");
+  } else {
+    console.log("⚠️ squareCraft function not found");
+  }
+}
+
 // Initialize debug functions
 console.log("🚀 Debug functions available:");
 console.log("- checkElements() - Check if required elements exist");
+console.log("- checkWidgetLoading() - Check widget loading status");
 console.log("- testDropdownToggle() - Test the dropdown toggle functionality");
 console.log("- toggleDropdown() - Manually toggle the dropdown");
 console.log("- testEventListeners() - Test event listener attachment");
 console.log("- checkStyles() - Check CSS styles affecting the dropdown");
 console.log("- testNewImplementation() - Test the new implementation");
+console.log("- forceWidgetReload() - Force widget reload");
 
-// Auto-run initial check
+// Auto-run initial checks
+console.log("🔍 Running initial checks...");
 checkElements();
+checkWidgetLoading();
