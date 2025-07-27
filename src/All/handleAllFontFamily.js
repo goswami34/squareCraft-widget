@@ -285,9 +285,27 @@ export function manualFixTypographyDropdown() {
     console.log("🎯 Font select clicked (manual fix)");
 
     const isHidden = fontFamilyOptions.classList.contains("sc-hidden");
-    fontFamilyOptions.classList.toggle("sc-hidden");
 
-    console.log("✅ Dropdown toggled:", isHidden ? "Shown" : "Hidden");
+    if (isHidden) {
+      // Show dropdown with forced styles
+      fontFamilyOptions.classList.remove("sc-hidden");
+      fontFamilyOptions.style.display = "block";
+      fontFamilyOptions.style.opacity = "1";
+      fontFamilyOptions.style.visibility = "visible";
+      fontFamilyOptions.style.maxHeight = "240px";
+      fontFamilyOptions.style.overflow = "auto";
+      fontFamilyOptions.style.zIndex = "9999";
+      console.log("✅ Dropdown forced to show");
+    } else {
+      // Hide dropdown
+      fontFamilyOptions.classList.add("sc-hidden");
+      fontFamilyOptions.style.display = "none";
+      fontFamilyOptions.style.opacity = "0";
+      fontFamilyOptions.style.visibility = "hidden";
+      fontFamilyOptions.style.maxHeight = "0";
+      fontFamilyOptions.style.overflow = "hidden";
+      console.log("✅ Dropdown hidden");
+    }
 
     // Initialize fonts if dropdown is now visible
     if (!fontFamilyOptions.classList.contains("sc-hidden")) {
@@ -306,6 +324,11 @@ export function manualFixTypographyDropdown() {
   document.addEventListener("click", (event) => {
     if (!newFontSelect.contains(event.target)) {
       fontFamilyOptions.classList.add("sc-hidden");
+      fontFamilyOptions.style.display = "none";
+      fontFamilyOptions.style.opacity = "0";
+      fontFamilyOptions.style.visibility = "hidden";
+      fontFamilyOptions.style.maxHeight = "0";
+      fontFamilyOptions.style.overflow = "hidden";
     }
   });
 
