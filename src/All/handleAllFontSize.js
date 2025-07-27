@@ -128,109 +128,65 @@ export async function handleAllFontSizeClick(event = null, context = null) {
     "typographyFontSize"
   );
 
-  // ✅ TRIGGER PUBLISH BUTTON FUNCTIONALITY
+  // ✅ CALL saveTypographyAllModifications DIRECTLY
   console.log(
-    "🚀 Triggering publish functionality for font size modification..."
+    "🚀 Calling saveTypographyAllModifications directly for font size..."
   );
 
-  // Simulate publish button click
+  // Show loading state on publish button
   const publishButton = document.getElementById("publish");
   if (publishButton) {
-    // Show loading state
     publishButton.disabled = true;
     publishButton.textContent = "Publishing...";
+  }
 
-    try {
-      // Call the publish function directly
-      if (window.handlePublish) {
-        await window.handlePublish();
-        console.log(
-          "✅ Publish completed successfully for font size modification"
+  try {
+    if (saveTypographyAllModifications) {
+      const cssData = {
+        "font-size": fontSize,
+        target: selectedSingleTextType,
+      };
+
+      console.log("📤 Calling saveTypographyAllModifications with:", {
+        blockId: block.id,
+        cssData,
+        textType: selectedSingleTextType,
+      });
+
+      const result = await saveTypographyAllModifications(
+        block.id,
+        cssData,
+        selectedSingleTextType
+      );
+
+      if (result?.success) {
+        console.log("✅ Font size saved to typography table:", result);
+        showNotification(
+          "✅ Font size saved to typography database!",
+          "success"
         );
-      } else {
-        // Fallback: call saveTypographyAllModifications directly
-        console.log(
-          "⚠️ handlePublish not available, calling saveTypographyAllModifications directly"
-        );
-        if (saveTypographyAllModifications) {
-          const cssData = {
-            "font-size": fontSize,
-            target: selectedSingleTextType,
-          };
-
-          const result = await saveTypographyAllModifications(
-            block.id,
-            cssData,
-            selectedSingleTextType
-          );
-
-          if (result?.success) {
-            console.log("✅ Font size saved directly to database:", result);
-            showNotification("✅ Font size saved to database!", "success");
-          } else {
-            console.error(
-              "❌ Failed to save font size directly:",
-              result?.error
-            );
-            showNotification(
-              `❌ Save failed: ${result?.error || "Unknown error"}`,
-              "error"
-            );
-          }
-        } else {
-          console.error(
-            "❌ saveTypographyAllModifications function not available"
-          );
-          showNotification("❌ Save function not available", "error");
-        }
-      }
-    } catch (error) {
-      console.error("❌ Error during publish:", error);
-      showNotification(`❌ Publish error: ${error.message}`, "error");
-    } finally {
-      // Reset button state
-      publishButton.disabled = false;
-      publishButton.textContent = "Publish";
-    }
-  } else {
-    console.warn(
-      "⚠️ Publish button not found, calling saveTypographyAllModifications directly"
-    );
-    try {
-      if (saveTypographyAllModifications) {
-        const cssData = {
-          "font-size": fontSize,
-          target: selectedSingleTextType,
-        };
-
-        const result = await saveTypographyAllModifications(
-          block.id,
-          cssData,
-          selectedSingleTextType
-        );
-
-        if (result?.success) {
-          console.log("✅ Font size saved directly to database:", result);
-          showNotification("✅ Font size saved to database!", "success");
-        } else {
-          console.error("❌ Failed to save font size directly:", result?.error);
-          showNotification(
-            `❌ Save failed: ${result?.error || "Unknown error"}`,
-            "error"
-          );
-        }
       } else {
         console.error(
-          "❌ saveTypographyAllModifications function not available"
+          "❌ Failed to save font size to typography table:",
+          result?.error
         );
-        showNotification("❌ Save function not available", "error");
+        showNotification(
+          `❌ Typography save failed: ${result?.error || "Unknown error"}`,
+          "error"
+        );
       }
-    } catch (error) {
-      console.error(
-        "❌ Error calling saveTypographyAllModifications directly:",
-        error
-      );
-      showNotification(`❌ Save error: ${error.message}`, "error");
+    } else {
+      console.error("❌ saveTypographyAllModifications function not available");
+      showNotification("❌ Typography save function not available", "error");
+    }
+  } catch (error) {
+    console.error("❌ Error calling saveTypographyAllModifications:", error);
+    showNotification(`❌ Typography save error: ${error.message}`, "error");
+  } finally {
+    // Reset button state
+    if (publishButton) {
+      publishButton.disabled = false;
+      publishButton.textContent = "Publish";
     }
   }
 
