@@ -13,7 +13,6 @@ import { WidgetTypoPresetSection } from "https://goswami34.github.io/squareCraft
 import { WidgetButtonAdvanceSection } from "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonSection/WidgetButtonAdvanceSection/WidgetButtonAdvanceSection.js";
 
 export function html() {
-
   const htmlString = `
     <div class="sc-p-2  z-index-high sc-text-color-white sc-border sc-border-solid sc-border-3d3d3d sc-bg-color-2c2c2c sc-rounded-15px sc-w-300px">
       <div id="sc-grabbing" class="sc-cursor-grabbing sc-w-full">
@@ -350,6 +349,99 @@ async function handlePublish() {
   } catch (error) {
     console.error("❌ Error in handlePublish:", error);
     showNotification(error.message, "error");
+  }
+}
+
+export async function saveTypographyAllModifications(blockId, css, textType) {
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  if (!pageId || !blockId || !css || !textType) {
+    console.warn("⚠️ Missing required data for typography all modifications", {
+      pageId,
+      blockId,
+      css,
+      textType,
+    });
+    return { success: false, error: "Missing required data" };
+  }
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  if (!userId || !token || !widgetId) {
+    console.warn("⚠️ Missing authentication data");
+    return { success: false, error: "Missing authentication data" };
+  }
+
+  // Clean invalid styles and format them
+  const cleanedCss = cleanCssObject(css);
+  const kebabCss = toKebabCaseStyleObject(cleanedCss);
+
+  if (Object.keys(kebabCss).length === 0) {
+    console.warn("⚠️ No valid typography styles to save");
+    return { success: false, error: "No valid styles to save" };
+  }
+
+  const selector =
+    textType === "heading1"
+      ? `#${blockId} h1`
+      : textType === "heading2"
+      ? `#${blockId} h2`
+      : textType === "heading3"
+      ? `#${blockId} h3`
+      : textType === "heading4"
+      ? `#${blockId} h4`
+      : textType === "paragraph1"
+      ? `#${blockId} p.sqsrte-large`
+      : textType === "paragraph2"
+      ? `#${blockId} p:not(.sqsrte-large):not(.sqsrte-small)`
+      : textType === "paragraph3"
+      ? `#${blockId} p.sqsrte-small`
+      : `#${blockId} *`;
+
+  const payload = {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    elementId: blockId,
+    textType,
+    css: {
+      selector,
+      styles: kebabCss,
+    },
+  };
+
+  try {
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/save-typography-all-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || `HTTP ${response.status}`);
+    }
+
+    console.log("✅ Typography all modifications saved:", result);
+    showNotification("Typography styles saved successfully!", "success");
+
+    return { success: true, data: result };
+  } catch (err) {
+    console.error("❌ Error saving typography modifications:", err);
+    showNotification(`Failed to save changes: ${err.message}`, "error");
+    return { success: false, error: err.message };
   }
 }
 
