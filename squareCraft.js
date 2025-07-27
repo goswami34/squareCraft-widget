@@ -4842,9 +4842,6 @@ window.pendingModifications = pendingModifications;
       initImageResetHandler();
       triggerLaunchAnimation();
 
-      // Initialize Typography Font Family System
-      initTypographyFontFamilySystem();
-
       if (clickedBlock) {
         waitForElement("#typoSection, #imageSection, #buttonSection")
           .then(() => {
@@ -4921,6 +4918,11 @@ window.pendingModifications = pendingModifications;
           if (typeof module.initToggleSwitch === "function") {
             module.initToggleSwitch();
           }
+
+          // Initialize typography system after widget is loaded
+          setTimeout(() => {
+            initTypographyFontFamilySystem();
+          }, 500); // Give more time for widget to be fully rendered
         }, 200);
       }
     } catch (err) {

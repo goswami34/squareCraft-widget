@@ -60,20 +60,33 @@ export function handleAllFontFamilyClick(event = null, context = null) {
     "scTypographyFontFamilyOptions"
   );
 
+  console.log("🔍 handleAllFontFamilyClick called");
+  console.log("- fontSelect:", fontSelect ? "Found" : "Not found");
+  console.log(
+    "- fontFamilyOptions:",
+    fontFamilyOptions ? "Found" : "Not found"
+  );
+
   if (fontSelect && fontFamilyOptions) {
     // Toggle the dropdown
+    const wasHidden = fontFamilyOptions.classList.contains("sc-hidden");
     fontFamilyOptions.classList.toggle("sc-hidden");
-    console.log(
-      "✅ Font family dropdown toggled:",
-      !fontFamilyOptions.classList.contains("sc-hidden")
-    );
+    const isNowHidden = fontFamilyOptions.classList.contains("sc-hidden");
+
+    console.log("✅ Font family dropdown toggled:");
+    console.log("- Was hidden:", wasHidden);
+    console.log("- Is now hidden:", isNowHidden);
+    console.log("- Dropdown is now:", isNowHidden ? "Hidden" : "Visible");
 
     // Initialize font family controls if dropdown is now visible
-    if (!fontFamilyOptions.classList.contains("sc-hidden")) {
+    if (!isNowHidden) {
+      console.log("🔄 Initializing font family controls...");
       initTypographyFontFamilyControlsIfNeeded(context);
     }
   } else {
     console.warn("❌ Font family dropdown elements not found");
+    console.log("- fontSelect element:", fontSelect);
+    console.log("- fontFamilyOptions element:", fontFamilyOptions);
   }
 }
 
@@ -214,11 +227,16 @@ export function handleFontFamilySelection(fontFamily, context) {
 
 // Initialize typography font family events (like button implementation)
 export function initTypographyFontFamilyEvents(context) {
+  console.log("🔍 Initializing typography font family events...");
+
   // Wait for typography elements to be available
   waitForTypographyElements()
     .then(({ fontSelect, fontFamilyOptions }) => {
+      console.log("✅ Typography elements found, adding event listeners...");
+
       // Add click event listener to font select (like button implementation)
       fontSelect.addEventListener("click", (event) => {
+        console.log("🎯 Font select clicked!");
         event.stopPropagation();
         handleAllFontFamilyClick(event, context);
       });
@@ -230,13 +248,14 @@ export function initTypographyFontFamilyEvents(context) {
         }
       });
 
-      console.log("✅ Typography font family events initialized");
+      console.log("✅ Typography font family events initialized successfully");
     })
     .catch((error) => {
       console.warn("⚠️ Could not initialize typography events:", error.message);
 
       // Retry after a delay
       setTimeout(() => {
+        console.log("🔄 Retrying typography event initialization...");
         initTypographyFontFamilyEvents(context);
       }, 2000);
     });

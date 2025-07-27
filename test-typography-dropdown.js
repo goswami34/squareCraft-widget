@@ -23,6 +23,22 @@ function testNewTypographyElements() {
     fontNameLabel ? "✅ Found" : "❌ Not found"
   );
 
+  if (fontSelect) {
+    console.log("- Font select classes:", fontSelect.className);
+    console.log(
+      "- Font select innerHTML:",
+      fontSelect.innerHTML.substring(0, 100) + "..."
+    );
+  }
+
+  if (fontFamilyOptions) {
+    console.log("- Font family options classes:", fontFamilyOptions.className);
+    console.log(
+      "- Font family options hidden:",
+      fontFamilyOptions.classList.contains("sc-hidden")
+    );
+  }
+
   return { fontSelect, fontFamilyOptions, fontNameLabel };
 }
 
@@ -40,7 +56,7 @@ function testOldFontFamilyElements() {
   return oldFontFamily;
 }
 
-// Test 3: Test dropdown toggle
+// Test 3: Test dropdown toggle manually
 function testDropdownToggle() {
   console.log("📋 Test 3: Testing dropdown toggle...");
 
@@ -55,24 +71,17 @@ function testDropdownToggle() {
   const isInitiallyHidden = fontFamilyOptions.classList.contains("sc-hidden");
   console.log("- Initial state:", isInitiallyHidden ? "Hidden" : "Visible");
 
-  // Simulate click
-  const clickEvent = new MouseEvent("click", {
-    bubbles: true,
-    cancelable: true,
-    view: window,
-  });
+  // Manually toggle
+  fontFamilyOptions.classList.toggle("sc-hidden");
+  const isNowHidden = fontFamilyOptions.classList.contains("sc-hidden");
+  console.log("- After manual toggle:", isNowHidden ? "Hidden" : "Visible");
+  console.log(
+    "- Manual toggle successful:",
+    isInitiallyHidden !== isNowHidden ? "✅ Yes" : "❌ No"
+  );
 
-  fontSelect.dispatchEvent(clickEvent);
-
-  // Check result after delay
-  setTimeout(() => {
-    const isNowHidden = fontFamilyOptions.classList.contains("sc-hidden");
-    console.log("- After click:", isNowHidden ? "Hidden" : "Visible");
-    console.log(
-      "- Toggle successful:",
-      isInitiallyHidden !== isNowHidden ? "✅ Yes" : "❌ No"
-    );
-  }, 100);
+  // Toggle back
+  fontFamilyOptions.classList.toggle("sc-hidden");
 
   return true;
 }
@@ -139,6 +148,62 @@ function testWidgetLoading() {
   }
 }
 
+// Test 6: Test the actual handler function
+function testHandlerFunction() {
+  console.log("📋 Test 6: Testing handler function...");
+
+  // Import and test the handler
+  import("./src/All/handleAllFontFamily.js")
+    .then((module) => {
+      const { handleAllFontFamilyClick } = module;
+
+      // Create test context
+      const testContext = {
+        lastClickedElement: document.querySelector('[id^="block-"]'),
+        selectedSingleTextType: "paragraph1",
+        addPendingModification: (blockId, modifications) => {
+          console.log("Test modification:", { blockId, modifications });
+        },
+      };
+
+      // Test the handler
+      handleAllFontFamilyClick(null, testContext);
+
+      console.log("✅ Handler function test completed");
+    })
+    .catch((err) => {
+      console.error("❌ Failed to test handler function:", err);
+    });
+}
+
+// Test 7: Force widget reload and test
+function forceWidgetReload() {
+  console.log("📋 Test 7: Force widget reload...");
+
+  // Remove existing widget
+  const existingWidget = document.querySelector(
+    '[id*="widget"], [class*="widget"], [id*="squarecraft"], [class*="squarecraft"]'
+  );
+  if (existingWidget) {
+    existingWidget.remove();
+    console.log("✅ Removed existing widget");
+  }
+
+  // Trigger widget creation
+  if (window.squareCraft && typeof window.squareCraft === "function") {
+    window.squareCraft();
+    console.log("✅ Triggered widget creation");
+
+    // Wait and test
+    setTimeout(() => {
+      console.log("🔄 Testing after widget reload...");
+      testNewTypographyElements();
+    }, 3000);
+  } else {
+    console.log("⚠️ squareCraft function not found");
+  }
+}
+
 // Run all tests
 function runAllTests() {
   console.log("🚀 Running all typography dropdown tests...\n");
@@ -158,6 +223,9 @@ function runAllTests() {
   const test5 = testWidgetLoading();
   console.log("");
 
+  testHandlerFunction();
+  console.log("");
+
   console.log("📊 Test Summary:");
   console.log(
     "- New typography elements:",
@@ -173,6 +241,17 @@ function runAllTests() {
   console.log("- Event listeners:", test4 ? "✅ Working" : "❌ Not working");
   console.log("- Widget loading:", test5 ? "✅ Working" : "❌ Not working");
 }
+
+// Initialize debug functions
+console.log("🚀 Debug functions available:");
+console.log("- testNewTypographyElements() - Check if required elements exist");
+console.log("- testOldFontFamilyElements() - Check old system status");
+console.log("- testDropdownToggle() - Test manual dropdown toggle");
+console.log("- testEventListeners() - Test event listener attachment");
+console.log("- testWidgetLoading() - Check widget loading status");
+console.log("- testHandlerFunction() - Test the handler function");
+console.log("- forceWidgetReload() - Force widget reload");
+console.log("- runAllTests() - Run all tests");
 
 // Auto-run tests
 runAllTests();
