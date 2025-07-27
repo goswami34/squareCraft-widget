@@ -257,6 +257,17 @@ async function handlePublish() {
       window.pendingModifications
     );
 
+    // Debug: Log all entries in pendingModifications
+    if (window.pendingModifications.size > 0) {
+      console.log("🔍 All pending modifications:");
+      for (const [
+        blockId,
+        modifications,
+      ] of window.pendingModifications.entries()) {
+        console.log(`Block ${blockId}:`, modifications);
+      }
+    }
+
     // Save each pending modification
     for (const [
       blockId,
@@ -290,12 +301,20 @@ async function handlePublish() {
           case "typographyTextHighlight":
           case "typographyTextTransform":
           case "typographyLetterSpacing":
+            console.log("🎨 Processing typography modification:", {
+              tagType: mod.tagType,
+              blockId,
+              css: mod.css,
+              target: mod.target,
+              textType: mod.textType,
+            });
             // Use the typography-specific save function
             result = await saveTypographyAllModifications(
               blockId,
               mod.css,
               mod.target || mod.textType
             );
+            console.log("✅ Typography modification result:", result);
             break;
           case "strong":
           case "linkText":
@@ -434,6 +453,12 @@ export async function saveTypographyAllModifications(blockId, css, textType) {
   };
 
   try {
+    console.log(
+      "📤 Sending typography payload:",
+      JSON.stringify(payload, null, 2)
+    );
+    console.log("🌐 Making API request to save typography modifications...");
+
     const response = await fetch(
       "https://admin.squareplugin.com/api/v1/save-typography-all-modifications",
       {
@@ -444,6 +469,12 @@ export async function saveTypographyAllModifications(blockId, css, textType) {
         },
         body: JSON.stringify(payload),
       }
+    );
+
+    console.log("📡 Response status:", response.status);
+    console.log(
+      "📡 Response headers:",
+      Object.fromEntries(response.headers.entries())
     );
 
     const result = await response.json();
