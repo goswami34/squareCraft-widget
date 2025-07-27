@@ -1,3 +1,49 @@
+// Immediate fix - run this to force the dropdown to show
+function forceDropdownToShow() {
+  console.log("🚀 Force fixing dropdown visibility...");
+
+  const fontFamilyOptions = document.getElementById(
+    "scTypographyFontFamilyOptions"
+  );
+
+  if (!fontFamilyOptions) {
+    console.error("❌ Dropdown element not found");
+    return;
+  }
+
+  // Force show the dropdown with inline styles
+  fontFamilyOptions.classList.remove("sc-hidden");
+  fontFamilyOptions.style.display = "block";
+  fontFamilyOptions.style.opacity = "1";
+  fontFamilyOptions.style.visibility = "visible";
+  fontFamilyOptions.style.maxHeight = "240px";
+  fontFamilyOptions.style.overflow = "auto";
+  fontFamilyOptions.style.zIndex = "9999";
+  fontFamilyOptions.style.position = "absolute";
+  fontFamilyOptions.style.top = "100%";
+  fontFamilyOptions.style.left = "0";
+  fontFamilyOptions.style.right = "0";
+  fontFamilyOptions.style.marginTop = "4px";
+  fontFamilyOptions.style.backgroundColor = "#3f3f3f";
+  fontFamilyOptions.style.borderRadius = "6px";
+  fontFamilyOptions.style.border = "1px solid #585858";
+
+  // Add some test content
+  if (fontFamilyOptions.children.length === 0) {
+    fontFamilyOptions.innerHTML = `
+      <div class="sc-dropdown-item" style="padding: 8px 12px; color: white; cursor: pointer;">Arial</div>
+      <div class="sc-dropdown-item" style="padding: 8px 12px; color: white; cursor: pointer;">Helvetica</div>
+      <div class="sc-dropdown-item" style="padding: 8px 12px; color: white; cursor: pointer;">Times New Roman</div>
+      <div class="sc-dropdown-item" style="padding: 8px 12px; color: white; cursor: pointer;">Georgia</div>
+    `;
+  }
+
+  console.log("✅ Dropdown forced to show with inline styles");
+  console.log(
+    "🎯 You should now see the dropdown below the 'Select Font' area"
+  );
+}
+
 // Quick test function - run this first
 function quickTest() {
   console.log("⚡ Quick Test: Checking font-family dropdown...");
@@ -25,7 +71,7 @@ function quickTest() {
     );
 
     if (!isVisible) {
-      console.log("💡 Try running: applyManualFix()");
+      console.log("💡 Try running: forceDropdownToShow()");
     }
   }, 100);
 
