@@ -594,6 +594,10 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { saveTypographyAllModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   // Make saveButtonColorModifications available globally
   window.saveButtonColorModifications = saveButtonColorModifications;
 
