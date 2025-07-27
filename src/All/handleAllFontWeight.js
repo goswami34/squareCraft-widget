@@ -27,8 +27,12 @@ function showNotification(message, type = "info") {
 }
 
 export async function handleAllFontWeightClick(event = null, context = null) {
-  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
-    context;
+  const {
+    lastClickedElement,
+    selectedSingleTextType,
+    addPendingModification,
+    saveTypographyAllModifications,
+  } = context;
 
   if (!event) {
     event = { target: document.getElementById("squareCraftAllFontWeight") };
@@ -113,15 +117,56 @@ export async function handleAllFontWeightClick(event = null, context = null) {
     specificSelector = `#${block.id} ${selectedSingleTextType}`;
   }
 
-  addPendingModification(
-    block.id,
-    {
+  // ✅ DIRECT SAVE TO DATABASE
+  if (saveTypographyAllModifications) {
+    console.log("🚀 Directly saving font-weight modification to database...");
+
+    const cssData = {
       "font-weight": fontWeight,
       target: selectedSingleTextType,
       selector: specificSelector,
-    },
-    "typographyFontWeight"
-  );
+    };
+
+    try {
+      const result = await saveTypographyAllModifications(
+        block.id,
+        cssData,
+        selectedSingleTextType
+      );
+
+      if (result?.success) {
+        console.log("✅ Font-weight modification saved successfully:", result);
+        showNotification(
+          `✅ Font-weight ${fontWeight} saved to database for ${selectedSingleTextType}`,
+          "success"
+        );
+      } else {
+        console.error(
+          "❌ Failed to save font-weight modification:",
+          result?.error
+        );
+        showNotification(
+          `❌ Failed to save: ${result?.error || "Unknown error"}`,
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("❌ Error saving font-weight modification:", error);
+      showNotification(`❌ Save error: ${error.message}`, "error");
+    }
+  } else {
+    console.warn("⚠️ saveTypographyAllModifications function not available");
+    // Fallback to pending modifications
+    addPendingModification(
+      block.id,
+      {
+        "font-weight": fontWeight,
+        target: selectedSingleTextType,
+        selector: specificSelector,
+      },
+      "typographyFontWeight"
+    );
+  }
 
   // Update active button - Fixed to target the correct element
   const clickedElement = event.target.closest('[id^="scFontWeight"]');

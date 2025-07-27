@@ -26,11 +26,11 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
-export function handleAllFontSizeClick(event = null, context = null) {
+export async function handleAllFontSizeClick(event = null, context = null) {
   const {
     lastClickedElement,
     selectedSingleTextType,
-    saveModifications,
+    saveTypographyAllModifications,
     addPendingModification,
     showNotification,
   } = context;
@@ -116,14 +116,54 @@ export function handleAllFontSizeClick(event = null, context = null) {
       }
     `;
 
-  addPendingModification(
-    block.id,
-    {
+  // ✅ DIRECT SAVE TO DATABASE
+  if (saveTypographyAllModifications) {
+    console.log("🚀 Directly saving typography modification to database...");
+
+    const cssData = {
       "font-size": fontSize,
       target: selectedSingleTextType,
-    },
-    "typographyFontSize"
-  );
+    };
+
+    try {
+      const result = await saveTypographyAllModifications(
+        block.id,
+        cssData,
+        selectedSingleTextType
+      );
+
+      if (result?.success) {
+        console.log("✅ Typography modification saved successfully:", result);
+        showNotification(
+          `✅ Font size ${fontSize} saved to database for ${selectedSingleTextType}`,
+          "success"
+        );
+      } else {
+        console.error(
+          "❌ Failed to save typography modification:",
+          result?.error
+        );
+        showNotification(
+          `❌ Failed to save: ${result?.error || "Unknown error"}`,
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("❌ Error saving typography modification:", error);
+      showNotification(`❌ Save error: ${error.message}`, "error");
+    }
+  } else {
+    console.warn("⚠️ saveTypographyAllModifications function not available");
+    // Fallback to pending modifications
+    addPendingModification(
+      block.id,
+      {
+        "font-size": fontSize,
+        target: selectedSingleTextType,
+      },
+      "typographyFontSize"
+    );
+  }
 
   // STEP 5️⃣: Update UI highlighting
   document.querySelectorAll('[id^="scAllFontSizeInput"]').forEach((el) => {

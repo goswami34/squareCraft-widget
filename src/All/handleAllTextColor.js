@@ -26,9 +26,13 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
-export function handleAllTextColorClick(event = null, context = null) {
-  const { lastClickedElement, selectedSingleTextType, addPendingModification } =
-    context;
+export async function handleAllTextColorClick(event = null, context = null) {
+  const {
+    lastClickedElement,
+    selectedSingleTextType,
+    addPendingModification,
+    saveTypographyAllModifications,
+  } = context;
 
   if (!event) {
     event = { target: document.getElementById("textColorPalate") };
@@ -107,17 +111,57 @@ export function handleAllTextColorClick(event = null, context = null) {
       }
     `;
 
-  addPendingModification(
-    block.id,
-    {
+  // ✅ DIRECT SAVE TO DATABASE
+  if (saveTypographyAllModifications) {
+    console.log("🚀 Directly saving text color modification to database...");
+
+    const cssData = {
       color: textColor,
       target: selectedSingleTextType,
-    },
-    "typographyTextColor"
-  );
+    };
+
+    try {
+      const result = await saveTypographyAllModifications(
+        block.id,
+        cssData,
+        selectedSingleTextType
+      );
+
+      if (result?.success) {
+        console.log("✅ Text color modification saved successfully:", result);
+        showNotification(
+          `✅ Text color saved to database for ${selectedSingleTextType}`,
+          "success"
+        );
+      } else {
+        console.error(
+          "❌ Failed to save text color modification:",
+          result?.error
+        );
+        showNotification(
+          `❌ Failed to save: ${result?.error || "Unknown error"}`,
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("❌ Error saving text color modification:", error);
+      showNotification(`❌ Save error: ${error.message}`, "error");
+    }
+  } else {
+    console.warn("⚠️ saveTypographyAllModifications function not available");
+    // Fallback to pending modifications
+    addPendingModification(
+      block.id,
+      {
+        color: textColor,
+        target: selectedSingleTextType,
+      },
+      "typographyTextColor"
+    );
+  }
 
   showNotification(
-    // `Text color applied to: ${selectedSingleTextType}`,
+    `✅ Text color applied to: ${selectedSingleTextType}`,
     "success"
-  ); // 🎯
+  );
 }
