@@ -28,67 +28,105 @@ function showNotification(message, type = "info") {
 
 export function handleAllFontFamilyClick(event = null, context = null) {
   // Use global variables from squareCraft.js if context is not provided
-  const lastClickedElement = context?.lastClickedElement || window.lastClickedElement;
-  const selectedSingleTextType = context?.selectedSingleTextType || window.selectedSingleTextType;
-  const addPendingModification = context?.addPendingModification || window.addPendingModification;
+  const lastClickedElement =
+    context?.lastClickedElement || window.lastClickedElement;
+  const selectedSingleTextType =
+    context?.selectedSingleTextType || window.selectedSingleTextType;
+  const addPendingModification =
+    context?.addPendingModification || window.addPendingModification;
 
   // Toggle the font family dropdown
-  const fontFamilyOptions = document.getElementById("scTypographyFontFamilyOptions");
+  const fontFamilyOptions = document.getElementById(
+    "scTypographyFontFamilyOptions"
+  );
   const fontSelect = document.getElementById("scFontSelect");
-  
+
   if (fontFamilyOptions && fontSelect) {
     const isHidden = fontFamilyOptions.classList.contains("sc-hidden");
-    
+
     // Hide all other dropdowns first
-    document.querySelectorAll('.sc-dropdown-options').forEach(dropdown => {
-      dropdown.classList.add("sc-hidden");
-    });
-    
+    document
+      .querySelectorAll(
+        ".sc-dropdown-options, #scTypographyFontWeightOptions, #scFontSizeOptions"
+      )
+      .forEach((dropdown) => {
+        dropdown.classList.add("sc-hidden");
+      });
+
     if (isHidden) {
+      // Show the dropdown
       fontFamilyOptions.classList.remove("sc-hidden");
+      console.log("✅ Font family dropdown opened");
+
       // Initialize font family controls if not already done
       initTypographyFontFamilyControlsIfNeeded(context);
     } else {
+      // Hide the dropdown
       fontFamilyOptions.classList.add("sc-hidden");
+      console.log("✅ Font family dropdown closed");
     }
+  } else {
+    console.warn("❌ Font family dropdown elements not found");
   }
 }
 
 // Function to initialize typography font family controls
 function initTypographyFontFamilyControlsIfNeeded(context) {
-  const lastClickedElement = context?.lastClickedElement || window.lastClickedElement;
-  const selectedSingleTextType = context?.selectedSingleTextType || window.selectedSingleTextType;
-  const addPendingModification = context?.addPendingModification || window.addPendingModification;
-  
+  const lastClickedElement =
+    context?.lastClickedElement || window.lastClickedElement;
+  const selectedSingleTextType =
+    context?.selectedSingleTextType || window.selectedSingleTextType;
+  const addPendingModification =
+    context?.addPendingModification || window.addPendingModification;
+
+  const fontFamilyOptions = document.getElementById(
+    "scTypographyFontFamilyOptions"
+  );
+
+  // Check if fonts are already loaded
+  if (fontFamilyOptions && fontFamilyOptions.children.length > 0) {
+    console.log("✅ Fonts already loaded, skipping initialization");
+    return;
+  }
+
   // Import and initialize the font family controls
-  import('./initTypographyFontFamilyControls.js').then(module => {
-    const { initTypographyFontFamilyControls } = module;
-    
-    initTypographyFontFamilyControls(
-      () => lastClickedElement,
-      addPendingModification,
-      showNotification,
-      saveTypographyModifications
-    );
-  }).catch(err => {
-    console.error("Failed to load typography font family controls:", err);
-  });
+  import("./initTypographyFontFamilyControls.js")
+    .then((module) => {
+      const { initTypographyFontFamilyControls } = module;
+
+      initTypographyFontFamilyControls(
+        () => lastClickedElement,
+        addPendingModification,
+        showNotification,
+        saveTypographyModifications
+      );
+    })
+    .catch((err) => {
+      console.error("Failed to load typography font family controls:", err);
+    });
 }
 
 // Function to save typography modifications
 function saveTypographyModifications(blockId, textType, styles) {
   // This function should save the typography modifications to your storage system
-  console.log("Saving typography modifications:", { blockId, textType, styles });
-  
+  console.log("Saving typography modifications:", {
+    blockId,
+    textType,
+    styles,
+  });
+
   // You can implement your save logic here
   // For example, save to localStorage, send to server, etc.
 }
 
 // Function to handle font family selection from dropdown
 export function handleFontFamilySelection(fontFamily, context) {
-  const lastClickedElement = context?.lastClickedElement || window.lastClickedElement;
-  const selectedSingleTextType = context?.selectedSingleTextType || window.selectedSingleTextType;
-  const addPendingModification = context?.addPendingModification || window.addPendingModification;
+  const lastClickedElement =
+    context?.lastClickedElement || window.lastClickedElement;
+  const selectedSingleTextType =
+    context?.selectedSingleTextType || window.selectedSingleTextType;
+  const addPendingModification =
+    context?.addPendingModification || window.addPendingModification;
 
   if (!lastClickedElement) {
     showNotification("Please select a block first", "error");
@@ -161,33 +199,61 @@ export function handleFontFamilySelection(fontFamily, context) {
     target: selectedSingleTextType,
   });
 
-  showNotification(`✅ Font family "${fontFamily}" applied to ${selectedSingleTextType}`, "success");
+  showNotification(
+    `✅ Font family "${fontFamily}" applied to ${selectedSingleTextType}`,
+    "success"
+  );
 }
 
 // Add click event listener to font select container
 export function initTypographyFontFamilyEvents(context) {
   const fontSelect = document.getElementById("scFontSelect");
   if (fontSelect) {
-    fontSelect.addEventListener("click", (event) => {
-      // Don't trigger if clicking on dropdown options
-      if (event.target.closest('#scTypographyFontFamilyOptions') || 
-          event.target.closest('#scTypographyFontWeightOptions')) {
-        return;
-      }
-      
-      handleAllFontFamilyClick(event, context);
-    });
+    // Remove existing event listeners to prevent duplicates
+    fontSelect.removeEventListener("click", handleFontSelectClick);
+
+    // Add new event listener
+    fontSelect.addEventListener("click", handleFontSelectClick);
+
+    console.log("✅ Font select event listener initialized");
   }
 
   // Close dropdowns when clicking outside
-  document.addEventListener("click", (event) => {
-    const fontSelect = document.getElementById("scFontSelect");
-    const fontFamilyOptions = document.getElementById("scTypographyFontFamilyOptions");
-    const fontWeightOptions = document.getElementById("scTypographyFontWeightOptions");
-    
-    if (!fontSelect?.contains(event.target)) {
-      fontFamilyOptions?.classList.add("sc-hidden");
-      fontWeightOptions?.classList.add("sc-hidden");
-    }
-  });
+  document.addEventListener("click", handleOutsideClick);
+}
+
+// Handle font select click
+function handleFontSelectClick(event) {
+  // Don't trigger if clicking on dropdown options
+  if (
+    event.target.closest("#scTypographyFontFamilyOptions") ||
+    event.target.closest("#scTypographyFontWeightOptions")
+  ) {
+    return;
+  }
+
+  // Create context for the event
+  const context = {
+    lastClickedElement: window.lastClickedElement,
+    selectedSingleTextType: window.selectedSingleTextType,
+    addPendingModification: window.addPendingModification,
+  };
+
+  handleAllFontFamilyClick(event, context);
+}
+
+// Handle clicks outside dropdowns
+function handleOutsideClick(event) {
+  const fontSelect = document.getElementById("scFontSelect");
+  const fontFamilyOptions = document.getElementById(
+    "scTypographyFontFamilyOptions"
+  );
+  const fontWeightOptions = document.getElementById(
+    "scTypographyFontWeightOptions"
+  );
+
+  if (!fontSelect?.contains(event.target)) {
+    fontFamilyOptions?.classList.add("sc-hidden");
+    fontWeightOptions?.classList.add("sc-hidden");
+  }
 }

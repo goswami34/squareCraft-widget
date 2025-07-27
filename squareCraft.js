@@ -4873,37 +4873,75 @@ window.pendingModifications = pendingModifications;
   async function initTypographyFontFamilySystem() {
     try {
       // Import the typography font family system
-      const { initTypographyFontFamilyControls } = await import('./src/All/initTypographyFontFamilyControls.js');
-      const { initTypographyFontFamilyEvents } = await import('./src/All/handleAllFontFamily.js');
-      
+      const { initTypographyFontFamilyControls } = await import(
+        "./src/All/initTypographyFontFamilyControls.js"
+      );
+      const { initTypographyFontFamilyEvents } = await import(
+        "./src/All/handleAllFontFamily.js"
+      );
+
       // Expose global variables for typography system
       window.lastClickedElement = selectedElement;
       window.selectedSingleTextType = selectedSingleTextType;
       window.addPendingModification = addPendingModification;
-      
+
       // Create context for typography system
       const typographyContext = {
         lastClickedElement: selectedElement,
         selectedSingleTextType: selectedSingleTextType,
         addPendingModification: (blockId, modifications) => {
           addPendingModification(blockId, modifications);
-        }
+        },
       };
 
-      // Initialize the typography font family events
-      initTypographyFontFamilyEvents(typographyContext);
-
-      // Wait for the typography section to be available
+      // Wait for the typography section to be available first
       waitForElement("#scFontSelect, #scTypographyFontFamilyOptions")
         .then(() => {
-          console.log("✅ Typography font family system initialized");
+          console.log("✅ Typography elements found, initializing events");
+
+          // Initialize the typography font family events
+          initTypographyFontFamilyEvents(typographyContext);
+
+          // Also initialize the controls immediately
+          initTypographyFontFamilyControls(
+            () => selectedElement,
+            addPendingModification,
+            showNotification,
+            (blockId, textType, styles) => {
+              console.log("Typography modifications saved:", {
+                blockId,
+                textType,
+                styles,
+              });
+            }
+          );
+
+          console.log("✅ Typography font family system fully initialized");
         })
         .catch((error) => {
-          console.warn("⚠️ Typography font family dropdown not found yet:", error.message);
-        });
+          console.warn(
+            "⚠️ Typography font family dropdown not found yet:",
+            error.message
+          );
 
+          // Try to initialize events anyway in case elements exist
+          try {
+            initTypographyFontFamilyEvents(typographyContext);
+            console.log(
+              "✅ Typography events initialized (elements may appear later)"
+            );
+          } catch (eventError) {
+            console.warn(
+              "⚠️ Could not initialize typography events:",
+              eventError
+            );
+          }
+        });
     } catch (error) {
-      console.error("❌ Failed to initialize typography font family system:", error);
+      console.error(
+        "❌ Failed to initialize typography font family system:",
+        error
+      );
     }
   }
 
