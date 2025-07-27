@@ -260,3 +260,55 @@ export function initTypographyFontFamilyEvents(context) {
       }, 2000);
     });
 }
+
+// Simple manual fix function - call this if dropdown is not working
+export function manualFixTypographyDropdown() {
+  console.log("🔧 Manual fix: Setting up typography dropdown...");
+
+  const fontSelect = document.getElementById("scFontSelect");
+  const fontFamilyOptions = document.getElementById(
+    "scTypographyFontFamilyOptions"
+  );
+
+  if (!fontSelect || !fontFamilyOptions) {
+    console.error("❌ Manual fix failed - elements not found");
+    return false;
+  }
+
+  // Remove any existing event listeners
+  const newFontSelect = fontSelect.cloneNode(true);
+  fontSelect.parentNode.replaceChild(newFontSelect, fontSelect);
+
+  // Add simple click handler
+  newFontSelect.addEventListener("click", (event) => {
+    event.stopPropagation();
+    console.log("🎯 Font select clicked (manual fix)");
+
+    const isHidden = fontFamilyOptions.classList.contains("sc-hidden");
+    fontFamilyOptions.classList.toggle("sc-hidden");
+
+    console.log("✅ Dropdown toggled:", isHidden ? "Shown" : "Hidden");
+
+    // Initialize fonts if dropdown is now visible
+    if (!fontFamilyOptions.classList.contains("sc-hidden")) {
+      console.log("🔄 Loading fonts...");
+      initTypographyFontFamilyControlsIfNeeded({
+        lastClickedElement: document.querySelector('[id^="block-"]'),
+        selectedSingleTextType: "paragraph1",
+        addPendingModification: (blockId, modifications) => {
+          console.log("Modification:", { blockId, modifications });
+        },
+      });
+    }
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", (event) => {
+    if (!newFontSelect.contains(event.target)) {
+      fontFamilyOptions.classList.add("sc-hidden");
+    }
+  });
+
+  console.log("✅ Manual fix applied - dropdown should now work");
+  return true;
+}

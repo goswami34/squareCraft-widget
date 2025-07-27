@@ -4921,8 +4921,9 @@ window.pendingModifications = pendingModifications;
 
           // Initialize typography system after widget is loaded
           setTimeout(() => {
+            console.log("🔄 Initializing typography system...");
             initTypographyFontFamilySystem();
-          }, 500); // Give more time for widget to be fully rendered
+          }, 1000); // Give more time for widget to be fully rendered
         }, 200);
       }
     } catch (err) {

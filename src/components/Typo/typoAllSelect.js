@@ -17,12 +17,18 @@ export function typoAllSelect(fontSizes, LetterSpacing) {
          </div>
 
          <!-- Font Family Dropdown Options -->
-         <div id="scTypographyFontFamilyOptions" class="sc-hidden sc-absolute sc-top-full sc-left-0 sc-right-0 sc-mt-1 sc-bg-3f3f3f sc-max-h-60 sc-overflow-y-auto sc-rounded-6px sc-border sc-border-585858 sc-z-50">
-            <!-- Fonts will be populated here -->
-         </div>
+         <div
+            id="scTypographyFontFamilyOptions"
+            class="sc-hidden sc-absolute sc-top-full sc-left-0 sc-right-0 sc-mt-1 sc-bg-3f3f3f sc-max-h-60 sc-overflow-y-auto sc-rounded-6px sc-border sc-border-585858 sc-z-50"
+         >
+                  <!-- Fonts will be populated here -->
+               </div>
 
-         <!-- Font Weight Dropdown Options -->
-         <div id="scTypographyFontWeightOptions" class="sc-hidden sc-absolute sc-top-full sc-left-0 sc-right-0 sc-mt-1 sc-bg-3f3f3f sc-max-h-60 sc-overflow-y-auto sc-rounded-6px sc-border sc-border-585858 sc-z-50">
+               <!-- Font Weight Dropdown Options -->
+               <div
+            id="scTypographyFontWeightOptions"
+            class="sc-hidden sc-absolute sc-top-full sc-left-0 sc-right-0 sc-mt-1 sc-bg-3f3f3f sc-max-h-60 sc-overflow-y-auto sc-rounded-6px sc-border sc-border-585858 sc-z-50"
+         >
             <!-- Font weights will be populated here -->
          </div>
       </div>
