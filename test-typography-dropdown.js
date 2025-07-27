@@ -1,7 +1,44 @@
+// Quick test function - run this first
+function quickTest() {
+  console.log("⚡ Quick Test: Checking font-family dropdown...");
+
+  const fontSelect = document.getElementById("scFontSelect");
+  const fontFamilyOptions = document.getElementById(
+    "scTypographyFontFamilyOptions"
+  );
+
+  if (!fontSelect || !fontFamilyOptions) {
+    console.error("❌ Elements not found - widget may not be loaded");
+    return false;
+  }
+
+  console.log("✅ Elements found - testing click...");
+
+  // Test click
+  fontSelect.click();
+
+  setTimeout(() => {
+    const isVisible = !fontFamilyOptions.classList.contains("sc-hidden");
+    console.log(
+      "🎯 Click result:",
+      isVisible ? "✅ Dropdown opened!" : "❌ Dropdown still hidden"
+    );
+
+    if (!isVisible) {
+      console.log("💡 Try running: applyManualFix()");
+    }
+  }, 100);
+
+  return true;
+}
+
 // Test script for typography dropdown
 // Run this in the browser console to test the dropdown
 
-console.log("�� Testing Typography Font-Family Dropdown...");
+console.log("🧪 Testing Typography Font-Family Dropdown...");
+
+// Quick test first
+quickTest();
 
 // Test 1: Check if font-family elements exist
 function testFontFamilyElements() {
