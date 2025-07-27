@@ -26,44 +26,24 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// Main function to handle font family dropdown toggle
 export function handleAllFontFamilyClick(event = null, context = null) {
-  // Use global variables from squareCraft.js if context is not provided
-  const lastClickedElement =
-    context?.lastClickedElement || window.lastClickedElement;
-  const selectedSingleTextType =
-    context?.selectedSingleTextType || window.selectedSingleTextType;
-  const addPendingModification =
-    context?.addPendingModification || window.addPendingModification;
-
-  // Toggle the font family dropdown
+  const fontSelect = document.getElementById("scFontSelect");
   const fontFamilyOptions = document.getElementById(
     "scTypographyFontFamilyOptions"
   );
-  const fontSelect = document.getElementById("scFontSelect");
 
-  if (fontFamilyOptions && fontSelect) {
-    const isHidden = fontFamilyOptions.classList.contains("sc-hidden");
+  if (fontSelect && fontFamilyOptions) {
+    // Toggle the dropdown
+    fontFamilyOptions.classList.toggle("sc-hidden");
+    console.log(
+      "✅ Font family dropdown toggled:",
+      !fontFamilyOptions.classList.contains("sc-hidden")
+    );
 
-    // Hide all other dropdowns first
-    document
-      .querySelectorAll(
-        ".sc-dropdown-options, #scTypographyFontWeightOptions, #scFontSizeOptions"
-      )
-      .forEach((dropdown) => {
-        dropdown.classList.add("sc-hidden");
-      });
-
-    if (isHidden) {
-      // Show the dropdown
-      fontFamilyOptions.classList.remove("sc-hidden");
-      console.log("✅ Font family dropdown opened");
-
-      // Initialize font family controls if not already done
+    // Initialize font family controls if dropdown is now visible
+    if (!fontFamilyOptions.classList.contains("sc-hidden")) {
       initTypographyFontFamilyControlsIfNeeded(context);
-    } else {
-      // Hide the dropdown
-      fontFamilyOptions.classList.add("sc-hidden");
-      console.log("✅ Font family dropdown closed");
     }
   } else {
     console.warn("❌ Font family dropdown elements not found");
@@ -205,55 +185,31 @@ export function handleFontFamilySelection(fontFamily, context) {
   );
 }
 
-// Add click event listener to font select container
+// Initialize typography font family events (like button implementation)
 export function initTypographyFontFamilyEvents(context) {
-  const fontSelect = document.getElementById("scFontSelect");
-  if (fontSelect) {
-    // Remove existing event listeners to prevent duplicates
-    fontSelect.removeEventListener("click", handleFontSelectClick);
-
-    // Add new event listener
-    fontSelect.addEventListener("click", handleFontSelectClick);
-
-    console.log("✅ Font select event listener initialized");
-  }
-
-  // Close dropdowns when clicking outside
-  document.addEventListener("click", handleOutsideClick);
-}
-
-// Handle font select click
-function handleFontSelectClick(event) {
-  // Don't trigger if clicking on dropdown options
-  if (
-    event.target.closest("#scTypographyFontFamilyOptions") ||
-    event.target.closest("#scTypographyFontWeightOptions")
-  ) {
-    return;
-  }
-
-  // Create context for the event
-  const context = {
-    lastClickedElement: window.lastClickedElement,
-    selectedSingleTextType: window.selectedSingleTextType,
-    addPendingModification: window.addPendingModification,
-  };
-
-  handleAllFontFamilyClick(event, context);
-}
-
-// Handle clicks outside dropdowns
-function handleOutsideClick(event) {
   const fontSelect = document.getElementById("scFontSelect");
   const fontFamilyOptions = document.getElementById(
     "scTypographyFontFamilyOptions"
   );
-  const fontWeightOptions = document.getElementById(
-    "scTypographyFontWeightOptions"
-  );
 
-  if (!fontSelect?.contains(event.target)) {
-    fontFamilyOptions?.classList.add("sc-hidden");
-    fontWeightOptions?.classList.add("sc-hidden");
+  if (fontSelect && fontFamilyOptions) {
+    // Add click event listener to font select (like button implementation)
+    fontSelect.addEventListener("click", (event) => {
+      event.stopPropagation();
+      handleAllFontFamilyClick(event, context);
+    });
+
+    // Close dropdown when clicking outside (like button implementation)
+    document.addEventListener("click", (event) => {
+      if (!fontSelect.contains(event.target)) {
+        fontFamilyOptions.classList.add("sc-hidden");
+      }
+    });
+
+    console.log("✅ Typography font family events initialized");
+  } else {
+    console.warn(
+      "⚠️ Typography font family elements not found for event initialization"
+    );
   }
 }

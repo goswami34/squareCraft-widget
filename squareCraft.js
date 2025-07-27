@@ -4894,48 +4894,19 @@ window.pendingModifications = pendingModifications;
         },
       };
 
-      // Wait for the typography section to be available first
+      // Initialize events immediately (like button implementation)
+      initTypographyFontFamilyEvents(typographyContext);
+
+      // Wait for the typography section to be available
       waitForElement("#scFontSelect, #scTypographyFontFamilyOptions")
         .then(() => {
-          console.log("✅ Typography elements found, initializing events");
-
-          // Initialize the typography font family events
-          initTypographyFontFamilyEvents(typographyContext);
-
-          // Also initialize the controls immediately
-          initTypographyFontFamilyControls(
-            () => selectedElement,
-            addPendingModification,
-            showNotification,
-            (blockId, textType, styles) => {
-              console.log("Typography modifications saved:", {
-                blockId,
-                textType,
-                styles,
-              });
-            }
-          );
-
-          console.log("✅ Typography font family system fully initialized");
+          console.log("✅ Typography elements found, system ready");
         })
         .catch((error) => {
           console.warn(
             "⚠️ Typography font family dropdown not found yet:",
             error.message
           );
-
-          // Try to initialize events anyway in case elements exist
-          try {
-            initTypographyFontFamilyEvents(typographyContext);
-            console.log(
-              "✅ Typography events initialized (elements may appear later)"
-            );
-          } catch (eventError) {
-            console.warn(
-              "⚠️ Could not initialize typography events:",
-              eventError
-            );
-          }
         });
     } catch (error) {
       console.error(

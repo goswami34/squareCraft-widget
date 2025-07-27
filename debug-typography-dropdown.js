@@ -94,12 +94,6 @@ function testEventListeners() {
 
   console.log("🎧 Testing event listeners...");
 
-  // Check if click event is attached
-  const events = getEventListeners
-    ? getEventListeners(fontSelect)
-    : "Cannot check (DevTools required)";
-  console.log("📡 Event listeners:", events);
-
   // Add a test listener
   fontSelect.addEventListener(
     "click",
@@ -134,6 +128,34 @@ function checkStyles() {
   console.log("- Z-index:", styles.zIndex);
 }
 
+// Test the new implementation
+function testNewImplementation() {
+  console.log("🧪 Testing new typography implementation...");
+
+  // Import and test the handler
+  import("./src/All/handleAllFontFamily.js")
+    .then((module) => {
+      const { handleAllFontFamilyClick } = module;
+
+      // Create test context
+      const testContext = {
+        lastClickedElement: document.querySelector('[id^="block-"]'),
+        selectedSingleTextType: "paragraph1",
+        addPendingModification: (blockId, modifications) => {
+          console.log("Test modification:", { blockId, modifications });
+        },
+      };
+
+      // Test the handler
+      handleAllFontFamilyClick(null, testContext);
+
+      console.log("✅ New implementation test completed");
+    })
+    .catch((err) => {
+      console.error("❌ Failed to test new implementation:", err);
+    });
+}
+
 // Initialize debug functions
 console.log("🚀 Debug functions available:");
 console.log("- checkElements() - Check if required elements exist");
@@ -141,6 +163,7 @@ console.log("- testDropdownToggle() - Test the dropdown toggle functionality");
 console.log("- toggleDropdown() - Manually toggle the dropdown");
 console.log("- testEventListeners() - Test event listener attachment");
 console.log("- checkStyles() - Check CSS styles affecting the dropdown");
+console.log("- testNewImplementation() - Test the new implementation");
 
 // Auto-run initial check
 checkElements();
