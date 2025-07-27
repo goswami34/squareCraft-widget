@@ -128,67 +128,10 @@ export async function handleAllFontSizeClick(event = null, context = null) {
     "typographyFontSize"
   );
 
-  // ✅ CALL saveTypographyAllModifications DIRECTLY
+  // ✅ ADD TO PENDING MODIFICATIONS ONLY
   console.log(
-    "🚀 Calling saveTypographyAllModifications directly for font size..."
+    "📝 Font size modification added to pending modifications. Click 'Publish' to save to database."
   );
-
-  // Show loading state on publish button
-  const publishButton = document.getElementById("publish");
-  if (publishButton) {
-    publishButton.disabled = true;
-    publishButton.textContent = "Publishing...";
-  }
-
-  try {
-    if (saveTypographyAllModifications) {
-      const cssData = {
-        "font-size": fontSize,
-        target: selectedSingleTextType,
-      };
-
-      console.log("📤 Calling saveTypographyAllModifications with:", {
-        blockId: block.id,
-        cssData,
-        textType: selectedSingleTextType,
-      });
-
-      const result = await saveTypographyAllModifications(
-        block.id,
-        cssData,
-        selectedSingleTextType
-      );
-
-      if (result?.success) {
-        console.log("✅ Font size saved to typography table:", result);
-        showNotification(
-          "✅ Font size saved to typography database!",
-          "success"
-        );
-      } else {
-        console.error(
-          "❌ Failed to save font size to typography table:",
-          result?.error
-        );
-        showNotification(
-          `❌ Typography save failed: ${result?.error || "Unknown error"}`,
-          "error"
-        );
-      }
-    } else {
-      console.error("❌ saveTypographyAllModifications function not available");
-      showNotification("❌ Typography save function not available", "error");
-    }
-  } catch (error) {
-    console.error("❌ Error calling saveTypographyAllModifications:", error);
-    showNotification(`❌ Typography save error: ${error.message}`, "error");
-  } finally {
-    // Reset button state
-    if (publishButton) {
-      publishButton.disabled = false;
-      publishButton.textContent = "Publish";
-    }
-  }
 
   // STEP 5️⃣: Update UI highlighting
   document.querySelectorAll('[id^="scAllFontSizeInput"]').forEach((el) => {
@@ -202,4 +145,143 @@ export async function handleAllFontSizeClick(event = null, context = null) {
     `✅ Font size applied to bold text inside: ${selectedSingleTextType}`,
     "success"
   );
+}
+
+// ✅ COMPLETE PUBLISH FUNCTIONALITY FOR TYPOGRAPHY
+export async function handleTypographyPublish() {
+  console.log(
+    "🚀 handleTypographyPublish called - Processing all typography modifications..."
+  );
+
+  // Check if there are any pending modifications
+  if (
+    typeof window.pendingModifications === "undefined" ||
+    window.pendingModifications.size === 0
+  ) {
+    showNotification("No typography changes to publish", "info");
+    return;
+  }
+
+  // Show loading state on publish button
+  const publishButton = document.getElementById("publish");
+  if (publishButton) {
+    publishButton.disabled = true;
+    publishButton.textContent = "Publishing...";
+  }
+
+  try {
+    console.log(
+      "🔄 Publishing typography modifications:",
+      window.pendingModifications
+    );
+
+    // Debug: Log all entries in pendingModifications
+    if (window.pendingModifications.size > 0) {
+      console.log("🔍 All pending typography modifications:");
+      for (const [
+        blockId,
+        modifications,
+      ] of window.pendingModifications.entries()) {
+        console.log(`Block ${blockId}:`, modifications);
+      }
+    }
+
+    // Save each pending typography modification
+    for (const [
+      blockId,
+      modifications,
+    ] of window.pendingModifications.entries()) {
+      for (const mod of modifications) {
+        let result;
+
+        // Handle typography-specific modifications
+        switch (mod.tagType) {
+          case "typographyAll":
+          case "typographyFontFamily":
+          case "typographyFontSize":
+          case "typographyFontWeight":
+          case "typographyLineHeight":
+          case "typographyTextAlign":
+          case "typographyTextColor":
+          case "typographyTextHighlight":
+          case "typographyTextTransform":
+          case "typographyLetterSpacing":
+            console.log("🎨 Processing typography modification:", {
+              tagType: mod.tagType,
+              blockId,
+              css: mod.css,
+              target: mod.target,
+              textType: mod.textType,
+            });
+
+            // Use the typography-specific save function
+            if (window.saveTypographyAllModifications) {
+              result = await window.saveTypographyAllModifications(
+                blockId,
+                mod.css,
+                mod.target || mod.textType
+              );
+              console.log("✅ Typography modification result:", result);
+            } else {
+              console.error(
+                "❌ saveTypographyAllModifications function not available"
+              );
+              throw new Error("Typography save function not available");
+            }
+            break;
+          default:
+            console.warn(
+              "❌ Unknown tagType in pendingModifications:",
+              mod.tagType
+            );
+            continue;
+        }
+
+        if (!result?.success) {
+          throw new Error(
+            `Failed to save typography changes for block ${blockId}`
+          );
+        }
+      }
+    }
+
+    // Clear pending modifications after successful save
+    window.pendingModifications.clear();
+    showNotification(
+      "All typography changes published successfully!",
+      "success"
+    );
+  } catch (error) {
+    console.error("❌ Error in handleTypographyPublish:", error);
+    showNotification(error.message, "error");
+  } finally {
+    // Reset button state
+    if (publishButton) {
+      publishButton.disabled = false;
+      publishButton.textContent = "Publish";
+    }
+  }
+}
+
+// ✅ INITIALIZE PUBLISH BUTTON FOR TYPOGRAPHY
+export function initTypographyPublishButton() {
+  const publishButton = document.getElementById("publish");
+  if (!publishButton) {
+    console.warn("Publish button not found");
+    return;
+  }
+
+  // Remove any existing event listeners
+  const newPublishButton = publishButton.cloneNode(true);
+  publishButton.parentNode.replaceChild(newPublishButton, publishButton);
+
+  newPublishButton.addEventListener("click", async () => {
+    try {
+      await handleTypographyPublish();
+    } catch (error) {
+      showNotification(error.message, "error");
+    }
+  });
+
+  console.log("✅ Typography publish button initialized");
 }
