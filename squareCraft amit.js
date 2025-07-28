@@ -180,6 +180,10 @@ let selectedElement = null;
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontFamily.js"
   );
 
+  const { saveTypographyAllModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   const { handleItalicBlockClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleItalicBlockClick.js"
   );

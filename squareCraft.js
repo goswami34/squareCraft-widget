@@ -5421,6 +5421,39 @@ window.pendingModifications = pendingModifications;
               console.log("🖼️ Processing buttonIcon modification");
               result = await saveButtonIconModifications(blockId, mod.css);
               break;
+            case "typographyAll":
+            case "typographyFontFamily":
+            case "typographyFontSize":
+            case "typographyFontWeight":
+            case "typographyLineHeight":
+            case "typographyTextAlign":
+            case "typographyTextColor":
+            case "typographyTextHighlight":
+            case "typographyTextTransform":
+            case "typographyLetterSpacing":
+              console.log("🎨 Processing typography modification:", {
+                tagType: mod.tagType,
+                blockId,
+                css: mod.css,
+                target: mod.target,
+                textType: mod.textType,
+              });
+
+              // Use the typography-specific save function
+              if (window.saveTypographyAllModifications) {
+                result = await window.saveTypographyAllModifications(
+                  blockId,
+                  mod.css,
+                  mod.target || mod.textType
+                );
+                console.log("✅ Typography modification result:", result);
+              } else {
+                console.error(
+                  "❌ saveTypographyAllModifications function not available"
+                );
+                throw new Error("Typography save function not available");
+              }
+              break;
             default:
               console.log(
                 `📄 Processing default modification for tagType: ${mod.tagType}`

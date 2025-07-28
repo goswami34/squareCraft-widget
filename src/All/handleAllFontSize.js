@@ -119,11 +119,27 @@ export async function handleAllFontSizeClick(event = null, context = null) {
   // ✅ ADD TO PENDING MODIFICATIONS FOR PUBLISH BUTTON
   console.log("📝 Adding font size modification to pending modifications...");
 
+  // Create specific selector for better targeting
+  let specificSelector = "";
+  if (selectedSingleTextType === "paragraph1") {
+    specificSelector = `#${block.id} p.sqsrte-large`;
+  } else if (selectedSingleTextType === "paragraph2") {
+    specificSelector = `#${block.id} p:not(.sqsrte-large):not(.sqsrte-small)`;
+  } else if (selectedSingleTextType === "paragraph3") {
+    specificSelector = `#${block.id} p.sqsrte-small`;
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    const headingNumber = selectedSingleTextType.replace("heading", "");
+    specificSelector = `#${block.id} h${headingNumber}`;
+  } else {
+    specificSelector = `#${block.id} ${selectedSingleTextType}`;
+  }
+
   addPendingModification(
     block.id,
     {
       "font-size": fontSize,
       target: selectedSingleTextType,
+      selector: specificSelector,
     },
     "typographyFontSize"
   );
@@ -186,6 +202,16 @@ export async function handleTypographyPublish() {
       }
     }
 
+    // Check if saveTypographyAllModifications is available
+    if (!window.saveTypographyAllModifications) {
+      console.error(
+        "❌ saveTypographyAllModifications not available on window object"
+      );
+      throw new Error(
+        "Typography save function not available. Please refresh the page."
+      );
+    }
+
     // Save each pending typography modification
     for (const [
       blockId,
@@ -214,19 +240,22 @@ export async function handleTypographyPublish() {
               textType: mod.textType,
             });
 
-            // Use the typography-specific save function
-            if (window.saveTypographyAllModifications) {
+            try {
+              // Use the typography-specific save function
               result = await window.saveTypographyAllModifications(
                 blockId,
                 mod.css,
                 mod.target || mod.textType
               );
               console.log("✅ Typography modification result:", result);
-            } else {
+            } catch (saveError) {
               console.error(
-                "❌ saveTypographyAllModifications function not available"
+                "❌ Error saving typography modification:",
+                saveError
               );
-              throw new Error("Typography save function not available");
+              throw new Error(
+                `Failed to save ${mod.tagType}: ${saveError.message}`
+              );
             }
             break;
           default:
@@ -239,7 +268,9 @@ export async function handleTypographyPublish() {
 
         if (!result?.success) {
           throw new Error(
-            `Failed to save typography changes for block ${blockId}`
+            `Failed to save typography changes for block ${blockId}: ${
+              result?.error || "Unknown error"
+            }`
           );
         }
       }
