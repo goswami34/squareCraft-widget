@@ -25,6 +25,9 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// Store pending text align modifications locally (like font size controls)
+const pendingTextAlignModifications = new Map();
+
 // ✅ Apply data-sc-text-type to all elements in block
 function applyDataTextTypeAttributes(block) {
   const allTextElements = block.querySelectorAll("h1, h2, h3, h4, p");
@@ -139,17 +142,49 @@ export function handleAllTextAlignClick(event = null, context = null) {
     }
   `;
 
-  addPendingModification(
-    block.id,
-    {
-      "text-align": textAlign,
-      target: selectedSingleTextType,
-    },
-    "typographyTextAlign"
-  );
+  console.log("📝 Adding text align modification to pending modifications...");
+
+  // Create specific selector for better targeting
+  let specificSelectorForDB = "";
+  if (selectedSingleTextType === "paragraph1") {
+    specificSelectorForDB = `#${block.id} p.sqsrte-large`;
+  } else if (selectedSingleTextType === "paragraph2") {
+    specificSelectorForDB = `#${block.id} p:not(.sqsrte-large):not(.sqsrte-small)`;
+  } else if (selectedSingleTextType === "paragraph3") {
+    specificSelectorForDB = `#${block.id} p.sqsrte-small`;
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    const headingNumber = selectedSingleTextType.replace("heading", "");
+    specificSelectorForDB = `#${block.id} h${headingNumber}`;
+  } else {
+    specificSelectorForDB = `#${block.id} ${selectedSingleTextType}`;
+  }
+
+  // Store text align modification locally (like font size controls)
+  const textAlignData = {
+    "text-align": textAlign,
+    target: selectedSingleTextType,
+    selector: specificSelectorForDB,
+  };
+
+  pendingTextAlignModifications.set(block.id, textAlignData);
+
+  // Also add to global pending modifications for compatibility
+  if (addPendingModification) {
+    addPendingModification(block.id, textAlignData, "typographyTextAlign");
+  }
 
   console.log(
-    "✅ Text-align modification added to pending modifications. Click 'Publish' to save to database."
+    "📝 Text-align modification added to pending modifications. Click 'Publish' to save to database."
+  );
+
+  // Debug: Log the current pending modifications
+  console.log(
+    "🔍 Current pending text align modifications:",
+    pendingTextAlignModifications
+  );
+  console.log(
+    "🔍 Pending text align modifications size:",
+    pendingTextAlignModifications.size
   );
 
   // UI state
@@ -165,3 +200,114 @@ export function handleAllTextAlignClick(event = null, context = null) {
     "success"
   );
 }
+
+// Function to publish all pending text align modifications (like font size controls)
+const publishPendingTextAlignModifications = async (
+  saveTypographyAllModifications
+) => {
+  if (pendingTextAlignModifications.size === 0) {
+    console.log("No text align changes to publish");
+    return;
+  }
+
+  try {
+    console.log(
+      "🔄 Publishing text align modifications:",
+      pendingTextAlignModifications
+    );
+
+    for (const [blockId, textAlignData] of pendingTextAlignModifications) {
+      if (typeof saveTypographyAllModifications === "function") {
+        console.log("Publishing text align for block:", blockId, textAlignData);
+        const result = await saveTypographyAllModifications(
+          blockId,
+          textAlignData,
+          textAlignData.target
+        );
+        console.log("✅ Text align modification result:", result);
+
+        if (!result?.success) {
+          throw new Error(
+            `Failed to save text align changes for block ${blockId}: ${
+              result?.error || "Unknown error"
+            }`
+          );
+        }
+      } else {
+        console.error(
+          "❌ saveTypographyAllModifications function not available"
+        );
+        throw new Error("Typography save function not available");
+      }
+    }
+
+    // Clear pending modifications after successful publish
+    pendingTextAlignModifications.clear();
+    console.log("✅ All text align changes published successfully!");
+    showNotification(
+      "All text align changes published successfully!",
+      "success"
+    );
+  } catch (error) {
+    console.error("❌ Failed to publish text align modifications:", error);
+    showNotification(
+      `Failed to publish text align changes: ${error.message}`,
+      "error"
+    );
+    throw error;
+  }
+};
+
+// ✅ INITIALIZE PUBLISH BUTTON FOR TEXT ALIGN (like font size controls)
+export function initTextAlignPublishButton(saveTypographyAllModifications) {
+  const publishButton = document.getElementById("publish");
+  if (!publishButton) {
+    console.warn("Publish button not found");
+    return;
+  }
+
+  console.log("🔍 Found publish button for text align:", publishButton);
+  console.log(
+    "🔍 saveTypographyAllModifications function:",
+    typeof saveTypographyAllModifications
+  );
+
+  // Remove existing listener to avoid duplicates
+  publishButton.removeEventListener(
+    "click",
+    publishButton.textAlignPublishHandler
+  );
+
+  // Create new handler
+  publishButton.textAlignPublishHandler = async () => {
+    try {
+      console.log("🚀 Text align publish handler triggered");
+
+      // Show loading state
+      publishButton.disabled = true;
+      publishButton.textContent = "Publishing...";
+
+      await publishPendingTextAlignModifications(
+        saveTypographyAllModifications
+      );
+    } catch (error) {
+      console.error("Text align publish error:", error);
+      showNotification(error.message, "error");
+    } finally {
+      // Reset button state
+      publishButton.disabled = false;
+      publishButton.textContent = "Publish";
+    }
+  };
+
+  // Add the handler
+  publishButton.addEventListener(
+    "click",
+    publishButton.textAlignPublishHandler
+  );
+
+  console.log("✅ Text align publish button initialized");
+}
+
+// Export the publish function for external use
+export { publishPendingTextAlignModifications };

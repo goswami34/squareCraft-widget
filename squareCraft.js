@@ -345,7 +345,7 @@ window.pendingModifications = pendingModifications;
   const { handleAllTextTransformClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextTransform.js"
   );
-  const { handleAllTextAlignClick } = await import(
+  const { handleAllTextAlignClick, initTextAlignPublishButton } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextAlign.js"
   );
   const { handleAllLetterSpacingClick } = await import(
@@ -4931,6 +4931,10 @@ window.pendingModifications = pendingModifications;
             // Initialize font size publish button
             console.log("🔄 Initializing font size publish button...");
             initFontSizePublishButton(saveTypographyAllModifications);
+
+            // Initialize text align publish button
+            console.log("🔄 Initializing text align publish button...");
+            initTextAlignPublishButton(saveTypographyAllModifications);
           }, 1000); // Give more time for widget to be fully rendered
         }, 200);
       }
