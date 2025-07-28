@@ -104,7 +104,9 @@ export function handleAllTextAlignClick(event = null, context = null) {
     heading4: "h4",
   };
 
-  const selector = typeToTag[selectedSingleTextType];
+  // const selector = typeToTag[selectedSingleTextType];
+  const selector = `[data-sc-text-type="${selectedSingleTextType}"]`;
+
   if (!selector) {
     showNotification(
       "Unsupported text type: " + selectedSingleTextType,
