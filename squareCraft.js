@@ -338,7 +338,7 @@ window.pendingModifications = pendingModifications;
   // const { handleTextHighLinghtClick } = await import(
   //   "https://goswami34.github.io/squareCraft-widget/src/Link/handleTextHighLinght.js"
   // );
-  const { handleAllFontSizeClick } = await import(
+  const { handleAllFontSizeClick, initFontSizePublishButton } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontSize.js"
   );
 
@@ -4927,6 +4927,10 @@ window.pendingModifications = pendingModifications;
           setTimeout(() => {
             console.log("🔄 Initializing typography system...");
             initTypographyFontFamilySystem();
+
+            // Initialize font size publish button
+            console.log("🔄 Initializing font size publish button...");
+            initFontSizePublishButton(saveTypographyAllModifications);
           }, 1000); // Give more time for widget to be fully rendered
         }, 200);
       }

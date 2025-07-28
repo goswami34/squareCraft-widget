@@ -26,6 +26,9 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// Store pending font size modifications locally (like shadow controls)
+const pendingFontSizeModifications = new Map();
+
 export async function handleAllFontSizeClick(event = null, context = null) {
   const {
     lastClickedElement,
@@ -118,6 +121,7 @@ export async function handleAllFontSizeClick(event = null, context = null) {
 
   console.log("📝 Adding font size modification to pending modifications...");
 
+  // Create specific selector for better targeting
   let specificSelector = "";
   if (selectedSingleTextType === "paragraph1") {
     specificSelector = `#${block.id} p.sqsrte-large`;
@@ -132,32 +136,33 @@ export async function handleAllFontSizeClick(event = null, context = null) {
     specificSelector = `#${block.id} ${selectedSingleTextType}`;
   }
 
-  addPendingModification(
-    block.id,
-    {
-      "font-size": fontSize,
-      target: selectedSingleTextType,
-      selector: specificSelector,
-    },
-    "typographyFontSize"
-  );
+  // Store font size modification locally (like shadow controls)
+  const fontSizeData = {
+    "font-size": fontSize,
+    target: selectedSingleTextType,
+    selector: specificSelector,
+  };
 
-  // ✅ ADD TO PENDING MODIFICATIONS ONLY
+  pendingFontSizeModifications.set(block.id, fontSizeData);
+
+  // Also add to global pending modifications for compatibility
+  if (addPendingModification) {
+    addPendingModification(block.id, fontSizeData, "typographyFontSize");
+  }
+
   console.log(
     "📝 Font size modification added to pending modifications. Click 'Publish' to save to database."
   );
 
   // Debug: Log the current pending modifications
-  if (window.pendingModifications) {
-    console.log(
-      "🔍 Current pending modifications:",
-      window.pendingModifications
-    );
-    console.log(
-      "🔍 Pending modifications size:",
-      window.pendingModifications.size
-    );
-  }
+  console.log(
+    "🔍 Current pending font size modifications:",
+    pendingFontSizeModifications
+  );
+  console.log(
+    "🔍 Pending font size modifications size:",
+    pendingFontSizeModifications.size
+  );
 
   // STEP 5️⃣: Update UI highlighting
   document.querySelectorAll('[id^="scAllFontSizeInput"]').forEach((el) => {
@@ -173,141 +178,108 @@ export async function handleAllFontSizeClick(event = null, context = null) {
   );
 }
 
-// ✅ COMPLETE PUBLISH FUNCTIONALITY FOR TYPOGRAPHY
-export async function handleTypographyPublish() {
-  console.log(
-    "🚀 handleTypographyPublish called - Processing all typography modifications..."
-  );
-
-  // Check if there are any pending modifications
-  if (
-    typeof window.pendingModifications === "undefined" ||
-    window.pendingModifications.size === 0
-  ) {
-    showNotification("No typography changes to publish", "info");
+// Function to publish all pending font size modifications (like shadow controls)
+const publishPendingFontSizeModifications = async (
+  saveTypographyAllModifications
+) => {
+  if (pendingFontSizeModifications.size === 0) {
+    console.log("No font size changes to publish");
     return;
-  }
-
-  // Show loading state on publish button
-  const publishButton = document.getElementById("publish");
-  if (publishButton) {
-    publishButton.disabled = true;
-    publishButton.textContent = "Publishing...";
   }
 
   try {
     console.log(
-      "🔄 Publishing typography modifications:",
-      window.pendingModifications
+      "🔄 Publishing font size modifications:",
+      pendingFontSizeModifications
     );
 
-    // Debug: Log all entries in pendingModifications
-    if (window.pendingModifications.size > 0) {
-      console.log("🔍 All pending typography modifications:");
-      for (const [
-        blockId,
-        modifications,
-      ] of window.pendingModifications.entries()) {
-        console.log(`Block ${blockId}:`, modifications);
-      }
-    }
-
-    // Check if saveTypographyAllModifications is available
-    if (!window.saveTypographyAllModifications) {
-      console.error(
-        "❌ saveTypographyAllModifications not available on window object"
-      );
-      throw new Error(
-        "Typography save function not available. Please refresh the page."
-      );
-    }
-
-    // Save each pending typography modification
-    for (const [
-      blockId,
-      modifications,
-    ] of window.pendingModifications.entries()) {
-      for (const mod of modifications) {
-        let result;
-
-        // Handle typography-specific modifications
-        switch (mod.tagType) {
-          case "typographyAll":
-          case "typographyFontFamily":
-          case "typographyFontSize":
-          case "typographyFontWeight":
-          case "typographyLineHeight":
-          case "typographyTextAlign":
-          case "typographyTextColor":
-          case "typographyTextHighlight":
-          case "typographyTextTransform":
-          case "typographyLetterSpacing":
-            console.log("🎨 Processing typography modification:", {
-              tagType: mod.tagType,
-              blockId,
-              css: mod.css,
-              target: mod.target,
-              textType: mod.textType,
-            });
-
-            try {
-              // Use the typography-specific save function
-              result = await window.saveTypographyAllModifications(
-                blockId,
-                mod.css,
-                mod.target || mod.textType
-              );
-              console.log("✅ Typography modification result:", result);
-            } catch (saveError) {
-              console.error(
-                "❌ Error saving typography modification:",
-                saveError
-              );
-              throw new Error(
-                `Failed to save ${mod.tagType}: ${saveError.message}`
-              );
-            }
-            break;
-          default:
-            console.warn(
-              "❌ Unknown tagType in pendingModifications:",
-              mod.tagType
-            );
-            continue;
-        }
+    for (const [blockId, fontSizeData] of pendingFontSizeModifications) {
+      if (typeof saveTypographyAllModifications === "function") {
+        console.log("Publishing font size for block:", blockId, fontSizeData);
+        const result = await saveTypographyAllModifications(
+          blockId,
+          fontSizeData,
+          fontSizeData.target
+        );
+        console.log("✅ Font size modification result:", result);
 
         if (!result?.success) {
           throw new Error(
-            `Failed to save typography changes for block ${blockId}: ${
+            `Failed to save font size changes for block ${blockId}: ${
               result?.error || "Unknown error"
             }`
           );
         }
+      } else {
+        console.error(
+          "❌ saveTypographyAllModifications function not available"
+        );
+        throw new Error("Typography save function not available");
       }
     }
 
-    // Clear pending modifications after successful save
-    window.pendingModifications.clear();
+    // Clear pending modifications after successful publish
+    pendingFontSizeModifications.clear();
+    console.log("✅ All font size changes published successfully!");
     showNotification(
-      "All typography changes published successfully!",
+      "All font size changes published successfully!",
       "success"
     );
   } catch (error) {
-    console.error("❌ Error in handleTypographyPublish:", error);
-    showNotification(error.message, "error");
-  } finally {
-    // Reset button state
-    if (publishButton) {
+    console.error("❌ Failed to publish font size modifications:", error);
+    showNotification(
+      `Failed to publish font size changes: ${error.message}`,
+      "error"
+    );
+    throw error;
+  }
+};
+
+// ✅ INITIALIZE PUBLISH BUTTON FOR FONT SIZE (like shadow controls)
+export function initFontSizePublishButton(saveTypographyAllModifications) {
+  const publishButton = document.getElementById("publish");
+  if (!publishButton) {
+    console.warn("Publish button not found");
+    return;
+  }
+
+  console.log("🔍 Found publish button:", publishButton);
+  console.log(
+    "🔍 saveTypographyAllModifications function:",
+    typeof saveTypographyAllModifications
+  );
+
+  // Remove existing listener to avoid duplicates
+  publishButton.removeEventListener(
+    "click",
+    publishButton.fontSizePublishHandler
+  );
+
+  // Create new handler
+  publishButton.fontSizePublishHandler = async () => {
+    try {
+      console.log("🚀 Font size publish handler triggered");
+
+      // Show loading state
+      publishButton.disabled = true;
+      publishButton.textContent = "Publishing...";
+
+      await publishPendingFontSizeModifications(saveTypographyAllModifications);
+    } catch (error) {
+      console.error("Font size publish error:", error);
+      showNotification(error.message, "error");
+    } finally {
+      // Reset button state
       publishButton.disabled = false;
       publishButton.textContent = "Publish";
     }
-  }
+  };
+
+  // Add the handler
+  publishButton.addEventListener("click", publishButton.fontSizePublishHandler);
+
+  console.log("✅ Font size publish button initialized");
 }
 
-// ✅ INITIALIZE PUBLISH BUTTON FOR TYPOGRAPHY
-export function initTypographyPublishButton() {
-  // This function is no longer needed since the main publish button in squareCraft.js handles typography
-  console.log(
-    "ℹ️ Typography publish button initialization skipped - using main publish handler"
-  );
-}
+// Export the publish function for external use
+export { publishPendingFontSizeModifications };
