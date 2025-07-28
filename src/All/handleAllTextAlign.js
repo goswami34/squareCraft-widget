@@ -29,24 +29,54 @@ function showNotification(message, type = "info") {
 const pendingTextAlignModifications = new Map();
 
 // ✅ Apply data-sc-text-type to all elements in block
+// function applyDataTextTypeAttributes(block) {
+//   const allTextElements = block.querySelectorAll("h1, h2, h3, h4, p");
+
+//   allTextElements.forEach((el) => {
+//     if (el.classList.contains("sqsrte-large")) {
+//       el.setAttribute("data-sc-text-type", "paragraph1");
+//     } else if (el.classList.contains("sqsrte-small")) {
+//       el.setAttribute("data-sc-text-type", "paragraph3");
+//     } else if (el.tagName.toLowerCase() === "p") {
+//       el.setAttribute("data-sc-text-type", "paragraph2");
+//     } else if (el.tagName.toLowerCase() === "h1") {
+//       el.setAttribute("data-sc-text-type", "heading1");
+//     } else if (el.tagName.toLowerCase() === "h2") {
+//       el.setAttribute("data-sc-text-type", "heading2");
+//     } else if (el.tagName.toLowerCase() === "h3") {
+//       el.setAttribute("data-sc-text-type", "heading3");
+//     } else if (el.tagName.toLowerCase() === "h4") {
+//       el.setAttribute("data-sc-text-type", "heading4");
+//     }
+//   });
+// }
+
 function applyDataTextTypeAttributes(block) {
   const allTextElements = block.querySelectorAll("h1, h2, h3, h4, p");
 
   allTextElements.forEach((el) => {
-    if (el.classList.contains("sqsrte-large")) {
-      el.setAttribute("data-sc-text-type", "paragraph1");
-    } else if (el.classList.contains("sqsrte-small")) {
-      el.setAttribute("data-sc-text-type", "paragraph3");
-    } else if (el.tagName.toLowerCase() === "p") {
-      el.setAttribute("data-sc-text-type", "paragraph2");
-    } else if (el.tagName.toLowerCase() === "h1") {
+    // ⚠️ Step 1: Remove any previous data-sc-text-type
+    el.removeAttribute("data-sc-text-type");
+
+    // ⚙️ Step 2: Apply new one based on logic
+    const tag = el.tagName.toLowerCase();
+
+    if (tag === "h1") {
       el.setAttribute("data-sc-text-type", "heading1");
-    } else if (el.tagName.toLowerCase() === "h2") {
+    } else if (tag === "h2") {
       el.setAttribute("data-sc-text-type", "heading2");
-    } else if (el.tagName.toLowerCase() === "h3") {
+    } else if (tag === "h3") {
       el.setAttribute("data-sc-text-type", "heading3");
-    } else if (el.tagName.toLowerCase() === "h4") {
+    } else if (tag === "h4") {
       el.setAttribute("data-sc-text-type", "heading4");
+    } else if (tag === "p") {
+      if (el.classList.contains("sqsrte-large")) {
+        el.setAttribute("data-sc-text-type", "paragraph1");
+      } else if (el.classList.contains("sqsrte-small")) {
+        el.setAttribute("data-sc-text-type", "paragraph3");
+      } else {
+        el.setAttribute("data-sc-text-type", "paragraph2");
+      }
     }
   });
 }
