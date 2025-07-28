@@ -116,7 +116,6 @@ export async function handleAllFontSizeClick(event = null, context = null) {
       }
     `;
 
-  // ✅ ADD TO PENDING MODIFICATIONS FOR PUBLISH BUTTON
   console.log("📝 Adding font size modification to pending modifications...");
 
   // Create specific selector for better targeting
