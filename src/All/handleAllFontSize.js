@@ -118,7 +118,6 @@ export async function handleAllFontSizeClick(event = null, context = null) {
 
   console.log("📝 Adding font size modification to pending modifications...");
 
-  // Create specific selector for better targeting
   let specificSelector = "";
   if (selectedSingleTextType === "paragraph1") {
     specificSelector = `#${block.id} p.sqsrte-large`;
