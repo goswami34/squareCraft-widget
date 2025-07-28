@@ -26,6 +26,9 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// Store pending font weight modifications locally (like font size controls)
+const pendingFontWeightModifications = new Map();
+
 export function handleAllFontWeightClick(event = null, context = null) {
   const {
     lastClickedElement,
@@ -120,18 +123,32 @@ export function handleAllFontWeightClick(event = null, context = null) {
   // ✅ ADD TO PENDING MODIFICATIONS FOR PUBLISH BUTTON
   console.log("📝 Adding font-weight modification to pending modifications...");
 
-  addPendingModification(
-    block.id,
-    {
-      "font-weight": fontWeight,
-      target: selectedSingleTextType,
-      selector: specificSelector,
-    },
-    "typographyFontWeight"
-  );
+  // Store font weight modification locally (like font size controls)
+  const fontWeightData = {
+    "font-weight": fontWeight,
+    target: selectedSingleTextType,
+    selector: specificSelector,
+  };
+
+  pendingFontWeightModifications.set(block.id, fontWeightData);
+
+  // Also add to global pending modifications for compatibility
+  if (addPendingModification) {
+    addPendingModification(block.id, fontWeightData, "typographyFontWeight");
+  }
 
   console.log(
-    "✅ Font-weight modification added to pending modifications. Click 'Publish' to save to database."
+    "📝 Font-weight modification added to pending modifications. Click 'Publish' to save to database."
+  );
+
+  // Debug: Log the current pending modifications
+  console.log(
+    "🔍 Current pending font weight modifications:",
+    pendingFontWeightModifications
+  );
+  console.log(
+    "🔍 Pending font weight modifications size:",
+    pendingFontWeightModifications.size
   );
 
   // Update active button - Fixed to target the correct element
@@ -150,3 +167,118 @@ export function handleAllFontWeightClick(event = null, context = null) {
     "success"
   );
 }
+
+// Function to publish all pending font weight modifications (like font size controls)
+const publishPendingFontWeightModifications = async (
+  saveTypographyAllModifications
+) => {
+  if (pendingFontWeightModifications.size === 0) {
+    console.log("No font weight changes to publish");
+    return;
+  }
+
+  try {
+    console.log(
+      "🔄 Publishing font weight modifications:",
+      pendingFontWeightModifications
+    );
+
+    for (const [blockId, fontWeightData] of pendingFontWeightModifications) {
+      if (typeof saveTypographyAllModifications === "function") {
+        console.log(
+          "Publishing font weight for block:",
+          blockId,
+          fontWeightData
+        );
+        const result = await saveTypographyAllModifications(
+          blockId,
+          fontWeightData,
+          fontWeightData.target
+        );
+        console.log("✅ Font weight modification result:", result);
+
+        if (!result?.success) {
+          throw new Error(
+            `Failed to save font weight changes for block ${blockId}: ${
+              result?.error || "Unknown error"
+            }`
+          );
+        }
+      } else {
+        console.error(
+          "❌ saveTypographyAllModifications function not available"
+        );
+        throw new Error("Typography save function not available");
+      }
+    }
+
+    // Clear pending modifications after successful publish
+    pendingFontWeightModifications.clear();
+    console.log("✅ All font weight changes published successfully!");
+    showNotification(
+      "All font weight changes published successfully!",
+      "success"
+    );
+  } catch (error) {
+    console.error("❌ Failed to publish font weight modifications:", error);
+    showNotification(
+      `Failed to publish font weight changes: ${error.message}`,
+      "error"
+    );
+    throw error;
+  }
+};
+
+// ✅ INITIALIZE PUBLISH BUTTON FOR FONT WEIGHT (like font size controls)
+export function initFontWeightPublishButton(saveTypographyAllModifications) {
+  const publishButton = document.getElementById("publish");
+  if (!publishButton) {
+    console.warn("Publish button not found");
+    return;
+  }
+
+  console.log("🔍 Found publish button for font weight:", publishButton);
+  console.log(
+    "🔍 saveTypographyAllModifications function:",
+    typeof saveTypographyAllModifications
+  );
+
+  // Remove existing listener to avoid duplicates
+  publishButton.removeEventListener(
+    "click",
+    publishButton.fontWeightPublishHandler
+  );
+
+  // Create new handler
+  publishButton.fontWeightPublishHandler = async () => {
+    try {
+      console.log("🚀 Font weight publish handler triggered");
+
+      // Show loading state
+      publishButton.disabled = true;
+      publishButton.textContent = "Publishing...";
+
+      await publishPendingFontWeightModifications(
+        saveTypographyAllModifications
+      );
+    } catch (error) {
+      console.error("Font weight publish error:", error);
+      showNotification(error.message, "error");
+    } finally {
+      // Reset button state
+      publishButton.disabled = false;
+      publishButton.textContent = "Publish";
+    }
+  };
+
+  // Add the handler
+  publishButton.addEventListener(
+    "click",
+    publishButton.fontWeightPublishHandler
+  );
+
+  console.log("✅ Font weight publish button initialized");
+}
+
+// Export the publish function for external use
+export { publishPendingFontWeightModifications };

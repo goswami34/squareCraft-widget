@@ -26,6 +26,9 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// Store pending text transform modifications locally (like font size controls)
+const pendingTextTransformModifications = new Map();
+
 export function handleAllTextTransformClick(event = null, context = null) {
   const {
     lastClickedElement,
@@ -113,17 +116,51 @@ export function handleAllTextTransformClick(event = null, context = null) {
       }
     `;
 
-  addPendingModification(
-    block.id,
-    {
-      "text-transform": textTransform,
-      target: selectedSingleTextType,
-    },
-    "typographyTextTransform"
-  );
+  // Create specific selector for better targeting
+  let specificSelector = "";
+  if (selectedSingleTextType === "paragraph1") {
+    specificSelector = `#${block.id} p.sqsrte-large`;
+  } else if (selectedSingleTextType === "paragraph2") {
+    specificSelector = `#${block.id} p:not(.sqsrte-large):not(.sqsrte-small)`;
+  } else if (selectedSingleTextType === "paragraph3") {
+    specificSelector = `#${block.id} p.sqsrte-small`;
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    const headingNumber = selectedSingleTextType.replace("heading", "");
+    specificSelector = `#${block.id} h${headingNumber}`;
+  } else {
+    specificSelector = `#${block.id} ${selectedSingleTextType}`;
+  }
+
+  // Store text transform modification locally (like font size controls)
+  const textTransformData = {
+    "text-transform": textTransform,
+    target: selectedSingleTextType,
+    selector: specificSelector,
+  };
+
+  pendingTextTransformModifications.set(block.id, textTransformData);
+
+  // Also add to global pending modifications for compatibility
+  if (addPendingModification) {
+    addPendingModification(
+      block.id,
+      textTransformData,
+      "typographyTextTransform"
+    );
+  }
 
   console.log(
-    "✅ Text-transform modification added to pending modifications. Click 'Publish' to save to database."
+    "📝 Text-transform modification added to pending modifications. Click 'Publish' to save to database."
+  );
+
+  // Debug: Log the current pending modifications
+  console.log(
+    "🔍 Current pending text transform modifications:",
+    pendingTextTransformModifications
+  );
+  console.log(
+    "🔍 Pending text transform modifications size:",
+    pendingTextTransformModifications.size
   );
 
   // Update active button
@@ -139,3 +176,121 @@ export function handleAllTextTransformClick(event = null, context = null) {
     "success"
   );
 }
+
+// Function to publish all pending text transform modifications (like font size controls)
+const publishPendingTextTransformModifications = async (
+  saveTypographyAllModifications
+) => {
+  if (pendingTextTransformModifications.size === 0) {
+    console.log("No text transform changes to publish");
+    return;
+  }
+
+  try {
+    console.log(
+      "🔄 Publishing text transform modifications:",
+      pendingTextTransformModifications
+    );
+
+    for (const [
+      blockId,
+      textTransformData,
+    ] of pendingTextTransformModifications) {
+      if (typeof saveTypographyAllModifications === "function") {
+        console.log(
+          "Publishing text transform for block:",
+          blockId,
+          textTransformData
+        );
+        const result = await saveTypographyAllModifications(
+          blockId,
+          textTransformData,
+          textTransformData.target
+        );
+        console.log("✅ Text transform modification result:", result);
+
+        if (!result?.success) {
+          throw new Error(
+            `Failed to save text transform changes for block ${blockId}: ${
+              result?.error || "Unknown error"
+            }`
+          );
+        }
+      } else {
+        console.error(
+          "❌ saveTypographyAllModifications function not available"
+        );
+        throw new Error("Typography save function not available");
+      }
+    }
+
+    // Clear pending modifications after successful publish
+    pendingTextTransformModifications.clear();
+    console.log("✅ All text transform changes published successfully!");
+    showNotification(
+      "All text transform changes published successfully!",
+      "success"
+    );
+  } catch (error) {
+    console.error("❌ Failed to publish text transform modifications:", error);
+    showNotification(
+      `Failed to publish text transform changes: ${error.message}`,
+      "error"
+    );
+    throw error;
+  }
+};
+
+// ✅ INITIALIZE PUBLISH BUTTON FOR TEXT TRANSFORM (like font size controls)
+export function initTextTransformPublishButton(saveTypographyAllModifications) {
+  const publishButton = document.getElementById("publish");
+  if (!publishButton) {
+    console.warn("Publish button not found");
+    return;
+  }
+
+  console.log("🔍 Found publish button for text transform:", publishButton);
+  console.log(
+    "🔍 saveTypographyAllModifications function:",
+    typeof saveTypographyAllModifications
+  );
+
+  // Remove existing listener to avoid duplicates
+  publishButton.removeEventListener(
+    "click",
+    publishButton.textTransformPublishHandler
+  );
+
+  // Create new handler
+  publishButton.textTransformPublishHandler = async () => {
+    try {
+      console.log("🚀 Text transform publish handler triggered");
+
+      // Show loading state
+      publishButton.disabled = true;
+      publishButton.textContent = "Publishing...";
+
+      await publishPendingTextTransformModifications(
+        saveTypographyAllModifications
+      );
+    } catch (error) {
+      console.error("Text transform publish error:", error);
+      showNotification(error.message, "error");
+    } finally {
+      // Reset button state
+      publishButton.disabled = false;
+      publishButton.textContent = "Publish";
+    }
+  };
+
+  // Add the handler
+  publishButton.addEventListener(
+    "click",
+    publishButton.textTransformPublishHandler
+  );
+
+  console.log("✅ Text transform publish button initialized");
+}
+
+// Export the publish function for external use
+export { publishPendingTextTransformModifications };

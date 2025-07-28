@@ -26,6 +26,9 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// Store pending letter spacing modifications locally (like font size controls)
+const pendingLetterSpacingModifications = new Map();
+
 export function handleAllLetterSpacingClick(event = null, context = null) {
   const { lastClickedElement, selectedSingleTextType, addPendingModification } =
     context;
@@ -109,17 +112,51 @@ export function handleAllLetterSpacingClick(event = null, context = null) {
           }
         `;
 
-  addPendingModification(
-    block.id,
-    {
-      "letter-spacing": letterSpacing,
-      target: selectedSingleTextType,
-    },
-    "typographyLetterSpacing"
-  );
+  // Create specific selector for better targeting
+  let specificSelector = "";
+  if (selectedSingleTextType === "paragraph1") {
+    specificSelector = `#${block.id} p.sqsrte-large`;
+  } else if (selectedSingleTextType === "paragraph2") {
+    specificSelector = `#${block.id} p:not(.sqsrte-large):not(.sqsrte-small)`;
+  } else if (selectedSingleTextType === "paragraph3") {
+    specificSelector = `#${block.id} p.sqsrte-small`;
+  } else if (selectedSingleTextType.startsWith("heading")) {
+    const headingNumber = selectedSingleTextType.replace("heading", "");
+    specificSelector = `#${block.id} h${headingNumber}`;
+  } else {
+    specificSelector = `#${block.id} ${selectedSingleTextType}`;
+  }
+
+  // Store letter spacing modification locally (like font size controls)
+  const letterSpacingData = {
+    "letter-spacing": letterSpacing,
+    target: selectedSingleTextType,
+    selector: specificSelector,
+  };
+
+  pendingLetterSpacingModifications.set(block.id, letterSpacingData);
+
+  // Also add to global pending modifications for compatibility
+  if (addPendingModification) {
+    addPendingModification(
+      block.id,
+      letterSpacingData,
+      "typographyLetterSpacing"
+    );
+  }
 
   console.log(
-    "✅ Letter-spacing modification added to pending modifications. Click 'Publish' to save to database."
+    "📝 Letter-spacing modification added to pending modifications. Click 'Publish' to save to database."
+  );
+
+  // Debug: Log the current pending modifications
+  console.log(
+    "🔍 Current pending letter spacing modifications:",
+    pendingLetterSpacingModifications
+  );
+  console.log(
+    "🔍 Pending letter spacing modifications size:",
+    pendingLetterSpacingModifications.size
   );
 
   // Update active button
@@ -135,3 +172,121 @@ export function handleAllLetterSpacingClick(event = null, context = null) {
     "success"
   );
 }
+
+// Function to publish all pending letter spacing modifications (like font size controls)
+const publishPendingLetterSpacingModifications = async (
+  saveTypographyAllModifications
+) => {
+  if (pendingLetterSpacingModifications.size === 0) {
+    console.log("No letter spacing changes to publish");
+    return;
+  }
+
+  try {
+    console.log(
+      "🔄 Publishing letter spacing modifications:",
+      pendingLetterSpacingModifications
+    );
+
+    for (const [
+      blockId,
+      letterSpacingData,
+    ] of pendingLetterSpacingModifications) {
+      if (typeof saveTypographyAllModifications === "function") {
+        console.log(
+          "Publishing letter spacing for block:",
+          blockId,
+          letterSpacingData
+        );
+        const result = await saveTypographyAllModifications(
+          blockId,
+          letterSpacingData,
+          letterSpacingData.target
+        );
+        console.log("✅ Letter spacing modification result:", result);
+
+        if (!result?.success) {
+          throw new Error(
+            `Failed to save letter spacing changes for block ${blockId}: ${
+              result?.error || "Unknown error"
+            }`
+          );
+        }
+      } else {
+        console.error(
+          "❌ saveTypographyAllModifications function not available"
+        );
+        throw new Error("Typography save function not available");
+      }
+    }
+
+    // Clear pending modifications after successful publish
+    pendingLetterSpacingModifications.clear();
+    console.log("✅ All letter spacing changes published successfully!");
+    showNotification(
+      "All letter spacing changes published successfully!",
+      "success"
+    );
+  } catch (error) {
+    console.error("❌ Failed to publish letter spacing modifications:", error);
+    showNotification(
+      `Failed to publish letter spacing changes: ${error.message}`,
+      "error"
+    );
+    throw error;
+  }
+};
+
+// ✅ INITIALIZE PUBLISH BUTTON FOR LETTER SPACING (like font size controls)
+export function initLetterSpacingPublishButton(saveTypographyAllModifications) {
+  const publishButton = document.getElementById("publish");
+  if (!publishButton) {
+    console.warn("Publish button not found");
+    return;
+  }
+
+  console.log("🔍 Found publish button for letter spacing:", publishButton);
+  console.log(
+    "🔍 saveTypographyAllModifications function:",
+    typeof saveTypographyAllModifications
+  );
+
+  // Remove existing listener to avoid duplicates
+  publishButton.removeEventListener(
+    "click",
+    publishButton.letterSpacingPublishHandler
+  );
+
+  // Create new handler
+  publishButton.letterSpacingPublishHandler = async () => {
+    try {
+      console.log("🚀 Letter spacing publish handler triggered");
+
+      // Show loading state
+      publishButton.disabled = true;
+      publishButton.textContent = "Publishing...";
+
+      await publishPendingLetterSpacingModifications(
+        saveTypographyAllModifications
+      );
+    } catch (error) {
+      console.error("Letter spacing publish error:", error);
+      showNotification(error.message, "error");
+    } finally {
+      // Reset button state
+      publishButton.disabled = false;
+      publishButton.textContent = "Publish";
+    }
+  };
+
+  // Add the handler
+  publishButton.addEventListener(
+    "click",
+    publishButton.letterSpacingPublishHandler
+  );
+
+  console.log("✅ Letter spacing publish button initialized");
+}
+
+// Export the publish function for external use
+export { publishPendingLetterSpacingModifications };

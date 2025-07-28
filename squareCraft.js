@@ -342,23 +342,27 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontSize.js"
   );
 
-  const { handleAllTextTransformClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextTransform.js"
-  );
+  const { handleAllTextTransformClick, initTextTransformPublishButton } =
+    await import(
+      "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextTransform.js"
+    );
   const { handleAllTextAlignClick, initTextAlignPublishButton } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextAlign.js"
   );
-  const { handleAllLetterSpacingClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/All/handleLetterSpeacing.js"
-  );
+  const { handleAllLetterSpacingClick, initLetterSpacingPublishButton } =
+    await import(
+      "https://goswami34.github.io/squareCraft-widget/src/All/handleLetterSpeacing.js"
+    );
 
-  const { handleAllLineHeightClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllLineHeight.js"
-  );
+  const { handleAllLineHeightClick, initLineHeightPublishButton } =
+    await import(
+      "https://goswami34.github.io/squareCraft-widget/src/All/handleAllLineHeight.js"
+    );
 
-  const { handleAllFontWeightClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontWeight.js"
-  );
+  const { handleAllFontWeightClick, initFontWeightPublishButton } =
+    await import(
+      "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontWeight.js"
+    );
 
   const { handleAllTextColorClick, initTextColorPublishButton } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextColor.js"
@@ -372,9 +376,10 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleAllBlockClick.js"
   );
 
-  const { handleAllTextHighlightClick } = await import(
-    "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextHighlight.js"
-  );
+  const { handleAllTextHighlightClick, initTextHighlightPublishButton } =
+    await import(
+      "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextHighlight.js"
+    );
 
   const { handleTextHighlightColorClick } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/clickEvents/handleTextHighlightColorClick.js"
@@ -4939,6 +4944,26 @@ window.pendingModifications = pendingModifications;
             // Initialize text color publish button
             console.log("🔄 Initializing text color publish button...");
             initTextColorPublishButton(saveTypographyAllModifications);
+
+            // Initialize line height publish button
+            console.log("🔄 Initializing line height publish button...");
+            initLineHeightPublishButton(saveTypographyAllModifications);
+
+            // Initialize font weight publish button
+            console.log("🔄 Initializing font weight publish button...");
+            initFontWeightPublishButton(saveTypographyAllModifications);
+
+            // Initialize text transform publish button
+            console.log("🔄 Initializing text transform publish button...");
+            initTextTransformPublishButton(saveTypographyAllModifications);
+
+            // Initialize text highlight publish button
+            console.log("🔄 Initializing text highlight publish button...");
+            initTextHighlightPublishButton(saveTypographyAllModifications);
+
+            // Initialize letter spacing publish button
+            console.log("🔄 Initializing letter spacing publish button...");
+            initLetterSpacingPublishButton(saveTypographyAllModifications);
           }, 1000); // Give more time for widget to be fully rendered
         }, 200);
       }
