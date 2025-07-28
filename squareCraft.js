@@ -5441,6 +5441,9 @@ window.pendingModifications = pendingModifications;
 
               // Use the typography-specific save function
               if (window.saveTypographyAllModifications) {
+                console.log(
+                  "✅ saveTypographyAllModifications function found, calling it..."
+                );
                 result = await window.saveTypographyAllModifications(
                   blockId,
                   mod.css,
@@ -5535,18 +5538,34 @@ window.pendingModifications = pendingModifications;
       console.log("✅ Publish button found:", publishButton);
 
       // Remove any existing event listeners to prevent duplicates
-      publishButton.removeEventListener("click", handlePublish);
+      const newPublishButton = publishButton.cloneNode(true);
+      publishButton.parentNode.replaceChild(newPublishButton, publishButton);
 
       // Add the event listener
-      publishButton.addEventListener("click", handlePublish);
+      newPublishButton.addEventListener("click", async () => {
+        try {
+          // Show loading state
+          newPublishButton.disabled = true;
+          newPublishButton.textContent = "Publishing...";
+
+          await handlePublish();
+        } catch (error) {
+          showNotification(error.message, "error");
+        } finally {
+          // Reset button state
+          newPublishButton.disabled = false;
+          newPublishButton.textContent = "Publish";
+        }
+      });
+
       console.log("✅ Publish button event listener added");
 
       // Test if the button is clickable
       console.log("🔍 Publish button properties:", {
-        disabled: publishButton.disabled,
-        textContent: publishButton.textContent,
-        className: publishButton.className,
-        style: publishButton.style.display,
+        disabled: newPublishButton.disabled,
+        textContent: newPublishButton.textContent,
+        className: newPublishButton.className,
+        style: newPublishButton.style.display,
       });
     } else {
       console.warn("⚠️ Publish button not found");

@@ -147,6 +147,18 @@ export async function handleAllFontSizeClick(event = null, context = null) {
     "📝 Font size modification added to pending modifications. Click 'Publish' to save to database."
   );
 
+  // Debug: Log the current pending modifications
+  if (window.pendingModifications) {
+    console.log(
+      "🔍 Current pending modifications:",
+      window.pendingModifications
+    );
+    console.log(
+      "🔍 Pending modifications size:",
+      window.pendingModifications.size
+    );
+  }
+
   // STEP 5️⃣: Update UI highlighting
   document.querySelectorAll('[id^="scAllFontSizeInput"]').forEach((el) => {
     el.classList.remove("sc-activeTab-border");
@@ -294,23 +306,8 @@ export async function handleTypographyPublish() {
 
 // ✅ INITIALIZE PUBLISH BUTTON FOR TYPOGRAPHY
 export function initTypographyPublishButton() {
-  const publishButton = document.getElementById("publish");
-  if (!publishButton) {
-    console.warn("Publish button not found");
-    return;
-  }
-
-  // Remove any existing event listeners
-  const newPublishButton = publishButton.cloneNode(true);
-  publishButton.parentNode.replaceChild(newPublishButton, publishButton);
-
-  newPublishButton.addEventListener("click", async () => {
-    try {
-      await handleTypographyPublish();
-    } catch (error) {
-      showNotification(error.message, "error");
-    }
-  });
-
-  console.log("✅ Typography publish button initialized");
+  // This function is no longer needed since the main publish button in squareCraft.js handles typography
+  console.log(
+    "ℹ️ Typography publish button initialization skipped - using main publish handler"
+  );
 }

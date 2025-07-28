@@ -500,31 +500,16 @@ if (!window.handlePublish) {
   window.handlePublish = handlePublish;
   console.log("✅ html.js handlePublish set globally");
 } else {
-  console.log("ℹ️ handlePublish already exists, using existing one");
+  console.log(
+    "ℹ️ handlePublish already exists, using existing one from squareCraft.js"
+  );
 }
 
 export function initPublishButton() {
-  const publishButton = document.getElementById("publish");
-  if (!publishButton) {
-    console.warn("Publish button not found");
-    return;
-  }
-
-  publishButton.addEventListener("click", async () => {
-    try {
-      // Show loading state
-      publishButton.disabled = true;
-      publishButton.textContent = "Publishing...";
-
-      await handlePublish();
-    } catch (error) {
-      showNotification(error.message, "error");
-    } finally {
-      // Reset button state
-      publishButton.disabled = false;
-      publishButton.textContent = "Publish";
-    }
-  });
+  // This function is no longer needed since squareCraft.js handles the publish button
+  console.log(
+    "ℹ️ html.js initPublishButton skipped - using main publish handler from squareCraft.js"
+  );
 }
 
 // function toKebabCaseStyleObject(obj) {
