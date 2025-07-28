@@ -360,7 +360,7 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllFontWeight.js"
   );
 
-  const { handleAllTextColorClick } = await import(
+  const { handleAllTextColorClick, initTextColorPublishButton } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/All/handleAllTextColor.js"
   );
 
@@ -4935,6 +4935,10 @@ window.pendingModifications = pendingModifications;
             // Initialize text align publish button
             console.log("🔄 Initializing text align publish button...");
             initTextAlignPublishButton(saveTypographyAllModifications);
+
+            // Initialize text color publish button
+            console.log("🔄 Initializing text color publish button...");
+            initTextColorPublishButton(saveTypographyAllModifications);
           }, 1000); // Give more time for widget to be fully rendered
         }, 200);
       }
