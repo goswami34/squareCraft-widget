@@ -2494,6 +2494,127 @@ window.pendingModifications = pendingModifications;
     }
   }
 
+  // fetch typography all functionality code start here
+  async function fetchAllModificationsByElementId(elementId) {
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!userId || !token || !widgetId || !pageId || !elementId) {
+      console.warn("⚠️ Missing credentials, page ID, or element ID");
+      return null;
+    }
+
+    try {
+      const response = await fetch(
+        `https://admin.squareplugin.com/api/v1/get-typography-all-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.elementId || !result.css) {
+        console.warn(
+          "⚠️ No typography modifications found for element:",
+          elementId
+        );
+        return null;
+      }
+
+      return {
+        elementId: result.elementId,
+        css: result.css,
+      };
+    } catch (error) {
+      console.error(
+        "❌ Error fetching typography modifications for element:",
+        elementId,
+        error
+      );
+      return null;
+    }
+  }
+
+  async function fetchTypographyModifications() {
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
+      return;
+    }
+
+    try {
+      // Get all typography elements on the page
+      const typographyElements = document.querySelectorAll(
+        "h1, h2, h3, h4, h5, h6, p, span, div[data-block-type='text'], div[data-block-type='quote']"
+      );
+
+      // Fetch modifications for each element
+      for (const element of typographyElements) {
+        const elementId = element.id;
+        if (!elementId) continue;
+
+        const modifications = await fetchAllModificationsByElementId(elementId);
+        if (!modifications) continue;
+
+        // Apply the CSS modifications to the element
+        const { css } = modifications;
+
+        if (css && typeof css === "object") {
+          // Create a style tag for this element's modifications
+          const styleTagId = `sc-typography-style-${elementId}`;
+          let styleTag = document.getElementById(styleTagId);
+          if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = styleTagId;
+            document.head.appendChild(styleTag);
+          }
+
+          // Build CSS text from the modifications
+          let cssText = `#${elementId} {`;
+          Object.entries(css).forEach(([prop, value]) => {
+            if (value !== null && value !== undefined && value !== "null") {
+              cssText += `${prop}: ${value} !important; `;
+            }
+          });
+          cssText += "}";
+
+          styleTag.textContent = cssText;
+
+          // Add a class to mark this element as modified
+          if (!element.classList.contains("sc-typography-modified")) {
+            element.classList.add("sc-typography-modified");
+          }
+
+          console.log(
+            `✅ Applied typography modifications to element: ${elementId}`
+          );
+        }
+      }
+    } catch (error) {
+      console.error("❌ Error in fetchTypographyModifications:", error);
+    }
+  }
+  // fetch typography all functionality code end here
+
   async function fetchImageModifications() {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
@@ -3643,6 +3764,11 @@ window.pendingModifications = pendingModifications;
       await fetchImageShadowModifications(lastClickedBlockId);
     }
 
+    // Fetch typography modifications on page load
+    console.log("🌅 Window load: About to fetch typography modifications");
+    await fetchTypographyModifications();
+    console.log("🌅 Window load: Typography modifications fetch completed");
+
     // Fetch button color modifications on page load
     console.log("🌅 Window load: About to fetch button color modifications");
     await fetchButtonColorModifications();
@@ -3695,6 +3821,7 @@ window.pendingModifications = pendingModifications;
     observer.disconnect();
     // addHeadingEventListeners();
     fetchModifications();
+    fetchTypographyModifications(); // Fetch typography modifications
     fetchButtonIconModifications(); // Fetch all button icon modifications
     // fetchImageModifications(lastClickedBlockId);
     const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
