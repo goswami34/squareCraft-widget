@@ -2495,7 +2495,7 @@ window.pendingModifications = pendingModifications;
   }
 
   // ✅ fetch typography all functionality code start here
-  async function fetchAllTypographyModifications() {
+  async function fetchAllTypographyModifications(blockId = null) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -2503,19 +2503,27 @@ window.pendingModifications = pendingModifications;
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    // 🔁 Use selectedElement or lastClickedBlockId from global state
-    const elementId =
-      typeof lastClickedBlockId !== "undefined" && lastClickedBlockId
-        ? lastClickedBlockId
-        : typeof selectedElement !== "undefined" && selectedElement?.id;
-
-    if (!userId || !token || !widgetId || !pageId || !elementId) {
-      console.warn("⚠️ Missing credentials or required identifiers");
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
       return null;
     }
 
-    const apiUrl = `https://admin.squareplugin.com/api/v1/get-typography-all-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`;
-    console.log("🔍 Fetching all typography modifications from:", apiUrl);
+    // Use provided blockId, or fallback to global lastClickedBlockId, or fetch all for page
+    const elementId = blockId || lastClickedBlockId;
+
+    let apiUrl = `https://admin.squareplugin.com/api/v1/get-typography-all-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+
+    if (elementId) {
+      apiUrl += `&elementId=${elementId}`;
+      console.log(
+        "🔍 Fetching typography modifications for specific element:",
+        elementId
+      );
+    } else {
+      console.log("🔍 Fetching all typography modifications for page");
+    }
+
+    console.log("🔍 API URL:", apiUrl);
 
     try {
       const response = await fetch(apiUrl, {
@@ -2529,7 +2537,7 @@ window.pendingModifications = pendingModifications;
       if (!response.ok) {
         const errorText = await response.text();
         if (response.status === 404) {
-          console.log("ℹ️ No typography modifications found for this page");
+          console.log("ℹ️ No typography modifications found");
           return null;
         }
 
@@ -2549,6 +2557,103 @@ window.pendingModifications = pendingModifications;
 
   async function fetchTypographyModifications() {
     console.log("🚀 Starting fetchTypographyModifications...");
+
+    // Check if we have a selected element or last clicked block
+    const selectedBlockId = lastClickedBlockId;
+
+    if (!selectedBlockId) {
+      console.log("ℹ️ No specific block selected, skipping typography fetch");
+      return;
+    }
+
+    console.log(
+      "🔍 Fetching typography modifications for block:",
+      selectedBlockId
+    );
+    const result = await fetchAllTypographyModifications(selectedBlockId);
+    if (!result) {
+      console.log("ℹ️ No typography modifications found for this block");
+      return;
+    }
+
+    console.log("📄 Raw typography response:", result);
+
+    // Handle different response structures
+    let elements = [];
+
+    if (result.elements && Array.isArray(result.elements)) {
+      elements = result.elements;
+      console.log("📋 Using direct elements structure");
+    } else if (result.modifications && Array.isArray(result.modifications)) {
+      console.log("📋 Using nested modifications structure");
+      result.modifications.forEach((mod) => {
+        if (mod.elements && Array.isArray(mod.elements)) {
+          elements = elements.concat(mod.elements);
+        }
+      });
+    } else if (result.elementId && result.css) {
+      elements = [{ elementId: result.elementId, css: result.css }];
+      console.log("📋 Using single element structure");
+    } else {
+      console.log("⚠️ No recognized structure found in response");
+      console.log("📋 Available keys:", Object.keys(result));
+      return;
+    }
+
+    console.log(`🔍 Total typography elements found: ${elements.length}`);
+
+    let appliedCount = 0;
+
+    elements.forEach(({ elementId, css }) => {
+      if (!elementId || !css) {
+        console.log("⏭️ Skipping element without ID or CSS:", elementId);
+        return;
+      }
+
+      if (elementId.includes("yui_") || elementId.length > 50) {
+        console.log("⏭️ Skipping element with suspicious ID:", elementId);
+        return;
+      }
+
+      console.log(`🔍 Processing typography element: ${elementId}`);
+
+      const styleTagId = `sc-typography-style-${elementId}`;
+      let styleTag = document.getElementById(styleTagId);
+      if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = styleTagId;
+        document.head.appendChild(styleTag);
+      }
+
+      let cssText = `#${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} h6, #${elementId} p, #${elementId} span {`;
+      Object.entries(css).forEach(([prop, value]) => {
+        if (value !== null && value !== undefined && value !== "null") {
+          cssText += `${prop}: ${value} !important; `;
+        }
+      });
+      cssText += "}";
+
+      styleTag.textContent = cssText;
+
+      const element = document.getElementById(elementId);
+      if (element && !element.classList.contains("sc-typography-modified")) {
+        element.classList.add("sc-typography-modified");
+      }
+
+      appliedCount++;
+      console.log(
+        `✅ Applied typography modifications to element: ${elementId}`
+      );
+    });
+
+    console.log(
+      `✅ Typography modifications completed - Applied: ${appliedCount}`
+    );
+  }
+
+  // Fetch typography modifications for all elements on the page
+  async function fetchAllTypographyModificationsForPage() {
+    console.log("🚀 Starting fetchAllTypographyModificationsForPage...");
 
     const result = await fetchAllTypographyModifications();
     if (!result) {
@@ -2627,7 +2732,7 @@ window.pendingModifications = pendingModifications;
     });
 
     console.log(
-      `✅ Typography modifications completed - Applied: ${appliedCount}`
+      `✅ All typography modifications completed - Applied: ${appliedCount}`
     );
   }
   // ✅ fetch typography all functionality code end here
@@ -3838,7 +3943,7 @@ window.pendingModifications = pendingModifications;
     observer.disconnect();
     // addHeadingEventListeners();
     fetchModifications();
-    fetchTypographyModifications(); // Fetch typography modifications
+    fetchAllTypographyModificationsForPage(); // Fetch all typography modifications for page
     fetchButtonIconModifications(); // Fetch all button icon modifications
     // fetchImageModifications(lastClickedBlockId);
     const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
