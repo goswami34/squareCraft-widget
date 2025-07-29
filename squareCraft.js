@@ -2534,7 +2534,12 @@ window.pendingModifications = pendingModifications;
       if (!response.ok) {
         const errorText = await response.text();
         if (response.status === 404) {
-          console.log("ℹ️ No typography modifications found");
+          // Only log if we're debugging, otherwise skip to reduce noise
+          if (blockId) {
+            console.log(
+              `ℹ️ No typography modifications found for block: ${blockId}`
+            );
+          }
           return null;
         }
 
