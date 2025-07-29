@@ -2548,14 +2548,23 @@ window.pendingModifications = pendingModifications;
       );
 
       if (!response.ok) {
+        // Log the actual response for debugging
+        const errorText = await response.text();
+
+        // Handle 404 specifically - this means no modifications exist for this element
+        if (response.status === 404) {
+          console.log(
+            `ℹ️ No typography modifications found for element: ${elementId}`
+          );
+          return null;
+        }
+
+        // For other errors, log them as errors
         console.error(
           `❌ API returned ${response.status} for element: ${elementId}`
         );
         console.error(`❌ Response status: ${response.status}`);
         console.error(`❌ Response statusText: ${response.statusText}`);
-
-        // Log the actual response for debugging
-        const errorText = await response.text();
         console.error(`❌ Response body:`, errorText);
 
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -2613,6 +2622,9 @@ window.pendingModifications = pendingModifications;
         `🔍 Found ${typographyElements.length} typography elements on the page`
       );
 
+      let processedCount = 0;
+      let appliedCount = 0;
+
       // Fetch modifications for each element
       for (const element of typographyElements) {
         // Get the block ID (parent element with block- prefix)
@@ -2644,6 +2656,7 @@ window.pendingModifications = pendingModifications;
         }
 
         console.log(`🔍 Processing block: ${blockId} (${element.tagName})`);
+        processedCount++;
         const modifications = await fetchAllModificationsByElementId(blockId);
         if (!modifications) continue;
 
@@ -2680,11 +2693,16 @@ window.pendingModifications = pendingModifications;
             blockElement.classList.add("sc-typography-modified");
           }
 
+          appliedCount++;
           console.log(
             `✅ Applied typography modifications to block: ${blockId}`
           );
         }
       }
+
+      console.log(
+        `✅ Typography modifications fetch completed - Processed: ${processedCount}, Applied: ${appliedCount}`
+      );
     } catch (error) {
       console.error("❌ Error in fetchTypographyModifications:", error);
     }
