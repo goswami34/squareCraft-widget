@@ -2534,12 +2534,7 @@ window.pendingModifications = pendingModifications;
       if (!response.ok) {
         const errorText = await response.text();
         if (response.status === 404) {
-          // Only log if we're debugging, otherwise skip to reduce noise
-          if (blockId) {
-            console.log(
-              `ℹ️ No typography modifications found for block: ${blockId}`
-            );
-          }
+          // Silently handle 404s - this is expected when no modifications exist
           return null;
         }
 
@@ -2672,9 +2667,9 @@ window.pendingModifications = pendingModifications;
     for (const block of blocks) {
       const blockId = block.id;
 
-      // Skip blocks with suspicious IDs
-      if (blockId.includes("yui_") || blockId.length > 50) {
-        console.log("⏭️ Skipping block with suspicious ID:", blockId);
+      // Skip blocks with very long IDs (but allow yui_ IDs since they exist in database)
+      if (blockId.length > 100) {
+        console.log("⏭️ Skipping block with very long ID:", blockId);
         continue;
       }
 
@@ -2703,14 +2698,20 @@ window.pendingModifications = pendingModifications;
         elements = [{ elementId: result.elementId, css: result.css }];
       }
 
+      console.log("📋 Processing elements for block:", blockId);
+      console.log("📋 Elements found:", elements.length);
+
       // Apply modifications for this block
       elements.forEach(({ elementId, css }) => {
         if (!elementId || !css) {
+          console.log("⏭️ Skipping element without ID or CSS:", elementId);
           return;
         }
 
         console.log(`🔍 Processing typography element: ${elementId}`);
+        console.log("📋 CSS structure:", css);
 
+        // Handle nested CSS structure (h1, h2, h3, etc.)
         const styleTagId = `sc-typography-style-${elementId}`;
         let styleTag = document.getElementById(styleTagId);
         if (!styleTag) {
@@ -2719,13 +2720,41 @@ window.pendingModifications = pendingModifications;
           document.head.appendChild(styleTag);
         }
 
-        let cssText = `#${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} h6, #${elementId} p, #${elementId} span {`;
-        Object.entries(css).forEach(([prop, value]) => {
-          if (value !== null && value !== undefined && value !== "null") {
-            cssText += `${prop}: ${value} !important; `;
+        let cssText = "";
+
+        // Process each heading type (h1, h2, h3, etc.)
+        Object.entries(css).forEach(([headingType, headingData]) => {
+          if (
+            headingData &&
+            typeof headingData === "object" &&
+            headingData.styles
+          ) {
+            const styles = headingData.styles;
+            const selector =
+              headingData.selector || `#${elementId} ${headingType}`;
+
+            if (Object.keys(styles).length > 0) {
+              cssText += `${selector} {`;
+              Object.entries(styles).forEach(([prop, value]) => {
+                if (value !== null && value !== undefined && value !== "null") {
+                  cssText += `${prop}: ${value} !important; `;
+                }
+              });
+              cssText += "}\n";
+            }
           }
         });
-        cssText += "}";
+
+        // If no specific heading styles, apply to all typography elements
+        if (!cssText) {
+          cssText = `#${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} h6, #${elementId} p, #${elementId} span {`;
+          Object.entries(css).forEach(([prop, value]) => {
+            if (value !== null && value !== undefined && value !== "null") {
+              cssText += `${prop}: ${value} !important; `;
+            }
+          });
+          cssText += "}";
+        }
 
         styleTag.textContent = cssText;
 
@@ -2742,7 +2771,7 @@ window.pendingModifications = pendingModifications;
     }
 
     console.log(
-      `✅ All typography modifications completed - Applied: ${totalApplied}`
+      `✅ All typography modifications completed - Applied: ${totalApplied} out of ${blocks.length} blocks processed`
     );
   }
   // ✅ fetch typography all functionality code end here
