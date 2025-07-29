@@ -2494,7 +2494,7 @@ window.pendingModifications = pendingModifications;
     }
   }
 
-  // fetch typography all functionality code start here
+  // ✅ fetch typography all functionality code start here
   async function fetchAllTypographyModifications() {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
@@ -2503,32 +2503,31 @@ window.pendingModifications = pendingModifications;
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
+    // 🔁 Use selectedElement or lastClickedBlockId from global state
+    const elementId =
+      typeof lastClickedBlockId !== "undefined" && lastClickedBlockId
+        ? lastClickedBlockId
+        : typeof selectedElement !== "undefined" && selectedElement?.id;
+
+    if (!userId || !token || !widgetId || !pageId || !elementId) {
+      console.warn("⚠️ Missing credentials or required identifiers");
       return null;
     }
 
-    try {
-      console.log("🔍 Fetching all typography modifications for page");
-      console.log(
-        "🔍 API URL:",
-        `https://admin.squareplugin.com/api/v1/get-typography-all-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`
-      );
+    const apiUrl = `https://admin.squareplugin.com/api/v1/get-typography-all-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}&elementId=${elementId}`;
+    console.log("🔍 Fetching all typography modifications from:", apiUrl);
 
-      const response = await fetch(
-        `https://admin.squareplugin.com/api/v1/get-typography-all-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
-
         if (response.status === 404) {
           console.log("ℹ️ No typography modifications found for this page");
           return null;
@@ -2551,114 +2550,87 @@ window.pendingModifications = pendingModifications;
   async function fetchTypographyModifications() {
     console.log("🚀 Starting fetchTypographyModifications...");
 
-    const userId = localStorage.getItem("sc_u_id");
-    const token = localStorage.getItem("sc_auth_token");
-    const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
-
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
+    const result = await fetchAllTypographyModifications();
+    if (!result) {
+      console.log("ℹ️ No typography modifications found for this page");
       return;
     }
 
-    try {
-      // Fetch all typography modifications for the page
-      const result = await fetchAllTypographyModifications();
-      if (!result) {
-        console.log("ℹ️ No typography modifications found for this page");
-        return;
-      }
+    console.log("📄 Raw typography response:", result);
 
-      console.log("📄 Raw typography response:", result);
+    // Handle different response structures
+    let elements = [];
 
-      // Handle different response structures
-      let elements = [];
-
-      // Try direct structure first: elements[]
-      if (result.elements && Array.isArray(result.elements)) {
-        elements = result.elements;
-        console.log("📋 Using direct elements structure");
-      }
-      // Try nested structure: modifications[].elements[]
-      else if (result.modifications && Array.isArray(result.modifications)) {
-        console.log("📋 Using nested modifications structure");
-        result.modifications.forEach((mod, index) => {
-          if (mod.elements && Array.isArray(mod.elements)) {
-            elements = elements.concat(mod.elements);
-          }
-        });
-      }
-      // Try single element structure: { elementId, css }
-      else if (result.elementId && result.css) {
-        elements = [{ elementId: result.elementId, css: result.css }];
-        console.log("📋 Using single element structure");
-      } else {
-        console.log("⚠️ No recognized structure found in response");
-        console.log("📋 Available keys:", Object.keys(result));
-        return;
-      }
-
-      console.log(`🔍 Total typography elements found: ${elements.length}`);
-
-      let appliedCount = 0;
-
-      // Apply modifications to each element
-      elements.forEach(({ elementId, css }) => {
-        if (!elementId || !css) {
-          console.log("⏭️ Skipping element without ID or CSS:", elementId);
-          return;
+    if (result.elements && Array.isArray(result.elements)) {
+      elements = result.elements;
+      console.log("📋 Using direct elements structure");
+    } else if (result.modifications && Array.isArray(result.modifications)) {
+      console.log("📋 Using nested modifications structure");
+      result.modifications.forEach((mod) => {
+        if (mod.elements && Array.isArray(mod.elements)) {
+          elements = elements.concat(mod.elements);
         }
-
-        // Skip elements with suspicious IDs
-        if (elementId.includes("yui_") || elementId.length > 50) {
-          console.log("⏭️ Skipping element with suspicious ID:", elementId);
-          return;
-        }
-
-        console.log(`🔍 Processing typography element: ${elementId}`);
-
-        // Create a style tag for this element's modifications
-        const styleTagId = `sc-typography-style-${elementId}`;
-        let styleTag = document.getElementById(styleTagId);
-        if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = styleTagId;
-          document.head.appendChild(styleTag);
-        }
-
-        // Build CSS text from the modifications
-        let cssText = `#${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} h6, #${elementId} p, #${elementId} span {`;
-        Object.entries(css).forEach(([prop, value]) => {
-          if (value !== null && value !== undefined && value !== "null") {
-            cssText += `${prop}: ${value} !important; `;
-          }
-        });
-        cssText += "}";
-
-        styleTag.textContent = cssText;
-
-        // Add a class to mark this element as modified
-        const element = document.getElementById(elementId);
-        if (element && !element.classList.contains("sc-typography-modified")) {
-          element.classList.add("sc-typography-modified");
-        }
-
-        appliedCount++;
-        console.log(
-          `✅ Applied typography modifications to element: ${elementId}`
-        );
       });
-
-      console.log(
-        `✅ Typography modifications completed - Applied: ${appliedCount}`
-      );
-    } catch (error) {
-      console.error("❌ Error in fetchTypographyModifications:", error);
+    } else if (result.elementId && result.css) {
+      elements = [{ elementId: result.elementId, css: result.css }];
+      console.log("📋 Using single element structure");
+    } else {
+      console.log("⚠️ No recognized structure found in response");
+      console.log("📋 Available keys:", Object.keys(result));
+      return;
     }
+
+    console.log(`🔍 Total typography elements found: ${elements.length}`);
+
+    let appliedCount = 0;
+
+    elements.forEach(({ elementId, css }) => {
+      if (!elementId || !css) {
+        console.log("⏭️ Skipping element without ID or CSS:", elementId);
+        return;
+      }
+
+      if (elementId.includes("yui_") || elementId.length > 50) {
+        console.log("⏭️ Skipping element with suspicious ID:", elementId);
+        return;
+      }
+
+      console.log(`🔍 Processing typography element: ${elementId}`);
+
+      const styleTagId = `sc-typography-style-${elementId}`;
+      let styleTag = document.getElementById(styleTagId);
+      if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = styleTagId;
+        document.head.appendChild(styleTag);
+      }
+
+      let cssText = `#${elementId} h1, #${elementId} h2, #${elementId} h3, #${elementId} h4, #${elementId} h5, #${elementId} h6, #${elementId} p, #${elementId} span {`;
+      Object.entries(css).forEach(([prop, value]) => {
+        if (value !== null && value !== undefined && value !== "null") {
+          cssText += `${prop}: ${value} !important; `;
+        }
+      });
+      cssText += "}";
+
+      styleTag.textContent = cssText;
+
+      const element = document.getElementById(elementId);
+      if (element && !element.classList.contains("sc-typography-modified")) {
+        element.classList.add("sc-typography-modified");
+      }
+
+      appliedCount++;
+      console.log(
+        `✅ Applied typography modifications to element: ${elementId}`
+      );
+    });
+
+    console.log(
+      `✅ Typography modifications completed - Applied: ${appliedCount}`
+    );
   }
-  // fetch typography all functionality code end here
+  // ✅ fetch typography all functionality code end here
 
   async function fetchImageModifications() {
     const userId = localStorage.getItem("sc_u_id");
