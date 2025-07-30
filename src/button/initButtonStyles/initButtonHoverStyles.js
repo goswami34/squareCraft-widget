@@ -1,6 +1,3 @@
-
-
-
 const hoverShadowState = {
   X: 0,
   Y: 0,
@@ -81,7 +78,6 @@ export function initHoverButtonShadowControls(getSelectedElement) {
       label.textContent = `${value}px`;
       applyHoverShadow();
     }
-    
 
     inc?.addEventListener("click", () => update(value + 1));
     dec?.addEventListener("click", () => update(value - 1));
@@ -118,16 +114,15 @@ export function initHoverButtonShadowControls(getSelectedElement) {
   setup("Spread", "Spread", 30);
 }
 
-
-
-
 let hoverRotationInitialized = false;
 
 export function initHoverButtonIconRotationControl(getSelectedElement) {
   if (hoverRotationInitialized) return;
   hoverRotationInitialized = true;
 
-  const bullet = document.getElementById("hover-buttonIconRotationradiusBullet");
+  const bullet = document.getElementById(
+    "hover-buttonIconRotationradiusBullet"
+  );
   const fill = document.getElementById("hover-buttonIconRotationradiusFill");
   const field = document.getElementById("hover-buttonIconRotationradiusField");
   const label = document.getElementById("hover-buttoniconRotationradiusCount");
@@ -143,10 +138,14 @@ export function initHoverButtonIconRotationControl(getSelectedElement) {
 
   function applyStyle() {
     const selected = getSelectedElement?.();
-    const btn = selected?.querySelector("a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary");
+    const btn = selected?.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
     if (!btn) return;
 
-    const cls = [...btn.classList].find(c => c.startsWith("sqs-button-element--"));
+    const cls = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
+    );
     if (!cls) return;
 
     const id = `sc-hover-style-transform-${cls.replace(/--/g, "-")}`;
@@ -175,7 +174,9 @@ export function initHoverButtonIconRotationControl(getSelectedElement) {
     updateUI();
 
     if (value === oldValue && reason !== "initial sync") {
-      console.warn(`⚠️ Hover rotation didn't change from ${oldValue} ➝ ${newVal}`);
+      console.warn(
+        `⚠️ Hover rotation didn't change from ${oldValue} ➝ ${newVal}`
+      );
     }
   }
 
@@ -185,7 +186,7 @@ export function initHoverButtonIconRotationControl(getSelectedElement) {
     const rect = field.getBoundingClientRect();
     const move = (eMove) => {
       const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
-      const mapped = min + ((x / rect.width) * (max - min));
+      const mapped = min + (x / rect.width) * (max - min);
       setValue(Math.round(mapped), "drag");
     };
     const up = () => {
@@ -200,7 +201,7 @@ export function initHoverButtonIconRotationControl(getSelectedElement) {
     hasInteracted = true;
     const rect = field.getBoundingClientRect();
     const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
-    const mapped = min + ((x / rect.width) * (max - min));
+    const mapped = min + (x / rect.width) * (max - min);
     setValue(Math.round(mapped), "click");
   });
 
@@ -216,9 +217,13 @@ export function initHoverButtonIconRotationControl(getSelectedElement) {
 
   setTimeout(() => {
     const selected = getSelectedElement?.();
-    const icon = selected?.querySelector(".sqscraft-button-icon, .sqscraft-image-icon");
+    const icon = selected?.querySelector(
+      ".sqscraft-button-icon, .sqscraft-image-icon"
+    );
     if (icon) {
-      const match = icon.style.transform?.match(/rotate\((-?\d+(?:\.\d+)?)deg\)/);
+      const match = icon.style.transform?.match(
+        /rotate\((-?\d+(?:\.\d+)?)deg\)/
+      );
       if (match) {
         const rotation = parseFloat(match[1]);
         if (!isNaN(rotation)) {
@@ -230,7 +235,6 @@ export function initHoverButtonIconRotationControl(getSelectedElement) {
     setValue(0, "initial sync");
   }, 50);
 }
-
 
 let hoverSizeInitialized = false;
 
@@ -252,10 +256,14 @@ export function initHoverButtonIconSizeControl(getSelectedElement) {
 
   function applyStyle() {
     const selected = getSelectedElement?.();
-    const btn = selected?.querySelector("a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary");
+    const btn = selected?.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
     if (!btn) return;
 
-    const cls = [...btn.classList].find(c => c.startsWith("sqs-button-element--"));
+    const cls = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
+    );
     if (!cls) return;
 
     const id = `sc-hover-style-size-${cls.replace(/--/g, "-")}`;
@@ -283,7 +291,9 @@ export function initHoverButtonIconSizeControl(getSelectedElement) {
     updateUI();
 
     if (value === oldValue && reason !== "initial sync") {
-      console.warn(`⚠️ setValue() failed to increase from ${oldValue} ➝ ${newVal}`);
+      console.warn(
+        `⚠️ setValue() failed to increase from ${oldValue} ➝ ${newVal}`
+      );
     }
   }
 
@@ -315,7 +325,9 @@ export function initHoverButtonIconSizeControl(getSelectedElement) {
 
   setTimeout(() => {
     const selected = getSelectedElement?.();
-    const icon = selected?.querySelector(".sqscraft-button-icon, .sqscraft-image-icon");
+    const icon = selected?.querySelector(
+      ".sqscraft-button-icon, .sqscraft-image-icon"
+    );
     if (!icon || !icon.style.width) return;
     const size = parseInt(icon.style.width);
     if (!isNaN(size)) {
@@ -323,7 +335,6 @@ export function initHoverButtonIconSizeControl(getSelectedElement) {
     }
   }, 50);
 }
-
 
 let hoverSpacingInitialized = false;
 
@@ -345,10 +356,14 @@ export function initHoverButtonIconSpacingControl(getSelectedElement) {
 
   function applyStyle() {
     const selected = getSelectedElement?.();
-    const btn = selected?.querySelector("a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary");
+    const btn = selected?.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
     if (!btn) return;
 
-    const cls = [...btn.classList].find(c => c.startsWith("sqs-button-element--"));
+    const cls = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
+    );
     if (!cls) return;
 
     const id = `sc-hover-style-gap-${cls.replace(/--/g, "-")}`;
@@ -376,7 +391,9 @@ export function initHoverButtonIconSpacingControl(getSelectedElement) {
     updateUI();
 
     if (value === oldValue && reason !== "initial sync") {
-      console.warn(`⚠️ Hover spacing didn't change from ${oldValue} ➝ ${newVal}`);
+      console.warn(
+        `⚠️ Hover spacing didn't change from ${oldValue} ➝ ${newVal}`
+      );
     }
   }
 
@@ -408,7 +425,9 @@ export function initHoverButtonIconSpacingControl(getSelectedElement) {
 
   setTimeout(() => {
     const selected = getSelectedElement?.();
-    const btn = selected?.querySelector("a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary");
+    const btn = selected?.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
     if (btn) {
       const gap = parseInt(window.getComputedStyle(btn).gap);
       if (!isNaN(gap)) {
@@ -417,7 +436,6 @@ export function initHoverButtonIconSpacingControl(getSelectedElement) {
     }
   }, 50);
 }
-
 
 let hoverRadiusInitialized = false;
 
@@ -505,8 +523,6 @@ export function initHoverButtonBorderRadiusControl(getSelectedElement) {
   update(0); // Initialize with default value
 }
 
-
-
 export function initHoverButtonBorderTypeToggle(getSelectedElement) {
   const typeButtons = [
     { id: "hover-buttonBorderTypeSolid", type: "solid" },
@@ -553,9 +569,6 @@ export function initHoverButtonBorderTypeToggle(getSelectedElement) {
     };
   });
 }
-
-
-
 
 let hoverBorderInitialized = false;
 
@@ -702,10 +715,6 @@ export function initHoverButtonBorderControl(getSelectedElement) {
   update(value);
 }
 
-
-
-
-
 export function applyHoverButtonEffects(getSelectedElement) {
   const transition =
     document
@@ -827,10 +836,6 @@ export function applyHoverButtonEffects(getSelectedElement) {
   setTimeout(() => update(window.__squareCraftTransformDistance || 0), 50);
 }
 
-
-
-
-
 window.syncHoverButtonStylesFromElement = function (selectedElement) {
   if (!selectedElement) return;
 
@@ -839,13 +844,17 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
   );
   if (!sample) return;
 
-  const typeClass = [...sample.classList].find(cls => cls.startsWith("sqs-button-element--"));
+  const typeClass = [...sample.classList].find((cls) =>
+    cls.startsWith("sqs-button-element--")
+  );
   if (!typeClass) return;
 
   const hoverKey = `hover--${typeClass}`;
 
   // 1. 🔄 Border Width
-  const borderState = window.__squareCraftHoverBorderStateMap?.get(hoverKey) || { value: 0, side: "All" };
+  const borderState = window.__squareCraftHoverBorderStateMap?.get(
+    hoverKey
+  ) || { value: 0, side: "All" };
   const getPercent = (val, max) => `${(val / max) * 100}%`;
 
   const fill = document.getElementById("hover-buttonBorderFill");
@@ -879,7 +888,9 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
   const radius = parseInt(window.__squareCraftHoverRadius || 0);
   const radPercent = (radius / 50) * 100;
   const radiusFill = document.getElementById("hover-buttonBorderradiusFill");
-  const radiusBullet = document.getElementById("hover-buttonBorderradiusBullet");
+  const radiusBullet = document.getElementById(
+    "hover-buttonBorderradiusBullet"
+  );
   const radiusCount = document.getElementById("hover-buttonBorderradiusCount");
 
   if (radiusFill && radiusBullet && radiusCount) {

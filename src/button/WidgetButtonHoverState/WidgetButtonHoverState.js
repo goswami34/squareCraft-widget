@@ -1,5 +1,5 @@
 export function WidgetButtonHoverState() {
-   return `
+  return `
      <div id="ButtonHoverState" class="sc-mt-4 sc-hidden  sc-roboto sc-font-light  sc-px-2">
             <div id="hover-colorButton"
                class="sc-bg-3f3f3f sc-mt-4 sc-items-center sc-relative sc-z-9999 sc-flex sc-border-hover-3d3d3d sc-border sc-border-solid sc-border-3f3f3f sc-cursor-pointer sc-px-2 sc-justify-between sc-py-1 sc-rounded-4px">
@@ -673,5 +673,5 @@ export function WidgetButtonHoverState() {
 
            
           </div>
-    `
+    `;
 }
