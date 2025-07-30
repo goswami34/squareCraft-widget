@@ -603,6 +603,10 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { saveButtonHoverBorderModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   // Make saveButtonColorModifications available globally
   window.saveButtonColorModifications = saveButtonColorModifications;
 
@@ -1051,13 +1055,43 @@ window.pendingModifications = pendingModifications;
       initHoverButtonIconSpacingControl(() => selectedElement);
     }
     if (selectedElement) {
-      initHoverButtonBorderRadiusControl(() => selectedElement);
+      initHoverButtonBorderRadiusControl(
+        () => selectedElement,
+        saveButtonHoverBorderModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
+      );
     }
     if (selectedElement) {
-      initHoverButtonBorderTypeToggle(() => selectedElement);
+      initHoverButtonBorderTypeToggle(
+        () => selectedElement,
+        saveButtonHoverBorderModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
+      );
     }
     if (selectedElement) {
-      initHoverButtonBorderControl(() => selectedElement);
+      initHoverButtonBorderControl(
+        () => selectedElement,
+        saveButtonHoverBorderModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
+      );
     }
     if (selectedElement) {
       applyHoverButtonEffects(() => selectedElement);
