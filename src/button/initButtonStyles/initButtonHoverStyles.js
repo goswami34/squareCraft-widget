@@ -5,7 +5,62 @@ const hoverShadowState = {
   Spread: 0,
 };
 
-export function initHoverButtonShadowControls(getSelectedElement) {
+export function initHoverButtonShadowControls(
+  getSelectedElement,
+  saveButtonModifications,
+  addPendingModification,
+  showNotification
+) {
+  async function saveToDatabase() {
+    const el = getSelectedElement?.();
+    if (!el) return;
+
+    const btn = el.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const cls = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
+    );
+    if (!cls) return;
+
+    const blockId = el.id;
+    if (!blockId || blockId === "block-id") return;
+
+    const v = hoverShadowState;
+    const shadow = `${v.X}px ${v.Y}px ${v.Blur}px ${v.Spread}px rgba(0,0,0,0.3)`;
+
+    const cssPayload = {
+      buttonPrimary: {
+        selector: `.${cls}`,
+        styles: {
+          boxShadow: shadow,
+        },
+      },
+    };
+
+    // Add to pending modifications
+    if (typeof addPendingModification === "function") {
+      addPendingModification(blockId, cssPayload, "buttonShadow");
+    }
+
+    // Save to database
+    if (typeof saveButtonModifications === "function") {
+      try {
+        const result = await saveButtonModifications(blockId, cssPayload);
+        if (result.success && typeof showNotification === "function") {
+          showNotification("Hover shadow saved!", "success");
+        }
+      } catch (error) {
+        console.error("❌ Error saving hover shadow:", error);
+        if (typeof showNotification === "function") {
+          showNotification("Failed to save hover shadow", "error");
+        }
+      }
+    }
+  }
+
   function applyHoverShadow() {
     const el = getSelectedElement?.();
     if (!el) return;
@@ -36,6 +91,12 @@ export function initHoverButtonShadowControls(getSelectedElement) {
   box-shadow: ${shadow} !important;
 }
 `;
+
+    // Save to database after a short delay to avoid too many requests
+    clearTimeout(window.hoverShadowSaveTimeout);
+    window.hoverShadowSaveTimeout = setTimeout(() => {
+      saveToDatabase();
+    }, 500);
   }
 
   function setup(typeKey, domKey, range = 50) {
@@ -93,6 +154,8 @@ export function initHoverButtonShadowControls(getSelectedElement) {
       const up = () => {
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
+        // Save when user stops dragging
+        saveToDatabase();
       };
       document.addEventListener("mousemove", move);
       document.addEventListener("mouseup", up);
@@ -116,7 +179,12 @@ export function initHoverButtonShadowControls(getSelectedElement) {
 
 let hoverRotationInitialized = false;
 
-export function initHoverButtonIconRotationControl(getSelectedElement) {
+export function initHoverButtonIconRotationControl(
+  getSelectedElement,
+  saveButtonIconModifications,
+  addPendingModification,
+  showNotification
+) {
   if (hoverRotationInitialized) return;
   hoverRotationInitialized = true;
 
@@ -159,6 +227,53 @@ export function initHoverButtonIconRotationControl(getSelectedElement) {
     style.innerHTML = `a.${cls}:hover .sqscraft-button-icon { transform: rotate(${value}deg) !important; }`;
   }
 
+  async function saveToDatabase() {
+    const selected = getSelectedElement?.();
+    if (!selected) return;
+
+    const btn = selected.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const cls = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
+    );
+    if (!cls) return;
+
+    const blockId = selected.id;
+    if (!blockId || blockId === "block-id") return;
+
+    const cssPayload = {
+      iconProperties: {
+        selector: `.${cls}`,
+        styles: {
+          transform: `rotate(${value}deg)`,
+        },
+      },
+    };
+
+    // Add to pending modifications
+    if (typeof addPendingModification === "function") {
+      addPendingModification(blockId, cssPayload, "buttonIcon");
+    }
+
+    // Save to database
+    if (typeof saveButtonIconModifications === "function") {
+      try {
+        const result = await saveButtonIconModifications(blockId, cssPayload);
+        if (result.success && typeof showNotification === "function") {
+          showNotification("Hover icon rotation saved!", "success");
+        }
+      } catch (error) {
+        console.error("❌ Error saving hover icon rotation:", error);
+        if (typeof showNotification === "function") {
+          showNotification("Failed to save hover icon rotation", "error");
+        }
+      }
+    }
+  }
+
   function updateUI() {
     const percent = ((value - min) / (max - min)) * 100;
     bullet.style.left = `${percent}%`;
@@ -166,6 +281,12 @@ export function initHoverButtonIconRotationControl(getSelectedElement) {
     fill.style.width = `${Math.abs(percent - 50)}%`;
     label.textContent = `${value}deg`;
     applyStyle();
+
+    // Save to database after a short delay to avoid too many requests
+    clearTimeout(window.hoverRotationSaveTimeout);
+    window.hoverRotationSaveTimeout = setTimeout(() => {
+      saveToDatabase();
+    }, 500);
   }
 
   function setValue(newVal, reason = "") {
@@ -192,6 +313,8 @@ export function initHoverButtonIconRotationControl(getSelectedElement) {
     const up = () => {
       document.removeEventListener("mousemove", move);
       document.removeEventListener("mouseup", up);
+      // Save when user stops dragging
+      saveToDatabase();
     };
     document.addEventListener("mousemove", move);
     document.addEventListener("mouseup", up);
@@ -238,7 +361,12 @@ export function initHoverButtonIconRotationControl(getSelectedElement) {
 
 let hoverSizeInitialized = false;
 
-export function initHoverButtonIconSizeControl(getSelectedElement) {
+export function initHoverButtonIconSizeControl(
+  getSelectedElement,
+  saveButtonIconModifications,
+  addPendingModification,
+  showNotification
+) {
   if (hoverSizeInitialized) return;
   hoverSizeInitialized = true;
 
@@ -277,12 +405,66 @@ export function initHoverButtonIconSizeControl(getSelectedElement) {
     style.innerHTML = `a.${cls}:hover .sqscraft-button-icon { width: ${value}px !important; height: auto !important; }`;
   }
 
+  async function saveToDatabase() {
+    const selected = getSelectedElement?.();
+    if (!selected) return;
+
+    const btn = selected.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const cls = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
+    );
+    if (!cls) return;
+
+    const blockId = selected.id;
+    if (!blockId || blockId === "block-id") return;
+
+    const cssPayload = {
+      iconProperties: {
+        selector: `.${cls}`,
+        styles: {
+          width: `${value}px`,
+          height: "auto",
+        },
+      },
+    };
+
+    // Add to pending modifications
+    if (typeof addPendingModification === "function") {
+      addPendingModification(blockId, cssPayload, "buttonIcon");
+    }
+
+    // Save to database
+    if (typeof saveButtonIconModifications === "function") {
+      try {
+        const result = await saveButtonIconModifications(blockId, cssPayload);
+        if (result.success && typeof showNotification === "function") {
+          showNotification("Hover icon size saved!", "success");
+        }
+      } catch (error) {
+        console.error("❌ Error saving hover icon size:", error);
+        if (typeof showNotification === "function") {
+          showNotification("Failed to save hover icon size", "error");
+        }
+      }
+    }
+  }
+
   function updateUI() {
     const percent = (value / max) * 100;
     bullet.style.left = `${percent}%`;
     fill.style.width = `${percent}%`;
     label.textContent = `${value}px`;
     applyStyle();
+
+    // Save to database after a short delay to avoid too many requests
+    clearTimeout(window.hoverSizeSaveTimeout);
+    window.hoverSizeSaveTimeout = setTimeout(() => {
+      saveToDatabase();
+    }, 500);
   }
 
   function setValue(newVal, reason = "") {
@@ -291,23 +473,22 @@ export function initHoverButtonIconSizeControl(getSelectedElement) {
     updateUI();
 
     if (value === oldValue && reason !== "initial sync") {
-      console.warn(
-        `⚠️ setValue() failed to increase from ${oldValue} ➝ ${newVal}`
-      );
+      console.warn(`⚠️ Hover size didn't change from ${oldValue} ➝ ${newVal}`);
     }
   }
 
   bullet.addEventListener("mousedown", (e) => {
     e.preventDefault();
+    const rect = field.getBoundingClientRect();
     const move = (eMove) => {
-      const rect = field.getBoundingClientRect();
       const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
-      const mapped = (x / rect.width) * max;
-      setValue(Math.round(mapped), "drag");
+      setValue(Math.round((x / rect.width) * max), "drag");
     };
     const up = () => {
       document.removeEventListener("mousemove", move);
       document.removeEventListener("mouseup", up);
+      // Save when user stops dragging
+      saveToDatabase();
     };
     document.addEventListener("mousemove", move);
     document.addEventListener("mouseup", up);
@@ -316,8 +497,7 @@ export function initHoverButtonIconSizeControl(getSelectedElement) {
   field.addEventListener("click", (e) => {
     const rect = field.getBoundingClientRect();
     const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
-    const mapped = (x / rect.width) * max;
-    setValue(Math.round(mapped), "click");
+    setValue(Math.round((x / rect.width) * max), "click");
   });
 
   incBtn?.addEventListener("click", () => setValue(value + 1, "increase"));
@@ -328,17 +508,28 @@ export function initHoverButtonIconSizeControl(getSelectedElement) {
     const icon = selected?.querySelector(
       ".sqscraft-button-icon, .sqscraft-image-icon"
     );
-    if (!icon || !icon.style.width) return;
-    const size = parseInt(icon.style.width);
-    if (!isNaN(size)) {
-      setValue(size, "initial sync");
+    if (icon) {
+      const width = icon.style.width;
+      if (width) {
+        const size = parseInt(width);
+        if (!isNaN(size)) {
+          setValue(size, "initial sync");
+          return;
+        }
+      }
     }
+    setValue(0, "initial sync");
   }, 50);
 }
 
 let hoverSpacingInitialized = false;
 
-export function initHoverButtonIconSpacingControl(getSelectedElement) {
+export function initHoverButtonIconSpacingControl(
+  getSelectedElement,
+  saveButtonIconModifications,
+  addPendingModification,
+  showNotification
+) {
   if (hoverSpacingInitialized) return;
   hoverSpacingInitialized = true;
 
@@ -352,7 +543,7 @@ export function initHoverButtonIconSpacingControl(getSelectedElement) {
   if (!bullet || !fill || !field || !label) return;
 
   let value = 0;
-  const max = 30;
+  const max = 50;
 
   function applyStyle() {
     const selected = getSelectedElement?.();
@@ -366,7 +557,7 @@ export function initHoverButtonIconSpacingControl(getSelectedElement) {
     );
     if (!cls) return;
 
-    const id = `sc-hover-style-gap-${cls.replace(/--/g, "-")}`;
+    const id = `sc-hover-style-spacing-${cls.replace(/--/g, "-")}`;
     let style = document.getElementById(id);
     if (!style) {
       style = document.createElement("style");
@@ -377,12 +568,65 @@ export function initHoverButtonIconSpacingControl(getSelectedElement) {
     style.innerHTML = `a.${cls}:hover { gap: ${value}px !important; }`;
   }
 
+  async function saveToDatabase() {
+    const selected = getSelectedElement?.();
+    if (!selected) return;
+
+    const btn = selected.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const cls = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
+    );
+    if (!cls) return;
+
+    const blockId = selected.id;
+    if (!blockId || blockId === "block-id") return;
+
+    const cssPayload = {
+      iconProperties: {
+        selector: `.${cls}`,
+        styles: {
+          gap: `${value}px`,
+        },
+      },
+    };
+
+    // Add to pending modifications
+    if (typeof addPendingModification === "function") {
+      addPendingModification(blockId, cssPayload, "buttonIcon");
+    }
+
+    // Save to database
+    if (typeof saveButtonIconModifications === "function") {
+      try {
+        const result = await saveButtonIconModifications(blockId, cssPayload);
+        if (result.success && typeof showNotification === "function") {
+          showNotification("Hover icon spacing saved!", "success");
+        }
+      } catch (error) {
+        console.error("❌ Error saving hover icon spacing:", error);
+        if (typeof showNotification === "function") {
+          showNotification("Failed to save hover icon spacing", "error");
+        }
+      }
+    }
+  }
+
   function updateUI() {
     const percent = (value / max) * 100;
     bullet.style.left = `${percent}%`;
     fill.style.width = `${percent}%`;
     label.textContent = `${value}px`;
     applyStyle();
+
+    // Save to database after a short delay to avoid too many requests
+    clearTimeout(window.hoverSpacingSaveTimeout);
+    window.hoverSpacingSaveTimeout = setTimeout(() => {
+      saveToDatabase();
+    }, 500);
   }
 
   function setValue(newVal, reason = "") {
@@ -399,15 +643,16 @@ export function initHoverButtonIconSpacingControl(getSelectedElement) {
 
   bullet.addEventListener("mousedown", (e) => {
     e.preventDefault();
+    const rect = field.getBoundingClientRect();
     const move = (eMove) => {
-      const rect = field.getBoundingClientRect();
       const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
-      const mapped = (x / rect.width) * max;
-      setValue(Math.round(mapped), "drag");
+      setValue(Math.round((x / rect.width) * max), "drag");
     };
     const up = () => {
       document.removeEventListener("mousemove", move);
       document.removeEventListener("mouseup", up);
+      // Save when user stops dragging
+      saveToDatabase();
     };
     document.addEventListener("mousemove", move);
     document.addEventListener("mouseup", up);
@@ -416,8 +661,7 @@ export function initHoverButtonIconSpacingControl(getSelectedElement) {
   field.addEventListener("click", (e) => {
     const rect = field.getBoundingClientRect();
     const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
-    const mapped = (x / rect.width) * max;
-    setValue(Math.round(mapped), "click");
+    setValue(Math.round((x / rect.width) * max), "click");
   });
 
   incBtn?.addEventListener("click", () => setValue(value + 1, "increase"));
@@ -429,17 +673,26 @@ export function initHoverButtonIconSpacingControl(getSelectedElement) {
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
     );
     if (btn) {
-      const gap = parseInt(window.getComputedStyle(btn).gap);
-      if (!isNaN(gap)) {
-        setValue(gap, "initial sync");
+      const gap = window.getComputedStyle(btn).gap;
+      if (gap && gap !== "normal") {
+        const spacing = parseInt(gap);
+        if (!isNaN(spacing)) {
+          setValue(spacing, "initial sync");
+        }
       }
     }
+    setValue(0, "initial sync");
   }, 50);
 }
 
 let hoverRadiusInitialized = false;
 
-export function initHoverButtonBorderRadiusControl(getSelectedElement) {
+export function initHoverButtonBorderRadiusControl(
+  getSelectedElement,
+  saveButtonHoverBorderModifications,
+  addPendingModification,
+  showNotification
+) {
   if (hoverRadiusInitialized) return;
   hoverRadiusInitialized = true;
 
@@ -486,6 +739,57 @@ export function initHoverButtonBorderRadiusControl(getSelectedElement) {
 `;
   }
 
+  async function saveToDatabase() {
+    const el = getSelectedElement?.();
+    if (!el) return;
+
+    const btn = el.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const cls = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
+    );
+    if (!cls) return;
+
+    const blockId = el.id;
+    if (!blockId || blockId === "block-id") return;
+
+    const cssPayload = {
+      buttonPrimary: {
+        selector: `.${cls}`,
+        styles: {
+          borderRadius: `${value}px`,
+          overflow: "hidden",
+        },
+      },
+    };
+
+    // Add to pending modifications
+    if (typeof addPendingModification === "function") {
+      addPendingModification(blockId, cssPayload, "buttonHoverBorder");
+    }
+
+    // Save to database
+    if (typeof saveButtonHoverBorderModifications === "function") {
+      try {
+        const result = await saveButtonHoverBorderModifications(
+          blockId,
+          cssPayload
+        );
+        if (result.success && typeof showNotification === "function") {
+          showNotification("Hover border radius saved!", "success");
+        }
+      } catch (error) {
+        console.error("❌ Error saving hover border radius:", error);
+        if (typeof showNotification === "function") {
+          showNotification("Failed to save hover border radius", "error");
+        }
+      }
+    }
+  }
+
   function update(val) {
     value = Math.max(0, Math.min(50, val));
     const percent = (value / 50) * 100;
@@ -493,6 +797,12 @@ export function initHoverButtonBorderRadiusControl(getSelectedElement) {
     fill.style.width = `${percent}%`;
     valueText.textContent = `${value}px`;
     apply();
+
+    // Save to database after a short delay to avoid too many requests
+    clearTimeout(window.hoverRadiusSaveTimeout);
+    window.hoverRadiusSaveTimeout = setTimeout(() => {
+      saveToDatabase();
+    }, 500);
   }
 
   bullet.addEventListener("mousedown", (e) => {
@@ -505,6 +815,8 @@ export function initHoverButtonBorderRadiusControl(getSelectedElement) {
     const up = () => {
       document.removeEventListener("mousemove", move);
       document.removeEventListener("mouseup", up);
+      // Save when user stops dragging
+      saveToDatabase();
     };
     document.addEventListener("mousemove", move);
     document.addEventListener("mouseup", up);
@@ -523,12 +835,67 @@ export function initHoverButtonBorderRadiusControl(getSelectedElement) {
   update(0); // Initialize with default value
 }
 
-export function initHoverButtonBorderTypeToggle(getSelectedElement) {
+export function initHoverButtonBorderTypeToggle(
+  getSelectedElement,
+  saveButtonHoverBorderModifications,
+  addPendingModification,
+  showNotification
+) {
   const typeButtons = [
     { id: "hover-buttonBorderTypeSolid", type: "solid" },
     { id: "hover-buttonBorderTypeDashed", type: "dashed" },
     { id: "hover-buttonBorderTypeDotted", type: "dotted" },
   ];
+
+  async function saveToDatabase(borderType) {
+    const selected = getSelectedElement?.();
+    if (!selected) return;
+
+    const btn = selected.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const cls = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
+    );
+    if (!cls) return;
+
+    const blockId = selected.id;
+    if (!blockId || blockId === "block-id") return;
+
+    const cssPayload = {
+      buttonPrimary: {
+        selector: `.${cls}`,
+        styles: {
+          borderStyle: borderType,
+        },
+      },
+    };
+
+    // Add to pending modifications
+    if (typeof addPendingModification === "function") {
+      addPendingModification(blockId, cssPayload, "buttonHoverBorder");
+    }
+
+    // Save to database
+    if (typeof saveButtonHoverBorderModifications === "function") {
+      try {
+        const result = await saveButtonHoverBorderModifications(
+          blockId,
+          cssPayload
+        );
+        if (result.success && typeof showNotification === "function") {
+          showNotification("Hover border style saved!", "success");
+        }
+      } catch (error) {
+        console.error("❌ Error saving hover border style:", error);
+        if (typeof showNotification === "function") {
+          showNotification("Failed to save hover border style", "error");
+        }
+      }
+    }
+  }
 
   typeButtons.forEach(({ id, type }) => {
     const el = document.getElementById(id);
@@ -566,13 +933,21 @@ export function initHoverButtonBorderTypeToggle(getSelectedElement) {
   border-style: ${type} !important;
 }
 `;
+
+      // Save to database
+      saveToDatabase(type);
     };
   });
 }
 
 let hoverBorderInitialized = false;
 
-export function initHoverButtonBorderControl(getSelectedElement) {
+export function initHoverButtonBorderControl(
+  getSelectedElement,
+  saveButtonHoverBorderModifications,
+  addPendingModification,
+  showNotification
+) {
   if (hoverBorderInitialized) return;
   hoverBorderInitialized = true;
 
@@ -642,6 +1017,61 @@ export function initHoverButtonBorderControl(getSelectedElement) {
 `;
   }
 
+  async function saveToDatabase() {
+    const { blockId, typeClass } = getTypeClassAndBlock();
+    if (!typeClass || !blockId || blockId === "block-id") return;
+
+    const key = `${blockId}--${typeClass}`;
+    const state = window.__squareCraftHoverBorderStateMap.get(key) || {
+      value: 0,
+      side: "All",
+    };
+
+    const val = `${state.value}px`;
+    const t = state.side === "Top" || state.side === "All" ? val : "0px";
+    const r = state.side === "Right" || state.side === "All" ? val : "0px";
+    const b = state.side === "Bottom" || state.side === "All" ? val : "0px";
+    const l = state.side === "Left" || state.side === "All" ? val : "0px";
+
+    const cssPayload = {
+      buttonPrimary: {
+        selector: `.${typeClass}`,
+        styles: {
+          borderTopWidth: t,
+          borderRightWidth: r,
+          borderBottomWidth: b,
+          borderLeftWidth: l,
+          borderStyle: window.__squareCraftBorderStyle || "solid",
+          borderColor: window.__squareCraftHoverBorderColor || "black",
+          borderRadius: `${window.__squareCraftHoverRadius || 0}px`,
+        },
+      },
+    };
+
+    // Add to pending modifications
+    if (typeof addPendingModification === "function") {
+      addPendingModification(blockId, cssPayload, "buttonHoverBorder");
+    }
+
+    // Save to database
+    if (typeof saveButtonHoverBorderModifications === "function") {
+      try {
+        const result = await saveButtonHoverBorderModifications(
+          blockId,
+          cssPayload
+        );
+        if (result.success && typeof showNotification === "function") {
+          showNotification("Hover border saved!", "success");
+        }
+      } catch (error) {
+        console.error("❌ Error saving hover border:", error);
+        if (typeof showNotification === "function") {
+          showNotification("Failed to save hover border", "error");
+        }
+      }
+    }
+  }
+
   function update(val) {
     value = Math.max(0, Math.min(10, val));
     const percent = (value / 10) * 100;
@@ -660,6 +1090,12 @@ export function initHoverButtonBorderControl(getSelectedElement) {
     state.value = value;
     window.__squareCraftHoverBorderStateMap.set(key, state);
     applyStyle();
+
+    // Save to database after a short delay to avoid too many requests
+    clearTimeout(window.hoverBorderSaveTimeout);
+    window.hoverBorderSaveTimeout = setTimeout(() => {
+      saveToDatabase();
+    }, 500);
   }
 
   bullet.addEventListener("mousedown", (e) => {
@@ -672,6 +1108,8 @@ export function initHoverButtonBorderControl(getSelectedElement) {
     const up = () => {
       document.removeEventListener("mousemove", move);
       document.removeEventListener("mouseup", up);
+      // Save when user stops dragging
+      saveToDatabase();
     };
     document.addEventListener("mousemove", move);
     document.addEventListener("mouseup", up);
@@ -709,6 +1147,9 @@ export function initHoverButtonBorderControl(getSelectedElement) {
       currentSide = side;
       window.__squareCraftHoverBorderStateMap.set(key, state);
       applyStyle();
+
+      // Save to database when side changes
+      saveToDatabase();
     });
   });
 

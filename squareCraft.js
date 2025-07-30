@@ -1046,13 +1046,43 @@ window.pendingModifications = pendingModifications;
     }
 
     if (selectedElement) {
-      initHoverButtonIconRotationControl(() => selectedElement);
+      initHoverButtonIconRotationControl(
+        () => selectedElement,
+        saveButtonIconModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
+      );
     }
     if (selectedElement) {
-      initHoverButtonIconSizeControl(() => selectedElement);
+      initHoverButtonIconSizeControl(
+        () => selectedElement,
+        saveButtonIconModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
+      );
     }
     if (selectedElement) {
-      initHoverButtonIconSpacingControl(() => selectedElement);
+      initHoverButtonIconSpacingControl(
+        () => selectedElement,
+        saveButtonIconModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
+      );
     }
     if (selectedElement) {
       initHoverButtonBorderRadiusControl(
