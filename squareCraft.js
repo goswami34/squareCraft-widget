@@ -603,15 +603,20 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
-  const { saveButtonHoverBorderModifications } = await import(
-    "https://goswami34.github.io/squareCraft-widget/html.js"
-  );
+  const {
+    saveButtonHoverBorderModifications,
+    fetchButtonHoverBorderModifications,
+  } = await import("https://goswami34.github.io/squareCraft-widget/html.js");
 
   // Make saveButtonColorModifications available globally
   window.saveButtonColorModifications = saveButtonColorModifications;
 
   // Make fetchButtonIconModifications available globally for testing
   window.fetchButtonIconModifications = fetchButtonIconModifications;
+
+  // Make fetchButtonHoverBorderModifications available globally
+  window.fetchButtonHoverBorderModifications =
+    fetchButtonHoverBorderModifications;
 
   // Test function to manually trigger button icon fetch
   window.testButtonIconFetch = async () => {
@@ -661,6 +666,58 @@ window.pendingModifications = pendingModifications;
       console.log(`Button ${index + 1}:`, button);
       console.log("Classes:", button.className);
     });
+  };
+
+  // Test function to debug hover border functionality
+  window.testHoverBorderFunctionality = async () => {
+    console.log("🧪 Testing hover border functionality...");
+
+    // Check if functions are available
+    console.log(
+      "saveButtonHoverBorderModifications available:",
+      typeof saveButtonHoverBorderModifications === "function"
+    );
+    console.log(
+      "fetchButtonHoverBorderModifications available:",
+      typeof fetchButtonHoverBorderModifications === "function"
+    );
+
+    // Test save function
+    const testPayload = {
+      buttonPrimary: {
+        selector: ".sqs-button-element--primary",
+        styles: {
+          borderTopWidth: "2px",
+          borderRightWidth: "2px",
+          borderBottomWidth: "2px",
+          borderLeftWidth: "2px",
+          borderStyle: "solid",
+          borderColor: "red",
+          borderRadius: "5px",
+        },
+      },
+    };
+
+    console.log("📤 Testing save with payload:", testPayload);
+
+    try {
+      const result = await saveButtonHoverBorderModifications(
+        "test-block-id",
+        testPayload
+      );
+      console.log("✅ Save test result:", result);
+    } catch (error) {
+      console.error("❌ Save test failed:", error);
+    }
+
+    // Test fetch function
+    console.log("📥 Testing fetch...");
+    try {
+      const fetchResult = await fetchButtonHoverBorderModifications();
+      console.log("✅ Fetch test result:", fetchResult);
+    } catch (error) {
+      console.error("❌ Fetch test failed:", error);
+    }
   };
 
   // Make applyStylesAsExternalCSS available globally
@@ -3642,6 +3699,29 @@ window.pendingModifications = pendingModifications;
     }
   }
 
+  // Fetch and apply button hover border modifications from the backend
+  async function fetchButtonHoverBorderModifications(blockId = null) {
+    console.log("🔄 Fetching button hover border modifications...");
+    try {
+      const result = await fetchButtonHoverBorderModifications(blockId);
+      if (result.success) {
+        console.log(
+          "✅ Button hover border modifications fetched successfully"
+        );
+      } else {
+        console.warn(
+          "⚠️ Failed to fetch button hover border modifications:",
+          result.error
+        );
+      }
+    } catch (error) {
+      console.error(
+        "❌ Error fetching button hover border modifications:",
+        error
+      );
+    }
+  }
+
   // Fetch button shadow modifications from the backend
   async function fetchButtonShadowModifications(blockId = null) {
     const userId = localStorage.getItem("sc_u_id");
@@ -4063,6 +4143,7 @@ window.pendingModifications = pendingModifications;
       fetchButtonBorderModifications(elementId);
       fetchButtonShadowModifications(elementId);
       fetchButtonIconModifications(elementId);
+      fetchButtonHoverBorderModifications(elementId);
     }
 
     // Fetch button color modifications

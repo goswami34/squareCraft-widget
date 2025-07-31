@@ -1451,14 +1451,17 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
   const widgetId = localStorage.getItem("sc_w_id");
 
   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-    console.warn("❌ Missing required data to save button border styles", {
-      userId,
-      token,
-      widgetId,
-      pageId,
-      blockId,
-      css,
-    });
+    console.warn(
+      "❌ Missing required data to save button hover border styles",
+      {
+        userId,
+        token,
+        widgetId,
+        pageId,
+        blockId,
+        css,
+      }
+    );
     return { success: false, error: "Missing required data" };
   }
 
@@ -1478,18 +1481,27 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
       ])
     );
 
-  const cleanedPrimary = css.buttonPrimary
-    ? {
-        selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
-        styles: toKebabCaseStyleObject(
-          cleanCssObject(css.buttonPrimary.styles || {})
-        ),
-      }
-    : { selector: null, styles: {} };
+  // Handle different CSS structures
+  let cleanedPrimary = { selector: null, styles: {} };
+
+  if (css.buttonPrimary) {
+    cleanedPrimary = {
+      selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
+      styles: toKebabCaseStyleObject(
+        cleanCssObject(css.buttonPrimary.styles || {})
+      ),
+    };
+  } else if (css.styles) {
+    // Handle direct styles object
+    cleanedPrimary = {
+      selector: css.selector || ".sqs-button-element--primary",
+      styles: toKebabCaseStyleObject(cleanCssObject(css.styles || {})),
+    };
+  }
 
   if (Object.keys(cleanedPrimary.styles).length === 0) {
-    console.warn("⚠️ No valid border styles found in buttonPrimary.");
-    return { success: false, error: "No valid border styles to save" };
+    console.warn("⚠️ No valid hover border styles found.");
+    return { success: false, error: "No valid hover border styles to save" };
   }
 
   const payload = {
@@ -1503,7 +1515,7 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
     },
   };
 
-  console.log("📤 Sending button border payload:", payload);
+  console.log("📤 Sending button hover border payload:", payload);
 
   try {
     const response = await fetch(
@@ -1524,14 +1536,17 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
       throw new Error(result.message || `HTTP ${response.status}`);
     }
 
-    console.log("✅ Button border styles saved:", result);
-    showNotification("Button border styles saved successfully!", "success");
+    console.log("✅ Button hover border styles saved:", result);
+    showNotification(
+      "Button hover border styles saved successfully!",
+      "success"
+    );
 
     return { success: true, data: result };
   } catch (error) {
-    console.error("❌ Error saving button border styles:", error);
+    console.error("❌ Error saving button hover border styles:", error);
     showNotification(
-      `Failed to save button border styles: ${error.message}`,
+      `Failed to save button hover border styles: ${error.message}`,
       "error"
     );
     return { success: false, error: error.message };
@@ -1541,6 +1556,98 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
 // button hover border save modification code end here
 
 // button hover code end here
+
+export async function fetchButtonHoverBorderModifications(blockId = null) {
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  if (!userId || !token || !widgetId || !pageId) {
+    console.warn(
+      "❌ Missing required data to fetch button hover border styles",
+      {
+        userId,
+        token,
+        widgetId,
+        pageId,
+      }
+    );
+    return { success: false, error: "Missing required data" };
+  }
+
+  const payload = {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    ...(blockId && { elementId: blockId }),
+  };
+
+  console.log("📤 Fetching button hover border styles:", payload);
+
+  try {
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/fetch-button-hover-border-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || `HTTP ${response.status}`);
+    }
+
+    console.log("✅ Button hover border styles fetched:", result);
+
+    // Apply the fetched styles to the DOM
+    if (result.data && result.data.length > 0) {
+      result.data.forEach((modification) => {
+        if (modification.css && modification.css.buttonPrimary) {
+          const { selector, styles } = modification.css.buttonPrimary;
+          if (selector && styles) {
+            // Create or update the style element
+            const styleId = `sc-hover-border-fetched-${modification.elementId}`;
+            let style = document.getElementById(styleId);
+            if (!style) {
+              style = document.createElement("style");
+              style.id = styleId;
+              document.head.appendChild(style);
+            }
+
+            // Convert styles to CSS string
+            const cssProperties = Object.entries(styles)
+              .map(
+                ([key, value]) =>
+                  `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}: ${value}`
+              )
+              .join("; ");
+
+            style.innerHTML = `
+${selector}:hover {
+  ${cssProperties} !important;
+}
+`;
+          }
+        }
+      });
+    }
+
+    return { success: true, data: result.data || [] };
+  } catch (error) {
+    console.error("❌ Error fetching button hover border styles:", error);
+    return { success: false, error: error.message };
+  }
+}
 
 // link text save modificaiton code here
 

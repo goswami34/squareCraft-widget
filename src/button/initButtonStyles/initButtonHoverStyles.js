@@ -766,6 +766,8 @@ export function initHoverButtonBorderRadiusControl(
       },
     };
 
+    console.log("📤 Saving hover border radius payload:", cssPayload);
+
     // Add to pending modifications
     if (typeof addPendingModification === "function") {
       addPendingModification(blockId, cssPayload, "buttonHoverBorder");
@@ -780,6 +782,11 @@ export function initHoverButtonBorderRadiusControl(
         );
         if (result.success && typeof showNotification === "function") {
           showNotification("Hover border radius saved!", "success");
+        } else {
+          console.error("❌ Failed to save hover border radius:", result);
+          if (typeof showNotification === "function") {
+            showNotification("Failed to save hover border radius", "error");
+          }
         }
       } catch (error) {
         console.error("❌ Error saving hover border radius:", error);
@@ -787,6 +794,10 @@ export function initHoverButtonBorderRadiusControl(
           showNotification("Failed to save hover border radius", "error");
         }
       }
+    } else {
+      console.error(
+        "❌ saveButtonHoverBorderModifications function not available"
+      );
     }
   }
 
@@ -873,6 +884,8 @@ export function initHoverButtonBorderTypeToggle(
       },
     };
 
+    console.log("📤 Saving hover border type payload:", cssPayload);
+
     // Add to pending modifications
     if (typeof addPendingModification === "function") {
       addPendingModification(blockId, cssPayload, "buttonHoverBorder");
@@ -887,6 +900,11 @@ export function initHoverButtonBorderTypeToggle(
         );
         if (result.success && typeof showNotification === "function") {
           showNotification("Hover border style saved!", "success");
+        } else {
+          console.error("❌ Failed to save hover border style:", result);
+          if (typeof showNotification === "function") {
+            showNotification("Failed to save hover border style", "error");
+          }
         }
       } catch (error) {
         console.error("❌ Error saving hover border style:", error);
@@ -894,6 +912,10 @@ export function initHoverButtonBorderTypeToggle(
           showNotification("Failed to save hover border style", "error");
         }
       }
+    } else {
+      console.error(
+        "❌ saveButtonHoverBorderModifications function not available"
+      );
     }
   }
 
@@ -1048,6 +1070,8 @@ export function initHoverButtonBorderControl(
       },
     };
 
+    console.log("📤 Saving hover border payload:", cssPayload);
+
     // Add to pending modifications
     if (typeof addPendingModification === "function") {
       addPendingModification(blockId, cssPayload, "buttonHoverBorder");
@@ -1062,6 +1086,11 @@ export function initHoverButtonBorderControl(
         );
         if (result.success && typeof showNotification === "function") {
           showNotification("Hover border saved!", "success");
+        } else {
+          console.error("❌ Failed to save hover border:", result);
+          if (typeof showNotification === "function") {
+            showNotification("Failed to save hover border", "error");
+          }
         }
       } catch (error) {
         console.error("❌ Error saving hover border:", error);
@@ -1069,6 +1098,10 @@ export function initHoverButtonBorderControl(
           showNotification("Failed to save hover border", "error");
         }
       }
+    } else {
+      console.error(
+        "❌ saveButtonHoverBorderModifications function not available"
+      );
     }
   }
 
