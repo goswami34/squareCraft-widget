@@ -175,6 +175,9 @@ export function initHoverButtonShadowControls(
   setup("Y", "Yaxis", 30);
   setup("Blur", "Blur", 50);
   setup("Spread", "Spread", 30);
+
+  // Fetch existing hover shadow data
+  // fetchButtonHoverBorderModifications(); // This line is removed
 }
 
 let hoverRotationInitialized = false;
@@ -357,6 +360,9 @@ export function initHoverButtonIconRotationControl(
     }
     setValue(0, "initial sync");
   }, 50);
+
+  // Fetch existing hover icon rotation data
+  // fetchButtonHoverBorderModifications(); // This line is removed
 }
 
 let hoverSizeInitialized = false;
@@ -520,6 +526,9 @@ export function initHoverButtonIconSizeControl(
     }
     setValue(0, "initial sync");
   }, 50);
+
+  // Fetch existing hover icon size data
+  // fetchButtonHoverBorderModifications(); // This line is removed
 }
 
 let hoverSpacingInitialized = false;
@@ -683,6 +692,9 @@ export function initHoverButtonIconSpacingControl(
     }
     setValue(0, "initial sync");
   }, 50);
+
+  // Fetch existing hover icon spacing data
+  // fetchButtonHoverBorderModifications(); // This line is removed
 }
 
 let hoverRadiusInitialized = false;
@@ -852,6 +864,9 @@ export function initHoverButtonBorderRadiusControl(
   resetBtn?.addEventListener("click", () => update(0));
 
   update(0); // Initialize with default value
+
+  // Fetch existing hover border radius data
+  // fetchButtonHoverBorderModifications(); // This line is removed
 }
 
 export function initHoverButtonBorderTypeToggle(
@@ -972,6 +987,9 @@ export function initHoverButtonBorderTypeToggle(
       saveToDatabase(type);
     };
   });
+
+  // Fetch existing hover border type data
+  // fetchButtonHoverBorderModifications(); // This line is removed
 }
 
 let hoverBorderInitialized = false;
@@ -1190,6 +1208,9 @@ export function initHoverButtonBorderControl(
   });
 
   update(value);
+
+  // Fetch existing hover border data
+  // fetchButtonHoverBorderModifications(); // This line is removed
 }
 
 export function applyHoverButtonEffects(getSelectedElement) {
@@ -1311,6 +1332,9 @@ export function applyHoverButtonEffects(getSelectedElement) {
   decBtn?.addEventListener("click", () => update(value - 1));
 
   setTimeout(() => update(window.__squareCraftTransformDistance || 0), 50);
+
+  // Fetch existing hover effects data
+  // fetchButtonHoverBorderModifications(); // This line is removed
 }
 
 window.syncHoverButtonStylesFromElement = function (selectedElement) {
