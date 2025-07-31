@@ -5,6 +5,47 @@ const hoverShadowState = {
   Spread: 0,
 };
 
+// Helper function to fetch and merge hover border data
+async function fetchAndMergeHoverBorderData(
+  blockId,
+  newStyles,
+  saveButtonHoverBorderModifications
+) {
+  try {
+    // Try to fetch existing data
+    if (typeof window.fetchButtonHoverBorderModifications === "function") {
+      const existingData = await window.fetchButtonHoverBorderModifications(
+        blockId
+      );
+      console.log("📥 Fetched existing hover border data:", existingData);
+
+      if (
+        existingData &&
+        existingData.success &&
+        existingData.data &&
+        existingData.data.css
+      ) {
+        // Extract existing styles
+        const existingStyles =
+          existingData.data.css.buttonPrimary?.styles || {};
+        console.log("📥 Existing styles:", existingStyles);
+
+        // Merge with new styles
+        const mergedStyles = { ...existingStyles, ...newStyles };
+        console.log("🔗 Merged styles:", mergedStyles);
+
+        return mergedStyles;
+      }
+    }
+  } catch (error) {
+    console.warn("⚠️ Could not fetch existing hover border data:", error);
+  }
+
+  // If no existing data or fetch failed, return just the new styles
+  console.log("📝 Using only new styles:", newStyles);
+  return newStyles;
+}
+
 export function initHoverButtonShadowControls(
   getSelectedElement,
   saveButtonModifications,
@@ -756,17 +797,29 @@ export function initHoverButtonBorderRadiusControl(
     const blockId = el.id;
     if (!blockId || blockId === "block-id") return;
 
+    // New styles to add/update
+    const newStyles = {
+      borderRadius: `${value}px`,
+      overflow: "hidden",
+    };
+
+    console.log("📤 New hover border radius styles:", newStyles);
+
+    // Fetch and merge with existing data
+    const mergedStyles = await fetchAndMergeHoverBorderData(
+      blockId,
+      newStyles,
+      saveButtonHoverBorderModifications
+    );
+
     const cssPayload = {
       buttonPrimary: {
         selector: `.${cls}`,
-        styles: {
-          borderRadius: `${value}px`,
-          overflow: "hidden",
-        },
+        styles: mergedStyles,
       },
     };
 
-    console.log("📤 Saving hover border radius payload:", cssPayload);
+    console.log("📤 Saving merged hover border radius payload:", cssPayload);
 
     // Add to pending modifications
     if (typeof addPendingModification === "function") {
@@ -875,16 +928,28 @@ export function initHoverButtonBorderTypeToggle(
     const blockId = selected.id;
     if (!blockId || blockId === "block-id") return;
 
+    // New styles to add/update
+    const newStyles = {
+      borderStyle: borderType,
+    };
+
+    console.log("📤 New hover border type styles:", newStyles);
+
+    // Fetch and merge with existing data
+    const mergedStyles = await fetchAndMergeHoverBorderData(
+      blockId,
+      newStyles,
+      saveButtonHoverBorderModifications
+    );
+
     const cssPayload = {
       buttonPrimary: {
         selector: `.${cls}`,
-        styles: {
-          borderStyle: borderType,
-        },
+        styles: mergedStyles,
       },
     };
 
-    console.log("📤 Saving hover border type payload:", cssPayload);
+    console.log("📤 Saving merged hover border type payload:", cssPayload);
 
     // Add to pending modifications
     if (typeof addPendingModification === "function") {
@@ -1055,22 +1120,34 @@ export function initHoverButtonBorderControl(
     const b = state.side === "Bottom" || state.side === "All" ? val : "0px";
     const l = state.side === "Left" || state.side === "All" ? val : "0px";
 
+    // New styles to add/update
+    const newStyles = {
+      borderTopWidth: t,
+      borderRightWidth: r,
+      borderBottomWidth: b,
+      borderLeftWidth: l,
+      borderStyle: window.__squareCraftBorderStyle || "solid",
+      borderColor: window.__squareCraftHoverBorderColor || "black",
+      borderRadius: `${window.__squareCraftHoverRadius || 0}px`,
+    };
+
+    console.log("📤 New hover border styles:", newStyles);
+
+    // Fetch and merge with existing data
+    const mergedStyles = await fetchAndMergeHoverBorderData(
+      blockId,
+      newStyles,
+      saveButtonHoverBorderModifications
+    );
+
     const cssPayload = {
       buttonPrimary: {
         selector: `.${typeClass}`,
-        styles: {
-          borderTopWidth: t,
-          borderRightWidth: r,
-          borderBottomWidth: b,
-          borderLeftWidth: l,
-          borderStyle: window.__squareCraftBorderStyle || "solid",
-          borderColor: window.__squareCraftHoverBorderColor || "black",
-          borderRadius: `${window.__squareCraftHoverRadius || 0}px`,
-        },
+        styles: mergedStyles,
       },
     };
 
-    console.log("📤 Saving hover border payload:", cssPayload);
+    console.log("📤 Saving merged hover border payload:", cssPayload);
 
     // Add to pending modifications
     if (typeof addPendingModification === "function") {
@@ -1393,4 +1470,116 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
   // - hover icon size
   // - hover spacing
   // - transform type and distance if needed
+};
+
+// Test function to verify hover border merging functionality
+window.testHoverBorderMerging = async () => {
+  console.log("🧪 Testing hover border merging functionality...");
+
+  const selectedElement =
+    window.selectedElement || document.querySelector('[id^="block-"]');
+  if (!selectedElement) {
+    console.error("❌ No selected element found");
+    return;
+  }
+
+  const blockId = selectedElement.id;
+  console.log("📋 Using block ID:", blockId);
+
+  // Test 1: Save border radius
+  console.log("📤 Test 1: Saving border radius...");
+  const radiusPayload = {
+    buttonPrimary: {
+      selector: ".sqs-button-element--primary",
+      styles: {
+        borderRadius: "10px",
+        overflow: "hidden",
+      },
+    },
+  };
+
+  try {
+    const radiusResult = await window.saveButtonHoverBorderModifications(
+      blockId,
+      radiusPayload
+    );
+    console.log("✅ Border radius save result:", radiusResult);
+  } catch (error) {
+    console.error("❌ Border radius save failed:", error);
+  }
+
+  // Test 2: Save border style (should merge with radius)
+  console.log("📤 Test 2: Saving border style...");
+  const stylePayload = {
+    buttonPrimary: {
+      selector: ".sqs-button-element--primary",
+      styles: {
+        borderStyle: "dashed",
+      },
+    },
+  };
+
+  try {
+    const styleResult = await window.saveButtonHoverBorderModifications(
+      blockId,
+      stylePayload
+    );
+    console.log("✅ Border style save result:", styleResult);
+  } catch (error) {
+    console.error("❌ Border style save failed:", error);
+  }
+
+  // Test 3: Save border width (should merge with radius and style)
+  console.log("📤 Test 3: Saving border width...");
+  const widthPayload = {
+    buttonPrimary: {
+      selector: ".sqs-button-element--primary",
+      styles: {
+        borderTopWidth: "3px",
+        borderRightWidth: "3px",
+        borderBottomWidth: "3px",
+        borderLeftWidth: "3px",
+        borderColor: "red",
+      },
+    },
+  };
+
+  try {
+    const widthResult = await window.saveButtonHoverBorderModifications(
+      blockId,
+      widthPayload
+    );
+    console.log("✅ Border width save result:", widthResult);
+  } catch (error) {
+    console.error("❌ Border width save failed:", error);
+  }
+
+  // Test 4: Fetch and verify all data is preserved
+  console.log("📥 Test 4: Fetching to verify all data is preserved...");
+  try {
+    const fetchResult = await window.fetchButtonHoverBorderModifications(
+      blockId
+    );
+    console.log("✅ Fetch result:", fetchResult);
+    if (fetchResult.success && fetchResult.data && fetchResult.data.css) {
+      const styles = fetchResult.data.css.buttonPrimary?.styles || {};
+      console.log("📋 Final merged styles:", styles);
+
+      // Check if all properties are present
+      const hasRadius = styles.borderRadius || styles["border-radius"];
+      const hasStyle = styles.borderStyle || styles["border-style"];
+      const hasWidth = styles.borderTopWidth || styles["border-top-width"];
+      const hasColor = styles.borderColor || styles["border-color"];
+
+      console.log("🔍 Property check:", {
+        hasRadius,
+        hasStyle,
+        hasWidth,
+        hasColor,
+        allPresent: hasRadius && hasStyle && hasWidth && hasColor,
+      });
+    }
+  } catch (error) {
+    console.error("❌ Fetch test failed:", error);
+  }
 };
