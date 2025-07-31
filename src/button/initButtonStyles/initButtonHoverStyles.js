@@ -797,29 +797,36 @@ export function initHoverButtonBorderRadiusControl(
     const blockId = el.id;
     if (!blockId || blockId === "block-id") return;
 
-    // New styles to add/update
-    const newStyles = {
-      borderRadius: `${value}px`,
+    // Get all current border properties from global state
+    const currentBorderWidth =
+      window.__squareCraftHoverBorderStateMap?.get(`${blockId}--${cls}`)
+        ?.value || 0;
+    const currentBorderStyle = window.__squareCraftBorderStyle || "solid";
+    const currentBorderColor = window.__squareCraftHoverBorderColor || "black";
+    const currentBorderRadius = value; // Current radius value
+
+    // Create complete styles object with all border properties
+    const completeStyles = {
+      borderRadius: `${currentBorderRadius}px`,
       overflow: "hidden",
+      borderTopWidth: `${currentBorderWidth}px`,
+      borderRightWidth: `${currentBorderWidth}px`,
+      borderBottomWidth: `${currentBorderWidth}px`,
+      borderLeftWidth: `${currentBorderWidth}px`,
+      borderStyle: currentBorderStyle,
+      borderColor: currentBorderColor,
     };
 
-    console.log("📤 New hover border radius styles:", newStyles);
-
-    // Fetch and merge with existing data
-    const mergedStyles = await fetchAndMergeHoverBorderData(
-      blockId,
-      newStyles,
-      saveButtonHoverBorderModifications
-    );
+    console.log("📤 Complete hover border styles:", completeStyles);
 
     const cssPayload = {
       buttonPrimary: {
         selector: `.${cls}`,
-        styles: mergedStyles,
+        styles: completeStyles,
       },
     };
 
-    console.log("📤 Saving merged hover border radius payload:", cssPayload);
+    console.log("📤 Saving complete hover border payload:", cssPayload);
 
     // Add to pending modifications
     if (typeof addPendingModification === "function") {
@@ -860,6 +867,10 @@ export function initHoverButtonBorderRadiusControl(
     bullet.style.left = `${percent}%`;
     fill.style.width = `${percent}%`;
     valueText.textContent = `${value}px`;
+
+    // Update global state
+    window.__squareCraftHoverRadius = value;
+
     apply();
 
     // Save to database after a short delay to avoid too many requests
@@ -928,28 +939,35 @@ export function initHoverButtonBorderTypeToggle(
     const blockId = selected.id;
     if (!blockId || blockId === "block-id") return;
 
-    // New styles to add/update
-    const newStyles = {
+    // Get all current border properties from global state
+    const currentBorderWidth =
+      window.__squareCraftHoverBorderStateMap?.get(`${blockId}--${cls}`)
+        ?.value || 0;
+    const currentBorderColor = window.__squareCraftHoverBorderColor || "black";
+    const currentBorderRadius = window.__squareCraftHoverRadius || 0;
+
+    // Create complete styles object with all border properties
+    const completeStyles = {
+      borderRadius: `${currentBorderRadius}px`,
+      overflow: "hidden",
+      borderTopWidth: `${currentBorderWidth}px`,
+      borderRightWidth: `${currentBorderWidth}px`,
+      borderBottomWidth: `${currentBorderWidth}px`,
+      borderLeftWidth: `${currentBorderWidth}px`,
       borderStyle: borderType,
+      borderColor: currentBorderColor,
     };
 
-    console.log("📤 New hover border type styles:", newStyles);
-
-    // Fetch and merge with existing data
-    const mergedStyles = await fetchAndMergeHoverBorderData(
-      blockId,
-      newStyles,
-      saveButtonHoverBorderModifications
-    );
+    console.log("📤 Complete hover border styles:", completeStyles);
 
     const cssPayload = {
       buttonPrimary: {
         selector: `.${cls}`,
-        styles: mergedStyles,
+        styles: completeStyles,
       },
     };
 
-    console.log("📤 Saving merged hover border type payload:", cssPayload);
+    console.log("📤 Saving complete hover border payload:", cssPayload);
 
     // Add to pending modifications
     if (typeof addPendingModification === "function") {
@@ -1120,34 +1138,28 @@ export function initHoverButtonBorderControl(
     const b = state.side === "Bottom" || state.side === "All" ? val : "0px";
     const l = state.side === "Left" || state.side === "All" ? val : "0px";
 
-    // New styles to add/update
-    const newStyles = {
+    // Create complete styles object with all border properties
+    const completeStyles = {
+      borderRadius: `${window.__squareCraftHoverRadius || 0}px`,
+      overflow: "hidden",
       borderTopWidth: t,
       borderRightWidth: r,
       borderBottomWidth: b,
       borderLeftWidth: l,
       borderStyle: window.__squareCraftBorderStyle || "solid",
       borderColor: window.__squareCraftHoverBorderColor || "black",
-      borderRadius: `${window.__squareCraftHoverRadius || 0}px`,
     };
 
-    console.log("📤 New hover border styles:", newStyles);
-
-    // Fetch and merge with existing data
-    const mergedStyles = await fetchAndMergeHoverBorderData(
-      blockId,
-      newStyles,
-      saveButtonHoverBorderModifications
-    );
+    console.log("📤 Complete hover border styles:", completeStyles);
 
     const cssPayload = {
       buttonPrimary: {
         selector: `.${typeClass}`,
-        styles: mergedStyles,
+        styles: completeStyles,
       },
     };
 
-    console.log("📤 Saving merged hover border payload:", cssPayload);
+    console.log("📤 Saving complete hover border payload:", cssPayload);
 
     // Add to pending modifications
     if (typeof addPendingModification === "function") {
