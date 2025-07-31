@@ -929,23 +929,32 @@ export function initHoverButtonBorderTypeToggle(
     if (!blockId || blockId === "block-id") return;
 
     // New styles to add/update
-    const newStyles = {
-      borderStyle: borderType,
-    };
+    // const newStyles = {
+    //   borderStyle: borderType,
+    // };
 
-    console.log("📤 New hover border type styles:", newStyles);
+    // console.log("📤 New hover border type styles:", newStyles);
 
-    // Fetch and merge with existing data
-    const mergedStyles = await fetchAndMergeHoverBorderData(
-      blockId,
-      newStyles,
-      saveButtonHoverBorderModifications
-    );
+    // // Fetch and merge with existing data
+    // const mergedStyles = await fetchAndMergeHoverBorderData(
+    //   blockId,
+    //   newStyles,
+    //   saveButtonHoverBorderModifications
+    // );
+
+    // const cssPayload = {
+    //   buttonPrimary: {
+    //     selector: `.${cls}`,
+    //     styles: mergedStyles,
+    //   },
+    // };
 
     const cssPayload = {
       buttonPrimary: {
         selector: `.${cls}`,
-        styles: mergedStyles,
+        styles: {
+          borderStyle: borderType,
+        },
       },
     };
 
