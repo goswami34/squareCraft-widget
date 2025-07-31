@@ -1450,6 +1450,15 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
+  console.log("🔍 Debug - saveButtonHoverBorderModifications called with:", {
+    blockId,
+    css,
+    pageId,
+    userId,
+    token: token ? "present" : "missing",
+    widgetId,
+  });
+
   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
     console.warn(
       "❌ Missing required data to save button hover border styles",
@@ -1499,6 +1508,8 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
     };
   }
 
+  console.log("🔍 Debug - cleanedPrimary:", cleanedPrimary);
+
   if (Object.keys(cleanedPrimary.styles).length === 0) {
     console.warn("⚠️ No valid hover border styles found.");
     return { success: false, error: "No valid hover border styles to save" };
@@ -1518,6 +1529,7 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
   console.log("📤 Sending button hover border payload:", payload);
 
   try {
+    console.log("🌐 Making API request to save button hover border styles...");
     const response = await fetch(
       "https://admin.squareplugin.com/api/v1/save-button-hover-border-modifications",
       {
@@ -1530,7 +1542,14 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
       }
     );
 
+    console.log("📥 API Response status:", response.status);
+    console.log(
+      "📥 API Response headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+
     const result = await response.json();
+    console.log("📥 API Response body:", result);
 
     if (!response.ok) {
       throw new Error(result.message || `HTTP ${response.status}`);
@@ -1545,6 +1564,10 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
     return { success: true, data: result };
   } catch (error) {
     console.error("❌ Error saving button hover border styles:", error);
+    console.error("❌ Error details:", {
+      message: error.message,
+      stack: error.stack,
+    });
     showNotification(
       `Failed to save button hover border styles: ${error.message}`,
       "error"
@@ -1902,3 +1925,42 @@ window.testSaveButtonIconModifications = testSaveButtonIconModifications;
 
 // Make typography function available globally
 window.saveTypographyAllModifications = saveTypographyAllModifications;
+
+// Test function to debug hover border save functionality
+export async function testHoverBorderSave() {
+  console.log("🧪 Testing hover border save functionality...");
+
+  const testPayload = {
+    buttonPrimary: {
+      selector: ".sqs-button-element--primary",
+      styles: {
+        borderTopWidth: "2px",
+        borderRightWidth: "2px",
+        borderBottomWidth: "2px",
+        borderLeftWidth: "2px",
+        borderStyle: "solid",
+        borderColor: "red",
+        borderRadius: "5px",
+      },
+    },
+  };
+
+  console.log("📤 Test payload:", testPayload);
+
+  try {
+    const result = await saveButtonHoverBorderModifications(
+      "test-block-id",
+      testPayload
+    );
+    console.log("✅ Test result:", result);
+    return result;
+  } catch (error) {
+    console.error("❌ Test failed:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Make test function globally available
+if (typeof window !== "undefined") {
+  window.testHoverBorderSave = testHoverBorderSave;
+}

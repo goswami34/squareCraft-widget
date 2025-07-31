@@ -618,6 +618,10 @@ window.pendingModifications = pendingModifications;
   window.fetchButtonHoverBorderModifications =
     fetchButtonHoverBorderModifications;
 
+  // Make saveButtonHoverBorderModifications available globally for testing
+  window.saveButtonHoverBorderModifications =
+    saveButtonHoverBorderModifications;
+
   // Test function to manually trigger button icon fetch
   window.testButtonIconFetch = async () => {
     console.log("🧪 Testing button icon fetch...");
@@ -717,6 +721,55 @@ window.pendingModifications = pendingModifications;
       console.log("✅ Fetch test result:", fetchResult);
     } catch (error) {
       console.error("❌ Fetch test failed:", error);
+    }
+  };
+
+  // Test function to manually trigger hover border save
+  window.testHoverBorderSave = async () => {
+    console.log("🧪 Testing hover border save manually...");
+
+    // Get current selected element
+    const selectedElement =
+      window.selectedElement || document.querySelector('[id^="block-"]');
+    if (!selectedElement) {
+      console.error("❌ No selected element found");
+      return;
+    }
+
+    const blockId = selectedElement.id;
+    console.log("📋 Using block ID:", blockId);
+
+    const testPayload = {
+      buttonPrimary: {
+        selector: ".sqs-button-element--primary",
+        styles: {
+          borderTopWidth: "3px",
+          borderRightWidth: "3px",
+          borderBottomWidth: "3px",
+          borderLeftWidth: "3px",
+          borderStyle: "solid",
+          borderColor: "blue",
+          borderRadius: "8px",
+        },
+      },
+    };
+
+    console.log("📤 Testing save with payload:", testPayload);
+
+    try {
+      const result = await saveButtonHoverBorderModifications(
+        blockId,
+        testPayload
+      );
+      console.log("✅ Manual save test result:", result);
+
+      if (result.success) {
+        console.log("🎉 Hover border save successful!");
+      } else {
+        console.error("❌ Hover border save failed:", result.error);
+      }
+    } catch (error) {
+      console.error("❌ Manual save test failed:", error);
     }
   };
 
