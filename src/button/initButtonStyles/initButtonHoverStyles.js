@@ -1,5 +1,3 @@
-// Remove global state management code and revert to original pattern
-
 const hoverShadowState = {
   X: 0,
   Y: 0,
@@ -1377,7 +1375,6 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
     radiusBullet.style.left = `${radPercent}%`;
     radiusCount.textContent = `${radius}px`;
   }
-
   // 5. 🔄 Shadow
   const hoverShadow = window.hoverShadowState || {};
   ["Xaxis", "Yaxis", "Blur", "Spread"].forEach((type) => {
