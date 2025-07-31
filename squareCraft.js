@@ -603,16 +603,63 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
-  const {
-    saveButtonHoverBorderModifications,
-    fetchButtonHoverBorderModifications,
-  } = await import("https://goswami34.github.io/squareCraft-widget/html.js");
+  const { saveButtonHoverBorderModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
 
   // Make saveButtonColorModifications available globally
   window.saveButtonColorModifications = saveButtonColorModifications;
 
   // Make fetchButtonIconModifications available globally for testing
   window.fetchButtonIconModifications = fetchButtonIconModifications;
+
+  async function fetchButtonHoverBorderModifications(blockId = null) {
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
+      return;
+    }
+
+    let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+    if (blockId) url += `&elementId=${blockId}`;
+
+    try {
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message);
+
+      // Handle the direct structure: elements[]
+      const elements = result.elements || [];
+      elements.forEach(({ elementId, selector, styles }) => {
+        // Apply button border styles as external CSS
+        if (selector && styles) {
+          applyStylesAsExternalCSS(selector, styles, "sc-btn-border-style");
+          console.log(
+            `✅ Applied button border styles to ${elementId}:`,
+            styles
+          );
+        }
+      });
+      console.log(
+        "✅ Applied button border styles to all elements (external CSS)"
+      );
+    } catch (error) {
+      console.error(
+        "❌ Failed to fetch button border modifications:",
+        error.message
+      );
+    }
+  }
 
   // Make fetchButtonHoverBorderModifications available globally
   window.fetchButtonHoverBorderModifications =
