@@ -1,6 +1,9 @@
 // Global state map for button hover styles (similar to __scImageStyleMap)
 window.__squareCraftButtonHoverStyleMap = new Map();
 
+// Store pending modifications locally (like shadow controls)
+const pendingButtonHoverModifications = new Map();
+
 // Function to merge and save button hover styles
 export function mergeAndSaveButtonHoverStyles(blockId, newStyles) {
   console.log("🔄 mergeAndSaveButtonHoverStyles called with:", {
@@ -30,21 +33,44 @@ export function mergeAndSaveButtonHoverStyles(blockId, newStyles) {
   // Save to map only (no DB call)
   window.__squareCraftButtonHoverStyleMap.set(blockId, finalData);
 
-  console.log("💾 Updated button hover style map:", {
+  // Store in local pendingModifications
+  pendingButtonHoverModifications.set(blockId, finalData);
+
+  console.log("💾 Added to pending button hover modifications:", {
     blockId,
     finalData,
+    pendingCount: pendingButtonHoverModifications.size,
   });
 }
 
-// Export the publish function (for backward compatibility, but it's not used)
-export const publishPendingButtonHoverModifications = async (
+// Function to publish all pending button hover modifications
+const publishPendingButtonHoverModifications = async (
   saveButtonHoverBorderModifications
 ) => {
-  console.log(
-    "⚠️ publishPendingButtonHoverModifications called but not used - using global publish system"
-  );
-  // This function is kept for backward compatibility but the main publish system handles everything
+  if (pendingButtonHoverModifications.size === 0) {
+    console.log("No button hover changes to publish");
+    return;
+  }
+
+  try {
+    for (const [blockId, hoverData] of pendingButtonHoverModifications) {
+      if (typeof saveButtonHoverBorderModifications === "function") {
+        console.log("Publishing button hover for block:", blockId, hoverData);
+        await saveButtonHoverBorderModifications(blockId, hoverData);
+      }
+    }
+
+    // Clear pending modifications after successful publish
+    pendingButtonHoverModifications.clear();
+    console.log("All button hover changes published successfully!");
+  } catch (error) {
+    console.error("Failed to publish button hover modifications:", error);
+    throw error;
+  }
 };
+
+// Export the publish function
+export { publishPendingButtonHoverModifications };
 
 const hoverShadowState = {
   X: 0,
@@ -1653,54 +1679,4 @@ window.testButtonHoverPublish = async () => {
   } catch (error) {
     console.error("❌ Publish test failed:", error);
   }
-};
-
-// Test function to check publish button handlers
-window.testPublishButtonHandlers = () => {
-  console.log("🔍 Testing publish button handlers...");
-
-  const publishButton = document.getElementById("publish");
-  if (!publishButton) {
-    console.error("❌ Publish button not found");
-    return;
-  }
-
-  console.log("✅ Publish button found:", publishButton);
-  console.log("🔍 Publish button properties:", {
-    disabled: publishButton.disabled,
-    textContent: publishButton.textContent,
-    className: publishButton.className,
-    style: publishButton.style.display,
-  });
-
-  // Check if handlePublish is available
-  if (typeof window.handlePublish === "function") {
-    console.log("✅ handlePublish function is available");
-  } else {
-    console.error("❌ handlePublish function not available");
-  }
-
-  // Check if saveButtonHoverBorderModifications is available
-  if (typeof window.saveButtonHoverBorderModifications === "function") {
-    console.log("✅ saveButtonHoverBorderModifications function is available");
-  } else {
-    console.error(
-      "❌ saveButtonHoverBorderModifications function not available"
-    );
-  }
-
-  // Check if addPendingModification is available
-  if (typeof window.addPendingModification === "function") {
-    console.log("✅ addPendingModification function is available");
-  } else {
-    console.error("❌ addPendingModification function not available");
-  }
-
-  // Check pending modifications
-  const globalPendingModifications = window.pendingModifications;
-  console.log("📊 Pending modifications:", globalPendingModifications);
-  console.log(
-    "📊 Pending modifications size:",
-    globalPendingModifications.size
-  );
 };
