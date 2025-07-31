@@ -614,12 +614,22 @@ window.pendingModifications = pendingModifications;
   window.fetchButtonIconModifications = fetchButtonIconModifications;
 
   async function fetchButtonHoverBorderModifications(blockId = null) {
+    console.log("🚀 Starting fetchButtonHoverBorderModifications...");
+    console.log("📋 Parameters:", { blockId });
+
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
     const pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
+
+    console.log("🔑 Credentials check:", {
+      userId: !!userId,
+      token: !!token,
+      widgetId: !!widgetId,
+      pageId: !!pageId,
+    });
 
     if (!userId || !token || !widgetId || !pageId) {
       console.warn("⚠️ Missing credentials or page ID");
@@ -629,6 +639,8 @@ window.pendingModifications = pendingModifications;
     let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
     if (blockId) url += `&elementId=${blockId}`;
 
+    console.log("🌐 Fetching from URL:", url);
+
     try {
       const res = await fetch(url, {
         headers: {
@@ -636,26 +648,30 @@ window.pendingModifications = pendingModifications;
         },
       });
       const result = await res.json();
+      console.log("📥 API Response:", result);
+
       if (!res.ok) throw new Error(result.message);
 
       // Handle the direct structure: elements[]
       const elements = result.elements || [];
+      console.log("📋 Elements to process:", elements.length);
+
       elements.forEach(({ elementId, selector, styles }) => {
-        // Apply button border styles as external CSS
+        // Apply button hover styles as external CSS with :hover pseudo-class
         if (selector && styles) {
-          applyStylesAsExternalCSS(selector, styles, "sc-btn-border-style");
+          applyHoverStylesAsExternalCSS(selector, styles, "sc-btn-hover-style");
           console.log(
-            `✅ Applied button border styles to ${elementId}:`,
+            `✅ Applied button hover styles to ${elementId}:`,
             styles
           );
         }
       });
       console.log(
-        "✅ Applied button border styles to all elements (external CSS)"
+        "✅ Applied button hover styles to all elements (external CSS)"
       );
     } catch (error) {
       console.error(
-        "❌ Failed to fetch button border modifications:",
+        "❌ Failed to fetch button hover border modifications:",
         error.message
       );
     }
@@ -3459,6 +3475,30 @@ window.pendingModifications = pendingModifications;
     styleTag.textContent = cssText;
   }
 
+  function applyHoverStylesAsExternalCSS(
+    selector,
+    styles,
+    styleIdPrefix = "sc-btn-hover-style"
+  ) {
+    const styleId = `${styleIdPrefix}-${selector.replace(
+      /[^a-zA-Z0-9-_]/g,
+      ""
+    )}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+    let cssText = `${selector}:hover {`;
+    Object.entries(styles).forEach(([prop, value]) => {
+      cssText += `${prop}: ${value} !important; `;
+    });
+    cssText += "}";
+    styleTag.textContent = cssText;
+    console.log("🎨 Applied hover CSS:", cssText);
+  }
+
   // Fetch and apply button modifications from the backend
   async function fetchButtonModifications(blockId = null) {
     const userId = localStorage.getItem("sc_u_id");
@@ -4183,6 +4223,15 @@ window.pendingModifications = pendingModifications;
     console.log("🌅 Window load: About to fetch button icon modifications");
     await fetchButtonIconModifications();
     console.log("🌅 Window load: Button icon modifications fetch completed");
+
+    // Fetch button hover border modifications on page load
+    console.log(
+      "🌅 Window load: About to fetch button hover border modifications"
+    );
+    await fetchButtonHoverBorderModifications();
+    console.log(
+      "🌅 Window load: Button hover border modifications fetch completed"
+    );
   });
 
   async function addHeadingEventListeners() {
