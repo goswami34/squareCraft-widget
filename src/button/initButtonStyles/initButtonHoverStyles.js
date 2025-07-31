@@ -1,3 +1,77 @@
+// Global state map for button hover styles (similar to __scImageStyleMap)
+window.__squareCraftButtonHoverStyleMap = new Map();
+
+// Store pending modifications locally (like shadow controls)
+const pendingButtonHoverModifications = new Map();
+
+// Function to merge and save button hover styles
+export function mergeAndSaveButtonHoverStyles(blockId, newStyles) {
+  console.log("🔄 mergeAndSaveButtonHoverStyles called with:", {
+    blockId,
+    newStyles,
+  });
+
+  const prevStyles = window.__squareCraftButtonHoverStyleMap.get(blockId) || {
+    buttonPrimary: {
+      selector: ".sqs-button-element--primary",
+      styles: {},
+    },
+  };
+
+  const mergedButtonStyles = {
+    ...prevStyles.buttonPrimary.styles,
+    ...(newStyles.buttonPrimary?.styles || {}),
+  };
+
+  const finalData = {
+    buttonPrimary: {
+      selector: prevStyles.buttonPrimary.selector,
+      styles: mergedButtonStyles,
+    },
+  };
+
+  // Save to map only (no DB call)
+  window.__squareCraftButtonHoverStyleMap.set(blockId, finalData);
+
+  // Store in local pendingModifications
+  pendingButtonHoverModifications.set(blockId, finalData);
+
+  console.log("💾 Added to pending button hover modifications:", {
+    blockId,
+    finalData,
+    pendingCount: pendingButtonHoverModifications.size,
+  });
+}
+
+// Function to publish all pending button hover modifications
+const publishPendingButtonHoverModifications = async (
+  saveButtonHoverBorderModifications
+) => {
+  if (pendingButtonHoverModifications.size === 0) {
+    console.log("No button hover changes to publish");
+    return;
+  }
+
+  try {
+    for (const [blockId, hoverData] of pendingButtonHoverModifications) {
+      if (typeof saveButtonHoverBorderModifications === "function") {
+        console.log("Publishing button hover for block:", blockId, hoverData);
+        await saveButtonHoverBorderModifications(blockId, hoverData);
+      }
+    }
+
+    // Clear pending modifications after successful publish
+    pendingButtonHoverModifications.clear();
+    console.log("All button hover changes published successfully!");
+  } catch (error) {
+    console.error("Failed to publish button hover modifications:", error);
+    throw error;
+  }
+};
+
+// Export the publish function
+export { publishPendingButtonHoverModifications };
+
 const hoverShadowState = {
   X: 0,
   Y: 0,
@@ -828,36 +902,17 @@ export function initHoverButtonBorderRadiusControl(
 
     console.log("📤 Saving complete hover border payload:", cssPayload);
 
-    // Add to pending modifications
+    // Use mergeAndSaveButtonHoverStyles instead of direct database save
+    mergeAndSaveButtonHoverStyles(blockId, cssPayload);
+
+    // Add to pending modifications for publish functionality
     if (typeof addPendingModification === "function") {
       addPendingModification(blockId, cssPayload, "buttonHoverBorder");
     }
 
-    // Save to database
-    if (typeof saveButtonHoverBorderModifications === "function") {
-      try {
-        const result = await saveButtonHoverBorderModifications(
-          blockId,
-          cssPayload
-        );
-        if (result.success && typeof showNotification === "function") {
-          showNotification("Hover border radius saved!", "success");
-        } else {
-          console.error("❌ Failed to save hover border radius:", result);
-          if (typeof showNotification === "function") {
-            showNotification("Failed to save hover border radius", "error");
-          }
-        }
-      } catch (error) {
-        console.error("❌ Error saving hover border radius:", error);
-        if (typeof showNotification === "function") {
-          showNotification("Failed to save hover border radius", "error");
-        }
-      }
-    } else {
-      console.error(
-        "❌ saveButtonHoverBorderModifications function not available"
-      );
+    // Show notification for local save
+    if (typeof showNotification === "function") {
+      showNotification("Hover border radius saved locally!", "success");
     }
   }
 
@@ -969,36 +1024,17 @@ export function initHoverButtonBorderTypeToggle(
 
     console.log("📤 Saving complete hover border payload:", cssPayload);
 
-    // Add to pending modifications
+    // Use mergeAndSaveButtonHoverStyles instead of direct database save
+    mergeAndSaveButtonHoverStyles(blockId, cssPayload);
+
+    // Add to pending modifications for publish functionality
     if (typeof addPendingModification === "function") {
       addPendingModification(blockId, cssPayload, "buttonHoverBorder");
     }
 
-    // Save to database
-    if (typeof saveButtonHoverBorderModifications === "function") {
-      try {
-        const result = await saveButtonHoverBorderModifications(
-          blockId,
-          cssPayload
-        );
-        if (result.success && typeof showNotification === "function") {
-          showNotification("Hover border style saved!", "success");
-        } else {
-          console.error("❌ Failed to save hover border style:", result);
-          if (typeof showNotification === "function") {
-            showNotification("Failed to save hover border style", "error");
-          }
-        }
-      } catch (error) {
-        console.error("❌ Error saving hover border style:", error);
-        if (typeof showNotification === "function") {
-          showNotification("Failed to save hover border style", "error");
-        }
-      }
-    } else {
-      console.error(
-        "❌ saveButtonHoverBorderModifications function not available"
-      );
+    // Show notification for local save
+    if (typeof showNotification === "function") {
+      showNotification("Hover border style saved locally!", "success");
     }
   }
 
@@ -1161,36 +1197,17 @@ export function initHoverButtonBorderControl(
 
     console.log("📤 Saving complete hover border payload:", cssPayload);
 
-    // Add to pending modifications
+    // Use mergeAndSaveButtonHoverStyles instead of direct database save
+    mergeAndSaveButtonHoverStyles(blockId, cssPayload);
+
+    // Add to pending modifications for publish functionality
     if (typeof addPendingModification === "function") {
       addPendingModification(blockId, cssPayload, "buttonHoverBorder");
     }
 
-    // Save to database
-    if (typeof saveButtonHoverBorderModifications === "function") {
-      try {
-        const result = await saveButtonHoverBorderModifications(
-          blockId,
-          cssPayload
-        );
-        if (result.success && typeof showNotification === "function") {
-          showNotification("Hover border saved!", "success");
-        } else {
-          console.error("❌ Failed to save hover border:", result);
-          if (typeof showNotification === "function") {
-            showNotification("Failed to save hover border", "error");
-          }
-        }
-      } catch (error) {
-        console.error("❌ Error saving hover border:", error);
-        if (typeof showNotification === "function") {
-          showNotification("Failed to save hover border", "error");
-        }
-      }
-    } else {
-      console.error(
-        "❌ saveButtonHoverBorderModifications function not available"
-      );
+    // Show notification for local save
+    if (typeof showNotification === "function") {
+      showNotification("Hover border saved locally!", "success");
     }
   }
 
@@ -1593,5 +1610,73 @@ window.testHoverBorderMerging = async () => {
     }
   } catch (error) {
     console.error("❌ Fetch test failed:", error);
+  }
+};
+
+// Test function to verify button hover publish functionality
+window.testButtonHoverPublish = async () => {
+  console.log("🧪 Testing button hover publish functionality...");
+
+  const selectedElement =
+    window.selectedElement || document.querySelector('[id^="block-"]');
+  if (!selectedElement) {
+    console.error("❌ No selected element found");
+    return;
+  }
+
+  const blockId = selectedElement.id;
+  console.log("📋 Using block ID:", blockId);
+
+  // Test: Add some hover border modifications to pending
+  const testPayload = {
+    buttonPrimary: {
+      selector: ".sqs-button-element--primary",
+      styles: {
+        borderRadius: "15px",
+        borderTopWidth: "5px",
+        borderRightWidth: "5px",
+        borderBottomWidth: "5px",
+        borderLeftWidth: "5px",
+        borderStyle: "dashed",
+        borderColor: "blue",
+        overflow: "hidden",
+      },
+    },
+  };
+
+  // Add to pending modifications
+  if (typeof window.addPendingModification === "function") {
+    window.addPendingModification(blockId, testPayload, "buttonHoverBorder");
+    console.log("✅ Added button hover border modification to pending");
+  } else {
+    console.error("❌ addPendingModification function not available");
+    return;
+  }
+
+  // Check pending modifications
+  const globalPendingModifications = window.pendingModifications;
+  console.log("📊 Current pending modifications:", globalPendingModifications);
+  console.log(
+    "📊 Pending modifications size:",
+    globalPendingModifications.size
+  );
+
+  if (globalPendingModifications.has(blockId)) {
+    const blockMods = globalPendingModifications.get(blockId);
+    console.log("📋 Modifications for this block:", blockMods);
+  }
+
+  // Test the publish functionality
+  console.log("🚀 Testing publish functionality...");
+  try {
+    // Simulate the publish process
+    if (typeof window.handlePublish === "function") {
+      await window.handlePublish();
+      console.log("✅ Publish test completed");
+    } else {
+      console.error("❌ handlePublish function not available");
+    }
+  } catch (error) {
+    console.error("❌ Publish test failed:", error);
   }
 };

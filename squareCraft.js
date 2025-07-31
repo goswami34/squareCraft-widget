@@ -5944,6 +5944,13 @@ window.pendingModifications = pendingModifications;
               console.log("🖼️ Processing buttonIcon modification");
               result = await saveButtonIconModifications(blockId, mod.css);
               break;
+            case "buttonHoverBorder":
+              console.log("🖼️ Processing buttonHoverBorder modification");
+              result = await saveButtonHoverBorderModifications(
+                blockId,
+                mod.css
+              );
+              break;
             case "typographyAll":
             case "typographyFontFamily":
             case "typographyFontSize":
