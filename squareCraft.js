@@ -6060,31 +6060,59 @@ window.pendingModifications = pendingModifications;
     return mergedColors;
   }
 
+  // Function to disable conflicting publish button handlers
+  function disableConflictingPublishHandlers() {
+    console.log("🔧 Disabling conflicting publish button handlers...");
+
+    const publishButton = document.getElementById("publish");
+    if (!publishButton) return;
+
+    // Remove any existing event listeners by cloning the button
+    const newPublishButton = publishButton.cloneNode(true);
+    publishButton.parentNode.replaceChild(newPublishButton, publishButton);
+
+    console.log("✅ Removed existing publish button handlers");
+    return newPublishButton;
+  }
+
   // Add publish button event listener
   function initPublishButton() {
     console.log("🔍 Looking for publish button...");
-    const publishButton = document.getElementById("publish");
+
+    // First, disable any conflicting handlers
+    const publishButton =
+      disableConflictingPublishHandlers() || document.getElementById("publish");
+
     if (publishButton) {
       console.log("✅ Publish button found:", publishButton);
 
-      // Remove any existing event listeners to prevent duplicates
-      const newPublishButton = publishButton.cloneNode(true);
-      publishButton.parentNode.replaceChild(newPublishButton, publishButton);
-
       // Add the event listener
-      newPublishButton.addEventListener("click", async () => {
+      publishButton.addEventListener("click", async () => {
+        console.log("🚀 Publish button clicked!");
         try {
           // Show loading state
-          newPublishButton.disabled = true;
-          newPublishButton.textContent = "Publishing...";
+          publishButton.disabled = true;
+          publishButton.textContent = "Publishing...";
+
+          console.log(
+            "📊 Current pending modifications before publish:",
+            window.pendingModifications
+          );
+          console.log(
+            "📊 Pending modifications size:",
+            window.pendingModifications.size
+          );
 
           await handlePublish();
+
+          console.log("✅ Publish completed successfully");
         } catch (error) {
+          console.error("❌ Error during publish:", error);
           showNotification(error.message, "error");
         } finally {
           // Reset button state
-          newPublishButton.disabled = false;
-          newPublishButton.textContent = "Publish";
+          publishButton.disabled = false;
+          publishButton.textContent = "Publish";
         }
       });
 
@@ -6092,11 +6120,14 @@ window.pendingModifications = pendingModifications;
 
       // Test if the button is clickable
       console.log("🔍 Publish button properties:", {
-        disabled: newPublishButton.disabled,
-        textContent: newPublishButton.textContent,
-        className: newPublishButton.className,
-        style: newPublishButton.style.display,
+        disabled: publishButton.disabled,
+        textContent: publishButton.textContent,
+        className: publishButton.className,
+        style: publishButton.style.display,
       });
+
+      // Make the button available globally for testing
+      window.mainPublishButton = publishButton;
     } else {
       console.warn("⚠️ Publish button not found");
       console.log(
@@ -6116,4 +6147,74 @@ window.pendingModifications = pendingModifications;
 
   // Make saveButtonColorModifications available globally
   window.saveButtonColorModifications = saveButtonColorModifications;
+
+  // Global test function for publish functionality
+  window.testPublishFunctionality = async () => {
+    console.log("🧪 Testing publish functionality...");
+
+    // Check if all required functions are available
+    const checks = {
+      handlePublish: typeof window.handlePublish === "function",
+      addPendingModification:
+        typeof window.addPendingModification === "function",
+      saveButtonHoverBorderModifications:
+        typeof window.saveButtonHoverBorderModifications === "function",
+      pendingModifications: window.pendingModifications instanceof Map,
+      mainPublishButton: !!window.mainPublishButton,
+    };
+
+    console.log("🔍 Function availability checks:", checks);
+
+    // Check pending modifications
+    console.log(
+      "📊 Current pending modifications:",
+      window.pendingModifications
+    );
+    console.log(
+      "📊 Pending modifications size:",
+      window.pendingModifications.size
+    );
+
+    // Test adding a modification
+    const testBlockId = "test-block-123";
+    const testPayload = {
+      buttonPrimary: {
+        selector: ".sqs-button-element--primary",
+        styles: {
+          borderRadius: "10px",
+          borderTopWidth: "2px",
+          borderRightWidth: "2px",
+          borderBottomWidth: "2px",
+          borderLeftWidth: "2px",
+          borderStyle: "solid",
+          borderColor: "red",
+          overflow: "hidden",
+        },
+      },
+    };
+
+    if (checks.addPendingModification) {
+      window.addPendingModification(
+        testBlockId,
+        testPayload,
+        "buttonHoverBorder"
+      );
+      console.log("✅ Added test modification to pending");
+      console.log(
+        "📊 Pending modifications after adding:",
+        window.pendingModifications
+      );
+    }
+
+    // Test the publish function directly
+    if (checks.handlePublish) {
+      console.log("🚀 Testing handlePublish function...");
+      try {
+        await window.handlePublish();
+        console.log("✅ handlePublish test completed successfully");
+      } catch (error) {
+        console.error("❌ handlePublish test failed:", error);
+      }
+    }
+  };
 })();
