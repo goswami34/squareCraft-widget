@@ -3935,29 +3935,6 @@ ${selector}:hover {
     }
   }
 
-  // Fetch and apply button hover border modifications from the backend
-  // async function fetchButtonHoverBorderModifications(blockId = null) {
-  //   console.log("🔄 Fetching button hover border modifications...");
-  //   try {
-  //     const result = await fetchButtonHoverBorderModifications(blockId);
-  //     if (result.success) {
-  //       console.log(
-  //         "✅ Button hover border modifications fetched successfully"
-  //       );
-  //     } else {
-  //       console.warn(
-  //         "⚠️ Failed to fetch button hover border modifications:",
-  //         result.error
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error(
-  //       "❌ Error fetching button hover border modifications:",
-  //       error
-  //     );
-  //   }
-  // }
-
   // Fetch button shadow modifications from the backend
   async function fetchButtonShadowModifications(blockId = null) {
     const userId = localStorage.getItem("sc_u_id");
