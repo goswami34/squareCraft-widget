@@ -634,28 +634,26 @@ window.pendingModifications = pendingModifications;
       return { success: false, error: "Missing required data" };
     }
 
-    const payload = {
+    console.log("📤 Fetching button hover border styles:", {
       userId,
-      token,
       widgetId,
       pageId,
-      ...(blockId && { elementId: blockId }),
-    };
-
-    console.log("📤 Fetching button hover border styles:", payload);
+      blockId,
+    });
 
     try {
-      const response = await fetch(
-        "https://admin.squareplugin.com/api/v1/fetch-button-hover-border-modifications",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      // Build URL with query parameters for GET request
+      let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+      if (blockId) {
+        url += `&elementId=${blockId}`;
+      }
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const result = await response.json();
 
@@ -671,99 +669,83 @@ window.pendingModifications = pendingModifications;
       console.log("📋 Modifications to process:", modifications.length);
 
       modifications.forEach((modification) => {
-        // Handle the nested css structure with buttonPrimary
-        if (modification.css && modification.css.buttonPrimary) {
-          const { selector, styles } = modification.css.buttonPrimary;
-          if (selector && styles) {
-            // Create or update the style element
-            const styleId = `sc-hover-border-fetched-${modification.elementId}`;
-            let style = document.getElementById(styleId);
-            if (!style) {
-              style = document.createElement("style");
-              style.id = styleId;
-              document.head.appendChild(style);
+        // Handle the nested structure: modifications[].elements[]
+        const elements = modification.elements || [];
+        elements.forEach((element) => {
+          const { elementId, css } = element;
+
+          // Handle buttonPrimary
+          if (css && css.buttonPrimary) {
+            const { selector, styles } = css.buttonPrimary;
+            if (selector && styles) {
+              // Convert styles to kebab-case for consistency
+              const kebabStyles = Object.fromEntries(
+                Object.entries(styles).map(([key, value]) => [
+                  key.replace(/([A-Z])/g, "-$1").toLowerCase(),
+                  value,
+                ])
+              );
+
+              applyHoverStylesAsExternalCSS(
+                selector,
+                kebabStyles,
+                `sc-hover-border-fetched-${elementId}`
+              );
+              console.log(
+                `✅ Applied button hover styles to ${elementId}:`,
+                styles
+              );
             }
-
-            // Convert styles to CSS string
-            const cssProperties = Object.entries(styles)
-              .map(
-                ([key, value]) =>
-                  `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}: ${value}`
-              )
-              .join("; ");
-
-            style.innerHTML = `
-${selector}:hover {
-  ${cssProperties} !important;
-}
-`;
-            console.log(
-              `✅ Applied button hover styles to ${modification.elementId}:`,
-              styles
-            );
           }
-        }
 
-        // Also handle buttonSecondary and buttonTertiary if they exist
-        if (modification.css && modification.css.buttonSecondary) {
-          const { selector, styles } = modification.css.buttonSecondary;
-          if (selector && styles) {
-            const styleId = `sc-hover-border-fetched-secondary-${modification.elementId}`;
-            let style = document.getElementById(styleId);
-            if (!style) {
-              style = document.createElement("style");
-              style.id = styleId;
-              document.head.appendChild(style);
+          // Handle buttonSecondary
+          if (css && css.buttonSecondary) {
+            const { selector, styles } = css.buttonSecondary;
+            if (selector && styles) {
+              // Convert styles to kebab-case for consistency
+              const kebabStyles = Object.fromEntries(
+                Object.entries(styles).map(([key, value]) => [
+                  key.replace(/([A-Z])/g, "-$1").toLowerCase(),
+                  value,
+                ])
+              );
+
+              applyHoverStylesAsExternalCSS(
+                selector,
+                kebabStyles,
+                `sc-hover-border-fetched-secondary-${elementId}`
+              );
+              console.log(
+                `✅ Applied button secondary hover styles to ${elementId}:`,
+                styles
+              );
             }
-
-            const cssProperties = Object.entries(styles)
-              .map(
-                ([key, value]) =>
-                  `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}: ${value}`
-              )
-              .join("; ");
-
-            style.innerHTML = `
-${selector}:hover {
-  ${cssProperties} !important;
-}
-`;
-            console.log(
-              `✅ Applied button secondary hover styles to ${modification.elementId}:`,
-              styles
-            );
           }
-        }
 
-        if (modification.css && modification.css.buttonTertiary) {
-          const { selector, styles } = modification.css.buttonTertiary;
-          if (selector && styles) {
-            const styleId = `sc-hover-border-fetched-tertiary-${modification.elementId}`;
-            let style = document.getElementById(styleId);
-            if (!style) {
-              style = document.createElement("style");
-              style.id = styleId;
-              document.head.appendChild(style);
+          // Handle buttonTertiary
+          if (css && css.buttonTertiary) {
+            const { selector, styles } = css.buttonTertiary;
+            if (selector && styles) {
+              // Convert styles to kebab-case for consistency
+              const kebabStyles = Object.fromEntries(
+                Object.entries(styles).map(([key, value]) => [
+                  key.replace(/([A-Z])/g, "-$1").toLowerCase(),
+                  value,
+                ])
+              );
+
+              applyHoverStylesAsExternalCSS(
+                selector,
+                kebabStyles,
+                `sc-hover-border-fetched-tertiary-${elementId}`
+              );
+              console.log(
+                `✅ Applied button tertiary hover styles to ${elementId}:`,
+                styles
+              );
             }
-
-            const cssProperties = Object.entries(styles)
-              .map(
-                ([key, value]) =>
-                  `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}: ${value}`
-              )
-              .join("; ");
-
-            style.innerHTML = `
-${selector}:hover {
-  ${cssProperties} !important;
-}
-`;
-            console.log(
-              `✅ Applied button tertiary hover styles to ${modification.elementId}:`,
-              styles
-            );
           }
-        }
+        });
       });
 
       return { success: true, data: result.data || [] };
