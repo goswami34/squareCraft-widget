@@ -614,6 +614,11 @@ window.pendingModifications = pendingModifications;
   window.fetchButtonIconModifications = fetchButtonIconModifications;
 
   async function fetchButtonHoverBorderModifications(blockId = null) {
+    console.log(
+      "🚀 fetchButtonHoverBorderModifications called with blockId:",
+      blockId
+    );
+
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
@@ -621,14 +626,21 @@ window.pendingModifications = pendingModifications;
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
 
+    console.log("🔍 Retrieved data from localStorage:", {
+      userId: userId ? "present" : "missing",
+      token: token ? "present" : "missing",
+      widgetId: widgetId ? "present" : "missing",
+      pageId: pageId ? "present" : "missing",
+    });
+
     if (!userId || !token || !widgetId || !pageId) {
       console.warn(
         "❌ Missing required data to fetch button hover border styles",
         {
-          userId,
-          token,
-          widgetId,
-          pageId,
+          userId: userId || "MISSING",
+          token: token ? "present" : "MISSING",
+          widgetId: widgetId || "MISSING",
+          pageId: pageId || "MISSING",
         }
       );
       return { success: false, error: "Missing required data" };
@@ -648,6 +660,8 @@ window.pendingModifications = pendingModifications;
         url += `&elementId=${blockId}`;
       }
 
+      console.log("🌐 Making request to URL:", url);
+
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -655,9 +669,18 @@ window.pendingModifications = pendingModifications;
         },
       });
 
+      console.log("📡 Response status:", response.status);
+      console.log("📡 Response ok:", response.ok);
+
       const result = await response.json();
+      console.log("📄 Response data:", result);
 
       if (!response.ok) {
+        console.error(
+          "❌ HTTP Error:",
+          response.status,
+          result.message || `HTTP ${response.status}`
+        );
         throw new Error(result.message || `HTTP ${response.status}`);
       }
 
@@ -667,17 +690,46 @@ window.pendingModifications = pendingModifications;
       // Handle both result.data and result.modifications structures
       const modifications = result.modifications || result.data || [];
       console.log("📋 Modifications to process:", modifications.length);
+      console.log("📋 Modifications structure:", modifications);
 
-      modifications.forEach((modification) => {
+      if (modifications.length === 0) {
+        console.log("ℹ️ No modifications found in response");
+        return { success: true, message: "No modifications found" };
+      }
+
+      modifications.forEach((modification, modIndex) => {
+        console.log(
+          `🔍 Processing modification ${modIndex + 1}:`,
+          modification
+        );
+
         // Handle the nested structure: modifications[].elements[]
         const elements = modification.elements || [];
-        elements.forEach((element) => {
+        console.log(
+          `📋 Elements in modification ${modIndex + 1}:`,
+          elements.length
+        );
+
+        elements.forEach((element, elementIndex) => {
           const { elementId, css } = element;
+          console.log(
+            `🔍 Processing element ${elementIndex + 1} (${elementId}):`,
+            element
+          );
 
           // Handle buttonPrimary
           if (css && css.buttonPrimary) {
+            console.log(
+              `🎯 Found buttonPrimary in element ${elementId}:`,
+              css.buttonPrimary
+            );
             const { selector, styles } = css.buttonPrimary;
             if (selector && styles) {
+              console.log(
+                `✅ Applying buttonPrimary styles for ${elementId}:`,
+                styles
+              );
+
               // Convert styles to kebab-case for consistency
               const kebabStyles = Object.fromEntries(
                 Object.entries(styles).map(([key, value]) => [
@@ -685,6 +737,8 @@ window.pendingModifications = pendingModifications;
                   value,
                 ])
               );
+
+              console.log(`🎨 Converted to kebab-case:`, kebabStyles);
 
               applyHoverStylesAsExternalCSS(
                 selector,
@@ -695,13 +749,28 @@ window.pendingModifications = pendingModifications;
                 `✅ Applied button hover styles to ${elementId}:`,
                 styles
               );
+            } else {
+              console.log(
+                `⚠️ Missing selector or styles in buttonPrimary for ${elementId}`
+              );
             }
+          } else {
+            console.log(`ℹ️ No buttonPrimary found in element ${elementId}`);
           }
 
           // Handle buttonSecondary
           if (css && css.buttonSecondary) {
+            console.log(
+              `🎯 Found buttonSecondary in element ${elementId}:`,
+              css.buttonSecondary
+            );
             const { selector, styles } = css.buttonSecondary;
             if (selector && styles) {
+              console.log(
+                `✅ Applying buttonSecondary styles for ${elementId}:`,
+                styles
+              );
+
               // Convert styles to kebab-case for consistency
               const kebabStyles = Object.fromEntries(
                 Object.entries(styles).map(([key, value]) => [
@@ -709,6 +778,8 @@ window.pendingModifications = pendingModifications;
                   value,
                 ])
               );
+
+              console.log(`🎨 Converted to kebab-case:`, kebabStyles);
 
               applyHoverStylesAsExternalCSS(
                 selector,
@@ -719,13 +790,28 @@ window.pendingModifications = pendingModifications;
                 `✅ Applied button secondary hover styles to ${elementId}:`,
                 styles
               );
+            } else {
+              console.log(
+                `⚠️ Missing selector or styles in buttonSecondary for ${elementId}`
+              );
             }
+          } else {
+            console.log(`ℹ️ No buttonSecondary found in element ${elementId}`);
           }
 
           // Handle buttonTertiary
           if (css && css.buttonTertiary) {
+            console.log(
+              `🎯 Found buttonTertiary in element ${elementId}:`,
+              css.buttonTertiary
+            );
             const { selector, styles } = css.buttonTertiary;
             if (selector && styles) {
+              console.log(
+                `✅ Applying buttonTertiary styles for ${elementId}:`,
+                styles
+              );
+
               // Convert styles to kebab-case for consistency
               const kebabStyles = Object.fromEntries(
                 Object.entries(styles).map(([key, value]) => [
@@ -733,6 +819,8 @@ window.pendingModifications = pendingModifications;
                   value,
                 ])
               );
+
+              console.log(`🎨 Converted to kebab-case:`, kebabStyles);
 
               applyHoverStylesAsExternalCSS(
                 selector,
@@ -743,14 +831,24 @@ window.pendingModifications = pendingModifications;
                 `✅ Applied button tertiary hover styles to ${elementId}:`,
                 styles
               );
+            } else {
+              console.log(
+                `⚠️ Missing selector or styles in buttonTertiary for ${elementId}`
+              );
             }
+          } else {
+            console.log(`ℹ️ No buttonTertiary found in element ${elementId}`);
           }
         });
       });
 
-      return { success: true, data: result.data || [] };
+      console.log(
+        "🎉 fetchButtonHoverBorderModifications completed successfully"
+      );
+      return { success: true, modifications: modifications.length };
     } catch (error) {
-      console.error("❌ Error fetching button hover border styles:", error);
+      console.error("❌ Error in fetchButtonHoverBorderModifications:", error);
+      console.error("❌ Error stack:", error.stack);
       return { success: false, error: error.message };
     }
   }
@@ -862,6 +960,19 @@ window.pendingModifications = pendingModifications;
       console.log("✅ Fetch test result:", fetchResult);
     } catch (error) {
       console.error("❌ Fetch test failed:", error);
+    }
+  };
+
+  // Simple test function for fetchButtonHoverBorderModifications
+  window.testFetchButtonHoverBorder = async () => {
+    console.log("🧪 Testing fetchButtonHoverBorderModifications...");
+    console.log("📞 Calling function directly...");
+
+    try {
+      const result = await fetchButtonHoverBorderModifications();
+      console.log("✅ Function executed successfully:", result);
+    } catch (error) {
+      console.error("❌ Function failed:", error);
     }
   };
 
@@ -4283,10 +4394,18 @@ window.pendingModifications = pendingModifications;
     console.log(
       "🌅 Window load: About to fetch button hover border modifications"
     );
-    await fetchButtonHoverBorderModifications();
-    console.log(
-      "🌅 Window load: Button hover border modifications fetch completed"
-    );
+    try {
+      const result = await fetchButtonHoverBorderModifications();
+      console.log(
+        "🌅 Window load: Button hover border modifications fetch completed with result:",
+        result
+      );
+    } catch (error) {
+      console.error(
+        "🌅 Window load: Button hover border modifications fetch failed:",
+        error
+      );
+    }
   });
 
   async function addHeadingEventListeners() {
@@ -4343,11 +4462,19 @@ window.pendingModifications = pendingModifications;
     }
 
     if (elementId) {
+      console.log(
+        "🔄 Observer: Calling fetchButtonHoverBorderModifications with elementId:",
+        elementId
+      );
       fetchButtonModifications(elementId);
       fetchButtonBorderModifications(elementId);
       fetchButtonShadowModifications(elementId);
       fetchButtonIconModifications(elementId);
       fetchButtonHoverBorderModifications(elementId);
+    } else {
+      console.log(
+        "🔄 Observer: No elementId found, not calling fetchButtonHoverBorderModifications"
+      );
     }
 
     // Fetch button color modifications
