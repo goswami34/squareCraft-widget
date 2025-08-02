@@ -3664,31 +3664,53 @@ window.pendingModifications = pendingModifications;
     styleTag.textContent = cssText;
   }
 
-  function applyHoverStylesAsExternalCSS(
-    selector,
-    styles,
-    styleIdPrefix = "sc-btn-hover-style"
-  ) {
-    const styleId = `${styleIdPrefix}-${selector.replace(
-      /[^a-zA-Z0-9-_]/g,
-      ""
-    )}`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
-    }
-    let cssText = `${selector}:hover {`;
-    Object.entries(styles).forEach(([prop, value]) => {
-      cssText += `${prop}: ${value} !important; `;
-    });
-    cssText += "}";
-    styleTag.textContent = cssText;
-    console.log("🎨 Applied hover CSS:", cssText);
-  }
+  // function applyHoverStylesAsExternalCSS(
+  //   selector,
+  //   styles,
+  //   styleIdPrefix = "sc-btn-hover-style"
+  // ) {
+  //   const styleId = `${styleIdPrefix}-${selector.replace(
+  //     /[^a-zA-Z0-9-_]/g,
+  //     ""
+  //   )}`;
+  //   let styleTag = document.getElementById(styleId);
+  //   if (!styleTag) {
+  //     styleTag = document.createElement("style");
+  //     styleTag.id = styleId;
+  //     document.head.appendChild(styleTag);
+  //   }
+  //   let cssText = `${selector}:hover {`;
+  //   Object.entries(styles).forEach(([prop, value]) => {
+  //     cssText += `${prop}: ${value} !important; `;
+  //   });
+  //   cssText += "}";
+  //   styleTag.textContent = cssText;
+  //   console.log("🎨 Applied hover CSS:", cssText);
+  // }
 
   // Fetch and apply button modifications from the backend
+
+  function applyHoverStylesAsExternalCSS(selector, styles, uniqueStyleId) {
+    // Check if style tag already exists
+    let styleTag = document.getElementById(uniqueStyleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = uniqueStyleId;
+      document.head.appendChild(styleTag);
+    }
+
+    const cssRules = Object.entries(styles)
+      .map(([prop, value]) => `${prop}: ${value} !important;`)
+      .join(" ");
+
+    // Append :hover to the selector if not already present
+    const hoverSelector = selector.includes(":hover")
+      ? selector
+      : `${selector}:hover`;
+
+    styleTag.textContent = `${hoverSelector} { ${cssRules} }`;
+  }
+
   async function fetchButtonModifications(blockId = null) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
