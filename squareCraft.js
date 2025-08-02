@@ -652,20 +652,64 @@ window.pendingModifications = pendingModifications;
 
       if (!res.ok) throw new Error(result.message);
 
-      // Handle the direct structure: elements[]
-      const elements = result.elements || [];
-      console.log("📋 Elements to process:", elements.length);
+      // Handle the nested structure: modifications[].elements[]
+      const modifications = result.modifications || [];
+      console.log("📋 Modifications to process:", modifications.length);
 
-      elements.forEach(({ elementId, selector, styles }) => {
-        // Apply button hover styles as external CSS with :hover pseudo-class
-        if (selector && styles) {
-          applyHoverStylesAsExternalCSS(selector, styles, "sc-btn-hover-style");
-          console.log(
-            `✅ Applied button hover styles to ${elementId}:`,
-            styles
-          );
-        }
+      modifications.forEach((modification) => {
+        const elements = modification.elements || [];
+        console.log("📋 Elements in modification:", elements.length);
+
+        elements.forEach(({ elementId, css }) => {
+          // Handle the nested css structure with buttonPrimary
+          if (css && css.buttonPrimary) {
+            const { selector, styles } = css.buttonPrimary;
+            if (selector && styles) {
+              applyHoverStylesAsExternalCSS(
+                selector,
+                styles,
+                "sc-btn-hover-style"
+              );
+              console.log(
+                `✅ Applied button hover styles to ${elementId}:`,
+                styles
+              );
+            }
+          }
+
+          // Also handle buttonSecondary and buttonTertiary if they exist
+          if (css && css.buttonSecondary) {
+            const { selector, styles } = css.buttonSecondary;
+            if (selector && styles) {
+              applyHoverStylesAsExternalCSS(
+                selector,
+                styles,
+                "sc-btn-hover-style"
+              );
+              console.log(
+                `✅ Applied button secondary hover styles to ${elementId}:`,
+                styles
+              );
+            }
+          }
+
+          if (css && css.buttonTertiary) {
+            const { selector, styles } = css.buttonTertiary;
+            if (selector && styles) {
+              applyHoverStylesAsExternalCSS(
+                selector,
+                styles,
+                "sc-btn-hover-style"
+              );
+              console.log(
+                `✅ Applied button tertiary hover styles to ${elementId}:`,
+                styles
+              );
+            }
+          }
+        });
       });
+
       console.log(
         "✅ Applied button hover styles to all elements (external CSS)"
       );

@@ -1633,37 +1633,105 @@ export async function fetchButtonHoverBorderModifications(blockId = null) {
     console.log("✅ Button hover border styles fetched:", result);
 
     // Apply the fetched styles to the DOM
-    if (result.data && result.data.length > 0) {
-      result.data.forEach((modification) => {
-        if (modification.css && modification.css.buttonPrimary) {
-          const { selector, styles } = modification.css.buttonPrimary;
-          if (selector && styles) {
-            // Create or update the style element
-            const styleId = `sc-hover-border-fetched-${modification.elementId}`;
-            let style = document.getElementById(styleId);
-            if (!style) {
-              style = document.createElement("style");
-              style.id = styleId;
-              document.head.appendChild(style);
-            }
+    // Handle both result.data and result.modifications structures
+    const modifications = result.modifications || result.data || [];
+    console.log("📋 Modifications to process:", modifications.length);
 
-            // Convert styles to CSS string
-            const cssProperties = Object.entries(styles)
-              .map(
-                ([key, value]) =>
-                  `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}: ${value}`
-              )
-              .join("; ");
+    modifications.forEach((modification) => {
+      // Handle the nested css structure with buttonPrimary
+      if (modification.css && modification.css.buttonPrimary) {
+        const { selector, styles } = modification.css.buttonPrimary;
+        if (selector && styles) {
+          // Create or update the style element
+          const styleId = `sc-hover-border-fetched-${modification.elementId}`;
+          let style = document.getElementById(styleId);
+          if (!style) {
+            style = document.createElement("style");
+            style.id = styleId;
+            document.head.appendChild(style);
+          }
 
-            style.innerHTML = `
+          // Convert styles to CSS string
+          const cssProperties = Object.entries(styles)
+            .map(
+              ([key, value]) =>
+                `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}: ${value}`
+            )
+            .join("; ");
+
+          style.innerHTML = `
 ${selector}:hover {
   ${cssProperties} !important;
 }
 `;
-          }
+          console.log(
+            `✅ Applied button hover styles to ${modification.elementId}:`,
+            styles
+          );
         }
-      });
-    }
+      }
+
+      // Also handle buttonSecondary and buttonTertiary if they exist
+      if (modification.css && modification.css.buttonSecondary) {
+        const { selector, styles } = modification.css.buttonSecondary;
+        if (selector && styles) {
+          const styleId = `sc-hover-border-fetched-secondary-${modification.elementId}`;
+          let style = document.getElementById(styleId);
+          if (!style) {
+            style = document.createElement("style");
+            style.id = styleId;
+            document.head.appendChild(style);
+          }
+
+          const cssProperties = Object.entries(styles)
+            .map(
+              ([key, value]) =>
+                `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}: ${value}`
+            )
+            .join("; ");
+
+          style.innerHTML = `
+${selector}:hover {
+  ${cssProperties} !important;
+}
+`;
+          console.log(
+            `✅ Applied button secondary hover styles to ${modification.elementId}:`,
+            styles
+          );
+        }
+      }
+
+      if (modification.css && modification.css.buttonTertiary) {
+        const { selector, styles } = modification.css.buttonTertiary;
+        if (selector && styles) {
+          const styleId = `sc-hover-border-fetched-tertiary-${modification.elementId}`;
+          let style = document.getElementById(styleId);
+          if (!style) {
+            style = document.createElement("style");
+            style.id = styleId;
+            document.head.appendChild(style);
+          }
+
+          const cssProperties = Object.entries(styles)
+            .map(
+              ([key, value]) =>
+                `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}: ${value}`
+            )
+            .join("; ");
+
+          style.innerHTML = `
+${selector}:hover {
+  ${cssProperties} !important;
+}
+`;
+          console.log(
+            `✅ Applied button tertiary hover styles to ${modification.elementId}:`,
+            styles
+          );
+        }
+      }
+    });
 
     return { success: true, data: result.data || [] };
   } catch (error) {
