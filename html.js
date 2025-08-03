@@ -1474,7 +1474,7 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
     return { success: false, error: "Missing required data" };
   }
 
-  // Clean & normalize buttonPrimary border styles
+  // Clean & normalize button styles
   const cleanCssObject = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
@@ -1490,31 +1490,61 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
       ])
     );
 
-  // Handle different CSS structures
-  let cleanedPrimary = { selector: null, styles: {} };
+  // Determine button type and create appropriate payload
+  let buttonType = "buttonPrimary"; // Default
+  let cleanedStyles = { selector: null, styles: {} };
 
+  // Check which button type is present in the CSS object
   if (css.buttonPrimary) {
-    cleanedPrimary = {
+    buttonType = "buttonPrimary";
+    cleanedStyles = {
       selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
       styles: toKebabCaseStyleObject(
         cleanCssObject(css.buttonPrimary.styles || {})
       ),
     };
+  } else if (css.buttonSecondary) {
+    buttonType = "buttonSecondary";
+    cleanedStyles = {
+      selector:
+        css.buttonSecondary.selector || ".sqs-button-element--secondary",
+      styles: toKebabCaseStyleObject(
+        cleanCssObject(css.buttonSecondary.styles || {})
+      ),
+    };
+  } else if (css.buttonTertiary) {
+    buttonType = "buttonTertiary";
+    cleanedStyles = {
+      selector: css.buttonTertiary.selector || ".sqs-button-element--tertiary",
+      styles: toKebabCaseStyleObject(
+        cleanCssObject(css.buttonTertiary.styles || {})
+      ),
+    };
   } else if (css.styles) {
-    // Handle direct styles object
-    cleanedPrimary = {
-      selector: css.selector || ".sqs-button-element--primary",
+    // Handle direct styles object - determine type from selector
+    const selector = css.selector || ".sqs-button-element--primary";
+    if (selector.includes("--secondary")) {
+      buttonType = "buttonSecondary";
+    } else if (selector.includes("--tertiary")) {
+      buttonType = "buttonTertiary";
+    } else {
+      buttonType = "buttonPrimary";
+    }
+    cleanedStyles = {
+      selector: selector,
       styles: toKebabCaseStyleObject(cleanCssObject(css.styles || {})),
     };
   }
 
-  console.log("🔍 Debug - cleanedPrimary:", cleanedPrimary);
+  console.log("🔍 Debug - determined button type:", buttonType);
+  console.log("🔍 Debug - cleaned styles:", cleanedStyles);
 
-  if (Object.keys(cleanedPrimary.styles).length === 0) {
+  if (Object.keys(cleanedStyles.styles).length === 0) {
     console.warn("⚠️ No valid hover border styles found.");
     return { success: false, error: "No valid hover border styles to save" };
   }
 
+  // Create payload with the correct button type
   const payload = {
     userId,
     token,
@@ -1522,7 +1552,7 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
     pageId,
     elementId: blockId,
     css: {
-      buttonPrimary: cleanedPrimary,
+      [buttonType]: cleanedStyles,
     },
   };
 

@@ -800,8 +800,16 @@ export function initHoverButtonBorderRadiusControl(
 
     console.log("📤 Complete hover border styles:", completeStyles);
 
+    // Determine the correct button type key based on the class
+    let buttonTypeKey = "buttonPrimary"; // Default
+    if (cls.includes("--secondary")) {
+      buttonTypeKey = "buttonSecondary";
+    } else if (cls.includes("--tertiary")) {
+      buttonTypeKey = "buttonTertiary";
+    }
+
     const cssPayload = {
-      buttonPrimary: {
+      [buttonTypeKey]: {
         selector: `.${cls}`,
         styles: completeStyles,
       },
@@ -929,8 +937,16 @@ export function initHoverButtonBorderTypeToggle(
 
     console.log("📤 Complete hover border styles:", completeStyles);
 
+    // Determine the correct button type key based on the class
+    let buttonTypeKey = "buttonPrimary"; // Default
+    if (cls.includes("--secondary")) {
+      buttonTypeKey = "buttonSecondary";
+    } else if (cls.includes("--tertiary")) {
+      buttonTypeKey = "buttonTertiary";
+    }
+
     const cssPayload = {
-      buttonPrimary: {
+      [buttonTypeKey]: {
         selector: `.${cls}`,
         styles: completeStyles,
       },
@@ -1109,8 +1125,16 @@ export function initHoverButtonBorderControl(
 
     console.log("📤 Complete hover border styles:", completeStyles);
 
+    // Determine the correct button type key based on the typeClass
+    let buttonTypeKey = "buttonPrimary"; // Default
+    if (typeClass.includes("--secondary")) {
+      buttonTypeKey = "buttonSecondary";
+    } else if (typeClass.includes("--tertiary")) {
+      buttonTypeKey = "buttonTertiary";
+    }
+
     const cssPayload = {
-      buttonPrimary: {
+      [buttonTypeKey]: {
         selector: `.${typeClass}`,
         styles: completeStyles,
       },
