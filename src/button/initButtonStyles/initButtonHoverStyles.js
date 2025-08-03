@@ -1362,21 +1362,75 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
 
   const hoverKey = `hover--${typeClass}`;
 
+  // Read applied hover styles directly from the DOM
+  // Look for the dynamically injected style tags that contain hover styles
+  const styleTags = document.querySelectorAll('style[id*="sc-hover-border-"]');
+  let foundHoverStyles = null;
+
+  // Find the relevant hover styles for this button type
+  for (const styleTag of styleTags) {
+    const styleContent = styleTag.textContent;
+    if (styleContent.includes(typeClass) && styleContent.includes(":hover")) {
+      // Extract the CSS rules from the style content
+      const cssRules = styleContent.match(/\{[^}]+\}/);
+      if (cssRules) {
+        const ruleText = cssRules[0];
+
+        // Extract border properties
+        const borderWidthMatch = ruleText.match(/border-top-width:\s*([^;]+)/);
+        const borderStyleMatch = ruleText.match(/border-style:\s*([^;]+)/);
+        const borderColorMatch = ruleText.match(/border-color:\s*([^;]+)/);
+        const borderRadiusMatch = ruleText.match(/border-radius:\s*([^;]+)/);
+
+        foundHoverStyles = {
+          borderWidth: borderWidthMatch ? parseInt(borderWidthMatch[1]) : 0,
+          borderStyle: borderStyleMatch ? borderStyleMatch[1].trim() : "solid",
+          borderColor: borderColorMatch
+            ? borderColorMatch[1].trim()
+            : "#000000",
+          borderRadius: borderRadiusMatch ? parseInt(borderRadiusMatch[1]) : 0,
+        };
+        break;
+      }
+    }
+  }
+
+  // If no fetched styles found, fall back to global state
+  if (!foundHoverStyles) {
+    const borderState = window.__squareCraftHoverBorderStateMap?.get(
+      hoverKey
+    ) || { value: 0, side: "All" };
+    foundHoverStyles = {
+      borderWidth: borderState.value || 0,
+      borderStyle: window.__squareCraftBorderStyle || "solid",
+      borderColor: window.__squareCraftHoverBorderColor || "#000000",
+      borderRadius: parseInt(window.__squareCraftHoverRadius || 0),
+    };
+  }
+
+  // Update global state with the found values
+  window.__squareCraftHoverBorderStateMap =
+    window.__squareCraftHoverBorderStateMap || new Map();
+  window.__squareCraftHoverBorderStateMap.set(hoverKey, {
+    value: foundHoverStyles.borderWidth,
+    side: "All",
+  });
+  window.__squareCraftBorderStyle = foundHoverStyles.borderStyle;
+  window.__squareCraftHoverBorderColor = foundHoverStyles.borderColor;
+  window.__squareCraftHoverRadius = foundHoverStyles.borderRadius;
+
   // 1. 🔄 Border Width
-  const borderState = window.__squareCraftHoverBorderStateMap?.get(
-    hoverKey
-  ) || { value: 0, side: "All" };
   const getPercent = (val, max) => `${(val / max) * 100}%`;
 
   const fill = document.getElementById("hover-buttonBorderFill");
   const bullet = document.getElementById("hover-buttonBorderBullet");
   const valueText = document.getElementById("hover-buttonBorderCount");
 
-  const percent = (borderState.value / 10) * 100;
+  const percent = (foundHoverStyles.borderWidth / 10) * 100;
   if (fill && bullet && valueText) {
     fill.style.width = `${percent}%`;
     bullet.style.left = `${percent}%`;
-    valueText.textContent = `${borderState.value}px`;
+    valueText.textContent = `${foundHoverStyles.borderWidth}px`;
   }
 
   // 2. 🟢 Border Side Tab Sync
@@ -1384,20 +1438,22 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
   sides.forEach((side) => {
     const el = document.getElementById(`hover-buttonBorder${side}`);
     if (el) {
-      el.classList.toggle("sc-bg-454545", borderState.side === side);
+      el.classList.toggle("sc-bg-454545", side === "All");
     }
   });
 
   // 3. 🔄 Border Style Type
-  const style = window.__squareCraftBorderStyle || "solid";
   ["Solid", "Dashed", "Dotted"].forEach((type) => {
     const btn = document.getElementById(`hover-buttonBorderType${type}`);
-    if (btn) btn.classList.toggle("sc-bg-454545", style === type.toLowerCase());
+    if (btn)
+      btn.classList.toggle(
+        "sc-bg-454545",
+        foundHoverStyles.borderStyle === type.toLowerCase()
+      );
   });
 
   // 4. 🔄 Radius
-  const radius = parseInt(window.__squareCraftHoverRadius || 0);
-  const radPercent = (radius / 50) * 100;
+  const radPercent = (foundHoverStyles.borderRadius / 50) * 100;
   const radiusFill = document.getElementById("hover-buttonBorderradiusFill");
   const radiusBullet = document.getElementById(
     "hover-buttonBorderradiusBullet"
@@ -1407,8 +1463,9 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
   if (radiusFill && radiusBullet && radiusCount) {
     radiusFill.style.width = `${radPercent}%`;
     radiusBullet.style.left = `${radPercent}%`;
-    radiusCount.textContent = `${radius}px`;
+    radiusCount.textContent = `${foundHoverStyles.borderRadius}px`;
   }
+
   // 5. 🔄 Shadow
   const hoverShadow = window.hoverShadowState || {};
   ["Xaxis", "Yaxis", "Blur", "Spread"].forEach((type) => {

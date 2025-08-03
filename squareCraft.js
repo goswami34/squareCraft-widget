@@ -1431,6 +1431,11 @@ window.pendingModifications = pendingModifications;
           (lastActiveAlignmentElement = val),
       });
 
+      // Sync hover button styles from the selected element to update UI controls
+      if (window.syncHoverButtonStylesFromElement && selectedElement) {
+        window.syncHoverButtonStylesFromElement(selectedElement);
+      }
+
       initButtonFontColorPaletteToggle(
         themeColors,
         () => selectedElement,
