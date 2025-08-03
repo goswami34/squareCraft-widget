@@ -881,7 +881,8 @@ export function initHoverButtonBorderRadiusControl(
   decBtn?.addEventListener("click", () => update(value - 1));
   resetBtn?.addEventListener("click", () => update(0));
 
-  update(0); // Initialize with default value
+  // update(0); // Initialize with default value
+  update(window.__squareCraftHoverRadius || 0); // Sync saved value if exists
 
   // Fetch existing hover border radius data
   // fetchButtonHoverBorderModifications(); // This line is removed
