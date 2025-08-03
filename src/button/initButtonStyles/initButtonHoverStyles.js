@@ -1385,9 +1385,7 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
         foundHoverStyles = {
           borderWidth: borderWidthMatch ? parseInt(borderWidthMatch[1]) : 0,
           borderStyle: borderStyleMatch ? borderStyleMatch[1].trim() : "solid",
-          borderColor: borderColorMatch
-            ? borderColorMatch[1].trim()
-            : "#000000",
+          borderColor: borderColorMatch ? borderColorMatch[1].trim() : "black",
           borderRadius: borderRadiusMatch ? parseInt(borderRadiusMatch[1]) : 0,
         };
         break;
