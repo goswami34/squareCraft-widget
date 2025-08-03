@@ -686,166 +686,96 @@ window.pendingModifications = pendingModifications;
 
       console.log("✅ Button hover border styles fetched:", result);
 
-      // Apply the fetched styles to the DOM
-      // Handle both result.data and result.modifications structures
-      const modifications = result.modifications || result.data || [];
-      console.log("📋 Modifications to process:", modifications.length);
-      console.log("📋 Modifications structure:", modifications);
+      // Handle the nested structure: elements[].buttonPrimary/buttonSecondary/buttonTertiary
+      const elements = result.elements || [];
+      console.log("📋 Elements to process:", elements.length);
 
-      if (modifications.length === 0) {
-        console.log("ℹ️ No modifications found in response");
-        return { success: true, message: "No modifications found" };
+      if (elements.length === 0) {
+        console.log("ℹ️ No hover border modifications found in response");
+        return {
+          success: true,
+          message: "No hover border modifications found",
+        };
       }
 
-      modifications.forEach((modification, modIndex) => {
+      elements.forEach((element, index) => {
+        const { elementId } = element;
         console.log(
-          `🔍 Processing modification ${modIndex + 1}:`,
-          modification
+          `🔍 Processing element ${index + 1} (${elementId}):`,
+          element
         );
 
-        // Handle the nested structure: modifications[].elements[]
-        const elements = modification.elements || [];
-        console.log(
-          `📋 Elements in modification ${modIndex + 1}:`,
-          elements.length
-        );
-
-        elements.forEach((element, elementIndex) => {
-          const { elementId, css } = element;
+        // Handle buttonPrimary
+        if (
+          element.buttonPrimary &&
+          element.buttonPrimary.selector &&
+          element.buttonPrimary.styles
+        ) {
           console.log(
-            `🔍 Processing element ${elementIndex + 1} (${elementId}):`,
-            element
+            `✅ Applying buttonPrimary hover border styles for ${elementId}:`,
+            element.buttonPrimary.styles
           );
 
-          // Handle buttonPrimary
-          if (css && css.buttonPrimary) {
-            console.log(
-              `🎯 Found buttonPrimary in element ${elementId}:`,
-              css.buttonPrimary
-            );
-            const { selector, styles } = css.buttonPrimary;
-            if (selector && styles) {
-              console.log(
-                `✅ Applying buttonPrimary styles for ${elementId}:`,
-                styles
-              );
+          applyHoverStylesAsExternalCSS(
+            element.buttonPrimary.selector,
+            element.buttonPrimary.styles,
+            `sc-hover-border-fetched-primary-${elementId}`
+          );
+          console.log(
+            `✅ Applied buttonPrimary hover border styles to ${elementId}:`,
+            element.buttonPrimary.styles
+          );
+        }
 
-              // Convert styles to kebab-case for consistency
-              const kebabStyles = Object.fromEntries(
-                Object.entries(styles).map(([key, value]) => [
-                  key.replace(/([A-Z])/g, "-$1").toLowerCase(),
-                  value,
-                ])
-              );
+        // Handle buttonSecondary
+        if (
+          element.buttonSecondary &&
+          element.buttonSecondary.selector &&
+          element.buttonSecondary.styles
+        ) {
+          console.log(
+            `✅ Applying buttonSecondary hover border styles for ${elementId}:`,
+            element.buttonSecondary.styles
+          );
 
-              console.log(`🎨 Converted to kebab-case:`, kebabStyles);
+          applyHoverStylesAsExternalCSS(
+            element.buttonSecondary.selector,
+            element.buttonSecondary.styles,
+            `sc-hover-border-fetched-secondary-${elementId}`
+          );
+          console.log(
+            `✅ Applied buttonSecondary hover border styles to ${elementId}:`,
+            element.buttonSecondary.styles
+          );
+        }
 
-              applyHoverStylesAsExternalCSS(
-                selector,
-                kebabStyles,
-                `sc-hover-border-fetched-${elementId}`
-              );
-              console.log(
-                `✅ Applied button hover styles to ${elementId}:`,
-                styles
-              );
-            } else {
-              console.log(
-                `⚠️ Missing selector or styles in buttonPrimary for ${elementId}`
-              );
-            }
-          } else {
-            console.log(`ℹ️ No buttonPrimary found in element ${elementId}`);
-          }
+        // Handle buttonTertiary
+        if (
+          element.buttonTertiary &&
+          element.buttonTertiary.selector &&
+          element.buttonTertiary.styles
+        ) {
+          console.log(
+            `✅ Applying buttonTertiary hover border styles for ${elementId}:`,
+            element.buttonTertiary.styles
+          );
 
-          // Handle buttonSecondary
-          if (css && css.buttonSecondary) {
-            console.log(
-              `🎯 Found buttonSecondary in element ${elementId}:`,
-              css.buttonSecondary
-            );
-            const { selector, styles } = css.buttonSecondary;
-            if (selector && styles) {
-              console.log(
-                `✅ Applying buttonSecondary styles for ${elementId}:`,
-                styles
-              );
-
-              // Convert styles to kebab-case for consistency
-              const kebabStyles = Object.fromEntries(
-                Object.entries(styles).map(([key, value]) => [
-                  key.replace(/([A-Z])/g, "-$1").toLowerCase(),
-                  value,
-                ])
-              );
-
-              console.log(`🎨 Converted to kebab-case:`, kebabStyles);
-
-              applyHoverStylesAsExternalCSS(
-                selector,
-                kebabStyles,
-                `sc-hover-border-fetched-secondary-${elementId}`
-              );
-              console.log(
-                `✅ Applied button secondary hover styles to ${elementId}:`,
-                styles
-              );
-            } else {
-              console.log(
-                `⚠️ Missing selector or styles in buttonSecondary for ${elementId}`
-              );
-            }
-          } else {
-            console.log(`ℹ️ No buttonSecondary found in element ${elementId}`);
-          }
-
-          // Handle buttonTertiary
-          if (css && css.buttonTertiary) {
-            console.log(
-              `🎯 Found buttonTertiary in element ${elementId}:`,
-              css.buttonTertiary
-            );
-            const { selector, styles } = css.buttonTertiary;
-            if (selector && styles) {
-              console.log(
-                `✅ Applying buttonTertiary styles for ${elementId}:`,
-                styles
-              );
-
-              // Convert styles to kebab-case for consistency
-              const kebabStyles = Object.fromEntries(
-                Object.entries(styles).map(([key, value]) => [
-                  key.replace(/([A-Z])/g, "-$1").toLowerCase(),
-                  value,
-                ])
-              );
-
-              console.log(`🎨 Converted to kebab-case:`, kebabStyles);
-
-              applyHoverStylesAsExternalCSS(
-                selector,
-                kebabStyles,
-                `sc-hover-border-fetched-tertiary-${elementId}`
-              );
-              console.log(
-                `✅ Applied button tertiary hover styles to ${elementId}:`,
-                styles
-              );
-            } else {
-              console.log(
-                `⚠️ Missing selector or styles in buttonTertiary for ${elementId}`
-              );
-            }
-          } else {
-            console.log(`ℹ️ No buttonTertiary found in element ${elementId}`);
-          }
-        });
+          applyHoverStylesAsExternalCSS(
+            element.buttonTertiary.selector,
+            element.buttonTertiary.styles,
+            `sc-hover-border-fetched-tertiary-${elementId}`
+          );
+          console.log(
+            `✅ Applied buttonTertiary hover border styles to ${elementId}:`,
+            element.buttonTertiary.styles
+          );
+        }
       });
 
       console.log(
         "🎉 fetchButtonHoverBorderModifications completed successfully"
       );
-      return { success: true, modifications: modifications.length };
+      return { success: true, modifications: elements.length };
     } catch (error) {
       console.error("❌ Error in fetchButtonHoverBorderModifications:", error);
       console.error("❌ Error stack:", error.stack);
