@@ -751,14 +751,19 @@ export function initHoverButtonBorderRadiusControl(
       style = document.createElement("style");
       style.id = id;
       document.head.appendChild(style);
+      console.log(`🎨 Created new style tag: ${id}`);
+    } else {
+      console.log(`🎨 Updated existing style tag: ${id}`);
     }
 
-    style.innerHTML = `
+    const cssContent = `
 .${cls}:hover {
   border-radius: ${value}px !important;
   overflow: hidden !important;
 }
 `;
+    style.innerHTML = cssContent;
+    console.log(`🎨 Applied radius styles: ${value}px to ${cls}`);
   }
 
   async function saveToDatabase() {
@@ -842,6 +847,8 @@ export function initHoverButtonBorderRadiusControl(
     fill.style.width = `${percent}%`;
     valueText.textContent = `${value}px`;
 
+    console.log(`🔄 Radius update: ${value}px (${percent}%)`);
+
     // Update global state
     window.__squareCraftHoverRadius = value;
 
@@ -850,6 +857,7 @@ export function initHoverButtonBorderRadiusControl(
     // Save to database after a short delay to avoid too many requests
     clearTimeout(window.hoverRadiusSaveTimeout);
     window.hoverRadiusSaveTimeout = setTimeout(() => {
+      console.log(`💾 Saving radius to database: ${value}px`);
       saveToDatabase();
     }, 500);
   }
@@ -1388,38 +1396,100 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
   const hoverKey = `hover--${typeClass}`;
 
   // Read applied hover styles directly from the DOM
-  // Look for the dynamically injected style tags that contain hover styles
-  const styleTags = document.querySelectorAll('style[id*="sc-hover-border-"]');
-  let foundHoverStyles = null;
+  // Look for all dynamically injected style tags that contain hover styles
+  const styleTagPatterns = [
+    'style[id*="sc-hover-border-"]',
+    'style[id*="sc-hover-radius-"]',
+    'style[id*="sc-hover-border-style-"]',
+    'style[id*="sc-hover-border-fetched-"]',
+  ];
 
-  // Find the relevant hover styles for this button type
-  for (const styleTag of styleTags) {
-    const styleContent = styleTag.textContent;
-    if (styleContent.includes(typeClass) && styleContent.includes(":hover")) {
-      // Extract the CSS rules from the style content
-      const cssRules = styleContent.match(/\{[^}]+\}/);
-      if (cssRules) {
-        const ruleText = cssRules[0];
+  let foundHoverStyles = {
+    borderWidth: 0,
+    borderStyle: "solid",
+    borderColor: "black",
+    borderRadius: 0,
+  };
 
-        // Extract border properties
-        const borderWidthMatch = ruleText.match(/border-top-width:\s*([^;]+)/);
-        const borderStyleMatch = ruleText.match(/border-style:\s*([^;]+)/);
-        const borderColorMatch = ruleText.match(/border-color:\s*([^;]+)/);
-        const borderRadiusMatch = ruleText.match(/border-radius:\s*([^;]+)/);
+  // Aggregate properties from all relevant style tags
+  console.log(
+    "🔍 syncHoverButtonStylesFromElement: Searching for style tags with patterns:",
+    styleTagPatterns
+  );
 
-        foundHoverStyles = {
-          borderWidth: borderWidthMatch ? parseInt(borderWidthMatch[1]) : 0,
-          borderStyle: borderStyleMatch ? borderStyleMatch[1].trim() : "solid",
-          borderColor: borderColorMatch ? borderColorMatch[1].trim() : "black",
-          borderRadius: borderRadiusMatch ? parseInt(borderRadiusMatch[1]) : 0,
-        };
-        break;
+  for (const pattern of styleTagPatterns) {
+    const styleTags = document.querySelectorAll(pattern);
+    console.log(
+      `🔍 Found ${styleTags.length} style tags with pattern: ${pattern}`
+    );
+
+    for (const styleTag of styleTags) {
+      const styleContent = styleTag.textContent;
+      console.log(
+        `🔍 Style tag ID: ${styleTag.id}, Content: ${styleContent.substring(
+          0,
+          100
+        )}...`
+      );
+
+      if (styleContent.includes(typeClass) && styleContent.includes(":hover")) {
+        console.log(`✅ Found matching style tag for ${typeClass}`);
+
+        // Extract the CSS rules from the style content
+        const cssRules = styleContent.match(/\{[^}]+\}/);
+        if (cssRules) {
+          const ruleText = cssRules[0];
+          console.log(`🔍 CSS rule: ${ruleText}`);
+
+          // Extract border properties and update foundHoverStyles
+          const borderWidthMatch = ruleText.match(
+            /border-top-width:\s*([^;]+)/
+          );
+          const borderStyleMatch = ruleText.match(/border-style:\s*([^;]+)/);
+          const borderColorMatch = ruleText.match(/border-color:\s*([^;]+)/);
+          const borderRadiusMatch = ruleText.match(/border-radius:\s*([^;]+)/);
+
+          if (borderWidthMatch) {
+            foundHoverStyles.borderWidth = parseInt(borderWidthMatch[1]);
+            console.log(
+              `📏 Found border width: ${foundHoverStyles.borderWidth}`
+            );
+          }
+          if (borderStyleMatch) {
+            foundHoverStyles.borderStyle = borderStyleMatch[1].trim();
+            console.log(
+              `📏 Found border style: ${foundHoverStyles.borderStyle}`
+            );
+          }
+          if (borderColorMatch) {
+            foundHoverStyles.borderColor = borderColorMatch[1].trim();
+            console.log(
+              `📏 Found border color: ${foundHoverStyles.borderColor}`
+            );
+          }
+          if (borderRadiusMatch) {
+            foundHoverStyles.borderRadius = parseInt(borderRadiusMatch[1]);
+            console.log(
+              `📏 Found border radius: ${foundHoverStyles.borderRadius}`
+            );
+          }
+        }
       }
     }
   }
 
-  // If no fetched styles found, fall back to global state
-  if (!foundHoverStyles) {
+  // If no styles found in DOM, fall back to global state
+  const hasStylesInDOM =
+    foundHoverStyles.borderWidth > 0 ||
+    foundHoverStyles.borderRadius > 0 ||
+    foundHoverStyles.borderStyle !== "solid" ||
+    foundHoverStyles.borderColor !== "black";
+
+  console.log(`🔍 Has styles in DOM: ${hasStylesInDOM}`);
+  console.log(`🔍 Found hover styles:`, foundHoverStyles);
+
+  if (!hasStylesInDOM) {
+    console.log("⚠️ No styles found in DOM, falling back to global state");
     const borderState = window.__squareCraftHoverBorderStateMap?.get(
       hoverKey
     ) || { value: 0, side: "All" };
@@ -1429,6 +1499,7 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
       borderColor: window.__squareCraftHoverBorderColor || "#000000",
       borderRadius: parseInt(window.__squareCraftHoverRadius || 0),
     };
+    console.log(`🔍 Using global state:`, foundHoverStyles);
   }
 
   // Update global state with the found values
@@ -1483,10 +1554,22 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
   );
   const radiusCount = document.getElementById("hover-buttonBorderradiusCount");
 
+  console.log(
+    `🔍 Updating radius UI: ${foundHoverStyles.borderRadius}px (${radPercent}%)`
+  );
+  console.log(`🔍 Radius elements found:`, {
+    radiusFill: !!radiusFill,
+    radiusBullet: !!radiusBullet,
+    radiusCount: !!radiusCount,
+  });
+
   if (radiusFill && radiusBullet && radiusCount) {
     radiusFill.style.width = `${radPercent}%`;
     radiusBullet.style.left = `${radPercent}%`;
     radiusCount.textContent = `${foundHoverStyles.borderRadius}px`;
+    console.log(`✅ Updated radius UI to ${foundHoverStyles.borderRadius}px`);
+  } else {
+    console.log("⚠️ Some radius UI elements not found");
   }
 
   // 5. 🔄 Shadow
