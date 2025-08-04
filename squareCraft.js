@@ -1135,9 +1135,9 @@ window.pendingModifications = pendingModifications;
         .closest(
           ".sc-py-4px.sc-relative.sc-mt-3.sc-bg-3f3f3f.sc-inActiveTab-border"
         )
-        .querySelector("#button-hover-color-palette");
+        .querySelector("#button-hover-border-color-palette");
     const paletteButtonHoverBorderColor = document.getElementById(
-      "button-hover-color-palette"
+      "button-hover-border-color-palette"
     );
 
     if (isHoverBorderColorTrigger && paletteButtonHoverBorderColor) {
