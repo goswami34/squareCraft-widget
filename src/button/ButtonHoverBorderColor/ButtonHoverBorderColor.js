@@ -5,9 +5,11 @@ export function ButtonHoverBorderColorPalateToggle(
   addPendingModification,
   showNotification
 ) {
-  const palette = document.getElementById("button-hover-color-palette");
+  const palette = document.getElementById("button-hover-border-color-palette");
   const container = document.getElementById("button-hover-border-colors");
-  const selectorField = document.getElementById("hover-color-selection-field");
+  const selectorField = document.getElementById(
+    "button-hover-border-color-selection-field"
+  );
   const bullet = document.getElementById("hover-color-selection-bar");
   const colorCode = document.getElementById("hover-color-code");
   const transparencyCount = document.getElementById(

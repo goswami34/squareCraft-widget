@@ -4983,3 +4983,16 @@
 }
 
 /* button icon color palate end here */
+
+/* button hover border color palate start here */
+#button-hover-border-color-palette {
+  z-index: 999999 !important;
+}
+
+#button-hover-border-color-selection-field {
+  width: 100% !important;
+  height: 100px !important;
+  border-radius: 6px !important;
+}
+
+/* button hover border color palate end here */
