@@ -269,12 +269,14 @@ export function WidgetButtonHoverState() {
                         </div>
                      </div>
                   </div>
+
+
           
                   <div class="sc-mt-4 sc-gap-2 sc-grid sc-grid-cols-12">
                      <div class="sc-col-span-5">
                         <p class="sc-roboto sc-font-thin sc-universal  sc-font-size-12 sc-font-thin sc-text-gray-300">
                            Border
-                           Color
+                           Color jkhkhk
                         </p>
           
                         <div
@@ -331,6 +333,10 @@ export function WidgetButtonHoverState() {
           
                         </div>
                      </div>
+
+
+
+
                      <div class="sc-col-span-7">
                         <p class="sc-roboto sc-font-thin sc-universal  sc-font-size-12 sc-font-thin sc-text-gray-300">
                            Border
