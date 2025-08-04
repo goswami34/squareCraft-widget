@@ -731,6 +731,11 @@ export function initHoverButtonBorderRadiusControl(
 
   let value = 0;
 
+  // Helper function to clean border style value
+  function cleanBorderStyle(style) {
+    return style?.replace(/\s*!important\w*\s*$/, "") || "solid";
+  }
+
   function apply() {
     const el = getSelectedElement?.();
     if (!el) return;
@@ -760,7 +765,9 @@ export function initHoverButtonBorderRadiusControl(
     const currentBorderWidth =
       window.__squareCraftHoverBorderStateMap?.get(`${el.id}--${cls}`)?.value ||
       0;
-    const currentBorderStyle = window.__squareCraftBorderStyle || "solid";
+    const currentBorderStyle = cleanBorderStyle(
+      window.__squareCraftBorderStyle
+    );
     const currentBorderColor = window.__squareCraftHoverBorderColor || "black";
     const currentBorderRadius = value; // Current radius value
 
@@ -918,6 +925,11 @@ export function initHoverButtonBorderTypeToggle(
   addPendingModification,
   showNotification
 ) {
+  // Helper function to clean border style value
+  function cleanBorderStyle(style) {
+    return style?.replace(/\s*!important\w*\s*$/, "") || "solid";
+  }
+
   const typeButtons = [
     { id: "hover-buttonBorderTypeSolid", type: "solid" },
     { id: "hover-buttonBorderTypeDashed", type: "dashed" },
@@ -956,7 +968,7 @@ export function initHoverButtonBorderTypeToggle(
       borderRightWidth: `${currentBorderWidth}px`,
       borderBottomWidth: `${currentBorderWidth}px`,
       borderLeftWidth: `${currentBorderWidth}px`,
-      borderStyle: borderType,
+      borderStyle: cleanBorderStyle(borderType),
       borderColor: currentBorderColor,
     };
 
@@ -1066,6 +1078,11 @@ export function initHoverButtonBorderControl(
   addPendingModification,
   showNotification
 ) {
+  // Helper function to clean border style value
+  function cleanBorderStyle(style) {
+    return style?.replace(/\s*!important\w*\s*$/, "") || "solid";
+  }
+
   if (hoverBorderInitialized) return;
   hoverBorderInitialized = true;
 
@@ -1124,7 +1141,7 @@ export function initHoverButtonBorderControl(
 
     style.innerHTML = `
 .${typeClass}:hover {
-  border-style: ${window.__squareCraftBorderStyle || "solid"} !important;
+  border-style: ${cleanBorderStyle(window.__squareCraftBorderStyle)} !important;
   border-color: ${window.__squareCraftHoverBorderColor || "black"} !important;
   border-radius: ${window.__squareCraftHoverRadius || 0}px !important;
   border-top-width: ${t} !important;
@@ -1159,7 +1176,7 @@ export function initHoverButtonBorderControl(
       borderRightWidth: r,
       borderBottomWidth: b,
       borderLeftWidth: l,
-      borderStyle: window.__squareCraftBorderStyle || "solid",
+      borderStyle: cleanBorderStyle(window.__squareCraftBorderStyle),
       borderColor: window.__squareCraftHoverBorderColor || "black",
     };
 
@@ -1540,7 +1557,11 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
     value: foundHoverStyles.borderWidth,
     side: "All",
   });
-  window.__squareCraftBorderStyle = foundHoverStyles.borderStyle;
+  // Clean the border style value to remove any !important suffixes
+  const cleanBorderStyle =
+    foundHoverStyles.borderStyle?.replace(/\s*!important\w*\s*$/, "") ||
+    "solid";
+  window.__squareCraftBorderStyle = cleanBorderStyle;
   window.__squareCraftHoverBorderColor = foundHoverStyles.borderColor;
   window.__squareCraftHoverRadius = foundHoverStyles.borderRadius;
 
