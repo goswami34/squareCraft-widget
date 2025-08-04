@@ -44,12 +44,12 @@ export function ButtonHoverBorderColorPalateToggle(
   // Helper function to convert any color format to RGB string
   function convertToRGB(color) {
     if (!color) return "rgb(255, 0, 0)";
-    
+
     // If already RGB format, return as is
     if (color.startsWith("rgb(")) {
       return color;
     }
-    
+
     // Convert HSL to RGB
     if (color.startsWith("hsl(")) {
       const hsl = rgbToHslFromAny(color);
@@ -57,7 +57,7 @@ export function ButtonHoverBorderColorPalateToggle(
         const h = hsl.h / 360;
         const s = hsl.s;
         const l = hsl.l;
-        
+
         function hueToRgb(p, q, t) {
           if (t < 0) t += 1;
           if (t > 1) t -= 1;
@@ -66,7 +66,7 @@ export function ButtonHoverBorderColorPalateToggle(
           if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
           return p;
         }
-        
+
         let r, g, b;
         if (s === 0) {
           r = g = b = l;
@@ -77,11 +77,11 @@ export function ButtonHoverBorderColorPalateToggle(
           g = hueToRgb(p, q, h);
           b = hueToRgb(p, q, h - 1 / 3);
         }
-        
+
         return toRGBString(r * 255, g * 255, b * 255);
       }
     }
-    
+
     // Convert Hex to RGB
     if (color.startsWith("#")) {
       const hex = color.replace("#", "");
@@ -97,7 +97,7 @@ export function ButtonHoverBorderColorPalateToggle(
       }
       return toRGBString(r, g, b);
     }
-    
+
     // Default fallback
     return "rgb(255, 0, 0)";
   }
