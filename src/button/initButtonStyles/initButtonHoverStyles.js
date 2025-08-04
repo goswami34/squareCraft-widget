@@ -1562,8 +1562,12 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
   const cleanBorderStyle =
     foundHoverStyles.borderStyle?.replace(/\s*!important\w*\s*$/, "") ||
     "solid";
+  // Clean the border color value to remove any !important suffixes
+  const cleanBorderColor =
+    foundHoverStyles.borderColor?.replace(/\s*!important\w*\s*$/, "") ||
+    "black";
   window.__squareCraftBorderStyle = cleanBorderStyle;
-  window.__squareCraftHoverBorderColor = foundHoverStyles.borderColor;
+  window.__squareCraftHoverBorderColor = cleanBorderColor;
   window.__squareCraftHoverRadius = foundHoverStyles.borderRadius;
 
   // 1. 🔄 Border Width
