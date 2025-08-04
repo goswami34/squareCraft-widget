@@ -4986,6 +4986,10 @@
 
 /* button hover border color palate start here */
 #button-hover-border-color-palette {
+  width: 180px !important;
+  min-width: 180px !important;
+  max-width: 180px !important;
+  box-sizing: border-box;
   z-index: 999999 !important;
 }
 
