@@ -13,16 +13,6 @@ const hoverShadowState = {
   Spread: 0,
 };
 
-// .sqs-button-element--primary:hover {
-//   border-style: solid !important;
-//   border-color: black !important;
-//   border-radius: 0px !important;
-//   border-top-width: 5px !important;
-//   border-right-width: 5px !important;
-//   border-bottom-width: 5px !important;
-//   border-left-width: 5px !important;
-// }
-
 export function initHoverButtonShadowControls(
   getSelectedElement,
   saveButtonModifications,
