@@ -583,6 +583,10 @@ window.pendingModifications = pendingModifications;
   const { ButtonBorderColorPalateToggle } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/button/ButtonBorderColorPalate/ButtonBorderColorPalateToggle.js"
   );
+
+  const { ButtonHoverBorderColorPalateToggle } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/ButtonHoverBorderColor/ButtonHoverBorderColor.js"
+  );
   // const { ButtonTextColorPalate } = await import(
   //   "https://goswami34.github.io/squareCraft-widget/src/button/ButtonTextColor/ButtonTextColorPalate.js"
   // );
@@ -1115,6 +1119,51 @@ window.pendingModifications = pendingModifications;
     }
 
     // Button border color palette trigger end here
+
+    // Button hover border color palette trigger start here
+    const triggerButtonHoverBorderColor = event.target.closest(
+      ".sc-square-6.sc-cursor-pointer"
+    );
+
+    // Check if this is the hover border color trigger by looking for the specific palette
+    const isHoverBorderColorTrigger =
+      triggerButtonHoverBorderColor &&
+      triggerButtonHoverBorderColor.closest(
+        ".sc-py-4px.sc-relative.sc-mt-3.sc-bg-3f3f3f.sc-inActiveTab-border"
+      ) &&
+      triggerButtonHoverBorderColor
+        .closest(
+          ".sc-py-4px.sc-relative.sc-mt-3.sc-bg-3f3f3f.sc-inActiveTab-border"
+        )
+        .querySelector("#button-hover-color-palette");
+    const paletteButtonHoverBorderColor = document.getElementById(
+      "button-hover-color-palette"
+    );
+
+    if (isHoverBorderColorTrigger && paletteButtonHoverBorderColor) {
+      paletteButtonHoverBorderColor.classList.toggle("sc-hidden");
+
+      // Load palette after toggle
+      if (!paletteButtonHoverBorderColor.classList.contains("sc-hidden")) {
+        setTimeout(() => {
+          ButtonHoverBorderColorPalateToggle(
+            themeColors,
+            () => selectedElement,
+            saveButtonHoverBorderModifications,
+            (blockId, css, tagType) => {
+              if (!pendingModifications.has(blockId)) {
+                pendingModifications.set(blockId, []);
+              }
+              pendingModifications.get(blockId).push({ css, tagType });
+            },
+            showNotification
+          );
+        }, 50);
+      }
+      return;
+    }
+
+    // Button hover border color palette trigger end here
 
     // button icon color palette trigger start here
     const triggerButtonIconColor = event.target.closest(

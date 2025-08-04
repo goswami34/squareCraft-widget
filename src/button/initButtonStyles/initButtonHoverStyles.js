@@ -756,14 +756,30 @@ export function initHoverButtonBorderRadiusControl(
       console.log(`🎨 Updated existing style tag: ${id}`);
     }
 
+    // Get all border properties from global state
+    const currentBorderWidth =
+      window.__squareCraftHoverBorderStateMap?.get(`${el.id}--${cls}`)?.value ||
+      0;
+    const currentBorderStyle = window.__squareCraftBorderStyle || "solid";
+    const currentBorderColor = window.__squareCraftHoverBorderColor || "black";
+    const currentBorderRadius = value; // Current radius value
+
     const cssContent = `
-.${cls}:hover {
-  border-radius: ${value}px !important;
-  overflow: hidden !important;
-}
+    .${cls}:hover {
+      border-radius: ${currentBorderRadius}px !important;
+      overflow: hidden !important;
+      border-top-width: ${currentBorderWidth}px !important;
+      border-right-width: ${currentBorderWidth}px !important;
+      border-bottom-width: ${currentBorderWidth}px !important;
+      border-left-width: ${currentBorderWidth}px !important;
+      border-style: ${currentBorderStyle} !important;
+      border-color: ${currentBorderColor} !important;
+    }
 `;
     style.innerHTML = cssContent;
-    console.log(`🎨 Applied radius styles: ${value}px to ${cls}`);
+    console.log(
+      `🎨 Applied complete border styles: radius=${currentBorderRadius}px, width=${currentBorderWidth}px, style=${currentBorderStyle}, color=${currentBorderColor} to ${cls}`
+    );
   }
 
   async function saveToDatabase() {
@@ -1012,9 +1028,24 @@ export function initHoverButtonBorderTypeToggle(
         document.head.appendChild(style);
       }
 
+      // Get all border properties from global state
+      const currentBorderWidth =
+        window.__squareCraftHoverBorderStateMap?.get(`${selected.id}--${cls}`)
+          ?.value || 0;
+      const currentBorderColor =
+        window.__squareCraftHoverBorderColor || "black";
+      const currentBorderRadius = window.__squareCraftHoverRadius || 0;
+
       style.innerHTML = `
 .${cls}:hover {
   border-style: ${type} !important;
+  border-top-width: ${currentBorderWidth}px !important;
+  border-right-width: ${currentBorderWidth}px !important;
+  border-bottom-width: ${currentBorderWidth}px !important;
+  border-left-width: ${currentBorderWidth}px !important;
+  border-color: ${currentBorderColor} !important;
+  border-radius: ${currentBorderRadius}px !important;
+  overflow: hidden !important;
 }
 `;
 
