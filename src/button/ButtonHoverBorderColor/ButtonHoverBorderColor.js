@@ -141,7 +141,7 @@ export function ButtonHoverBorderColorPalateToggle(
     styleTag.textContent = `
         a.${buttonType}:hover,
         button.${buttonType}:hover {
-          border-color: ${rgbaColor} !important;
+          border-color: ${rgbaColor}
         }
       `;
 
