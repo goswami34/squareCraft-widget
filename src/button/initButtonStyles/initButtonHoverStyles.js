@@ -810,7 +810,8 @@ export function initHoverButtonBorderRadiusControl(
     const currentBorderWidth =
       window.__squareCraftHoverBorderStateMap?.get(`${blockId}--${cls}`)
         ?.value || 0;
-    const currentBorderStyle = window.__squareCraftBorderStyle || "solid";
+    const currentBorderStyle =
+      cleanBorderStyle(window.__squareCraftBorderStyle) || "solid";
     const currentBorderColor = window.__squareCraftHoverBorderColor || "black";
     const currentBorderRadius = value; // Current radius value
 
