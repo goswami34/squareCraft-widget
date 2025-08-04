@@ -876,6 +876,9 @@ export function initHoverButtonBorderRadiusControl(
     // Update global state
     window.__squareCraftHoverRadius = value;
 
+    // Mark this as a recent user interaction to prevent sync from overriding
+    window.lastUserInteraction.borderRadius = Date.now();
+
     apply();
 
     // Save to database after a short delay to avoid too many requests
@@ -1235,6 +1238,10 @@ export function initHoverButtonBorderControl(
     };
     state.value = value;
     window.__squareCraftHoverBorderStateMap.set(key, state);
+
+    // Mark this as a recent user interaction to prevent sync from overriding
+    window.lastUserInteraction.borderWidth = Date.now();
+
     applyStyle();
 
     // Save to database after a short delay to avoid too many requests
@@ -1577,11 +1584,22 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
   const bullet = document.getElementById("hover-buttonBorderBullet");
   const valueText = document.getElementById("hover-buttonBorderCount");
 
+  // Check if user recently interacted with border width control (within last 2 seconds)
+  const recentBorderWidthInteraction =
+    Date.now() - (window.lastUserInteraction?.borderWidth || 0) < 2000;
+
   const percent = (foundHoverStyles.borderWidth / 10) * 100;
-  if (fill && bullet && valueText) {
+  if (fill && bullet && valueText && !recentBorderWidthInteraction) {
     fill.style.width = `${percent}%`;
     bullet.style.left = `${percent}%`;
     valueText.textContent = `${foundHoverStyles.borderWidth}px`;
+    console.log(
+      `🔄 Updated border width UI to ${foundHoverStyles.borderWidth}px (not recent interaction)`
+    );
+  } else if (recentBorderWidthInteraction) {
+    console.log(
+      `⏸️ Skipping border width UI update due to recent user interaction`
+    );
   }
 
   // 2. 🟢 Border Side Tab Sync
@@ -1611,6 +1629,10 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
   );
   const radiusCount = document.getElementById("hover-buttonBorderradiusCount");
 
+  // Check if user recently interacted with border radius control (within last 2 seconds)
+  const recentBorderRadiusInteraction =
+    Date.now() - (window.lastUserInteraction?.borderRadius || 0) < 2000;
+
   console.log(
     `🔍 Updating radius UI: ${foundHoverStyles.borderRadius}px (${radPercent}%)`
   );
@@ -1620,11 +1642,20 @@ window.syncHoverButtonStylesFromElement = function (selectedElement) {
     radiusCount: !!radiusCount,
   });
 
-  if (radiusFill && radiusBullet && radiusCount) {
+  if (
+    radiusFill &&
+    radiusBullet &&
+    radiusCount &&
+    !recentBorderRadiusInteraction
+  ) {
     radiusFill.style.width = `${radPercent}%`;
     radiusBullet.style.left = `${radPercent}%`;
     radiusCount.textContent = `${foundHoverStyles.borderRadius}px`;
-    console.log(`✅ Updated radius UI to ${foundHoverStyles.borderRadius}px`);
+    console.log(
+      `✅ Updated radius UI to ${foundHoverStyles.borderRadius}px (not recent interaction)`
+    );
+  } else if (recentBorderRadiusInteraction) {
+    console.log(`⏸️ Skipping radius UI update due to recent user interaction`);
   } else {
     console.log("⚠️ Some radius UI elements not found");
   }
