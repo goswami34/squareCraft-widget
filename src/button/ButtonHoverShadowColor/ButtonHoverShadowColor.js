@@ -135,27 +135,29 @@ export function ButtonHoverShadowColorPalateToggle(
       `a.${buttonType}, button.${buttonType}`
     );
 
+    // Get shadow values from the first button to use for all buttons
+    const firstButton = allButtons[0];
+    const existingShadow =
+      firstButton?.dataset.scButtonHoverShadow ||
+      "0 4px 8px rgba(0, 0, 0, 0.3)";
+
+    // Parse existing shadow values
+    const shadowMatch = existingShadow.match(
+      /^(\d+px)\s+(\d+px)\s+(\d+px)\s+(\d+px)\s+(.+)$/
+    );
+    let xOffset = "0px";
+    let yOffset = "4px";
+    let blurRadius = "8px";
+    let spreadRadius = "0px";
+
+    if (shadowMatch) {
+      xOffset = shadowMatch[1];
+      yOffset = shadowMatch[2];
+      blurRadius = shadowMatch[3];
+      spreadRadius = shadowMatch[4];
+    }
+
     allButtons.forEach((btn) => {
-      // Get existing shadow values or use defaults
-      const existingShadow =
-        btn.dataset.scButtonHoverShadow || "0 4px 8px rgba(0, 0, 0, 0.3)";
-
-      // Parse existing shadow values
-      const shadowMatch = existingShadow.match(
-        /^(\d+px)\s+(\d+px)\s+(\d+px)\s+(\d+px)\s+(.+)$/
-      );
-      let xOffset = "0px";
-      let yOffset = "4px";
-      let blurRadius = "8px";
-      let spreadRadius = "0px";
-
-      if (shadowMatch) {
-        xOffset = shadowMatch[1];
-        yOffset = shadowMatch[2];
-        blurRadius = shadowMatch[3];
-        spreadRadius = shadowMatch[4];
-      }
-
       // Create new shadow with updated color
       const newShadow = `${xOffset} ${yOffset} ${blurRadius} ${spreadRadius} ${rgbaColor}`;
 
