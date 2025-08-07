@@ -141,7 +141,7 @@ export function ButtonHoverShadowColorPalateToggle(
       firstButton?.dataset.scButtonHoverShadow ||
       "0 4px 8px rgba(0, 0, 0, 0.3)";
 
-    // Parse existing shadow values
+    // Parse existing shadow values fdgsfs
     const shadowMatch = existingShadow.match(
       /^(\d+px)\s+(\d+px)\s+(\d+px)\s+(\d+px)\s+(.+)$/
     );
