@@ -1194,7 +1194,7 @@ window.pendingModifications = pendingModifications;
       "button-hover-shadow-color-palette"
     );
 
-    if (isHoverBorderColorTrigger && paletteButtonHoverShadowColor) {
+    if (isHoverShadowColorTrigger && paletteButtonHoverShadowColor) {
       paletteButtonHoverShadowColor.classList.toggle("sc-hidden");
 
       // Load palette after toggle
