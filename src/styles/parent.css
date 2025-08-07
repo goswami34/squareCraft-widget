@@ -5000,3 +5000,17 @@
 }
 
 /* button hover border color palate end here */
+
+#button-hover-shadow-color-palette {
+  width: 180px !important;
+  min-width: 180px !important;
+  max-width: 180px !important;
+  box-sizing: border-box;
+  z-index: 999999 !important;
+}
+
+#button-hover-shadow-color-selection-field {
+  width: 100% !important;
+  height: 100px !important;
+  border-radius: 6px !important;
+}

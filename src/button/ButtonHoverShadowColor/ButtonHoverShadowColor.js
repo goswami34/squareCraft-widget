@@ -5,12 +5,12 @@ export function ButtonHoverShadowColorPalateToggle(
   addPendingModification,
   showNotification
 ) {
-  const palette = document.getElementById("button-hover-border-color-palette");
-  const container = document.getElementById("button-hover-border-colors");
+  const palette = document.getElementById("button-hover-shadow-color-palette");
+  const container = document.getElementById("button-hover-shadow-colors");
   const selectorField = document.getElementById(
-    "button-hover-border-color-selection-field"
+    "button-hover-shadow-color-selection-field"
   );
-  const bullet = document.getElementById("hover-color-selection-bar");
+  const bullet = document.getElementById("hover-shadow-color-selection-bar");
   const colorCode = document.getElementById("hover-color-code");
   const transparencyCount = document.getElementById(
     "hover-color-transparency-count"
@@ -102,8 +102,8 @@ export function ButtonHoverShadowColorPalateToggle(
     return "rgb(255, 0, 0)";
   }
 
-  // Function to apply border color to button
-  function applyButtonBorderColor(color, alpha = 1) {
+  // Function to apply shadow color to button
+  function applyButtonShadowColor(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
 
@@ -130,7 +130,7 @@ export function ButtonHoverShadowColorPalateToggle(
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
 
-    const styleId = `sc-hover-border-style-global-${buttonType}`;
+    const styleId = `sc-hover-shadow-style-global-${buttonType}`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
       styleTag = document.createElement("style");
@@ -138,10 +138,11 @@ export function ButtonHoverShadowColorPalateToggle(
       document.head.appendChild(styleTag);
     }
 
+    // Apply box-shadow with the selected color
     styleTag.textContent = `
           a.${buttonType}:hover,
           button.${buttonType}:hover {
-            border-color: ${rgbaColor} !important;
+            box-shadow: 0 4px 8px ${rgbaColor} !important;
           }
         `;
 
@@ -149,9 +150,9 @@ export function ButtonHoverShadowColorPalateToggle(
       `a.${buttonType}, button.${buttonType}`
     );
     allButtons.forEach((btn) => {
-      btn.dataset.scButtonHoverBorderColor = color;
+      btn.dataset.scButtonHoverShadowColor = color;
     });
-    console.log("🖌️ APPLYING HOVER BORDER COLOR:", rgbaColor, "on", buttonType);
+    console.log("🖌️ APPLYING HOVER SHADOW COLOR:", rgbaColor, "on", buttonType);
 
     // Save modifications if functions are provided
     if (
@@ -163,13 +164,13 @@ export function ButtonHoverShadowColorPalateToggle(
         const stylePayload = {
           buttonPrimary: {
             selector: `.${buttonType}:hover`,
-            styles: { borderColor: rgbaColor },
+            styles: { boxShadow: `0 4px 8px ${rgbaColor}` },
           },
         };
-        addPendingModification(blockId, stylePayload, "button");
+        addPendingModification(blockId, stylePayload, "buttonShadow");
         if (showNotification) {
           showNotification(
-            `Hover border color applied to ${buttonType}`,
+            `Hover shadow color applied to ${buttonType}`,
             "success"
           );
         }
@@ -276,7 +277,7 @@ export function ButtonHoverShadowColorPalateToggle(
         }
 
         // Apply the color to button border
-        applyButtonBorderColor(finalColor, currentTransparency / 100);
+        applyButtonShadowColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -346,7 +347,7 @@ export function ButtonHoverShadowColorPalateToggle(
         }
 
         // Apply the color to button border
-        applyButtonBorderColor(finalColor, currentTransparency / 100);
+        applyButtonShadowColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -377,7 +378,7 @@ export function ButtonHoverShadowColorPalateToggle(
 
         // Apply current color with new transparency
         if (colorCode && colorCode.textContent) {
-          applyButtonBorderColor(
+          applyButtonShadowColor(
             colorCode.textContent,
             currentTransparency / 100
           );
@@ -414,7 +415,7 @@ export function ButtonHoverShadowColorPalateToggle(
       colorCode.textContent = convertToRGB(cleanColor);
 
       // Apply the color to button border
-      applyButtonBorderColor(cleanColor, currentTransparency / 100);
+      applyButtonShadowColor(cleanColor, currentTransparency / 100);
     });
 
     container.appendChild(swatch);
@@ -569,7 +570,7 @@ export function ButtonHoverShadowColorPalateToggle(
         }
 
         // Apply the color to button border
-        applyButtonBorderColor(finalColor, currentTransparency / 100);
+        applyButtonShadowColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -582,6 +583,6 @@ export function ButtonHoverShadowColorPalateToggle(
   if (firstColor) {
     renderVerticalColorShades(firstColor);
     colorCode.textContent = convertToRGB(firstColor);
-    applyButtonBorderColor(firstColor, currentTransparency / 100);
+    applyButtonShadowColor(firstColor, currentTransparency / 100);
   }
 }
