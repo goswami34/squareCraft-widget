@@ -1559,6 +1559,11 @@ window.pendingModifications = pendingModifications;
         showNotification
       );
 
+      // Sync hover shadow state with actual DOM values
+      if (typeof window.syncHoverButtonShadowStylesFromElement === "function") {
+        window.syncHoverButtonShadowStylesFromElement(selectedElement);
+      }
+
       initButtonIconRotationControl(
         () => selectedElement,
         saveButtonIconModifications,

@@ -16,6 +16,98 @@ const hoverShadowState = {
 // Make hoverShadowState globally accessible for color picker integration
 window.hoverShadowState = hoverShadowState;
 
+// Function to synchronize hoverShadowState with actual shadow values from DOM
+function syncHoverButtonShadowStylesFromElement(element) {
+  if (!element) return;
+
+  const btn = element.querySelector(
+    "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+  );
+  if (!btn) return;
+
+  // Try to get shadow from dataset first
+  let existingShadow = btn.dataset.scButtonHoverShadow;
+
+  // If no dataset, try to get from computed styles
+  if (!existingShadow) {
+    const computedStyle = window.getComputedStyle(btn);
+    existingShadow = computedStyle.boxShadow;
+  }
+
+  // If still no shadow, use default values
+  if (!existingShadow || existingShadow === "none") {
+    existingShadow = "0px 4px 8px 0px rgba(0, 0, 0, 0.3)";
+  }
+
+  // Parse the shadow values
+  const shadowMatch = existingShadow.match(
+    /^(\d+)px\s+(\d+)px\s+(\d+)px\s+(\d+)px\s+(.+)$/
+  );
+
+  if (shadowMatch) {
+    const xValue = parseInt(shadowMatch[1]);
+    const yValue = parseInt(shadowMatch[2]);
+    const blurValue = parseInt(shadowMatch[3]);
+    const spreadValue = parseInt(shadowMatch[4]);
+
+    // Update hoverShadowState with actual values
+    hoverShadowState.X = xValue;
+    hoverShadowState.Y = yValue;
+    hoverShadowState.Blur = blurValue;
+    hoverShadowState.Spread = spreadValue;
+
+    console.log("🔄 Synced hoverShadowState with DOM values:", {
+      X: xValue,
+      Y: yValue,
+      Blur: blurValue,
+      Spread: spreadValue,
+    });
+
+    // Update UI sliders to reflect the synced values
+    updateHoverShadowUI();
+  }
+}
+
+// Function to update UI sliders based on current hoverShadowState
+function updateHoverShadowUI() {
+  const types = ["X", "Y", "Blur", "Spread"];
+  const ranges = [50, 50, 50, 50]; // Default ranges for each type
+
+  types.forEach((typeKey, index) => {
+    const domKey = typeKey;
+    const bullet = document.getElementById(`hover-buttonShadow${domKey}Bullet`);
+    const field = document.getElementById(`hover-buttonShadow${domKey}Field`);
+    const label = document.getElementById(`hover-buttonShadow${domKey}Count`);
+
+    if (!bullet || !field || !label) return;
+
+    const range = ranges[index];
+    const min = typeKey === "X" || typeKey === "Y" ? -range : 0;
+    const max = range;
+    const value = hoverShadowState[typeKey] ?? 0;
+
+    // Update bullet position
+    const percent = ((value - min) / (max - min)) * 100;
+    bullet.style.left = `${percent}%`;
+
+    // Update fill
+    let fill = field.querySelector(".sc-shadow-fill");
+    if (fill) {
+      const centerPercent = ((0 - min) / (max - min)) * 100;
+      fill.style.left = `${Math.min(percent, centerPercent)}%`;
+      fill.style.width = `${Math.abs(percent - centerPercent)}%`;
+    }
+
+    // Update label
+    label.textContent = `${value}px`;
+  });
+}
+
+// Make sync function globally accessible
+window.syncHoverButtonShadowStylesFromElement =
+  syncHoverButtonShadowStylesFromElement;
+window.updateHoverShadowUI = updateHoverShadowUI;
+
 export function initHoverButtonShadowControls(
   getSelectedElement,
   saveButtonHoverShadowModifications,

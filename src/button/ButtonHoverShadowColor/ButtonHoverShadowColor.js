@@ -107,6 +107,11 @@ export function ButtonHoverShadowColorPalateToggle(
     const currentElement = selectedElement?.();
     if (!currentElement) return;
 
+    // Sync hoverShadowState with actual DOM values before applying color
+    if (typeof window.syncHoverButtonShadowStylesFromElement === "function") {
+      window.syncHoverButtonShadowStylesFromElement(currentElement);
+    }
+
     const buttonTypes = [
       "sqs-button-element--primary",
       "sqs-button-element--secondary",
@@ -137,25 +142,12 @@ export function ButtonHoverShadowColorPalateToggle(
 
     // Get shadow values from the first button to use for all buttons
     const firstButton = allButtons[0];
-    const existingShadow =
-      firstButton?.dataset.scButtonHoverShadow ||
-      "0 4px 8px rgba(0, 0, 0, 0.3)";
 
-    // Parse existing shadow values fdgsfs
-    const shadowMatch = existingShadow.match(
-      /^(\d+px)\s+(\d+px)\s+(\d+px)\s+(\d+px)\s+(.+)$/
-    );
-    let xOffset = "0px";
-    let yOffset = "4px";
-    let blurRadius = "8px";
-    let spreadRadius = "0px";
-
-    if (shadowMatch) {
-      xOffset = shadowMatch[1];
-      yOffset = shadowMatch[2];
-      blurRadius = shadowMatch[3];
-      spreadRadius = shadowMatch[4];
-    }
+    // Use the synced hoverShadowState values instead of parsing from dataset
+    const xOffset = `${window.hoverShadowState?.X || 0}px`;
+    const yOffset = `${window.hoverShadowState?.Y || 4}px`;
+    const blurRadius = `${window.hoverShadowState?.Blur || 8}px`;
+    const spreadRadius = `${window.hoverShadowState?.Spread || 0}px`;
 
     allButtons.forEach((btn) => {
       // Create new shadow with updated color
@@ -181,6 +173,12 @@ export function ButtonHoverShadowColorPalateToggle(
     });
 
     console.log("🖌️ APPLYING HOVER SHADOW COLOR:", rgbaColor, "on", buttonType);
+    console.log("📏 Using shadow dimensions:", {
+      xOffset,
+      yOffset,
+      blurRadius,
+      spreadRadius,
+    });
 
     // Save modifications if functions are provided
     if (
@@ -205,22 +203,6 @@ export function ButtonHoverShadowColorPalateToggle(
           );
         }
       }
-    }
-
-    // Update the hoverShadowState with current shadow dimensions before applying
-    // This ensures the shadow dimensions are preserved when color is applied
-    if (window.hoverShadowState) {
-      // Extract numeric values from the parsed shadow dimensions
-      const xValue = parseInt(xOffset);
-      const yValue = parseInt(yOffset);
-      const blurValue = parseInt(blurRadius);
-      const spreadValue = parseInt(spreadRadius);
-
-      // Update the global hoverShadowState with current dimensions
-      window.hoverShadowState.X = xValue;
-      window.hoverShadowState.Y = yValue;
-      window.hoverShadowState.Blur = blurValue;
-      window.hoverShadowState.Spread = spreadValue;
     }
 
     // Trigger the hover shadow controls to update with new color
