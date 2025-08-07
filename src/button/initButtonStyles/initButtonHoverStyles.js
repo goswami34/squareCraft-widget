@@ -15,7 +15,7 @@ const hoverShadowState = {
 
 export function initHoverButtonShadowControls(
   getSelectedElement,
-  saveButtonModifications,
+  saveButtonHoverShadowModifications,
   addPendingModification,
   showNotification
 ) {
@@ -54,9 +54,12 @@ export function initHoverButtonShadowControls(
     }
 
     // Save to database
-    if (typeof saveButtonModifications === "function") {
+    if (typeof saveButtonHoverShadowModifications === "function") {
       try {
-        const result = await saveButtonModifications(blockId, cssPayload);
+        const result = await saveButtonHoverShadowModifications(
+          blockId,
+          cssPayload
+        );
         if (result.success && typeof showNotification === "function") {
           showNotification("Hover shadow saved!", "success");
         }

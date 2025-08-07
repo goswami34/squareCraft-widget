@@ -1608,6 +1608,112 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
 
 // button hover border save modification code end here
 
+// button hover shadow save modification code start here
+export async function saveButtonHoverShadowModifications(blockId, css) {
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+    console.warn(
+      "❌ Missing required data to save button hover shadow styles",
+      {
+        userId,
+        token,
+        widgetId,
+        pageId,
+        blockId,
+        css,
+      }
+    );
+    return { success: false, error: "Missing required data" };
+  }
+
+  // ✅ Clean null/empty values from style object
+  const cleanCssObject = (obj = {}) =>
+    Object.fromEntries(
+      Object.entries(obj).filter(
+        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+      )
+    );
+
+  // ✅ Convert camelCase → kebab-case (e.g., boxShadow → box-shadow)
+  const toKebabCaseStyleObject = (obj = {}) =>
+    Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [
+        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        value,
+      ])
+    );
+
+  // ✅ Format buttonPrimary styles (only one supported for now)
+  const cleanedPrimary = css.buttonPrimary
+    ? {
+        selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
+        styles: toKebabCaseStyleObject(
+          cleanCssObject(css.buttonPrimary.styles || {})
+        ),
+      }
+    : { selector: null, styles: {} };
+
+  if (Object.keys(cleanedPrimary.styles).length === 0) {
+    console.warn("⚠️ No valid hover shadow styles found in buttonPrimary.");
+    return { success: false, error: "No valid hover shadow styles to save" };
+  }
+
+  // ✅ Final payload to send
+  const payload = {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    elementId: blockId,
+    css: {
+      buttonPrimary: cleanedPrimary,
+    },
+  };
+
+  console.log("📤 Sending button shadow payload:", payload);
+
+  try {
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/save-button-hover-shadow-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || `HTTP ${response.status}`);
+    }
+
+    console.log("✅ Button shadow styles saved:", result);
+    showNotification("Button shadow styles saved successfully!", "success");
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("❌ Error saving button shadow styles:", error);
+    showNotification(
+      `Failed to save button shadow styles: ${error.message}`,
+      "error"
+    );
+    return { success: false, error: error.message };
+  }
+}
+
+// button hover shadow save modification code end here
+
 // button hover code end here
 
 // link text save modificaiton code here
