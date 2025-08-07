@@ -504,24 +504,24 @@ export function WidgetButtonHoverState() {
                                        class="sc-w-2 sc-h-2 sc-absolute sc-cursor-pointer sc-rounded-full sc-border sc-border-solid sc-border-white">
                                     </div>
                                  </div>
-                                 <div id="hover-shadow-color-transparency-field"
+                                 <div id="hover-color-shadow-transparency-field"
                                     class="sc-h-full sc-w-3 sc-relative  sc-rounded-15px ">
-                                    <div id="hover-shadow-color-transparency-bar"
+                                    <div id="hover-color-shadow-transparency-bar"
                                        class="sc-absolute  sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px  sc-cursor-grabbing  sc-h-2 sc-bg-color-f2f2f2">
                                     </div>
                                  </div>
-                                 <div id="hover-all-color-selction-field"
+                                 <div id="hover-all-color-shadow-selction-field"
                                     class="sc-h-full sc-w-3 sc-relative sc-rounded-15px">
-                                    <div id="hover-all-color-selction-bar"
+                                    <div id="hover-all-color-shadow-selction-bar"
                                        class="sc-absolute  sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px sc-cursor-grabbing sc-h-2 sc-bg-color-f2f2f2">
                                     </div>
                                  </div>
                               </div>
                               <div
                                  class="sc-flex sc-justify-between sc-mt-3 sc-px-2 sc-py-0_5 sc-rounded-4px sc-bg-454545">
-                                 <p id="hover-color-code" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select
+                                 <p id="hover-color-shadow-code" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select
                                  </p>
-                                 <p id="hover-color-transparency-count"
+                                 <p id="hover-color-shadow-transparency-count"
                                     class="sc-font-size-12 sc-roboto sc-font-light sc-universal">100%</p>
                               </div>
                            </div>
