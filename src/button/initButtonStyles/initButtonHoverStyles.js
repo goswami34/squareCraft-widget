@@ -37,7 +37,10 @@ export function initHoverButtonShadowControls(
     if (!blockId || blockId === "block-id") return;
 
     const v = hoverShadowState;
-    const shadow = `${v.X}px ${v.Y}px ${v.Blur}px ${v.Spread}px rgba(0,0,0,0.3)`;
+    // Get the current shadow color from dataset or use default
+    const currentShadowColor =
+      btn.dataset.scButtonHoverShadowColor || "rgba(0,0,0,0.3)";
+    const shadow = `${v.X}px ${v.Y}px ${v.Blur}px ${v.Spread}px ${currentShadowColor}`;
 
     const cssPayload = {
       buttonPrimary: {
@@ -95,7 +98,10 @@ export function initHoverButtonShadowControls(
     }
 
     const v = hoverShadowState;
-    const shadow = `${v.X}px ${v.Y}px ${v.Blur}px ${v.Spread}px rgba(0,0,0,0.3)`;
+    // Get the current shadow color from dataset or use default
+    const currentShadowColor =
+      btn.dataset.scButtonHoverShadowColor || "rgba(0,0,0,0.3)";
+    const shadow = `${v.X}px ${v.Y}px ${v.Blur}px ${v.Spread}px ${currentShadowColor}`;
 
     style.innerHTML = `
 .${cls}:hover {
@@ -103,12 +109,18 @@ export function initHoverButtonShadowControls(
 }
 `;
 
+    // Update the dataset with the new shadow
+    btn.dataset.scButtonHoverShadow = shadow;
+
     // Save to database after a short delay to avoid too many requests
     clearTimeout(window.hoverShadowSaveTimeout);
     window.hoverShadowSaveTimeout = setTimeout(() => {
       saveToDatabase();
     }, 500);
   }
+
+  // Make applyHoverShadow globally accessible for color picker integration
+  window.applyHoverShadow = applyHoverShadow;
 
   function setup(typeKey, domKey, range = 50) {
     const bullet = document.getElementById(`hover-buttonShadow${domKey}Bullet`);

@@ -206,6 +206,18 @@ export function ButtonHoverShadowColorPalateToggle(
         }
       }
     }
+
+    // Trigger the hover shadow controls to update with new color
+    // This ensures the shadow dimensions are preserved when color is applied
+    if (window.hoverShadowSaveTimeout) {
+      clearTimeout(window.hoverShadowSaveTimeout);
+    }
+    window.hoverShadowSaveTimeout = setTimeout(() => {
+      // This will trigger the saveToDatabase function in initHoverButtonShadowControls
+      if (typeof window.applyHoverShadow === "function") {
+        window.applyHoverShadow();
+      }
+    }, 100);
   }
 
   if (allColorField) {
