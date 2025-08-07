@@ -130,6 +130,24 @@ export function ButtonHoverShadowColorPalateToggle(
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
 
+    // Get existing shadow values from the button's dataset
+    const allButtons = currentElement.querySelectorAll(
+      `a.${buttonType}, button.${buttonType}`
+    );
+
+    let existingShadowValues = "0px 4px 8px 0px"; // Default fallback
+    if (allButtons.length > 0) {
+      const firstButton = allButtons[0];
+      if (firstButton.dataset.scButtonHoverShadow) {
+        // Parse existing shadow values (format: "Xpx Ypx Blurpx Spreadpx")
+        const shadowParts = firstButton.dataset.scButtonHoverShadow.split(" ");
+        if (shadowParts.length >= 4) {
+          // Keep X, Y, Blur, Spread values, only update the color
+          existingShadowValues = `${shadowParts[0]} ${shadowParts[1]} ${shadowParts[2]} ${shadowParts[3]}`;
+        }
+      }
+    }
+
     const styleId = `sc-hover-shadow-style-global-${buttonType}`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
@@ -138,21 +156,28 @@ export function ButtonHoverShadowColorPalateToggle(
       document.head.appendChild(styleTag);
     }
 
-    // Apply box-shadow with the selected color
+    // Apply box-shadow with existing values but new color
+    const newBoxShadow = `${existingShadowValues} ${rgbaColor}`;
     styleTag.textContent = `
           a.${buttonType}:hover,
           button.${buttonType}:hover {
-            box-shadow: 0 4px 8px ${rgbaColor} !important;
+            box-shadow: ${newBoxShadow} !important;
           }
         `;
 
-    const allButtons = currentElement.querySelectorAll(
-      `a.${buttonType}, button.${buttonType}`
-    );
     allButtons.forEach((btn) => {
       btn.dataset.scButtonHoverShadowColor = color;
+      // Update the full shadow string with new color
+      btn.dataset.scButtonHoverShadow = newBoxShadow;
     });
-    console.log("🖌️ APPLYING HOVER SHADOW COLOR:", rgbaColor, "on", buttonType);
+    console.log(
+      "🖌️ APPLYING HOVER SHADOW COLOR:",
+      rgbaColor,
+      "on",
+      buttonType,
+      "with shadow:",
+      newBoxShadow
+    );
 
     // Save modifications if functions are provided
     if (
@@ -164,7 +189,7 @@ export function ButtonHoverShadowColorPalateToggle(
         const stylePayload = {
           buttonPrimary: {
             selector: `.${buttonType}:hover`,
-            styles: { boxShadow: `0 4px 8px ${rgbaColor}` },
+            styles: { boxShadow: newBoxShadow },
           },
         };
         addPendingModification(blockId, stylePayload, "buttonShadow");

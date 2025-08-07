@@ -1174,22 +1174,12 @@ window.pendingModifications = pendingModifications;
     // Button hover border color palette trigger end here
 
     // button hover shadow color palette trigger start here
-
     const triggerButtonHoverShadowColor = event.target.closest(
-      ".sc-square-6.sc-cursor-pointer"
+      "#hover-shadow-color-trigger"
     );
 
-    // Check if this is the hover border color trigger by looking for the specific palette
-    const isHoverShadowColorTrigger =
-      triggerButtonHoverShadowColor &&
-      triggerButtonHoverShadowColor.closest(
-        ".sc-py-4px.sc-relative.sc-mt-3.sc-bg-3f3f3f.sc-inActiveTab-border"
-      ) &&
-      triggerButtonHoverShadowColor
-        .closest(
-          ".sc-py-4px.sc-relative.sc-mt-3.sc-bg-3f3f3f.sc-inActiveTab-border"
-        )
-        .querySelector("#button-hover-shadow-color-palette");
+    // Check if this is the hover shadow color trigger
+    const isHoverShadowColorTrigger = triggerButtonHoverShadowColor !== null;
     const paletteButtonHoverShadowColor = document.getElementById(
       "button-hover-shadow-color-palette"
     );
