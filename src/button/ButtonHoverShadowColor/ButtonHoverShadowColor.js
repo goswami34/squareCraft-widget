@@ -207,6 +207,22 @@ export function ButtonHoverShadowColorPalateToggle(
       }
     }
 
+    // Update the hoverShadowState with current shadow dimensions before applying
+    // This ensures the shadow dimensions are preserved when color is applied
+    if (window.hoverShadowState) {
+      // Extract numeric values from the parsed shadow dimensions
+      const xValue = parseInt(xOffset);
+      const yValue = parseInt(yOffset);
+      const blurValue = parseInt(blurRadius);
+      const spreadValue = parseInt(spreadRadius);
+
+      // Update the global hoverShadowState with current dimensions
+      window.hoverShadowState.X = xValue;
+      window.hoverShadowState.Y = yValue;
+      window.hoverShadowState.Blur = blurValue;
+      window.hoverShadowState.Spread = spreadValue;
+    }
+
     // Trigger the hover shadow controls to update with new color
     // This ensures the shadow dimensions are preserved when color is applied
     if (window.hoverShadowSaveTimeout) {

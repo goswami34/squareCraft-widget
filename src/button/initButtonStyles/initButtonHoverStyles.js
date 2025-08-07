@@ -13,6 +13,9 @@ const hoverShadowState = {
   Spread: 0,
 };
 
+// Make hoverShadowState globally accessible for color picker integration
+window.hoverShadowState = hoverShadowState;
+
 export function initHoverButtonShadowControls(
   getSelectedElement,
   saveButtonHoverShadowModifications,
