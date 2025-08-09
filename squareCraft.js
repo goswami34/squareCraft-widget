@@ -799,6 +799,73 @@ window.pendingModifications = pendingModifications;
   window.fetchButtonHoverBorderModifications =
     fetchButtonHoverBorderModifications;
 
+  // Fetch button hover shadow modifications from the backend
+  async function fetchButtonHoverShadowModifications(blockId = null) {
+    console.log(
+      "🚀 fetchButtonHoverShadowModifications called with blockId:",
+      blockId
+    );
+
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
+      return { success: false, error: "Missing credentials or page ID" };
+    }
+
+    // Endpoint mirrors hover-border fetch naming
+    let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+    if (blockId) url += `&elementId=${blockId}`;
+
+    try {
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
+
+      const elements = result.elements || [];
+      elements.forEach((element) => {
+        const { elementId } = element;
+
+        const applyForType = (typeKey, uniqueIdSuffix) => {
+          const data = element?.[typeKey];
+          if (!data?.selector || !data?.styles) return;
+
+          // Normalize possible camelCase -> hyphen-case keys if needed for CSS output
+          const normalized = {};
+          Object.entries(data.styles).forEach(([k, v]) => {
+            if (v === null || v === undefined || v === "null") return;
+            const hyphenKey = k.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+            normalized[hyphenKey] = v;
+          });
+
+          applyHoverStylesAsExternalCSS(
+            data.selector,
+            normalized,
+            `sc-hover-shadow-fetched-${uniqueIdSuffix}-${elementId}`
+          );
+        };
+
+        applyForType("buttonPrimary", "primary");
+        applyForType("buttonSecondary", "secondary");
+        applyForType("buttonTertiary", "tertiary");
+      });
+
+      console.log("✅ All button hover shadow modifications applied (external CSS)");
+      return { success: true, modifications: (result.elements || []).length };
+    } catch (error) {
+      console.error("❌ Failed to fetch button hover shadow modifications:", error.message);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Expose globally for debugging/testing
+  window.fetchButtonHoverShadowModifications = fetchButtonHoverShadowModifications;
+
   // Make saveButtonHoverBorderModifications available globally for testing
   window.saveButtonHoverBorderModifications =
     saveButtonHoverBorderModifications;
@@ -4461,6 +4528,21 @@ window.pendingModifications = pendingModifications;
         error
       );
     }
+
+    // Fetch button hover shadow modifications on page load
+    console.log("🌅 Window load: About to fetch button hover shadow modifications");
+    try {
+      const result = await fetchButtonHoverShadowModifications();
+      console.log(
+        "🌅 Window load: Button hover shadow modifications fetch completed with result:",
+        result
+      );
+    } catch (error) {
+      console.error(
+        "🌅 Window load: Button hover shadow modifications fetch failed:",
+        error
+      );
+    }
   });
 
   async function addHeadingEventListeners() {
@@ -4526,6 +4608,7 @@ window.pendingModifications = pendingModifications;
       fetchButtonShadowModifications(elementId);
       fetchButtonIconModifications(elementId);
       fetchButtonHoverBorderModifications(elementId);
+      fetchButtonHoverShadowModifications(elementId);
     } else {
       console.log(
         "🔄 Observer: No elementId found, not calling fetchButtonHoverBorderModifications"
