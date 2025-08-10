@@ -10,26 +10,28 @@ export function ButtonHoverBackgroundColorModification(
   );
   const container = document.getElementById("hover-button-hover-color-colors");
   const selectorField = document.getElementById(
-    "hover-button-background-color-selection-field"
+    "button-hover-background-color-selection-field"
   );
   const bullet = document.getElementById(
-    "hover-button-background-color-selection-bar"
+    "button-hover-background-color-selection-bar"
   );
-  const colorCode = document.getElementById("hover-color-shadow-code");
+  const colorCode = document.getElementById(
+    "button-hover-background-color-code"
+  );
   const transparencyCount = document.getElementById(
-    "hover-button-background-color-transparency-count"
+    "button-hover-background-color-transparency-count"
   );
   const allColorField = document.getElementById(
-    "hover-button-background-color-selection-field"
+    "button-hover-all-color-selection-field"
   );
   const allColorBullet = document.getElementById(
-    "hover-button-background-color-selection-bar"
+    "button-hover-all-color-selection-bar"
   );
   const transparencyField = document.getElementById(
-    "hover-button-background-color-transparency-field"
+    "button-hover-background-color-transparency-field"
   );
   const transparencyBullet = document.getElementById(
-    "hover-button-background-color-transparency-bar"
+    "button-hover-background-color-transparency-bar"
   );
 
   if (
