@@ -113,7 +113,7 @@ export function WidgetButtonHoverState() {
                                     class="sc-absolute  sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px  sc-cursor-grabbing  sc-h-2 sc-bg-color-f2f2f2">
                                  </div>
                               </div>
-                              <div id="hover-button-text-border-color-all-color-selction-field"
+                              <div id="hover-button-text-color-selection-field"
                                  class="sc-h-full sc-w-3 sc-relative sc-rounded-15px">
                                  <div id="hover-button-text-border-color-all-color-selction-bar"
                                     class="sc-absolute  sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px sc-cursor-grabbing sc-h-2 sc-bg-color-f2f2f2">
