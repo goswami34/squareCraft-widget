@@ -1,7 +1,7 @@
 export function ButtonHoverBackgroundColorModification(
   themeColors,
   selectedElement,
-  saveButtonHoverBackgroundModifications,
+  saveButtonHoverShadowModifications,
   addPendingModification,
   showNotification
 ) {
@@ -10,24 +10,26 @@ export function ButtonHoverBackgroundColorModification(
   );
   const container = document.getElementById("hover-button-hover-color-colors");
   const selectorField = document.getElementById(
-    "hover-button-color-selection-field"
+    "hover-button-background-color-selection-field"
   );
-  const bullet = document.getElementById("hover-button-color-selection-bar");
-  const colorCode = document.getElementById("hover-button-color-code");
+  const bullet = document.getElementById(
+    "hover-button-background-color-selection-bar"
+  );
+  const colorCode = document.getElementById("hover-color-shadow-code");
   const transparencyCount = document.getElementById(
-    "hover-button-color-transparency-count"
+    "hover-button-background-color-transparency-count"
   );
   const allColorField = document.getElementById(
-    "hover-button-all-color-selection-field"
+    "hover-button-background-color-selection-field"
   );
   const allColorBullet = document.getElementById(
-    "hover-button-all-color-selection-bar"
+    "hover-button-background-color-selection-bar"
   );
   const transparencyField = document.getElementById(
-    "hover-button-color-transparency-field"
+    "hover-button-background-color-transparency-field"
   );
   const transparencyBullet = document.getElementById(
-    "hover-button-color-transparency-bar"
+    "hover-button-background-color-transparency-bar"
   );
 
   if (
@@ -104,10 +106,15 @@ export function ButtonHoverBackgroundColorModification(
     return "rgb(255, 0, 0)";
   }
 
-  // Function to apply background color to button
+  // Function to apply shadow color to button
   function applyButtonBackgroundColor(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
+
+    // Sync hoverShadowState with actual DOM values before applying color
+    if (typeof window.syncHoverButtonShadowStylesFromElement === "function") {
+      window.syncHoverButtonShadowStylesFromElement(currentElement);
+    }
 
     const buttonTypes = [
       "sqs-button-element--primary",
@@ -132,12 +139,25 @@ export function ButtonHoverBackgroundColorModification(
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
 
+    // Get existing shadow values from dataset or use defaults
     const allButtons = currentElement.querySelectorAll(
       `a.${buttonType}, button.${buttonType}`
     );
 
+    // Get shadow values from the first button to use for all buttons
+    const firstButton = allButtons[0];
+
+    // Use the synced hoverShadowState values instead of parsing from dataset
+    const xOffset = `${window.hoverShadowState?.X || 0}px`;
+    const yOffset = `${window.hoverShadowState?.Y || 4}px`;
+    const blurRadius = `${window.hoverShadowState?.Blur || 8}px`;
+    const spreadRadius = `${window.hoverShadowState?.Spread || 0}px`;
+
     allButtons.forEach((btn) => {
-      const styleId = `sc-hover-background-style-global-${buttonType}`;
+      // Create new shadow with updated color
+      const newShadow = `${xOffset} ${yOffset} ${blurRadius} ${spreadRadius} ${rgbaColor}`;
+
+      const styleId = `sc-hover-shadow-style-global-${buttonType}`;
       let styleTag = document.getElementById(styleId);
       if (!styleTag) {
         styleTag = document.createElement("style");
@@ -148,24 +168,25 @@ export function ButtonHoverBackgroundColorModification(
       styleTag.textContent = `
           a.${buttonType}:hover,
           button.${buttonType}:hover {
-            background-color: ${rgbaColor} !important;
+            box-shadow: ${newShadow} !important;
           }
         `;
 
-      btn.dataset.scButtonHoverBackground = rgbaColor;
-      btn.dataset.scButtonHoverBackgroundColor = color;
+      btn.dataset.scButtonHoverShadow = newShadow;
+      btn.dataset.scButtonHoverShadowColor = color;
     });
 
-    console.log(
-      "🖌️ APPLYING HOVER BACKGROUND COLOR:",
-      rgbaColor,
-      "on",
-      buttonType
-    );
+    console.log("🖌️ APPLYING HOVER SHADOW COLOR:", rgbaColor, "on", buttonType);
+    console.log("📏 Using shadow dimensions:", {
+      xOffset,
+      yOffset,
+      blurRadius,
+      spreadRadius,
+    });
 
     // Save modifications if functions are provided
     if (
-      typeof saveButtonHoverBackgroundModifications === "function" &&
+      typeof saveButtonHoverShadowModifications === "function" &&
       typeof addPendingModification === "function"
     ) {
       const blockId = currentElement.id;
@@ -174,19 +195,31 @@ export function ButtonHoverBackgroundColorModification(
           buttonPrimary: {
             selector: `.${buttonType}:hover`,
             styles: {
-              backgroundColor: rgbaColor,
+              boxShadow: `${xOffset} ${yOffset} ${blurRadius} ${spreadRadius} ${rgbaColor}`,
             },
           },
         };
-        addPendingModification(blockId, stylePayload, "buttonBackground");
+        addPendingModification(blockId, stylePayload, "buttonShadow");
         if (showNotification) {
           showNotification(
-            `Hover background color applied to ${buttonType}`,
+            `Hover shadow color applied to ${buttonType}`,
             "success"
           );
         }
       }
     }
+
+    // Trigger the hover shadow controls to update with new color
+    // This ensures the shadow dimensions are preserved when color is applied
+    if (window.hoverShadowSaveTimeout) {
+      clearTimeout(window.hoverShadowSaveTimeout);
+    }
+    window.hoverShadowSaveTimeout = setTimeout(() => {
+      // This will trigger the saveToDatabase function in initHoverButtonShadowControls
+      if (typeof window.applyHoverShadow === "function") {
+        window.applyHoverShadow();
+      }
+    }, 100);
   }
 
   if (allColorField) {
@@ -287,7 +320,7 @@ export function ButtonHoverBackgroundColorModification(
           selectorField.style.backgroundRepeat = "no-repeat";
         }
 
-        // Apply the color to button background
+        // Apply the color to button border
         applyButtonBackgroundColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
@@ -357,12 +390,12 @@ export function ButtonHoverBackgroundColorModification(
           colorCode.textContent = convertToRGB(finalColor);
         }
 
-        // Apply the color to button background
+        // Apply the color to button border
         applyButtonBackgroundColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
-        document.onmouseup = null;
         document.onmousemove = null;
+        document.onmouseup = null;
       };
     };
   }
@@ -425,7 +458,7 @@ export function ButtonHoverBackgroundColorModification(
       if (hsl) dynamicHue = hsl.h;
       colorCode.textContent = convertToRGB(cleanColor);
 
-      // Apply the color to button background
+      // Apply the color to button border
       applyButtonBackgroundColor(cleanColor, currentTransparency / 100);
     });
 
@@ -580,7 +613,7 @@ export function ButtonHoverBackgroundColorModification(
           colorCode.textContent = convertToRGB(finalColor);
         }
 
-        // Apply the color to button background
+        // Apply the color to button border
         applyButtonBackgroundColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
