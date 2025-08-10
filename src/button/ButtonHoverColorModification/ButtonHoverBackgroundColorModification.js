@@ -389,7 +389,7 @@ export function ButtonHoverBackgroundColorModification(
 
         // Apply current color with new transparency
         if (colorCode && colorCode.textContent) {
-          applyButtonShadowColor(
+          applyButtonBackgroundColor(
             colorCode.textContent,
             currentTransparency / 100
           );
@@ -425,8 +425,8 @@ export function ButtonHoverBackgroundColorModification(
       if (hsl) dynamicHue = hsl.h;
       colorCode.textContent = convertToRGB(cleanColor);
 
-      // Apply the color to button border
-      applyButtonShadowColor(cleanColor, currentTransparency / 100);
+      // Apply the color to button background
+      applyButtonBackgroundColor(cleanColor, currentTransparency / 100);
     });
 
     container.appendChild(swatch);

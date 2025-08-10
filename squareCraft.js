@@ -1333,7 +1333,6 @@ window.pendingModifications = pendingModifications;
       "#hover-buttonFontColorPalateTriger"
     );
 
-    // Check if this is the hover shadow color trigger
     const isHoverBackgroundColorTrigger =
       triggerButtonHoverBackgroundColor !== null;
     const paletteButtonHoverBackgroundColor = document.getElementById(
