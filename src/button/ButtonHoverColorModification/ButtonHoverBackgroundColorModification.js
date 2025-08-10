@@ -6,7 +6,7 @@ export function ButtonHoverBackgroundColorModification(
   showNotification
 ) {
   const palette = document.getElementById(
-    "hover-button-hover-font-color-palette"
+    "hover-button-background-color-palette"
   );
   const container = document.getElementById("hover-button-hover-color-colors");
   const selectorField = document.getElementById(
