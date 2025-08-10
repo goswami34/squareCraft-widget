@@ -619,6 +619,14 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/src/button/ButtonHoverShadowColor/ButtonHoverShadowColor.js"
   );
 
+  const { ButtonHoverBackgroundColorModification } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/ButtonHoverColorModification/ButtonHoverBackgroundColorModification.js"
+  );
+
+  const { ButtonHoverColorModification } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/ButtonHoverColorModification/ButtonHoverColorModification.js"
+  );
+
   // Make saveButtonColorModifications available globally
   window.saveButtonColorModifications = saveButtonColorModifications;
 
@@ -1282,7 +1290,80 @@ window.pendingModifications = pendingModifications;
       return;
     }
 
-    // button hover shadow color palette trigger end here
+    // button hover color color palette trigger end here
+
+    const triggerButtonHoverColorModification = event.target.closest(
+      "#hover-button-text-color-select"
+    );
+
+    // Check if this is the hover shadow color trigger
+    const isHoverColorTrigger = triggerButtonHoverColorModification !== null;
+    const paletteButtonHoverColor = document.getElementById(
+      "hover-button-text-color-palette"
+    );
+
+    if (isHoverColorTrigger && paletteButtonHoverColor) {
+      paletteButtonHoverColor.classList.toggle("sc-hidden");
+
+      // Load palette after toggle
+      if (!paletteButtonHoverColor.classList.contains("sc-hidden")) {
+        setTimeout(() => {
+          ButtonHoverColorModification(
+            themeColors,
+            () => selectedElement,
+            saveButtonHoverShadowModifications,
+            (blockId, css, tagType) => {
+              if (!pendingModifications.has(blockId)) {
+                pendingModifications.set(blockId, []);
+              }
+              pendingModifications.get(blockId).push({ css, tagType });
+            },
+            showNotification
+          );
+        }, 50);
+      }
+      return;
+    }
+
+    // button color palette trigger end here
+
+    // button hover background color palette trigger start here
+
+    const triggerButtonHoverBackgroundColor = event.target.closest(
+      "#hover-buttonFontColorPalateTriger"
+    );
+
+    // Check if this is the hover shadow color trigger
+    const isHoverBackgroundColorTrigger =
+      triggerButtonHoverBackgroundColor !== null;
+    const paletteButtonHoverBackgroundColor = document.getElementById(
+      "hover-button-hover-font-color-palette"
+    );
+
+    if (isHoverBackgroundColorTrigger && paletteButtonHoverBackgroundColor) {
+      paletteButtonHoverBackgroundColor.classList.toggle("sc-hidden");
+
+      // Load palette after toggle
+      if (!paletteButtonHoverBackgroundColor.classList.contains("sc-hidden")) {
+        setTimeout(() => {
+          ButtonHoverBackgroundColorModification(
+            themeColors,
+            () => selectedElement,
+            saveButtonHoverShadowModifications,
+            (blockId, css, tagType) => {
+              if (!pendingModifications.has(blockId)) {
+                pendingModifications.set(blockId, []);
+              }
+              pendingModifications.get(blockId).push({ css, tagType });
+            },
+            showNotification
+          );
+        }, 50);
+      }
+      return;
+    }
+
+    // button hover background color palette trigger end here
 
     // button icon color palette trigger start here
     const triggerButtonIconColor = event.target.closest(
