@@ -4,7 +4,7 @@ export function initButtonSectionToggleControls() {
     colorButton: "colorSection",
     iconButton: "iconSection",
     bordersButton: "bordersSection",
-    shadowsButton: "shadowsSection"
+    shadowsButton: "shadowsSection",
   };
 
   function updateActiveBars() {
@@ -12,24 +12,34 @@ export function initButtonSectionToggleControls() {
       const button = document.getElementById(buttonId);
       if (!button) return;
 
-      const styleElements = sectionId === "fontSection"
-        ? [
-          "scButtonFontSizeInput",
-          "scButtonFontWeightSelected",
-          "scButtonLetterSpacingInput",
-          "scButtonAllCapital",
-          "scButtonAllSmall",
-          "scButtonFirstCapital"
-        ]
-        : sectionId === "colorSection"
+      const styleElements =
+        sectionId === "fontSection"
+          ? [
+              "scButtonFontSizeInput",
+              "scButtonFontWeightSelected",
+              "scButtonLetterSpacingInput",
+              "scButtonAllCapital",
+              "scButtonAllSmall",
+              "scButtonFirstCapital",
+            ]
+          : sectionId === "colorSection"
           ? ["buttonFontColorCode"]
           : sectionId === "iconSection"
-            ? ["buttoniconRotationradiusCount", "buttoniconSizeradiusCount", "buttoniconSpacingradiusCount"]
-            : sectionId === "bordersSection"
-              ? ["buttonBorderCount", "buttonBorderradiusCount"]
-              : sectionId === "shadowsSection"
-                ? ["buttonShadowXaxisCount", "buttonShadowYaxisCount", "buttonShadowBlurCount", "buttonShadowSpreadCount"]
-                : [];
+          ? [
+              "buttoniconRotationradiusCount",
+              "buttoniconSizeradiusCount",
+              "buttoniconSpacingradiusCount",
+            ]
+          : sectionId === "bordersSection"
+          ? ["buttonBorderCount", "buttonBorderradiusCount"]
+          : sectionId === "shadowsSection"
+          ? [
+              "buttonShadowXaxisCount",
+              "buttonShadowYaxisCount",
+              "buttonShadowBlurCount",
+              "buttonShadowSpreadCount",
+            ]
+          : [];
 
       const hasActiveStyle = styleElements.some((id) => {
         const el = document.getElementById(id);
@@ -43,11 +53,23 @@ export function initButtonSectionToggleControls() {
           return el.classList.contains("sc-activeTab-border");
         }
 
-        const value = el.tagName === "INPUT"
-          ? el.value?.trim()
-          : el.innerText?.trim();
+        const value =
+          el.tagName === "INPUT" ? el.value?.trim() : el.innerText?.trim();
 
-        return value && !["0px", "Select", "0deg", "", "0", "400", "16", "15", "Select Font"].includes(value);
+        return (
+          value &&
+          ![
+            "0px",
+            "Select",
+            "0deg",
+            "",
+            "0",
+            "400",
+            "16",
+            "15",
+            "Select Font",
+          ].includes(value)
+        );
       });
 
       const existingBar = button.querySelector(".sc-active-bar");
@@ -61,13 +83,12 @@ export function initButtonSectionToggleControls() {
     });
   }
 
-
   const arrowMap = {
     fontButton: "button-font-arrow",
     colorButton: "button-color-arrow",
     iconButton: "button-icon-arrow",
     bordersButton: "button-border-arrow",
-    shadowsButton: "button-shadow-arrow"
+    shadowsButton: "button-shadow-arrow",
   };
 
   Object.keys(sections).forEach((buttonId) => {
@@ -104,9 +125,12 @@ export function initButtonSectionToggleControls() {
     });
   });
 
-
-  const buttonFontSizeSelect = document.getElementById("scButtonFontSizeSelect");
-  const buttonFontSizeOptions = document.getElementById("scButtonFontSizeOptions");
+  const buttonFontSizeSelect = document.getElementById(
+    "scButtonFontSizeSelect"
+  );
+  const buttonFontSizeOptions = document.getElementById(
+    "scButtonFontSizeOptions"
+  );
 
   if (buttonFontSizeSelect && buttonFontSizeOptions) {
     buttonFontSizeSelect.addEventListener("click", () => {
@@ -114,9 +138,15 @@ export function initButtonSectionToggleControls() {
     });
   }
 
-  const buttonFontWeightSelect = document.getElementById("scButtonFontWeightSelect");
-  const buttonFontWeightOptions = document.getElementById("scButtonFontWeightOptions");
-  const buttonFontWeightSelected = document.getElementById("scButtonFontWeightSelected");
+  const buttonFontWeightSelect = document.getElementById(
+    "scButtonFontWeightSelect"
+  );
+  const buttonFontWeightOptions = document.getElementById(
+    "scButtonFontWeightOptions"
+  );
+  const buttonFontWeightSelected = document.getElementById(
+    "scButtonFontWeightSelected"
+  );
 
   if (buttonFontWeightSelect && buttonFontWeightOptions) {
     buttonFontWeightSelect.addEventListener("click", (event) => {
@@ -130,18 +160,26 @@ export function initButtonSectionToggleControls() {
       }
     });
 
-    buttonFontWeightOptions.querySelectorAll(".sc-dropdown-item").forEach((item) => {
-      item.addEventListener("click", () => {
-        const selectedWeight = item.innerText;
-        buttonFontWeightSelected.innerText = selectedWeight;
-        buttonFontWeightOptions.classList.add("sc-hidden");
+    buttonFontWeightOptions
+      .querySelectorAll(".sc-dropdown-item")
+      .forEach((item) => {
+        item.addEventListener("click", () => {
+          const selectedWeight = item.innerText;
+          buttonFontWeightSelected.innerText = selectedWeight;
+          buttonFontWeightOptions.classList.add("sc-hidden");
+        });
       });
-    });
   }
 
-  const buttonLetterSpacingSelect = document.getElementById("scButtonLetterSpacingSelect");
-  const buttonLetterSpacingOptions = document.getElementById("scButtonLetterSpacingOptions");
-  const buttonLetterSpacingInput = document.getElementById("scButtonLetterSpacingInput");
+  const buttonLetterSpacingSelect = document.getElementById(
+    "scButtonLetterSpacingSelect"
+  );
+  const buttonLetterSpacingOptions = document.getElementById(
+    "scButtonLetterSpacingOptions"
+  );
+  const buttonLetterSpacingInput = document.getElementById(
+    "scButtonLetterSpacingInput"
+  );
 
   if (buttonLetterSpacingSelect && buttonLetterSpacingOptions) {
     buttonLetterSpacingSelect.addEventListener("click", (event) => {
@@ -155,18 +193,24 @@ export function initButtonSectionToggleControls() {
       }
     });
 
-    buttonLetterSpacingOptions.querySelectorAll(".sc-dropdown-item").forEach((item) => {
-      item.addEventListener("click", () => {
-        const selectedSpacing = item.getAttribute("data-value");
-        buttonLetterSpacingInput.value = selectedSpacing;
-        buttonLetterSpacingOptions.classList.add("sc-hidden");
-        buttonLetterSpacingInput.dispatchEvent(new Event("input"));
+    buttonLetterSpacingOptions
+      .querySelectorAll(".sc-dropdown-item")
+      .forEach((item) => {
+        item.addEventListener("click", () => {
+          const selectedSpacing = item.getAttribute("data-value");
+          buttonLetterSpacingInput.value = selectedSpacing;
+          buttonLetterSpacingOptions.classList.add("sc-hidden");
+          buttonLetterSpacingInput.dispatchEvent(new Event("input"));
+        });
       });
-    });
   }
 
-  const buttonFontColorTrigger = document.getElementById("buttonFontColorPalate");
-  const buttonFontColorPalette = document.getElementById("button-font-color-palette");
+  const buttonFontColorTrigger = document.getElementById(
+    "buttonFontColorPalate"
+  );
+  const buttonFontColorPalette = document.getElementById(
+    "button-font-color-palette"
+  );
 
   if (buttonFontColorTrigger && buttonFontColorPalette) {
     buttonFontColorTrigger.addEventListener("click", (event) => {
@@ -175,39 +219,76 @@ export function initButtonSectionToggleControls() {
     });
 
     document.addEventListener("click", (event) => {
-      if (!buttonFontColorTrigger.contains(event.target) && !buttonFontColorPalette.contains(event.target)) {
+      if (
+        !buttonFontColorTrigger.contains(event.target) &&
+        !buttonFontColorPalette.contains(event.target)
+      ) {
         buttonFontColorPalette.classList.add("sc-hidden");
       }
     });
   }
 
-  const buttonNormalStateClick = document.getElementById("buttonNormalStateClick");
-  const buttonHoverStateClick = document.getElementById("buttonHoverStateClick");
+  const buttonNormalStateClick = document.getElementById(
+    "buttonNormalStateClick"
+  );
+  const buttonHoverStateClick = document.getElementById(
+    "buttonHoverStateClick"
+  );
   const buttonNormalState = document.getElementById("ButtonNormalState");
   const buttonHoverState = document.getElementById("ButtonHoverState");
 
-  if (buttonNormalStateClick && buttonHoverStateClick && buttonNormalState && buttonHoverState) {
+  if (
+    buttonNormalStateClick &&
+    buttonHoverStateClick &&
+    buttonNormalState &&
+    buttonHoverState
+  ) {
     buttonHoverStateClick.addEventListener("click", () => {
       buttonNormalState.classList.add("sc-hidden");
       buttonHoverState.classList.remove("sc-hidden");
-      buttonNormalStateClick.classList.remove("sc-bg-color-EF7C2F", "sc-text-color-white");
+      buttonNormalStateClick.classList.remove(
+        "sc-bg-color-EF7C2F",
+        "sc-text-color-white"
+      );
       buttonNormalStateClick.classList.add("sc-bg-3f3f3f");
-      buttonHoverStateClick.classList.add("sc-bg-color-EF7C2F", "sc-text-color-white");
+      buttonHoverStateClick.classList.add(
+        "sc-bg-color-EF7C2F",
+        "sc-text-color-white"
+      );
       buttonHoverStateClick.classList.remove("sc-bg-3f3f3f");
+
+      // Restore hover shadow state from existing applied styles when switching to hover state
+      if (
+        typeof window.restoreHoverShadowStateFromAppliedStyles === "function"
+      ) {
+        setTimeout(() => {
+          window.restoreHoverShadowStateFromAppliedStyles();
+        }, 100); // Small delay to ensure the hover state is fully visible
+      }
     });
 
     buttonNormalStateClick.addEventListener("click", () => {
       buttonHoverState.classList.add("sc-hidden");
       buttonNormalState.classList.remove("sc-hidden");
-      buttonHoverStateClick.classList.remove("sc-bg-color-EF7C2F", "sc-text-color-white");
+      buttonHoverStateClick.classList.remove(
+        "sc-bg-color-EF7C2F",
+        "sc-text-color-white"
+      );
       buttonHoverStateClick.classList.add("sc-bg-3f3f3f");
-      buttonNormalStateClick.classList.add("sc-bg-color-EF7C2F", "sc-text-color-white");
+      buttonNormalStateClick.classList.add(
+        "sc-bg-color-EF7C2F",
+        "sc-text-color-white"
+      );
       buttonNormalStateClick.classList.remove("sc-bg-3f3f3f");
     });
   }
 
-  const buttonFontFamilySelect = document.getElementById("buttonFontFamilyButton");
-  const buttonFontFamilyOptions = document.getElementById("buttonFontFamilyOptions");
+  const buttonFontFamilySelect = document.getElementById(
+    "buttonFontFamilyButton"
+  );
+  const buttonFontFamilyOptions = document.getElementById(
+    "buttonFontFamilyOptions"
+  );
 
   if (buttonFontFamilySelect && buttonFontFamilyOptions) {
     buttonFontFamilySelect.addEventListener("click", (event) => {
@@ -224,10 +305,16 @@ export function initButtonSectionToggleControls() {
 
   const solidTab = document.getElementById("buttonIconSolidClick");
   const outlineTab = document.getElementById("buttonIconOutlineClick");
-  const solidOption = document.querySelector("#buttonIconLibraryOptions #buttonIconSolidoptions");
-  const outlineOption = document.querySelector("#buttonIconLibraryOptions #buttonIconOutlineoptions");
+  const solidOption = document.querySelector(
+    "#buttonIconLibraryOptions #buttonIconSolidoptions"
+  );
+  const outlineOption = document.querySelector(
+    "#buttonIconLibraryOptions #buttonIconOutlineoptions"
+  );
   const iconLibraryButton = document.getElementById("iconLibraryButton");
-  const iconLibraryDropdown = document.getElementById("buttonIconLibraryOptions");
+  const iconLibraryDropdown = document.getElementById(
+    "buttonIconLibraryOptions"
+  );
 
   let isLibraryVisible = false;
 
@@ -260,112 +347,108 @@ export function initButtonSectionToggleControls() {
     });
 
     document.addEventListener("click", (e) => {
-      if (!iconLibraryButton.contains(e.target) && !iconLibraryDropdown.contains(e.target)) {
+      if (
+        !iconLibraryButton.contains(e.target) &&
+        !iconLibraryDropdown.contains(e.target)
+      ) {
         iconLibraryDropdown.classList.add("sc-hidden");
         isLibraryVisible = false;
       }
     });
   }
 
-
-
   const colorCodeToggle = document.getElementById("color-code-toggle");
-const colorCodeArrow = document.getElementById("color-code-arrow");
-const colorCodeList = document.getElementById("color-code-dropdown-list");
-const colorCodeLabel = document.getElementById("color-code-label");
+  const colorCodeArrow = document.getElementById("color-code-arrow");
+  const colorCodeList = document.getElementById("color-code-dropdown-list");
+  const colorCodeLabel = document.getElementById("color-code-label");
 
-if (colorCodeToggle && colorCodeArrow && colorCodeList && colorCodeLabel) {
-  colorCodeToggle.addEventListener("click", (e) => {
-    e.stopPropagation();
-    colorCodeList.classList.toggle("sc-hidden");
-    colorCodeArrow.classList.toggle("sc-rotate-180");
-  });
-
-  colorCodeList.querySelectorAll("[data-format]").forEach((option) => {
-    option.addEventListener("click", () => {
-      const selected = option.getAttribute("data-format");
-      colorCodeLabel.textContent = selected;
-      selectedColorFormat = selected;
-
-      const colorDisplay = document.getElementById("button-color-code");
-      const raw = colorDisplay?.dataset?.rawColor || colorDisplay?.textContent;
-
-      if (raw && colorDisplay) {
-        const temp = document.createElement("div");
-        temp.style.color = raw;
-        document.body.appendChild(temp);
-        const rgb = getComputedStyle(temp).color;
-        document.body.removeChild(temp);
-
-        const match = rgb.match(/\d+/g);
-        if (match) {
-          const r = +match[0],
-            g = +match[1],
-            b = +match[2];
-          const alpha = match[3] ? +match[3] / 255 : 1;
-
-          colorDisplay.textContent = formatColorOutput(r, g, b, alpha);
-          colorDisplay.dataset.rawColor = `rgba(${r}, ${g}, ${b}, ${alpha})`; // optional
-        }
-      }
-
-      colorCodeList.classList.add("sc-hidden");
-      colorCodeArrow.classList.remove("sc-rotate-180");
+  if (colorCodeToggle && colorCodeArrow && colorCodeList && colorCodeLabel) {
+    colorCodeToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      colorCodeList.classList.toggle("sc-hidden");
+      colorCodeArrow.classList.toggle("sc-rotate-180");
     });
-  });
-  
-  
-  
 
+    colorCodeList.querySelectorAll("[data-format]").forEach((option) => {
+      option.addEventListener("click", () => {
+        const selected = option.getAttribute("data-format");
+        colorCodeLabel.textContent = selected;
+        selectedColorFormat = selected;
 
-  document.addEventListener("click", (e) => {
-    if (!colorCodeList.contains(e.target) && !colorCodeToggle.contains(e.target)) {
-      colorCodeList.classList.add("sc-hidden");
-      colorCodeArrow.classList.add("sc-rotate-180");
-    }
-  });
-}
+        const colorDisplay = document.getElementById("button-color-code");
+        const raw =
+          colorDisplay?.dataset?.rawColor || colorDisplay?.textContent;
 
-const tabMap = {
-  "design-tab": "designTab",
-  "advanced-tab": "advancedTab",
-  "preset-tab": "presetsTab"
-};
+        if (raw && colorDisplay) {
+          const temp = document.createElement("div");
+          temp.style.color = raw;
+          document.body.appendChild(temp);
+          const rgb = getComputedStyle(temp).color;
+          document.body.removeChild(temp);
 
-const activeBar = document.querySelector(".sc-tab-active-indicator");
+          const match = rgb.match(/\d+/g);
+          if (match) {
+            const r = +match[0],
+              g = +match[1],
+              b = +match[2];
+            const alpha = match[3] ? +match[3] / 255 : 1;
 
-Object.keys(tabMap).forEach((tabId) => {
-  const tabButton = document.getElementById(tabId);
-  const targetTab = document.getElementById(tabMap[tabId]);
+            colorDisplay.textContent = formatColorOutput(r, g, b, alpha);
+            colorDisplay.dataset.rawColor = `rgba(${r}, ${g}, ${b}, ${alpha})`; // optional
+          }
+        }
 
-  if (tabButton && targetTab && activeBar) {
-    tabButton.addEventListener("click", () => {
-      Object.values(tabMap).forEach(id => {
-        document.getElementById(id)?.classList.add("sc-hidden");
+        colorCodeList.classList.add("sc-hidden");
+        colorCodeArrow.classList.remove("sc-rotate-180");
       });
+    });
 
-      targetTab.classList.remove("sc-hidden");
-
-      const tabRect = tabButton.getBoundingClientRect();
-      const parentRect = tabButton.parentElement.getBoundingClientRect();
-
-      let offsetLeft = tabRect.left - parentRect.left;
-
-      if (tabId === "advanced-tab") {
-        offsetLeft += 5;
+    document.addEventListener("click", (e) => {
+      if (
+        !colorCodeList.contains(e.target) &&
+        !colorCodeToggle.contains(e.target)
+      ) {
+        colorCodeList.classList.add("sc-hidden");
+        colorCodeArrow.classList.add("sc-rotate-180");
       }
-
-      activeBar.style.setProperty("left", `${offsetLeft}px`, "important");
     });
   }
-});
 
-document.getElementById("design-tab")?.click();
+  const tabMap = {
+    "design-tab": "designTab",
+    "advanced-tab": "advancedTab",
+    "preset-tab": "presetsTab",
+  };
 
+  const activeBar = document.querySelector(".sc-tab-active-indicator");
 
+  Object.keys(tabMap).forEach((tabId) => {
+    const tabButton = document.getElementById(tabId);
+    const targetTab = document.getElementById(tabMap[tabId]);
 
+    if (tabButton && targetTab && activeBar) {
+      tabButton.addEventListener("click", () => {
+        Object.values(tabMap).forEach((id) => {
+          document.getElementById(id)?.classList.add("sc-hidden");
+        });
 
+        targetTab.classList.remove("sc-hidden");
+
+        const tabRect = tabButton.getBoundingClientRect();
+        const parentRect = tabButton.parentElement.getBoundingClientRect();
+
+        let offsetLeft = tabRect.left - parentRect.left;
+
+        if (tabId === "advanced-tab") {
+          offsetLeft += 5;
+        }
+
+        activeBar.style.setProperty("left", `${offsetLeft}px`, "important");
+      });
+    }
+  });
+
+  document.getElementById("design-tab")?.click();
 
   window.updateActiveButtonBars = updateActiveBars;
-
 }

@@ -823,7 +823,9 @@ window.pendingModifications = pendingModifications;
     if (blockId) url += `&elementId=${blockId}`;
 
     try {
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const result = await res.json();
       if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
 
@@ -855,16 +857,22 @@ window.pendingModifications = pendingModifications;
         applyForType("buttonTertiary", "tertiary");
       });
 
-      console.log("✅ All button hover shadow modifications applied (external CSS)");
+      console.log(
+        "✅ All button hover shadow modifications applied (external CSS)"
+      );
       return { success: true, modifications: (result.elements || []).length };
     } catch (error) {
-      console.error("❌ Failed to fetch button hover shadow modifications:", error.message);
+      console.error(
+        "❌ Failed to fetch button hover shadow modifications:",
+        error.message
+      );
       return { success: false, error: error.message };
     }
   }
 
   // Expose globally for debugging/testing
-  window.fetchButtonHoverShadowModifications = fetchButtonHoverShadowModifications;
+  window.fetchButtonHoverShadowModifications =
+    fetchButtonHoverShadowModifications;
 
   // Make saveButtonHoverBorderModifications available globally for testing
   window.saveButtonHoverBorderModifications =
@@ -1625,6 +1633,13 @@ window.pendingModifications = pendingModifications;
         },
         showNotification
       );
+
+      // Restore hover shadow state from existing applied styles
+      if (
+        typeof window.restoreHoverShadowStateFromAppliedStyles === "function"
+      ) {
+        window.restoreHoverShadowStateFromAppliedStyles();
+      }
 
       // Sync hover shadow state with actual DOM values
       if (typeof window.syncHoverButtonShadowStylesFromElement === "function") {
@@ -4530,7 +4545,9 @@ window.pendingModifications = pendingModifications;
     }
 
     // Fetch button hover shadow modifications on page load
-    console.log("🌅 Window load: About to fetch button hover shadow modifications");
+    console.log(
+      "🌅 Window load: About to fetch button hover shadow modifications"
+    );
     try {
       const result = await fetchButtonHoverShadowModifications();
       console.log(

@@ -16,6 +16,92 @@ const hoverShadowState = {
 // Make hoverShadowState globally accessible for color picker integration
 window.hoverShadowState = hoverShadowState;
 
+// Function to restore shadow state from existing applied styles
+function restoreHoverShadowStateFromAppliedStyles() {
+  // Look for applied hover shadow styles in the document head
+  const styleTags = document.querySelectorAll(
+    'style[id*="sc-hover-shadow-fetched"]'
+  );
+
+  if (styleTags.length === 0) {
+    console.log("ℹ️ No applied hover shadow styles found");
+    return;
+  }
+
+  // Find the first button element to check its class
+  const firstButton = document.querySelector(
+    ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+  );
+  if (!firstButton) return;
+
+  const buttonClass = [...firstButton.classList].find((cls) =>
+    cls.startsWith("sqs-button-element--")
+  );
+  if (!buttonClass) return;
+
+  // Look for styles that match this button class
+  for (const styleTag of styleTags) {
+    const cssText = styleTag.textContent;
+    const hoverSelector = `.${buttonClass}:hover`;
+
+    if (cssText.includes(hoverSelector) && cssText.includes("box-shadow:")) {
+      // Extract the box-shadow value from the CSS
+      const shadowMatch = cssText.match(
+        new RegExp(
+          `${hoverSelector.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
+          )}\\s*{[^}]*box-shadow:\\s*([^;!]+)`
+        )
+      );
+      if (shadowMatch) {
+        const shadowValue = shadowMatch[1].trim();
+
+        // Parse the shadow values
+        const shadowMatch2 = shadowValue.match(
+          /^(\d+)px\s+(\d+)px\s+(\d+)px\s+(\d+)px\s+(.+)$/
+        );
+        if (shadowMatch2) {
+          const xValue = parseInt(shadowMatch2[1]);
+          const yValue = parseInt(shadowMatch2[2]);
+          const blurValue = parseInt(shadowMatch2[3]);
+          const spreadValue = parseInt(shadowMatch2[4]);
+
+          // Only update if we have valid non-zero values
+          if (
+            xValue !== 0 ||
+            yValue !== 0 ||
+            blurValue !== 0 ||
+            spreadValue !== 0
+          ) {
+            hoverShadowState.X = xValue;
+            hoverShadowState.Y = yValue;
+            hoverShadowState.Blur = blurValue;
+            hoverShadowState.Spread = spreadValue;
+
+            console.log("🔄 Restored hoverShadowState from applied styles:", {
+              X: xValue,
+              Y: yValue,
+              Blur: blurValue,
+              Spread: spreadValue,
+            });
+
+            // Update UI if it exists
+            if (typeof updateHoverShadowUI === "function") {
+              updateHoverShadowUI();
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+}
+
+// Make restore function globally accessible
+window.restoreHoverShadowStateFromAppliedStyles =
+  restoreHoverShadowStateFromAppliedStyles;
+
 // Function to synchronize hoverShadowState with actual shadow values from DOM
 function syncHoverButtonShadowStylesFromElement(element) {
   if (!element) return;
@@ -28,28 +114,81 @@ function syncHoverButtonShadowStylesFromElement(element) {
   // Try to get shadow from dataset first
   let existingShadow = btn.dataset.scButtonHoverShadow;
 
-  // If no dataset, try to get from computed styles
+  // If no dataset, try to get from applied CSS styles by checking all style tags
+  if (!existingShadow) {
+    // Look for applied hover shadow styles in the document head
+    const styleTags = document.querySelectorAll(
+      'style[id*="sc-hover-shadow-fetched"]'
+    );
+    let foundShadow = null;
+
+    for (const styleTag of styleTags) {
+      const cssText = styleTag.textContent;
+      // Look for hover styles that match this button's class
+      const buttonClasses = [...btn.classList].filter((cls) =>
+        cls.startsWith("sqs-button-element--")
+      );
+
+      for (const buttonClass of buttonClasses) {
+        const hoverSelector = `.${buttonClass}:hover`;
+        if (
+          cssText.includes(hoverSelector) &&
+          cssText.includes("box-shadow:")
+        ) {
+          // Extract the box-shadow value from the CSS
+          const shadowMatch = cssText.match(
+            new RegExp(
+              `${hoverSelector.replace(
+                /[.*+?^${}()|[\]\\]/g,
+                "\\$&"
+              )}\\s*{[^}]*box-shadow:\\s*([^;!]+)`
+            )
+          );
+          if (shadowMatch) {
+            foundShadow = shadowMatch[1].trim();
+            break;
+          }
+        }
+      }
+      if (foundShadow) break;
+    }
+
+    if (foundShadow) {
+      existingShadow = foundShadow;
+    }
+  }
+
+  // If still no shadow, try to get from computed styles (but this might not work for hover states)
   if (!existingShadow) {
     const computedStyle = window.getComputedStyle(btn);
     existingShadow = computedStyle.boxShadow;
   }
 
-  // If still no shadow, use default values
-  if (!existingShadow || existingShadow === "none") {
-    existingShadow = "0px 4px 8px 0px rgba(0, 0, 0, 0.3)";
+  // Parse the shadow values
+  let xValue = 0,
+    yValue = 0,
+    blurValue = 0,
+    spreadValue = 0;
+
+  if (existingShadow && existingShadow !== "none") {
+    const shadowMatch = existingShadow.match(
+      /^(\d+)px\s+(\d+)px\s+(\d+)px\s+(\d+)px\s+(.+)$/
+    );
+
+    if (shadowMatch) {
+      xValue = parseInt(shadowMatch[1]);
+      yValue = parseInt(shadowMatch[2]);
+      blurValue = parseInt(shadowMatch[3]);
+      spreadValue = parseInt(shadowMatch[4]);
+    }
   }
 
-  // Parse the shadow values
-  const shadowMatch = existingShadow.match(
-    /^(\d+)px\s+(\d+)px\s+(\d+)px\s+(\d+)px\s+(.+)$/
-  );
-
-  if (shadowMatch) {
-    const xValue = parseInt(shadowMatch[1]);
-    const yValue = parseInt(shadowMatch[2]);
-    const blurValue = parseInt(shadowMatch[3]);
-    const spreadValue = parseInt(shadowMatch[4]);
-
+  // Only update hoverShadowState if we found actual values, don't reset to zeros
+  if (
+    existingShadow &&
+    existingShadow !== "none" &&
+    (xValue !== 0 || yValue !== 0 || blurValue !== 0 || spreadValue !== 0)
+  ) {
     // Update hoverShadowState with actual values
     hoverShadowState.X = xValue;
     hoverShadowState.Y = yValue;
@@ -64,6 +203,14 @@ function syncHoverButtonShadowStylesFromElement(element) {
     });
 
     // Update UI sliders to reflect the synced values
+    updateHoverShadowUI();
+  } else {
+    // If no valid shadow found, preserve existing hoverShadowState values
+    // and just update the UI to reflect current state
+    console.log(
+      "ℹ️ No existing shadow found, preserving current hoverShadowState:",
+      hoverShadowState
+    );
     updateHoverShadowUI();
   }
 }
@@ -132,6 +279,16 @@ export function initHoverButtonShadowControls(
     if (!blockId || blockId === "block-id") return;
 
     const v = hoverShadowState;
+
+    // Check if all shadow values are 0 (no shadow)
+    const hasNoShadow =
+      v.X === 0 && v.Y === 0 && v.Blur === 0 && v.Spread === 0;
+
+    if (hasNoShadow) {
+      console.log("ℹ️ No shadow to save (all values are 0)");
+      return; // Don't save to database when there's no shadow
+    }
+
     // Get the current shadow color from dataset or use default
     const currentShadowColor =
       btn.dataset.scButtonHoverShadowColor || "rgba(0,0,0,0.3)";
@@ -184,6 +341,27 @@ export function initHoverButtonShadowControls(
     );
     if (!cls) return;
 
+    const v = hoverShadowState;
+
+    // Check if all shadow values are 0 (no shadow)
+    const hasNoShadow =
+      v.X === 0 && v.Y === 0 && v.Blur === 0 && v.Spread === 0;
+
+    if (hasNoShadow) {
+      // Remove any existing shadow styles
+      const styleId = `sc-hover-shadow-${cls.replace(/--/g, "-")}`;
+      const existingStyle = document.getElementById(styleId);
+      if (existingStyle) {
+        existingStyle.remove();
+      }
+
+      // Clear the dataset
+      delete btn.dataset.scButtonHoverShadow;
+
+      console.log("ℹ️ No shadow applied (all values are 0)");
+      return; // Don't save to database when there's no shadow
+    }
+
     const styleId = `sc-hover-shadow-${cls.replace(/--/g, "-")}`;
     let style = document.getElementById(styleId);
     if (!style) {
@@ -192,7 +370,6 @@ export function initHoverButtonShadowControls(
       document.head.appendChild(style);
     }
 
-    const v = hoverShadowState;
     // Get the current shadow color from dataset or use default
     const currentShadowColor =
       btn.dataset.scButtonHoverShadowColor || "rgba(0,0,0,0.3)";
