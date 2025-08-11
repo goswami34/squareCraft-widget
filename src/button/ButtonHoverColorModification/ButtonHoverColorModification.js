@@ -198,10 +198,11 @@ export function ButtonHoverColorModification(
             )`;
   }
 
+  // Initialize transparency field with default hue
   if (transparencyField) {
     transparencyField.style.background = `linear-gradient(to bottom,
-              hsla(0, 100%, 50%, 1),
-              hsla(0, 100%, 50%, 0)
+              hsla(${dynamicHue}, 100%, 50%, 1),
+              hsla(${dynamicHue}, 100%, 50%, 0)
             )`;
   }
 
@@ -253,7 +254,7 @@ export function ButtonHoverColorModification(
         const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
-          colorCode.textContent = convertToRGB(finalColor);
+          colorCode.textContent = finalColor;
         }
 
         if (transparencyField) {
@@ -351,7 +352,7 @@ export function ButtonHoverColorModification(
         const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
-          colorCode.textContent = convertToRGB(finalColor);
+          colorCode.textContent = finalColor;
         }
 
         // Apply the color to button text
@@ -378,10 +379,10 @@ export function ButtonHoverColorModification(
 
         const transparencyPercent =
           100 - Math.round((offsetY / rect.height) * 100);
-        currentTransparency = transparencyPercent;
+        currentTransparency = Math.max(0, Math.min(100, transparencyPercent));
 
         if (transparencyCount) {
-          transparencyCount.textContent = `${transparencyPercent}%`;
+          transparencyCount.textContent = `${currentTransparency}%`;
         }
 
         // Apply current color with new transparency
@@ -420,7 +421,7 @@ export function ButtonHoverColorModification(
       // add color code to the color code from default page color field
       const hsl = rgbToHslFromAny(cleanColor);
       if (hsl) dynamicHue = hsl.h;
-      colorCode.textContent = convertToRGB(cleanColor);
+      colorCode.textContent = cleanColor;
 
       // Apply the color to button text
       applyButtonTextColor(cleanColor, currentTransparency / 100);
@@ -590,7 +591,12 @@ export function ButtonHoverColorModification(
   const firstColor = Object.values(themeColors)[0];
   if (firstColor) {
     renderVerticalColorShades(firstColor);
-    colorCode.textContent = convertToRGB(firstColor);
+    colorCode.textContent = firstColor;
     applyButtonTextColor(firstColor, currentTransparency / 100);
+    
+    // Initialize transparency display
+    if (transparencyCount) {
+      transparencyCount.textContent = `${currentTransparency}%`;
+    }
   }
 }
