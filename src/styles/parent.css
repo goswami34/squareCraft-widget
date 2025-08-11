@@ -5024,7 +5024,7 @@
 }
 
 
-#hover-button-text-border-color-selection-field {
+#button-hover-background-color-selection-field {
   width: 100% !important;
   height: 100px !important;
   border-radius: 6px !important;
@@ -5038,7 +5038,7 @@
   z-index: 999999 !important;
 }
 
-#hover-button-text-color-selection-field {
+#hover-button-text-border-color-selection-field {
   width: 100% !important;
   height: 100px !important;
   border-radius: 6px !important;
