@@ -20,58 +20,44 @@ export function WidgetButtonHoverState() {
                      </div>
                   
                      <div id="hover-button-background-color-palette"
-                     class="sc-absolute sc-z-99999 sc-border sc-hidden sc-border-solid sc-border-EF7C2F sc-top-12 sc-bg-3f3f3f sc-left-0 sc-p-1_5 sc-rounded-4px">
-                     <div class="sc-button-fontcolor-arrow"></div>
+                     class="sc-absolute sc-hidden sc-border sc-border-solid sc-border-EF7C2F sc-top-12 sc-bg-3f3f3f sc-left-0 sc-p-1 sc-rounded-4px">
+                     <div class="sc-color-arrow"></div>
                   
                      <div class="sc-flex sc-items-center sc-justify-between">
                         <div id="hover-button-hover-color-colors" class="sc-flex sc-relative sc-items-center sc-gap-1"></div>
                   
-                     <div class="sc-relative sc-inline-block sc-w-auto">
-                     <div id="color-code-toggle" class="sc-rounded-15px sc-px-2 sc-cursor-pointer sc-py-4px sc-bg-454545 sc-flex sc-items-center sc-gap-2">
-                        <p id="color-code-label" class="sc-universal sc-font-size-11 sc-roboto">RGB</p>
-                        <span id="color-code-arrow" class="sc-arrow-placeholder sc-rotate-180"></span>
+                     <div class="sc-rounded-15px sc-px-1_5 sc-py-0_5 sc-bg-454545 sc-flex sc-gap-1">
+                        <p class="sc-universal sc-font-size-11 sc-roboto">RGB</p>
+                        <span class="sc-arrow-placeholder sc-rotate-180"></span>
                      </div>
-
-                  <div id="color-code-dropdown-list"
-                        class="sc-absolute sc-border sc-border-solid sc-border-EF7C2F sc-left-0 sc-w-full sc-text-sm sc-z-999999 sc-rounded-15px sc-bg-494949 sc-flex sc-hidden sc-top-6 sc-flex-col sc-overflow-hidden">
-                     <div class="sc-cursor-pointer sc-dropdown-item sc-py-2px sc-px-2 sc-rounded-t-14px" data-format="RGB">RGB</div>
-                     <div class="sc-cursor-pointer sc-dropdown-item sc-py-2px sc-px-2" data-format="HSL">HSL</div>
-                     <div class="sc-cursor-pointer sc-dropdown-item sc-py-2px sc-px-2 sc-rounded-b-14px" data-format="HEX">HEX</div>
-                  </div>
-                  </div>
-
-
                      </div>
                   
                      <div class="sc-h-1px sc-mt-2 sc-bg-color-gray"></div>
-                  
-                     <!-- Main Color Picker Area -->
-                     <div class="sc-mt-2 sc-relative sc-w-full sc-h-32">
-                        <div id="button-hover-background-color-selection-field" class="sc-relative sc-w-full sc-h-full sc-rounded-4px sc-overflow-hidden">
+                     <div class="sc-flex color-h-selection sc-mt-2 sc-items-center sc-gap-2">
+                        <div id="button-hover-background-color-selection-field" class="sc-relative">
                            <div id="button-hover-background-color-selection-bar"
-                           class="sc-w-2 sc-h-2 sc-absolute sc-cursor-pointer sc-rounded-full sc-border sc-border-solid sc-border-white sc-z-10">
+                              class="sc-w-2 sc-h-2 sc-absolute sc-cursor-pointer sc-rounded-full sc-border sc-border-solid sc-border-white">
                            </div>
                         </div>
-                     </div>
-                  
-                     <!-- Color Control Sliders -->
-                     <div class="sc-flex sc-mt-2 sc-items-center sc-gap-2">
-                        <div id="button-hover-all-color-selection-field" class="sc-h-full sc-w-3 sc-relative sc-rounded-15px">
-                           <div id="button-hover-all-color-selection-bar"
-                           class="sc-absolute sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px sc-cursor-grabbing sc-h-2 sc-bg-color-f2f2f2">
-                           </div>
-                        </div>
-                  
-                        <div id="button-hover-background-color-transparency-field" class="sc-h-full sc-w-3 sc-relative sc-rounded-15px">
+                        <div id="button-hover-background-color-transparency-field"
+                           class="sc-h-full sc-w-3 sc-relative  sc-rounded-15px ">
                            <div id="button-hover-background-color-transparency-bar"
-                           class="sc-absolute sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px sc-cursor-grabbing sc-h-2 sc-bg-color-f2f2f2">
+                              class="sc-absolute  sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px  sc-cursor-grabbing  sc-h-2 sc-bg-color-f2f2f2">
+                           </div>
+                        </div>
+                        <div id="button-hover-all-color-selection-field"
+                           class="sc-h-full sc-w-3 sc-relative sc-rounded-15px">
+                           <div id="button-hover-all-color-selection-bar"
+                              class="sc-absolute  sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px sc-cursor-grabbing sc-h-2 sc-bg-color-f2f2f2">
                            </div>
                         </div>
                      </div>
-                  
-                     <div class="sc-flex sc-justify-between sc-mt-2 sc-px-2 sc-py-0_5 sc-rounded-4px sc-bg-454545">
-                        <p id="button-hover-background-color-code" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select</p>
-                        <p id="button-hover-background-color-transparency-count" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">100%</p>
+                     <div
+                        class="sc-flex sc-justify-between sc-mt-3 sc-px-2 sc-py-0_5 sc-rounded-4px sc-bg-454545">
+                        <p id="button-hover-background-color-code" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select
+                        </p>
+                        <p id="button-hover-background-color-transparency-count"
+                           class="sc-font-size-12 sc-roboto sc-font-light sc-universal">100%</p>
                      </div>
                      </div>
                   </div>

@@ -5029,6 +5029,12 @@
   border-radius: 6px !important;
 }
 
+#button-hover-background-color-selection-field {
+  width: 100% !important;
+  height: 100px !important;
+  border-radius: 6px !important;
+}
+
 #hover-button-text-color-palette {
   width: 180px !important;
   min-width: 180px !important;

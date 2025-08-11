@@ -5,8 +5,6 @@ export function ButtonHoverBackgroundColorModification(
   addPendingModification,
   showNotification
 ) {
-  console.log("🎨 ButtonHoverBackgroundColorModification called!");
-  
   const palette = document.getElementById(
     "hover-button-background-color-palette"
   );
@@ -36,19 +34,6 @@ export function ButtonHoverBackgroundColorModification(
     "button-hover-background-color-transparency-bar"
   );
 
-  console.log("🎨 Found elements:", {
-    palette: !!palette,
-    container: !!container,
-    selectorField: !!selectorField,
-    bullet: !!bullet,
-    colorCode: !!colorCode,
-    transparencyCount: !!transparencyCount,
-    allColorField: !!allColorField,
-    allColorBullet: !!allColorBullet,
-    transparencyField: !!transparencyField,
-    transparencyBullet: !!transparencyBullet
-  });
-
   if (
     !palette ||
     !container ||
@@ -57,7 +42,6 @@ export function ButtonHoverBackgroundColorModification(
     !colorCode ||
     !transparencyCount
   ) {
-    console.log("❌ Missing required elements, returning early");
     return;
   }
 
@@ -218,9 +202,28 @@ export function ButtonHoverBackgroundColorModification(
 
   if (transparencyField) {
     transparencyField.style.background = `linear-gradient(to bottom,
-              hsla(0, 100%, 50%, 1),
-              hsla(0, 100%, 50%, 0)
+              hsla(${dynamicHue}, 100%, 50%, 1),
+              hsla(${dynamicHue}, 100%, 50%, 0)
             )`;
+  }
+
+  // Initialize the main color selection field with a default gradient
+  if (selectorField) {
+    selectorField.style.background = `
+      linear-gradient(
+        to right,
+        hsl(0, 100%, 50%),
+        white
+      ),
+      linear-gradient(
+        to top,
+        black,
+        transparent
+      )
+    `;
+    selectorField.style.backgroundBlendMode = "multiply";
+    selectorField.style.backgroundSize = "100% 100%";
+    selectorField.style.backgroundRepeat = "no-repeat";
   }
 
   if (
@@ -394,8 +397,9 @@ export function ButtonHoverBackgroundColorModification(
         );
         transparencyBullet.style.top = `${offsetY}px`;
 
-        const transparencyPercent =
-          100 - Math.round((offsetY / rect.height) * 100);
+        const transparencyPercent = Math.max(0, Math.min(100, 
+          100 - Math.round((offsetY / rect.height) * 100)
+        ));
         currentTransparency = transparencyPercent;
 
         if (transparencyCount) {
@@ -418,35 +422,7 @@ export function ButtonHoverBackgroundColorModification(
   }
 
   // Show the palette
-  console.log("🎨 Showing palette, removing sc-hidden class");
   palette.classList.remove("sc-hidden");
-  console.log("🎨 Palette classes after removal:", palette.className);
-  console.log("🎨 Palette computed styles:", {
-    display: getComputedStyle(palette).display,
-    visibility: getComputedStyle(palette).visibility,
-    opacity: getComputedStyle(palette).opacity,
-    zIndex: getComputedStyle(palette).zIndex,
-    position: getComputedStyle(palette).position,
-    top: getComputedStyle(palette).top,
-    left: getComputedStyle(palette).left
-  });
-  
-  // Check palette dimensions and position
-  const rect = palette.getBoundingClientRect();
-  console.log("🎨 Palette bounding rect:", {
-    top: rect.top,
-    left: rect.left,
-    width: rect.width,
-    height: rect.height,
-    bottom: rect.bottom,
-    right: rect.right
-  });
-  
-  // Check if palette is in viewport
-  const isInViewport = rect.top >= 0 && rect.left >= 0 && 
-                      rect.bottom <= window.innerHeight && 
-                      rect.right <= window.innerWidth;
-  console.log("🎨 Palette in viewport:", isInViewport);
 
   if (container.innerHTML.trim() !== "") return;
 
@@ -637,6 +613,12 @@ export function ButtonHoverBackgroundColorModification(
   if (firstColor) {
     renderVerticalColorShades(firstColor);
     colorCode.textContent = convertToRGB(firstColor);
+    
+    // Ensure transparency count is properly initialized
+    if (transparencyCount) {
+      transparencyCount.textContent = `${currentTransparency}%`;
+    }
+    
     applyButtonBackgroundColor(firstColor, currentTransparency / 100);
   }
 }
