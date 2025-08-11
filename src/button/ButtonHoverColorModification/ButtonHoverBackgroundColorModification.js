@@ -5,6 +5,8 @@ export function ButtonHoverBackgroundColorModification(
   addPendingModification,
   showNotification
 ) {
+  console.log("🎨 ButtonHoverBackgroundColorModification called!");
+  
   const palette = document.getElementById(
     "hover-button-background-color-palette"
   );
@@ -34,6 +36,19 @@ export function ButtonHoverBackgroundColorModification(
     "button-hover-background-color-transparency-bar"
   );
 
+  console.log("🎨 Found elements:", {
+    palette: !!palette,
+    container: !!container,
+    selectorField: !!selectorField,
+    bullet: !!bullet,
+    colorCode: !!colorCode,
+    transparencyCount: !!transparencyCount,
+    allColorField: !!allColorField,
+    allColorBullet: !!allColorBullet,
+    transparencyField: !!transparencyField,
+    transparencyBullet: !!transparencyBullet
+  });
+
   if (
     !palette ||
     !container ||
@@ -41,8 +56,10 @@ export function ButtonHoverBackgroundColorModification(
     !bullet ||
     !colorCode ||
     !transparencyCount
-  )
+  ) {
+    console.log("❌ Missing required elements, returning early");
     return;
+  }
 
   let dynamicHue = 0;
   let currentTransparency = 100;
@@ -108,15 +125,10 @@ export function ButtonHoverBackgroundColorModification(
     return "rgb(255, 0, 0)";
   }
 
-  // Function to apply shadow color to button
+  // Function to apply background color to button on hover
   function applyButtonBackgroundColor(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
-
-    // Sync hoverShadowState with actual DOM values before applying color
-    if (typeof window.syncHoverButtonShadowStylesFromElement === "function") {
-      window.syncHoverButtonShadowStylesFromElement(currentElement);
-    }
 
     const buttonTypes = [
       "sqs-button-element--primary",
@@ -141,25 +153,12 @@ export function ButtonHoverBackgroundColorModification(
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
 
-    // Get existing shadow values from dataset or use defaults
     const allButtons = currentElement.querySelectorAll(
       `a.${buttonType}, button.${buttonType}`
     );
 
-    // Get shadow values from the first button to use for all buttons
-    const firstButton = allButtons[0];
-
-    // Use the synced hoverShadowState values instead of parsing from dataset
-    const xOffset = `${window.hoverShadowState?.X || 0}px`;
-    const yOffset = `${window.hoverShadowState?.Y || 4}px`;
-    const blurRadius = `${window.hoverShadowState?.Blur || 8}px`;
-    const spreadRadius = `${window.hoverShadowState?.Spread || 0}px`;
-
     allButtons.forEach((btn) => {
-      // Create new shadow with updated color
-      const newShadow = `${xOffset} ${yOffset} ${blurRadius} ${spreadRadius} ${rgbaColor}`;
-
-      const styleId = `sc-hover-shadow-style-global-${buttonType}`;
+      const styleId = `sc-hover-background-style-global-${buttonType}`;
       let styleTag = document.getElementById(styleId);
       if (!styleTag) {
         styleTag = document.createElement("style");
@@ -170,21 +169,14 @@ export function ButtonHoverBackgroundColorModification(
       styleTag.textContent = `
           a.${buttonType}:hover,
           button.${buttonType}:hover {
-            box-shadow: ${newShadow} !important;
+            background-color: ${rgbaColor} !important;
           }
         `;
 
-      btn.dataset.scButtonHoverShadow = newShadow;
-      btn.dataset.scButtonHoverShadowColor = color;
+      btn.dataset.scButtonHoverBackgroundColor = rgbaColor;
     });
 
-    console.log("🖌️ APPLYING HOVER SHADOW COLOR:", rgbaColor, "on", buttonType);
-    console.log("📏 Using shadow dimensions:", {
-      xOffset,
-      yOffset,
-      blurRadius,
-      spreadRadius,
-    });
+    console.log("🖌️ APPLYING HOVER BACKGROUND COLOR:", rgbaColor, "on", buttonType);
 
     // Save modifications if functions are provided
     if (
@@ -197,31 +189,19 @@ export function ButtonHoverBackgroundColorModification(
           buttonPrimary: {
             selector: `.${buttonType}:hover`,
             styles: {
-              boxShadow: `${xOffset} ${yOffset} ${blurRadius} ${spreadRadius} ${rgbaColor}`,
+              backgroundColor: rgbaColor,
             },
           },
         };
-        addPendingModification(blockId, stylePayload, "buttonShadow");
+        addPendingModification(blockId, stylePayload, "buttonBackground");
         if (showNotification) {
           showNotification(
-            `Hover shadow color applied to ${buttonType}`,
+            `Hover background color applied to ${buttonType}`,
             "success"
           );
         }
       }
     }
-
-    // Trigger the hover shadow controls to update with new color
-    // This ensures the shadow dimensions are preserved when color is applied
-    if (window.hoverShadowSaveTimeout) {
-      clearTimeout(window.hoverShadowSaveTimeout);
-    }
-    window.hoverShadowSaveTimeout = setTimeout(() => {
-      // This will trigger the saveToDatabase function in initHoverButtonShadowControls
-      if (typeof window.applyHoverShadow === "function") {
-        window.applyHoverShadow();
-      }
-    }, 100);
   }
 
   if (allColorField) {
@@ -438,7 +418,35 @@ export function ButtonHoverBackgroundColorModification(
   }
 
   // Show the palette
+  console.log("🎨 Showing palette, removing sc-hidden class");
   palette.classList.remove("sc-hidden");
+  console.log("🎨 Palette classes after removal:", palette.className);
+  console.log("🎨 Palette computed styles:", {
+    display: getComputedStyle(palette).display,
+    visibility: getComputedStyle(palette).visibility,
+    opacity: getComputedStyle(palette).opacity,
+    zIndex: getComputedStyle(palette).zIndex,
+    position: getComputedStyle(palette).position,
+    top: getComputedStyle(palette).top,
+    left: getComputedStyle(palette).left
+  });
+  
+  // Check palette dimensions and position
+  const rect = palette.getBoundingClientRect();
+  console.log("🎨 Palette bounding rect:", {
+    top: rect.top,
+    left: rect.left,
+    width: rect.width,
+    height: rect.height,
+    bottom: rect.bottom,
+    right: rect.right
+  });
+  
+  // Check if palette is in viewport
+  const isInViewport = rect.top >= 0 && rect.left >= 0 && 
+                      rect.bottom <= window.innerHeight && 
+                      rect.right <= window.innerWidth;
+  console.log("🎨 Palette in viewport:", isInViewport);
 
   if (container.innerHTML.trim() !== "") return;
 

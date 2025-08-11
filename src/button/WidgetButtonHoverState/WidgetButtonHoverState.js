@@ -16,7 +16,7 @@ export function WidgetButtonHoverState() {
                   <div class="sc-col-span-5 sc-mt-2 sc-z-99999 sc-relative ">
                      <div class="sc-flex sc-w-30 sc-justify-between sc-items-center sc-px-1 sc-bg-3f3f3f sc-inActiveTab-border sc-rounded-4px sc-py-4px">
                      <p id="buttonFontColorCode" class="sc-font-size-12 sc-roboto sc-universal">Select</p>
-                     <div id="buttonFontColorPalate" class="sc-square-6  sc-cursor-pointer"></div>
+                     <div id="hover-button-background-color-trigger" class="sc-square-6  sc-cursor-pointer"></div>
                      </div>
                   
                      <div id="hover-button-background-color-palette"
@@ -24,7 +24,7 @@ export function WidgetButtonHoverState() {
                      <div class="sc-button-fontcolor-arrow"></div>
                   
                      <div class="sc-flex sc-items-center sc-justify-between">
-                        <div id="button-border-colors" class="sc-flex sc-relative sc-items-center sc-gap-1"></div>
+                        <div id="hover-button-hover-color-colors" class="sc-flex sc-relative sc-items-center sc-gap-1"></div>
                   
                      <div class="sc-relative sc-inline-block sc-w-auto">
                      <div id="color-code-toggle" class="sc-rounded-15px sc-px-2 sc-cursor-pointer sc-py-4px sc-bg-454545 sc-flex sc-items-center sc-gap-2">

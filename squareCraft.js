@@ -1330,7 +1330,7 @@ window.pendingModifications = pendingModifications;
     // button hover background color palette trigger start here
 
     const triggerButtonHoverBackgroundColor = event.target.closest(
-      "#buttonFontColorPalate"
+      "#hover-button-background-color-trigger"
     );
 
     const isHoverBackgroundColorTrigger =
@@ -1340,10 +1340,12 @@ window.pendingModifications = pendingModifications;
     );
 
     if (isHoverBackgroundColorTrigger && paletteButtonHoverBackgroundColor) {
+      console.log("🎨 Background color trigger clicked!");
       paletteButtonHoverBackgroundColor.classList.toggle("sc-hidden");
 
       // Load palette after toggle
       if (!paletteButtonHoverBackgroundColor.classList.contains("sc-hidden")) {
+        console.log("🎨 Loading background color palette...");
         setTimeout(() => {
           ButtonHoverBackgroundColorModification(
             themeColors,
@@ -1358,6 +1360,8 @@ window.pendingModifications = pendingModifications;
             showNotification
           );
         }, 50);
+      } else {
+        console.log("🎨 Hiding background color palette...");
       }
       return;
     }
