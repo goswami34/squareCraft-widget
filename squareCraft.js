@@ -1330,7 +1330,7 @@ window.pendingModifications = pendingModifications;
     // button hover background color palette trigger start here
 
     const triggerButtonHoverBackgroundColor = event.target.closest(
-      "#hover-buttonBackgroundColorPalateTriger"
+      "#buttonFontColorPalate"
     );
 
     const isHoverBackgroundColorTrigger =
