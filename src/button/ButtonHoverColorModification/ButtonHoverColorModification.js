@@ -5,6 +5,62 @@ export function ButtonHoverColorModification(
   addPendingModification,
   showNotification
 ) {
+  // Helper function to manage unified button hover styles
+  function updateButtonHoverStyles(buttonType, newStyles) {
+    const styleId = `sc-hover-button-styles-${buttonType}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+
+    // Get existing styles from the button's dataset
+    const currentElement = selectedElement?.();
+    if (!currentElement) return;
+
+    const allButtons = currentElement.querySelectorAll(
+      `a.${buttonType}, button.${buttonType}`
+    );
+
+    allButtons.forEach((btn) => {
+      // Merge new styles with existing ones
+      const existingStyles = {
+        backgroundColor: btn.dataset.scButtonHoverBackgroundColor || "",
+        color: btn.dataset.scButtonHoverTextColor || "",
+        ...newStyles,
+      };
+
+      // Update dataset
+      if (newStyles.backgroundColor !== undefined) {
+        btn.dataset.scButtonHoverBackgroundColor = newStyles.backgroundColor;
+      }
+      if (newStyles.color !== undefined) {
+        btn.dataset.scButtonHoverTextColor = newStyles.color;
+      }
+
+      // Build combined CSS
+      const cssProperties = [];
+      if (existingStyles.backgroundColor) {
+        cssProperties.push(
+          `background-color: ${existingStyles.backgroundColor} !important`
+        );
+      }
+      if (existingStyles.color) {
+        cssProperties.push(`color: ${existingStyles.color} !important`);
+      }
+
+      if (cssProperties.length > 0) {
+        styleTag.textContent = `
+          a.${buttonType}:hover,
+          button.${buttonType}:hover {
+            ${cssProperties.join(";\n            ")}
+          }
+        `;
+      }
+    });
+  }
+
   const palette = document.getElementById("hover-button-text-color-palette");
   const container = document.getElementById("hover-button-text-colors");
   const selectorField = document.getElementById(
@@ -106,7 +162,7 @@ export function ButtonHoverColorModification(
     return "rgb(255, 0, 0)";
   }
 
-  // Function to apply background color to button on hover
+  // Function to apply text color to button on hover
   function applyButtonHoverColor(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
@@ -134,39 +190,14 @@ export function ButtonHoverColorModification(
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
 
-    const allButtons = currentElement.querySelectorAll(
-      `a.${buttonType}, button.${buttonType}`
-    );
+    // Use the unified style management function
+    updateButtonHoverStyles(buttonType, { color: rgbaColor });
 
-    allButtons.forEach((btn) => {
-      const styleId = `sc-hover-background-style-global-${buttonType}`;
-      let styleTag = document.getElementById(styleId);
-      if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = styleId;
-        document.head.appendChild(styleTag);
-      }
-
-      styleTag.textContent = `
-          a.${buttonType}:hover,
-          button.${buttonType}:hover {
-            color: ${rgbaColor} !important;
-          }
-        `;
-
-      btn.dataset.scButtonHoverBackgroundColor = rgbaColor;
-    });
-
-    console.log(
-      "🖌️ APPLYING HOVER BACKGROUND COLOR:",
-      rgbaColor,
-      "on",
-      buttonType
-    );
+    console.log("🖌️ APPLYING HOVER TEXT COLOR:", rgbaColor, "on", buttonType);
 
     // Save modifications if functions are provided
     if (
-      typeof saveButtonHoverShadowModifications === "function" &&
+      typeof saveButtonHoverTextModifications === "function" &&
       typeof addPendingModification === "function"
     ) {
       const blockId = currentElement.id;
@@ -175,14 +206,14 @@ export function ButtonHoverColorModification(
           buttonPrimary: {
             selector: `.${buttonType}:hover`,
             styles: {
-              backgroundColor: rgbaColor,
+              color: rgbaColor,
             },
           },
         };
-        addPendingModification(blockId, stylePayload, "buttonBackground");
+        addPendingModification(blockId, stylePayload, "buttonTextColor");
         if (showNotification) {
           showNotification(
-            `Hover background color applied to ${buttonType}`,
+            `Hover text color applied to ${buttonType}`,
             "success"
           );
         }

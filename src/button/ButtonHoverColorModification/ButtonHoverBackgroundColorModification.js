@@ -5,6 +5,62 @@ export function ButtonHoverBackgroundColorModification(
   addPendingModification,
   showNotification
 ) {
+  // Helper function to manage unified button hover styles
+  function updateButtonHoverStyles(buttonType, newStyles) {
+    const styleId = `sc-hover-button-styles-${buttonType}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+
+    // Get existing styles from the button's dataset
+    const currentElement = selectedElement?.();
+    if (!currentElement) return;
+
+    const allButtons = currentElement.querySelectorAll(
+      `a.${buttonType}, button.${buttonType}`
+    );
+
+    allButtons.forEach((btn) => {
+      // Merge new styles with existing ones
+      const existingStyles = {
+        backgroundColor: btn.dataset.scButtonHoverBackgroundColor || "",
+        color: btn.dataset.scButtonHoverTextColor || "",
+        ...newStyles,
+      };
+
+      // Update dataset
+      if (newStyles.backgroundColor !== undefined) {
+        btn.dataset.scButtonHoverBackgroundColor = newStyles.backgroundColor;
+      }
+      if (newStyles.color !== undefined) {
+        btn.dataset.scButtonHoverTextColor = newStyles.color;
+      }
+
+      // Build combined CSS
+      const cssProperties = [];
+      if (existingStyles.backgroundColor) {
+        cssProperties.push(
+          `background-color: ${existingStyles.backgroundColor} !important`
+        );
+      }
+      if (existingStyles.color) {
+        cssProperties.push(`color: ${existingStyles.color} !important`);
+      }
+
+      if (cssProperties.length > 0) {
+        styleTag.textContent = `
+          a.${buttonType}:hover,
+          button.${buttonType}:hover {
+            ${cssProperties.join(";\n            ")}
+          }
+        `;
+      }
+    });
+  }
+
   const palette = document.getElementById(
     "hover-button-background-color-palette"
   );
@@ -137,28 +193,8 @@ export function ButtonHoverBackgroundColorModification(
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
 
-    const allButtons = currentElement.querySelectorAll(
-      `a.${buttonType}, button.${buttonType}`
-    );
-
-    allButtons.forEach((btn) => {
-      const styleId = `sc-hover-background-style-global-${buttonType}`;
-      let styleTag = document.getElementById(styleId);
-      if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = styleId;
-        document.head.appendChild(styleTag);
-      }
-
-      styleTag.textContent = `
-          a.${buttonType}:hover,
-          button.${buttonType}:hover {
-            background-color: ${rgbaColor} !important;
-          }
-        `;
-
-      btn.dataset.scButtonHoverBackgroundColor = rgbaColor;
-    });
+    // Use the unified style management function
+    updateButtonHoverStyles(buttonType, { backgroundColor: rgbaColor });
 
     console.log(
       "🖌️ APPLYING HOVER BACKGROUND COLOR:",
