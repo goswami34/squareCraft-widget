@@ -1825,7 +1825,7 @@ export async function saveButtonHoverColorModifications(blockId, css) {
       "🌐 Making API request to save button hover color modifications..."
     );
     const response = await fetch(
-      "http://localhost:8001/api/v1/save-button-hover-color-modifications",
+      "https://admin.squareplugin.com/api/v1/save-button-hover-color-modifications",
       {
         method: "POST",
         headers: {
