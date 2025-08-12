@@ -32,8 +32,9 @@ export function ButtonHoverBackgroundColorModification(
       };
 
       // Update dataset
-      if (newStyles.backgroundColor !== undefined) {
-        btn.dataset.scButtonHoverBackgroundColor = newStyles.backgroundColor;
+      if (newStyles["background-color"] !== undefined) {
+        btn.dataset.scButtonHoverBackgroundColor =
+          newStyles["background-color"];
       }
       if (newStyles.color !== undefined) {
         btn.dataset.scButtonHoverTextColor = newStyles.color;
@@ -229,21 +230,21 @@ export function ButtonHoverBackgroundColorModification(
             selector: ".sqs-button-element--primary:hover",
             styles:
               buttonKey === "buttonPrimary"
-                ? { backgroundColor: rgbaColor }
+                ? { "background-color": rgbaColor }
                 : {},
           },
           buttonSecondary: {
             selector: ".sqs-button-element--secondary:hover",
             styles:
               buttonKey === "buttonSecondary"
-                ? { backgroundColor: rgbaColor }
+                ? { "background-color": rgbaColor }
                 : {},
           },
           buttonTertiary: {
             selector: ".sqs-button-element--tertiary:hover",
             styles:
               buttonKey === "buttonTertiary"
-                ? { backgroundColor: rgbaColor }
+                ? { "background-color": rgbaColor }
                 : {},
           },
         };
