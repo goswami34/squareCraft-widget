@@ -627,9 +627,9 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/src/button/ButtonHoverColorModification/ButtonHoverColorModification.js"
   );
 
-  const { saveButtonHoverColorModifications } = await import(
-    "https://goswami34.github.io/squareCraft-widget/html.js"
-  );
+  // Use the local saveButtonHoverColorModifications function from html.js
+  const saveButtonHoverColorModifications =
+    window.saveButtonHoverColorModifications;
 
   // Make saveButtonColorModifications available globally
   window.saveButtonColorModifications = saveButtonColorModifications;
