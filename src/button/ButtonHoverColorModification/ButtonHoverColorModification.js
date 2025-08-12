@@ -32,9 +32,8 @@ export function ButtonHoverColorModification(
       };
 
       // Update dataset
-      if (newStyles["background-color"] !== undefined) {
-        btn.dataset.scButtonHoverBackgroundColor =
-          newStyles["background-color"];
+      if (newStyles.backgroundColor !== undefined) {
+        btn.dataset.scButtonHoverBackgroundColor = newStyles.backgroundColor;
       }
       if (newStyles.color !== undefined) {
         btn.dataset.scButtonHoverTextColor = newStyles.color;
