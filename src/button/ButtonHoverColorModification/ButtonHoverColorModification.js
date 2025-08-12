@@ -40,7 +40,23 @@ export function ButtonHoverColorModification(
     !colorCode ||
     !transparencyCount
   ) {
+    console.warn("⚠️ Required elements not found:", {
+      palette: !!palette,
+      container: !!container,
+      selectorField: !!selectorField,
+      bullet: !!bullet,
+      colorCode: !!colorCode,
+      transparencyCount: !!transparencyCount,
+    });
     return;
+  }
+
+  // Additional check for transparency elements
+  if (!transparencyField || !transparencyBullet) {
+    console.warn("⚠️ Transparency elements not found:", {
+      transparencyField: !!transparencyField,
+      transparencyBullet: !!transparencyBullet,
+    });
   }
 
   let dynamicHue = 0;
@@ -204,10 +220,24 @@ export function ButtonHoverColorModification(
   }
 
   if (transparencyField) {
-    transparencyField.style.background = `linear-gradient(to bottom,
-              hsla(${dynamicHue}, 100%, 50%, 1),
-              hsla(${dynamicHue}, 100%, 50%, 0)
-            )`;
+    // Remove conflicting CSS classes
+    transparencyField.classList.remove("sc-h-full", "sc-w-3");
+
+    // Force apply our styles with !important
+    transparencyField.style.setProperty(
+      "background",
+      `linear-gradient(to bottom, hsla(${dynamicHue}, 100%, 50%, 1), hsla(${dynamicHue}, 100%, 50%, 0))`,
+      "important"
+    );
+    transparencyField.style.setProperty("width", "24px", "important");
+    transparencyField.style.setProperty("height", "100px", "important");
+    transparencyField.style.setProperty(
+      "border",
+      "1px solid #666",
+      "important"
+    );
+    transparencyField.style.setProperty("borderRadius", "15px", "important");
+    transparencyField.style.setProperty("overflow", "hidden", "important");
   }
 
   // Initialize the main color selection field with a default gradient
@@ -227,6 +257,64 @@ export function ButtonHoverColorModification(
     selectorField.style.backgroundBlendMode = "multiply";
     selectorField.style.backgroundSize = "100% 100%";
     selectorField.style.backgroundRepeat = "no-repeat";
+  }
+
+  // Initialize transparency bar position and ensure it's visible
+  if (transparencyField && transparencyBullet) {
+    console.log("🎨 Initializing transparency field and bar...");
+
+    // Remove conflicting CSS classes
+    transparencyField.classList.remove("sc-h-full", "sc-w-3");
+
+    // Set initial position to middle of the field
+    transparencyBullet.style.top = "50%";
+    transparencyBullet.style.transform = "translateY(-50%)";
+
+    // Ensure the transparency bar is visible with proper styling
+    transparencyBullet.style.width = "20px";
+    transparencyBullet.style.height = "8px";
+    transparencyBullet.style.backgroundColor = "#f2f2f2";
+    transparencyBullet.style.border = "1px solid #999";
+    transparencyBullet.style.borderRadius = "4px";
+    transparencyBullet.style.cursor = "grab";
+    transparencyBullet.style.zIndex = "10";
+
+    // Force apply our styles
+    transparencyField.style.setProperty("width", "24px", "important");
+    transparencyField.style.setProperty("height", "100px", "important");
+    transparencyField.style.setProperty(
+      "background",
+      `linear-gradient(to bottom, hsla(${dynamicHue}, 100%, 50%, 1), hsla(${dynamicHue}, 100%, 50%, 0))`,
+      "important"
+    );
+    transparencyField.style.setProperty(
+      "border",
+      "1px solid #666",
+      "important"
+    );
+    transparencyField.style.setProperty("borderRadius", "15px", "important");
+    transparencyField.style.setProperty("overflow", "hidden", "important");
+
+    // Ensure the transparency bar is properly positioned
+    transparencyBullet.style.setProperty("position", "absolute", "important");
+    transparencyBullet.style.setProperty("left", "2px", "important");
+
+    console.log(
+      "✅ Transparency field initialized with dimensions:",
+      transparencyField.offsetWidth,
+      "x",
+      transparencyField.offsetHeight
+    );
+    console.log(
+      "✅ Transparency bar positioned at:",
+      transparencyBullet.offsetLeft,
+      transparencyBullet.offsetTop
+    );
+  } else {
+    console.warn("⚠️ Transparency field or bullet not found:", {
+      transparencyField,
+      transparencyBullet,
+    });
   }
 
   if (
@@ -281,10 +369,32 @@ export function ButtonHoverColorModification(
         }
 
         if (transparencyField) {
-          transparencyField.style.background = `linear-gradient(to bottom,
-                    hsla(${dynamicHue}, 100%, 50%, 1),
-                    hsla(${dynamicHue}, 100%, 50%, 0)
-                  )`;
+          // Remove conflicting CSS classes
+          transparencyField.classList.remove("sc-h-full", "sc-w-3");
+
+          // Force apply our styles with !important
+          transparencyField.style.setProperty(
+            "background",
+            `linear-gradient(to bottom, hsla(${dynamicHue}, 100%, 50%, 1), hsla(${dynamicHue}, 100%, 50%, 0))`,
+            "important"
+          );
+          transparencyField.style.setProperty("width", "24px", "important");
+          transparencyField.style.setProperty("height", "100px", "important");
+          transparencyField.style.setProperty(
+            "border",
+            "1px solid #666",
+            "important"
+          );
+          transparencyField.style.setProperty(
+            "borderRadius",
+            "15px",
+            "important"
+          );
+          transparencyField.style.setProperty(
+            "overflow",
+            "hidden",
+            "important"
+          );
         }
 
         if (selectorField) {
@@ -430,6 +540,44 @@ export function ButtonHoverColorModification(
 
   if (container.innerHTML.trim() !== "") return;
 
+  // Ensure transparency field is properly initialized after a short delay
+  setTimeout(() => {
+    if (transparencyField && transparencyBullet) {
+      console.log("🎨 Delayed initialization of transparency field...");
+
+      // Remove conflicting CSS classes
+      transparencyField.classList.remove("sc-h-full", "sc-w-3");
+
+      // Force apply our styles with !important
+      transparencyField.style.setProperty("width", "24px", "important");
+      transparencyField.style.setProperty("height", "100px", "important");
+      transparencyField.style.setProperty(
+        "background",
+        `linear-gradient(to bottom, hsla(${dynamicHue}, 100%, 50%, 1), hsla(${dynamicHue}, 100%, 50%, 0))`,
+        "important"
+      );
+      transparencyField.style.setProperty(
+        "border",
+        "1px solid #666",
+        "important"
+      );
+      transparencyField.style.setProperty("borderRadius", "15px", "important");
+      transparencyField.style.setProperty("overflow", "hidden", "important");
+
+      // Ensure the transparency bar is properly positioned
+      transparencyBullet.style.setProperty("position", "absolute", "important");
+      transparencyBullet.style.setProperty("left", "2px", "important");
+      transparencyBullet.style.setProperty("top", "50%", "important");
+      transparencyBullet.style.setProperty(
+        "transform",
+        "translateY(-50%)",
+        "important"
+      );
+
+      console.log("✅ Delayed transparency field initialization complete");
+    }
+  }, 100);
+
   Object.values(themeColors).forEach((color) => {
     const cleanColor = color.replace(/['"]+/g, "");
     const swatch = document.createElement("div");
@@ -523,6 +671,28 @@ export function ButtonHoverColorModification(
     const hsl = rgbToHslFromAny(baseColor);
     if (hsl) {
       dynamicHue = hsl.h;
+    }
+
+    // Update transparency field with new hue
+    if (transparencyField) {
+      // Remove conflicting CSS classes
+      transparencyField.classList.remove("sc-h-full", "sc-w-3");
+
+      // Force apply our styles with !important
+      transparencyField.style.setProperty(
+        "background",
+        `linear-gradient(to bottom, hsla(${dynamicHue}, 100%, 50%, 1), hsla(${dynamicHue}, 100%, 50%, 0))`,
+        "important"
+      );
+      transparencyField.style.setProperty("width", "24px", "important");
+      transparencyField.style.setProperty("height", "100px", "important");
+      transparencyField.style.setProperty(
+        "border",
+        "1px solid #666",
+        "important"
+      );
+      transparencyField.style.setProperty("borderRadius", "15px", "important");
+      transparencyField.style.setProperty("overflow", "hidden", "important");
     }
 
     selectorField.innerHTML = "";
