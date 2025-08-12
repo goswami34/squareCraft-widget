@@ -150,7 +150,7 @@ export function ButtonHoverColorModification(
       styleTag.textContent = `
           a.${buttonType}:hover,
           button.${buttonType}:hover {
-            background-color: ${rgbaColor} !important;
+            color: ${rgbaColor} !important;
           }
         `;
 
