@@ -6620,15 +6620,15 @@ window.pendingModifications = pendingModifications;
 
     const mergedHoverColors = {
       buttonPrimary: {
-        selector: ".sqs-button-element--primary",
+        selector: ".sqs-button-element--primary:hover",
         styles: {},
       },
       buttonSecondary: {
-        selector: ".sqs-button-element--secondary",
+        selector: ".sqs-button-element--secondary:hover",
         styles: {},
       },
       buttonTertiary: {
-        selector: ".sqs-button-element--tertiary",
+        selector: ".sqs-button-element--tertiary:hover",
         styles: {},
       },
     };
@@ -6636,20 +6636,37 @@ window.pendingModifications = pendingModifications;
     // Merge all button hover color modifications
     buttonHoverColorMods.forEach((mod) => {
       console.log(`📝 Merging buttonHoverColor modification:`, mod.css);
+      console.log(`🔍 Modification details:`, {
+        tagType: mod.tagType,
+        blockId: mod.blockId,
+        css: mod.css,
+      });
 
       if (mod.css.buttonPrimary?.styles) {
+        console.log(
+          `🎨 Merging buttonPrimary styles:`,
+          mod.css.buttonPrimary.styles
+        );
         Object.assign(
           mergedHoverColors.buttonPrimary.styles,
           mod.css.buttonPrimary.styles
         );
       }
       if (mod.css.buttonSecondary?.styles) {
+        console.log(
+          `🎨 Merging buttonSecondary styles:`,
+          mod.css.buttonSecondary.styles
+        );
         Object.assign(
           mergedHoverColors.buttonSecondary.styles,
           mod.css.buttonSecondary.styles
         );
       }
       if (mod.css.buttonTertiary?.styles) {
+        console.log(
+          `🎨 Merging buttonTertiary styles:`,
+          mod.css.buttonTertiary.styles
+        );
         Object.assign(
           mergedHoverColors.buttonTertiary.styles,
           mod.css.buttonTertiary.styles

@@ -1819,13 +1819,19 @@ export async function saveButtonHoverColorModifications(blockId, css) {
     buttonSecondary: cleanedSecondary,
     buttonTertiary: cleanedTertiary,
   });
+  console.log("🔍 Has valid styles check:", {
+    primaryStyles: Object.keys(cleanedPrimary.styles),
+    secondaryStyles: Object.keys(cleanedSecondary.styles),
+    tertiaryStyles: Object.keys(cleanedTertiary.styles),
+    hasValidStyles,
+  });
 
   try {
     console.log(
       "🌐 Making API request to save button hover color modifications..."
     );
     const response = await fetch(
-      "https://admin.squareplugin.com/api/v1/save-button-hover-color-modifications",
+      "http://localhost:8001/api/v1/save-button-hover-color-modifications",
       {
         method: "POST",
         headers: {

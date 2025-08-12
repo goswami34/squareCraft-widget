@@ -202,20 +202,28 @@ export function ButtonHoverColorModification(
     ) {
       const blockId = currentElement.id;
       if (blockId) {
+        // Map button type to the correct key
+        const buttonKey =
+          buttonType === "sqs-button-element--primary"
+            ? "buttonPrimary"
+            : buttonType === "sqs-button-element--secondary"
+            ? "buttonSecondary"
+            : buttonType === "sqs-button-element--tertiary"
+            ? "buttonTertiary"
+            : "buttonPrimary";
+
         const stylePayload = {
           buttonPrimary: {
-            selector: `.${buttonType}:hover`,
-            styles: {
-              color: rgbaColor,
-            },
+            selector: ".sqs-button-element--primary:hover",
+            styles: buttonKey === "buttonPrimary" ? { color: rgbaColor } : {},
           },
           buttonSecondary: {
             selector: ".sqs-button-element--secondary:hover",
-            styles: {},
+            styles: buttonKey === "buttonSecondary" ? { color: rgbaColor } : {},
           },
           buttonTertiary: {
             selector: ".sqs-button-element--tertiary:hover",
-            styles: {},
+            styles: buttonKey === "buttonTertiary" ? { color: rgbaColor } : {},
           },
         };
         addPendingModification(blockId, stylePayload, "buttonHoverColor");
