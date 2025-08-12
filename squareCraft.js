@@ -631,6 +631,8 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  window.saveButtonHoverColorModifications = saveButtonHoverColorModifications;
+
   // Make saveButtonColorModifications available globally
   window.saveButtonColorModifications = saveButtonColorModifications;
 
