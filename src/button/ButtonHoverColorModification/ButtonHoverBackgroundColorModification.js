@@ -178,7 +178,11 @@ export function ButtonHoverBackgroundColorModification(
 
     let buttonType = null;
     for (let type of buttonTypes) {
-      if (currentElement.querySelector(`a.${type}`)) {
+      // Check for both <a> and <button> tags with the button class
+      if (
+        currentElement.querySelector(`a.${type}`) ||
+        currentElement.querySelector(`button.${type}`)
+      ) {
         buttonType = type;
         break;
       }
