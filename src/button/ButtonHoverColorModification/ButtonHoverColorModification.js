@@ -8,28 +8,26 @@ export function ButtonHoverColorModification(
   const palette = document.getElementById("hover-button-text-color-palette");
   const container = document.getElementById("hover-button-text-colors");
   const selectorField = document.getElementById(
-    "hover-button-text-border-color-selection-field"
-  );
-  const bullet = document.getElementById(
-    "hover-button-text-border-color-selection-bar"
-  );
-  const colorCode = document.getElementById(
-    "hover-button-text-border-color-code"
-  );
-  const transparencyCount = document.getElementById(
-    "hover-button-text-border-color-transparency-count"
-  );
-  const allColorField = document.getElementById(
     "hover-button-text-color-selection-field"
   );
+  const bullet = document.getElementById(
+    "hover-button-text-color-selection-bar"
+  );
+  const colorCode = document.getElementById("hover-button-text-color-code");
+  const transparencyCount = document.getElementById(
+    "hover-button-text-color-transparency-count"
+  );
+  const allColorField = document.getElementById(
+    "hover-button-all-color-selection-field"
+  );
   const allColorBullet = document.getElementById(
-    "hover-button-text-border-color-all-color-selction-bar"
+    "hover-button-text-color-all-color-selction-bar"
   );
   const transparencyField = document.getElementById(
-    "hover-button-text-border-color-transparency-field"
+    "hover-button-text-color-transparency-field"
   );
   const transparencyBullet = document.getElementById(
-    "hover-button-text-border-color-transparency-bar"
+    "hover-button-text-color-transparency-bar"
   );
 
   if (

@@ -1293,7 +1293,7 @@ window.pendingModifications = pendingModifications;
     // button hover color color palette trigger end here
 
     const triggerButtonHoverColorModification = event.target.closest(
-      "#hover-button-text-color-select"
+      "#hover-button-text-color-trigger"
     );
 
     // Check if this is the hover shadow color trigger

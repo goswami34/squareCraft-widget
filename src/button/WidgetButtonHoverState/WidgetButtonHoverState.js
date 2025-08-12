@@ -64,21 +64,21 @@ export function WidgetButtonHoverState() {
                </div>
 
 
-               <div id="hover-bgColorSection" class=" ">
+               <div id="hover-TextColorSection" class=" ">
                   <p class="sc-font-size-11 sc-font-thin sc-mt-4 sc-universal sc-text-gray-300 sc-roboto">Text Color
                   </p>
                   <div class="sc-col-span-5 sc-mt-2 sc-z-99999 sc-relative ">
                      <div class="sc-flex sc-w-30 sc-justify-between sc-items-center sc-px-1 sc-bg-3f3f3f sc-inActiveTab-border sc-rounded-4px sc-py-4px">
                      <p id="buttonFontColorCode" class="sc-font-size-12 sc-roboto sc-universal">Select</p>
-                     <div id="hover-button-background-color-trigger" class="sc-square-6  sc-cursor-pointer"></div>
+                     <div id="hover-button-text-color-trigger" class="sc-square-6  sc-cursor-pointer"></div>
                      </div>
 
-                     <div id="hover-button-background-color-palette"
+                     <div id="hover-button-text-color-palette"
                      class="sc-absolute sc-hidden sc-border sc-border-solid sc-border-EF7C2F sc-top-12 sc-bg-3f3f3f sc-left-0 sc-p-1 sc-rounded-4px">
                      <div class="sc-color-arrow"></div>
 
                      <div class="sc-flex sc-items-center sc-justify-between">
-                        <div id="hover-button-hover-color-colors" class="sc-flex sc-relative sc-items-center sc-gap-1"></div>
+                        <div id="hover-button-text-colors" class="sc-flex sc-relative sc-items-center sc-gap-1"></div>
 
                      <div class="sc-rounded-15px sc-px-1_5 sc-py-0_5 sc-bg-454545 sc-flex sc-gap-1">
                         <p class="sc-universal sc-font-size-11 sc-roboto">RGB</p>
@@ -88,29 +88,29 @@ export function WidgetButtonHoverState() {
 
                      <div class="sc-h-1px sc-mt-2 sc-bg-color-gray"></div>
                      <div class="sc-flex color-h-selection sc-mt-2 sc-items-center sc-gap-2">
-                        <div id="button-hover-background-color-selection-field" class="sc-relative">
-                           <div id="button-hover-background-color-selection-bar"
+                        <div id="hover-button-text-color-selection-field" class="sc-relative">
+                           <div id="hover-button-text-color-selection-bar"
                               class="sc-w-2 sc-h-2 sc-absolute sc-cursor-pointer sc-rounded-full sc-border sc-border-solid sc-border-white">
                            </div>
                         </div>
-                        <div id="button-hover-background-color-transparency-field"
+                        <div id="hover-button-text-color-transparency-field"
                            class="sc-h-full sc-w-3 sc-relative  sc-rounded-15px ">
-                           <div id="button-hover-background-color-transparency-bar"
+                           <div id="hover-button-text-color-transparency-bar"
                               class="sc-absolute  sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px  sc-cursor-grabbing  sc-h-2 sc-bg-color-f2f2f2">
                            </div>
                         </div>
-                        <div id="button-hover-all-color-selection-field"
+                        <div id="hover-button-all-color-selection-field"
                            class="sc-h-full sc-w-3 sc-relative sc-rounded-15px">
-                           <div id="button-hover-all-color-selection-bar"
+                           <div id="hover-button-text-color-all-color-selction-bar"
                               class="sc-absolute  sc-w-5 sc-left-half sc-shadow-sm sc-rounded-15px sc-cursor-grabbing sc-h-2 sc-bg-color-f2f2f2">
                            </div>
                         </div>
                      </div>
                      <div
                         class="sc-flex sc-justify-between sc-mt-3 sc-px-2 sc-py-0_5 sc-rounded-4px sc-bg-454545">
-                        <p id="button-hover-background-color-code" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select
+                        <p id="hover-button-text-color-code" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select
                         </p>
-                        <p id="button-hover-background-color-transparency-count"
+                        <p id="hover-button-text-color-transparency-count"
                            class="sc-font-size-12 sc-roboto sc-font-light sc-universal">100%</p>
                      </div>
                      </div>
