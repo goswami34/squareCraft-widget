@@ -5042,33 +5042,3 @@
   height: 100px !important;
   border-radius: 6px !important;
 }
-
-#hover-button-text-border-color-transparency-field {
-  position: relative !important;
-  width: 24px !important;
-  height: 100px !important;
-  border: 1px solid #666 !important;
-  border-radius: 15px !important;
-  overflow: hidden !important;
-  background: linear-gradient(to bottom, hsla(0, 100%, 50%, 1), hsla(0, 100%, 50%, 0)) !important;
-  min-width: 24px !important;
-  min-height: 100px !important;
-}
-
-#hover-button-text-border-color-transparency-bar {
-  position: absolute !important;
-  width: 20px !important;
-  height: 8px !important;
-  background-color: #f2f2f2 !important;
-  border: 1px solid #999 !important;
-  border-radius: 4px !important;
-  cursor: grab !important;
-  z-index: 10 !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  left: 2px !important;
-}
-
-#hover-button-text-border-color-transparency-bar:active {
-  cursor: grabbing !important;
-}
