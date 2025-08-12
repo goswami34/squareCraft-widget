@@ -6,7 +6,7 @@ export function ButtonHoverColorModification(
   showNotification
 ) {
   const palette = document.getElementById("hover-button-text-color-palette");
-  const container = document.getElementById("hover-button-text-colors-palette");
+  const container = document.getElementById("hover-button-text-colors");
   const selectorField = document.getElementById(
     "hover-button-text-border-color-selection-field"
   );
@@ -39,8 +39,9 @@ export function ButtonHoverColorModification(
     !bullet ||
     !colorCode ||
     !transparencyCount
-  )
+  ) {
     return;
+  }
 
   let dynamicHue = 0;
   let currentTransparency = 100;
@@ -106,8 +107,8 @@ export function ButtonHoverColorModification(
     return "rgb(255, 0, 0)";
   }
 
-  // Function to apply text color to button
-  function applyButtonTextColor(color, alpha = 1) {
+  // Function to apply background color to button on hover
+  function applyButtonHoverColor(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
 
@@ -139,7 +140,7 @@ export function ButtonHoverColorModification(
     );
 
     allButtons.forEach((btn) => {
-      const styleId = `sc-hover-text-style-global-${buttonType}`;
+      const styleId = `sc-hover-background-style-global-${buttonType}`;
       let styleTag = document.getElementById(styleId);
       if (!styleTag) {
         styleTag = document.createElement("style");
@@ -150,19 +151,23 @@ export function ButtonHoverColorModification(
       styleTag.textContent = `
           a.${buttonType}:hover,
           button.${buttonType}:hover {
-            color: ${rgbaColor} !important;
+            background-color: ${rgbaColor} !important;
           }
         `;
 
-      btn.dataset.scButtonHoverText = rgbaColor;
-      btn.dataset.scButtonHoverTextColor = color;
+      btn.dataset.scButtonHoverBackgroundColor = rgbaColor;
     });
 
-    console.log("🖌️ APPLYING HOVER TEXT COLOR:", rgbaColor, "on", buttonType);
+    console.log(
+      "🖌️ APPLYING HOVER BACKGROUND COLOR:",
+      rgbaColor,
+      "on",
+      buttonType
+    );
 
     // Save modifications if functions are provided
     if (
-      typeof saveButtonHoverTextModifications === "function" &&
+      typeof saveButtonHoverShadowModifications === "function" &&
       typeof addPendingModification === "function"
     ) {
       const blockId = currentElement.id;
@@ -171,14 +176,14 @@ export function ButtonHoverColorModification(
           buttonPrimary: {
             selector: `.${buttonType}:hover`,
             styles: {
-              color: rgbaColor,
+              backgroundColor: rgbaColor,
             },
           },
         };
-        addPendingModification(blockId, stylePayload, "buttonText");
+        addPendingModification(blockId, stylePayload, "buttonBackground");
         if (showNotification) {
           showNotification(
-            `Hover text color applied to ${buttonType}`,
+            `Hover background color applied to ${buttonType}`,
             "success"
           );
         }
@@ -198,12 +203,30 @@ export function ButtonHoverColorModification(
             )`;
   }
 
-  // Initialize transparency field with default hue
   if (transparencyField) {
     transparencyField.style.background = `linear-gradient(to bottom,
               hsla(${dynamicHue}, 100%, 50%, 1),
               hsla(${dynamicHue}, 100%, 50%, 0)
             )`;
+  }
+
+  // Initialize the main color selection field with a default gradient
+  if (selectorField) {
+    selectorField.style.background = `
+      linear-gradient(
+        to right,
+        hsl(0, 100%, 50%),
+        white
+      ),
+      linear-gradient(
+        to top,
+        black,
+        transparent
+      )
+    `;
+    selectorField.style.backgroundBlendMode = "multiply";
+    selectorField.style.backgroundSize = "100% 100%";
+    selectorField.style.backgroundRepeat = "no-repeat";
   }
 
   if (
@@ -254,7 +277,7 @@ export function ButtonHoverColorModification(
         const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
-          colorCode.textContent = finalColor;
+          colorCode.textContent = convertToRGB(finalColor);
         }
 
         if (transparencyField) {
@@ -285,8 +308,8 @@ export function ButtonHoverColorModification(
           selectorField.style.backgroundRepeat = "no-repeat";
         }
 
-        // Apply the color to button text
-        applyButtonTextColor(finalColor, currentTransparency / 100);
+        // Apply the color to button border
+        applyButtonHoverColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -352,11 +375,11 @@ export function ButtonHoverColorModification(
         const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
-          colorCode.textContent = finalColor;
+          colorCode.textContent = convertToRGB(finalColor);
         }
 
-        // Apply the color to button text
-        applyButtonTextColor(finalColor, currentTransparency / 100);
+        // Apply the color to button border
+        applyButtonHoverColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -377,17 +400,19 @@ export function ButtonHoverColorModification(
         );
         transparencyBullet.style.top = `${offsetY}px`;
 
-        const transparencyPercent =
-          100 - Math.round((offsetY / rect.height) * 100);
-        currentTransparency = Math.max(0, Math.min(100, transparencyPercent));
+        const transparencyPercent = Math.max(
+          0,
+          Math.min(100, 100 - Math.round((offsetY / rect.height) * 100))
+        );
+        currentTransparency = transparencyPercent;
 
         if (transparencyCount) {
-          transparencyCount.textContent = `${currentTransparency}%`;
+          transparencyCount.textContent = `${transparencyPercent}%`;
         }
 
         // Apply current color with new transparency
         if (colorCode && colorCode.textContent) {
-          applyButtonTextColor(
+          applyButtonHoverColor(
             colorCode.textContent,
             currentTransparency / 100
           );
@@ -421,10 +446,10 @@ export function ButtonHoverColorModification(
       // add color code to the color code from default page color field
       const hsl = rgbToHslFromAny(cleanColor);
       if (hsl) dynamicHue = hsl.h;
-      colorCode.textContent = cleanColor;
+      colorCode.textContent = convertToRGB(cleanColor);
 
-      // Apply the color to button text
-      applyButtonTextColor(cleanColor, currentTransparency / 100);
+      // Apply the color to button border
+      applyButtonHoverColor(cleanColor, currentTransparency / 100);
     });
 
     container.appendChild(swatch);
@@ -578,8 +603,8 @@ export function ButtonHoverColorModification(
           colorCode.textContent = convertToRGB(finalColor);
         }
 
-        // Apply the color to button text
-        applyButtonTextColor(finalColor, currentTransparency / 100);
+        // Apply the color to button border
+        applyButtonHoverColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -591,12 +616,13 @@ export function ButtonHoverColorModification(
   const firstColor = Object.values(themeColors)[0];
   if (firstColor) {
     renderVerticalColorShades(firstColor);
-    colorCode.textContent = firstColor;
-    applyButtonTextColor(firstColor, currentTransparency / 100);
+    colorCode.textContent = convertToRGB(firstColor);
 
-    // Initialize transparency display
+    // Ensure transparency count is properly initialized
     if (transparencyCount) {
       transparencyCount.textContent = `${currentTransparency}%`;
     }
+
+    applyButtonHoverColor(firstColor, currentTransparency / 100);
   }
 }

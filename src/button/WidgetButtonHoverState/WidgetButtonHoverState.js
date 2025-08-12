@@ -77,7 +77,7 @@ export function WidgetButtonHoverState() {
                            class="sc-absolute sc-hidden sc-border sc-border-solid sc-border-EF7C2F sc-top-12 sc-bg-3f3f3f sc-left-0 sc-p-1 sc-rounded-4px ">
                            <div class="hover-sc-color-arrow"></div>
                            <div class="sc-flex sc-items-center sc-justify-between">
-                              <div id="hover-button-text-colors-palette" class="sc-flex sc-relative sc-items-center sc-gap-1">
+                              <div id="hover-button-text-colors" class="sc-flex sc-relative sc-items-center sc-gap-1">
 
 
                               </div>
