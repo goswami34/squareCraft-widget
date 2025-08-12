@@ -91,7 +91,7 @@ export function WidgetButtonHoverState() {
                            </div>
 
                            <div class="sc-h-1px sc-mt-2 sc-bg-color-gray"></div>
-                           <div class="sc-flex hover-color-h-selection sc-mt-2 sc-items-center sc-gap-2">
+                           <div class="sc-flex hover-color-h-selection sc-mt-2 sc-items-center sc-gap-2 sc-h-4">
                               <div id="hover-button-text-border-color-selection-field" class="sc-relative">
                                  <div id="hover-button-text-border-color-selection-bar"
                                     class="sc-w-2 sc-h-2 sc-absolute sc-cursor-pointer sc-rounded-full sc-border sc-border-solid sc-border-white">

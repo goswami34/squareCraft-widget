@@ -38,8 +38,13 @@ export function ButtonHoverColorModification(
     !selectorField ||
     !bullet ||
     !colorCode ||
-    !transparencyCount
+    !transparencyCount ||
+    !allColorField ||
+    !allColorBullet ||
+    !transparencyField ||
+    !transparencyBullet
   ) {
+    console.warn("❌ ButtonHoverColorModification - Missing required elements");
     return;
   }
 
