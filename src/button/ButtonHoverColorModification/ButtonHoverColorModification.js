@@ -593,7 +593,7 @@ export function ButtonHoverColorModification(
     renderVerticalColorShades(firstColor);
     colorCode.textContent = firstColor;
     applyButtonTextColor(firstColor, currentTransparency / 100);
-    
+
     // Initialize transparency display
     if (transparencyCount) {
       transparencyCount.textContent = `${currentTransparency}%`;

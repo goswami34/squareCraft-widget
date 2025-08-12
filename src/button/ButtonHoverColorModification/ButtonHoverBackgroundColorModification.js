@@ -160,7 +160,12 @@ export function ButtonHoverBackgroundColorModification(
       btn.dataset.scButtonHoverBackgroundColor = rgbaColor;
     });
 
-    console.log("🖌️ APPLYING HOVER BACKGROUND COLOR:", rgbaColor, "on", buttonType);
+    console.log(
+      "🖌️ APPLYING HOVER BACKGROUND COLOR:",
+      rgbaColor,
+      "on",
+      buttonType
+    );
 
     // Save modifications if functions are provided
     if (
@@ -397,9 +402,10 @@ export function ButtonHoverBackgroundColorModification(
         );
         transparencyBullet.style.top = `${offsetY}px`;
 
-        const transparencyPercent = Math.max(0, Math.min(100, 
-          100 - Math.round((offsetY / rect.height) * 100)
-        ));
+        const transparencyPercent = Math.max(
+          0,
+          Math.min(100, 100 - Math.round((offsetY / rect.height) * 100))
+        );
         currentTransparency = transparencyPercent;
 
         if (transparencyCount) {
@@ -613,12 +619,12 @@ export function ButtonHoverBackgroundColorModification(
   if (firstColor) {
     renderVerticalColorShades(firstColor);
     colorCode.textContent = convertToRGB(firstColor);
-    
+
     // Ensure transparency count is properly initialized
     if (transparencyCount) {
       transparencyCount.textContent = `${currentTransparency}%`;
     }
-    
+
     applyButtonBackgroundColor(firstColor, currentTransparency / 100);
   }
 }
