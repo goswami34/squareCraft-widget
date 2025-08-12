@@ -1831,7 +1831,7 @@ export async function saveButtonHoverColorModifications(blockId, css) {
       "🌐 Making API request to save button hover color modifications..."
     );
     const response = await fetch(
-      `${getApiBaseUrl()}/api/v1/save-button-hover-color-modifications`,
+      "https://admin.squareplugin.com/api/v1/save-button-hover-color-modifications",
       {
         method: "POST",
         headers: {
@@ -2276,29 +2276,4 @@ export async function testHoverBorderSave() {
 // Make test function globally available
 if (typeof window !== "undefined") {
   window.testHoverBorderSave = testHoverBorderSave;
-}
-
-// Make saveButtonHoverColorModifications available globally
-if (typeof window !== "undefined") {
-  window.saveButtonHoverColorModifications = saveButtonHoverColorModifications;
-  console.log("✅ saveButtonHoverColorModifications set globally");
-}
-
-// Helper function to get API base URL based on environment
-function getApiBaseUrl() {
-  // Check if we're in development mode (localhost)
-  if (
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
-  ) {
-    return "http://localhost:8001";
-  }
-  // Production mode
-  return "https://admin.squareplugin.com";
-}
-
-// Make getApiBaseUrl available globally
-if (typeof window !== "undefined") {
-  window.getApiBaseUrl = getApiBaseUrl;
-  console.log("✅ getApiBaseUrl set globally");
 }
