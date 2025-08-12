@@ -230,7 +230,7 @@ export function ButtonHoverColorModification(
             styles: buttonKey === "buttonTertiary" ? { color: rgbaColor } : {},
           },
         };
-        addPendingModification(blockId, stylePayload, "buttonHoverColor");
+        addPendingModification(blockId, stylePayload, "buttonHoverTextColor");
         if (showNotification) {
           showNotification(
             `Hover text color applied to ${buttonType}`,

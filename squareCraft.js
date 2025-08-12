@@ -6274,6 +6274,15 @@ window.pendingModifications = pendingModifications;
       "🔍 Pending modifications for this block:",
       globalPendingModifications.get(blockId)
     );
+
+    // Debug: Log the specific styles being added
+    if (css && typeof css === "object") {
+      console.log("🎨 Styles being added:", {
+        buttonPrimary: css.buttonPrimary?.styles,
+        buttonSecondary: css.buttonSecondary?.styles,
+        buttonTertiary: css.buttonTertiary?.styles,
+      });
+    }
   }
 
   // Make addPendingModification available globally for icon functions
@@ -6391,13 +6400,18 @@ window.pendingModifications = pendingModifications;
             mod.tagType === "buttonTextColor"
         );
         const buttonHoverColorMods = modifications.filter(
-          (mod) => mod.tagType === "buttonHoverColor"
+          (mod) =>
+            mod.tagType === "buttonHoverColor" ||
+            mod.tagType === "buttonHoverTextColor" ||
+            mod.tagType === "buttonHoverBackgroundColor"
         );
         const otherMods = modifications.filter(
           (mod) =>
             mod.tagType !== "buttonBackgroundColor" &&
             mod.tagType !== "buttonTextColor" &&
-            mod.tagType !== "buttonHoverColor"
+            mod.tagType !== "buttonHoverColor" &&
+            mod.tagType !== "buttonHoverTextColor" &&
+            mod.tagType !== "buttonHoverBackgroundColor"
         );
 
         // Handle button color modifications (merge background and text colors)
@@ -6635,7 +6649,7 @@ window.pendingModifications = pendingModifications;
 
     // Merge all button hover color modifications
     buttonHoverColorMods.forEach((mod) => {
-      console.log(`📝 Merging buttonHoverColor modification:`, mod.css);
+      console.log(`📝 Merging ${mod.tagType} modification:`, mod.css);
       console.log(`🔍 Modification details:`, {
         tagType: mod.tagType,
         blockId: mod.blockId,
@@ -6675,6 +6689,23 @@ window.pendingModifications = pendingModifications;
     });
 
     console.log("✅ Merged button hover colors:", mergedHoverColors);
+
+    // Debug: Check if we have both color and background-color
+    const hasTextColor = Object.values(mergedHoverColors).some((btn) =>
+      Object.keys(btn.styles).includes("color")
+    );
+    const hasBackgroundColor = Object.values(mergedHoverColors).some((btn) =>
+      Object.keys(btn.styles).includes("background-color")
+    );
+
+    console.log("🔍 Style check:", {
+      hasTextColor,
+      hasBackgroundColor,
+      allStyles: Object.values(mergedHoverColors).map((btn) =>
+        Object.keys(btn.styles)
+      ),
+    });
+
     return mergedHoverColors;
   }
 

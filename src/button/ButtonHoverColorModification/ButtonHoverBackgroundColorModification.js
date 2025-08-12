@@ -247,7 +247,11 @@ export function ButtonHoverBackgroundColorModification(
                 : {},
           },
         };
-        addPendingModification(blockId, stylePayload, "buttonHoverColor");
+        addPendingModification(
+          blockId,
+          stylePayload,
+          "buttonHoverBackgroundColor"
+        );
         if (showNotification) {
           showNotification(
             `Hover background color applied to ${buttonType}`,
