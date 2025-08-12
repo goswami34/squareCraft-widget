@@ -38,11 +38,7 @@ export function ButtonHoverColorModification(
     !selectorField ||
     !bullet ||
     !colorCode ||
-    !transparencyCount ||
-    !allColorField ||
-    !allColorBullet ||
-    !transparencyField ||
-    !transparencyBullet
+    !transparencyCount
   ) {
     console.warn("❌ ButtonHoverColorModification - Missing required elements");
     return;
