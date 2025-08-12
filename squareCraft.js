@@ -634,6 +634,10 @@ window.pendingModifications = pendingModifications;
   // Make saveButtonColorModifications available globally
   window.saveButtonColorModifications = saveButtonColorModifications;
 
+  // Make mergeButtonHoverColorModifications available globally
+  window.mergeButtonHoverColorModifications =
+    mergeButtonHoverColorModifications;
+
   // Make fetchButtonIconModifications available globally for testing
   window.fetchButtonIconModifications = fetchButtonIconModifications;
 
@@ -6386,10 +6390,14 @@ window.pendingModifications = pendingModifications;
             mod.tagType === "buttonBackgroundColor" ||
             mod.tagType === "buttonTextColor"
         );
+        const buttonHoverColorMods = modifications.filter(
+          (mod) => mod.tagType === "buttonHoverColor"
+        );
         const otherMods = modifications.filter(
           (mod) =>
             mod.tagType !== "buttonBackgroundColor" &&
-            mod.tagType !== "buttonTextColor"
+            mod.tagType !== "buttonTextColor" &&
+            mod.tagType !== "buttonHoverColor"
         );
 
         // Handle button color modifications (merge background and text colors)
@@ -6435,6 +6443,32 @@ window.pendingModifications = pendingModifications;
             if (typeof window.pendingButtonColorModifications !== "undefined") {
               window.pendingButtonColorModifications.clear();
               console.log("✅ Unified button color modifications cleared");
+            }
+          }
+        }
+
+        // Handle button hover color modifications (merge background and text hover colors)
+        if (buttonHoverColorMods.length > 0) {
+          console.log(
+            "🎨 Processing button hover color modifications:",
+            buttonHoverColorMods
+          );
+
+          // Merge background and text hover color modifications
+          const mergedButtonHoverColors =
+            mergeButtonHoverColorModifications(buttonHoverColorMods);
+
+          if (mergedButtonHoverColors) {
+            const result = await saveButtonHoverColorModifications(
+              blockId,
+              mergedButtonHoverColors
+            );
+            console.log(`✅ Button hover color modification result:`, result);
+
+            if (!result?.success) {
+              throw new Error(
+                `Failed to save button hover color changes for block ${blockId}`
+              );
             }
           }
         }
@@ -6575,6 +6609,56 @@ window.pendingModifications = pendingModifications;
 
     console.log("✅ Merged button colors:", mergedColors);
     return mergedColors;
+  }
+
+  // Function to merge background and text hover color modifications
+  function mergeButtonHoverColorModifications(buttonHoverColorMods) {
+    console.log(
+      "🔄 Merging button hover color modifications:",
+      buttonHoverColorMods
+    );
+
+    const mergedHoverColors = {
+      buttonPrimary: {
+        selector: ".sqs-button-element--primary",
+        styles: {},
+      },
+      buttonSecondary: {
+        selector: ".sqs-button-element--secondary",
+        styles: {},
+      },
+      buttonTertiary: {
+        selector: ".sqs-button-element--tertiary",
+        styles: {},
+      },
+    };
+
+    // Merge all button hover color modifications
+    buttonHoverColorMods.forEach((mod) => {
+      console.log(`📝 Merging buttonHoverColor modification:`, mod.css);
+
+      if (mod.css.buttonPrimary?.styles) {
+        Object.assign(
+          mergedHoverColors.buttonPrimary.styles,
+          mod.css.buttonPrimary.styles
+        );
+      }
+      if (mod.css.buttonSecondary?.styles) {
+        Object.assign(
+          mergedHoverColors.buttonSecondary.styles,
+          mod.css.buttonSecondary.styles
+        );
+      }
+      if (mod.css.buttonTertiary?.styles) {
+        Object.assign(
+          mergedHoverColors.buttonTertiary.styles,
+          mod.css.buttonTertiary.styles
+        );
+      }
+    });
+
+    console.log("✅ Merged button hover colors:", mergedHoverColors);
+    return mergedHoverColors;
   }
 
   // Add publish button event listener
