@@ -363,6 +363,14 @@ async function handlePublish() {
             console.log("📤 Icon data being sent:", mod.css);
             result = await saveButtonIconModifications(blockId, mod.css);
             break;
+          case "buttonHoverColor":
+            console.log(
+              "🎨 Publishing button hover color modifications for block:",
+              blockId
+            );
+            console.log("📤 Hover color data being sent:", mod.css);
+            result = await saveButtonHoverColorModifications(blockId, mod.css);
+            break;
           case "linkText":
             result = await saveLinkTextModifications(blockId, mod.css);
             break;
@@ -1714,6 +1722,158 @@ export async function saveButtonHoverShadowModifications(blockId, css) {
 
 // button hover shadow save modification code end here
 
+// button hover color save modification code start here
+export async function saveButtonHoverColorModifications(blockId, css) {
+  console.log("🚀 saveButtonHoverColorModifications called with:", {
+    blockId,
+    css,
+  });
+
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  console.log("📋 Required data check:", {
+    userId: !!userId,
+    token: !!token,
+    widgetId: !!widgetId,
+    pageId: !!pageId,
+    blockId: !!blockId,
+    css: !!css,
+  });
+
+  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+    console.warn(
+      "❌ Missing required data to save button hover color modifications",
+      {
+        userId,
+        token,
+        widgetId,
+        pageId,
+        blockId,
+        css,
+      }
+    );
+    return { success: false, error: "Missing required data" };
+  }
+
+  // Clean & normalize button styles and convert to kebab-case
+  const cleanCssObject = (obj = {}) =>
+    Object.fromEntries(
+      Object.entries(obj).filter(
+        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+      )
+    );
+
+  const toKebabCaseStyleObject = (obj = {}) =>
+    Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [
+        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        value,
+      ])
+    );
+
+  // Clean each button type's CSS block
+  const cleanCssBlock = (block) => ({
+    selector: block?.selector || null,
+    styles: toKebabCaseStyleObject(cleanCssObject(block?.styles || {})),
+  });
+
+  // Process each button type
+  const cleanedPrimary = cleanCssBlock(css.buttonPrimary);
+  const cleanedSecondary = cleanCssBlock(css.buttonSecondary);
+  const cleanedTertiary = cleanCssBlock(css.buttonTertiary);
+
+  // Check if we have at least one valid style to save
+  const hasValidStyles =
+    Object.keys(cleanedPrimary.styles).length > 0 ||
+    Object.keys(cleanedSecondary.styles).length > 0 ||
+    Object.keys(cleanedTertiary.styles).length > 0;
+
+  if (!hasValidStyles) {
+    console.warn("⚠️ No valid hover color styles to save");
+    return { success: false, error: "No valid hover color styles to save" };
+  }
+
+  const payload = {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    elementId: blockId,
+    css: {
+      buttonPrimary: cleanedPrimary,
+      buttonSecondary: cleanedSecondary,
+      buttonTertiary: cleanedTertiary,
+    },
+  };
+
+  console.log("📤 Sending button hover color payload:", payload);
+  console.log("🔍 Original CSS received:", css);
+  console.log("🧹 Cleaned CSS structure:", {
+    buttonPrimary: cleanedPrimary,
+    buttonSecondary: cleanedSecondary,
+    buttonTertiary: cleanedTertiary,
+  });
+
+  try {
+    console.log(
+      "🌐 Making API request to save button hover color modifications..."
+    );
+    const response = await fetch(
+      "http://localhost:8001/api/v1/save-button-hover-color-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    console.log("📡 Response status:", response.status);
+    console.log(
+      "📡 Response headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error("❌ Server error response:", result);
+      console.error("❌ Full error details:", {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        result: result,
+      });
+      throw new Error(
+        result.message || result.error || `HTTP ${response.status}`
+      );
+    }
+
+    console.log("✅ Button hover color modifications saved:", result);
+    showNotification("Button hover colors saved successfully!", "success");
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("❌ Error saving button hover color modifications:", error);
+    showNotification(
+      `Failed to save button hover colors: ${error.message}`,
+      "error"
+    );
+
+    return { success: false, error: error.message };
+  }
+}
+
+// button hover color save modification code end here
+
 // button hover text save modification code start here
 export async function saveButtonHoverTextModifications(blockId, css) {
   const pageId = document
@@ -1725,17 +1885,14 @@ export async function saveButtonHoverTextModifications(blockId, css) {
   const widgetId = localStorage.getItem("sc_w_id");
 
   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-    console.warn(
-      "❌ Missing required data to save button hover text styles",
-      {
-        userId,
-        token,
-        widgetId,
-        pageId,
-        blockId,
-        css,
-      }
-    );
+    console.warn("❌ Missing required data to save button hover text styles", {
+      userId,
+      token,
+      widgetId,
+      pageId,
+      blockId,
+      css,
+    });
     return { success: false, error: "Missing required data" };
   }
 

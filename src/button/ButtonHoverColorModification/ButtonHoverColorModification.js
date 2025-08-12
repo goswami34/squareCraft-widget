@@ -1,7 +1,7 @@
 export function ButtonHoverColorModification(
   themeColors,
   selectedElement,
-  saveButtonHoverTextModifications,
+  saveButtonHoverColorModifications,
   addPendingModification,
   showNotification
 ) {
@@ -197,7 +197,7 @@ export function ButtonHoverColorModification(
 
     // Save modifications if functions are provided
     if (
-      typeof saveButtonHoverTextModifications === "function" &&
+      typeof saveButtonHoverColorModifications === "function" &&
       typeof addPendingModification === "function"
     ) {
       const blockId = currentElement.id;
@@ -209,8 +209,16 @@ export function ButtonHoverColorModification(
               color: rgbaColor,
             },
           },
+          buttonSecondary: {
+            selector: ".sqs-button-element--secondary:hover",
+            styles: {},
+          },
+          buttonTertiary: {
+            selector: ".sqs-button-element--tertiary:hover",
+            styles: {},
+          },
         };
-        addPendingModification(blockId, stylePayload, "buttonTextColor");
+        addPendingModification(blockId, stylePayload, "buttonHoverColor");
         if (showNotification) {
           showNotification(
             `Hover text color applied to ${buttonType}`,

@@ -1,7 +1,7 @@
 export function ButtonHoverBackgroundColorModification(
   themeColors,
   selectedElement,
-  saveButtonHoverShadowModifications,
+  saveButtonHoverColorModifications,
   addPendingModification,
   showNotification
 ) {
@@ -205,7 +205,7 @@ export function ButtonHoverBackgroundColorModification(
 
     // Save modifications if functions are provided
     if (
-      typeof saveButtonHoverShadowModifications === "function" &&
+      typeof saveButtonHoverColorModifications === "function" &&
       typeof addPendingModification === "function"
     ) {
       const blockId = currentElement.id;
@@ -217,8 +217,16 @@ export function ButtonHoverBackgroundColorModification(
               backgroundColor: rgbaColor,
             },
           },
+          buttonSecondary: {
+            selector: ".sqs-button-element--secondary:hover",
+            styles: {},
+          },
+          buttonTertiary: {
+            selector: ".sqs-button-element--tertiary:hover",
+            styles: {},
+          },
         };
-        addPendingModification(blockId, stylePayload, "buttonBackground");
+        addPendingModification(blockId, stylePayload, "buttonHoverColor");
         if (showNotification) {
           showNotification(
             `Hover background color applied to ${buttonType}`,

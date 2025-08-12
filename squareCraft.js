@@ -627,6 +627,10 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/src/button/ButtonHoverColorModification/ButtonHoverColorModification.js"
   );
 
+  const { saveButtonHoverColorModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   // Make saveButtonColorModifications available globally
   window.saveButtonColorModifications = saveButtonColorModifications;
 
@@ -1311,7 +1315,7 @@ window.pendingModifications = pendingModifications;
           ButtonHoverColorModification(
             themeColors,
             () => selectedElement,
-            saveButtonHoverShadowModifications,
+            saveButtonHoverColorModifications,
             (blockId, css, tagType) => {
               if (!pendingModifications.has(blockId)) {
                 pendingModifications.set(blockId, []);
@@ -1348,7 +1352,7 @@ window.pendingModifications = pendingModifications;
           ButtonHoverBackgroundColorModification(
             themeColors,
             () => selectedElement,
-            saveButtonHoverShadowModifications,
+            saveButtonHoverColorModifications,
             (blockId, css, tagType) => {
               if (!pendingModifications.has(blockId)) {
                 pendingModifications.set(blockId, []);
