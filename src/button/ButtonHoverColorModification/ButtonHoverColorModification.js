@@ -61,6 +61,151 @@ export function ButtonHoverColorModification(
     });
   }
 
+  // ✅ NEW: Function to create and handle publish button for text color
+  function createTextColorPublishButton() {
+    // Check if publish button already exists
+    let publishButton = document.getElementById("hover-text-color-publish-btn");
+    if (publishButton) {
+      return publishButton;
+    }
+
+    // Create publish button
+    publishButton = document.createElement("button");
+    publishButton.id = "hover-text-color-publish-btn";
+    publishButton.className = "sc-publish-btn sc-text-color-publish-btn";
+    publishButton.innerHTML = `
+      <span class="btn-text">💾 Save Text Color</span>
+      <span class="btn-loading" style="display: none;">⏳ Saving...</span>
+    `;
+    publishButton.style.cssText = `
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      margin-top: 15px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    `;
+
+    // Add hover effects
+    publishButton.addEventListener("mouseenter", () => {
+      publishButton.style.transform = "translateY(-2px)";
+      publishButton.style.boxShadow = "0 6px 20px rgba(102, 126, 234, 0.4)";
+    });
+
+    publishButton.addEventListener("mouseleave", () => {
+      publishButton.style.transform = "translateY(0)";
+      publishButton.style.boxShadow = "0 4px 15px rgba(102, 126, 234, 0.3)";
+    });
+
+    // Add click handler
+    publishButton.addEventListener("click", async () => {
+      try {
+        // Show loading state
+        const btnText = publishButton.querySelector(".btn-text");
+        const btnLoading = publishButton.querySelector(".btn-loading");
+        btnText.style.display = "none";
+        btnLoading.style.display = "inline";
+        publishButton.disabled = true;
+
+        // Get current element and block ID
+        const currentElement = selectedElement?.();
+        if (!currentElement) {
+          throw new Error("No element selected");
+        }
+
+        const blockId =
+          currentElement.getAttribute("data-block-id") ||
+          currentElement.id ||
+          currentElement
+            .closest("[data-block-id]")
+            ?.getAttribute("data-block-id");
+
+        if (!blockId) {
+          throw new Error("Could not determine block ID");
+        }
+
+        // Get all button hover text color modifications for this block
+        const textColorMods =
+          window.pendingModifications
+            ?.get(blockId)
+            ?.filter((mod) => mod.tagType === "buttonHoverTextColor") || [];
+
+        if (textColorMods.length === 0) {
+          throw new Error("No text color modifications to save");
+        }
+
+        // Create the CSS payload for text color
+        const cssPayload = {
+          buttonPrimary: { styles: {} },
+          buttonSecondary: { styles: {} },
+          buttonTertiary: { styles: {} },
+        };
+
+        // Merge all text color modifications
+        textColorMods.forEach((mod) => {
+          if (mod.css?.buttonPrimary?.styles?.color) {
+            cssPayload.buttonPrimary.styles.color =
+              mod.css.buttonPrimary.styles.color;
+          }
+          if (mod.css?.buttonSecondary?.styles?.color) {
+            cssPayload.buttonSecondary.styles.color =
+              mod.css.buttonSecondary.styles.color;
+          }
+          if (mod.css?.buttonTertiary?.styles?.color) {
+            cssPayload.buttonTertiary.styles.color =
+              mod.css.buttonTertiary.styles.color;
+          }
+        });
+
+        // Save to database
+        const result = await saveButtonHoverColorModifications(
+          blockId,
+          cssPayload
+        );
+
+        if (result.success) {
+          showNotification("✅ Text color saved successfully!", "success");
+
+          // Remove the saved modifications from pending
+          if (window.pendingModifications?.has(blockId)) {
+            const remainingMods = window.pendingModifications
+              .get(blockId)
+              .filter((mod) => mod.tagType !== "buttonHoverTextColor");
+            if (remainingMods.length === 0) {
+              window.pendingModifications.delete(blockId);
+            } else {
+              window.pendingModifications.set(blockId, remainingMods);
+            }
+          }
+        } else {
+          throw new Error(result.error || "Failed to save text color");
+        }
+      } catch (error) {
+        console.error("❌ Error saving text color:", error);
+        showNotification(`❌ ${error.message}`, "error");
+      } finally {
+        // Reset button state
+        const btnText = publishButton.querySelector(".btn-text");
+        const btnLoading = publishButton.querySelector(".btn-loading");
+        btnText.style.display = "inline";
+        btnLoading.style.display = "none";
+        publishButton.disabled = false;
+      }
+    });
+
+    return publishButton;
+  }
+
   const palette = document.getElementById("hover-button-text-color-palette");
   const container = document.getElementById("hover-button-text-colors");
   const selectorField = document.getElementById(
@@ -688,4 +833,31 @@ export function ButtonHoverColorModification(
 
     applyButtonHoverColor(firstColor, currentTransparency / 100);
   }
+
+  // ✅ NEW: Add publish button to the UI
+  function addPublishButtonToUI() {
+    // Find the container to add the publish button
+    const publishButtonContainer = document.getElementById(
+      "hover-button-text-color-palette"
+    );
+    if (!publishButtonContainer) {
+      console.warn("❌ Could not find palette container for publish button");
+      return;
+    }
+
+    // Create and add the publish button
+    const publishButton = createTextColorPublishButton();
+
+    // Check if button already exists in the container
+    const existingButton = publishButtonContainer.querySelector(
+      "#hover-text-color-publish-btn"
+    );
+    if (!existingButton) {
+      publishButtonContainer.appendChild(publishButton);
+      console.log("✅ Text color publish button added to UI");
+    }
+  }
+
+  // Initialize the publish button
+  setTimeout(addPublishButtonToUI, 100);
 }
