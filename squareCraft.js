@@ -4132,6 +4132,186 @@ window.pendingModifications = pendingModifications;
     }
   }
 
+  async function fetchButtonHoverColorModifications(blockId = null) {
+    console.log("🚀 Starting fetchButtonHoverColorModifications...");
+    console.log("📋 Parameters:", { blockId });
+
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    console.log("🔑 Credentials check:", {
+      userId: userId ? "✅ Present" : "❌ Missing",
+      token: token ? "✅ Present" : "❌ Missing",
+      widgetId: widgetId ? "✅ Present" : "❌ Missing",
+      pageId: pageId ? "✅ Present" : "❌ Missing",
+    });
+
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn("⚠️ Missing credentials or page ID");
+      console.log("❌ Missing data:", {
+        userId: !userId,
+        token: !token,
+        widgetId: !widgetId,
+        pageId: !pageId,
+      });
+      return;
+    }
+
+    let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-color-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+    if (blockId) url += `&elementId=${blockId}`;
+
+    console.log("�� API URL:", url);
+    console.log("�� Request headers:", {
+      Authorization: `Bearer ${token.substring(0, 20)}...`,
+    });
+
+    try {
+      console.log("�� Making API request...");
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("📥 Response received:", {
+        status: res.status,
+        statusText: res.statusText,
+        ok: res.ok,
+        headers: Object.fromEntries(res.headers.entries()),
+      });
+
+      const result = await res.json();
+      console.log("📄 Raw API response:", result);
+
+      if (!res.ok) {
+        console.error("❌ API request failed:", result);
+        throw new Error(result.message || `HTTP ${res.status}`);
+      }
+
+      console.log("✅ Button hover color modifications fetched successfully");
+      console.log("�� Response structure analysis:", {
+        hasElements: !!result.elements,
+        elementsLength: result.elements?.length || 0,
+        firstElement: result.elements?.[0],
+        hasModifications: !!result.modifications,
+        modificationsLength: result.modifications?.length || 0,
+        responseKeys: Object.keys(result),
+      });
+
+      // Handle both possible response structures
+      let elements = [];
+
+      console.log("🔍 Processing response structure...");
+
+      // Try direct structure first: elements[]
+      if (result.elements && Array.isArray(result.elements)) {
+        elements = result.elements;
+        console.log("📋 Using direct elements structure");
+        console.log("📋 Elements found:", elements);
+      }
+      // Try nested structure: modifications[].elements[]
+      else if (result.modifications && Array.isArray(result.modifications)) {
+        console.log("📋 Using nested modifications structure");
+        result.modifications.forEach((mod, index) => {
+          console.log(`📋 Processing modification ${index}:`, mod);
+          if (mod.elements && Array.isArray(mod.elements)) {
+            elements = elements.concat(mod.elements);
+            console.log(
+              `📋 Added ${mod.elements.length} elements from modification ${index}`
+            );
+          }
+        });
+      } else {
+        console.log("⚠️ No recognized structure found in response");
+        console.log("📋 Available keys:", Object.keys(result));
+      }
+
+      console.log(`🔍 Total elements found: ${elements.length}`);
+      console.log("📋 All elements:", elements);
+
+      elements.forEach((element, index) => {
+        console.log(`�� Processing element ${index}:`, element);
+
+        const { elementId, css } = element;
+
+        console.log("🔍 Element structure analysis:", {
+          hasCss: !!css,
+          elementId,
+          cssKeys: css ? Object.keys(css) : [],
+        });
+
+        if (css) {
+          // Process each button type (primary, secondary, tertiary)
+          const buttonTypes = [
+            "buttonPrimary",
+            "buttonSecondary",
+            "buttonTertiary",
+          ];
+
+          buttonTypes.forEach((buttonType) => {
+            const buttonData = css[buttonType];
+            if (buttonData?.styles) {
+              console.log(`🎨 Processing ${buttonType}:`, buttonData);
+
+              // ✅ FIXED: Create proper hover selectors for each button type
+              const hoverSelectors = {
+                buttonPrimary: ".sqs-button-element--primary:hover",
+                buttonSecondary: ".sqs-button-element--secondary:hover",
+                buttonTertiary: ".sqs-button-element--tertiary:hover",
+              };
+
+              const hoverSelector = hoverSelectors[buttonType];
+
+              if (hoverSelector && Object.keys(buttonData.styles).length > 0) {
+                // Apply button hover styles as external CSS with :hover pseudo-class
+                applyStylesAsExternalCSS(
+                  hoverSelector,
+                  buttonData.styles,
+                  `sc-btn-hover-${buttonType}-${elementId}`
+                );
+                console.log(
+                  `✅ Applied ${buttonType} hover styles to ${elementId}:`,
+                  buttonData.styles
+                );
+                console.log(`🎯 Hover selector used: ${hoverSelector}`);
+              } else {
+                console.log(
+                  `⚠️ No valid ${buttonType} styles found for element:`,
+                  elementId
+                );
+              }
+            } else {
+              console.log(
+                `⚠️ No valid ${buttonType} data found for element:`,
+                elementId
+              );
+            }
+          });
+        } else {
+          console.log("⚠️ No valid CSS structure found for this element");
+        }
+      });
+
+      console.log(
+        "✅ Applied button hover color styles to all elements (external CSS with :hover)"
+      );
+      console.log(
+        "🏁 fetchButtonHoverColorModifications completed successfully"
+      );
+    } catch (error) {
+      console.error(
+        "❌ Failed to fetch button hover color modifications:",
+        error.message
+      );
+      console.error("❌ Full error details:", error);
+      console.error("❌ Error stack:", error.stack);
+    }
+  }
+
   // Fetch button shadow modifications from the backend
   async function fetchButtonShadowModifications(blockId = null) {
     const userId = localStorage.getItem("sc_u_id");
@@ -4640,6 +4820,15 @@ window.pendingModifications = pendingModifications;
         error
       );
     }
+
+    // Fetch button hover color modifications on page load
+    console.log(
+      "🌅 Window load: About to fetch button hover color modifications"
+    );
+    await fetchButtonHoverColorModifications();
+    console.log(
+      "🌅 Window load: Button hover color modifications fetch completed"
+    );
   });
 
   async function addHeadingEventListeners() {
