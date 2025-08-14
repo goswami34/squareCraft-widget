@@ -1799,6 +1799,18 @@ export async function saveButtonHoverColorModifications(blockId, css) {
     return { success: false, error: "No valid hover color styles to save" };
   }
 
+  // Additional debugging for the cleaning process
+  console.log("🔍 Cleaning Process Debug:", {
+    originalCSS: css,
+    cleanedPrimary: cleanedPrimary,
+    cleanedSecondary: cleanedSecondary,
+    cleanedTertiary: cleanedTertiary,
+    hasValidStyles,
+    primaryStyleKeys: Object.keys(cleanedPrimary.styles),
+    secondaryStyleKeys: Object.keys(cleanedSecondary.styles),
+    tertiaryStyleKeys: Object.keys(cleanedTertiary.styles),
+  });
+
   const payload = {
     userId,
     token,

@@ -1322,12 +1322,7 @@ window.pendingModifications = pendingModifications;
             themeColors,
             () => selectedElement,
             saveButtonHoverColorModifications,
-            (blockId, css, tagType) => {
-              if (!pendingModifications.has(blockId)) {
-                pendingModifications.set(blockId, []);
-              }
-              pendingModifications.get(blockId).push({ css, tagType });
-            },
+            addPendingModification,
             showNotification
           );
         }, 50);
@@ -1359,12 +1354,7 @@ window.pendingModifications = pendingModifications;
             themeColors,
             () => selectedElement,
             saveButtonHoverColorModifications,
-            (blockId, css, tagType) => {
-              if (!pendingModifications.has(blockId)) {
-                pendingModifications.set(blockId, []);
-              }
-              pendingModifications.get(blockId).push({ css, tagType });
-            },
+            addPendingModification,
             showNotification
           );
         }, 50);
@@ -6284,6 +6274,22 @@ window.pendingModifications = pendingModifications;
         buttonSecondary: css.buttonSecondary?.styles,
         buttonTertiary: css.buttonTertiary?.styles,
       });
+
+      // Additional debugging for button hover colors
+      if (
+        tagType === "buttonHoverTextColor" ||
+        tagType === "buttonHoverBackgroundColor"
+      ) {
+        console.log(
+          "🔍 Button Hover Debug - Full CSS object:",
+          JSON.stringify(css, null, 2)
+        );
+        console.log("🔍 Button Hover Debug - Button types with styles:", {
+          primary: Object.keys(css.buttonPrimary?.styles || {}),
+          secondary: Object.keys(css.buttonSecondary?.styles || {}),
+          tertiary: Object.keys(css.buttonTertiary?.styles || {}),
+        });
+      }
     }
   }
 
@@ -6706,6 +6712,22 @@ window.pendingModifications = pendingModifications;
       allStyles: Object.values(mergedHoverColors).map((btn) =>
         Object.keys(btn.styles)
       ),
+    });
+
+    // Additional debugging for the merge process
+    console.log("🔍 Merge Process Debug:", {
+      inputModifications: buttonHoverColorMods.length,
+      inputModTypes: buttonHoverColorMods.map((m) => m.tagType),
+      finalMergedStyles: {
+        primary: Object.keys(mergedHoverColors.buttonPrimary.styles),
+        secondary: Object.keys(mergedHoverColors.buttonSecondary.styles),
+        tertiary: Object.keys(mergedHoverColors.buttonTertiary.styles),
+      },
+      finalMergedValues: {
+        primary: mergedHoverColors.buttonPrimary.styles,
+        secondary: mergedHoverColors.buttonSecondary.styles,
+        tertiary: mergedHoverColors.buttonTertiary.styles,
+      },
     });
 
     return mergedHoverColors;

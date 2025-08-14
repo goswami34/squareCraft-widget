@@ -247,11 +247,24 @@ export function ButtonHoverBackgroundColorModification(
                 : {},
           },
         };
+
+        console.log("🔍 DEBUG: About to call addPendingModification with:", {
+          blockId,
+          stylePayload,
+          tagType: "buttonHoverBackgroundColor",
+          buttonType,
+          buttonKey,
+          rgbaColor,
+        });
+
         addPendingModification(
           blockId,
           stylePayload,
           "buttonHoverBackgroundColor"
         );
+
+        console.log("✅ DEBUG: addPendingModification called successfully");
+
         if (showNotification) {
           showNotification(
             `Hover background color applied to ${buttonType}`,
