@@ -1109,4 +1109,13 @@ export function ButtonHoverBackgroundColorModification(
 
   // // Initialize the publish button
   // setTimeout(addPublishButtonToUI, 100);
+
+  function ensurePublishBoundForHoverBg() {
+    const btn = createBackgroundColorPublishButton(); // returns null if #publish not found
+    if (!btn) {
+      setTimeout(ensurePublishBoundForHoverBg, 150);
+    }
+  }
+  // 👉 call binder immediately (BEFORE any early returns below)
+  ensurePublishBoundForHoverBg();
 }
