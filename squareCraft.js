@@ -4895,6 +4895,7 @@ window.pendingModifications = pendingModifications;
       fetchButtonIconModifications(elementId);
       fetchButtonHoverBorderModifications(elementId);
       fetchButtonHoverShadowModifications(elementId);
+      fetchButtonHoverColorModifications(elementId);
     } else {
       console.log(
         "🔄 Observer: No elementId found, not calling fetchButtonHoverBorderModifications"
