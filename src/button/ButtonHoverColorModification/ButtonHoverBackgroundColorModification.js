@@ -1082,31 +1082,31 @@ export function ButtonHoverBackgroundColorModification(
   }
 
   // ✅ NEW: Add publish button to the UI
-  function addPublishButtonToUI() {
-    // Find the container to add the publish button
-    const publishButtonContainer = document.getElementById(
-      "hover-button-background-color-palette"
-    );
-    if (!publishButtonContainer) {
-      console.warn(
-        "❌ Could not find palette container for background color publish button"
-      );
-      return;
-    }
+  // function addPublishButtonToUI() {
+  //   // Find the container to add the publish button
+  //   const publishButtonContainer = document.getElementById(
+  //     "hover-button-background-color-palette"
+  //   );
+  //   if (!publishButtonContainer) {
+  //     console.warn(
+  //       "❌ Could not find palette container for background color publish button"
+  //     );
+  //     return;
+  //   }
 
-    // Create and add the publish button
-    const publishButton = createBackgroundColorPublishButton();
+  //   // Create and add the publish button
+  //   const publishButton = createBackgroundColorPublishButton();
 
-    // Check if button already exists in the container
-    const existingButton = publishButtonContainer.querySelector(
-      "#hover-background-color-publish-btn"
-    );
-    if (!existingButton) {
-      publishButtonContainer.appendChild(publishButton);
-      console.log("✅ Background color publish button added to UI");
-    }
-  }
+  //   // Check if button already exists in the container
+  //   const existingButton = publishButtonContainer.querySelector(
+  //     "#hover-background-color-publish-btn"
+  //   );
+  //   if (!existingButton) {
+  //     publishButtonContainer.appendChild(publishButton);
+  //     console.log("✅ Background color publish button added to UI");
+  //   }
+  // }
 
-  // Initialize the publish button
-  setTimeout(addPublishButtonToUI, 100);
+  // // Initialize the publish button
+  // setTimeout(addPublishButtonToUI, 100);
 }
