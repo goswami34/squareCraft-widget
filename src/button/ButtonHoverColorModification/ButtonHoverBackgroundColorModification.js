@@ -62,154 +62,287 @@ export function ButtonHoverBackgroundColorModification(
   }
 
   // ✅ NEW: Function to create and handle publish button for background color
+  // function createBackgroundColorPublishButton() {
+  //   // Check if publish button already exists
+  //   let publishButton = document.getElementById(
+  //     "hover-background-color-publish-btn"
+  //   );
+  //   if (publishButton) {
+  //     return publishButton;
+  //   }
+
+  //   // Create publish button
+  //   publishButton = document.createElement("button");
+  //   publishButton.id = "hover-background-color-publish-btn";
+  //   publishButton.className = "sc-publish-btn sc-background-color-publish-btn";
+  //   publishButton.innerHTML = `
+  //     <span class="btn-text">💾 Save Background Color</span>
+  //     <span class="btn-loading" style="display: none;">⏳ Saving...</span>
+  //   `;
+  //   publishButton.style.cssText = `
+  //     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  //     color: white;
+  //     border: none;
+  //     border-radius: 8px;
+  //     padding: 10px 20px;
+  //     font-size: 14px;
+  //     font-weight: 600;
+  //     cursor: pointer;
+  //     transition: all 0.3s ease;
+  //     box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  //     margin-top: 15px;
+  //     width: 100%;
+  //     display: flex;
+  //     align-items: center;
+  //     justify-content: center;
+  //     gap: 8px;
+  //   `;
+
+  //   // Add hover effects
+  //   publishButton.addEventListener("mouseenter", () => {
+  //     publishButton.style.transform = "translateY(-2px)";
+  //     publishButton.style.boxShadow = "0 6px 20px rgba(255, 107, 107, 0.4)";
+  //   });
+
+  //   publishButton.addEventListener("mouseleave", () => {
+  //     publishButton.style.transform = "translateY(0)";
+  //     publishButton.style.boxShadow = "0 4px 15px rgba(255, 107, 107, 0.3)";
+  //   });
+
+  //   // Add click handler
+  //   publishButton.addEventListener("click", async () => {
+  //     try {
+  //       // Show loading state
+  //       const btnText = publishButton.querySelector(".btn-text");
+  //       const btnLoading = publishButton.querySelector(".btn-loading");
+  //       btnText.style.display = "none";
+  //       btnLoading.style.display = "inline";
+  //       publishButton.disabled = true;
+
+  //       // Get current element and block ID
+  //       const currentElement = selectedElement?.();
+  //       console.log("🔍 DEBUG: Current element:", currentElement);
+
+  //       if (!currentElement) {
+  //         throw new Error("No element selected");
+  //       }
+
+  //       // Debug: Check all possible block ID sources
+  //       const dataBlockId = currentElement.getAttribute("data-block-id");
+  //       const elementId = currentElement.id;
+  //       const closestDataBlockId = currentElement
+  //         .closest("[data-block-id]")
+  //         ?.getAttribute("data-block-id");
+
+  //       console.log("🔍 DEBUG: Block ID sources:", {
+  //         dataBlockId,
+  //         elementId,
+  //         closestDataBlockId,
+  //         element: currentElement,
+  //       });
+
+  //       const blockId = dataBlockId || elementId || closestDataBlockId;
+
+  //       console.log("🔍 DEBUG: Final block ID:", blockId);
+
+  //       if (!blockId) {
+  //         throw new Error("Could not determine block ID");
+  //       }
+
+  //       // Debug: Check if pendingModifications exists and has data
+  //       console.log(
+  //         "🔍 DEBUG: window.pendingModifications:",
+  //         window.pendingModifications
+  //       );
+  //       console.log(
+  //         "🔍 DEBUG: typeof window.pendingModifications:",
+  //         typeof window.pendingModifications
+  //       );
+  //       console.log(
+  //         "🔍 DEBUG: window.pendingModifications instanceof Map:",
+  //         window.pendingModifications instanceof Map
+  //       );
+
+  //       if (window.pendingModifications) {
+  //         console.log(
+  //           "🔍 DEBUG: All pending modifications:",
+  //           Array.from(window.pendingModifications.entries())
+  //         );
+  //         console.log(
+  //           "🔍 DEBUG: Has blockId:",
+  //           window.pendingModifications.has(blockId)
+  //         );
+  //         if (window.pendingModifications.has(blockId)) {
+  //           console.log(
+  //             "🔍 DEBUG: Modifications for this block:",
+  //             window.pendingModifications.get(blockId)
+  //           );
+  //         }
+  //       }
+
+  //       // Get all button hover background color modifications for this block
+  //       const backgroundColorMods =
+  //         window.pendingModifications
+  //           ?.get(blockId)
+  //           ?.filter((mod) => mod.tagType === "buttonHoverBackgroundColor") ||
+  //         [];
+
+  //       console.log(
+  //         "🔍 DEBUG: Background color modifications found:",
+  //         backgroundColorMods
+  //       );
+  //       console.log(
+  //         "🔍 DEBUG: Number of background color mods:",
+  //         backgroundColorMods.length
+  //       );
+
+  //       if (backgroundColorMods.length === 0) {
+  //         throw new Error("No background color modifications to save");
+  //       }
+
+  //       // Create the CSS payload for background color
+  //       const cssPayload = {
+  //         buttonPrimary: { styles: {} },
+  //         buttonSecondary: { styles: {} },
+  //         buttonTertiary: { styles: {} },
+  //       };
+
+  //       // Merge all background color modifications
+  //       backgroundColorMods.forEach((mod) => {
+  //         console.log("🔍 DEBUG: Processing modification:", mod);
+  //         if (mod.css?.buttonPrimary?.styles?.backgroundColor) {
+  //           cssPayload.buttonPrimary.styles.backgroundColor =
+  //             mod.css.buttonPrimary.styles.backgroundColor;
+  //         }
+  //         if (mod.css?.buttonSecondary?.styles?.backgroundColor) {
+  //           cssPayload.buttonSecondary.styles.backgroundColor =
+  //             mod.css.buttonSecondary.styles.backgroundColor;
+  //         }
+  //         if (mod.css?.buttonTertiary?.styles?.backgroundColor) {
+  //           cssPayload.buttonTertiary.styles.backgroundColor =
+  //             mod.css.buttonTertiary.styles.backgroundColor;
+  //         }
+  //       });
+
+  //       console.log("🔍 DEBUG: Final CSS payload:", cssPayload);
+
+  //       // Save to database
+  //       console.log(
+  //         "🔍 DEBUG: About to call saveButtonHoverColorModifications with:",
+  //         {
+  //           blockId,
+  //           cssPayload,
+  //         }
+  //       );
+
+  //       const result = await saveButtonHoverColorModifications(
+  //         blockId,
+  //         cssPayload
+  //       );
+
+  //       console.log("🔍 DEBUG: Save result:", result);
+
+  //       if (result.success) {
+  //         showNotification(
+  //           "✅ Background color saved successfully!",
+  //           "success"
+  //         );
+
+  //         // Remove the saved modifications from pending
+  //         if (window.pendingModifications?.has(blockId)) {
+  //           const remainingMods = window.pendingModifications
+  //             .get(blockId)
+  //             .filter((mod) => mod.tagType !== "buttonHoverBackgroundColor");
+  //           if (remainingMods.length === 0) {
+  //             window.pendingModifications.delete(blockId);
+  //           } else {
+  //             window.pendingModifications.set(blockId, remainingMods);
+  //           }
+  //           console.log(
+  //             "🔍 DEBUG: Updated pending modifications:",
+  //             Array.from(window.pendingModifications.entries())
+  //           );
+  //         }
+  //       } else {
+  //         throw new Error(result.error || "Failed to save background color");
+  //       }
+  //     } catch (error) {
+  //       console.error("❌ Error saving background color:", error);
+  //       showNotification(`❌ ${error.message}`, "error");
+  //     } finally {
+  //       // Reset button state
+  //       const btnText = publishButton.querySelector(".btn-text");
+  //       const btnLoading = publishButton.querySelector(".btn-loading");
+  //       btnText.style.display = "inline";
+  //       btnLoading.style.display = "none";
+  //       publishButton.disabled = false;
+  //     }
+  //   });
+
+  //   return publishButton;
+  // }
+
+  // ✅ Reuse the global Publish button from html.js
   function createBackgroundColorPublishButton() {
-    // Check if publish button already exists
-    let publishButton = document.getElementById(
-      "hover-background-color-publish-btn"
-    );
-    if (publishButton) {
-      return publishButton;
+    // Get the Publish button that html() renders
+    let publishButton = document.getElementById("publish");
+
+    // If it doesn't exist yet, bail out (html() may not have rendered yet)
+    if (!publishButton) {
+      console.warn("❌ 'publish' button not found in DOM yet.");
+      return null;
     }
 
-    // Create publish button
-    publishButton = document.createElement("button");
-    publishButton.id = "hover-background-color-publish-btn";
-    publishButton.className = "sc-publish-btn sc-background-color-publish-btn";
-    publishButton.innerHTML = `
-      <span class="btn-text">💾 Save Background Color</span>
-      <span class="btn-loading" style="display: none;">⏳ Saving...</span>
-    `;
-    publishButton.style.cssText = `
-      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-      margin-top: 15px;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    `;
+    // Prevent attaching the same handler multiple times
+    if (publishButton.dataset.hoverBgBound === "1") {
+      return publishButton;
+    }
+    publishButton.dataset.hoverBgBound = "1";
+    publishButton.classList.add("sc-background-color-publish-btn");
 
-    // Add hover effects
-    publishButton.addEventListener("mouseenter", () => {
-      publishButton.style.transform = "translateY(-2px)";
-      publishButton.style.boxShadow = "0 6px 20px rgba(255, 107, 107, 0.4)";
-    });
+    // Small helper to show a loading state without changing button structure
+    const setLoading = (state) => {
+      publishButton.style.pointerEvents = state ? "none" : "auto";
+      publishButton.style.opacity = state ? "0.6" : "1";
+      publishButton.dataset.loading = state ? "1" : "0";
+      // keep the label consistent with your UI
+      publishButton.textContent = state ? "⏳ Saving..." : "Publish";
+    };
 
-    publishButton.addEventListener("mouseleave", () => {
-      publishButton.style.transform = "translateY(0)";
-      publishButton.style.boxShadow = "0 4px 15px rgba(255, 107, 107, 0.3)";
-    });
-
-    // Add click handler
+    // Attach click handler (migrated from your previous create button code)
     publishButton.addEventListener("click", async () => {
       try {
-        // Show loading state
-        const btnText = publishButton.querySelector(".btn-text");
-        const btnLoading = publishButton.querySelector(".btn-loading");
-        btnText.style.display = "none";
-        btnLoading.style.display = "inline";
-        publishButton.disabled = true;
+        setLoading(true);
 
-        // Get current element and block ID
         const currentElement = selectedElement?.();
-        console.log("🔍 DEBUG: Current element:", currentElement);
+        if (!currentElement) throw new Error("No element selected");
 
-        if (!currentElement) {
-          throw new Error("No element selected");
-        }
-
-        // Debug: Check all possible block ID sources
         const dataBlockId = currentElement.getAttribute("data-block-id");
         const elementId = currentElement.id;
         const closestDataBlockId = currentElement
-          .closest("[data-block-id]")
+          .closest?.("[data-block-id]")
           ?.getAttribute("data-block-id");
-
-        console.log("🔍 DEBUG: Block ID sources:", {
-          dataBlockId,
-          elementId,
-          closestDataBlockId,
-          element: currentElement,
-        });
-
         const blockId = dataBlockId || elementId || closestDataBlockId;
+        if (!blockId) throw new Error("Could not determine block ID");
 
-        console.log("🔍 DEBUG: Final block ID:", blockId);
-
-        if (!blockId) {
-          throw new Error("Could not determine block ID");
-        }
-
-        // Debug: Check if pendingModifications exists and has data
-        console.log(
-          "🔍 DEBUG: window.pendingModifications:",
-          window.pendingModifications
-        );
-        console.log(
-          "🔍 DEBUG: typeof window.pendingModifications:",
-          typeof window.pendingModifications
-        );
-        console.log(
-          "🔍 DEBUG: window.pendingModifications instanceof Map:",
-          window.pendingModifications instanceof Map
-        );
-
-        if (window.pendingModifications) {
-          console.log(
-            "🔍 DEBUG: All pending modifications:",
-            Array.from(window.pendingModifications.entries())
-          );
-          console.log(
-            "🔍 DEBUG: Has blockId:",
-            window.pendingModifications.has(blockId)
-          );
-          if (window.pendingModifications.has(blockId)) {
-            console.log(
-              "🔍 DEBUG: Modifications for this block:",
-              window.pendingModifications.get(blockId)
-            );
-          }
-        }
-
-        // Get all button hover background color modifications for this block
+        // Gather pending hover background-color mods for this block
         const backgroundColorMods =
           window.pendingModifications
             ?.get(blockId)
-            ?.filter((mod) => mod.tagType === "buttonHoverBackgroundColor") ||
-          [];
-
-        console.log(
-          "🔍 DEBUG: Background color modifications found:",
-          backgroundColorMods
-        );
-        console.log(
-          "🔍 DEBUG: Number of background color mods:",
-          backgroundColorMods.length
-        );
+            ?.filter((m) => m.tagType === "buttonHoverBackgroundColor") || [];
 
         if (backgroundColorMods.length === 0) {
           throw new Error("No background color modifications to save");
         }
 
-        // Create the CSS payload for background color
+        // Build payload
         const cssPayload = {
           buttonPrimary: { styles: {} },
           buttonSecondary: { styles: {} },
           buttonTertiary: { styles: {} },
         };
 
-        // Merge all background color modifications
         backgroundColorMods.forEach((mod) => {
-          console.log("🔍 DEBUG: Processing modification:", mod);
           if (mod.css?.buttonPrimary?.styles?.backgroundColor) {
             cssPayload.buttonPrimary.styles.backgroundColor =
               mod.css.buttonPrimary.styles.backgroundColor;
@@ -224,58 +357,35 @@ export function ButtonHoverBackgroundColorModification(
           }
         });
 
-        console.log("🔍 DEBUG: Final CSS payload:", cssPayload);
-
-        // Save to database
-        console.log(
-          "🔍 DEBUG: About to call saveButtonHoverColorModifications with:",
-          {
-            blockId,
-            cssPayload,
-          }
-        );
-
+        // Save
         const result = await saveButtonHoverColorModifications(
           blockId,
           cssPayload
         );
 
-        console.log("🔍 DEBUG: Save result:", result);
-
-        if (result.success) {
+        if (result?.success) {
           showNotification(
             "✅ Background color saved successfully!",
             "success"
           );
 
-          // Remove the saved modifications from pending
+          // Clear only the saved hover-bg-color mods for this block
           if (window.pendingModifications?.has(blockId)) {
-            const remainingMods = window.pendingModifications
+            const remaining = window.pendingModifications
               .get(blockId)
-              .filter((mod) => mod.tagType !== "buttonHoverBackgroundColor");
-            if (remainingMods.length === 0) {
+              .filter((m) => m.tagType !== "buttonHoverBackgroundColor");
+            if (remaining.length === 0)
               window.pendingModifications.delete(blockId);
-            } else {
-              window.pendingModifications.set(blockId, remainingMods);
-            }
-            console.log(
-              "🔍 DEBUG: Updated pending modifications:",
-              Array.from(window.pendingModifications.entries())
-            );
+            else window.pendingModifications.set(blockId, remaining);
           }
         } else {
-          throw new Error(result.error || "Failed to save background color");
+          throw new Error(result?.error || "Failed to save background color");
         }
-      } catch (error) {
-        console.error("❌ Error saving background color:", error);
-        showNotification(`❌ ${error.message}`, "error");
+      } catch (err) {
+        console.error("❌ Error saving background color:", err);
+        showNotification(`❌ ${err.message}`, "error");
       } finally {
-        // Reset button state
-        const btnText = publishButton.querySelector(".btn-text");
-        const btnLoading = publishButton.querySelector(".btn-loading");
-        btnText.style.display = "inline";
-        btnLoading.style.display = "none";
-        publishButton.disabled = false;
+        setLoading(false);
       }
     });
 
