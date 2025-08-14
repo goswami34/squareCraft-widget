@@ -63,147 +63,65 @@ export function ButtonHoverColorModification(
 
   // ✅ NEW: Function to create and handle publish button for text color
   function createTextColorPublishButton() {
-    // Check if publish button already exists
-    let publishButton = document.getElementById("hover-text-color-publish-btn");
-    if (publishButton) {
-      return publishButton;
+    // Get the Publish button that html() renders
+    let publishButton = document.getElementById("publish");
+
+    // If it doesn't exist yet, bail out (html() may not have rendered yet)
+    if (!publishButton) {
+      console.warn("❌ 'publish' button not found in DOM yet.");
+      return null;
     }
 
-    // Create publish button
-    publishButton = document.createElement("button");
-    publishButton.id = "hover-text-color-publish-btn";
-    publishButton.className = "sc-publish-btn sc-text-color-publish-btn";
-    publishButton.innerHTML = `
-      <span class="btn-text">💾 Save Text Color</span>
-      <span class="btn-loading" style="display: none;">⏳ Saving...</span>
-    `;
-    publishButton.style.cssText = `
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-      margin-top: 15px;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    `;
+    // Prevent attaching the same handler multiple times
+    if (publishButton.dataset.hoverTextColorBound === "1") {
+      return publishButton;
+    }
+    publishButton.dataset.hoverTextColorBound = "1";
+    publishButton.classList.add("sc-text-color-publish-btn");
 
-    // Add hover effects
-    publishButton.addEventListener("mouseenter", () => {
-      publishButton.style.transform = "translateY(-2px)";
-      publishButton.style.boxShadow = "0 6px 20px rgba(102, 126, 234, 0.4)";
-    });
+    // Small helper to show a loading state without changing button structure
+    const setLoading = (state) => {
+      publishButton.style.pointerEvents = state ? "none" : "auto";
+      publishButton.style.opacity = state ? "0.6" : "1";
+      publishButton.dataset.loading = state ? "1" : "0";
+      // keep the label consistent with your UI
+      publishButton.textContent = state ? "⏳ Saving..." : "Publish";
+    };
 
-    publishButton.addEventListener("mouseleave", () => {
-      publishButton.style.transform = "translateY(0)";
-      publishButton.style.boxShadow = "0 4px 15px rgba(102, 126, 234, 0.3)";
-    });
-
-    // Add click handler
+    // Attach click handler (migrated from your previous create button code)
     publishButton.addEventListener("click", async () => {
       try {
-        // Show loading state
-        const btnText = publishButton.querySelector(".btn-text");
-        const btnLoading = publishButton.querySelector(".btn-loading");
-        btnText.style.display = "none";
-        btnLoading.style.display = "inline";
-        publishButton.disabled = true;
+        setLoading(true);
 
-        // Get current element and block ID
         const currentElement = selectedElement?.();
-        console.log("🔍 DEBUG: Current element:", currentElement);
+        if (!currentElement) throw new Error("No element selected");
 
-        if (!currentElement) {
-          throw new Error("No element selected");
-        }
-
-        // Debug: Check all possible block ID sources
         const dataBlockId = currentElement.getAttribute("data-block-id");
         const elementId = currentElement.id;
         const closestDataBlockId = currentElement
-          .closest("[data-block-id]")
+          .closest?.("[data-block-id]")
           ?.getAttribute("data-block-id");
-
-        console.log("🔍 DEBUG: Block ID sources:", {
-          dataBlockId,
-          elementId,
-          closestDataBlockId,
-          element: currentElement,
-        });
-
         const blockId = dataBlockId || elementId || closestDataBlockId;
+        if (!blockId) throw new Error("Could not determine block ID");
 
-        console.log("🔍 DEBUG: Final block ID:", blockId);
-
-        if (!blockId) {
-          throw new Error("Could not determine block ID");
-        }
-
-        // Debug: Check if pendingModifications exists and has data
-        console.log(
-          "🔍 DEBUG: window.pendingModifications:",
-          window.pendingModifications
-        );
-        console.log(
-          "🔍 DEBUG: typeof window.pendingModifications:",
-          typeof window.pendingModifications
-        );
-        console.log(
-          "🔍 DEBUG: window.pendingModifications instanceof Map:",
-          window.pendingModifications instanceof Map
-        );
-
-        if (window.pendingModifications) {
-          console.log(
-            "🔍 DEBUG: All pending modifications:",
-            Array.from(window.pendingModifications.entries())
-          );
-          console.log(
-            "🔍 DEBUG: Has blockId:",
-            window.pendingModifications.has(blockId)
-          );
-          if (window.pendingModifications.has(blockId)) {
-            console.log(
-              "🔍 DEBUG: Modifications for this block:",
-              window.pendingModifications.get(blockId)
-            );
-          }
-        }
-
-        // Get all button hover text color modifications for this block
+        // Gather pending hover text-color mods for this block
         const textColorMods =
           window.pendingModifications
             ?.get(blockId)
-            ?.filter((mod) => mod.tagType === "buttonHoverTextColor") || [];
-
-        console.log("🔍 DEBUG: Text color modifications found:", textColorMods);
-        console.log(
-          "🔍 DEBUG: Number of text color mods:",
-          textColorMods.length
-        );
+            ?.filter((m) => m.tagType === "buttonHoverTextColor") || [];
 
         if (textColorMods.length === 0) {
           throw new Error("No text color modifications to save");
         }
 
-        // Create the CSS payload for text color
+        // Build payload
         const cssPayload = {
           buttonPrimary: { styles: {} },
           buttonSecondary: { styles: {} },
           buttonTertiary: { styles: {} },
         };
 
-        // Merge all text color modifications
         textColorMods.forEach((mod) => {
-          console.log("🔍 DEBUG: Processing modification:", mod);
           if (mod.css?.buttonPrimary?.styles?.color) {
             cssPayload.buttonPrimary.styles.color =
               mod.css.buttonPrimary.styles.color;
@@ -218,55 +136,32 @@ export function ButtonHoverColorModification(
           }
         });
 
-        console.log("🔍 DEBUG: Final CSS payload:", cssPayload);
-
-        // Save to database
-        console.log(
-          "🔍 DEBUG: About to call saveButtonHoverColorModifications with:",
-          {
-            blockId,
-            cssPayload,
-          }
-        );
-
+        // Save
         const result = await saveButtonHoverColorModifications(
           blockId,
           cssPayload
         );
 
-        console.log("🔍 DEBUG: Save result:", result);
-
-        if (result.success) {
+        if (result?.success) {
           showNotification("✅ Text color saved successfully!", "success");
 
-          // Remove the saved modifications from pending
+          // Clear only the saved hover-text-color mods for this block
           if (window.pendingModifications?.has(blockId)) {
-            const remainingMods = window.pendingModifications
+            const remaining = window.pendingModifications
               .get(blockId)
-              .filter((mod) => mod.tagType !== "buttonHoverTextColor");
-            if (remainingMods.length === 0) {
+              .filter((m) => m.tagType !== "buttonHoverTextColor");
+            if (remaining.length === 0)
               window.pendingModifications.delete(blockId);
-            } else {
-              window.pendingModifications.set(blockId, remainingMods);
-            }
-            console.log(
-              "🔍 DEBUG: Updated pending modifications:",
-              Array.from(window.pendingModifications.entries())
-            );
+            else window.pendingModifications.set(blockId, remaining);
           }
         } else {
-          throw new Error(result.error || "Failed to save text color");
+          throw new Error(result?.error || "Failed to save text color");
         }
-      } catch (error) {
-        console.error("❌ Error saving text color:", error);
-        showNotification(`❌ ${error.message}`, "error");
+      } catch (err) {
+        console.error("❌ Error saving text color:", err);
+        showNotification(`❌ ${err.message}`, "error");
       } finally {
-        // Reset button state
-        const btnText = publishButton.querySelector(".btn-text");
-        const btnLoading = publishButton.querySelector(".btn-loading");
-        btnText.style.display = "inline";
-        btnLoading.style.display = "none";
-        publishButton.disabled = false;
+        setLoading(false);
       }
     });
 
@@ -941,30 +836,13 @@ export function ButtonHoverColorModification(
     applyButtonHoverColor(firstColor, currentTransparency / 100);
   }
 
-  // ✅ NEW: Add publish button to the UI
-  function addPublishButtonToUI() {
-    // Find the container to add the publish button
-    const publishButtonContainer = document.getElementById(
-      "hover-button-text-color-palette"
-    );
-    if (!publishButtonContainer) {
-      console.warn("❌ Could not find palette container for publish button");
-      return;
-    }
-
-    // Create and add the publish button
-    const publishButton = createTextColorPublishButton();
-
-    // Check if button already exists in the container
-    const existingButton = publishButtonContainer.querySelector(
-      "#hover-text-color-publish-btn"
-    );
-    if (!existingButton) {
-      publishButtonContainer.appendChild(publishButton);
-      console.log("✅ Text color publish button added to UI");
+  // ✅ NEW: call publish button to the UI
+  function ensurePublishBoundForHoverTextColor() {
+    const btn = createTextColorPublishButton(); // returns null if #publish not found
+    if (!btn) {
+      setTimeout(ensurePublishBoundForHoverTextColor, 150);
     }
   }
-
-  // Initialize the publish button
-  setTimeout(addPublishButtonToUI, 100);
+  // 👉 call binder immediately (BEFORE any early returns below)
+  ensurePublishBoundForHoverTextColor();
 }
