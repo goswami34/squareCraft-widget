@@ -119,19 +119,63 @@ export function ButtonHoverColorModification(
 
         // Get current element and block ID
         const currentElement = selectedElement?.();
+        console.log("🔍 DEBUG: Current element:", currentElement);
+
         if (!currentElement) {
           throw new Error("No element selected");
         }
 
-        const blockId =
-          currentElement.getAttribute("data-block-id") ||
-          currentElement.id ||
-          currentElement
-            .closest("[data-block-id]")
-            ?.getAttribute("data-block-id");
+        // Debug: Check all possible block ID sources
+        const dataBlockId = currentElement.getAttribute("data-block-id");
+        const elementId = currentElement.id;
+        const closestDataBlockId = currentElement
+          .closest("[data-block-id]")
+          ?.getAttribute("data-block-id");
+
+        console.log("🔍 DEBUG: Block ID sources:", {
+          dataBlockId,
+          elementId,
+          closestDataBlockId,
+          element: currentElement,
+        });
+
+        const blockId = dataBlockId || elementId || closestDataBlockId;
+
+        console.log("🔍 DEBUG: Final block ID:", blockId);
 
         if (!blockId) {
           throw new Error("Could not determine block ID");
+        }
+
+        // Debug: Check if pendingModifications exists and has data
+        console.log(
+          "🔍 DEBUG: window.pendingModifications:",
+          window.pendingModifications
+        );
+        console.log(
+          "🔍 DEBUG: typeof window.pendingModifications:",
+          typeof window.pendingModifications
+        );
+        console.log(
+          "🔍 DEBUG: window.pendingModifications instanceof Map:",
+          window.pendingModifications instanceof Map
+        );
+
+        if (window.pendingModifications) {
+          console.log(
+            "🔍 DEBUG: All pending modifications:",
+            Array.from(window.pendingModifications.entries())
+          );
+          console.log(
+            "🔍 DEBUG: Has blockId:",
+            window.pendingModifications.has(blockId)
+          );
+          if (window.pendingModifications.has(blockId)) {
+            console.log(
+              "🔍 DEBUG: Modifications for this block:",
+              window.pendingModifications.get(blockId)
+            );
+          }
         }
 
         // Get all button hover text color modifications for this block
@@ -139,6 +183,12 @@ export function ButtonHoverColorModification(
           window.pendingModifications
             ?.get(blockId)
             ?.filter((mod) => mod.tagType === "buttonHoverTextColor") || [];
+
+        console.log("🔍 DEBUG: Text color modifications found:", textColorMods);
+        console.log(
+          "🔍 DEBUG: Number of text color mods:",
+          textColorMods.length
+        );
 
         if (textColorMods.length === 0) {
           throw new Error("No text color modifications to save");
@@ -153,6 +203,7 @@ export function ButtonHoverColorModification(
 
         // Merge all text color modifications
         textColorMods.forEach((mod) => {
+          console.log("🔍 DEBUG: Processing modification:", mod);
           if (mod.css?.buttonPrimary?.styles?.color) {
             cssPayload.buttonPrimary.styles.color =
               mod.css.buttonPrimary.styles.color;
@@ -167,11 +218,23 @@ export function ButtonHoverColorModification(
           }
         });
 
+        console.log("🔍 DEBUG: Final CSS payload:", cssPayload);
+
         // Save to database
+        console.log(
+          "🔍 DEBUG: About to call saveButtonHoverColorModifications with:",
+          {
+            blockId,
+            cssPayload,
+          }
+        );
+
         const result = await saveButtonHoverColorModifications(
           blockId,
           cssPayload
         );
+
+        console.log("🔍 DEBUG: Save result:", result);
 
         if (result.success) {
           showNotification("✅ Text color saved successfully!", "success");
@@ -186,6 +249,10 @@ export function ButtonHoverColorModification(
             } else {
               window.pendingModifications.set(blockId, remainingMods);
             }
+            console.log(
+              "🔍 DEBUG: Updated pending modifications:",
+              Array.from(window.pendingModifications.entries())
+            );
           }
         } else {
           throw new Error(result.error || "Failed to save text color");
@@ -350,6 +417,20 @@ export function ButtonHoverColorModification(
       typeof addPendingModification === "function"
     ) {
       const blockId = currentElement.id;
+      console.log("🔍 DEBUG: applyButtonHoverColor - blockId:", blockId);
+      console.log(
+        "🔍 DEBUG: applyButtonHoverColor - currentElement:",
+        currentElement
+      );
+      console.log(
+        "🔍 DEBUG: applyButtonHoverColor - currentElement.id:",
+        currentElement.id
+      );
+      console.log(
+        "🔍 DEBUG: applyButtonHoverColor - currentElement.getAttribute('data-block-id'):",
+        currentElement.getAttribute("data-block-id")
+      );
+
       if (blockId) {
         // Map button type to the correct key
         const buttonKey =
@@ -389,13 +470,39 @@ export function ButtonHoverColorModification(
 
         console.log("✅ DEBUG: addPendingModification called successfully");
 
+        // Debug: Check if the modification was added
+        console.log(
+          "🔍 DEBUG: After addPendingModification - window.pendingModifications:",
+          window.pendingModifications
+        );
+        if (
+          window.pendingModifications &&
+          window.pendingModifications.has(blockId)
+        ) {
+          console.log(
+            "🔍 DEBUG: Modifications for this block after adding:",
+            window.pendingModifications.get(blockId)
+          );
+        }
+
         if (showNotification) {
           showNotification(
             `Hover text color applied to ${buttonType}`,
             "success"
           );
         }
+      } else {
+        console.warn(
+          "⚠️ No block ID found for currentElement:",
+          currentElement
+        );
       }
+    } else {
+      console.warn("⚠️ Required functions not available:", {
+        saveButtonHoverColorModifications:
+          typeof saveButtonHoverColorModifications,
+        addPendingModification: typeof addPendingModification,
+      });
     }
   }
 
