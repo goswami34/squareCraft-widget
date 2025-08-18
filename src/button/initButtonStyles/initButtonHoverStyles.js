@@ -502,6 +502,11 @@ function ensurePublishBoundForHoverIcon(
           ?.filter((m) => m.tagType === "buttonHoverIcon") || [];
       if (iconMods.length === 0) return;
 
+      // Show publishing state
+      const originalText = publishButton.textContent;
+      publishButton.textContent = "Publishing...";
+      publishButton.disabled = true;
+
       const merged = {
         buttonPrimary: [],
         buttonSecondary: [],
@@ -540,13 +545,30 @@ function ensurePublishBoundForHoverIcon(
             window.pendingModifications.delete(blockId);
           else window.pendingModifications.set(blockId, remaining);
         }
+
+        // Show published state briefly, then restore
+        publishButton.textContent = "Published";
+        publishButton.style.backgroundColor = "#4CAF50"; // Green color
+
+        setTimeout(() => {
+          publishButton.textContent = originalText;
+          publishButton.style.backgroundColor = "#EF7C2F"; // Original color
+          publishButton.disabled = false;
+        }, 2000);
+
         if (showNotification)
           showNotification(
             "Hover icon changes published",
             result?.success ? "success" : "error"
           );
       }
-    } catch (_) {}
+    } catch (error) {
+      // Restore button state on error
+      publishButton.textContent = "Publish";
+      publishButton.style.backgroundColor = "#EF7C2F";
+      publishButton.disabled = false;
+      console.error("Error publishing hover icon changes:", error);
+    }
   });
 }
 
