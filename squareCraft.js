@@ -1423,7 +1423,7 @@ window.pendingModifications = pendingModifications;
           "#hover-button-icon-color-trigger"
         ),
         allPaletteElements: document.querySelectorAll(
-          "#hover-button-icon-color-palette"
+          "#button-hover-icon-color-palette"
         ),
       });
     }
