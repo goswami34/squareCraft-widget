@@ -37,8 +37,10 @@ export function ButtonHoverIconColorPalateToggle(
     !bullet ||
     !colorCode ||
     !transparencyCount
-  )
+  ) {
+    console.warn("❌ ButtonHoverColorModification - Missing required elements");
     return;
+  }
 
   let dynamicHue = 0;
   let currentTransparency = 100;
@@ -104,8 +106,8 @@ export function ButtonHoverIconColorPalateToggle(
     return "rgb(255, 0, 0)";
   }
 
-  // Function to apply icon color to button
-  function applyButtonIconColor(color, alpha = 1) {
+  // Function to apply text color to button on hover
+  function applyButtonHoverColor(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
 
@@ -117,7 +119,11 @@ export function ButtonHoverIconColorPalateToggle(
 
     let buttonType = null;
     for (let type of buttonTypes) {
-      if (currentElement.querySelector(`a.${type}`)) {
+      // Check for both <a> and <button> tags with the button class
+      if (
+        currentElement.querySelector(`a.${type}`) ||
+        currentElement.querySelector(`button.${type}`)
+      ) {
         buttonType = type;
         break;
       }
@@ -132,70 +138,142 @@ export function ButtonHoverIconColorPalateToggle(
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
 
-    const styleId = `sc-hover-icon-color-style-global-${buttonType}`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
-    }
+    // Use the unified style management function
+    updateButtonHoverStyles(buttonType, { color: rgbaColor });
 
-    styleTag.textContent = `
-          a.${buttonType}:hover .sqscraft-button-icon,
-          button.${buttonType}:hover .sqscraft-button-icon {
-            color: ${rgbaColor} !important;
-          }
-        `;
-
-    const allButtons = currentElement.querySelectorAll(
-      `a.${buttonType}, button.${buttonType}`
-    );
-    allButtons.forEach((btn) => {
-      btn.dataset.scButtonHoverIconColor = color;
-    });
-    console.log("🖌️ APPLYING HOVER ICON COLOR:", rgbaColor, "on", buttonType);
+    console.log("🖌️ APPLYING HOVER TEXT COLOR:", rgbaColor, "on", buttonType);
 
     // Save modifications if functions are provided
     if (
-      typeof saveButtonHoverIconModifications === "function" &&
+      typeof saveButtonHoverColorModifications === "function" &&
       typeof addPendingModification === "function"
     ) {
       const blockId = currentElement.id;
+      console.log("🔍 DEBUG: applyButtonHoverColor - blockId:", blockId);
+      console.log(
+        "🔍 DEBUG: applyButtonHoverColor - currentElement:",
+        currentElement
+      );
+      console.log(
+        "🔍 DEBUG: applyButtonHoverColor - currentElement.id:",
+        currentElement.id
+      );
+      console.log(
+        "🔍 DEBUG: applyButtonHoverColor - currentElement.getAttribute('data-block-id'):",
+        currentElement.getAttribute("data-block-id")
+      );
+
       if (blockId) {
+        // Map button type to the correct key
+        const buttonKey =
+          buttonType === "sqs-button-element--primary"
+            ? "buttonPrimary"
+            : buttonType === "sqs-button-element--secondary"
+            ? "buttonSecondary"
+            : buttonType === "sqs-button-element--tertiary"
+            ? "buttonTertiary"
+            : "buttonPrimary";
+
         const stylePayload = {
           buttonPrimary: {
-            selector: `a.${buttonType}:hover .sqscraft-button-icon`,
-            styles: { color: rgbaColor },
+            selector: ".sqs-button-element--primary:hover",
+            styles: buttonKey === "buttonPrimary" ? { color: rgbaColor } : {},
+          },
+          buttonSecondary: {
+            selector: ".sqs-button-element--secondary:hover",
+            styles: buttonKey === "buttonSecondary" ? { color: rgbaColor } : {},
+          },
+          buttonTertiary: {
+            selector: ".sqs-button-element--tertiary:hover",
+            styles: buttonKey === "buttonTertiary" ? { color: rgbaColor } : {},
           },
         };
-        addPendingModification(blockId, stylePayload, "buttonHoverIcon");
+
+        console.log("🔍 DEBUG: About to call addPendingModification with:", {
+          blockId,
+          stylePayload,
+          tagType: "buttonHoverTextColor",
+          buttonType,
+          buttonKey,
+          rgbaColor,
+        });
+
+        addPendingModification(blockId, stylePayload, "buttonHoverTextColor");
+
+        console.log("✅ DEBUG: addPendingModification called successfully");
+
+        // Debug: Check if the modification was added
+        console.log(
+          "🔍 DEBUG: After addPendingModification - window.pendingModifications:",
+          window.pendingModifications
+        );
+        if (
+          window.pendingModifications &&
+          window.pendingModifications.has(blockId)
+        ) {
+          console.log(
+            "🔍 DEBUG: Modifications for this block after adding:",
+            window.pendingModifications.get(blockId)
+          );
+        }
+
         if (showNotification) {
           showNotification(
-            `Hover icon color applied to ${buttonType}`,
+            `Hover text color applied to ${buttonType}`,
             "success"
           );
         }
+      } else {
+        console.warn(
+          "⚠️ No block ID found for currentElement:",
+          currentElement
+        );
       }
+    } else {
+      console.warn("⚠️ Required functions not available:", {
+        saveButtonHoverColorModifications:
+          typeof saveButtonHoverColorModifications,
+        addPendingModification: typeof addPendingModification,
+      });
     }
   }
 
   if (allColorField) {
     allColorField.style.background = `linear-gradient(to bottom,
-            hsl(0, 100%, 50%),
-            hsl(60, 100%, 50%),
-            hsl(120, 100%, 50%),
-            hsl(180, 100%, 50%),
-            hsl(240, 100%, 50%),
-            hsl(300, 100%, 50%),
-            hsl(360, 100%, 50%)
-          )`;
+                hsl(0, 100%, 50%),
+                hsl(60, 100%, 50%),
+                hsl(120, 100%, 50%),
+                hsl(180, 100%, 50%),
+                hsl(240, 100%, 50%),
+                hsl(300, 100%, 50%),
+                hsl(360, 100%, 50%)
+              )`;
   }
 
   if (transparencyField) {
     transparencyField.style.background = `linear-gradient(to bottom,
-            hsla(0, 100%, 50%, 1),
-            hsla(0, 100%, 50%, 0)
-          )`;
+                hsla(${dynamicHue}, 100%, 50%, 1),
+                hsla(${dynamicHue}, 100%, 50%, 0)
+              )`;
+  }
+
+  // Initialize the main color selection field with a default gradient
+  if (selectorField) {
+    selectorField.style.background = `
+        linear-gradient(
+          to right,
+          hsl(0, 100%, 50%),
+          white
+        ),
+        linear-gradient(
+          to top,
+          black,
+          transparent
+        )
+      `;
+    selectorField.style.backgroundBlendMode = "multiply";
+    selectorField.style.backgroundSize = "100% 100%";
+    selectorField.style.backgroundRepeat = "no-repeat";
   }
 
   if (
@@ -251,9 +329,9 @@ export function ButtonHoverIconColorPalateToggle(
 
         if (transparencyField) {
           transparencyField.style.background = `linear-gradient(to bottom,
-                  hsla(${dynamicHue}, 100%, 50%, 1),
-                  hsla(${dynamicHue}, 100%, 50%, 0)
-                )`;
+                      hsla(${dynamicHue}, 100%, 50%, 1),
+                      hsla(${dynamicHue}, 100%, 50%, 0)
+                    )`;
         }
 
         if (selectorField) {
@@ -261,24 +339,24 @@ export function ButtonHoverIconColorPalateToggle(
           selectorField.appendChild(bullet);
 
           selectorField.style.background = `
-                  linear-gradient(
-                    to right,
-                    hsl(${dynamicHue}, 100%, 50%),
-                    white
-                  ),
-                  linear-gradient(
-                    to top,
-                    black,
-                    transparent
-                  )
-                `;
+                      linear-gradient(
+                        to right,
+                        hsl(${dynamicHue}, 100%, 50%),
+                        white
+                      ),
+                      linear-gradient(
+                        to top,
+                        black,
+                        transparent
+                      )
+                    `;
           selectorField.style.backgroundBlendMode = "multiply";
           selectorField.style.backgroundSize = "100% 100%";
           selectorField.style.backgroundRepeat = "no-repeat";
         }
 
-        // Apply the color to button icon
-        applyButtonIconColor(finalColor, currentTransparency / 100);
+        // Apply the color to button border
+        applyButtonHoverColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -347,8 +425,8 @@ export function ButtonHoverIconColorPalateToggle(
           colorCode.textContent = convertToRGB(finalColor);
         }
 
-        // Apply the color to button icon
-        applyButtonIconColor(finalColor, currentTransparency / 100);
+        // Apply the color to button border
+        applyButtonHoverColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -369,8 +447,10 @@ export function ButtonHoverIconColorPalateToggle(
         );
         transparencyBullet.style.top = `${offsetY}px`;
 
-        const transparencyPercent =
-          100 - Math.round((offsetY / rect.height) * 100);
+        const transparencyPercent = Math.max(
+          0,
+          Math.min(100, 100 - Math.round((offsetY / rect.height) * 100))
+        );
         currentTransparency = transparencyPercent;
 
         if (transparencyCount) {
@@ -379,7 +459,7 @@ export function ButtonHoverIconColorPalateToggle(
 
         // Apply current color with new transparency
         if (colorCode && colorCode.textContent) {
-          applyButtonIconColor(
+          applyButtonHoverColor(
             colorCode.textContent,
             currentTransparency / 100
           );
@@ -415,8 +495,8 @@ export function ButtonHoverIconColorPalateToggle(
       if (hsl) dynamicHue = hsl.h;
       colorCode.textContent = convertToRGB(cleanColor);
 
-      // Apply the color to button icon
-      applyButtonIconColor(cleanColor, currentTransparency / 100);
+      // Apply the color to button border
+      applyButtonHoverColor(cleanColor, currentTransparency / 100);
     });
 
     container.appendChild(swatch);
@@ -496,17 +576,17 @@ export function ButtonHoverIconColorPalateToggle(
     selectorField.appendChild(bullet);
 
     selectorField.style.background = `
-            linear-gradient(
-              to right,
-              ${baseColor},
-              white
-            ),
-            linear-gradient(
-              to top,
-              black,
-              transparent
-            )
-          `;
+                linear-gradient(
+                  to right,
+                  ${baseColor},
+                  white
+                ),
+                linear-gradient(
+                  to top,
+                  black,
+                  transparent
+                )
+              `;
     selectorField.style.backgroundBlendMode = "multiply";
     selectorField.style.backgroundSize = "100% 100%";
     selectorField.style.backgroundRepeat = "no-repeat";
@@ -570,8 +650,8 @@ export function ButtonHoverIconColorPalateToggle(
           colorCode.textContent = convertToRGB(finalColor);
         }
 
-        // Apply the color to button icon
-        applyButtonIconColor(finalColor, currentTransparency / 100);
+        // Apply the color to button border
+        applyButtonHoverColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -584,6 +664,22 @@ export function ButtonHoverIconColorPalateToggle(
   if (firstColor) {
     renderVerticalColorShades(firstColor);
     colorCode.textContent = convertToRGB(firstColor);
-    applyButtonIconColor(firstColor, currentTransparency / 100);
+
+    // Ensure transparency count is properly initialized
+    if (transparencyCount) {
+      transparencyCount.textContent = `${currentTransparency}%`;
+    }
+
+    applyButtonHoverColor(firstColor, currentTransparency / 100);
   }
+
+  // ✅ NEW: call publish button to the UI
+  function ensurePublishBoundForHoverTextColor() {
+    const btn = createTextColorPublishButton(); // returns null if #publish not found
+    if (!btn) {
+      setTimeout(ensurePublishBoundForHoverTextColor, 150);
+    }
+  }
+  // 👉 call binder immediately (BEFORE any early returns below)
+  ensurePublishBoundForHoverTextColor();
 }
