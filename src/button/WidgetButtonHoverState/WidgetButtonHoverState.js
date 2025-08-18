@@ -248,7 +248,7 @@ export function WidgetButtonHoverState() {
                      </div>
                      <div
                         class="sc-flex sc-justify-between sc-mt-3 sc-px-2 sc-py-0_5 sc-rounded-4px sc-bg-454545">
-                        <p id="hover-button-text-color-code" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select
+                        <p id="hover-button-icon-color-code" class="sc-font-size-12 sc-roboto sc-font-light sc-universal">Select
                         </p>
                         <p id="hover-button-icon-color-transparency-count"
                            class="sc-font-size-12 sc-roboto sc-font-light sc-universal">100%</p>

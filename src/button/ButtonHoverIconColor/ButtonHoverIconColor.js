@@ -13,7 +13,7 @@ export function ButtonHoverIconColorPalateToggle(
   const bullet = document.getElementById(
     "hover-button-icon-color-selection-bar"
   );
-  const colorCode = document.getElementById("buttonHoverIconColorCode");
+  const colorCode = document.getElementById("hover-button-icon-color-code");
   const transparencyCount = document.getElementById(
     "hover-button-icon-color-transparency-count"
   );
