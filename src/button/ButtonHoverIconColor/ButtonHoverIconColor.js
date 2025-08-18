@@ -5,7 +5,7 @@ export function ButtonHoverIconColorPalateToggle(
   addPendingModification,
   showNotification
 ) {
-  const palette = document.getElementById("hover-button-icon-color-palette");
+  const palette = document.getElementById("button-hover-icon-color-palette");
   const container = document.getElementById("hover-button-icon-colors");
   const selectorField = document.getElementById(
     "hover-button-icon-color-selection-field"

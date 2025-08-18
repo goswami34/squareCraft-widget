@@ -1380,25 +1380,52 @@ window.pendingModifications = pendingModifications;
 
     const isHoverIconColorTrigger = triggerButtonHoverIconColor !== null;
     const paletteButtonHoverIconColor = document.getElementById(
-      "hover-button-background-color-palette"
+      "hover-button-icon-color-palette"
     );
 
+    console.log("🔍 Icon Color Trigger Debug:", {
+      triggerButtonHoverIconColor,
+      isHoverIconColorTrigger,
+      paletteButtonHoverIconColor,
+      eventTarget: event.target,
+      eventType: event.type,
+      eventTargetId: event.target.id,
+      eventTargetClass: event.target.className,
+    });
+
     if (isHoverIconColorTrigger && paletteButtonHoverIconColor) {
+      console.log("✅ Toggling icon color palette visibility");
       paletteButtonHoverIconColor.classList.toggle("sc-hidden");
 
+      const isHidden =
+        paletteButtonHoverIconColor.classList.contains("sc-hidden");
+      console.log("🎨 Palette hidden state:", isHidden);
+
       // Load palette after toggle
-      if (!paletteButtonHoverIconColor.classList.contains("sc-hidden")) {
+      if (!isHidden) {
+        console.log("🚀 Loading icon color palette");
         setTimeout(() => {
-          ButtonHoverBackgroundColorModification(
+          ButtonHoverIconColorPalateToggle(
             themeColors,
             () => selectedElement,
-            saveButtonHoverColorModifications,
+            saveButtonHoverIconModifications,
             addPendingModification,
             showNotification
           );
         }, 50);
       }
       return;
+    } else {
+      console.log("❌ Icon color trigger not found or palette not found:", {
+        triggerFound: !!triggerButtonHoverIconColor,
+        paletteFound: !!paletteButtonHoverIconColor,
+        allIconColorElements: document.querySelectorAll(
+          "#hover-button-icon-color-trigger"
+        ),
+        allPaletteElements: document.querySelectorAll(
+          "#hover-button-icon-color-palette"
+        ),
+      });
     }
 
     // button hover icon color palette trigger end here

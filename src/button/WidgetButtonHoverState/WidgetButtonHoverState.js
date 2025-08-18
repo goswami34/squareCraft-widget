@@ -213,7 +213,7 @@ export function WidgetButtonHoverState() {
                      <div id="hover-button-icon-color-trigger" class="sc-square-6  sc-cursor-pointer"></div>
                   </div>
                   
-                  <div id="hover-button-icon-color-palette"
+                  <div id="button-hover-icon-color-palette"
                      class="sc-absolute sc-hidden sc-border sc-border-solid sc-border-EF7C2F sc-top-12 sc-bg-3f3f3f sc-left-0 sc-p-1 sc-rounded-4px">
                      <div class="sc-color-arrow"></div>
                      
