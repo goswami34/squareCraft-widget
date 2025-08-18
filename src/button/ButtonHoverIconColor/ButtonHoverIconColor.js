@@ -5,6 +5,173 @@ export function ButtonHoverIconColorPalateToggle(
   addPendingModification,
   showNotification
 ) {
+  function updateButtonHoverStyles(buttonType, newStyles) {
+    const styleId = `sc-hover-button-styles-${buttonType}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
+
+    // Get existing styles from the button's dataset
+    const currentElement = selectedElement?.();
+    if (!currentElement) return;
+
+    const allButtons = currentElement.querySelectorAll(
+      `a.${buttonType}, button.${buttonType}`
+    );
+
+    allButtons.forEach((btn) => {
+      // Merge new styles with existing ones
+      const existingStyles = {
+        backgroundColor: btn.dataset.scButtonHoverBackgroundColor || "",
+        color: btn.dataset.scButtonHoverTextColor || "",
+        ...newStyles,
+      };
+
+      // Update dataset
+      if (newStyles.backgroundColor !== undefined) {
+        btn.dataset.scButtonHoverBackgroundColor = newStyles.backgroundColor;
+      }
+      if (newStyles.color !== undefined) {
+        btn.dataset.scButtonHoverTextColor = newStyles.color;
+      }
+
+      // Build combined CSS
+      const cssProperties = [];
+      if (existingStyles.backgroundColor) {
+        cssProperties.push(
+          `background-color: ${existingStyles.backgroundColor} !important`
+        );
+      }
+      if (existingStyles.color) {
+        cssProperties.push(`color: ${existingStyles.color} !important`);
+      }
+
+      if (cssProperties.length > 0) {
+        styleTag.textContent = `
+              a.${buttonType}:hover,
+              button.${buttonType}:hover {
+                ${cssProperties.join(";\n            ")}
+              }
+            `;
+      }
+    });
+  }
+
+  // ✅ NEW: Function to create and handle publish button for icon color
+  function createTextColorPublishButton() {
+    // Get the Publish button that html() renders
+    let publishButton = document.getElementById("publish");
+
+    // If it doesn't exist yet, bail out (html() may not have rendered yet)
+    if (!publishButton) {
+      console.warn("❌ 'publish' button not found in DOM yet.");
+      return null;
+    }
+
+    // Prevent attaching the same handler multiple times
+    if (publishButton.dataset.hoverIconColorBound === "1") {
+      return publishButton;
+    }
+    publishButton.dataset.hoverIconColorBound = "1";
+    publishButton.classList.add("sc-text-color-publish-btn");
+
+    // Small helper to show a loading state without changing button structure
+    const setLoading = (state) => {
+      publishButton.style.pointerEvents = state ? "none" : "auto";
+      publishButton.style.opacity = state ? "0.6" : "1";
+      publishButton.dataset.loading = state ? "1" : "0";
+      // keep the label consistent with your UI
+      publishButton.textContent = state ? "⏳ Saving..." : "Publish";
+    };
+
+    // Attach click handler (migrated from your previous create button code)
+    publishButton.addEventListener("click", async () => {
+      try {
+        setLoading(true);
+
+        const currentElement = selectedElement?.();
+        if (!currentElement) throw new Error("No element selected");
+
+        const dataBlockId = currentElement.getAttribute("data-block-id");
+        const elementId = currentElement.id;
+        const closestDataBlockId = currentElement
+          .closest?.("[data-block-id]")
+          ?.getAttribute("data-block-id");
+        const blockId = dataBlockId || elementId || closestDataBlockId;
+        if (!blockId) throw new Error("Could not determine block ID");
+
+        // Gather pending hover icon mods for this block
+        const iconMods =
+          window.pendingModifications
+            ?.get(blockId)
+            ?.filter((m) => m.tagType === "buttonHoverIcon") || [];
+
+        if (iconMods.length === 0) {
+          throw new Error("No icon color modifications to save");
+        }
+
+        // Build payload by merging arrays across pending entries
+        const merged = {
+          buttonPrimary: [],
+          buttonSecondary: [],
+          buttonTertiary: [],
+        };
+
+        const pushAll = (arr, into) => {
+          if (Array.isArray(arr)) {
+            arr.forEach((it) => {
+              if (
+                it &&
+                it.selector &&
+                it.styles &&
+                Object.keys(it.styles).length
+              )
+                into.push(it);
+            });
+          } else if (arr && arr.selector && arr.styles) {
+            into.push(arr);
+          }
+        };
+
+        iconMods.forEach((mod) => {
+          if (!mod?.css) return;
+          pushAll(mod.css.buttonPrimary, merged.buttonPrimary);
+          pushAll(mod.css.buttonSecondary, merged.buttonSecondary);
+          pushAll(mod.css.buttonTertiary, merged.buttonTertiary);
+        });
+
+        // Save to hover-icon endpoint
+        const result = await saveButtonHoverIconModifications(blockId, merged);
+
+        if (result?.success) {
+          showNotification("✅ Icon color saved successfully!", "success");
+
+          // Clear only the saved hover-text-color mods for this block
+          if (window.pendingModifications?.has(blockId)) {
+            const remaining = window.pendingModifications
+              .get(blockId)
+              .filter((m) => m.tagType !== "buttonHoverIcon");
+            if (remaining.length === 0)
+              window.pendingModifications.delete(blockId);
+            else window.pendingModifications.set(blockId, remaining);
+          }
+        } else {
+          throw new Error(result?.error || "Failed to save text color");
+        }
+      } catch (err) {
+        console.error("❌ Error saving text color:", err);
+        showNotification(`❌ ${err.message}`, "error");
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    return publishButton;
+  }
+
   const palette = document.getElementById("button-hover-icon-color-palette");
   const container = document.getElementById("hover-button-icon-colors");
   const selectorField = document.getElementById(
@@ -106,7 +273,7 @@ export function ButtonHoverIconColorPalateToggle(
     return "rgb(255, 0, 0)";
   }
 
-  // Function to apply text color to button on hover
+  // Function to apply icon color to button on hover (saves in buttonHoverIcon payload)
   function applyButtonHoverColor(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
@@ -138,16 +305,21 @@ export function ButtonHoverIconColorPalateToggle(
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
 
-    // Use the unified style management function
-    updateButtonHoverStyles(buttonType, { color: rgbaColor });
+    // Live preview on hover: set color on icon via external style
+    updateButtonHoverStyles(buttonType, {});
+    const previewStyleId = `sc-hover-icon-color-preview-${buttonType}`;
+    let previewStyle = document.getElementById(previewStyleId);
+    if (!previewStyle) {
+      previewStyle = document.createElement("style");
+      previewStyle.id = previewStyleId;
+      document.head.appendChild(previewStyle);
+    }
+    previewStyle.textContent = `a.${buttonType}:hover .sqscraft-button-icon, button.${buttonType}:hover .sqscraft-button-icon { color: ${rgbaColor} !important; }`;
 
     console.log("🖌️ APPLYING HOVER TEXT COLOR:", rgbaColor, "on", buttonType);
 
     // Save modifications if functions are provided
-    if (
-      typeof saveButtonHoverColorModifications === "function" &&
-      typeof addPendingModification === "function"
-    ) {
+    if (typeof addPendingModification === "function") {
       const blockId = currentElement.id;
       console.log("🔍 DEBUG: applyButtonHoverColor - blockId:", blockId);
       console.log(
@@ -170,35 +342,34 @@ export function ButtonHoverIconColorPalateToggle(
             ? "buttonPrimary"
             : buttonType === "sqs-button-element--secondary"
             ? "buttonSecondary"
-            : buttonType === "sqs-button-element--tertiary"
-            ? "buttonTertiary"
-            : "buttonPrimary";
+            : "buttonTertiary";
 
-        const stylePayload = {
-          buttonPrimary: {
-            selector: ".sqs-button-element--primary:hover",
-            styles: buttonKey === "buttonPrimary" ? { color: rgbaColor } : {},
-          },
-          buttonSecondary: {
-            selector: ".sqs-button-element--secondary:hover",
-            styles: buttonKey === "buttonSecondary" ? { color: rgbaColor } : {},
-          },
-          buttonTertiary: {
-            selector: ".sqs-button-element--tertiary:hover",
-            styles: buttonKey === "buttonTertiary" ? { color: rgbaColor } : {},
-          },
+        const cssPayload = {
+          [buttonKey]: [
+            {
+              selector: `a.${buttonType}:hover .sqscraft-button-icon`,
+              styles: { color: rgbaColor },
+            },
+          ],
         };
 
         console.log("🔍 DEBUG: About to call addPendingModification with:", {
           blockId,
-          stylePayload,
-          tagType: "buttonHoverTextColor",
+          cssPayload,
+          tagType: "buttonHoverIcon",
           buttonType,
           buttonKey,
           rgbaColor,
         });
 
-        addPendingModification(blockId, stylePayload, "buttonHoverTextColor");
+        addPendingModification(blockId, cssPayload, "buttonHoverIcon");
+
+        // Also persist immediately to the correct endpoint
+        if (typeof saveButtonHoverIconModifications === "function") {
+          try {
+            void saveButtonHoverIconModifications(blockId, cssPayload);
+          } catch (_) {}
+        }
 
         console.log("✅ DEBUG: addPendingModification called successfully");
 
@@ -219,7 +390,7 @@ export function ButtonHoverIconColorPalateToggle(
 
         if (showNotification) {
           showNotification(
-            `Hover text color applied to ${buttonType}`,
+            `Hover icon color applied to ${buttonType}`,
             "success"
           );
         }
@@ -231,8 +402,8 @@ export function ButtonHoverIconColorPalateToggle(
       }
     } else {
       console.warn("⚠️ Required functions not available:", {
-        saveButtonHoverColorModifications:
-          typeof saveButtonHoverColorModifications,
+        saveButtonHoverIconModifications:
+          typeof saveButtonHoverIconModifications,
         addPendingModification: typeof addPendingModification,
       });
     }
