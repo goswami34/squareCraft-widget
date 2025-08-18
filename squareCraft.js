@@ -1349,7 +1349,7 @@ window.pendingModifications = pendingModifications;
     const isHoverBackgroundColorTrigger =
       triggerButtonHoverBackgroundColor !== null;
     const paletteButtonHoverBackgroundColor = document.getElementById(
-      "button-hover-icon-color-palette"
+      "hover-button-icon-color-palette"
     );
 
     if (isHoverBackgroundColorTrigger && paletteButtonHoverBackgroundColor) {
@@ -1358,7 +1358,7 @@ window.pendingModifications = pendingModifications;
       // Load palette after toggle
       if (!paletteButtonHoverBackgroundColor.classList.contains("sc-hidden")) {
         setTimeout(() => {
-          ButtonHoverIconColorPalateToggle(
+          ButtonHoverBackgroundColorModification(
             themeColors,
             () => selectedElement,
             saveButtonHoverIconModifications,
@@ -1380,7 +1380,7 @@ window.pendingModifications = pendingModifications;
 
     const isHoverIconColorTrigger = triggerButtonHoverIconColor !== null;
     const paletteButtonHoverIconColor = document.getElementById(
-      "hover-button-icon-color-palette"
+      "button-hover-icon-color-palette"
     );
 
     console.log("🔍 Icon Color Trigger Debug:", {
