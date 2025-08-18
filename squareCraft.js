@@ -635,6 +635,10 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { ButtonHoverIconColorPalateToggle } = await import(
+    "https://goswami34.github.io/squareCraft-widget/src/button/ButtonHoverIconColor/ButtonHoverIconColor.js"
+  );
+
   window.saveButtonHoverColorModifications = saveButtonHoverColorModifications;
 
   // Make saveButtonColorModifications available globally
@@ -1345,7 +1349,7 @@ window.pendingModifications = pendingModifications;
     const isHoverBackgroundColorTrigger =
       triggerButtonHoverBackgroundColor !== null;
     const paletteButtonHoverBackgroundColor = document.getElementById(
-      "hover-button-background-color-palette"
+      "hover-button-icon-color-palette"
     );
 
     if (isHoverBackgroundColorTrigger && paletteButtonHoverBackgroundColor) {
@@ -1353,6 +1357,37 @@ window.pendingModifications = pendingModifications;
 
       // Load palette after toggle
       if (!paletteButtonHoverBackgroundColor.classList.contains("sc-hidden")) {
+        setTimeout(() => {
+          ButtonHoverIconColorPalateToggle(
+            themeColors,
+            () => selectedElement,
+            saveButtonHoverIconModifications,
+            addPendingModification,
+            showNotification
+          );
+        }, 50);
+      }
+      return;
+    }
+
+    // button hover background color palette trigger end here
+
+    // button hover icon color palette trigger start here
+
+    const triggerButtonHoverIconColor = event.target.closest(
+      "#hover-button-icon-color-trigger"
+    );
+
+    const isHoverIconColorTrigger = triggerButtonHoverIconColor !== null;
+    const paletteButtonHoverIconColor = document.getElementById(
+      "hover-button-background-color-palette"
+    );
+
+    if (isHoverIconColorTrigger && paletteButtonHoverIconColor) {
+      paletteButtonHoverIconColor.classList.toggle("sc-hidden");
+
+      // Load palette after toggle
+      if (!paletteButtonHoverIconColor.classList.contains("sc-hidden")) {
         setTimeout(() => {
           ButtonHoverBackgroundColorModification(
             themeColors,
@@ -1366,7 +1401,7 @@ window.pendingModifications = pendingModifications;
       return;
     }
 
-    // button hover background color palette trigger end here
+    // button hover icon color palette trigger end here
 
     // button icon color palette trigger start here
     const triggerButtonIconColor = event.target.closest(

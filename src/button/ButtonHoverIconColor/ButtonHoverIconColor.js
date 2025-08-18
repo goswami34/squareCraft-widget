@@ -1,31 +1,33 @@
 export function ButtonHoverIconColorPalateToggle(
   themeColors,
   selectedElement,
-  saveButtonModifications,
+  saveButtonHoverIconModifications,
   addPendingModification,
   showNotification
 ) {
-  const palette = document.getElementById("button-hover-border-color-palette");
-  const container = document.getElementById("button-hover-border-colors");
+  const palette = document.getElementById("hover-button-icon-color-palette");
+  const container = document.getElementById("hover-button-icon-colors");
   const selectorField = document.getElementById(
-    "button-hover-border-color-selection-field"
+    "hover-button-icon-color-selection-field"
   );
-  const bullet = document.getElementById("hover-color-selection-bar");
-  const colorCode = document.getElementById("hover-color-code");
+  const bullet = document.getElementById(
+    "hover-button-icon-color-selection-bar"
+  );
+  const colorCode = document.getElementById("hover-button-icon-color-code");
   const transparencyCount = document.getElementById(
-    "hover-color-transparency-count"
+    "hover-button-icon-color-transparency-count"
   );
   const allColorField = document.getElementById(
-    "hover-all-color-selction-field"
+    "hover-button-icon-all-color-selection-field"
   );
   const allColorBullet = document.getElementById(
-    "hover-all-color-selction-bar"
+    "hover-button-icon-all-color-selection-bar"
   );
   const transparencyField = document.getElementById(
-    "hover-color-transparency-field"
+    "hover-button-icon-color-transparency-field"
   );
   const transparencyBullet = document.getElementById(
-    "hover-color-transparency-bar"
+    "hover-button-icon-color-transparency-bar"
   );
 
   if (
@@ -102,8 +104,8 @@ export function ButtonHoverIconColorPalateToggle(
     return "rgb(255, 0, 0)";
   }
 
-  // Function to apply border color to button
-  function applyButtonBorderColor(color, alpha = 1) {
+  // Function to apply icon color to button
+  function applyButtonIconColor(color, alpha = 1) {
     const currentElement = selectedElement?.();
     if (!currentElement) return;
 
@@ -130,7 +132,7 @@ export function ButtonHoverIconColorPalateToggle(
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
 
-    const styleId = `sc-hover-border-style-global-${buttonType}`;
+    const styleId = `sc-hover-icon-color-style-global-${buttonType}`;
     let styleTag = document.getElementById(styleId);
     if (!styleTag) {
       styleTag = document.createElement("style");
@@ -139,9 +141,9 @@ export function ButtonHoverIconColorPalateToggle(
     }
 
     styleTag.textContent = `
-          a.${buttonType}:hover,
-          button.${buttonType}:hover {
-            border-color: ${rgbaColor} !important;
+          a.${buttonType}:hover .sqscraft-button-icon,
+          button.${buttonType}:hover .sqscraft-button-icon {
+            color: ${rgbaColor} !important;
           }
         `;
 
@@ -149,27 +151,27 @@ export function ButtonHoverIconColorPalateToggle(
       `a.${buttonType}, button.${buttonType}`
     );
     allButtons.forEach((btn) => {
-      btn.dataset.scButtonHoverBorderColor = color;
+      btn.dataset.scButtonHoverIconColor = color;
     });
-    console.log("🖌️ APPLYING HOVER BORDER COLOR:", rgbaColor, "on", buttonType);
+    console.log("🖌️ APPLYING HOVER ICON COLOR:", rgbaColor, "on", buttonType);
 
     // Save modifications if functions are provided
     if (
-      typeof saveButtonModifications === "function" &&
+      typeof saveButtonHoverIconModifications === "function" &&
       typeof addPendingModification === "function"
     ) {
       const blockId = currentElement.id;
       if (blockId) {
         const stylePayload = {
           buttonPrimary: {
-            selector: `.${buttonType}:hover`,
-            styles: { borderColor: rgbaColor },
+            selector: `a.${buttonType}:hover .sqscraft-button-icon`,
+            styles: { color: rgbaColor },
           },
         };
-        addPendingModification(blockId, stylePayload, "button");
+        addPendingModification(blockId, stylePayload, "buttonHoverIcon");
         if (showNotification) {
           showNotification(
-            `Hover border color applied to ${buttonType}`,
+            `Hover icon color applied to ${buttonType}`,
             "success"
           );
         }
@@ -275,8 +277,8 @@ export function ButtonHoverIconColorPalateToggle(
           selectorField.style.backgroundRepeat = "no-repeat";
         }
 
-        // Apply the color to button border
-        applyButtonBorderColor(finalColor, currentTransparency / 100);
+        // Apply the color to button icon
+        applyButtonIconColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -345,8 +347,8 @@ export function ButtonHoverIconColorPalateToggle(
           colorCode.textContent = convertToRGB(finalColor);
         }
 
-        // Apply the color to button border
-        applyButtonBorderColor(finalColor, currentTransparency / 100);
+        // Apply the color to button icon
+        applyButtonIconColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -377,7 +379,7 @@ export function ButtonHoverIconColorPalateToggle(
 
         // Apply current color with new transparency
         if (colorCode && colorCode.textContent) {
-          applyButtonBorderColor(
+          applyButtonIconColor(
             colorCode.textContent,
             currentTransparency / 100
           );
@@ -413,8 +415,8 @@ export function ButtonHoverIconColorPalateToggle(
       if (hsl) dynamicHue = hsl.h;
       colorCode.textContent = convertToRGB(cleanColor);
 
-      // Apply the color to button border
-      applyButtonBorderColor(cleanColor, currentTransparency / 100);
+      // Apply the color to button icon
+      applyButtonIconColor(cleanColor, currentTransparency / 100);
     });
 
     container.appendChild(swatch);
@@ -568,8 +570,8 @@ export function ButtonHoverIconColorPalateToggle(
           colorCode.textContent = convertToRGB(finalColor);
         }
 
-        // Apply the color to button border
-        applyButtonBorderColor(finalColor, currentTransparency / 100);
+        // Apply the color to button icon
+        applyButtonIconColor(finalColor, currentTransparency / 100);
       };
       document.onmouseup = function () {
         document.onmousemove = null;
@@ -582,6 +584,6 @@ export function ButtonHoverIconColorPalateToggle(
   if (firstColor) {
     renderVerticalColorShades(firstColor);
     colorCode.textContent = convertToRGB(firstColor);
-    applyButtonBorderColor(firstColor, currentTransparency / 100);
+    applyButtonIconColor(firstColor, currentTransparency / 100);
   }
 }
