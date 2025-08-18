@@ -1349,7 +1349,7 @@ window.pendingModifications = pendingModifications;
     const isHoverBackgroundColorTrigger =
       triggerButtonHoverBackgroundColor !== null;
     const paletteButtonHoverBackgroundColor = document.getElementById(
-      "hover-button-icon-color-palette"
+      "button-hover-icon-color-palette"
     );
 
     if (isHoverBackgroundColorTrigger && paletteButtonHoverBackgroundColor) {
