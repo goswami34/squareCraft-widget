@@ -631,6 +631,10 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { saveButtonHoverIconModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   window.saveButtonHoverColorModifications = saveButtonHoverColorModifications;
 
   // Make saveButtonColorModifications available globally
@@ -1588,7 +1592,7 @@ window.pendingModifications = pendingModifications;
     if (selectedElement) {
       initHoverButtonIconRotationControl(
         () => selectedElement,
-        saveButtonIconModifications,
+        saveButtonHoverIconModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
@@ -1601,7 +1605,7 @@ window.pendingModifications = pendingModifications;
     if (selectedElement) {
       initHoverButtonIconSizeControl(
         () => selectedElement,
-        saveButtonIconModifications,
+        saveButtonHoverIconModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);
@@ -1614,7 +1618,7 @@ window.pendingModifications = pendingModifications;
     if (selectedElement) {
       initHoverButtonIconSpacingControl(
         () => selectedElement,
-        saveButtonIconModifications,
+        saveButtonHoverIconModifications,
         (blockId, css, tagType) => {
           if (!pendingModifications.has(blockId)) {
             pendingModifications.set(blockId, []);

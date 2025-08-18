@@ -479,7 +479,7 @@ let hoverRotationInitialized = false;
 
 export function initHoverButtonIconRotationControl(
   getSelectedElement,
-  saveButtonIconModifications,
+  saveButtonHoverIconModifications,
   addPendingModification,
   showNotification
 ) {
@@ -542,24 +542,37 @@ export function initHoverButtonIconRotationControl(
     const blockId = selected.id;
     if (!blockId || blockId === "block-id") return;
 
+    // Determine button type
+    let buttonType = "buttonPrimary";
+    if (cls.includes("--secondary")) {
+      buttonType = "buttonSecondary";
+    } else if (cls.includes("--tertiary")) {
+      buttonType = "buttonTertiary";
+    }
+
     const cssPayload = {
-      iconProperties: {
-        selector: `.${cls}`,
-        styles: {
-          transform: `rotate(${value}deg)`,
+      [buttonType]: [
+        {
+          selector: `a.${cls}:hover .sqscraft-button-icon`,
+          styles: {
+            transform: `rotate(${value}deg)`,
+          },
         },
-      },
+      ],
     };
 
     // Add to pending modifications
     if (typeof addPendingModification === "function") {
-      addPendingModification(blockId, cssPayload, "buttonIcon");
+      addPendingModification(blockId, cssPayload, "buttonHoverIcon");
     }
 
     // Save to database
-    if (typeof saveButtonIconModifications === "function") {
+    if (typeof saveButtonHoverIconModifications === "function") {
       try {
-        const result = await saveButtonIconModifications(blockId, cssPayload);
+        const result = await saveButtonHoverIconModifications(
+          blockId,
+          cssPayload
+        );
         if (result.success && typeof showNotification === "function") {
           showNotification("Hover icon rotation saved!", "success");
         }
@@ -664,7 +677,7 @@ let hoverSizeInitialized = false;
 
 export function initHoverButtonIconSizeControl(
   getSelectedElement,
-  saveButtonIconModifications,
+  saveButtonHoverIconModifications,
   addPendingModification,
   showNotification
 ) {
@@ -723,25 +736,38 @@ export function initHoverButtonIconSizeControl(
     const blockId = selected.id;
     if (!blockId || blockId === "block-id") return;
 
+    // Determine button type
+    let buttonType = "buttonPrimary";
+    if (cls.includes("--secondary")) {
+      buttonType = "buttonSecondary";
+    } else if (cls.includes("--tertiary")) {
+      buttonType = "buttonTertiary";
+    }
+
     const cssPayload = {
-      iconProperties: {
-        selector: `.${cls}`,
-        styles: {
-          width: `${value}px`,
-          height: "auto",
+      [buttonType]: [
+        {
+          selector: `a.${cls}:hover .sqscraft-button-icon`,
+          styles: {
+            width: `${value}px`,
+            height: "auto",
+          },
         },
-      },
+      ],
     };
 
     // Add to pending modifications
     if (typeof addPendingModification === "function") {
-      addPendingModification(blockId, cssPayload, "buttonIcon");
+      addPendingModification(blockId, cssPayload, "buttonHoverIcon");
     }
 
     // Save to database
-    if (typeof saveButtonIconModifications === "function") {
+    if (typeof saveButtonHoverIconModifications === "function") {
       try {
-        const result = await saveButtonIconModifications(blockId, cssPayload);
+        const result = await saveButtonHoverIconModifications(
+          blockId,
+          cssPayload
+        );
         if (result.success && typeof showNotification === "function") {
           showNotification("Hover icon size saved!", "success");
         }
@@ -830,7 +856,7 @@ let hoverSpacingInitialized = false;
 
 export function initHoverButtonIconSpacingControl(
   getSelectedElement,
-  saveButtonIconModifications,
+  saveButtonHoverIconModifications,
   addPendingModification,
   showNotification
 ) {
@@ -889,24 +915,37 @@ export function initHoverButtonIconSpacingControl(
     const blockId = selected.id;
     if (!blockId || blockId === "block-id") return;
 
+    // Determine button type
+    let buttonType = "buttonPrimary";
+    if (cls.includes("--secondary")) {
+      buttonType = "buttonSecondary";
+    } else if (cls.includes("--tertiary")) {
+      buttonType = "buttonTertiary";
+    }
+
     const cssPayload = {
-      iconProperties: {
-        selector: `.${cls}`,
-        styles: {
-          gap: `${value}px`,
+      [buttonType]: [
+        {
+          selector: `a.${cls}:hover`,
+          styles: {
+            gap: `${value}px`,
+          },
         },
-      },
+      ],
     };
 
     // Add to pending modifications
     if (typeof addPendingModification === "function") {
-      addPendingModification(blockId, cssPayload, "buttonIcon");
+      addPendingModification(blockId, cssPayload, "buttonHoverIcon");
     }
 
     // Save to database
-    if (typeof saveButtonIconModifications === "function") {
+    if (typeof saveButtonHoverIconModifications === "function") {
       try {
-        const result = await saveButtonIconModifications(blockId, cssPayload);
+        const result = await saveButtonHoverIconModifications(
+          blockId,
+          cssPayload
+        );
         if (result.success && typeof showNotification === "function") {
           showNotification("Hover icon spacing saved!", "success");
         }
