@@ -5008,9 +5008,13 @@ window.pendingModifications = pendingModifications;
               }
             } else {
               // Apply styles to found buttons
-              // applyHoverIconStylesToButtons(
-              buttons, styles, buttonType, elementId, originalSelector;
-              // );
+              applyHoverIconStylesToButtons(
+                buttons,
+                styles,
+                buttonType,
+                elementId,
+                originalSelector
+              );
             }
           });
         });
@@ -5107,28 +5111,36 @@ window.pendingModifications = pendingModifications;
         const styleElement = document.createElement("style");
         styleElement.id = uniqueStyleId;
 
-        // Use the original selector from the API for precise targeting
-        const hoverSelector = originalSelector;
+        // Create a more reliable CSS selector that targets the specific button
+        const buttonId =
+          button.id || `button-${buttonType}-${elementId}-${index}`;
+        if (!button.id) {
+          button.id = buttonId;
+        }
 
-        // Create the CSS rule
-        const cssRule = `${hoverSelector} {
-            ${hoverStyles}
-          }`;
+        // Create a specific CSS selector for this button's icon
+        const specificSelector = `#${buttonId}:hover .sqscraft-button-icon`;
 
-        styleElement.textContent = cssRule;
-
-        console.log("🎨 Generated CSS rule:", cssRule);
+        // Create the CSS rule with the specific selector
+        const cssRule = `${specificSelector} {
+          ${hoverStyles}
+        }`;
 
         // Also create a simpler fallback selector for better compatibility
         const fallbackSelector = `.sqscraft-button-icon:hover`;
         const fallbackCssRule = `${fallbackSelector} {
-            ${hoverStyles}
-          }`;
+          ${hoverStyles}
+        }`;
 
         // Add both selectors to ensure compatibility
         styleElement.textContent = `${cssRule}\n\n${fallbackCssRule}`;
 
-        console.log("🎨 Final CSS with fallback:", styleElement.textContent);
+        console.log("🎨 Generated specific CSS rule:", cssRule);
+        console.log("🎨 Generated fallback CSS rule:", fallbackCssRule);
+        console.log(
+          "🎨 Final CSS with both selectors:",
+          styleElement.textContent
+        );
 
         document.head.appendChild(styleElement);
         console.log(`✅ Applied hover styles via CSS for ${buttonType}:`, {
@@ -5147,17 +5159,18 @@ window.pendingModifications = pendingModifications;
           console.log(`✅ CSS content in DOM:`, addedStyle.textContent);
 
           // Test if the CSS selector actually works
-          console.log("🧪 Testing CSS selector:", hoverSelector);
+          console.log("🧪 Testing specific CSS selector:", specificSelector);
           try {
             const testElements = document.querySelectorAll(
-              hoverSelector.replace(":hover", "")
+              specificSelector.replace(":hover", "")
             );
             console.log(
-              "🧪 Found elements matching base selector:",
+              "🧪 Found elements matching specific selector:",
               testElements.length
             );
             if (testElements.length > 0) {
               console.log("🧪 First matching element:", testElements[0]);
+              console.log("🧪 Element ID:", testElements[0].id);
               console.log("🧪 Element classes:", testElements[0].className);
             }
           } catch (e) {
@@ -5202,12 +5215,14 @@ window.pendingModifications = pendingModifications;
             });
           };
 
-          // Add event listeners
+          // Add event listeners to BOTH the button and the icon for better coverage
+          button.addEventListener("mouseenter", icon._hoverEnterHandler);
+          button.addEventListener("mouseleave", icon._hoverLeaveHandler);
           icon.addEventListener("mouseenter", icon._hoverEnterHandler);
           icon.addEventListener("mouseleave", icon._hoverLeaveHandler);
 
           console.log(
-            `✅ Added JavaScript hover event handlers as fallback for ${buttonType}`
+            `✅ Added JavaScript hover event handlers to both button and icon for ${buttonType}`
           );
 
           // Test the JavaScript hover handler immediately
@@ -5298,6 +5313,41 @@ window.pendingModifications = pendingModifications;
         }, 500);
       }
     }
+
+    // Create a global hover effect that works for all buttons
+    console.log("🌐 Creating global hover effect for better compatibility...");
+    const globalStyleId = `sc-global-hover-${buttonType}-${elementId}`;
+
+    // Remove any existing global style
+    const existingGlobalStyle = document.getElementById(globalStyleId);
+    if (existingGlobalStyle) {
+      existingGlobalStyle.remove();
+    }
+
+    // Create global CSS that targets all buttons with icons
+    const globalStyle = document.createElement("style");
+    globalStyle.id = globalStyleId;
+    globalStyle.textContent = `
+          /* Global hover effect for ${buttonType} buttons */
+          .sqscraft-button-icon:hover {
+            ${hoverStyles}
+          }
+          
+          /* Alternative targeting for better compatibility */
+          [class*="button"]:hover .sqscraft-button-icon {
+            ${hoverStyles}
+          }
+          
+          /* Target by button type classes */
+          .sqs-button-element--${buttonType
+            .replace("button", "")
+            .toLowerCase()}:hover .sqscraft-button-icon {
+            ${hoverStyles}
+          }
+        `;
+
+    document.head.appendChild(globalStyle);
+    console.log("✅ Global hover styles added for better compatibility");
   }
 
   // Fetch button border modifications from the backend end here
