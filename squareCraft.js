@@ -5008,13 +5008,9 @@ window.pendingModifications = pendingModifications;
               }
             } else {
               // Apply styles to found buttons
-              applyHoverIconStylesToButtons(
-                buttons,
-                styles,
-                buttonType,
-                elementId,
-                originalSelector
-              );
+              // applyHoverIconStylesToButtons(
+              buttons, styles, buttonType, elementId, originalSelector;
+              // );
             }
           });
         });
