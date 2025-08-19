@@ -5482,7 +5482,7 @@ window.pendingModifications = pendingModifications;
         "🔄 Observer: No elementId found, not calling fetchButtonHoverBorderModifications"
       );
       // Fetch general button hover icon modifications when no specific element
-      fetchButtonHoverIconModifications();
+      // fetchButtonHoverIconModifications();
     }
 
     // Fetch button color modifications
