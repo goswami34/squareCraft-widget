@@ -5083,8 +5083,17 @@ window.pendingModifications = pendingModifications;
         existingIcon.dataset.hoverIconId = `icon-${buttonType}-${elementId}-${index}`;
       }
 
-      // Store the hover styles for fallback JavaScript hover handling
-      existingIcon.dataset.hoverStyles = JSON.stringify(styles);
+      // Separate button-level props (e.g., gap) from icon props and normalize keys
+      const { gap: gapValue, ...rawIconStyles } = styles || {};
+      const normalizedIconStyles = {};
+      Object.entries(rawIconStyles || {}).forEach(([k, v]) => {
+        if (v === null || v === undefined || v === "") return;
+        const hyphenKey = k.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+        normalizedIconStyles[hyphenKey] = v;
+      });
+
+      // Store for JS fallback
+      existingIcon.dataset.hoverStyles = JSON.stringify(normalizedIconStyles);
 
       // Generate unique style ID for this button's hover styles
       const uniqueStyleId = `sc-hover-icon-${buttonType}-${elementId}-${index}`;
@@ -5095,12 +5104,12 @@ window.pendingModifications = pendingModifications;
         existingStyle.remove();
       }
 
-      // Create CSS rules for hover effects
-      const hoverStyles = Object.entries(styles)
+      // Create CSS rules for hover effects (icon styles only)
+      const hoverStyles = Object.entries(normalizedIconStyles)
         .filter(
           ([_, value]) => value !== null && value !== undefined && value !== ""
         )
-        .map(([property, value]) => `${property}: ${value};`)
+        .map(([property, value]) => `${property}: ${value} !important;`)
         .join(" ");
 
       console.log("🎨 Generated hover styles:", hoverStyles);
@@ -5132,8 +5141,15 @@ window.pendingModifications = pendingModifications;
           ${hoverStyles}
         }`;
 
-        // Add both selectors to ensure compatibility
-        styleElement.textContent = `${cssRule}\n\n${fallbackCssRule}`;
+        // Button-level hover rule for gap (requires flex)
+        const buttonHoverRule = gapValue
+          ? `#${buttonId}:hover { gap: ${gapValue} !important; display: inline-flex !important; align-items: center !important; }`
+          : "";
+
+        // Add selectors to ensure compatibility
+        styleElement.textContent = [cssRule, buttonHoverRule, fallbackCssRule]
+          .filter(Boolean)
+          .join("\n");
 
         console.log("🎨 Generated specific CSS rule:", cssRule);
         console.log("🎨 Generated fallback CSS rule:", fallbackCssRule);
@@ -5188,20 +5204,34 @@ window.pendingModifications = pendingModifications;
 
           // Store original styles for restoration
           const originalStyles = {};
-          Object.keys(styles).forEach((prop) => {
-            originalStyles[prop] = icon.style[prop] || "";
+          Object.keys(normalizedIconStyles).forEach((prop) => {
+            const camel = prop.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+            originalStyles[camel] = icon.style[camel] || "";
           });
+          const originalButtonGap = button.style.gap || "";
+          const originalButtonDisplay = button.style.display || "";
+          const originalButtonAlign = button.style.alignItems || "";
 
           // Create hover enter handler
           icon._hoverEnterHandler = () => {
             console.log(`🔄 JavaScript hover enter for ${buttonType}`);
-            console.log(`🔄 Applying styles:`, styles);
-            Object.entries(styles).forEach(([property, value]) => {
-              if (value !== null && value !== undefined && value !== "") {
-                icon.style[property] = value;
-                console.log(`🔄 Applied ${property}: ${value}`);
+            console.log(`🔄 Applying styles:`, normalizedIconStyles);
+            Object.entries(normalizedIconStyles).forEach(
+              ([property, value]) => {
+                if (value !== null && value !== undefined && value !== "") {
+                  const camel = property.replace(/-([a-z])/g, (_, c) =>
+                    c.toUpperCase()
+                  );
+                  icon.style[camel] = value;
+                  console.log(`🔄 Applied ${property}: ${value}`);
+                }
               }
-            });
+            );
+            if (gapValue) {
+              button.style.gap = gapValue;
+              button.style.display = "inline-flex";
+              button.style.alignItems = "center";
+            }
           };
 
           // Create hover leave handler
@@ -5212,6 +5242,11 @@ window.pendingModifications = pendingModifications;
               icon.style[property] = value;
               console.log(`🔄 Restored ${property}: ${value}`);
             });
+            if (gapValue) {
+              button.style.gap = originalButtonGap;
+              button.style.display = originalButtonDisplay;
+              button.style.alignItems = originalButtonAlign;
+            }
           };
 
           // Add event listeners to BOTH the button and the icon for better coverage
