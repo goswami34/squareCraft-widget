@@ -1638,7 +1638,7 @@ export function initHoverButtonBorderControl(
 
 export function applyHoverButtonEffects(
   getSelectedElement,
-  saveHoverEffectModifications,
+  saveButtonHoverEffectModifications,
   addPendingModification,
   notify
 ) {
@@ -1750,8 +1750,8 @@ export function applyHoverButtonEffects(
     }
 
     // Best-effort immediate save to local API
-    if (typeof saveHoverEffectModifications === "function" && blockId) {
-      saveHoverEffectModifications(blockId, hoverEffectCSS)
+    if (typeof saveButtonHoverEffectModifications === "function" && blockId) {
+      saveButtonHoverEffectModifications(blockId, hoverEffectCSS)
         .then((res) => {
           if (res?.success && typeof notify === "function") {
             notify("Hover effect saved", "success");
@@ -1759,7 +1759,7 @@ export function applyHoverButtonEffects(
         })
         .catch((e) =>
           console.warn(
-            "⚠️ saveHoverEffectModifications failed:",
+            "⚠️ saveButtonHoverEffectModifications failed:",
             e?.message || e
           )
         );
