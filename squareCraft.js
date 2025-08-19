@@ -5158,7 +5158,21 @@ window.pendingModifications = pendingModifications;
           styleElement.textContent
         );
 
-        document.head.appendChild(styleElement);
+        // Append style to both current document and Squarespace site iframe (if available)
+        const targetDocs = [document];
+        try {
+          const siteFrame = document.getElementById("sqs-site-frame");
+          const frameDoc =
+            siteFrame?.contentDocument || siteFrame?.contentWindow?.document;
+          if (frameDoc) targetDocs.push(frameDoc);
+        } catch (e) {
+          console.warn(
+            "⚠️ Unable to access iframe document for hover icon CSS"
+          );
+        }
+        targetDocs.forEach((docRef) =>
+          docRef.head.appendChild(styleElement.cloneNode(true))
+        );
         console.log(`✅ Applied hover styles via CSS for ${buttonType}:`, {
           styles: hoverStyles,
           styleId: uniqueStyleId,
@@ -5380,7 +5394,19 @@ window.pendingModifications = pendingModifications;
           }
         `;
 
-    document.head.appendChild(globalStyle);
+    // Append global styles to both documents
+    const hostDocs = [document];
+    try {
+      const siteFrame = document.getElementById("sqs-site-frame");
+      const frameDoc =
+        siteFrame?.contentDocument || siteFrame?.contentWindow?.document;
+      if (frameDoc) hostDocs.push(frameDoc);
+    } catch (e) {
+      console.warn("⚠️ Unable to access iframe document for global hover CSS");
+    }
+    hostDocs.forEach((docRef) =>
+      docRef.head.appendChild(globalStyle.cloneNode(true))
+    );
     console.log("✅ Global hover styles added for better compatibility");
   }
 
