@@ -1636,7 +1636,12 @@ export function initHoverButtonBorderControl(
   // fetchButtonHoverBorderModifications(); // This line is removed
 }
 
-export function applyHoverButtonEffects(getSelectedElement) {
+export function applyHoverButtonEffects(
+  getSelectedElement,
+  saveHoverEffectModifications,
+  addPendingModification,
+  notify
+) {
   const transition =
     document
       .getElementById("hover-buttonTransitionTypeLabel")
@@ -1717,57 +1722,47 @@ export function applyHoverButtonEffects(getSelectedElement) {
 }
 `;
 
-    // Save hover effect modifications to pending modifications
-    if (window.pendingModifications && selected.id) {
-      const blockId = selected.id;
+    // Build payload and forward to pending + save
+    const blockId = selected.id;
 
-      // Determine button type from the typeClass
-      let buttonType = "buttonPrimary";
-      if (typeClass.includes("--secondary")) {
-        buttonType = "buttonSecondary";
-      } else if (typeClass.includes("--tertiary")) {
-        buttonType = "buttonTertiary";
-      }
+    // Determine button type from the typeClass
+    let buttonType = "buttonPrimary";
+    if (typeClass.includes("--secondary")) {
+      buttonType = "buttonSecondary";
+    } else if (typeClass.includes("--tertiary")) {
+      buttonType = "buttonTertiary";
+    }
 
-      // Create CSS object for the hover effect
-      const hoverEffectCSS = {
-        [buttonType]: {
-          selector: `.${typeClass}`,
-          styles: {
-            transition: `all ${duration}ms ${transition} ${delay}ms`,
-            transform: transformRule,
-          },
+    // Create CSS object for the hover effect
+    const hoverEffectCSS = {
+      [buttonType]: {
+        selector: `.${typeClass}`,
+        styles: {
+          transition: `all ${duration}ms ${transition} ${delay}ms`,
+          transform: transformRule,
         },
-      };
+      },
+    };
 
-      // Add to pending modifications
-      if (!window.pendingModifications.has(blockId)) {
-        window.pendingModifications.set(blockId, []);
-      }
+    // Queue for publish
+    if (typeof addPendingModification === "function" && blockId) {
+      addPendingModification(blockId, hoverEffectCSS, "buttonHoverEffect");
+    }
 
-      // Check if buttonHoverEffect already exists, if so update it
-      const existingIndex = window.pendingModifications
-        .get(blockId)
-        .findIndex((mod) => mod.tagType === "buttonHoverEffect");
-
-      if (existingIndex !== -1) {
-        // Update existing modification
-        const existing =
-          window.pendingModifications.get(blockId)[existingIndex];
-        existing.css = { ...existing.css, ...hoverEffectCSS };
-      } else {
-        // Add new modification
-        window.pendingModifications.get(blockId).push({
-          tagType: "buttonHoverEffect",
-          css: hoverEffectCSS,
-        });
-      }
-
-      console.log("💾 Added button hover effect to pending modifications:", {
-        blockId,
-        tagType: "buttonHoverEffect",
-        css: hoverEffectCSS,
-      });
+    // Best-effort immediate save to local API
+    if (typeof saveHoverEffectModifications === "function" && blockId) {
+      saveHoverEffectModifications(blockId, hoverEffectCSS)
+        .then((res) => {
+          if (res?.success && typeof notify === "function") {
+            notify("Hover effect saved", "success");
+          }
+        })
+        .catch((e) =>
+          console.warn(
+            "⚠️ saveHoverEffectModifications failed:",
+            e?.message || e
+          )
+        );
     }
   }
 
