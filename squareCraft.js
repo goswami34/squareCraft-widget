@@ -5144,7 +5144,6 @@ window.pendingModifications = pendingModifications;
 
         document.head.appendChild(styleElement);
         console.log(`✅ Applied hover styles via CSS for ${buttonType}:`, {
-          selector: hoverSelector,
           styles: hoverStyles,
           styleId: uniqueStyleId,
           cssContent: styleElement.textContent,
