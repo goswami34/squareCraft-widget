@@ -379,6 +379,14 @@ async function handlePublish() {
             console.log("📤 Hover icon data being sent:", mod.css);
             result = await saveButtonHoverIconModifications(blockId, mod.css);
             break;
+          case "buttonHoverEffect":
+            console.log(
+              "🎨 Publishing button hover effect modifications for block:",
+              blockId
+            );
+            console.log("📤 Hover effect data being sent:", mod.css);
+            result = await saveButtonHoverEffectModifications(blockId, mod.css);
+            break;
           case "linkText":
             result = await saveLinkTextModifications(blockId, mod.css);
             break;
@@ -2487,4 +2495,200 @@ export async function testHoverBorderSave() {
 if (typeof window !== "undefined") {
   window.testHoverBorderSave = testHoverBorderSave;
   window.saveButtonHoverIconModifications = saveButtonHoverIconModifications;
+  window.saveButtonHoverEffectModifications =
+    saveButtonHoverEffectModifications;
 }
+
+// button hover effect save modification code start here
+export async function saveButtonHoverEffectModifications(blockId, css) {
+  console.log("🚀 saveButtonHoverEffectModifications called with:", {
+    blockId,
+    css,
+  });
+
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  console.log("📋 Required data check:", {
+    userId: !!userId,
+    token: !!token,
+    widgetId: !!widgetId,
+    pageId: !!pageId,
+    blockId: !!blockId,
+    css: !!css,
+  });
+
+  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+    console.warn(
+      "❌ Missing required data to save button hover effect modifications",
+      {
+        userId,
+        token,
+        widgetId,
+        pageId,
+        blockId,
+        css,
+      }
+    );
+    return { success: false, error: "Missing required data" };
+  }
+
+  // Clean & normalize CSS and convert to kebab-case
+  const cleanCssObject = (obj = {}) =>
+    Object.fromEntries(
+      Object.entries(obj).filter(
+        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+      )
+    );
+
+  const toKebabCaseStyleObject = (obj = {}) =>
+    Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [
+        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        value,
+      ])
+    );
+
+  // Process each button type's CSS block
+  const processButtonType = (buttonData) => {
+    if (!buttonData) return { selector: null, styles: {} };
+
+    // If it's already an object with selector and styles
+    if (buttonData.selector && buttonData.styles) {
+      return {
+        selector: buttonData.selector,
+        styles: toKebabCaseStyleObject(cleanCssObject(buttonData.styles)),
+      };
+    }
+
+    // If it's a raw styles object, use default selector
+    if (typeof buttonData === "object" && !buttonData.selector) {
+      return {
+        selector: ".sqs-button-element--primary", // Default selector
+        styles: toKebabCaseStyleObject(cleanCssObject(buttonData)),
+      };
+    }
+
+    return { selector: null, styles: {} };
+  };
+
+  // Process each button type
+  const cleanedPrimary = processButtonType(css.buttonPrimary);
+  const cleanedSecondary = processButtonType(css.buttonSecondary);
+  const cleanedTertiary = processButtonType(css.buttonTertiary);
+
+  // Check if we have at least one valid style to save
+  const hasValidStyles =
+    (cleanedPrimary.selector &&
+      Object.keys(cleanedPrimary.styles).length > 0) ||
+    (cleanedSecondary.selector &&
+      Object.keys(cleanedSecondary.styles).length > 0) ||
+    (cleanedTertiary.selector &&
+      Object.keys(cleanedTertiary.styles).length > 0);
+
+  if (!hasValidStyles) {
+    console.warn("⚠️ No valid hover effect styles to save");
+    return { success: false, error: "No valid hover effect styles to save" };
+  }
+
+  // Additional debugging for the cleaning process
+  console.log("🔍 Cleaning Process Debug:", {
+    originalCSS: css,
+    cleanedPrimary: cleanedPrimary,
+    cleanedSecondary: cleanedSecondary,
+    cleanedTertiary: cleanedTertiary,
+    hasValidStyles,
+    primaryStyleKeys: Object.keys(cleanedPrimary.styles),
+    secondaryStyleKeys: Object.keys(cleanedSecondary.styles),
+    tertiaryStyleKeys: Object.keys(cleanedTertiary.styles),
+  });
+
+  const payload = {
+    userId,
+    token,
+    widgetId,
+    pageId,
+    elementId: blockId,
+    css: {
+      buttonPrimary: cleanedPrimary.selector ? cleanedPrimary : undefined,
+      buttonSecondary: cleanedSecondary.selector ? cleanedSecondary : undefined,
+      buttonTertiary: cleanedTertiary.selector ? cleanedTertiary : undefined,
+    },
+  };
+
+  // Remove undefined values from payload
+  Object.keys(payload.css).forEach((key) => {
+    if (payload.css[key] === undefined) {
+      delete payload.css[key];
+    }
+  });
+
+  console.log("📤 Sending button hover effect payload:", payload);
+  console.log("🔍 Original CSS received:", css);
+  console.log("🧹 Cleaned CSS structure:", {
+    buttonPrimary: cleanedPrimary,
+    buttonSecondary: cleanedSecondary,
+    buttonTertiary: cleanedTertiary,
+  });
+
+  try {
+    console.log(
+      "🌐 Making API request to save button hover effect modifications..."
+    );
+    const response = await fetch(
+      "http://localhost:8001/api/v1/save-button-effect-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    console.log("📡 Response status:", response.status);
+    console.log(
+      "📡 Response headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error("❌ Server error response:", result);
+      console.error("❌ Full error details:", {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        result: result,
+      });
+      throw new Error(
+        result.message || result.error || `HTTP ${response.status}`
+      );
+    }
+
+    console.log("✅ Button hover effect modifications saved:", result);
+    showNotification(
+      "Button hover effect styles saved successfully!",
+      "success"
+    );
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("❌ Error saving button hover effect modifications:", error);
+    showNotification(
+      `Failed to save button hover effect styles: ${error.message}`,
+      "error"
+    );
+
+    return { success: false, error: error.message };
+  }
+}
+
+// button hover effect save modification code end here

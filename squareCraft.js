@@ -639,6 +639,10 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/src/button/ButtonHoverIconColor/ButtonHoverIconColor.js"
   );
 
+  const { saveButtonHoverEffectModifications } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   window.saveButtonHoverColorModifications = saveButtonHoverColorModifications;
 
   // Make saveButtonColorModifications available globally
@@ -1730,7 +1734,17 @@ window.pendingModifications = pendingModifications;
       );
     }
     if (selectedElement) {
-      applyHoverButtonEffects(() => selectedElement);
+      applyHoverButtonEffects(
+        () => selectedElement,
+        saveButtonHoverEffectModifications,
+        (blockId, css, tagType) => {
+          if (!pendingModifications.has(blockId)) {
+            pendingModifications.set(blockId, []);
+          }
+          pendingModifications.get(blockId).push({ css, tagType });
+        },
+        showNotification
+      );
     }
 
     setTimeout(() => {
