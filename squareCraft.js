@@ -5455,7 +5455,7 @@ window.pendingModifications = pendingModifications;
     fetchAllTypographyModificationsForPage(); // Fetch all typography modifications for page
     fetchButtonIconModifications(); // Fetch all button icon modifications
     // fetchImageModifications(lastClickedBlockId);
-    fetchButtonHoverIconModifications();
+    // fetchButtonHoverIconModifications();
 
     const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
     const elementId = selectedBlock?.id || null;
