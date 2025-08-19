@@ -5476,12 +5476,12 @@ window.pendingModifications = pendingModifications;
       fetchButtonHoverBorderModifications(elementId);
       fetchButtonHoverShadowModifications(elementId);
       fetchButtonHoverColorModifications(elementId);
-      fetchButtonHoverIconModifications(elementId);
     } else {
       console.log(
         "🔄 Observer: No elementId found, not calling fetchButtonHoverBorderModifications"
       );
       // Fetch general button hover icon modifications when no specific element
+      fetchButtonHoverIconModifications();
       fetchButtonHoverIconModifications();
     }
 
