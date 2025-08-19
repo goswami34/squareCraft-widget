@@ -4814,10 +4814,10 @@ window.pendingModifications = pendingModifications;
 
   // Fetch button hover icon modifications from the backend
   async function fetchButtonHoverIconModifications(blockId = null) {
-    console.log(
-      "🚀 fetchButtonHoverIconModifications called with blockId:",
-      blockId
-    );
+    console.log("🚀 ========================================");
+    console.log("🚀 fetchButtonHoverIconModifications STARTED");
+    console.log("🚀 Called with blockId:", blockId);
+    console.log("🚀 ========================================");
 
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
@@ -5021,15 +5021,30 @@ window.pendingModifications = pendingModifications;
       });
 
       console.log("✅ All hover icon styles processed.");
+      console.log("🚀 ========================================");
+      console.log(
+        "🚀 fetchButtonHoverIconModifications COMPLETED SUCCESSFULLY"
+      );
+      console.log("🚀 ========================================");
       return { success: true, data: result };
     } catch (error) {
       console.error(
         "❌ Failed to fetch/apply button hover icon modifications:",
         error
       );
+      console.log("🚀 ========================================");
+      console.log("🚀 fetchButtonHoverIconModifications FAILED");
+      console.log("🚀 ========================================");
       return { success: false, error: error.message };
     }
   }
+
+  // Test the function immediately after definition
+  console.log(
+    "🧪 Testing fetchButtonHoverIconModifications function definition..."
+  );
+  console.log("🧪 Function type:", typeof fetchButtonHoverIconModifications);
+  console.log("🧪 Function name:", fetchButtonHoverIconModifications.name);
 
   // Helper function to apply hover icon styles to buttons using CSS
   function applyHoverIconStylesToButtons(
@@ -5257,6 +5272,11 @@ window.pendingModifications = pendingModifications;
     console.log(
       "🌅 Window load: About to fetch button hover icon modifications"
     );
+    console.log(
+      "🌅 Checking if function exists:",
+      typeof fetchButtonHoverIconModifications
+    );
+    console.log("🌅 Function name:", fetchButtonHoverIconModifications.name);
     try {
       const result = await fetchButtonHoverIconModifications();
       console.log(
@@ -5312,23 +5332,6 @@ window.pendingModifications = pendingModifications;
     console.log(
       "🌅 Window load: Button hover color modifications fetch completed"
     );
-
-    // Fetch button hover icon modifications on page load
-    console.log(
-      "🌅 Window load: About to fetch button hover icon modifications"
-    );
-    try {
-      const result = await fetchButtonHoverIconModifications();
-      console.log(
-        "🌅 Window load: Button hover icon modifications fetch completed with result:",
-        result
-      );
-    } catch (error) {
-      console.error(
-        "🌅 Window load: Button hover icon modifications fetch failed:",
-        error
-      );
-    }
   });
 
   async function addHeadingEventListeners() {
