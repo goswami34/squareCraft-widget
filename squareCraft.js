@@ -5054,7 +5054,8 @@ window.pendingModifications = pendingModifications;
     elementId,
     originalSelector
   ) {
-    const buttonArray = Array.from(buttons);
+    const buttonArray =
+      buttons instanceof Element ? [buttons] : Array.from(buttons || []);
     console.log(
       `🎨 Applying ${buttonType} hover icon styles to ${buttonArray.length} button(s)`
     );
@@ -5091,6 +5092,14 @@ window.pendingModifications = pendingModifications;
         const hyphenKey = k.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
         normalizedIconStyles[hyphenKey] = v;
       });
+
+      // Ensure icon can exceed any default caps and can transform properly
+      normalizedIconStyles["max-width"] =
+        normalizedIconStyles["max-width"] || "none";
+      normalizedIconStyles["max-height"] =
+        normalizedIconStyles["max-height"] || "none";
+      normalizedIconStyles["display"] =
+        normalizedIconStyles["display"] || "inline-block";
 
       // Store for JS fallback
       existingIcon.dataset.hoverStyles = JSON.stringify(normalizedIconStyles);
