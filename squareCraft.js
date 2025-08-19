@@ -5482,7 +5482,6 @@ window.pendingModifications = pendingModifications;
       );
       // Fetch general button hover icon modifications when no specific element
       fetchButtonHoverIconModifications();
-      fetchButtonHoverIconModifications();
     }
 
     // Fetch button color modifications
