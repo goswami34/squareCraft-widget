@@ -195,6 +195,69 @@ window.pendingModifications = pendingModifications;
     styleTag.innerHTML = cssText;
   }
 
+  // Normalize Squarespace block IDs to the stable form stored in DB
+  // - Editor often uses transient ids like: block-yui_3_17_2_1_1751455829773_3877
+  // - Database/API uses stable ids like: block-af8743b31fea872b2d48
+  // This helper tries to resolve the stable id from data attributes.
+  function getStableBlockId(input) {
+    try {
+      let element = null;
+      let rawId = null;
+
+      if (!input) return null;
+      if (typeof input === "string") {
+        rawId = input;
+        element = document.getElementById(input) || null;
+      } else if (input instanceof Element) {
+        element = input;
+        rawId = element.id || null;
+      }
+
+      // Prefer data-block-id attribute if available (Squarespace exposes this)
+      const dataBlockHolder = element?.closest?.("[data-block-id]") || element;
+      const stableDataId =
+        dataBlockHolder?.getAttribute?.("data-block-id") ||
+        dataBlockHolder?.dataset?.blockId ||
+        null;
+      if (stableDataId) {
+        const normalized = stableDataId.startsWith("block-")
+          ? stableDataId
+          : `block-${stableDataId}`;
+        return normalized;
+      }
+
+      // If the id already looks stable (no yui_), just return it
+      if (rawId && rawId.startsWith("block-") && !rawId.includes("yui_")) {
+        return rawId;
+      }
+
+      // As a last resort, try to find a block inside the live site iframe
+      // with a stable id. This may not always be possible but is a safe attempt.
+      try {
+        const siteFrame = document.getElementById("sqs-site-frame");
+        const frameDoc =
+          siteFrame?.contentDocument || siteFrame?.contentWindow?.document;
+        if (frameDoc) {
+          // If we already have a stable-looking id in the editor, return it
+          // Otherwise, we cannot reliably map; return null to avoid wrong queries
+          const anyStable = frameDoc.querySelector(
+            '[id^="block-"]:not([id*="yui_"])'
+          );
+          if (anyStable && anyStable.id) {
+            // Do not guess mapping; only use if input is already stable
+            // Fallback: skip elementId filtering
+          }
+        }
+      } catch (e) {
+        // ignore cross-origin or access errors
+      }
+
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   const { initButtonAdvanceStyles } = await import(
     "https://goswami34.github.io/squareCraft-widget/src/button/WidgetButtonSection/WidgetButtonAdvanceStyles/WidgetButtonAdvanceStyles.js"
   );
@@ -5143,10 +5206,12 @@ window.pendingModifications = pendingModifications;
     });
 
     try {
+      // Normalize incoming blockId to the stable id that backend stores
+      const stableBlockId = getStableBlockId(blockId) || null;
       // Build URL with query parameters for GET request
       let url = `https://admin.squareplugin.com/api/v1/fetch-button-effect-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-      if (blockId) {
-        url += `&elementId=${blockId}`;
+      if (stableBlockId) {
+        url += `&elementId=${stableBlockId}`;
       }
 
       console.log("🌐 Making request to URL:", url);
@@ -5814,14 +5879,17 @@ window.pendingModifications = pendingModifications;
         .querySelector('[id^="block-"] img')
         ?.closest('[id^="block-"]');
       if (fallbackBlock) {
-        lastClickedBlockId = fallbackBlock.id;
+        lastClickedBlockId =
+          getStableBlockId(fallbackBlock) || fallbackBlock.id;
       }
     }
 
     if (lastClickedBlockId) {
-      await fetchImageModifications(lastClickedBlockId);
-      await fetchImageOverlayModifications(lastClickedBlockId);
-      await fetchImageShadowModifications(lastClickedBlockId);
+      const stableId =
+        getStableBlockId(lastClickedBlockId) || lastClickedBlockId;
+      await fetchImageModifications(stableId);
+      await fetchImageOverlayModifications(stableId);
+      await fetchImageShadowModifications(stableId);
     }
 
     // Fetch typography modifications on page load
@@ -5969,7 +6037,8 @@ window.pendingModifications = pendingModifications;
     // fetchButtonHoverIconModifications();
 
     const selectedBlock = document.querySelector('[id^="block-"]:has(img)');
-    const elementId = selectedBlock?.id || null;
+    const elementIdRaw = selectedBlock?.id || null;
+    const elementId = getStableBlockId(elementIdRaw) || elementIdRaw || null;
 
     if (elementId) {
       fetchImageModifications(elementId);
