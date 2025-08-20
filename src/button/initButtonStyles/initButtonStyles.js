@@ -430,14 +430,14 @@ export function initButtonFontFamilyControls(
       div.className =
         "sc-dropdown-item sc-py-1px sc-text-center sc-cursor-pointer";
       div.textContent = family;
-      div.style.fontFamily = `"${family}", sans-serif`;
+      div.style.fontFamily = `"${family}"`;
 
       div.addEventListener("click", async () => {
         const selectedElement = getSelectedElement?.();
         if (!selectedElement) return;
 
         const label = document.getElementById("font-name");
-        const fontFace = `"${family}", sans-serif`;
+        const fontFace = `"${family}"`;
 
         try {
           await document.fonts.load(`1em ${fontFace}`);
