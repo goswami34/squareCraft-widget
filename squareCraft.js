@@ -1304,7 +1304,7 @@ window.pendingModifications = pendingModifications;
           ButtonBorderColorPalateToggle(
             themeColors,
             () => selectedElement,
-            saveButtonModifications,
+            saveButtonBorderModifications,
             (blockId, css, tagType) => {
               if (!pendingModifications.has(blockId)) {
                 pendingModifications.set(blockId, []);
