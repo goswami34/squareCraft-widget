@@ -201,56 +201,61 @@ window.pendingModifications = pendingModifications;
   // This helper tries to resolve the stable id from data attributes.
   function getStableBlockId(input) {
     try {
-      let element = null;
-      let rawId = null;
+      const normalize = (val) =>
+        val ? (val.startsWith("block-") ? val : `block-${val}`) : null;
+
+      const extractFromElement = (el) => {
+        if (!el) return null;
+        // Direct attribute
+        const direct =
+          el.getAttribute?.("data-block-id") || el.dataset?.blockId;
+        if (direct) return normalize(direct);
+        // Nearest ancestor
+        const holder = el.closest?.("[data-block-id]");
+        const fromClosest =
+          holder?.getAttribute?.("data-block-id") || holder?.dataset?.blockId;
+        if (fromClosest) return normalize(fromClosest);
+        // Any descendant (Squarespace sometimes nests it)
+        const child = el.querySelector?.("[data-block-id]");
+        const fromChild =
+          child?.getAttribute?.("data-block-id") || child?.dataset?.blockId;
+        if (fromChild) return normalize(fromChild);
+        return null;
+      };
 
       if (!input) return null;
+
+      let rawId = null;
+      let element = null;
       if (typeof input === "string") {
         rawId = input;
         element = document.getElementById(input) || null;
       } else if (input instanceof Element) {
         element = input;
-        rawId = element.id || null;
+        rawId = input.id || null;
       }
 
-      // Prefer data-block-id attribute if available (Squarespace exposes this)
-      const dataBlockHolder = element?.closest?.("[data-block-id]") || element;
-      const stableDataId =
-        dataBlockHolder?.getAttribute?.("data-block-id") ||
-        dataBlockHolder?.dataset?.blockId ||
-        null;
-      if (stableDataId) {
-        const normalized = stableDataId.startsWith("block-")
-          ? stableDataId
-          : `block-${stableDataId}`;
-        return normalized;
-      }
+      // 1) Try current document
+      let stable = extractFromElement(element);
+      if (stable) return stable;
 
-      // If the id already looks stable (no yui_), just return it
+      // 2) If id already stable (not yui), return it
       if (rawId && rawId.startsWith("block-") && !rawId.includes("yui_")) {
         return rawId;
       }
 
-      // As a last resort, try to find a block inside the live site iframe
-      // with a stable id. This may not always be possible but is a safe attempt.
+      // 3) Try inside the Squarespace site iframe (actual page DOM)
       try {
         const siteFrame = document.getElementById("sqs-site-frame");
         const frameDoc =
           siteFrame?.contentDocument || siteFrame?.contentWindow?.document;
         if (frameDoc) {
-          // If we already have a stable-looking id in the editor, return it
-          // Otherwise, we cannot reliably map; return null to avoid wrong queries
-          const anyStable = frameDoc.querySelector(
-            '[id^="block-"]:not([id*="yui_"])'
-          );
-          if (anyStable && anyStable.id) {
-            // Do not guess mapping; only use if input is already stable
-            // Fallback: skip elementId filtering
-          }
+          const elInFrame =
+            typeof input === "string" ? frameDoc.getElementById(input) : null;
+          stable = extractFromElement(elInFrame);
+          if (stable) return stable;
         }
-      } catch (e) {
-        // ignore cross-origin or access errors
-      }
+      } catch (_) {}
 
       return null;
     } catch (_) {
@@ -4969,7 +4974,9 @@ window.pendingModifications = pendingModifications;
     }
 
     // Normalize incoming blockId to a stable id if possible
-    const stableBlockId = getStableBlockId(blockId) || blockId || null;
+    // IMPORTANT: Do NOT fallback to transient yui id. If stable id cannot be resolved,
+    // omit elementId from the query so backend returns all for the page.
+    const stableBlockId = getStableBlockId(blockId) || null;
 
     console.log("📤 Fetching button hover icon styles:", {
       userId,
