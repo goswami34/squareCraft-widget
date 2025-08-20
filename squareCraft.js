@@ -1072,6 +1072,25 @@ window.pendingModifications = pendingModifications;
     }
   };
 
+  // Test function to manually trigger button hover effect fetch
+  window.testButtonHoverEffectFetch = async () => {
+    console.log("🧪 Testing button hover effect fetch manually...");
+
+    try {
+      const result = await fetchButtonHoverEffectModifications();
+      console.log("✅ Button hover effect fetch test result:", result);
+
+      if (result.success) {
+        console.log("🎉 Button hover effect fetch successful!");
+        console.log(`📊 Found ${result.modifications} modifications`);
+      } else {
+        console.error("❌ Button hover effect fetch failed:", result.error);
+      }
+    } catch (error) {
+      console.error("❌ Button hover effect fetch test failed:", error);
+    }
+  };
+
   // Make applyStylesAsExternalCSS available globally
   window.applyStylesAsExternalCSS = applyStylesAsExternalCSS;
 
@@ -3986,6 +4005,32 @@ window.pendingModifications = pendingModifications;
     styleTag.textContent = `${hoverSelector} { ${cssRules} }`;
   }
 
+  // Helper function to apply hover effect styles as external CSS
+  function applyHoverEffectStylesAsExternalCSS(
+    selector,
+    styles,
+    uniqueStyleId
+  ) {
+    // Check if style tag already exists
+    let styleTag = document.getElementById(uniqueStyleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = uniqueStyleId;
+      document.head.appendChild(styleTag);
+    }
+
+    const cssRules = Object.entries(styles)
+      .map(([prop, value]) => `${prop}: ${value} !important;`)
+      .join(" ");
+
+    // Append :hover to the selector if not already present
+    const hoverSelector = selector.includes(":hover")
+      ? selector
+      : `${selector}:hover`;
+
+    styleTag.textContent = `${hoverSelector} { ${cssRules} }`;
+  }
+
   async function fetchButtonModifications(blockId = null) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
@@ -5053,6 +5098,184 @@ window.pendingModifications = pendingModifications;
     }
   }
 
+  // Make fetchButtonHoverIconModifications available globally
+  window.fetchButtonHoverIconModifications = fetchButtonHoverIconModifications;
+
+  // Fetch button hover effect modifications from the API
+  async function fetchButtonHoverEffectModifications(blockId = null) {
+    console.log(
+      "🚀 fetchButtonHoverEffectModifications called with blockId:",
+      blockId
+    );
+
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    console.log("🔍 Retrieved data from localStorage:", {
+      userId: userId ? "present" : "missing",
+      token: token ? "present" : "missing",
+      widgetId: widgetId ? "present" : "missing",
+      pageId: pageId ? "present" : "missing",
+    });
+
+    if (!userId || !token || !widgetId || !pageId) {
+      console.warn(
+        "❌ Missing required data to fetch button hover effect styles",
+        {
+          userId: userId || "MISSING",
+          token: token ? "present" : "MISSING",
+          widgetId: widgetId || "MISSING",
+          pageId: pageId || "MISSING",
+        }
+      );
+      return { success: false, error: "Missing required data" };
+    }
+
+    console.log("📤 Fetching button hover effect styles:", {
+      userId,
+      widgetId,
+      pageId,
+      blockId,
+    });
+
+    try {
+      // Build URL with query parameters for GET request
+      let url = `https://admin.squareplugin.com/api/v1/fetch-button-effect-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+      if (blockId) {
+        url += `&elementId=${blockId}`;
+      }
+
+      console.log("🌐 Making request to URL:", url);
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("📡 Response status:", response.status);
+      console.log("📡 Response ok:", response.ok);
+
+      const result = await response.json();
+      console.log("📄 Response data:", result);
+
+      if (!response.ok) {
+        console.error(
+          "❌ HTTP Error:",
+          response.status,
+          result.message || `HTTP ${response.status}`
+        );
+        throw new Error(result.message || `HTTP ${response.status}`);
+      }
+
+      console.log("✅ Button hover effect styles fetched:", result);
+
+      // Handle the nested structure: elements[].buttonPrimary/buttonSecondary/buttonTertiary
+      const elements = result.elements || [];
+      console.log("📋 Elements to process:", elements.length);
+
+      if (elements.length === 0) {
+        console.log("ℹ️ No hover effect modifications found in response");
+        return {
+          success: true,
+          message: "No hover effect modifications found",
+        };
+      }
+
+      elements.forEach((element, index) => {
+        const { elementId } = element;
+        console.log(
+          `🔍 Processing element ${index + 1} (${elementId}):`,
+          element
+        );
+
+        // Handle buttonPrimary
+        if (
+          element.buttonPrimary &&
+          element.buttonPrimary.selector &&
+          element.buttonPrimary.styles
+        ) {
+          console.log(
+            `✅ Applying buttonPrimary hover effect styles for ${elementId}:`,
+            element.buttonPrimary.styles
+          );
+
+          applyHoverEffectStylesAsExternalCSS(
+            element.buttonPrimary.selector,
+            element.buttonPrimary.styles,
+            `sc-hover-effect-fetched-primary-${elementId}`
+          );
+          console.log(
+            `✅ Applied buttonPrimary hover effect styles to ${elementId}:`,
+            element.buttonPrimary.styles
+          );
+        }
+
+        // Handle buttonSecondary
+        if (
+          element.buttonSecondary &&
+          element.buttonSecondary.selector &&
+          element.buttonSecondary.styles
+        ) {
+          console.log(
+            `✅ Applying buttonSecondary hover effect styles for ${elementId}:`,
+            element.buttonSecondary.styles
+          );
+
+          applyHoverEffectStylesAsExternalCSS(
+            element.buttonSecondary.selector,
+            element.buttonSecondary.styles,
+            `sc-hover-effect-fetched-secondary-${elementId}`
+          );
+          console.log(
+            `✅ Applied buttonSecondary hover effect styles to ${elementId}:`,
+            element.buttonSecondary.styles
+          );
+        }
+
+        // Handle buttonTertiary
+        if (
+          element.buttonTertiary &&
+          element.buttonTertiary.selector &&
+          element.buttonTertiary.styles
+        ) {
+          console.log(
+            `✅ Applying buttonTertiary hover effect styles for ${elementId}:`,
+            element.buttonTertiary.styles
+          );
+
+          applyHoverEffectStylesAsExternalCSS(
+            element.buttonTertiary.selector,
+            element.buttonTertiary.styles,
+            `sc-hover-effect-fetched-tertiary-${elementId}`
+          );
+          console.log(
+            `✅ Applied buttonTertiary hover effect styles to ${elementId}:`,
+            element.buttonTertiary.styles
+          );
+        }
+      });
+
+      console.log(
+        "🎉 fetchButtonHoverEffectModifications completed successfully"
+      );
+      return { success: true, modifications: elements.length };
+    } catch (error) {
+      console.error("❌ Error in fetchButtonHoverEffectModifications:", error);
+      console.error("❌ Error stack:", error.stack);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Make fetchButtonHoverEffectModifications available globally
+  window.fetchButtonHoverEffectModifications =
+    fetchButtonHoverEffectModifications;
+
   // Test the function immediately after definition
   console.log(
     "🧪 Testing fetchButtonHoverIconModifications function definition..."
@@ -5538,6 +5761,23 @@ window.pendingModifications = pendingModifications;
     console.log(
       "🌅 Window load: Button hover color modifications fetch completed"
     );
+
+    // Fetch button hover effect modifications on page load
+    console.log(
+      "🌅 Window load: About to fetch button hover effect modifications"
+    );
+    try {
+      const result = await fetchButtonHoverEffectModifications();
+      console.log(
+        "🌅 Window load: Button hover effect modifications fetch completed with result:",
+        result
+      );
+    } catch (error) {
+      console.error(
+        "🌅 Window load: Button hover effect modifications fetch failed:",
+        error
+      );
+    }
   });
 
   async function addHeadingEventListeners() {
@@ -5608,6 +5848,7 @@ window.pendingModifications = pendingModifications;
       fetchButtonHoverShadowModifications(elementId);
       fetchButtonHoverColorModifications(elementId);
       fetchButtonHoverIconModifications(elementId);
+      fetchButtonHoverEffectModifications(elementId);
     } else {
       console.log(
         "🔄 Observer: No elementId found, not calling fetchButtonHoverBorderModifications"
