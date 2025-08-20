@@ -1,7 +1,7 @@
 export function ButtonBorderColorPalateToggle(
   themeColors,
   selectedElement,
-  saveButtonModifications,
+  saveButtonBorderModifications,
   addPendingModification,
   showNotification
 ) {
@@ -98,7 +98,7 @@ export function ButtonBorderColorPalateToggle(
 
     // Save modifications if functions are provided
     if (
-      typeof saveButtonModifications === "function" &&
+      typeof saveButtonBorderModifications === "function" &&
       typeof addPendingModification === "function"
     ) {
       const blockId = currentElement.id;
