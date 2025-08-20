@@ -4766,6 +4766,25 @@ window.pendingModifications = pendingModifications;
     console.log(`✅ Finished applying ${buttonType} styles`);
   }
 
+  // Utility: query selectorAll in both host document and Squarespace iframe
+  function queryAllInHostAndFrame(selector) {
+    const results = [];
+    try {
+      const hostMatches = document.querySelectorAll(selector);
+      results.push(...Array.from(hostMatches));
+    } catch (_) {}
+    try {
+      const siteFrame = document.getElementById("sqs-site-frame");
+      const frameDoc =
+        siteFrame?.contentDocument || siteFrame?.contentWindow?.document;
+      if (frameDoc) {
+        const frameMatches = frameDoc.querySelectorAll(selector);
+        results.push(...Array.from(frameMatches));
+      }
+    } catch (_) {}
+    return results;
+  }
+
   // Main button icon fetch function
   async function fetchButtonIconModifications(blockId = null) {
     console.log(
@@ -5102,8 +5121,8 @@ window.pendingModifications = pendingModifications;
 
             console.log(`🔍 Base button selector: "${baseButtonSelector}"`);
 
-            // Find buttons with the base selector
-            let buttons = document.querySelectorAll(baseButtonSelector);
+            // Find buttons with the base selector in host doc and iframe
+            let buttons = queryAllInHostAndFrame(baseButtonSelector);
             console.log(
               `🔍 Found ${buttons.length} buttons with selector: "${baseButtonSelector}"`
             );
@@ -5116,12 +5135,16 @@ window.pendingModifications = pendingModifications;
                 );
                 waitForElement(baseButtonSelector)
                   .then((foundButtons) => {
-                    if (foundButtons && foundButtons.length > 0) {
+                    const merged = foundButtons ? Array.from(foundButtons) : [];
+                    // Also check iframe after wait
+                    const inFrame = queryAllInHostAndFrame(baseButtonSelector);
+                    merged.push(...inFrame);
+                    if (merged.length > 0) {
                       console.log(
-                        `⏳ Wait successful: Found ${foundButtons.length} buttons`
+                        `⏳ Wait successful: Found ${merged.length} buttons`
                       );
                       applyHoverIconStylesToButtons(
-                        foundButtons,
+                        merged,
                         styles,
                         buttonType,
                         elementId,
@@ -5520,6 +5543,19 @@ window.pendingModifications = pendingModifications;
       // Create or update the hover icon styles using CSS hover selectors
       const iconSelector = `.sqscraft-button-icon, .sqscraft-image-icon`;
       let existingIcon = button.querySelector(iconSelector);
+      if (!existingIcon) {
+        // Also search inside Squarespace iframe button clone if any
+        try {
+          const siteFrame = document.getElementById("sqs-site-frame");
+          const frameDoc =
+            siteFrame?.contentDocument || siteFrame?.contentWindow?.document;
+          if (frameDoc && button.id) {
+            const frameButton = frameDoc.getElementById(button.id);
+            existingIcon =
+              frameButton?.querySelector(iconSelector) || existingIcon;
+          }
+        } catch (_) {}
+      }
 
       if (!existingIcon) {
         // Create new icon element if none exists
