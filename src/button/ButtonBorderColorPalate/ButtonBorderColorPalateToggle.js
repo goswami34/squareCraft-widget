@@ -54,7 +54,7 @@ export function ButtonBorderColorPalateToggle(
 
     let buttonType = null;
     for (let type of buttonTypes) {
-      if (currentElement.querySelector(`a.${type}`)) {
+      if (currentElement.querySelector(`.${type}`)) {
         buttonType = type;
         break;
       }
@@ -78,18 +78,18 @@ export function ButtonBorderColorPalateToggle(
     }
 
     styleTag.textContent = `
-      a.${buttonType},
+      .${buttonType},
       button.${buttonType} {
         border-color: ${rgbaColor} !important;
       }
-      a.${buttonType}:hover,
+      .${buttonType}:hover,
       button.${buttonType}:hover {
         border-color: ${rgbaColor} !important;
       }
     `;
 
     const allButtons = currentElement.querySelectorAll(
-      `a.${buttonType}, button.${buttonType}`
+      `.${buttonType}, button.${buttonType}`
     );
     allButtons.forEach((btn) => {
       btn.dataset.scButtonBorderColor = color;
