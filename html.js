@@ -2641,7 +2641,7 @@ export async function saveButtonHoverEffectModifications(blockId, css) {
       "🌐 Making API request to save button hover effect modifications..."
     );
     const response = await fetch(
-      "http://localhost:8001/api/v1/save-button-effect-modifications",
+      "https://admin.squareplugin.com/api/v1/save-button-effect-modifications",
       {
         method: "POST",
         headers: {
