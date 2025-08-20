@@ -1091,6 +1091,108 @@ window.pendingModifications = pendingModifications;
     }
   };
 
+  // Test function to debug elementId mismatch issue
+  window.debugElementIdMismatch = async () => {
+    console.log("🔍 Debugging elementId mismatch issue...");
+
+    const userId = localStorage.getItem("sc_u_id");
+    const token = localStorage.getItem("sc_auth_token");
+    const widgetId = localStorage.getItem("sc_w_id");
+    const pageId = document
+      .querySelector("article[data-page-sections]")
+      ?.getAttribute("data-page-sections");
+
+    if (!userId || !token || !widgetId || !pageId) {
+      console.error("❌ Missing required data");
+      return;
+    }
+
+    // Get current selected element
+    const selectedElement =
+      window.selectedElement || document.querySelector('[id^="block-"]');
+    const currentElementId = selectedElement?.id;
+
+    console.log("🔍 Current page elementId:", currentElementId);
+    console.log(
+      "🔍 Database elementId (from your data): block-af8743b31fea872b2d48"
+    );
+
+    if (currentElementId) {
+      console.log("🔍 ElementId comparison:");
+      console.log("   Current:", currentElementId);
+      console.log("   Database:", "block-af8743b31fea872b2d48");
+      console.log(
+        "   Match:",
+        currentElementId === "block-af8743b31fea872b2d48"
+      );
+
+      if (currentElementId !== "block-af8743b31fea872b2d48") {
+        console.log("⚠️ ELEMENT ID MISMATCH DETECTED!");
+        console.log(
+          "   This explains why you're getting empty elements in the API response."
+        );
+        console.log("   The API is looking for:", currentElementId);
+        console.log(
+          "   But your database has data for: block-af8743b31fea872b2d48"
+        );
+      }
+    }
+
+    try {
+      // Test both approaches
+      console.log("\n🧪 Testing API call WITHOUT elementId (should work):");
+      const urlWithoutElementId = `https://admin.squareplugin.com/api/v1/fetch-button-effect-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+      console.log("🌐 URL:", urlWithoutElementId);
+
+      const response1 = await fetch(urlWithoutElementId, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result1 = await response1.json();
+      console.log("📄 Response without elementId:", result1);
+      console.log("📊 Elements found:", result1.elements?.length || 0);
+
+      if (result1.elements && result1.elements.length > 0) {
+        console.log("✅ SUCCESS! Found elements without elementId filter");
+        console.log(
+          "📋 Available elementIds:",
+          result1.elements.map((e) => e.elementId)
+        );
+      }
+
+      if (currentElementId) {
+        console.log(
+          "\n🧪 Testing API call WITH current elementId (might fail):"
+        );
+        const urlWithElementId = `${urlWithoutElementId}&elementId=${currentElementId}`;
+        console.log("🌐 URL:", urlWithElementId);
+
+        const response2 = await fetch(urlWithElementId, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const result2 = await response2.json();
+        console.log("📄 Response with elementId:", result2);
+        console.log("📊 Elements found:", result2.elements?.length || 0);
+
+        if (result2.elements && result2.elements.length > 0) {
+          console.log("✅ SUCCESS! Found elements with current elementId");
+        } else {
+          console.log("❌ FAILED! No elements found with current elementId");
+          console.log("   This confirms the elementId mismatch issue");
+        }
+      }
+    } catch (error) {
+      console.error("❌ Debug test failed:", error);
+    }
+  };
+
   // Make applyStylesAsExternalCSS available globally
   window.applyStylesAsExternalCSS = applyStylesAsExternalCSS;
 
@@ -5143,13 +5245,11 @@ window.pendingModifications = pendingModifications;
     });
 
     try {
-      // Build URL with query parameters for GET request
+      // First, try to fetch ALL button hover effect modifications for this page (without elementId)
+      // This will get all the data regardless of elementId mismatch
       let url = `https://admin.squareplugin.com/api/v1/fetch-button-effect-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-      if (blockId) {
-        url += `&elementId=${blockId}`;
-      }
 
-      console.log("🌐 Making request to URL:", url);
+      console.log("🌐 Making request to URL (without elementId):", url);
 
       const response = await fetch(url, {
         method: "GET",
@@ -5187,7 +5287,54 @@ window.pendingModifications = pendingModifications;
         };
       }
 
-      elements.forEach((element, index) => {
+      // If a specific blockId was requested, filter the results to find matching elements
+      let elementsToProcess = elements;
+      if (blockId) {
+        console.log("🎯 Filtering for specific blockId:", blockId);
+
+        // Try to find exact match first
+        let exactMatch = elements.find(
+          (element) => element.elementId === blockId
+        );
+
+        if (exactMatch) {
+          console.log("✅ Found exact elementId match:", blockId);
+          elementsToProcess = [exactMatch];
+        } else {
+          console.log(
+            "⚠️ No exact elementId match found, checking for partial matches..."
+          );
+
+          // Try to find partial matches (e.g., if blockId is a prefix or similar)
+          const partialMatches = elements.filter(
+            (element) =>
+              element.elementId &&
+              (element.elementId.includes(blockId) ||
+                blockId.includes(element.elementId) ||
+                (element.elementId.startsWith("block-") &&
+                  blockId.startsWith("block-")))
+          );
+
+          if (partialMatches.length > 0) {
+            console.log(
+              "🔍 Found partial matches:",
+              partialMatches.map((e) => e.elementId)
+            );
+            elementsToProcess = partialMatches;
+          } else {
+            console.log("⚠️ No partial matches found, processing all elements");
+            console.log(
+              "📋 Available elementIds in database:",
+              elements.map((e) => e.elementId)
+            );
+            console.log("🎯 Requested blockId:", blockId);
+          }
+        }
+      }
+
+      console.log("🎯 Final elements to process:", elementsToProcess.length);
+
+      elementsToProcess.forEach((element, index) => {
         const { elementId } = element;
         console.log(
           `🔍 Processing element ${index + 1} (${elementId}):`,
@@ -5198,15 +5345,22 @@ window.pendingModifications = pendingModifications;
         if (
           element.buttonPrimary &&
           element.buttonPrimary.selector &&
-          element.buttonPrimary.styles
+          element.buttonPrimary.styles &&
+          Object.keys(element.buttonPrimary.styles).length > 0
         ) {
           console.log(
             `✅ Applying buttonPrimary hover effect styles for ${elementId}:`,
             element.buttonPrimary.styles
           );
 
+          // Clean the selector - remove :hover if present for the base selector
+          const baseSelector = element.buttonPrimary.selector.replace(
+            ":hover",
+            ""
+          );
+
           applyHoverEffectStylesAsExternalCSS(
-            element.buttonPrimary.selector,
+            baseSelector,
             element.buttonPrimary.styles,
             `sc-hover-effect-fetched-primary-${elementId}`
           );
@@ -5214,21 +5368,37 @@ window.pendingModifications = pendingModifications;
             `✅ Applied buttonPrimary hover effect styles to ${elementId}:`,
             element.buttonPrimary.styles
           );
+        } else {
+          console.log(`⚠️ Skipping buttonPrimary for ${elementId}:`, {
+            hasButtonPrimary: !!element.buttonPrimary,
+            selector: element.buttonPrimary?.selector,
+            hasStyles: !!element.buttonPrimary?.styles,
+            stylesKeys: element.buttonPrimary?.styles
+              ? Object.keys(element.buttonPrimary.styles)
+              : [],
+          });
         }
 
         // Handle buttonSecondary
         if (
           element.buttonSecondary &&
           element.buttonSecondary.selector &&
-          element.buttonSecondary.styles
+          element.buttonSecondary.styles &&
+          Object.keys(element.buttonSecondary.styles).length > 0
         ) {
           console.log(
             `✅ Applying buttonSecondary hover effect styles for ${elementId}:`,
             element.buttonSecondary.styles
           );
 
+          // Clean the selector - remove :hover if present for the base selector
+          const baseSelector = element.buttonSecondary.selector.replace(
+            ":hover",
+            ""
+          );
+
           applyHoverEffectStylesAsExternalCSS(
-            element.buttonSecondary.selector,
+            baseSelector,
             element.buttonSecondary.styles,
             `sc-hover-effect-fetched-secondary-${elementId}`
           );
@@ -5236,21 +5406,37 @@ window.pendingModifications = pendingModifications;
             `✅ Applied buttonSecondary hover effect styles to ${elementId}:`,
             element.buttonSecondary.styles
           );
+        } else {
+          console.log(`⚠️ Skipping buttonSecondary for ${elementId}:`, {
+            hasButtonSecondary: !!element.buttonSecondary,
+            selector: element.buttonSecondary?.selector,
+            hasStyles: !!element.buttonSecondary?.styles,
+            stylesKeys: element.buttonSecondary?.styles
+              ? Object.keys(element.buttonSecondary.styles)
+              : [],
+          });
         }
 
         // Handle buttonTertiary
         if (
           element.buttonTertiary &&
           element.buttonTertiary.selector &&
-          element.buttonTertiary.styles
+          element.buttonTertiary.styles &&
+          Object.keys(element.buttonTertiary.styles).length > 0
         ) {
           console.log(
             `✅ Applying buttonTertiary hover effect styles for ${elementId}:`,
             element.buttonTertiary.styles
           );
 
+          // Clean the selector - remove :hover if present for the base selector
+          const baseSelector = element.buttonTertiary.selector.replace(
+            ":hover",
+            ""
+          );
+
           applyHoverEffectStylesAsExternalCSS(
-            element.buttonTertiary.selector,
+            baseSelector,
             element.buttonTertiary.styles,
             `sc-hover-effect-fetched-tertiary-${elementId}`
           );
@@ -5258,13 +5444,22 @@ window.pendingModifications = pendingModifications;
             `✅ Applied buttonTertiary hover effect styles to ${elementId}:`,
             element.buttonTertiary.styles
           );
+        } else {
+          console.log(`⚠️ Skipping buttonTertiary for ${elementId}:`, {
+            hasButtonTertiary: !!element.buttonTertiary,
+            selector: element.buttonTertiary?.selector,
+            hasStyles: !!element.buttonTertiary?.styles,
+            stylesKeys: element.buttonTertiary?.styles
+              ? Object.keys(element.buttonTertiary.styles)
+              : [],
+          });
         }
       });
 
       console.log(
         "🎉 fetchButtonHoverEffectModifications completed successfully"
       );
-      return { success: true, modifications: elements.length };
+      return { success: true, modifications: elementsToProcess.length };
     } catch (error) {
       console.error("❌ Error in fetchButtonHoverEffectModifications:", error);
       console.error("❌ Error stack:", error.stack);
