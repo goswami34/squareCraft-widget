@@ -1091,165 +1091,6 @@ window.pendingModifications = pendingModifications;
     }
   };
 
-  // Test function to debug API response parsing
-  window.debugButtonHoverEffectResponse = async () => {
-    console.log("🔍 Debugging button hover effect API response...");
-
-    const userId = localStorage.getItem("sc_u_id");
-    const token = localStorage.getItem("sc_auth_token");
-    const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
-
-    console.log("🔍 Current localStorage values:", {
-      userId,
-      token: token ? "present" : "missing",
-      widgetId,
-      pageId,
-    });
-
-    if (!userId || !token || !widgetId || !pageId) {
-      console.error("❌ Missing required data");
-      return;
-    }
-
-    try {
-      const url = `https://admin.squareplugin.com/api/v1/fetch-button-effect-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-      console.log("🌐 Testing URL:", url);
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      console.log("📡 Response status:", response.status);
-      const result = await response.json();
-      console.log("📄 Raw API response:", result);
-
-      if (result.elements && result.elements.length > 0) {
-        console.log("🔍 Analyzing first element:", result.elements[0]);
-        const element = result.elements[0];
-
-        console.log("📋 Element structure:", {
-          elementId: element.elementId,
-          buttonPrimary: element.buttonPrimary,
-          buttonSecondary: element.buttonSecondary,
-          buttonTertiary: element.buttonTertiary,
-        });
-
-        if (element.buttonPrimary) {
-          console.log("🎯 ButtonPrimary details:", {
-            selector: element.buttonPrimary.selector,
-            selectorType: typeof element.buttonPrimary.selector,
-            styles: element.buttonPrimary.styles,
-            stylesType: typeof element.buttonPrimary.styles,
-            stylesKeys: element.buttonPrimary.styles
-              ? Object.keys(element.buttonPrimary.styles)
-              : [],
-          });
-        }
-      } else {
-        console.log("⚠️ No elements found in response");
-      }
-    } catch (error) {
-      console.error("❌ Debug test failed:", error);
-    }
-  };
-
-  // Test function to simulate your exact API response
-  window.testWithYourData = () => {
-    console.log("🧪 Testing with your exact API response data...");
-
-    // Simulate the exact data structure from your Postman response
-    const mockResponse = {
-      success: true,
-      message: "Button hover effect modifications fetched successfully.",
-      elements: [
-        {
-          elementId: "block-af8743b31fea872b2d48",
-          buttonPrimary: {
-            selector: ".sqs-button-element--primary:hover",
-            styles: {
-              transition: "all 300ms linear 300ms",
-              transform: "translateY(44px)",
-            },
-          },
-          buttonSecondary: {
-            selector: null,
-          },
-          buttonTertiary: {
-            selector: null,
-          },
-        },
-      ],
-    };
-
-    console.log("📄 Mock response data:", mockResponse);
-
-    // Test the processing logic
-    const elements = mockResponse.elements || [];
-    console.log("📋 Elements to process:", elements.length);
-
-    if (elements.length === 0) {
-      console.log("ℹ️ No hover effect modifications found in response");
-      return;
-    }
-
-    elements.forEach((element, index) => {
-      const { elementId } = element;
-      console.log(
-        `🔍 Processing element ${index + 1} (${elementId}):`,
-        element
-      );
-
-      // Handle buttonPrimary
-      if (
-        element.buttonPrimary &&
-        element.buttonPrimary.selector &&
-        element.buttonPrimary.styles &&
-        Object.keys(element.buttonPrimary.styles).length > 0
-      ) {
-        console.log(
-          `✅ Applying buttonPrimary hover effect styles for ${elementId}:`,
-          element.buttonPrimary.styles
-        );
-
-        // Clean the selector - remove :hover if present for the base selector
-        const baseSelector = element.buttonPrimary.selector.replace(
-          ":hover",
-          ""
-        );
-        console.log("🎯 Base selector:", baseSelector);
-
-        // Test the applyHoverEffectStylesAsExternalCSS function
-        try {
-          applyHoverEffectStylesAsExternalCSS(
-            baseSelector,
-            element.buttonPrimary.styles,
-            `sc-hover-effect-fetched-primary-${elementId}`
-          );
-          console.log(
-            `✅ Successfully applied buttonPrimary hover effect styles to ${elementId}`
-          );
-        } catch (error) {
-          console.error("❌ Error applying styles:", error);
-        }
-      } else {
-        console.log(`⚠️ Skipping buttonPrimary for ${elementId}:`, {
-          hasButtonPrimary: !!element.buttonPrimary,
-          selector: element.buttonPrimary?.selector,
-          hasStyles: !!element.buttonPrimary?.styles,
-          stylesKeys: element.buttonPrimary?.styles
-            ? Object.keys(element.buttonPrimary.styles)
-            : [],
-        });
-      }
-    });
-  };
-
   // Make applyStylesAsExternalCSS available globally
   window.applyStylesAsExternalCSS = applyStylesAsExternalCSS;
 
@@ -5357,22 +5198,15 @@ window.pendingModifications = pendingModifications;
         if (
           element.buttonPrimary &&
           element.buttonPrimary.selector &&
-          element.buttonPrimary.styles &&
-          Object.keys(element.buttonPrimary.styles).length > 0
+          element.buttonPrimary.styles
         ) {
           console.log(
             `✅ Applying buttonPrimary hover effect styles for ${elementId}:`,
             element.buttonPrimary.styles
           );
 
-          // Clean the selector - remove :hover if present for the base selector
-          const baseSelector = element.buttonPrimary.selector.replace(
-            ":hover",
-            ""
-          );
-
           applyHoverEffectStylesAsExternalCSS(
-            baseSelector,
+            element.buttonPrimary.selector,
             element.buttonPrimary.styles,
             `sc-hover-effect-fetched-primary-${elementId}`
           );
@@ -5380,37 +5214,21 @@ window.pendingModifications = pendingModifications;
             `✅ Applied buttonPrimary hover effect styles to ${elementId}:`,
             element.buttonPrimary.styles
           );
-        } else {
-          console.log(`⚠️ Skipping buttonPrimary for ${elementId}:`, {
-            hasButtonPrimary: !!element.buttonPrimary,
-            selector: element.buttonPrimary?.selector,
-            hasStyles: !!element.buttonPrimary?.styles,
-            stylesKeys: element.buttonPrimary?.styles
-              ? Object.keys(element.buttonPrimary.styles)
-              : [],
-          });
         }
 
         // Handle buttonSecondary
         if (
           element.buttonSecondary &&
           element.buttonSecondary.selector &&
-          element.buttonSecondary.styles &&
-          Object.keys(element.buttonSecondary.styles).length > 0
+          element.buttonSecondary.styles
         ) {
           console.log(
             `✅ Applying buttonSecondary hover effect styles for ${elementId}:`,
             element.buttonSecondary.styles
           );
 
-          // Clean the selector - remove :hover if present for the base selector
-          const baseSelector = element.buttonSecondary.selector.replace(
-            ":hover",
-            ""
-          );
-
           applyHoverEffectStylesAsExternalCSS(
-            baseSelector,
+            element.buttonSecondary.selector,
             element.buttonSecondary.styles,
             `sc-hover-effect-fetched-secondary-${elementId}`
           );
@@ -5418,37 +5236,21 @@ window.pendingModifications = pendingModifications;
             `✅ Applied buttonSecondary hover effect styles to ${elementId}:`,
             element.buttonSecondary.styles
           );
-        } else {
-          console.log(`⚠️ Skipping buttonSecondary for ${elementId}:`, {
-            hasButtonSecondary: !!element.buttonSecondary,
-            selector: element.buttonSecondary?.selector,
-            hasStyles: !!element.buttonSecondary?.styles,
-            stylesKeys: element.buttonSecondary?.styles
-              ? Object.keys(element.buttonSecondary.styles)
-              : [],
-          });
         }
 
         // Handle buttonTertiary
         if (
           element.buttonTertiary &&
           element.buttonTertiary.selector &&
-          element.buttonTertiary.styles &&
-          Object.keys(element.buttonTertiary.styles).length > 0
+          element.buttonTertiary.styles
         ) {
           console.log(
             `✅ Applying buttonTertiary hover effect styles for ${elementId}:`,
             element.buttonTertiary.styles
           );
 
-          // Clean the selector - remove :hover if present for the base selector
-          const baseSelector = element.buttonTertiary.selector.replace(
-            ":hover",
-            ""
-          );
-
           applyHoverEffectStylesAsExternalCSS(
-            baseSelector,
+            element.buttonTertiary.selector,
             element.buttonTertiary.styles,
             `sc-hover-effect-fetched-tertiary-${elementId}`
           );
@@ -5456,15 +5258,6 @@ window.pendingModifications = pendingModifications;
             `✅ Applied buttonTertiary hover effect styles to ${elementId}:`,
             element.buttonTertiary.styles
           );
-        } else {
-          console.log(`⚠️ Skipping buttonTertiary for ${elementId}:`, {
-            hasButtonTertiary: !!element.buttonTertiary,
-            selector: element.buttonTertiary?.selector,
-            hasStyles: !!element.buttonTertiary?.styles,
-            stylesKeys: element.buttonTertiary?.styles
-              ? Object.keys(element.buttonTertiary.styles)
-              : [],
-          });
         }
       });
 
