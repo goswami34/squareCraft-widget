@@ -4968,18 +4968,21 @@ window.pendingModifications = pendingModifications;
       return { success: false, error: "Missing required data" };
     }
 
+    // Normalize incoming blockId to a stable id if possible
+    const stableBlockId = getStableBlockId(blockId) || blockId || null;
+
     console.log("📤 Fetching button hover icon styles:", {
       userId,
       widgetId,
       pageId,
-      blockId,
+      blockId: stableBlockId,
     });
 
     try {
       // Build URL with query parameters for GET request
       let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-icon-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-      if (blockId) {
-        url += `&elementId=${blockId}`;
+      if (stableBlockId) {
+        url += `&elementId=${stableBlockId}`;
       }
 
       console.log("🌐 Making request to URL:", url);
@@ -5028,9 +5031,9 @@ window.pendingModifications = pendingModifications;
         );
 
         // Skip if we're looking for a specific block and this isn't it
-        if (blockId && elementId !== blockId) {
+        if (stableBlockId && elementId !== stableBlockId) {
           console.log(
-            `⏭️ Skipping element ${elementId} - looking for ${blockId}`
+            `⏭️ Skipping element ${elementId} - looking for ${stableBlockId}`
           );
           return;
         }
