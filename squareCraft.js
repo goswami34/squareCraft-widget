@@ -4129,56 +4129,32 @@ window.pendingModifications = pendingModifications;
       modifications.forEach((mod) => {
         const elements = mod.elements || [];
         elements.forEach(({ elementId, css }) => {
-          // Apply button styles as external CSS with !important
+          // Apply button styles as external CSS
           const buttonPrimary = css?.buttonPrimary;
           if (buttonPrimary?.selector && buttonPrimary?.styles) {
-            // Ensure all styles have !important
-            const importantStyles = {};
-            Object.entries(buttonPrimary.styles).forEach(([prop, value]) => {
-              if (value !== null && value !== undefined && value !== "") {
-                const stringValue = String(value);
-                importantStyles[prop] = stringValue.includes("!important")
-                  ? stringValue
-                  : `${stringValue} !important`;
-              }
-            });
-
-            applyStylesAsExternalCSS(buttonPrimary.selector, importantStyles);
+            applyStylesAsExternalCSS(
+              buttonPrimary.selector,
+              buttonPrimary.styles
+            );
             console.log(
               `✅ Applied button styles to ${elementId}:`,
-              importantStyles
+              buttonPrimary.styles
             );
           }
           // Optionally handle secondary/tertiary
           const buttonSecondary = css?.buttonSecondary;
           if (buttonSecondary?.selector && buttonSecondary?.styles) {
-            // Ensure all styles have !important
-            const importantStyles = {};
-            Object.entries(buttonSecondary.styles).forEach(([prop, value]) => {
-              if (value !== null && value !== undefined && value !== "") {
-                const stringValue = String(value);
-                importantStyles[prop] = stringValue.includes("!important")
-                  ? stringValue
-                  : `${stringValue} !important`;
-              }
-            });
-
-            applyStylesAsExternalCSS(buttonSecondary.selector, importantStyles);
+            applyStylesAsExternalCSS(
+              buttonSecondary.selector,
+              buttonSecondary.styles
+            );
           }
           const buttonTertiary = css?.buttonTertiary;
           if (buttonTertiary?.selector && buttonTertiary?.styles) {
-            // Ensure all styles have !important
-            const importantStyles = {};
-            Object.entries(buttonTertiary.styles).forEach(([prop, value]) => {
-              if (value !== null && value !== undefined && value !== "") {
-                const stringValue = String(value);
-                importantStyles[prop] = stringValue.includes("!important")
-                  ? stringValue
-                  : `${stringValue} !important`;
-              }
-            });
-
-            applyStylesAsExternalCSS(buttonTertiary.selector, importantStyles);
+            applyStylesAsExternalCSS(
+              buttonTertiary.selector,
+              buttonTertiary.styles
+            );
           }
         });
       });
