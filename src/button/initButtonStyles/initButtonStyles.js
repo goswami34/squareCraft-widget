@@ -2221,7 +2221,7 @@ export function initButtonBorderControl(
     const borderStyles = {
       boxSizing: "border-box",
       borderStyle: window.__squareCraftBorderStyle || "solid",
-      borderColor: "black",
+      borderColor: window.__squareCraftBorderColor || "black", // Use selected color from palette
       borderTopWidth: `${state.values.Top || 0}px`,
       borderRightWidth: `${state.values.Right || 0}px`,
       borderBottomWidth: `${state.values.Bottom || 0}px`,
@@ -2234,13 +2234,17 @@ export function initButtonBorderControl(
       .${typeClass} {
         box-sizing: border-box !important;
         border-style: ${window.__squareCraftBorderStyle || "solid"} !important;
-        border-color: black !important;
+        border-color: ${window.__squareCraftBorderColor || "black"} !important;
         border-top-width: ${state.values.Top || 0}px !important;
         border-right-width: ${state.values.Right || 0}px !important;
         border-bottom-width: ${state.values.Bottom || 0}px !important;
         border-left-width: ${state.values.Left || 0}px !important;
-        borderRadius: btn ? window.getComputedStyle(btn).borderRadius : "0px",
-        overflow: btn ? window.getComputedStyle(btn).overflow : "hidden",
+        border-radius: ${
+          btn ? window.getComputedStyle(btn).borderRadius : "0px"
+        } !important;
+        overflow: ${
+          btn ? window.getComputedStyle(btn).overflow : "hidden"
+        } !important;
       }
     `;
 
@@ -2361,7 +2365,10 @@ export function initButtonBorderTypeToggle(
       const stylePayload = {
         buttonPrimary: {
           selector: ".sqs-button-element--primary",
-          styles: { borderStyle: borderType },
+          styles: {
+            borderStyle: borderType,
+            borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
+          },
         },
       };
       addPendingModification(blockId, stylePayload, "button", "border");
@@ -2665,6 +2672,7 @@ export function initButtonBorderRadiusControl(
     if (blockId && blockId !== "block-id") {
       const styleData = {
         overflow: "hidden",
+        borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
       };
 
       if (type === "all") {
@@ -3055,7 +3063,10 @@ export function initButtonShadowControls(
     const stylePayload = {
       buttonPrimary: {
         selector: ".sqs-button-element--primary",
-        styles: { boxShadow: value },
+        styles: {
+          boxShadow: value,
+          borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
+        },
       },
     };
 

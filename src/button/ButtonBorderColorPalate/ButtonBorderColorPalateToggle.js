@@ -41,6 +41,11 @@ export function ButtonBorderColorPalateToggle(
   let dynamicHue = 0;
   let currentTransparency = 100;
 
+  // Store selected border color globally so other functions can access it
+  if (!window.__squareCraftBorderColor) {
+    window.__squareCraftBorderColor = "black";
+  }
+
   // Function to apply border color to button
   function applyButtonBorderColor(color, alpha = 1) {
     const currentElement = selectedElement?.();
@@ -68,6 +73,9 @@ export function ButtonBorderColorPalateToggle(
     const rgbaColor = color.startsWith("rgb(")
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
+
+    // Store the selected color globally
+    window.__squareCraftBorderColor = rgbaColor;
 
     const styleId = `sc-border-style-global-${buttonType}`;
     let styleTag = document.getElementById(styleId);
@@ -110,6 +118,10 @@ export function ButtonBorderColorPalateToggle(
           },
         };
         addPendingModification(blockId, stylePayload, "button");
+
+        // Actually save to database
+        saveButtonBorderModifications(blockId, stylePayload);
+
         if (showNotification) {
           showNotification(`Border color applied to ${buttonType}`, "success");
         }
