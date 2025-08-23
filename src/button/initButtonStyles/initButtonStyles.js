@@ -3131,9 +3131,10 @@ export function initButtonShadowControls(
 ) {
   if (!window.shadowStatesByType) {
     window.shadowStatesByType = new Map();
+    d;
   }
 
-  function applyShadow() {
+  function applyShadow(saveToDB = false) {
     const el = getSelectedElement?.();
     if (!el) return;
 
@@ -3157,9 +3158,9 @@ export function initButtonShadowControls(
     }
 
     const shadowState = window.shadowStatesByType.get(typeClass);
+    // const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
     const color = shadowState.Color || "rgba(0,0,0,0.3)";
     const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${color}`;
-
     // Apply to DOM
     const styleId = `sc-button-shadow-${typeClass}`;
     let styleTag = document.getElementById(styleId);
@@ -3178,71 +3179,33 @@ export function initButtonShadowControls(
       }
     `;
 
-    // ✅ CRITICAL FIX: Add to global pending modifications
+    // Save to database and local state
     const blockId = el.id;
     if (!blockId) {
       console.warn("❌ No block ID found for selected element");
       return;
     }
 
-    // Create the proper data structure for shadow modifications
-    const shadowData = {
-      buttonPrimary: [],
-      buttonSecondary: [],
-      buttonTertiary: [],
-    };
-
-    // Add shadow data to the appropriate button type
-    const buttonType = typeClass.replace("sqs-button-element--", "");
-    const buttonKey = `button${
-      buttonType.charAt(0).toUpperCase() + buttonType.slice(1)
-    }`;
-
-    shadowData[buttonKey] = [
-      {
-        selector: `.${typeClass}`,
+    const stylePayload = {
+      buttonPrimary: {
+        selector: ".sqs-button-element--primary",
         styles: {
           boxShadow: value,
-          borderColor: window.__squareCraftBorderColor || "black",
+          borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
         },
       },
-    ];
+    };
 
-    // ✅ CRITICAL FIX: Add to global pending modifications
-    if (typeof addPendingModification === "function") {
-      addPendingModification(blockId, shadowData, "buttonShadow");
-      console.log("✅ Shadow modification added to pending modifications:", {
-        blockId,
-        tagType: "buttonShadow",
-        data: shadowData,
-      });
+    // Add to pending modifications
+    addPendingModification(blockId, stylePayload, "button", "shadow");
 
-      // Debug: Verify the data was stored
-      setTimeout(() => {
-        if (window.pendingModifications?.has(blockId)) {
-          const mods = window.pendingModifications.get(blockId);
-          const shadowMods = mods.filter((m) => m.tagType === "buttonShadow");
-          console.log(
-            "🔍 Verification: Found shadow modifications in pendingModifications:",
-            shadowMods
-          );
-        } else {
-          console.warn(
-            "❌ Verification failed: No pending modifications found for blockId:",
-            blockId
-          );
-        }
-      }, 100);
-    } else {
-      console.warn("❌ addPendingModification function not available");
+    // Save to database if requested
+    if (saveToDB && typeof saveButtonShadowModifications === "function") {
+      saveButtonShadowModifications(blockId, stylePayload);
     }
 
-    // Show notification that it's stored locally
     if (typeof showNotification === "function") {
-      showNotification(
-        "Shadow updated locally! Click Publish to save.",
-        "info"
-      );
+      showNotification("Shadow updated!", "success");
     }
   }
 
@@ -3284,7 +3247,7 @@ export function initButtonShadowControls(
     bullet.style.transform = "translateX(-50%)";
     bullet.style.zIndex = "1";
 
-    function updateUI(value) {
+    function updateUI(value, saveToDB = false) {
       const el = getSelectedElement?.();
       if (!el) return;
 
@@ -3319,7 +3282,7 @@ export function initButtonShadowControls(
       fill.style.width = `${Math.abs(percent - centerPercent)}%`;
 
       label.textContent = `${val}px`;
-      applyShadow(); // Always apply shadow locally, never save to DB
+      applyShadow(saveToDB);
     }
 
     bullet.addEventListener("mousedown", (e) => {
@@ -3329,13 +3292,36 @@ export function initButtonShadowControls(
         const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
         const percent = x / rect.width;
         const val = Math.round(percent * (maxValue - minValue) + minValue);
-        updateUI(val); // Don't save to DB during drag
+        updateUI(val, false); // Don't save to DB during drag
       };
       const up = () => {
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
-        // Don't save to DB when drag ends - just store locally
-        // The publish button will handle saving all pending modifications
+        // Save to DB when drag ends
+        const el = getSelectedElement?.();
+        if (el) {
+          const btn = el.querySelector(
+            ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+          );
+          if (btn) {
+            const typeClass = [...btn.classList].find((cls) =>
+              cls.startsWith("sqs-button-element--")
+            );
+            if (typeClass && window.shadowStatesByType.has(typeClass)) {
+              const shadowState = window.shadowStatesByType.get(typeClass);
+              const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
+              const stylePayload = {
+                buttonPrimary: {
+                  selector: ".sqs-button-element--primary",
+                  styles: { boxShadow: value },
+                },
+              };
+              if (typeof saveButtonShadowModifications === "function") {
+                saveButtonShadowModifications(el.id, stylePayload);
+              }
+            }
+          }
+        }
       };
       document.addEventListener("mousemove", move);
       document.addEventListener("mouseup", up);
@@ -3346,7 +3332,7 @@ export function initButtonShadowControls(
       const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
       const percent = x / rect.width;
       const val = Math.round(percent * (maxValue - minValue) + minValue);
-      updateUI(val); // Don't save to DB on click - just store locally
+      updateUI(val, true); // Save to DB on click
     });
 
     if (incBtn) {
@@ -3366,7 +3352,7 @@ export function initButtonShadowControls(
 
         const state = window.shadowStatesByType.get(typeClass) || {};
         const current = state[type] || 0;
-        updateUI(current + 1); // Don't save to DB on button click - just store locally
+        updateUI(current + 1, true); // Save to DB on button click
       };
     }
 
@@ -3387,7 +3373,7 @@ export function initButtonShadowControls(
 
         const state = window.shadowStatesByType.get(typeClass) || {};
         const current = state[type] || 0;
-        updateUI(current - 1); // Don't save to DB on button click - just store locally
+        updateUI(current - 1, true); // Save to DB on button click
       };
     }
 
@@ -3403,7 +3389,7 @@ export function initButtonShadowControls(
         );
         if (typeClass && window.shadowStatesByType.has(typeClass)) {
           const current = window.shadowStatesByType.get(typeClass)[type] || 0;
-          updateUI(current); // Don't save to DB on initial load
+          updateUI(current, false); // Don't save to DB on initial load
         }
       }
     }
@@ -3420,42 +3406,8 @@ export function initButtonShadowControls(
   buttonShadowColorPalate(
     themeColors,
     getSelectedElement,
-    addPendingModification,
-    showNotification
+    saveButtonShadowModifications
   );
-
-  // ✅ CRITICAL: Initialize the publish button event listener for shadow modifications
-  if (typeof ensurePublishButtonInShadow === "function") {
-    ensurePublishButtonInShadow(
-      getSelectedElement,
-      saveButtonShadowModifications,
-      showNotification
-    );
-    console.log(
-      "✅ Publish button event listener initialized for shadow modifications"
-    );
-  } else {
-    console.warn("❌ ensurePublishButtonInShadow function not available");
-  }
-
-  // Add debug function to check pending modifications
-  window.debugShadowModifications = function () {
-    console.log(
-      "🔍 Debug: Current pending modifications:",
-      window.pendingModifications
-    );
-    if (window.pendingModifications) {
-      for (const [blockId, mods] of window.pendingModifications) {
-        const shadowMods = mods.filter((m) => m.tagType === "buttonShadow");
-        if (shadowMods.length > 0) {
-          console.log(
-            `✅ Block ${blockId} has ${shadowMods.length} shadow modifications:`,
-            shadowMods
-          );
-        }
-      }
-    }
-  };
 }
 
 window.syncButtonStylesFromElement = function (selectedElement) {
