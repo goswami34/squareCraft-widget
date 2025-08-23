@@ -2502,6 +2502,14 @@ export function initButtonBorderControl(
           selector: ".sqs-button-element--primary",
           styles: borderStyles,
         },
+        buttonSecondary: {
+          selector: ".sqs-button-element--secondary",
+          styles: borderStyles,
+        },
+        buttonTertiary: {
+          selector: ".sqs-button-element--tertiary",
+          styles: borderStyles,
+        },
       };
       addPendingModification(blockId, stylePayload, "button", "border");
       if (saveToDB && typeof saveButtonBorderModifications === "function") {
