@@ -588,7 +588,6 @@ export function initButtonStyles(
   );
   const fontSizeOptions = document.getElementById("scButtonFontSizeOptions");
 
-  // Improved button selection logic to ensure we get the correct button type
   const buttonElement =
     selected.querySelector(
       "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
@@ -602,18 +601,11 @@ export function initButtonStyles(
     return;
   }
 
-  // Get the specific button type class
   const typeClass = [...buttonElement.classList].find((cls) =>
     cls.startsWith("sqs-button-element--")
   );
-  if (!typeClass) {
-    console.warn("No button type class found");
-    return;
-  }
+  if (!typeClass) return;
 
-  console.log("🎯 Button type identified:", typeClass);
-
-  // Improved updateGlobalStyle function with better isolation
   function updateGlobalStyle(property, value) {
     const styleId = `sc-style-${typeClass}`;
     let styleTag = document.getElementById(styleId);
@@ -624,20 +616,12 @@ export function initButtonStyles(
       document.head.appendChild(styleTag);
     }
 
-    // More specific selectors to prevent cross-contamination
-    // Use more specific selectors that include the block context
-    const blockId = selected.id;
-    const baseSelector = `#${blockId} .${typeClass}`;
+    const baseSelector = `.${typeClass}`;
     const textSelector = `
-      #${blockId} .${typeClass} span,
-      #${blockId} .${typeClass} .sqs-add-to-cart-button-inner
+      .${typeClass} span,
+      .${typeClass} .sqs-add-to-cart-button-inner
     `.trim();
 
-    console.log(`🎯 Creating CSS rules for ${typeClass} in block ${blockId}:`);
-    console.log(`   Base selector: ${baseSelector}`);
-    console.log(`   Text selector: ${textSelector}`);
-
-    // Get existing rules and update only the specific property
     const allRules = styleTag.innerHTML
       .split("}")
       .filter(Boolean)
@@ -648,12 +632,10 @@ export function initButtonStyles(
       const newRule = `${selector} { ${property}: ${value} !important; }`;
 
       if (index !== -1) {
-        // Update existing rule
         allRules[index] = allRules[index]
           .replace(new RegExp(`${property}:.*?;`, "g"), "")
           .replace("}", ` ${property}: ${value} !important; }`);
       } else {
-        // Add new rule
         allRules.push(newRule);
       }
     }
@@ -663,12 +645,8 @@ export function initButtonStyles(
 
     styleTag.innerHTML = allRules.join("\n");
 
-    console.log(
-      `🎨 Applied ${property}: ${value} to ${typeClass} in block ${blockId}`
-    );
-    console.log(`📝 Final CSS rules:`, styleTag.innerHTML);
-
     // Save to database using the global mergeAndSaveButtonStyles function
+    const blockId = selected.id;
     if (blockId) {
       mergeAndSaveButtonStyles(
         blockId,
@@ -682,67 +660,6 @@ export function initButtonStyles(
     }
   }
 
-  // Function to reset text-transform buttons to default state
-  function resetTextTransformButtons() {
-    textTransformButtons.forEach(({ id }) => {
-      const btn = document.getElementById(id);
-      if (btn) {
-        btn.classList.remove("sc-activeTab-border");
-        btn.classList.add("sc-inActiveTab-border");
-      }
-    });
-  }
-
-  // Function to sync text-transform button state with current button
-  function syncTextTransformButtonState() {
-    if (!buttonElement) return;
-
-    const computedStyle = window.getComputedStyle(buttonElement);
-    const currentTransform = computedStyle.textTransform;
-
-    // Reset all buttons first
-    resetTextTransformButtons();
-
-    // Find and activate the button that matches current state
-    const matchingButton = textTransformButtons.find(
-      ({ value }) => value === currentTransform
-    );
-    if (matchingButton) {
-      const btn = document.getElementById(matchingButton.id);
-      if (btn) {
-        btn.classList.remove("sc-inActiveTab-border");
-        btn.classList.add("sc-activeTab-border");
-      }
-    }
-  }
-
-  // Function to clear any conflicting styles from other button types
-  function clearConflictingStyles() {
-    const allButtonTypes = [
-      "sqs-button-element--primary",
-      "sqs-button-element--secondary",
-      "sqs-button-element--tertiary",
-    ];
-
-    allButtonTypes.forEach((buttonType) => {
-      if (buttonType !== typeClass) {
-        // Remove any existing style tags for other button types in this block
-        const otherStyleId = `sc-style-${buttonType}`;
-        const otherStyleTag = document.getElementById(otherStyleId);
-        if (otherStyleTag) {
-          console.log(`🧹 Cleaning up conflicting styles for ${buttonType}`);
-          otherStyleTag.remove();
-        }
-      }
-    });
-  }
-
-  // Function to ensure only the current button type has styles applied
-  function ensureStyleIsolation() {
-    console.log(`🔒 Ensuring style isolation for ${typeClass}`);
-    clearConflictingStyles();
-  }
-
   if (fontSizeOptions && fontSizeInput) {
     fontSizeOptions.querySelectorAll(".sc-dropdown-item").forEach((item) => {
       item.onclick = () => {
@@ -754,8 +671,6 @@ export function initButtonStyles(
 
     fontSizeInput.oninput = (e) => {
       const fontSize = e.target.value;
-      // Ensure style isolation before applying new styles
-      ensureStyleIsolation();
       updateGlobalStyle("font-size", `${fontSize}px`);
     };
   }
@@ -763,13 +678,11 @@ export function initButtonStyles(
   if (letterSpacingInput) {
     letterSpacingInput.oninput = (e) => {
       const spacing = e.target.value;
-      // Ensure style isolation before applying new styles
-      ensureStyleIsolation();
       updateGlobalStyle("letter-spacing", `${spacing}px`);
     };
   }
 
-  // Text transform controls with improved isolation
+  // Text transform controls
   const textTransformButtons = [
     { id: "scButtonAllCapital", value: "uppercase" },
     { id: "scButtonAllSmall", value: "lowercase" },
@@ -781,13 +694,6 @@ export function initButtonStyles(
     if (!button) return;
 
     button.addEventListener("click", () => {
-      console.log(
-        `🎯 Text transform button clicked: ${id} with value: ${value}`
-      );
-
-      // Ensure style isolation before applying new styles
-      ensureStyleIsolation();
-
       // Remove active class from all buttons
       textTransformButtons.forEach(({ id }) => {
         const btn = document.getElementById(id);
@@ -801,7 +707,6 @@ export function initButtonStyles(
       button.classList.remove("sc-inActiveTab-border");
       button.classList.add("sc-activeTab-border");
 
-      // Apply the style only to the selected button type
       updateGlobalStyle("text-transform", value);
     });
   });
@@ -821,9 +726,6 @@ export function initButtonStyles(
     if (!button) return;
 
     button.addEventListener("click", () => {
-      // Ensure style isolation before applying new styles
-      ensureStyleIsolation();
-
       // Remove active class from all buttons
       fontWeightButtons.forEach(({ id }) => {
         const btn = document.getElementById(id);
@@ -840,13 +742,6 @@ export function initButtonStyles(
       updateGlobalStyle("font-weight", value);
     });
   });
-
-  // Sync the UI state with the current button's actual styles
-  setTimeout(() => {
-    // Ensure style isolation on initialization
-    ensureStyleIsolation();
-    syncTextTransformButtonState();
-  }, 100);
 }
 
 async function replaceImgWithInlineSVG(imgElement) {
