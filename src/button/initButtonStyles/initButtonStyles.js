@@ -3011,16 +3011,37 @@ export function ensurePublishButtonInShadow(
 
   publishButton.addEventListener("click", async () => {
     try {
+      console.log(
+        "🔍 Publish button clicked - checking for shadow modifications..."
+      );
       const currentElement = getSelectedElement?.();
       const blockId = currentElement?.id;
-      if (!blockId || !window.pendingModifications) return;
+      console.log("🔍 Current element:", currentElement, "Block ID:", blockId);
+      console.log(
+        "🔍 Pending modifications available:",
+        !!window.pendingModifications
+      );
+
+      if (!blockId || !window.pendingModifications) {
+        console.warn("❌ Missing blockId or pendingModifications");
+        return;
+      }
 
       const shadowMods =
         window.pendingModifications
           .get(blockId)
-          ?.filter((m) => m.tagType === "button" && m.subType === "shadow") ||
-        [];
-      if (shadowMods.length === 0) return;
+          ?.filter((m) => m.tagType === "buttonShadow") || [];
+
+      console.log("🔍 Found shadow modifications:", shadowMods);
+      console.log(
+        "🔍 All modifications for this block:",
+        window.pendingModifications.get(blockId)
+      );
+
+      if (shadowMods.length === 0) {
+        console.warn("❌ No shadow modifications found for blockId:", blockId);
+        return;
+      }
 
       // Show publishing state
       const originalText = publishButton.textContent;
@@ -3047,20 +3068,30 @@ export function ensurePublishButtonInShadow(
         pushAll(mod.css.buttonTertiary, merged.buttonTertiary);
       });
 
+      console.log("🔍 Merged shadow data:", merged);
+
       if (
         merged.buttonPrimary.length +
           merged.buttonSecondary.length +
           merged.buttonTertiary.length ===
         0
-      )
+      ) {
+        console.warn("❌ No valid shadow data to save");
         return;
+      }
 
       if (typeof saveButtonShadowModifications === "function") {
+        console.log("🔍 Calling saveButtonShadowModifications with:", {
+          blockId,
+          merged,
+        });
         const result = await saveButtonShadowModifications(blockId, merged);
+        console.log("🔍 Database save result:", result);
+
         if (result?.success && window.pendingModifications?.has(blockId)) {
           const remaining = window.pendingModifications
             .get(blockId)
-            .filter((m) => !(m.tagType === "button" && m.subType === "shadow"));
+            .filter((m) => m.tagType !== "buttonShadow");
           if (remaining.length === 0)
             window.pendingModifications.delete(blockId);
           else window.pendingModifications.set(blockId, remaining);
@@ -3179,13 +3210,29 @@ export function initButtonShadowControls(
 
     // ✅ CRITICAL FIX: Add to global pending modifications
     if (typeof addPendingModification === "function") {
-      ensurePublishButtonInShadow(blockId, shadowData, "button", "shadow");
+      addPendingModification(blockId, shadowData, "buttonShadow");
       console.log("✅ Shadow modification added to pending modifications:", {
         blockId,
-        tagType: "button",
-        subType: "shadow",
+        tagType: "buttonShadow",
         data: shadowData,
       });
+
+      // Debug: Verify the data was stored
+      setTimeout(() => {
+        if (window.pendingModifications?.has(blockId)) {
+          const mods = window.pendingModifications.get(blockId);
+          const shadowMods = mods.filter((m) => m.tagType === "buttonShadow");
+          console.log(
+            "🔍 Verification: Found shadow modifications in pendingModifications:",
+            shadowMods
+          );
+        } else {
+          console.warn(
+            "❌ Verification failed: No pending modifications found for blockId:",
+            blockId
+          );
+        }
+      }, 100);
     } else {
       console.warn("❌ addPendingModification function not available");
     }
@@ -3376,6 +3423,39 @@ export function initButtonShadowControls(
     addPendingModification,
     showNotification
   );
+
+  // ✅ CRITICAL: Initialize the publish button event listener for shadow modifications
+  if (typeof ensurePublishButtonInShadow === "function") {
+    ensurePublishButtonInShadow(
+      getSelectedElement,
+      saveButtonShadowModifications,
+      showNotification
+    );
+    console.log(
+      "✅ Publish button event listener initialized for shadow modifications"
+    );
+  } else {
+    console.warn("❌ ensurePublishButtonInShadow function not available");
+  }
+
+  // Add debug function to check pending modifications
+  window.debugShadowModifications = function () {
+    console.log(
+      "🔍 Debug: Current pending modifications:",
+      window.pendingModifications
+    );
+    if (window.pendingModifications) {
+      for (const [blockId, mods] of window.pendingModifications) {
+        const shadowMods = mods.filter((m) => m.tagType === "buttonShadow");
+        if (shadowMods.length > 0) {
+          console.log(
+            `✅ Block ${blockId} has ${shadowMods.length} shadow modifications:`,
+            shadowMods
+          );
+        }
+      }
+    }
+  };
 }
 
 window.syncButtonStylesFromElement = function (selectedElement) {
