@@ -195,12 +195,10 @@ export function WidgetButtonNormalState() {
                         <span id="color-code-arrow" class="sc-arrow-placeholder sc-rotate-180"></span>
                      </div>
 
-                  <div id="color-code-dropdown-list"
-                        class="sc-absolute sc-border sc-border-solid sc-border-EF7C2F sc-left-0 sc-w-full sc-text-sm sc-z-999999 sc-rounded-15px sc-bg-494949 sc-flex sc-hidden sc-top-6 sc-flex-col sc-overflow-hidden">
-                     <div class="sc-cursor-pointer sc-dropdown-item sc-py-2px sc-px-2 sc-rounded-t-14px" data-format="RGB">RGB</div>
-                     <div class="sc-cursor-pointer sc-dropdown-item sc-py-2px sc-px-2" data-format="HSL">HSL</div>
-                     <div class="sc-cursor-pointer sc-dropdown-item sc-py-2px sc-px-2 sc-rounded-b-14px" data-format="HEX">HEX</div>
-                  </div>
+                     <div id="color-code-dropdown-list"
+                           class="sc-absolute sc-border sc-border-solid sc-border-EF7C2F sc-left-0 sc-w-full sc-text-sm sc-z-999999 sc-rounded-15px sc-bg-494949 sc-flex sc-hidden sc-top-6 sc-flex-col sc-overflow-hidden">
+                        <div class="sc-cursor-pointer sc-dropdown-item sc-py-2px sc-px-2 sc-rounded-t-14px" data-format="RGB">RGB</div>
+                     </div>
                   </div>
 
 
@@ -236,7 +234,7 @@ export function WidgetButtonNormalState() {
                   </div>
                </div>
 
-               
+
                <div id="textColorSection" class=" ">
                   <p class="sc-font-size-11 sc-font-thin sc-mt-4 sc-universal sc-text-gray-300 sc-roboto">Text Color
                   </p>
