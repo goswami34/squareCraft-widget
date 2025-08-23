@@ -3179,7 +3179,7 @@ export function initButtonShadowControls(
 
     // ✅ CRITICAL FIX: Add to global pending modifications
     if (typeof addPendingModification === "function") {
-      addPendingModification(blockId, shadowData, "button", "shadow");
+      ensurePublishButtonInShadow(blockId, shadowData, "button", "shadow");
       console.log("✅ Shadow modification added to pending modifications:", {
         blockId,
         tagType: "button",
