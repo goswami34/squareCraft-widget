@@ -3008,7 +3008,7 @@ export function initButtonShadowControls(
     window.shadowStatesByType = new Map();
   }
 
-  function applyShadow(saveToDB = false) {
+  function applyShadow() {
     const el = getSelectedElement?.();
     if (!el) return;
 
@@ -3032,9 +3032,9 @@ export function initButtonShadowControls(
     }
 
     const shadowState = window.shadowStatesByType.get(typeClass);
-    // const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
     const color = shadowState.Color || "rgba(0,0,0,0.3)";
     const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${color}`;
+
     // Apply to DOM
     const styleId = `sc-button-shadow-${typeClass}`;
     let styleTag = document.getElementById(styleId);
@@ -3053,7 +3053,7 @@ export function initButtonShadowControls(
       }
     `;
 
-    // Save to database and local state
+    // Only save to local state, NOT to database
     const blockId = el.id;
     if (!blockId) {
       console.warn("❌ No block ID found for selected element");
@@ -3062,24 +3062,23 @@ export function initButtonShadowControls(
 
     const stylePayload = {
       buttonPrimary: {
-        selector: ".sqs-button-element--primary",
+        selector: `.${typeClass}`,
         styles: {
           boxShadow: value,
-          borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
+          borderColor: window.__squareCraftBorderColor || "black",
         },
       },
     };
 
-    // Add to pending modifications
+    // Add to pending modifications for publish button
     addPendingModification(blockId, stylePayload, "button", "shadow");
 
-    // Save to database if requested
-    if (saveToDB && typeof saveButtonShadowModifications === "function") {
-      saveButtonShadowModifications(blockId, stylePayload);
-    }
-
+    // Show notification that it's stored locally
     if (typeof showNotification === "function") {
-      showNotification("Shadow updated!", "success");
+      showNotification(
+        "Shadow updated locally! Click Publish to save.",
+        "info"
+      );
     }
   }
 
@@ -3121,7 +3120,7 @@ export function initButtonShadowControls(
     bullet.style.transform = "translateX(-50%)";
     bullet.style.zIndex = "1";
 
-    function updateUI(value, saveToDB = false) {
+    function updateUI(value) {
       const el = getSelectedElement?.();
       if (!el) return;
 
@@ -3156,7 +3155,7 @@ export function initButtonShadowControls(
       fill.style.width = `${Math.abs(percent - centerPercent)}%`;
 
       label.textContent = `${val}px`;
-      applyShadow(saveToDB);
+      applyShadow(); // Always apply shadow locally, never save to DB
     }
 
     bullet.addEventListener("mousedown", (e) => {
@@ -3166,36 +3165,13 @@ export function initButtonShadowControls(
         const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
         const percent = x / rect.width;
         const val = Math.round(percent * (maxValue - minValue) + minValue);
-        updateUI(val, false); // Don't save to DB during drag
+        updateUI(val); // Don't save to DB during drag
       };
       const up = () => {
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
-        // Save to DB when drag ends
-        const el = getSelectedElement?.();
-        if (el) {
-          const btn = el.querySelector(
-            ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-          );
-          if (btn) {
-            const typeClass = [...btn.classList].find((cls) =>
-              cls.startsWith("sqs-button-element--")
-            );
-            if (typeClass && window.shadowStatesByType.has(typeClass)) {
-              const shadowState = window.shadowStatesByType.get(typeClass);
-              const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
-              const stylePayload = {
-                buttonPrimary: {
-                  selector: ".sqs-button-element--primary",
-                  styles: { boxShadow: value },
-                },
-              };
-              if (typeof saveButtonShadowModifications === "function") {
-                saveButtonShadowModifications(el.id, stylePayload);
-              }
-            }
-          }
-        }
+        // Don't save to DB when drag ends - just store locally
+        // The publish button will handle saving all pending modifications
       };
       document.addEventListener("mousemove", move);
       document.addEventListener("mouseup", up);
@@ -3206,7 +3182,7 @@ export function initButtonShadowControls(
       const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
       const percent = x / rect.width;
       const val = Math.round(percent * (maxValue - minValue) + minValue);
-      updateUI(val, true); // Save to DB on click
+      updateUI(val); // Don't save to DB on click - just store locally
     });
 
     if (incBtn) {
@@ -3226,7 +3202,7 @@ export function initButtonShadowControls(
 
         const state = window.shadowStatesByType.get(typeClass) || {};
         const current = state[type] || 0;
-        updateUI(current + 1, true); // Save to DB on button click
+        updateUI(current + 1); // Don't save to DB on button click - just store locally
       };
     }
 
@@ -3247,7 +3223,7 @@ export function initButtonShadowControls(
 
         const state = window.shadowStatesByType.get(typeClass) || {};
         const current = state[type] || 0;
-        updateUI(current - 1, true); // Save to DB on button click
+        updateUI(current - 1); // Don't save to DB on button click - just store locally
       };
     }
 
@@ -3263,7 +3239,7 @@ export function initButtonShadowControls(
         );
         if (typeClass && window.shadowStatesByType.has(typeClass)) {
           const current = window.shadowStatesByType.get(typeClass)[type] || 0;
-          updateUI(current, false); // Don't save to DB on initial load
+          updateUI(current); // Don't save to DB on initial load
         }
       }
     }
