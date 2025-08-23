@@ -2,9 +2,8 @@ const { buttonShadowColorPalate } = await import(
   "https://goswami34.github.io/squareCraft-widget/src/button/ButtonShadowColorPalate/buttonShadowColorPalate.js"
 );
 
-const { saveButtonIconModifications } = await import(
-  "https://goswami34.github.io/squareCraft-widget/html.js"
-);
+const { saveButtonIconModifications, saveButtonShadowModifications } =
+  await import("https://goswami34.github.io/squareCraft-widget/html.js");
 
 // Add this helper function after the imports and before the existing functions
 async function updateIconStyles(blockId, typeClass, newStyles) {
@@ -3256,7 +3255,8 @@ export function initButtonShadowControls(
   buttonShadowColorPalate(
     themeColors,
     getSelectedElement,
-    saveButtonShadowModifications
+    addPendingModification,
+    showNotification
   );
 }
 
@@ -3690,7 +3690,17 @@ export function resetAllButtonStyles(
         getSelectedElement,
         addPendingModification,
         showNotification,
-        saveButtonModifications
+        saveButtonShadowModifications
+      );
+
+      // Import and call ensurePublishButtonInShadow for shadow publish binding
+      const { ensurePublishButtonInShadow } = await import(
+        "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initButtonStyles/initButtonHoverStyles.js"
+      );
+      ensurePublishButtonInShadow(
+        getSelectedElement,
+        saveButtonShadowModifications,
+        showNotification
       );
 
       const {
