@@ -3180,396 +3180,17 @@ function typeKeyFromClass(typeClass) {
   return "buttonPrimary";
 }
 
-// export function initButtonShadowControls(
-//   getSelectedElement,
-//   addPendingModification,
-//   showNotification,
-//   saveButtonShadowModifications
-// ) {
-//   if (!window.shadowStatesByType) {
-//     window.shadowStatesByType = new Map();
-//     d;
-//   }
-
-//   function applyShadow(saveToDB = false) {
-//     const el = getSelectedElement?.();
-//     if (!el) return;
-
-//     const btn = el.querySelector(
-//       ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-//     );
-//     if (!btn) return;
-
-//     const typeClass = [...btn.classList].find((cls) =>
-//       cls.startsWith("sqs-button-element--")
-//     );
-//     if (!typeClass) return;
-
-//     if (!window.shadowStatesByType.has(typeClass)) {
-//       window.shadowStatesByType.set(typeClass, {
-//         Xaxis: 0,
-//         Yaxis: 0,
-//         Blur: 0,
-//         Spread: 0,
-//       });
-//     }
-
-//     const shadowState = window.shadowStatesByType.get(typeClass);
-//     // const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
-//     const color = shadowState.Color || "rgba(0,0,0,0.3)";
-//     const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${color}`;
-//     // Apply to DOM
-//     const styleId = `sc-button-shadow-${typeClass}`;
-//     let styleTag = document.getElementById(styleId);
-//     if (!styleTag) {
-//       styleTag = document.createElement("style");
-//       styleTag.id = styleId;
-//       document.head.appendChild(styleTag);
-//     }
-
-//     styleTag.innerHTML = `
-//       .${typeClass} {
-//         box-shadow: ${value} !important;
-//       }
-//       .${typeClass}:hover {
-//         box-shadow: ${value} !important;
-//       }
-//     `;
-
-//     // Save to database and local state
-//     const blockId = el.id;
-//     if (!blockId) {
-//       console.warn("❌ No block ID found for selected element");
-//       return;
-//     }
-
-//     const stylePayload = {
-//       buttonPrimary: {
-//         selector: ".sqs-button-element--primary",
-//         styles: {
-//           boxShadow: value,
-//           borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
-//         },
-//       },
-//     };
-
-//     // Add to pending modifications
-//     addPendingModification(blockId, stylePayload, "button", "shadow");
-
-//     // Save to database if requested
-//     if (saveToDB && typeof saveButtonShadowModifications === "function") {
-//       saveButtonShadowModifications(blockId, stylePayload);
-//     }
-
-//     if (typeof showNotification === "function") {
-//       showNotification("Shadow updated!", "success");
-//     }
-//   }
-
-//   function setupShadowControl(type, range = 50) {
-//     const bullet = document.getElementById(`buttonShadow${type}Bullet`);
-//     const field = document.getElementById(`buttonShadow${type}Field`);
-//     const label = document.getElementById(`buttonShadow${type}Count`);
-//     const idPrefix = type.replace("axis", "");
-//     const incBtn =
-//       document.getElementById(`buttonshadow${type}Increase`) ||
-//       document.getElementById(`buttonshadow${idPrefix}Increase`);
-//     const decBtn =
-//       document.getElementById(`buttonshadow${type}Decrease`) ||
-//       document.getElementById(`buttonshadow${idPrefix}Decrease`);
-
-//     if (!bullet || !field || !label) return;
-
-//     field.style.position = "relative";
-
-//     let minValue = 0;
-//     if (type === "Xaxis" || type === "Yaxis") minValue = -range;
-//     const maxValue = range;
-
-//     let fill = field.querySelector(".sc-shadow-fill");
-//     if (!fill) {
-//       fill = document.createElement("div");
-//       fill.className = "sc-shadow-fill";
-//       fill.style.position = "absolute";
-//       fill.style.top = "0";
-//       fill.style.left = "0";
-//       fill.style.height = "100%";
-//       fill.style.width = "0%";
-//       fill.style.backgroundColor = "#EF7C2F";
-//       fill.style.zIndex = "0";
-//       field.appendChild(fill);
-//     }
-
-//     bullet.style.position = "absolute";
-//     bullet.style.transform = "translateX(-50%)";
-//     bullet.style.zIndex = "1";
-
-//     function updateUI(value, saveToDB = false) {
-//       const el = getSelectedElement?.();
-//       if (!el) return;
-
-//       const btn = el.querySelector(
-//         ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-//       );
-//       if (!btn) return;
-
-//       const typeClass = [...btn.classList].find((cls) =>
-//         cls.startsWith("sqs-button-element--")
-//       );
-//       if (!typeClass) return;
-
-//       if (!window.shadowStatesByType.has(typeClass)) {
-//         window.shadowStatesByType.set(typeClass, {
-//           Xaxis: 0,
-//           Yaxis: 0,
-//           Blur: 0,
-//           Spread: 0,
-//         });
-//       }
-
-//       const shadowState = window.shadowStatesByType.get(typeClass);
-//       const val = Math.max(minValue, Math.min(maxValue, value));
-//       shadowState[type] = val;
-
-//       const percent = ((val - minValue) / (maxValue - minValue)) * 100;
-//       const centerPercent = ((0 - minValue) / (maxValue - minValue)) * 100;
-
-//       bullet.style.left = `${percent}%`;
-//       fill.style.left = `${Math.min(percent, centerPercent)}%`;
-//       fill.style.width = `${Math.abs(percent - centerPercent)}%`;
-
-//       label.textContent = `${val}px`;
-//       applyShadow(saveToDB);
-//     }
-
-//     bullet.addEventListener("mousedown", (e) => {
-//       e.preventDefault();
-//       const rect = field.getBoundingClientRect();
-//       const move = (eMove) => {
-//         const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
-//         const percent = x / rect.width;
-//         const val = Math.round(percent * (maxValue - minValue) + minValue);
-//         updateUI(val, false); // Don't save to DB during drag
-//       };
-//       const up = () => {
-//         document.removeEventListener("mousemove", move);
-//         document.removeEventListener("mouseup", up);
-//         // Save to DB when drag ends
-//         const el = getSelectedElement?.();
-//         if (el) {
-//           const btn = el.querySelector(
-//             ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-//           );
-//           if (btn) {
-//             const typeClass = [...btn.classList].find((cls) =>
-//               cls.startsWith("sqs-button-element--")
-//             );
-//             if (typeClass && window.shadowStatesByType.has(typeClass)) {
-//               const shadowState = window.shadowStatesByType.get(typeClass);
-//               const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
-//               const stylePayload = {
-//                 buttonPrimary: {
-//                   selector: ".sqs-button-element--primary",
-//                   styles: { boxShadow: value },
-//                 },
-//               };
-//               if (typeof saveButtonShadowModifications === "function") {
-//                 saveButtonShadowModifications(el.id, stylePayload);
-//               }
-//             }
-//           }
-//         }
-//       };
-//       document.addEventListener("mousemove", move);
-//       document.addEventListener("mouseup", up);
-//     });
-
-//     field.addEventListener("click", (e) => {
-//       const rect = field.getBoundingClientRect();
-//       const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
-//       const percent = x / rect.width;
-//       const val = Math.round(percent * (maxValue - minValue) + minValue);
-//       updateUI(val, true); // Save to DB on click
-//     });
-
-//     if (incBtn) {
-//       incBtn.onclick = () => {
-//         const el = getSelectedElement?.();
-//         if (!el) return;
-
-//         const btn = el.querySelector(
-//           ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-//         );
-//         if (!btn) return;
-
-//         const typeClass = [...btn.classList].find((cls) =>
-//           cls.startsWith("sqs-button-element--")
-//         );
-//         if (!typeClass) return;
-
-//         const state = window.shadowStatesByType.get(typeClass) || {};
-//         const current = state[type] || 0;
-//         updateUI(current + 1, true); // Save to DB on button click
-//       };
-//     }
-
-//     if (decBtn) {
-//       decBtn.onclick = () => {
-//         const el = getSelectedElement?.();
-//         if (!el) return;
-
-//         const btn = el.querySelector(
-//           ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-//         );
-//         if (!btn) return;
-
-//         const typeClass = [...btn.classList].find((cls) =>
-//           cls.startsWith("sqs-button-element--")
-//         );
-//         if (!typeClass) return;
-
-//         const state = window.shadowStatesByType.get(typeClass) || {};
-//         const current = state[type] || 0;
-//         updateUI(current - 1, true); // Save to DB on button click
-//       };
-//     }
-
-//     // Initial render
-//     const el = getSelectedElement?.();
-//     if (el) {
-//       const btn = el.querySelector(
-//         ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-//       );
-//       if (btn) {
-//         const typeClass = [...btn.classList].find((cls) =>
-//           cls.startsWith("sqs-button-element--")
-//         );
-//         if (typeClass && window.shadowStatesByType.has(typeClass)) {
-//           const current = window.shadowStatesByType.get(typeClass)[type] || 0;
-//           updateUI(current, false); // Don't save to DB on initial load
-//         }
-//       }
-//     }
-//   }
-
-//   setupShadowControl("Xaxis", 30);
-//   setupShadowControl("Yaxis", 30);
-//   setupShadowControl("Blur", 50);
-//   setupShadowControl("Spread", 30);
-
-//   // Initialize the button shadow color palette
-//   // You may need to pass themeColors from your context or config
-//   const themeColors = window.themeColors || {};
-//   buttonShadowColorPalate(
-//     themeColors,
-//     getSelectedElement,
-//     saveButtonShadowModifications
-//   );
-// }
-
 export function initButtonShadowControls(
   getSelectedElement,
-  addPendingModification, // can be undefined; we handle both cases
-  showNotification
+  addPendingModification,
+  showNotification,
+  saveButtonShadowModifications
 ) {
-  // Shared state
-  if (!window.shadowStatesByType) window.shadowStatesByType = new Map();
-  if (!window.pendingModifications) window.pendingModifications = new Map();
-
-  // Map ".sqs-button-element--X" => payload key
-  function typeKeyFromClass(typeClass) {
-    if (!typeClass) return "buttonPrimary";
-    if (typeClass.includes("--primary")) return "buttonPrimary";
-    if (typeClass.includes("--secondary")) return "buttonSecondary";
-    if (typeClass.includes("--tertiary")) return "buttonTertiary";
-    return "buttonPrimary";
+  if (!window.shadowStatesByType) {
+    window.shadowStatesByType = new Map();
   }
 
-  // --- CRITICAL: normalized enqueue that matches publish structure ---
-  function enqueueShadowModification(
-    blockId,
-    typeKey,
-    value,
-    extraStyles = {}
-  ) {
-    const item = {
-      selector:
-        typeKey === "buttonPrimary"
-          ? ".sqs-button-element--primary"
-          : typeKey === "buttonSecondary"
-          ? ".sqs-button-element--secondary"
-          : ".sqs-button-element--tertiary",
-      styles: { boxShadow: value, ...extraStyles },
-    };
-
-    // If the host provided addPendingModification, call it with the right arity & shape.
-    if (typeof addPendingModification === "function") {
-      const arity = addPendingModification.length;
-
-      // The publish code expects list entries shaped like:
-      // { tagType: "buttonShadow", css: { buttonPrimary: [ {selector, styles}, ... ] } }
-      // Some hosts use (blockId, payload, tagCategory, tagType)
-      // Others use (blockId, payload, tagType)
-      const payload = { css: { [typeKey]: [item] } };
-
-      if (arity >= 4) {
-        // (blockId, payload, "button", "buttonShadow")
-        addPendingModification(blockId, payload, "button", "buttonShadow");
-      } else {
-        // (blockId, payload, "buttonShadow")
-        addPendingModification(blockId, payload, "buttonShadow");
-      }
-      return;
-    }
-
-    // Fallback: store in window.pendingModifications with the exact structure
-    const list = window.pendingModifications.get(blockId) || [];
-    let entry = list.find((m) => m.tagType === "buttonShadow");
-
-    if (!entry) {
-      entry = { tagType: "buttonShadow", css: {} };
-      list.push(entry);
-    }
-
-    if (!entry.css[typeKey]) entry.css[typeKey] = [];
-
-    // Merge by selector (avoid duplicates)
-    const arr = entry.css[typeKey];
-    const idx = arr.findIndex((x) => x.selector === item.selector);
-    if (idx >= 0) arr[idx] = item;
-    else arr.push(item);
-
-    window.pendingModifications.set(blockId, list);
-
-    // Debug logging
-    console.log("🔧 Enqueued shadow modification:", {
-      blockId,
-      typeKey,
-      item,
-      pendingMods: window.pendingModifications,
-    });
-  }
-
-  function applyShadowToDOM(typeClass) {
-    const st = window.shadowStatesByType.get(typeClass);
-    const color = st.Color || "rgba(0,0,0,0.3)";
-    const value = `${st.Xaxis}px ${st.Yaxis}px ${st.Blur}px ${st.Spread}px ${color}`;
-
-    const styleId = `sc-button-shadow-${typeClass}`;
-    let styleTag = document.getElementById(styleId);
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = styleId;
-      document.head.appendChild(styleTag);
-    }
-    styleTag.innerHTML = `
-      .${typeClass} { box-shadow: ${value} !important; }
-      .${typeClass}:hover { box-shadow: ${value} !important; }
-    `;
-    return value;
-  }
-
-  function applyShadowAndQueue() {
+  function applyShadow(saveToDB = false) {
     const el = getSelectedElement?.();
     if (!el) return;
 
@@ -3578,8 +3199,8 @@ export function initButtonShadowControls(
     );
     if (!btn) return;
 
-    const typeClass = [...btn.classList].find((c) =>
-      c.startsWith("sqs-button-element--")
+    const typeClass = [...btn.classList].find((cls) =>
+      cls.startsWith("sqs-button-element--")
     );
     if (!typeClass) return;
 
@@ -3592,29 +3213,62 @@ export function initButtonShadowControls(
       });
     }
 
-    const value = applyShadowToDOM(typeClass);
+    const shadowState = window.shadowStatesByType.get(typeClass);
+    // const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
+    const color = shadowState.Color || "rgba(0,0,0,0.3)";
+    const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${color}`;
+    // Apply to DOM
+    const styleId = `sc-button-shadow-${typeClass}`;
+    let styleTag = document.getElementById(styleId);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = styleId;
+      document.head.appendChild(styleTag);
+    }
 
+    styleTag.innerHTML = `
+      .${typeClass} {
+        box-shadow: ${value} !important;
+      }
+      .${typeClass}:hover {
+        box-shadow: ${value} !important;
+      }
+    `;
+
+    // Save to database and local state
     const blockId = el.id;
     if (!blockId) {
       console.warn("❌ No block ID found for selected element");
       return;
     }
-    const typeKey = typeKeyFromClass(typeClass);
-    const extraStyles = {
-      borderColor: window.__squareCraftBorderColor || "black",
+
+    const stylePayload = {
+      buttonPrimary: {
+        selector: ".sqs-button-element--primary",
+        styles: {
+          boxShadow: value,
+          borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
+        },
+      },
     };
 
-    // Queue only (no DB write)
-    enqueueShadowModification(blockId, typeKey, value, extraStyles);
+    // Add to pending modifications
+    addPendingModification(blockId, stylePayload, "button", "shadow");
 
-    showNotification?.("Shadow updated (pending)", "success");
+    // Save to database if requested
+    if (saveToDB && typeof saveButtonShadowModifications === "function") {
+      saveButtonShadowModifications(blockId, stylePayload);
+    }
+
+    if (typeof showNotification === "function") {
+      showNotification("Shadow updated!", "success");
+    }
   }
 
   function setupShadowControl(type, range = 50) {
     const bullet = document.getElementById(`buttonShadow${type}Bullet`);
     const field = document.getElementById(`buttonShadow${type}Field`);
     const label = document.getElementById(`buttonShadow${type}Count`);
-
     const idPrefix = type.replace("axis", "");
     const incBtn =
       document.getElementById(`buttonshadow${type}Increase`) ||
@@ -3627,22 +3281,21 @@ export function initButtonShadowControls(
 
     field.style.position = "relative";
 
-    let minValue = type === "Xaxis" || type === "Yaxis" ? -range : 0;
+    let minValue = 0;
+    if (type === "Xaxis" || type === "Yaxis") minValue = -range;
     const maxValue = range;
 
     let fill = field.querySelector(".sc-shadow-fill");
     if (!fill) {
       fill = document.createElement("div");
       fill.className = "sc-shadow-fill";
-      Object.assign(fill.style, {
-        position: "absolute",
-        top: "0",
-        left: "0",
-        height: "100%",
-        width: "0%",
-        backgroundColor: "#EF7C2F",
-        zIndex: "0",
-      });
+      fill.style.position = "absolute";
+      fill.style.top = "0";
+      fill.style.left = "0";
+      fill.style.height = "100%";
+      fill.style.width = "0%";
+      fill.style.backgroundColor = "#EF7C2F";
+      fill.style.zIndex = "0";
       field.appendChild(fill);
     }
 
@@ -3650,7 +3303,7 @@ export function initButtonShadowControls(
     bullet.style.transform = "translateX(-50%)";
     bullet.style.zIndex = "1";
 
-    function updateUI(v) {
+    function updateUI(value, saveToDB = false) {
       const el = getSelectedElement?.();
       if (!el) return;
 
@@ -3659,8 +3312,8 @@ export function initButtonShadowControls(
       );
       if (!btn) return;
 
-      const typeClass = [...btn.classList].find((c) =>
-        c.startsWith("sqs-button-element--")
+      const typeClass = [...btn.classList].find((cls) =>
+        cls.startsWith("sqs-button-element--")
       );
       if (!typeClass) return;
 
@@ -3673,29 +3326,19 @@ export function initButtonShadowControls(
         });
       }
 
-      const st = window.shadowStatesByType.get(typeClass);
-      const val = Math.max(minValue, Math.min(maxValue, v));
-      st[type] = val;
+      const shadowState = window.shadowStatesByType.get(typeClass);
+      const val = Math.max(minValue, Math.min(maxValue, value));
+      shadowState[type] = val;
 
       const percent = ((val - minValue) / (maxValue - minValue)) * 100;
-      const center = ((0 - minValue) / (maxValue - minValue)) * 100;
+      const centerPercent = ((0 - minValue) / (maxValue - minValue)) * 100;
 
       bullet.style.left = `${percent}%`;
-      fill.style.left = `${Math.min(percent, center)}%`;
-      fill.style.width = `${Math.abs(percent - center)}%`;
+      fill.style.left = `${Math.min(percent, centerPercent)}%`;
+      fill.style.width = `${Math.abs(percent - centerPercent)}%`;
 
       label.textContent = `${val}px`;
-
-      // Apply visual + queue pending
-      applyShadowAndQueue();
-
-      // Debug: log current state
-      console.log("🎯 Shadow control updated:", {
-        type,
-        value: val,
-        shadowStatesByType: window.shadowStatesByType,
-        pendingModifications: window.pendingModifications,
-      });
+      applyShadow(saveToDB);
     }
 
     bullet.addEventListener("mousedown", (e) => {
@@ -3703,111 +3346,467 @@ export function initButtonShadowControls(
       const rect = field.getBoundingClientRect();
       const move = (eMove) => {
         const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
-        const p = x / rect.width;
-        const val = Math.round(p * (maxValue - minValue) + minValue);
-        updateUI(val);
+        const percent = x / rect.width;
+        const val = Math.round(percent * (maxValue - minValue) + minValue);
+        updateUI(val, false); // Don't save to DB during drag
       };
       const up = () => {
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
+        // Save to DB when drag ends
+        const el = getSelectedElement?.();
+        if (el) {
+          const btn = el.querySelector(
+            ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+          );
+          if (btn) {
+            const typeClass = [...btn.classList].find((cls) =>
+              cls.startsWith("sqs-button-element--")
+            );
+            if (typeClass && window.shadowStatesByType.has(typeClass)) {
+              const shadowState = window.shadowStatesByType.get(typeClass);
+              const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
+              const stylePayload = {
+                buttonPrimary: {
+                  selector: ".sqs-button-element--primary",
+                  styles: { boxShadow: value },
+                },
+              };
+              if (typeof saveButtonShadowModifications === "function") {
+                saveButtonShadowModifications(el.id, stylePayload);
+              }
+            }
+          }
+        }
       };
       document.addEventListener("mousemove", move);
       document.addEventListener("mouseup", up);
     });
 
     field.addEventListener("click", (e) => {
-      const r = field.getBoundingClientRect();
-      const x = Math.min(Math.max(e.clientX - r.left, 0), r.width);
-      const p = x / r.width;
-      const val = Math.round(p * (maxValue - minValue) + minValue);
-      updateUI(val);
+      const rect = field.getBoundingClientRect();
+      const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
+      const percent = x / rect.width;
+      const val = Math.round(percent * (maxValue - minValue) + minValue);
+      updateUI(val, true); // Save to DB on click
     });
 
-    if (incBtn)
+    if (incBtn) {
       incBtn.onclick = () => {
         const el = getSelectedElement?.();
         if (!el) return;
+
         const btn = el.querySelector(
           ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
         );
         if (!btn) return;
-        const typeClass = [...btn.classList].find((c) =>
-          c.startsWith("sqs-button-element--")
+
+        const typeClass = [...btn.classList].find((cls) =>
+          cls.startsWith("sqs-button-element--")
         );
         if (!typeClass) return;
-        const st = window.shadowStatesByType.get(typeClass) || {};
-        const cur = st[type] ?? 0;
-        updateUI(cur + 1);
-      };
 
-    if (decBtn)
+        const state = window.shadowStatesByType.get(typeClass) || {};
+        const current = state[type] || 0;
+        updateUI(current + 1, true); // Save to DB on button click
+      };
+    }
+
+    if (decBtn) {
       decBtn.onclick = () => {
         const el = getSelectedElement?.();
         if (!el) return;
+
         const btn = el.querySelector(
           ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
         );
         if (!btn) return;
-        const typeClass = [...btn.classList].find((c) =>
-          c.startsWith("sqs-button-element--")
+
+        const typeClass = [...btn.classList].find((cls) =>
+          cls.startsWith("sqs-button-element--")
         );
         if (!typeClass) return;
-        const st = window.shadowStatesByType.get(typeClass) || {};
-        const cur = st[type] ?? 0;
-        updateUI(cur - 1);
-      };
 
-    // Initial render (no DB)
+        const state = window.shadowStatesByType.get(typeClass) || {};
+        const current = state[type] || 0;
+        updateUI(current - 1, true); // Save to DB on button click
+      };
+    }
+
+    // Initial render
     const el = getSelectedElement?.();
     if (el) {
       const btn = el.querySelector(
         ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
       );
       if (btn) {
-        const typeClass = [...btn.classList].find((c) =>
-          c.startsWith("sqs-button-element--")
+        const typeClass = [...btn.classList].find((cls) =>
+          cls.startsWith("sqs-button-element--")
         );
         if (typeClass && window.shadowStatesByType.has(typeClass)) {
           const current = window.shadowStatesByType.get(typeClass)[type] || 0;
-          updateUI(current);
+          updateUI(current, false); // Don't save to DB on initial load
         }
       }
     }
   }
 
-  // Controls
   setupShadowControl("Xaxis", 30);
   setupShadowControl("Yaxis", 30);
   setupShadowControl("Blur", 50);
   setupShadowControl("Spread", 30);
 
-  // Optional: color palette hook — only queues pending
+  // Initialize the button shadow color palette
+  // You may need to pass themeColors from your context or config
   const themeColors = window.themeColors || {};
-  if (typeof buttonShadowColorPalate === "function") {
-    buttonShadowColorPalate(themeColors, getSelectedElement, () => {
-      const el = getSelectedElement?.();
-      if (!el) return;
-      const btn = el.querySelector(
-        ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-      );
-      if (!btn) return;
-      const typeClass = [...btn.classList].find((c) =>
-        c.startsWith("sqs-button-element--")
-      );
-      if (!typeClass) return;
-
-      // Ensure state exists and reapply to pick up new color
-      if (!window.shadowStatesByType.has(typeClass)) return;
-      const value = applyShadowToDOM(typeClass);
-
-      const blockId = el.id;
-      const typeKey = typeKeyFromClass(typeClass);
-      enqueueShadowModification(blockId, typeKey, value, {
-        borderColor: window.__squareCraftBorderColor || "black",
-      });
-    });
-  }
+  buttonShadowColorPalate(
+    themeColors,
+    getSelectedElement,
+    saveButtonShadowModifications
+  );
 }
+
+// export function initButtonShadowControls(
+//   getSelectedElement,
+//   addPendingModification, // can be undefined; we handle both cases
+//   showNotification
+// ) {
+//   // Shared state
+//   if (!window.shadowStatesByType) window.shadowStatesByType = new Map();
+//   if (!window.pendingModifications) window.pendingModifications = new Map();
+
+//   // Map ".sqs-button-element--X" => payload key
+//   function typeKeyFromClass(typeClass) {
+//     if (!typeClass) return "buttonPrimary";
+//     if (typeClass.includes("--primary")) return "buttonPrimary";
+//     if (typeClass.includes("--secondary")) return "buttonSecondary";
+//     if (typeClass.includes("--tertiary")) return "buttonTertiary";
+//     return "buttonPrimary";
+//   }
+
+//   // --- CRITICAL: normalized enqueue that matches publish structure ---
+//   function enqueueShadowModification(
+//     blockId,
+//     typeKey,
+//     value,
+//     extraStyles = {}
+//   ) {
+//     const item = {
+//       selector:
+//         typeKey === "buttonPrimary"
+//           ? ".sqs-button-element--primary"
+//           : typeKey === "buttonSecondary"
+//           ? ".sqs-button-element--secondary"
+//           : ".sqs-button-element--tertiary",
+//       styles: { boxShadow: value, ...extraStyles },
+//     };
+
+//     // If the host provided addPendingModification, call it with the right arity & shape.
+//     if (typeof addPendingModification === "function") {
+//       const arity = addPendingModification.length;
+
+//       // The publish code expects list entries shaped like:
+//       // { tagType: "buttonShadow", css: { buttonPrimary: [ {selector, styles}, ... ] } }
+//       // Some hosts use (blockId, payload, tagCategory, tagType)
+//       // Others use (blockId, payload, tagType)
+//       const payload = { css: { [typeKey]: [item] } };
+
+//       if (arity >= 4) {
+//         // (blockId, payload, "button", "buttonShadow")
+//         addPendingModification(blockId, payload, "button", "buttonShadow");
+//       } else {
+//         // (blockId, payload, "buttonShadow")
+//         addPendingModification(blockId, payload, "buttonShadow");
+//       }
+//       return;
+//     }
+
+//     // Fallback: store in window.pendingModifications with the exact structure
+//     const list = window.pendingModifications.get(blockId) || [];
+//     let entry = list.find((m) => m.tagType === "buttonShadow");
+
+//     if (!entry) {
+//       entry = { tagType: "buttonShadow", css: {} };
+//       list.push(entry);
+//     }
+
+//     if (!entry.css[typeKey]) entry.css[typeKey] = [];
+
+//     // Merge by selector (avoid duplicates)
+//     const arr = entry.css[typeKey];
+//     const idx = arr.findIndex((x) => x.selector === item.selector);
+//     if (idx >= 0) arr[idx] = item;
+//     else arr.push(item);
+
+//     window.pendingModifications.set(blockId, list);
+
+//     // Debug logging
+//     console.log("🔧 Enqueued shadow modification:", {
+//       blockId,
+//       typeKey,
+//       item,
+//       pendingMods: window.pendingModifications,
+//     });
+//   }
+
+//   function applyShadowToDOM(typeClass) {
+//     const st = window.shadowStatesByType.get(typeClass);
+//     const color = st.Color || "rgba(0,0,0,0.3)";
+//     const value = `${st.Xaxis}px ${st.Yaxis}px ${st.Blur}px ${st.Spread}px ${color}`;
+
+//     const styleId = `sc-button-shadow-${typeClass}`;
+//     let styleTag = document.getElementById(styleId);
+//     if (!styleTag) {
+//       styleTag = document.createElement("style");
+//       styleTag.id = styleId;
+//       document.head.appendChild(styleTag);
+//     }
+//     styleTag.innerHTML = `
+//       .${typeClass} { box-shadow: ${value} !important; }
+//       .${typeClass}:hover { box-shadow: ${value} !important; }
+//     `;
+//     return value;
+//   }
+
+//   function applyShadowAndQueue() {
+//     const el = getSelectedElement?.();
+//     if (!el) return;
+
+//     const btn = el.querySelector(
+//       ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+//     );
+//     if (!btn) return;
+
+//     const typeClass = [...btn.classList].find((c) =>
+//       c.startsWith("sqs-button-element--")
+//     );
+//     if (!typeClass) return;
+
+//     if (!window.shadowStatesByType.has(typeClass)) {
+//       window.shadowStatesByType.set(typeClass, {
+//         Xaxis: 0,
+//         Yaxis: 0,
+//         Blur: 0,
+//         Spread: 0,
+//       });
+//     }
+
+//     const value = applyShadowToDOM(typeClass);
+
+//     const blockId = el.id;
+//     if (!blockId) {
+//       console.warn("❌ No block ID found for selected element");
+//       return;
+//     }
+//     const typeKey = typeKeyFromClass(typeClass);
+//     const extraStyles = {
+//       borderColor: window.__squareCraftBorderColor || "black",
+//     };
+
+//     // Queue only (no DB write)
+//     enqueueShadowModification(blockId, typeKey, value, extraStyles);
+
+//     showNotification?.("Shadow updated (pending)", "success");
+//   }
+
+//   function setupShadowControl(type, range = 50) {
+//     const bullet = document.getElementById(`buttonShadow${type}Bullet`);
+//     const field = document.getElementById(`buttonShadow${type}Field`);
+//     const label = document.getElementById(`buttonShadow${type}Count`);
+
+//     const idPrefix = type.replace("axis", "");
+//     const incBtn =
+//       document.getElementById(`buttonshadow${type}Increase`) ||
+//       document.getElementById(`buttonshadow${idPrefix}Increase`);
+//     const decBtn =
+//       document.getElementById(`buttonshadow${type}Decrease`) ||
+//       document.getElementById(`buttonshadow${idPrefix}Decrease`);
+
+//     if (!bullet || !field || !label) return;
+
+//     field.style.position = "relative";
+
+//     let minValue = type === "Xaxis" || type === "Yaxis" ? -range : 0;
+//     const maxValue = range;
+
+//     let fill = field.querySelector(".sc-shadow-fill");
+//     if (!fill) {
+//       fill = document.createElement("div");
+//       fill.className = "sc-shadow-fill";
+//       Object.assign(fill.style, {
+//         position: "absolute",
+//         top: "0",
+//         left: "0",
+//         height: "100%",
+//         width: "0%",
+//         backgroundColor: "#EF7C2F",
+//         zIndex: "0",
+//       });
+//       field.appendChild(fill);
+//     }
+
+//     bullet.style.position = "absolute";
+//     bullet.style.transform = "translateX(-50%)";
+//     bullet.style.zIndex = "1";
+
+//     function updateUI(v) {
+//       const el = getSelectedElement?.();
+//       if (!el) return;
+
+//       const btn = el.querySelector(
+//         ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+//       );
+//       if (!btn) return;
+
+//       const typeClass = [...btn.classList].find((c) =>
+//         c.startsWith("sqs-button-element--")
+//       );
+//       if (!typeClass) return;
+
+//       if (!window.shadowStatesByType.has(typeClass)) {
+//         window.shadowStatesByType.set(typeClass, {
+//           Xaxis: 0,
+//           Yaxis: 0,
+//           Blur: 0,
+//           Spread: 0,
+//         });
+//       }
+
+//       const st = window.shadowStatesByType.get(typeClass);
+//       const val = Math.max(minValue, Math.min(maxValue, v));
+//       st[type] = val;
+
+//       const percent = ((val - minValue) / (maxValue - minValue)) * 100;
+//       const center = ((0 - minValue) / (maxValue - minValue)) * 100;
+
+//       bullet.style.left = `${percent}%`;
+//       fill.style.left = `${Math.min(percent, center)}%`;
+//       fill.style.width = `${Math.abs(percent - center)}%`;
+
+//       label.textContent = `${val}px`;
+
+//       // Apply visual + queue pending
+//       applyShadowAndQueue();
+
+//       // Debug: log current state
+//       console.log("🎯 Shadow control updated:", {
+//         type,
+//         value: val,
+//         shadowStatesByType: window.shadowStatesByType,
+//         pendingModifications: window.pendingModifications,
+//       });
+//     }
+
+//     bullet.addEventListener("mousedown", (e) => {
+//       e.preventDefault();
+//       const rect = field.getBoundingClientRect();
+//       const move = (eMove) => {
+//         const x = Math.min(Math.max(eMove.clientX - rect.left, 0), rect.width);
+//         const p = x / rect.width;
+//         const val = Math.round(p * (maxValue - minValue) + minValue);
+//         updateUI(val);
+//       };
+//       const up = () => {
+//         document.removeEventListener("mousemove", move);
+//         document.removeEventListener("mouseup", up);
+//       };
+//       document.addEventListener("mousemove", move);
+//       document.addEventListener("mouseup", up);
+//     });
+
+//     field.addEventListener("click", (e) => {
+//       const r = field.getBoundingClientRect();
+//       const x = Math.min(Math.max(e.clientX - r.left, 0), r.width);
+//       const p = x / r.width;
+//       const val = Math.round(p * (maxValue - minValue) + minValue);
+//       updateUI(val);
+//     });
+
+//     if (incBtn)
+//       incBtn.onclick = () => {
+//         const el = getSelectedElement?.();
+//         if (!el) return;
+//         const btn = el.querySelector(
+//           ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+//         );
+//         if (!btn) return;
+//         const typeClass = [...btn.classList].find((c) =>
+//           c.startsWith("sqs-button-element--")
+//         );
+//         if (!typeClass) return;
+//         const st = window.shadowStatesByType.get(typeClass) || {};
+//         const cur = st[type] ?? 0;
+//         updateUI(cur + 1);
+//       };
+
+//     if (decBtn)
+//       decBtn.onclick = () => {
+//         const el = getSelectedElement?.();
+//         if (!el) return;
+//         const btn = el.querySelector(
+//           ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+//         );
+//         if (!btn) return;
+//         const typeClass = [...btn.classList].find((c) =>
+//           c.startsWith("sqs-button-element--")
+//         );
+//         if (!typeClass) return;
+//         const st = window.shadowStatesByType.get(typeClass) || {};
+//         const cur = st[type] ?? 0;
+//         updateUI(cur - 1);
+//       };
+
+//     // Initial render (no DB)
+//     const el = getSelectedElement?.();
+//     if (el) {
+//       const btn = el.querySelector(
+//         ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+//       );
+//       if (btn) {
+//         const typeClass = [...btn.classList].find((c) =>
+//           c.startsWith("sqs-button-element--")
+//         );
+//         if (typeClass && window.shadowStatesByType.has(typeClass)) {
+//           const current = window.shadowStatesByType.get(typeClass)[type] || 0;
+//           updateUI(current);
+//         }
+//       }
+//     }
+//   }
+
+//   // Controls
+//   setupShadowControl("Xaxis", 30);
+//   setupShadowControl("Yaxis", 30);
+//   setupShadowControl("Blur", 50);
+//   setupShadowControl("Spread", 30);
+
+//   // Optional: color palette hook — only queues pending
+//   const themeColors = window.themeColors || {};
+//   if (typeof buttonShadowColorPalate === "function") {
+//     buttonShadowColorPalate(themeColors, getSelectedElement, () => {
+//       const el = getSelectedElement?.();
+//       if (!el) return;
+//       const btn = el.querySelector(
+//         ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+//       );
+//       if (!btn) return;
+//       const typeClass = [...btn.classList].find((c) =>
+//         c.startsWith("sqs-button-element--")
+//       );
+//       if (!typeClass) return;
+
+//       // Ensure state exists and reapply to pick up new color
+//       if (!window.shadowStatesByType.has(typeClass)) return;
+//       const value = applyShadowToDOM(typeClass);
+
+//       const blockId = el.id;
+//       const typeKey = typeKeyFromClass(typeClass);
+//       enqueueShadowModification(blockId, typeKey, value, {
+//         borderColor: window.__squareCraftBorderColor || "black",
+//       });
+//     });
+//   }
+// }
 
 window.syncButtonStylesFromElement = function (selectedElement) {
   try {
