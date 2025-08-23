@@ -3147,25 +3147,48 @@ export function initButtonShadowControls(
       }
     `;
 
-    // Only save to local state, NOT to database
+    // ✅ CRITICAL FIX: Add to global pending modifications
     const blockId = el.id;
     if (!blockId) {
       console.warn("❌ No block ID found for selected element");
       return;
     }
 
-    const stylePayload = {
-      buttonPrimary: {
+    // Create the proper data structure for shadow modifications
+    const shadowData = {
+      buttonPrimary: [],
+      buttonSecondary: [],
+      buttonTertiary: [],
+    };
+
+    // Add shadow data to the appropriate button type
+    const buttonType = typeClass.replace("sqs-button-element--", "");
+    const buttonKey = `button${
+      buttonType.charAt(0).toUpperCase() + buttonType.slice(1)
+    }`;
+
+    shadowData[buttonKey] = [
+      {
         selector: `.${typeClass}`,
         styles: {
           boxShadow: value,
           borderColor: window.__squareCraftBorderColor || "black",
         },
       },
-    };
+    ];
 
-    // Add to pending modifications for publish button
-    ensurePublishButtonInShadow(blockId, stylePayload, "button", "shadow");
+    // ✅ CRITICAL FIX: Add to global pending modifications
+    if (typeof addPendingModification === "function") {
+      addPendingModification(blockId, shadowData, "button", "shadow");
+      console.log("✅ Shadow modification added to pending modifications:", {
+        blockId,
+        tagType: "button",
+        subType: "shadow",
+        data: shadowData,
+      });
+    } else {
+      console.warn("❌ addPendingModification function not available");
+    }
 
     // Show notification that it's stored locally
     if (typeof showNotification === "function") {
@@ -4135,3 +4158,13 @@ export async function testAPIDirectly() {
 // Make the test functions available globally for debugging
 window.testIconSaving = testIconSaving;
 window.testAPIDirectly = testAPIDirectly;
+
+// Add debug function for pending modifications
+window.debugPendingModifications = function () {
+  console.log("🔍 Current pending modifications:", window.pendingModifications);
+  if (window.pendingModifications) {
+    for (const [blockId, mods] of window.pendingModifications) {
+      console.log(`Block ${blockId}:`, mods);
+    }
+  }
+};
