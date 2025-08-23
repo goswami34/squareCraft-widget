@@ -237,6 +237,286 @@ const pendingButtonModifications = new Map();
 // Add a map to track button styles by block/type
 const buttonStyleMap = new Map();
 
+// Function to restore shadow state from existing applied styles
+function restoreButtonShadowStateFromAppliedStyles() {
+  // Look for applied shadow styles in the document head
+  const styleTags = document.querySelectorAll(
+    'style[id*="sc-button-shadow-fetched"]'
+  );
+
+  if (styleTags.length === 0) {
+    console.log("ℹ️ No applied button shadow styles found");
+    return;
+  }
+
+  // Find the first button element to check its class
+  const firstButton = document.querySelector(
+    ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+  );
+  if (!firstButton) return;
+
+  const buttonClass = [...firstButton.classList].find((cls) =>
+    cls.startsWith("sqs-button-element--")
+  );
+  if (!buttonClass) return;
+
+  // Look for styles that match this button class
+  for (const styleTag of styleTags) {
+    const cssText = styleTag.textContent;
+    const buttonSelector = `.${buttonClass}`;
+
+    if (cssText.includes(buttonSelector) && cssText.includes("box-shadow:")) {
+      // Extract the box-shadow value from the CSS
+      const shadowMatch = cssText.match(
+        new RegExp(
+          `${buttonSelector.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
+          )}\\s*{[^}]*box-shadow:\\s*([^;!]+)`
+        )
+      );
+      if (shadowMatch) {
+        const shadowValue = shadowMatch[1].trim();
+
+        // Parse the shadow values
+        const shadowMatch2 = shadowValue.match(
+          /^(\d+)px\s+(\d+)px\s+(\d+)px\s+(\d+)px\s+(.+)$/
+        );
+        if (shadowMatch2) {
+          const xValue = parseInt(shadowMatch2[1]);
+          const yValue = parseInt(shadowMatch2[2]);
+          const blurValue = parseInt(shadowMatch2[3]);
+          const spreadValue = parseInt(shadowMatch2[4]);
+
+          // Only update if we have valid non-zero values
+          if (
+            xValue !== 0 ||
+            yValue !== 0 ||
+            blurValue !== 0 ||
+            spreadValue !== 0
+          ) {
+            // Update shadowStatesByType
+            if (!window.shadowStatesByType) {
+              window.shadowStatesByType = new Map();
+            }
+            if (!window.shadowStatesByType.has(buttonClass)) {
+              window.shadowStatesByType.set(buttonClass, {
+                Xaxis: 0,
+                Yaxis: 0,
+                Blur: 0,
+                Spread: 0,
+              });
+            }
+            const shadowState = window.shadowStatesByType.get(buttonClass);
+            shadowState.X = xValue;
+            shadowState.Y = yValue;
+            shadowState.Blur = blurValue;
+            shadowState.Spread = spreadValue;
+            window.shadowStatesByType.set(buttonClass, shadowState);
+
+            console.log(
+              "🔄 Restored button shadow state from applied styles:",
+              {
+                X: xValue,
+                Y: yValue,
+                Blur: blurValue,
+                Spread: spreadValue,
+              }
+            );
+          }
+        }
+        break;
+      }
+    }
+  }
+}
+
+// Make restore function globally accessible
+window.restoreButtonShadowStateFromAppliedStyles =
+  restoreButtonShadowStateFromAppliedStyles;
+
+// Function to synchronize button shadow styles from DOM
+function syncButtonShadowStylesFromElement(element) {
+  if (!element) return;
+
+  const btn = element.querySelector(
+    "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+  );
+  if (!btn) return;
+
+  // Try to get shadow from dataset first
+  let existingShadow = btn.dataset.scButtonShadow;
+
+  // If no dataset, try to get from applied CSS styles by checking all style tags
+  if (!existingShadow) {
+    // Look for applied shadow styles in the document head
+    const styleTags = document.querySelectorAll(
+      'style[id*="sc-button-shadow-"]'
+    );
+    let foundShadow = null;
+
+    for (const styleTag of styleTags) {
+      const cssText = styleTag.textContent;
+      // Look for styles that match this button's class
+      const buttonClasses = [...btn.classList].filter((cls) =>
+        cls.startsWith("sqs-button-element--")
+      );
+
+      for (const buttonClass of buttonClasses) {
+        const buttonSelector = `.${buttonClass}`;
+        if (
+          cssText.includes(buttonSelector) &&
+          cssText.includes("box-shadow:")
+        ) {
+          // Extract the box-shadow value from the CSS
+          const shadowMatch = cssText.match(
+            new RegExp(
+              `${buttonSelector.replace(
+                /[.*+?^${}()|[\]\\]/g,
+                "\\$&"
+              )}\\s*{[^}]*box-shadow:\\s*([^;!]+)`
+            )
+          );
+          if (shadowMatch) {
+            foundShadow = shadowMatch[1].trim();
+            break;
+          }
+        }
+      }
+      if (foundShadow) break;
+    }
+
+    if (foundShadow) {
+      existingShadow = foundShadow;
+    }
+  }
+
+  // If still no shadow, try to get from computed styles
+  if (!existingShadow) {
+    const computedStyle = window.getComputedStyle(btn);
+    existingShadow = computedStyle.boxShadow;
+  }
+
+  // Parse the shadow values
+  let xValue = 0,
+    yValue = 0,
+    blurValue = 0,
+    spreadValue = 0;
+
+  if (existingShadow && existingShadow !== "none") {
+    const shadowMatch = existingShadow.match(
+      /^(\d+)px\s+(\d+)px\s+(\d+)px\s+(\d+)px\s+(.+)$/
+    );
+
+    if (shadowMatch) {
+      xValue = parseInt(shadowMatch[1]);
+      yValue = parseInt(shadowMatch[2]);
+      blurValue = parseInt(shadowMatch[3]);
+      spreadValue = parseInt(shadowMatch[4]);
+    }
+  }
+
+  // Only update shadowStatesByType if we found actual values
+  if (
+    existingShadow &&
+    existingShadow !== "none" &&
+    (xValue !== 0 || yValue !== 0 || blurValue !== 0 || spreadValue !== 0)
+  ) {
+    const typeClass = [...btn.classList].find((cls) =>
+      cls.startsWith("sqs-button-element--")
+    );
+    if (typeClass) {
+      // Update shadowStatesByType with actual values
+      if (!window.shadowStatesByType) {
+        window.shadowStatesByType = new Map();
+      }
+      if (!window.shadowStatesByType.has(typeClass)) {
+        window.shadowStatesByType.set(typeClass, {
+          Xaxis: 0,
+          Yaxis: 0,
+          Blur: 0,
+          Spread: 0,
+        });
+      }
+      const shadowState = window.shadowStatesByType.get(typeClass);
+      shadowState.Xaxis = xValue;
+      shadowState.Yaxis = yValue;
+      shadowState.Blur = blurValue;
+      shadowState.Spread = spreadValue;
+      window.shadowStatesByType.set(typeClass, shadowState);
+
+      console.log("🔄 Synced button shadow state with DOM values:", {
+        X: xValue,
+        Y: yValue,
+        Blur: blurValue,
+        Spread: spreadValue,
+      });
+    }
+  }
+}
+
+// Make sync function globally accessible
+window.syncButtonShadowStylesFromElement = syncButtonShadowStylesFromElement;
+
+// Function to update UI sliders based on current shadow state
+function updateButtonShadowUI() {
+  if (!window.shadowStatesByType) return;
+
+  const types = ["Xaxis", "Yaxis", "Blur", "Spread"];
+  const ranges = [30, 30, 50, 30]; // Ranges for each type
+
+  types.forEach((typeKey, index) => {
+    const domKey = typeKey;
+    const bullet = document.getElementById(`buttonShadow${domKey}Bullet`);
+    const field = document.getElementById(`buttonShadow${domKey}Field`);
+    const label = document.getElementById(`buttonShadow${domKey}Count`);
+
+    if (!bullet || !field || !label) return;
+
+    const range = ranges[index];
+    const min = typeKey === "Xaxis" || typeKey === "Yaxis" ? -range : 0;
+    const max = range;
+
+    // Get the current shadow state for the active button type
+    const activeButton = document.querySelector(
+      ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+    );
+    if (!activeButton) return;
+
+    const typeClass = [...activeButton.classList].find((cls) =>
+      cls.startsWith("sqs-button-element--")
+    );
+    if (!typeClass) return;
+
+    const shadowState = window.shadowStatesByType.get(typeClass);
+    if (!shadowState) return;
+
+    const value = shadowState[typeKey] ?? 0;
+
+    // Update bullet position
+    const percent = ((value - min) / (max - min)) * 100;
+    bullet.style.left = `${percent}%`;
+
+    // Update fill
+    let fill = field.querySelector(".sc-shadow-fill");
+    if (fill) {
+      if (typeKey === "Xaxis" || typeKey === "Yaxis") {
+        const centerPercent = ((0 - min) / (max - min)) * 100;
+        fill.style.left = `${Math.min(percent, centerPercent)}%`;
+        fill.style.width = `${Math.abs(percent - centerPercent)}%`;
+      } else {
+        fill.style.width = `${percent}%`;
+      }
+    }
+
+    // Update label
+    label.textContent = `${value}px`;
+  });
+}
+
+// Make update function globally accessible
+window.updateButtonShadowUI = updateButtonShadowUI;
+
 function mergeAndSaveButtonStyles(
   blockId,
   typeClass,
@@ -3116,8 +3396,8 @@ export function ensurePublishButtonInShadow(
     } catch (error) {
       // Restore button state on error
       publishButton.textContent = "Publish";
-      publishButton.style.backgroundColor = "#EF7C2F";
       publishButton.disabled = false;
+      publishButton.style.backgroundColor = "#EF7C2F";
       console.error("Error publishing button shadow changes:", error);
     }
   });
@@ -3178,6 +3458,9 @@ export function initButtonShadowControls(
       }
     `;
 
+    // Update the dataset with the new shadow
+    btn.dataset.scButtonShadow = value;
+
     // ✅ CRITICAL FIX: Add to global pending modifications
     const blockId = el.id;
     if (!blockId) {
@@ -3203,7 +3486,6 @@ export function initButtonShadowControls(
         selector: `.${typeClass}`,
         styles: {
           boxShadow: value,
-          borderColor: window.__squareCraftBorderColor || "black",
         },
       },
     ];
@@ -3243,6 +3525,11 @@ export function initButtonShadowControls(
         "Shadow updated locally! Click Publish to save.",
         "info"
       );
+    }
+
+    // Update the UI to reflect the current shadow state
+    if (typeof updateButtonShadowUI === "function") {
+      updateButtonShadowUI();
     }
   }
 
@@ -3456,6 +3743,27 @@ export function initButtonShadowControls(
       }
     }
   };
+
+  // ✅ CRITICAL: Sync shadow styles from DOM and restore from applied styles
+  setTimeout(() => {
+    const selectedElement = getSelectedElement?.();
+    if (selectedElement) {
+      // Sync from DOM
+      if (typeof syncButtonShadowStylesFromElement === "function") {
+        syncButtonShadowStylesFromElement(selectedElement);
+      }
+
+      // Restore from applied styles
+      if (typeof restoreButtonShadowStateFromAppliedStyles === "function") {
+        restoreButtonShadowStateFromAppliedStyles();
+      }
+
+      // Update UI
+      if (typeof updateButtonShadowUI === "function") {
+        updateButtonShadowUI();
+      }
+    }
+  }, 100);
 }
 
 window.syncButtonStylesFromElement = function (selectedElement) {
@@ -3561,10 +3869,33 @@ window.syncButtonStylesFromElement = function (selectedElement) {
         el.classList.toggle("sc-bg-454545", spacing[dir.toLowerCase()] > 0);
     });
 
+    // ✅ CRITICAL FIX: Sync shadow styles from DOM and update shadowStatesByType
     const shadow = sampleButton.style.boxShadow || "";
     const match = shadow.match(/(-?\d+)px\s+(-?\d+)px\s+(\d+)px\s+(\d+)px/);
     if (match) {
       const [x, y, blur, spread] = match.slice(1).map(Number);
+
+      // Update shadowStatesByType for the button type
+      const typeClass = [...sampleButton.classList].find((cls) =>
+        cls.startsWith("sqs-button-element--")
+      );
+      if (typeClass && window.shadowStatesByType) {
+        if (!window.shadowStatesByType.has(typeClass)) {
+          window.shadowStatesByType.set(typeClass, {
+            Xaxis: 0,
+            Yaxis: 0,
+            Blur: 0,
+            Spread: 0,
+          });
+        }
+        const shadowState = window.shadowStatesByType.get(typeClass);
+        shadowState.Xaxis = x;
+        shadowState.Yaxis = y;
+        shadowState.Blur = blur;
+        shadowState.Spread = spread;
+        window.shadowStatesByType.set(typeClass, shadowState);
+      }
+
       const props = {
         Xaxis: [x, 30],
         Yaxis: [y, 30],
@@ -3579,11 +3910,32 @@ window.syncButtonStylesFromElement = function (selectedElement) {
         );
         if (count) count.textContent = `${val}px`;
         if (bullet) bullet.style.left = getPercent(val, max);
-        if (fill) fill.style.width = getPercent(val, max);
+        if (fill) {
+          fill.style.width = getPercent(val, max);
+          // Also update fill position for X and Y axis
+          if (type === "Xaxis" || type === "Yaxis") {
+            const centerPercent =
+              ((0 - (type === "Xaxis" || type === "Yaxis" ? -30 : 0)) /
+                (max - (type === "Xaxis" || type === "Yaxis" ? -30 : 0))) *
+              100;
+            fill.style.left = `${Math.min(
+              getPercent(val, max),
+              centerPercent
+            )}%`;
+            fill.style.width = `${Math.abs(
+              getPercent(val, max) - centerPercent
+            )}%`;
+          }
+        }
       });
     }
 
     window.updateActiveButtonBars?.();
+
+    // ✅ CRITICAL: Also sync shadow styles
+    if (typeof syncButtonShadowStylesFromElement === "function") {
+      syncButtonShadowStylesFromElement(selectedElement);
+    }
   } catch (error) {
     console.warn("❌ Error syncing button styles from element:", error);
   }
