@@ -534,18 +534,35 @@ export function initButtonFontColorPaletteToggle(
 
   function setSelectorCanvas(hue) {
     selectorField.innerHTML = "";
-    const canvas = getGradientCanvas(
-      hue,
-      selectorField.offsetWidth,
-      selectorField.offsetHeight
-    );
+
+    // Ensure we have proper dimensions, fallback to reasonable defaults if not
+    let width = selectorField.offsetWidth;
+    let height = selectorField.offsetHeight;
+
+    // If dimensions are 0 or undefined, use fallback dimensions
+    if (!width || !height || width === 0 || height === 0) {
+      width = 200; // Default width
+      height = 150; // Default height
+      console.log("⚠️ Using fallback dimensions for color picker:", {
+        width,
+        height,
+      });
+    }
+
+    console.log("🎨 Creating canvas with dimensions:", { width, height, hue });
+
+    const canvas = getGradientCanvas(hue, width, height);
     canvas.style.position = "absolute";
     canvas.style.top = "0";
     canvas.style.left = "0";
     canvas.style.zIndex = "0";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
     selectorField.style.position = "relative";
     selectorField.appendChild(canvas);
     selectorField.appendChild(bullet);
+
+    console.log("✅ Canvas created and added to selector field");
   }
 
   function hslToRgb(h, s = 1, l = 0.5) {
@@ -593,6 +610,54 @@ export function initButtonFontColorPaletteToggle(
       "🎨 Background color palette toggle found, adding click handler"
     );
 
+    // Function to ensure canvas is properly initialized
+    function ensureCanvasInitialized() {
+      if (selectorField && selectorField.children.length === 0) {
+        // If no canvas exists, create one with the first color
+        const firstColor = container.children[0]?.style.backgroundColor;
+        if (firstColor) {
+          updateSelectorField(firstColor);
+          console.log("✅ Canvas initialized with first color:", firstColor);
+        }
+      }
+    }
+
+    // Function to force canvas creation
+    function forceCanvasCreation() {
+      const firstColor =
+        container.children[0]?.style.backgroundColor || "rgb(255, 0, 0)";
+      updateSelectorField(firstColor);
+      console.log("✅ Canvas forced creation with color:", firstColor);
+
+      // Set default bullet position
+      if (bullet) {
+        const rect = selectorField.getBoundingClientRect();
+        const defaultX = Math.round(rect.width * 0.5);
+        const defaultY = Math.round(rect.height * 0.5);
+        bullet.style.left = `${defaultX}px`;
+        bullet.style.top = `${defaultY}px`;
+      }
+    }
+
+    // Function to ensure palette is ready before opening
+    function ensurePaletteReady() {
+      // Check if all required elements are available
+      if (!selectorField || !bullet || !colorCode || !transparencyCount) {
+        console.warn("⚠️ Required palette elements not found, retrying...");
+        setTimeout(ensurePaletteReady, 100);
+        return false;
+      }
+
+      // Check if container has color swatches
+      if (container.children.length === 0) {
+        console.warn("⚠️ No color swatches found, retrying...");
+        setTimeout(ensurePaletteReady, 100);
+        return false;
+      }
+
+      return true;
+    }
+
     paletteToggle.addEventListener("click", function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -601,8 +666,16 @@ export function initButtonFontColorPaletteToggle(
 
       // Toggle palette visibility
       if (palette.classList.contains("sc-hidden")) {
-        palette.classList.remove("sc-hidden");
-        console.log("✅ Background color palette opened");
+        // Check if palette is ready before opening
+        if (ensurePaletteReady()) {
+          palette.classList.remove("sc-hidden");
+          console.log("✅ Background color palette opened");
+
+          // Force canvas creation when palette opens
+          setTimeout(forceCanvasCreation, 50);
+        } else {
+          console.log("⏳ Palette not ready, will retry...");
+        }
       } else {
         palette.classList.add("sc-hidden");
         console.log("✅ Background color palette closed");
@@ -683,6 +756,51 @@ export function initButtonFontColorPaletteToggle(
   }
 
   if (selectorField && bullet) {
+    // Add resize observer to handle dynamic sizing
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+          // If dimensions are now available and canvas doesn't exist, create it
+          if (selectorField.children.length === 0) {
+            const firstColor = container.children[0]?.style.backgroundColor;
+            if (firstColor) {
+              updateSelectorField(firstColor);
+              console.log("✅ Canvas created after resize:", {
+                width: entry.contentRect.width,
+                height: entry.contentRect.height,
+              });
+            }
+          } else {
+            // If canvas exists but dimensions changed significantly, recreate it
+            const canvas = selectorField.querySelector("canvas");
+            if (
+              canvas &&
+              (Math.abs(canvas.width - entry.contentRect.width) > 10 ||
+                Math.abs(canvas.height - entry.contentRect.height) > 10)
+            ) {
+              console.log(
+                "🔄 Canvas dimensions changed significantly, recreating..."
+              );
+              const currentColor =
+                colorCode?.textContent ||
+                container.children[0]?.style.backgroundColor;
+              if (currentColor) {
+                updateSelectorField(currentColor);
+                console.log("✅ Canvas recreated with new dimensions:", {
+                  oldWidth: canvas.width,
+                  oldHeight: canvas.height,
+                  newWidth: entry.contentRect.width,
+                  newHeight: entry.contentRect.height,
+                });
+              }
+            }
+          }
+        }
+      }
+    });
+
+    resizeObserver.observe(selectorField);
+
     bullet.onmousedown = function (e) {
       e.preventDefault();
       document.onmousemove = function (e) {
@@ -724,6 +842,8 @@ export function initButtonFontColorPaletteToggle(
   }
 
   function getGradientCanvas(hue, width, height) {
+    console.log("🎨 getGradientCanvas called with:", { hue, width, height });
+
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
@@ -744,6 +864,7 @@ export function initButtonFontColorPaletteToggle(
     ctx.fillStyle = gradient2;
     ctx.fillRect(0, 0, width, height);
 
+    console.log("✅ Gradient canvas created successfully");
     return canvas;
   }
 
@@ -795,102 +916,148 @@ export function initButtonFontColorPaletteToggle(
     };
   }
 
-  if (container.innerHTML.trim() !== "") return;
+  // Ensure we have theme colors
+  if (!themeColors || Object.keys(themeColors).length === 0) {
+    console.warn("⚠️ No theme colors available, using fallback colors");
+    themeColors = {
+      red: "rgb(255, 0, 0)",
+      green: "rgb(0, 255, 0)",
+      blue: "rgb(0, 0, 255)",
+      yellow: "rgb(255, 255, 0)",
+      purple: "rgb(128, 0, 128)",
+    };
+  }
 
-  Object.values(themeColors).forEach((color) => {
-    const cleanColor = color.replace(/['"]+/g, "");
-    const swatch = document.createElement("div");
-    swatch.className = "sc-border-colors sc-cursor-pointer";
-    swatch.style.backgroundColor = cleanColor;
-    swatch.style.width = "18px";
-    swatch.style.height = "18px";
-    swatch.style.borderRadius = "6px";
-    swatch.title = cleanColor;
+  // Function to wait for theme colors if they're loaded asynchronously
+  function waitForThemeColors(maxAttempts = 10) {
+    let attempts = 0;
 
-    swatch.onclick = () => {
-      const color = swatch.style.backgroundColor;
+    const checkColors = () => {
+      attempts++;
 
-      updateSelectorField(color);
-      // Move allColorBullet to match dynamicHue
-      if (allColorField && allColorBullet) {
-        const rect = allColorField.getBoundingClientRect();
-        const huePercentage = dynamicHue / 360;
-        const bulletTop = huePercentage * rect.height;
-        allColorBullet.style.top = `${bulletTop}px`;
+      if (container.children.length > 0) {
+        console.log("✅ Theme colors loaded, proceeding with initialization");
+        initializeColorSwatches();
+        return;
       }
 
-      applyButtonBackgroundColor(color, currentTransparency / 100);
+      if (attempts >= maxAttempts) {
+        console.warn("⚠️ Max attempts reached, using fallback colors");
+        initializeColorSwatches();
+        return;
+      }
 
-      requestAnimationFrame(() => {
-        const canvas = selectorField.querySelector("canvas");
-        const ctx = canvas.getContext("2d");
-        const width = canvas.width;
-        const height = canvas.height;
-
-        let bestMatch = { x: 0, y: 0, diff: Infinity };
-
-        const [cr, cg, cb] = color
-          .replace(/[^\d,]/g, "")
-          .split(",")
-          .map((n) => parseInt(n.trim()));
-
-        for (let y = 0; y < height; y += 2) {
-          for (let x = 0; x < width; x += 2) {
-            const data = ctx.getImageData(x, y, 1, 1).data;
-            const diff =
-              Math.abs(data[0] - cr) +
-              Math.abs(data[1] - cg) +
-              Math.abs(data[2] - cb);
-            if (diff < bestMatch.diff) {
-              bestMatch = { x, y, diff };
-              if (diff <= 3) break;
-            }
-          }
-        }
-
-        moveBullet(bestMatch.x, bestMatch.y);
-        if (transparencyBullet && transparencyField) {
-          transparencyBullet.style.top = `0px`;
-        }
-        currentTransparency = 100;
-        if (transparencyCount) {
-          transparencyCount.textContent = `100%`;
-        }
-
-        // Update the color code display
-        if (colorCode) {
-          colorCode.textContent = color;
-        }
-      });
-
-      applyButtonBackgroundColor(color, currentTransparency / 100);
+      console.log(
+        `⏳ Waiting for theme colors... (attempt ${attempts}/${maxAttempts})`
+      );
+      setTimeout(checkColors, 200);
     };
 
-    container.appendChild(swatch);
-  });
+    checkColors();
+  }
+
+  // Function to initialize color swatches
+  function initializeColorSwatches() {
+    if (container.innerHTML.trim() !== "") return;
+
+    Object.values(themeColors).forEach((color) => {
+      const cleanColor = color.replace(/['"]+/g, "");
+      const swatch = document.createElement("div");
+      swatch.className = "sc-border-colors sc-cursor-pointer";
+      swatch.style.backgroundColor = cleanColor;
+      swatch.style.width = "18px";
+      swatch.style.height = "18px";
+      swatch.style.borderRadius = "6px";
+      swatch.title = cleanColor;
+
+      swatch.onclick = () => {
+        const color = swatch.style.backgroundColor;
+
+        updateSelectorField(color);
+        // Move allColorBullet to match dynamicHue
+        if (allColorField && allColorBullet) {
+          const rect = allColorField.getBoundingClientRect();
+          const huePercentage = dynamicHue / 360;
+          const bulletTop = huePercentage * rect.height;
+          allColorBullet.style.top = `${bulletTop}px`;
+        }
+
+        applyButtonBackgroundColor(color, currentTransparency / 100);
+
+        requestAnimationFrame(() => {
+          const canvas = selectorField.querySelector("canvas");
+          const ctx = canvas.getContext("2d");
+          const width = canvas.width;
+          const height = canvas.height;
+
+          let bestMatch = { x: 0, y: 0, diff: Infinity };
+
+          const [cr, cg, cb] = color
+            .replace(/[^\d,]/g, "")
+            .split(",")
+            .map((n) => parseInt(n.trim()));
+
+          for (let y = 0; y < height; y += 2) {
+            for (let x = 0; x < width; x += 2) {
+              const data = ctx.getImageData(x, y, 1, 1).data;
+              const diff =
+                Math.abs(data[0] - cr) +
+                Math.abs(data[1] - cg) +
+                Math.abs(data[2] - cb);
+              if (diff < bestMatch.diff) {
+                bestMatch = { x, y, diff };
+                if (diff <= 3) break;
+              }
+            }
+          }
+
+          moveBullet(bestMatch.x, bestMatch.y);
+          if (transparencyBullet && transparencyField) {
+            transparencyBullet.style.top = `0px`;
+          }
+          currentTransparency = 100;
+          if (transparencyCount) {
+            transparencyCount.textContent = `100%`;
+          }
+
+          // Update the color code display
+          if (colorCode) {
+            colorCode.textContent = color;
+          }
+        });
+
+        applyButtonBackgroundColor(color, currentTransparency / 100);
+      };
+
+      container.appendChild(swatch);
+    });
+  }
 
   if (container.children.length > 0) {
     const firstSwatchColor = container.children[0].style.backgroundColor;
 
-    updateSelectorField(firstSwatchColor);
+    // Add a small delay to ensure DOM is ready and dimensions are available
+    setTimeout(() => {
+      updateSelectorField(firstSwatchColor);
 
-    const rect = selectorField.getBoundingClientRect();
-    const defaultX = Math.round(rect.width * 0.5);
-    const defaultY = Math.round(rect.height * 0.5);
-    bullet.style.left = `${defaultX}px`;
-    bullet.style.top = `${defaultY}px`;
+      const rect = selectorField.getBoundingClientRect();
+      const defaultX = Math.round(rect.width * 0.5);
+      const defaultY = Math.round(rect.height * 0.5);
+      bullet.style.left = `${defaultX}px`;
+      bullet.style.top = `${defaultY}px`;
 
-    const canvas = selectorField.querySelector("canvas");
-    const ctx = canvas?.getContext("2d");
-    if (ctx) {
-      const data = ctx.getImageData(defaultX, defaultY, 1, 1).data;
-      const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
-      colorCode.textContent = rgb;
-    }
+      const canvas = selectorField.querySelector("canvas");
+      const ctx = canvas?.getContext("2d");
+      if (ctx) {
+        const data = ctx.getImageData(defaultX, defaultY, 1, 1).data;
+        const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
+        colorCode.textContent = rgb;
+      }
 
-    transparencyBullet.style.top = `0px`;
-    currentTransparency = 100;
-    transparencyCount.textContent = `100%`;
+      transparencyBullet.style.top = `0px`;
+      currentTransparency = 100;
+      transparencyCount.textContent = `100%`;
+    }, 100); // 100ms delay to ensure DOM is ready
 
     requestAnimationFrame(() => {
       setTimeout(() => {
@@ -930,6 +1097,46 @@ export function initButtonFontColorPaletteToggle(
     if (transparencyCount) {
       transparencyCount.textContent = `100%`;
     }
+  }
+
+  // Fallback initialization to ensure canvas is created
+  setTimeout(() => {
+    if (selectorField && selectorField.children.length === 0) {
+      const firstColor = container.children[0]?.style.backgroundColor;
+      if (firstColor) {
+        updateSelectorField(firstColor);
+        console.log("✅ Canvas created via fallback initialization");
+      }
+    }
+  }, 200);
+
+  // Start waiting for theme colors
+  waitForThemeColors();
+
+  // Additional initialization when DOM is fully loaded
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      setTimeout(() => {
+        if (selectorField && selectorField.children.length === 0) {
+          const firstColor = container.children[0]?.style.backgroundColor;
+          if (firstColor) {
+            updateSelectorField(firstColor);
+            console.log("✅ Canvas created after DOM content loaded");
+          }
+        }
+      }, 100);
+    });
+  } else {
+    // DOM is already loaded
+    setTimeout(() => {
+      if (selectorField && selectorField.children.length === 0) {
+        const firstColor = container.children[0]?.style.backgroundColor;
+        if (firstColor) {
+          updateSelectorField(firstColor);
+          console.log("✅ Canvas created after DOM ready check");
+        }
+      }
+    }, 100);
   }
 
   // Note: Publish handler moved to unified handler at the end of the file

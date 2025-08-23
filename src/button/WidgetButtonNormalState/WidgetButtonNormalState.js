@@ -235,6 +235,8 @@ export function WidgetButtonNormalState() {
                      </div>
                   </div>
                </div>
+
+               
                <div id="textColorSection" class=" ">
                   <p class="sc-font-size-11 sc-font-thin sc-mt-4 sc-universal sc-text-gray-300 sc-roboto">Text Color
                   </p>
