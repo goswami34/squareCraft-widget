@@ -218,18 +218,7 @@ async function updateIconStyles(blockId, typeClass, newStyles) {
   }
 }
 
-setTimeout(() => {
-  let selectedElement = null;
-  function getSelectedElement() {
-    return selectedElement;
-  }
-  const section = document.getElementById("buttoniconPositionSection");
-  if (section) {
-    initButtonIconPositionToggle(getSelectedElement);
-  } else {
-    console.warn("⛔ buttoniconPositionSection not found");
-  }
-}, 200);
+// Removed problematic setTimeout block that was creating scope issues with getSelectedElement
 
 // Store pending button modifications locally (like shadow controls)
 const pendingButtonModifications = new Map();
@@ -4360,18 +4349,7 @@ export function initButtonBorderResetHandlers(
   });
 }
 
-setTimeout(() => {
-  if (typeof window.syncButtonStylesFromElement === "function") {
-    window.syncButtonStylesFromElement(getSelectedElement);
-  }
-  if (typeof initButtonBorderRadiusControl === "function") {
-    initButtonBorderRadiusControl(getSelectedElement);
-  }
-  if (typeof initButtonBorderTypeToggle === "function") {
-    initButtonBorderTypeToggle(getSelectedElement);
-  }
-  document.getElementById("buttonBorderTypeSolid")?.click();
-}, 100);
+// Removed problematic setTimeout block that was trying to access undefined getSelectedElement
 
 // Test function to debug icon saving
 export function testIconSaving(getSelectedElement) {
