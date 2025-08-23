@@ -3256,8 +3256,8 @@ export function initButtonShadowControls(
     addPendingModification(blockId, stylePayload, "button", "shadow");
 
     // Save to database if requested
-    if (saveToDB && typeof saveButtonShadowModifications === "function") {
-      saveButtonShadowModifications(blockId, stylePayload);
+    if (saveToDB && typeof ensurePublishButtonInShadow === "function") {
+      ensurePublishButtonInShadow(blockId, stylePayload);
     }
 
     if (typeof showNotification === "function") {
@@ -3372,8 +3372,8 @@ export function initButtonShadowControls(
                   styles: { boxShadow: value },
                 },
               };
-              if (typeof saveButtonShadowModifications === "function") {
-                saveButtonShadowModifications(el.id, stylePayload);
+              if (typeof ensurePublishButtonInShadow === "function") {
+                ensurePublishButtonInShadow(el.id, stylePayload);
               }
             }
           }
