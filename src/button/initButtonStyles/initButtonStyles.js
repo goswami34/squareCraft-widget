@@ -3016,16 +3016,73 @@ export function ensurePublishButtonInShadow(
       const currentElement = getSelectedElement?.();
       const blockId = currentElement?.id;
 
-      if (!blockId || !window.pendingModifications) {
-        console.warn("❌ Missing blockId or pendingModifications");
+      if (!blockId) {
+        console.warn("❌ Missing blockId");
         return;
       }
 
-      const list = window.pendingModifications.get(blockId) || [];
-      const shadowMods = list.filter((m) => m.tagType === "buttonShadow");
+      // Check both window.pendingModifications and shadowStatesByType
+      const pendingList = window.pendingModifications?.get(blockId) || [];
+      const shadowMods = pendingList.filter(
+        (m) => m.tagType === "buttonShadow"
+      );
 
-      if (!shadowMods.length) {
-        console.warn("❌ No shadow modifications found for blockId:", blockId);
+      console.log("🔍 Debug publish data:", {
+        blockId,
+        pendingModifications: window.pendingModifications,
+        pendingList,
+        shadowMods,
+        shadowStatesByType: window.shadowStatesByType,
+      });
+
+      // If no pending modifications, try to get current shadow states
+      let shadowData = null;
+      if (shadowMods.length > 0) {
+        shadowData = shadowMods[0];
+        console.log("✅ Using pending shadow data:", shadowData);
+      } else if (
+        window.shadowStatesByType &&
+        window.shadowStatesByType.size > 0
+      ) {
+        // Create shadow data from current states
+        shadowData = {
+          tagType: "buttonShadow",
+          css: {},
+        };
+
+        // Get all button types that have shadow states
+        for (const [typeClass, state] of window.shadowStatesByType) {
+          if (
+            state &&
+            (state.Xaxis !== 0 ||
+              state.Yaxis !== 0 ||
+              state.Blur !== 0 ||
+              state.Spread !== 0)
+          ) {
+            const typeKey = typeKeyFromClass(typeClass);
+            const color = state.Color || "rgba(0,0,0,0.3)";
+            const shadowValue = `${state.Xaxis}px ${state.Yaxis}px ${state.Blur}px ${state.Spread}px ${color}`;
+
+            shadowData.css[typeKey] = [
+              {
+                selector: typeClass,
+                styles: {
+                  boxShadow: shadowValue,
+                  borderColor: window.__squareCraftBorderColor || "black",
+                },
+              },
+            ];
+          }
+        }
+        console.log("✅ Created shadow data from states:", shadowData);
+      }
+
+      if (
+        !shadowData ||
+        !shadowData.css ||
+        Object.keys(shadowData.css).length === 0
+      ) {
+        console.warn("❌ No shadow data to save");
         return;
       }
 
@@ -3041,6 +3098,7 @@ export function ensurePublishButtonInShadow(
         buttonSecondary: [],
         buttonTertiary: [],
       };
+
       const pushAll = (src, dest) => {
         if (Array.isArray(src)) {
           src.forEach((it) => {
@@ -3052,7 +3110,8 @@ export function ensurePublishButtonInShadow(
           dest.push(src);
         }
       };
-      for (const mod of shadowMods) {
+
+      for (const mod of [shadowData]) {
         const css = mod?.css || {};
         pushAll(css.buttonPrimary, merged.buttonPrimary);
         pushAll(css.buttonSecondary, merged.buttonSecondary);
@@ -3071,14 +3130,22 @@ export function ensurePublishButtonInShadow(
         return;
       }
 
+      console.log("📤 Publishing shadow data:", { blockId, merged });
       const result = await saveButtonShadowModifications(blockId, merged);
 
       // Clear only buttonShadow entries if saved OK
       if (result?.success) {
-        const remaining = list.filter((m) => m.tagType !== "buttonShadow");
+        const remaining = pendingList.filter(
+          (m) => m.tagType !== "buttonShadow"
+        );
         if (remaining.length)
           window.pendingModifications.set(blockId, remaining);
         else window.pendingModifications.delete(blockId);
+
+        // Also clear the shadow states after successful save
+        if (window.shadowStatesByType) {
+          window.shadowStatesByType.clear();
+        }
       }
 
       // UI feedback
@@ -3102,6 +3169,15 @@ export function ensurePublishButtonInShadow(
       showNotification?.("Publish failed", "error");
     }
   });
+}
+
+// Helper function to get button type key from class
+function typeKeyFromClass(typeClass) {
+  if (!typeClass) return "buttonPrimary";
+  if (typeClass.includes("--primary")) return "buttonPrimary";
+  if (typeClass.includes("--secondary")) return "buttonSecondary";
+  if (typeClass.includes("--tertiary")) return "buttonTertiary";
+  return "buttonPrimary";
 }
 
 // export function initButtonShadowControls(
@@ -3464,6 +3540,14 @@ export function initButtonShadowControls(
     else arr.push(item);
 
     window.pendingModifications.set(blockId, list);
+
+    // Debug logging
+    console.log("🔧 Enqueued shadow modification:", {
+      blockId,
+      typeKey,
+      item,
+      pendingMods: window.pendingModifications,
+    });
   }
 
   function applyShadowToDOM(typeClass) {
@@ -3604,6 +3688,14 @@ export function initButtonShadowControls(
 
       // Apply visual + queue pending
       applyShadowAndQueue();
+
+      // Debug: log current state
+      console.log("🎯 Shadow control updated:", {
+        type,
+        value: val,
+        shadowStatesByType: window.shadowStatesByType,
+        pendingModifications: window.pendingModifications,
+      });
     }
 
     bullet.addEventListener("mousedown", (e) => {
