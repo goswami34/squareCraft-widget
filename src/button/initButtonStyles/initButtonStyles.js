@@ -2497,34 +2497,18 @@ export function initButtonBorderControl(
 
     // Only update local state, do not save to DB
     if (blockId && blockId !== "block-id") {
-      // ✅ DYNAMIC: Use the actual detected button type instead of hardcoded buttonPrimary
-      const buttonTypeKey = typeClass.replace("sqs-button-element--", "button");
-      const buttonTypeKeyCapitalized =
-        buttonTypeKey.charAt(0).toUpperCase() + buttonTypeKey.slice(1);
-
       const stylePayload = {
-        [buttonTypeKeyCapitalized]: {
-          selector: `.${typeClass}`,
+        buttonPrimary: {
+          selector: ".sqs-button-element--primary",
           styles: borderStyles,
         },
       };
-
-      console.log("🔧 Border applied to:", {
-        detectedType: typeClass,
-        buttonTypeKey: buttonTypeKeyCapitalized,
-        selector: `.${typeClass}`,
-        payload: stylePayload,
-      });
-
       addPendingModification(blockId, stylePayload, "button", "border");
       if (saveToDB && typeof saveButtonBorderModifications === "function") {
         saveButtonBorderModifications(blockId, stylePayload);
       }
       if (typeof showNotification === "function") {
-        showNotification(
-          `Border updated for ${buttonTypeKeyCapitalized} button!`,
-          "info"
-        );
+        showNotification("Border updated locally!", "info");
       }
     }
   }
@@ -2624,37 +2608,22 @@ export function initButtonBorderTypeToggle(
         }
       `;
 
-      // ✅ DYNAMIC: Use the actual detected button type instead of hardcoded buttonPrimary
-      const buttonTypeKey = typeClass.replace("sqs-button-element--", "button");
-      const buttonTypeKeyCapitalized =
-        buttonTypeKey.charAt(0).toUpperCase() + buttonTypeKey.slice(1);
-
+      // Only update local state, do not save to DB
       const stylePayload = {
-        [buttonTypeKeyCapitalized]: {
-          selector: `.${typeClass}`,
+        buttonPrimary: {
+          selector: ".sqs-button-element--primary",
           styles: {
             borderStyle: borderType,
             borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
           },
         },
       };
-
-      console.log("🔧 Border type applied to:", {
-        detectedType: typeClass,
-        buttonTypeKey: buttonTypeKeyCapitalized,
-        selector: `.${typeClass}`,
-        payload: stylePayload,
-      });
-
       addPendingModification(blockId, stylePayload, "button", "border");
       if (saveToDB && typeof saveButtonBorderModifications === "function") {
         saveButtonBorderModifications(blockId, stylePayload);
       }
       if (typeof showNotification === "function") {
-        showNotification(
-          `Border style updated for ${buttonTypeKeyCapitalized} button!`,
-          "info"
-        );
+        showNotification("Border style updated locally!", "info");
       }
     } catch (error) {
       console.error("❌ Error updating border type:", error);
