@@ -2997,6 +2997,101 @@ export function initButtonBorderRadiusControl(
   }, 50);
 }
 
+export function ensurePublishButtonInShadow(
+  getSelectedElement,
+  saveButtonShadowModifications,
+  showNotification
+) {
+  if (window.shadowPublishBound) return;
+  const publishButton = document.getElementById("publish");
+  if (!publishButton) return; // widget not ready yet
+  if (publishButton.dataset.shadowBound === "1") return;
+  publishButton.dataset.shadowBound = "1";
+  window.shadowPublishBound = true;
+
+  publishButton.addEventListener("click", async () => {
+    try {
+      const currentElement = getSelectedElement?.();
+      const blockId = currentElement?.id;
+      if (!blockId || !window.pendingModifications) return;
+
+      const shadowMods =
+        window.pendingModifications
+          .get(blockId)
+          ?.filter((m) => m.tagType === "button" && m.subType === "shadow") ||
+        [];
+      if (shadowMods.length === 0) return;
+
+      // Show publishing state
+      const originalText = publishButton.textContent;
+      publishButton.textContent = "Publishing...";
+      publishButton.disabled = true;
+
+      const merged = {
+        buttonPrimary: [],
+        buttonSecondary: [],
+        buttonTertiary: [],
+      };
+      const pushAll = (src, dest) => {
+        if (Array.isArray(src))
+          src.forEach((it) => {
+            if (it?.selector && it?.styles && Object.keys(it.styles).length)
+              dest.push(it);
+          });
+        else if (src?.selector && src?.styles) dest.push(src);
+      };
+      shadowMods.forEach((mod) => {
+        if (!mod?.css) return;
+        pushAll(mod.css.buttonPrimary, merged.buttonPrimary);
+        pushAll(mod.css.buttonSecondary, merged.buttonSecondary);
+        pushAll(mod.css.buttonTertiary, merged.buttonTertiary);
+      });
+
+      if (
+        merged.buttonPrimary.length +
+          merged.buttonSecondary.length +
+          merged.buttonTertiary.length ===
+        0
+      )
+        return;
+
+      if (typeof saveButtonShadowModifications === "function") {
+        const result = await saveButtonShadowModifications(blockId, merged);
+        if (result?.success && window.pendingModifications?.has(blockId)) {
+          const remaining = window.pendingModifications
+            .get(blockId)
+            .filter((m) => !(m.tagType === "button" && m.subType === "shadow"));
+          if (remaining.length === 0)
+            window.pendingModifications.delete(blockId);
+          else window.pendingModifications.set(blockId, remaining);
+        }
+
+        // Show published state briefly, then restore
+        publishButton.textContent = "Published";
+        publishButton.style.backgroundColor = "#4CAF50"; // Green color
+
+        setTimeout(() => {
+          publishButton.textContent = originalText;
+          publishButton.style.backgroundColor = "#EF7C2F"; // Original color
+          publishButton.disabled = false;
+        }, 2000);
+
+        if (showNotification)
+          showNotification(
+            "Button shadow changes published",
+            result?.success ? "success" : "error"
+          );
+      }
+    } catch (error) {
+      // Restore button state on error
+      publishButton.textContent = "Publish";
+      publishButton.style.backgroundColor = "#EF7C2F";
+      publishButton.disabled = false;
+      console.error("Error publishing button shadow changes:", error);
+    }
+  });
+}
+
 export function initButtonShadowControls(
   getSelectedElement,
   addPendingModification,
@@ -3070,7 +3165,7 @@ export function initButtonShadowControls(
     };
 
     // Add to pending modifications for publish button
-    addPendingModification(blockId, stylePayload, "button", "shadow");
+    ensurePublishButtonInShadow(blockId, stylePayload, "button", "shadow");
 
     // Show notification that it's stored locally
     if (typeof showNotification === "function") {
@@ -3694,9 +3789,9 @@ export function resetAllButtonStyles(
       );
 
       // Import and call ensurePublishButtonInShadow for shadow publish binding
-      const { ensurePublishButtonInShadow } = await import(
-        "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initButtonStyles/initButtonHoverStyles.js"
-      );
+      // const { ensurePublishButtonInShadow } = await import(
+      //   "https://fatin-webefo.github.io/squareCraft-plugin/src/utils/initButtonStyles/initButtonHoverStyles.js"
+      // );
       ensurePublishButtonInShadow(
         getSelectedElement,
         saveButtonShadowModifications,
