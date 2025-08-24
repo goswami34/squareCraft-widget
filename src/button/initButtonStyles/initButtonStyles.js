@@ -2497,17 +2497,18 @@ export function initButtonBorderControl(
 
     // Only update local state, do not save to DB
     if (blockId && blockId !== "block-id") {
+      // ✅ CRITICAL FIX: Create payload based on ACTUAL button type being modified
+      const buttonType = typeClass.includes("--primary")
+        ? "buttonPrimary"
+        : typeClass.includes("--secondary")
+        ? "buttonSecondary"
+        : typeClass.includes("--tertiary")
+        ? "buttonTertiary"
+        : "buttonPrimary";
+
       const stylePayload = {
-        buttonPrimary: {
-          selector: ".sqs-button-element--primary",
-          styles: borderStyles,
-        },
-        buttonSecondary: {
-          selector: ".sqs-button-element--secondary",
-          styles: borderStyles,
-        },
-        buttonTertiary: {
-          selector: ".sqs-button-element--tertiary",
+        [buttonType]: {
+          selector: `.${typeClass}`,
           styles: borderStyles,
         },
       };
@@ -2616,10 +2617,18 @@ export function initButtonBorderTypeToggle(
         }
       `;
 
-      // Only update local state, do not save to DB
+      // ✅ FIXED: Create payload based on ACTUAL button type being modified
+      const buttonType = typeClass.includes("--primary")
+        ? "buttonPrimary"
+        : typeClass.includes("--secondary")
+        ? "buttonSecondary"
+        : typeClass.includes("--tertiary")
+        ? "buttonTertiary"
+        : "buttonPrimary";
+
       const stylePayload = {
-        buttonPrimary: {
-          selector: ".sqs-button-element--primary",
+        [buttonType]: {
+          selector: `.${typeClass}`,
           styles: {
             borderStyle: borderType,
             borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
@@ -2760,20 +2769,29 @@ export function initButtonBorderRadiusControl(
       newStyles,
     });
 
+    // ✅ FIXED: Determine the correct button type key
+    const buttonType = typeClass.includes("--primary")
+      ? "buttonPrimary"
+      : typeClass.includes("--secondary")
+      ? "buttonSecondary"
+      : typeClass.includes("--tertiary")
+      ? "buttonTertiary"
+      : "buttonPrimary";
+
     const prevStyles = window.__scButtonStyleMap.get(blockId) || {
-      [typeClass]: {
+      [buttonType]: {
         selector: `.${typeClass}`,
         styles: {},
       },
     };
 
     const mergedStyles = {
-      ...prevStyles[typeClass]?.styles,
+      ...prevStyles[buttonType]?.styles,
       ...(newStyles || {}),
     };
 
     const finalData = {
-      [typeClass]: {
+      [buttonType]: {
         selector: `.${typeClass}`,
         styles: mergedStyles,
       },
@@ -2787,6 +2805,7 @@ export function initButtonBorderRadiusControl(
 
     console.log("💾 Added to pending radius modifications:", {
       blockId,
+      buttonType,
       finalData,
       pendingCount: pendingBorderRadiusModifications.size,
     });
