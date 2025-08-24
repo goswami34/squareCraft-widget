@@ -111,8 +111,17 @@ export function ButtonBorderColorPalateToggle(
     ) {
       const blockId = currentElement.id;
       if (blockId) {
+        // ✅ FIXED: Create payload based on ACTUAL button type being modified
+        const buttonTypeKey = buttonType.includes("--primary")
+          ? "buttonPrimary"
+          : buttonType.includes("--secondary")
+          ? "buttonSecondary"
+          : buttonType.includes("--tertiary")
+          ? "buttonTertiary"
+          : "buttonPrimary";
+
         const stylePayload = {
-          buttonPrimary: {
+          [buttonTypeKey]: {
             selector: `.${buttonType}`,
             styles: { borderColor: rgbaColor },
           },
