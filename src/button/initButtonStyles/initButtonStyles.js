@@ -2626,19 +2626,53 @@ export function initButtonBorderTypeToggle(
         ? "buttonTertiary"
         : "buttonPrimary";
 
+      // Get the current button element to extract existing styles
+      const buttons = document.querySelectorAll(`.${typeClass}`);
+      let currentStyles = {};
+      if (buttons.length > 0) {
+        currentStyles = window.getComputedStyle(buttons[0]);
+      }
+
+      // Get current border state for this specific button
+      const key = `${blockId}--${typeClass}`;
+      const currentState = window.__squareCraftBorderStateMap.get(key) || {
+        values: {},
+      };
+
+      // Create a comprehensive stylePayload with all border properties
       const stylePayload = {
         [buttonType]: {
           selector: `.${typeClass}`,
           styles: {
             borderStyle: borderType,
-            borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
+            borderColor: window.__squareCraftBorderColor || "black",
+            // Include current border widths from the state
+            borderTopWidth: `${currentState.values.Top || 0}px`,
+            borderRightWidth: `${currentState.values.Right || 0}px`,
+            borderBottomWidth: `${currentState.values.Bottom || 0}px`,
+            borderLeftWidth: `${currentState.values.Left || 0}px`,
+            // Include other border properties
+            borderRadius: currentStyles.borderRadius || "0px",
+            overflow: currentStyles.overflow || "hidden",
+            boxSizing: "border-box",
           },
         },
       };
+
+      // Debug logging
+      console.log("🔍 updateBorderType - stylePayload:", {
+        buttonType,
+        typeClass,
+        borderType,
+        stylePayload,
+        currentState: currentState.values,
+        globalBorderStyle: window.__squareCraftBorderStyle,
+      });
       addPendingModification(blockId, stylePayload, "button", "border");
 
       // ✅ CRITICAL FIX: Always save to DB when border type changes
       if (typeof saveButtonBorderModifications === "function") {
+        console.log("💾 Saving to database with payload:", stylePayload);
         saveButtonBorderModifications(blockId, stylePayload);
       }
 
@@ -2667,6 +2701,8 @@ export function initButtonBorderTypeToggle(
     if (!el) return;
 
     el.onclick = () => {
+      console.log("🎯 Border type button clicked:", { id, type });
+
       typeButtons.forEach(({ id }) => {
         const btn = document.getElementById(id);
         btn?.classList.remove("sc-bg-454545");
@@ -2674,30 +2710,42 @@ export function initButtonBorderTypeToggle(
 
       el.classList.add("sc-bg-454545");
       window.__squareCraftBorderStyle = type;
+      console.log("🌐 Global border style set to:", type);
 
       const selected = getSelectedElement?.();
       if (!selected) return;
+      console.log("📦 Selected element:", selected);
 
       const btn = selected.querySelector(
         "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
       );
       if (!btn) return;
+      console.log("🔘 Found button:", btn);
 
       const typeClass = [...btn.classList].find((cls) =>
         cls.startsWith("sqs-button-element--")
       );
       if (!typeClass) return;
+      console.log("🏷️ Button type class:", typeClass);
 
       const blockId = selected.id || "block-id";
       const key = `${blockId}--${typeClass}`;
+      console.log("🔑 State key:", key);
+
       const state = window.__squareCraftBorderStateMap.get(key) || {
         values: {},
         side: "All",
         color: "#000000",
       };
+      console.log("📊 Current state:", state);
       window.__squareCraftBorderStateMap.set(key, { ...state });
 
-      updateBorderType(blockId, typeClass, type);
+      console.log("🚀 Calling updateBorderType with:", {
+        blockId,
+        typeClass,
+        type,
+      });
+      updateBorderType(blockId, typeClass, type, true);
     };
   });
 }
