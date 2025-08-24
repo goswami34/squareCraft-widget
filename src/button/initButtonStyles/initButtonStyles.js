@@ -2467,7 +2467,7 @@ export function initButtonBorderControl(
     // Create border styles object for local state
     const borderStyles = {
       boxSizing: "border-box",
-      borderStyle: window.__squareCraftBorderStyle || "solid",
+      borderStyle: window.__squareCraftBorderStyle,
       borderColor: window.__squareCraftBorderColor || "black", // Use selected color from palette
       borderTopWidth: `${state.values.Top || 0}px`,
       borderRightWidth: `${state.values.Right || 0}px`,
@@ -2480,7 +2480,7 @@ export function initButtonBorderControl(
     styleTag.innerHTML = `
       .${typeClass} {
         box-sizing: border-box !important;
-        border-style: ${window.__squareCraftBorderStyle || "solid"} !important;
+        border-style: ${window.__squareCraftBorderStyle} !important;
         border-color: ${window.__squareCraftBorderColor || "black"} !important;
         border-top-width: ${state.values.Top || 0}px !important;
         border-right-width: ${state.values.Right || 0}px !important;
