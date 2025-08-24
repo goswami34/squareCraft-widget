@@ -2464,15 +2464,11 @@ export function initButtonBorderControl(
       document.head.appendChild(styleTag);
     }
 
-    // ✅ FIXED: Get the current border style from global state
-    const currentBorderStyle = window.__squareCraftBorderStyle || "solid";
-    const currentBorderColor = window.__squareCraftBorderColor || "black";
-
     // Create border styles object for local state
     const borderStyles = {
       boxSizing: "border-box",
-      borderStyle: currentBorderStyle,
-      borderColor: currentBorderColor,
+      borderStyle: window.__squareCraftBorderStyle || "solid",
+      borderColor: window.__squareCraftBorderColor || "black", // Use selected color from palette
       borderTopWidth: `${state.values.Top || 0}px`,
       borderRightWidth: `${state.values.Right || 0}px`,
       borderBottomWidth: `${state.values.Bottom || 0}px`,
@@ -2484,8 +2480,8 @@ export function initButtonBorderControl(
     styleTag.innerHTML = `
       .${typeClass} {
         box-sizing: border-box !important;
-        border-style: ${currentBorderStyle} !important;
-        border-color: ${currentBorderColor} !important;
+        border-style: ${window.__squareCraftBorderStyle || "solid"} !important;
+        border-color: ${window.__squareCraftBorderColor || "black"} !important;
         border-top-width: ${state.values.Top || 0}px !important;
         border-right-width: ${state.values.Right || 0}px !important;
         border-bottom-width: ${state.values.Bottom || 0}px !important;
@@ -2640,15 +2636,11 @@ export function initButtonBorderTypeToggle(
         },
       };
       addPendingModification(blockId, stylePayload, "button", "border");
-
-      // ✅ FIXED: Always save border style changes to database
-      if (typeof saveButtonBorderModifications === "function") {
-        console.log(`💾 Saving border style change to database: ${borderType}`);
+      if (saveToDB && typeof saveButtonBorderModifications === "function") {
         saveButtonBorderModifications(blockId, stylePayload);
       }
-
       if (typeof showNotification === "function") {
-        showNotification(`Border style changed to ${borderType}!`, "success");
+        showNotification("Border style updated locally!", "info");
       }
     } catch (error) {
       console.error("❌ Error updating border type:", error);
@@ -2699,45 +2691,7 @@ export function initButtonBorderTypeToggle(
       };
       window.__squareCraftBorderStateMap.set(key, { ...state });
 
-      // ✅ FIXED: Update border type and also trigger border update to apply new style
       updateBorderType(blockId, typeClass, type);
-
-      // ✅ NEW: Force update the border to apply the new style immediately
-      if (window.__squareCraftBorderStateMap.has(key)) {
-        const currentState = window.__squareCraftBorderStateMap.get(key);
-        if (currentState && currentState.values) {
-          // Get current border width value
-          let currentWidth = 0;
-          if (currentState.side === "All") {
-            const v = currentState.values;
-            currentWidth = Math.round(
-              ((v.Top ?? 0) +
-                (v.Right ?? 0) +
-                (v.Bottom ?? 0) +
-                (v.Left ?? 0)) /
-                4
-            );
-          } else {
-            currentWidth = currentState.values[currentState.side] || 0;
-          }
-
-          // Force apply border with new style
-          if (currentWidth > 0) {
-            console.log(
-              `🔄 Forcing border update with new style: ${type}, width: ${currentWidth}px`
-            );
-            // Trigger border update by calling applyBorder directly
-            setTimeout(() => {
-              const selectedElement = getSelectedElement?.();
-              if (selectedElement && selectedElement.id === blockId) {
-                // Update the current value and trigger applyBorder
-                currentValue = currentWidth;
-                applyBorder();
-              }
-            }, 10);
-          }
-        }
-      }
     };
   });
 }
@@ -3316,30 +3270,6 @@ export function initButtonBorderRadiusControl(
       updateUIForTarget(activeRadiusTarget);
     }
   }, 50);
-
-  // ✅ NEW: Initialize border style buttons to show current selection
-  setTimeout(() => {
-    const currentStyle = window.__squareCraftBorderStyle || "solid";
-    const styleButtons = [
-      { id: "buttonBorderTypeSolid", type: "solid" },
-      { id: "buttonBorderTypeDashed", type: "dashed" },
-      { id: "buttonBorderTypeDotted", type: "dotted" },
-    ];
-
-    styleButtons.forEach(({ id, type }) => {
-      const btn = document.getElementById(id);
-      if (btn) {
-        btn.classList.remove("sc-bg-454545");
-        if (type === currentStyle) {
-          btn.classList.add("sc-bg-454545");
-        }
-      }
-    });
-
-    console.log(
-      `🎨 Initialized border style UI with current style: ${currentStyle}`
-    );
-  }, 100);
 }
 
 export function ensurePublishButtonInShadow(
