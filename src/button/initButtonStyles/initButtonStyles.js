@@ -2480,7 +2480,7 @@ export function initButtonBorderControl(
     styleTag.innerHTML = `
       .${typeClass} {
         box-sizing: border-box !important;
-        border-style: ${window.__squareCraftBorderStyle} !important;
+        border-style: ${window.__squareCraftBorderStyle || "solid"} !important;
         border-color: ${window.__squareCraftBorderColor || "black"} !important;
         border-top-width: ${state.values.Top || 0}px !important;
         border-right-width: ${state.values.Right || 0}px !important;
@@ -2636,11 +2636,17 @@ export function initButtonBorderTypeToggle(
         },
       };
       addPendingModification(blockId, stylePayload, "button", "border");
-      if (saveToDB && typeof saveButtonBorderModifications === "function") {
+
+      // ✅ CRITICAL FIX: Always save to DB when border type changes
+      if (typeof saveButtonBorderModifications === "function") {
         saveButtonBorderModifications(blockId, stylePayload);
       }
+
       if (typeof showNotification === "function") {
-        showNotification("Border style updated locally!", "info");
+        showNotification(
+          "Border style updated and saved to database!",
+          "success"
+        );
       }
     } catch (error) {
       console.error("❌ Error updating border type:", error);
