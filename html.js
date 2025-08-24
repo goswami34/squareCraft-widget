@@ -1110,7 +1110,7 @@ export async function saveButtonBorderModifications(blockId, css) {
     return { success: false, error: "Missing required data" };
   }
 
-  // Clean & normalize buttonPrimary border styles
+  // Clean & normalize button styles for all button types
   const cleanCssObject = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
@@ -1126,17 +1126,55 @@ export async function saveButtonBorderModifications(blockId, css) {
       ])
     );
 
-  const cleanedPrimary = css.buttonPrimary
-    ? {
-        selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
-        styles: toKebabCaseStyleObject(
-          cleanCssObject(css.buttonPrimary.styles || {})
-        ),
-      }
-    : { selector: null, styles: {} };
+  // ✅ FIXED: Handle all button types dynamically
+  const cleanedCss = {};
+  let hasValidStyles = false;
 
-  if (Object.keys(cleanedPrimary.styles).length === 0) {
-    console.warn("⚠️ No valid border styles found in buttonPrimary.");
+  // Process buttonPrimary
+  if (
+    css.buttonPrimary &&
+    Object.keys(css.buttonPrimary.styles || {}).length > 0
+  ) {
+    cleanedCss.buttonPrimary = {
+      selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
+      styles: toKebabCaseStyleObject(
+        cleanCssObject(css.buttonPrimary.styles || {})
+      ),
+    };
+    hasValidStyles = true;
+  }
+
+  // Process buttonSecondary
+  if (
+    css.buttonSecondary &&
+    Object.keys(css.buttonSecondary.styles || {}).length > 0
+  ) {
+    cleanedCss.buttonSecondary = {
+      selector:
+        css.buttonSecondary.selector || ".sqs-button-element--secondary",
+      styles: toKebabCaseStyleObject(
+        cleanCssObject(css.buttonSecondary.styles || {})
+      ),
+    };
+    hasValidStyles = true;
+  }
+
+  // Process buttonTertiary
+  if (
+    css.buttonTertiary &&
+    Object.keys(css.buttonTertiary.styles || {}).length > 0
+  ) {
+    cleanedCss.buttonTertiary = {
+      selector: css.buttonTertiary.selector || ".sqs-button-element--tertiary",
+      styles: toKebabCaseStyleObject(
+        cleanCssObject(css.buttonTertiary.styles || {})
+      ),
+    };
+    hasValidStyles = true;
+  }
+
+  if (!hasValidStyles) {
+    console.warn("⚠️ No valid border styles found in any button type.");
     return { success: false, error: "No valid border styles to save" };
   }
 
@@ -1146,12 +1184,17 @@ export async function saveButtonBorderModifications(blockId, css) {
     widgetId,
     pageId,
     elementId: blockId,
-    css: {
-      buttonPrimary: cleanedPrimary,
-    },
+    css: cleanedCss,
   };
 
-  console.log("📤 Sending button border payload:", payload);
+  console.log("📤 Sending button border payload:", {
+    ...payload,
+    buttonTypes: Object.keys(cleanedCss),
+    totalStyles: Object.values(cleanedCss).reduce(
+      (sum, btn) => sum + Object.keys(btn.styles).length,
+      0
+    ),
+  });
 
   try {
     const response = await fetch(
@@ -1385,7 +1428,7 @@ export async function saveButtonShadowModifications(blockId, css) {
     return { success: false, error: "Missing required data" };
   }
 
-  // Clean & normalize CSS
+  // Clean & normalize CSS for all button types
   const cleanCssObject = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
@@ -1401,17 +1444,55 @@ export async function saveButtonShadowModifications(blockId, css) {
       ])
     );
 
-  const cleanedPrimary = css.buttonPrimary
-    ? {
-        selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
-        styles: toKebabCaseStyleObject(
-          cleanCssObject(css.buttonPrimary.styles || {})
-        ),
-      }
-    : { selector: null, styles: {} };
+  // ✅ FIXED: Handle all button types dynamically
+  const cleanedCss = {};
+  let hasValidStyles = false;
 
-  if (Object.keys(cleanedPrimary.styles).length === 0) {
-    console.warn("⚠️ No valid shadow styles found in buttonPrimary.");
+  // Process buttonPrimary
+  if (
+    css.buttonPrimary &&
+    Object.keys(css.buttonPrimary.styles || {}).length > 0
+  ) {
+    cleanedCss.buttonPrimary = {
+      selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
+      styles: toKebabCaseStyleObject(
+        cleanCssObject(css.buttonPrimary.styles || {})
+      ),
+    };
+    hasValidStyles = true;
+  }
+
+  // Process buttonSecondary
+  if (
+    css.buttonSecondary &&
+    Object.keys(css.buttonSecondary.styles || {}).length > 0
+  ) {
+    cleanedCss.buttonSecondary = {
+      selector:
+        css.buttonSecondary.selector || ".sqs-button-element--secondary",
+      styles: toKebabCaseStyleObject(
+        cleanCssObject(css.buttonSecondary.styles || {})
+      ),
+    };
+    hasValidStyles = true;
+  }
+
+  // Process buttonTertiary
+  if (
+    css.buttonTertiary &&
+    Object.keys(css.buttonTertiary.styles || {}).length > 0
+  ) {
+    cleanedCss.buttonTertiary = {
+      selector: css.buttonTertiary.selector || ".sqs-button-element--tertiary",
+      styles: toKebabCaseStyleObject(
+        cleanCssObject(css.buttonTertiary.styles || {})
+      ),
+    };
+    hasValidStyles = true;
+  }
+
+  if (!hasValidStyles) {
+    console.warn("⚠️ No valid shadow styles found in any button type.");
     return { success: false, error: "No valid shadow styles to save" };
   }
 
@@ -1422,12 +1503,17 @@ export async function saveButtonShadowModifications(blockId, css) {
     widgetId,
     pageId,
     elementId: blockId,
-    css: {
-      buttonPrimary: cleanedPrimary,
-    },
+    css: cleanedCss,
   };
 
-  console.log("📤 Sending button shadow payload:", payload);
+  console.log("📤 Sending button shadow payload:", {
+    ...payload,
+    buttonTypes: Object.keys(cleanedCss),
+    totalStyles: Object.values(cleanedCss).reduce(
+      (sum, btn) => sum + Object.keys(btn.styles).length,
+      0
+    ),
+  });
 
   try {
     const response = await fetch(

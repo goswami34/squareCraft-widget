@@ -7717,10 +7717,25 @@ window.pendingModifications = pendingModifications;
     );
     if (!btn) return null;
 
+    // ✅ FIXED: Dynamically determine the button type based on the actual selected button
+    const typeClass = [...btn.classList].find((c) =>
+      c.startsWith("sqs-button-element--")
+    );
+
+    if (!typeClass) return null;
+
+    const buttonType = typeClass.includes("--primary")
+      ? "buttonPrimary"
+      : typeClass.includes("--secondary")
+      ? "buttonSecondary"
+      : typeClass.includes("--tertiary")
+      ? "buttonTertiary"
+      : "buttonPrimary";
+
     const computed = window.getComputedStyle(btn);
     return {
-      buttonPrimary: {
-        selector: ".sqs-button-element--primary",
+      [buttonType]: {
+        selector: `.${typeClass}`,
         styles: {
           boxSizing: computed.boxSizing,
           borderStyle: computed.borderStyle,
