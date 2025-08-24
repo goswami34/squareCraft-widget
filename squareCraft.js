@@ -4595,20 +4595,36 @@ window.pendingModifications = pendingModifications;
       const result = await res.json();
       if (!res.ok) throw new Error(result.message);
 
-      // Handle the direct structure: elements[]
+      // ✅ FIXED: Handle the new API structure with css buckets
       const elements = result.elements || [];
-      elements.forEach(({ elementId, selector, styles }) => {
-        // Apply button border styles as external CSS
-        if (selector && styles) {
-          applyStylesAsExternalCSS(selector, styles, "sc-btn-border-style");
-          console.log(
-            `✅ Applied button border styles to ${elementId}:`,
-            styles
-          );
-        }
+      console.log("🔄 Processing button border modifications:", elements);
+
+      elements.forEach(({ elementId, css }) => {
+        if (!css || typeof css !== "object") return;
+
+        // Process each button type bucket (buttonPrimary, buttonSecondary, buttonTertiary)
+        Object.entries(css).forEach(([buttonType, buttonData]) => {
+          if (!buttonData || !buttonData.selector || !buttonData.styles) return;
+
+          const { selector, styles } = buttonData;
+
+          // Apply button border styles as external CSS
+          if (selector && Object.keys(styles).length > 0) {
+            applyStylesAsExternalCSS(
+              selector,
+              styles,
+              `sc-btn-border-${buttonType}`
+            );
+            console.log(
+              `✅ Applied ${buttonType} border styles to ${elementId}:`,
+              { selector, styles }
+            );
+          }
+        });
       });
+
       console.log(
-        "✅ Applied button border styles to all elements (external CSS)"
+        `✅ Applied button border styles to ${elements.length} elements (external CSS)`
       );
     } catch (error) {
       console.error(
