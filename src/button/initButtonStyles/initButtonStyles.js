@@ -2480,7 +2480,7 @@ export function initButtonBorderControl(
     styleTag.innerHTML = `
       .${typeClass} {
         box-sizing: border-box !important;
-        border-style: ${window.__squareCraftBorderStyle || "solid"} !important;
+        border-style: ${window.__squareCraftBorderStyle} !important;
         border-color: ${window.__squareCraftBorderColor || "black"} !important;
         border-top-width: ${state.values.Top || 0}px !important;
         border-right-width: ${state.values.Right || 0}px !important;
