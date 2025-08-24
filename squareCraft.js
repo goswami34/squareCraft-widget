@@ -4574,9 +4574,42 @@ window.pendingModifications = pendingModifications;
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
+
+    // ✅ DEBUG: Try multiple ways to get pageId
+    let pageId = document
       .querySelector("article[data-page-sections]")
       ?.getAttribute("data-page-sections");
+
+    // Fallback: try to get pageId from other sources
+    if (!pageId) {
+      pageId = document
+        .querySelector("[data-page-id]")
+        ?.getAttribute("data-page-id");
+    }
+    if (!pageId) {
+      pageId = document
+        .querySelector("[data-page-sections]")
+        ?.getAttribute("data-page-sections");
+    }
+    if (!pageId) {
+      // Try to get from URL path
+      const pathMatch = window.location.pathname.match(/\/([a-f0-9]{24})/);
+      if (pathMatch) pageId = pathMatch[1];
+    }
+
+    console.log("🔍 Page ID sources:", {
+      fromArticle: document
+        .querySelector("article[data-page-sections]")
+        ?.getAttribute("data-page-sections"),
+      fromDataPageId: document
+        .querySelector("[data-page-id]")
+        ?.getAttribute("data-page-id"),
+      fromDataPageSections: document
+        .querySelector("[data-page-sections]")
+        ?.getAttribute("data-page-sections"),
+      fromURL: window.location.pathname,
+      finalPageId: pageId,
+    });
 
     if (!userId || !token || !widgetId || !pageId) {
       console.warn("⚠️ Missing credentials or page ID");
@@ -4594,6 +4627,11 @@ window.pendingModifications = pendingModifications;
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.message);
+
+      // ✅ DEBUG: Log the full API response to understand the structure
+      console.log("🔍 Full API Response:", result);
+      console.log("🔍 Request URL:", url);
+      console.log("🔍 Credentials:", { userId, widgetId, pageId, blockId });
 
       // ✅ FIXED: Handle the new API structure with css buckets
       const elements = result.elements || [];
@@ -4626,11 +4664,48 @@ window.pendingModifications = pendingModifications;
       console.log(
         `✅ Applied button border styles to ${elements.length} elements (external CSS)`
       );
+
+      // ✅ DEBUG: If no elements found, test the API with different parameters
+      if (elements.length === 0) {
+        console.log(
+          "⚠️ No elements found. Testing API with different parameters..."
+        );
+        await testAPIWithDifferentParams(userId, token, widgetId);
+      }
     } catch (error) {
       console.error(
         "❌ Failed to fetch button border modifications:",
         error.message
       );
+    }
+  }
+
+  // ✅ DEBUG: Test API with different parameters to find the issue
+  async function testAPIWithDifferentParams(userId, token, widgetId) {
+    console.log("🧪 Testing API with different parameters...");
+
+    // Test 1: Without pageId
+    try {
+      const url1 = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}`;
+      const res1 = await fetch(url1, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const result1 = await res1.json();
+      console.log("🧪 Test 1 (no pageId):", result1);
+    } catch (e) {
+      console.log("🧪 Test 1 failed:", e.message);
+    }
+
+    // Test 2: With different pageId format
+    try {
+      const url2 = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=all`;
+      const res2 = await fetch(url2, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const result2 = await res2.json();
+      console.log("🧪 Test 2 (pageId=all):", result2);
+    } catch (e) {
+      console.log("🧪 Test 2 failed:", e.message);
     }
   }
 
