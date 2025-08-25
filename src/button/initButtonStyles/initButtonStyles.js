@@ -3645,8 +3645,8 @@ export function initButtonShadowControls(
       allColorBar.style.left = "50%";
     }
 
-    // Apply the reset shadow
-    applyShadow(true);
+    // Apply the reset shadow (but don't save to DB automatically)
+    applyShadow(false);
 
     if (typeof showNotification === "function") {
       showNotification("All shadows reset!", "success");
@@ -3706,8 +3706,8 @@ export function initButtonShadowControls(
       }
     }
 
-    // Apply the updated shadow
-    applyShadow(true);
+    // Apply the updated shadow (but don't save to DB automatically)
+    applyShadow(false);
   }
 
   function setupShadowControl(type, range = 50) {
@@ -3798,31 +3798,7 @@ export function initButtonShadowControls(
       const up = () => {
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
-        // Save to DB when drag ends
-        const el = getSelectedElement?.();
-        if (el) {
-          const btn = el.querySelector(
-            ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
-          );
-          if (btn) {
-            const typeClass = [...btn.classList].find((cls) =>
-              cls.startsWith("sqs-button-element--")
-            );
-            if (typeClass && window.shadowStatesByType.has(typeClass)) {
-              const shadowState = window.shadowStatesByType.get(typeClass);
-              const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
-              const stylePayload = {
-                buttonPrimary: {
-                  selector: ".sqs-button-element--primary",
-                  styles: { boxShadow: value },
-                },
-              };
-              if (typeof saveButtonShadowModifications === "function") {
-                saveButtonShadowModifications(el.id, stylePayload);
-              }
-            }
-          }
-        }
+        // Don't save to DB automatically - wait for publish button
       };
       document.addEventListener("mousemove", move);
       document.addEventListener("mouseup", up);
@@ -3833,7 +3809,7 @@ export function initButtonShadowControls(
       const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
       const percent = x / rect.width;
       const val = Math.round(percent * (maxValue - minValue) + minValue);
-      updateUI(val, true); // Save to DB on click
+      updateUI(val, false); // Don't save to DB on click - wait for publish button
     });
 
     if (incBtn) {
@@ -3853,7 +3829,7 @@ export function initButtonShadowControls(
 
         const state = window.shadowStatesByType.get(typeClass) || {};
         const current = state[type] || 0;
-        updateUI(current + 1, true); // Save to DB on button click
+        updateUI(current + 1, false); // Don't save to DB on button click - wait for publish button
       };
     }
 
@@ -3874,7 +3850,7 @@ export function initButtonShadowControls(
 
         const state = window.shadowStatesByType.get(typeClass) || {};
         const current = state[type] || 0;
-        updateUI(current - 1, true); // Save to DB on button click
+        updateUI(current - 1, false); // Don't save to DB on button click - wait for publish button
       };
     }
 
