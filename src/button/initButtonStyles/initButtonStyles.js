@@ -2317,8 +2317,6 @@ export function initButtonIconColorPalate(
   }
 }
 
-import { accumulatePendingBorder } from "../../../../html";
-
 export function initButtonBorderControl(
   getSelectedElement,
   addPendingModification,
@@ -2353,7 +2351,6 @@ export function initButtonBorderControl(
 
       // Only update local state, do not save to DB
       addPendingModification(blockId, { border }, "border");
-      accumulatePendingBorder(blockId, { border });
       if (typeof showNotification === "function") {
         showNotification("Border updated locally!", "info");
       }
@@ -2519,8 +2516,6 @@ export function initButtonBorderControl(
         },
       };
       addPendingModification(blockId, stylePayload, "button", "border");
-      accumulatePendingBorder(blockId, stylePayload);
-
       if (saveToDB && typeof saveButtonBorderModifications === "function") {
         saveButtonBorderModifications(blockId, stylePayload);
       }
@@ -2691,12 +2686,11 @@ export function initButtonBorderTypeToggle(
       });
 
       addPendingModification(blockId, stylePayload, "button", "border");
-      accumulatePendingBorder(blockId, stylePayload);
 
       // ✅ CRITICAL FIX: Always save to DB when border type changes
       if (typeof saveButtonBorderModifications === "function") {
         console.log("💾 Saving to database with payload:", stylePayload);
-        // saveButtonBorderModifications(blockId, stylePayload);
+        saveButtonBorderModifications(blockId, stylePayload);
       }
 
       if (typeof showNotification === "function") {
