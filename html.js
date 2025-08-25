@@ -1319,13 +1319,24 @@ export async function saveButtonIconModifications(blockId, css) {
   // Apply only if explicitly true, otherwise false
   const applyToAllTypes = css?.applyToAllTypes ?? false;
 
+  // Structure the payload to match server expectations
   const payload = {
     userId,
     token,
     widgetId,
     pageId,
     elementId: blockId,
-    iconProperties,
+    modifications: [
+      {
+        elements: [
+          {
+            icon: {
+              buttonPrimary: iconProperties,
+            },
+          },
+        ],
+      },
+    ],
     buttonType,
     applyToAllTypes: applyToAllTypes,
   };
