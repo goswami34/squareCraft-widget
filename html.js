@@ -1091,6 +1091,33 @@ export async function saveButtonColorModifications(blockId, css) {
 
 // button color save modification end here
 
+// --- Pending buffer holder ---
+if (!window.__scPending) window.__scPending = {};
+if (!window.__scPending.buttonBorder)
+  window.__scPending.buttonBorder = new Map();
+
+/**
+ * Merge per-block pending border styles into a single payload.
+ * shape: { buttonPrimary|buttonSecondary|buttonTertiary: { selector, styles:{} } }
+ */
+export function accumulatePendingBorder(blockId, stylePayload) {
+  const map = window.__scPending.buttonBorder;
+  const prev = map.get(blockId) || {};
+
+  ["buttonPrimary", "buttonSecondary", "buttonTertiary"].forEach((k) => {
+    if (!stylePayload[k]) return;
+    const incoming = stylePayload[k];
+    const existed = prev[k] || { selector: incoming.selector, styles: {} };
+
+    prev[k] = {
+      selector: incoming.selector || existed.selector,
+      styles: { ...existed.styles, ...incoming.styles },
+    };
+  });
+
+  map.set(blockId, prev);
+}
+
 //button border save modification start here
 export async function saveButtonBorderModifications(blockId, css) {
   const pageId = document
