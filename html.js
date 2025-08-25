@@ -352,6 +352,9 @@ async function handlePublish() {
           case "buttonBorder":
             result = await saveButtonBorderModifications(blockId, mod.css);
             break;
+          case "buttonHoverBorder":
+            result = await saveButtonHoverBorderModifications(blockId, mod.css);
+            break;
           case "buttonColor":
             result = await saveButtonColorModifications(blockId, mod.css);
             break;
