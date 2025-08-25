@@ -1326,9 +1326,13 @@ export async function saveButtonIconModifications(blockId, css) {
     widgetId,
     pageId,
     elementId: blockId,
-    iconProperties,
-    buttonType,
-    applyToAllTypes: applyToAllTypes,
+    modifications: [
+      {
+        iconProperties,
+        buttonType,
+        applyToAllTypes: applyToAllTypes,
+      },
+    ],
   };
 
   // Validate that we have valid icon properties to save
