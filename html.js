@@ -1326,17 +1326,7 @@ export async function saveButtonIconModifications(blockId, css) {
     widgetId,
     pageId,
     elementId: blockId,
-    modifications: [
-      {
-        elements: [
-          {
-            icon: {
-              buttonPrimary: iconProperties,
-            },
-          },
-        ],
-      },
-    ],
+    iconProperties,
     buttonType,
     applyToAllTypes: applyToAllTypes,
   };
