@@ -2467,7 +2467,8 @@ export function initButtonBorderControl(
     // Create border styles object for local state
     const borderStyles = {
       boxSizing: "border-box",
-      borderStyle: window.__squareCraftBorderStyle,
+      borderStyle:
+        state.borderStyle || window.__squareCraftBorderStyle || "solid",
       borderColor: window.__squareCraftBorderColor || "black", // Use selected color from palette
       borderTopWidth: `${state.values.Top || 0}px`,
       borderRightWidth: `${state.values.Right || 0}px`,
@@ -2480,7 +2481,9 @@ export function initButtonBorderControl(
     styleTag.innerHTML = `
       .${typeClass} {
         box-sizing: border-box !important;
-        border-style: ${window.__squareCraftBorderStyle} !important;
+        border-style: ${
+          state.borderStyle || window.__squareCraftBorderStyle || "solid"
+        } !important;
         border-color: ${window.__squareCraftBorderColor || "black"} !important;
         border-top-width: ${state.values.Top || 0}px !important;
         border-right-width: ${state.values.Right || 0}px !important;
@@ -2633,19 +2636,20 @@ export function initButtonBorderTypeToggle(
         currentStyles = window.getComputedStyle(buttons[0]);
       }
 
-      // Get current border state for this specific button
+      // ✅ CRITICAL FIX: Get current border state for this specific button
       const key = `${blockId}--${typeClass}`;
       const currentState = window.__squareCraftBorderStateMap.get(key) || {
         values: {},
       };
 
-      // Create a comprehensive stylePayload with all border properties
+      // ✅ FIXED: Use the ACTUAL borderType parameter, not global state
       const stylePayload = {
         [buttonType]: {
           selector: `.${typeClass}`,
           styles: {
-            borderStyle: borderType,
-            borderColor: window.__squareCraftBorderColor || "black",
+            borderStyle: borderType, // Use the actual borderType parameter
+            borderColor:
+              currentState.color || window.__squareCraftBorderColor || "black",
             // Include current border widths from the state
             borderTopWidth: `${currentState.values.Top || 0}px`,
             borderRightWidth: `${currentState.values.Right || 0}px`,
@@ -2659,6 +2663,18 @@ export function initButtonBorderTypeToggle(
         },
       };
 
+      // ✅ CRITICAL FIX: Update the global border style map with the ACTUAL border type
+      if (!window.__squareCraftBorderStateMap) {
+        window.__squareCraftBorderStateMap = new Map();
+      }
+
+      // Update the specific button's border style in the state map
+      const updatedState = {
+        ...currentState,
+        borderStyle: borderType, // Store the actual border type for this button
+      };
+      window.__squareCraftBorderStateMap.set(key, updatedState);
+
       // Debug logging
       console.log("🔍 updateBorderType - stylePayload:", {
         buttonType,
@@ -2666,8 +2682,9 @@ export function initButtonBorderTypeToggle(
         borderType,
         stylePayload,
         currentState: currentState.values,
-        globalBorderStyle: window.__squareCraftBorderStyle,
+        storedBorderStyle: updatedState.borderStyle,
       });
+
       addPendingModification(blockId, stylePayload, "button", "border");
 
       // ✅ CRITICAL FIX: Always save to DB when border type changes
@@ -2709,6 +2726,8 @@ export function initButtonBorderTypeToggle(
       });
 
       el.classList.add("sc-bg-454545");
+
+      // ✅ FIXED: Set global border style but don't rely on it for individual buttons
       window.__squareCraftBorderStyle = type;
       console.log("🌐 Global border style set to:", type);
 
@@ -2732,19 +2751,25 @@ export function initButtonBorderTypeToggle(
       const key = `${blockId}--${typeClass}`;
       console.log("🔑 State key:", key);
 
+      // ✅ FIXED: Initialize state with current border style if not exists
       const state = window.__squareCraftBorderStateMap.get(key) || {
         values: {},
         side: "All",
         color: "#000000",
+        borderStyle: "solid", // Default border style
       };
-      console.log("📊 Current state:", state);
-      window.__squareCraftBorderStateMap.set(key, { ...state });
+
+      // ✅ FIXED: Update the border style for this specific button
+      state.borderStyle = type;
+      window.__squareCraftBorderStateMap.set(key, state);
 
       console.log("🚀 Calling updateBorderType with:", {
         blockId,
         typeClass,
         type,
       });
+
+      // ✅ CRITICAL FIX: Pass the actual border type, not rely on global state
       updateBorderType(blockId, typeClass, type, true);
     };
   });
