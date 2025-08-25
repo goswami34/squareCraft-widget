@@ -3634,9 +3634,9 @@ export function initButtonShadowControls(
                   styles: { boxShadow: value },
                 },
               };
-              if (typeof saveButtonShadowModifications === "function") {
-                saveButtonShadowModifications(el.id, stylePayload);
-              }
+              // if (typeof saveButtonShadowModifications === "function") {
+              //   // saveButtonShadowModifications(el.id, stylePayload);
+              // }
             }
           }
         }
