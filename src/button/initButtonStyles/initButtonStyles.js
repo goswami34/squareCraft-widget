@@ -3599,17 +3599,57 @@ export function initButtonShadowControls(
       if (field) {
         const fill = field.querySelector(".sc-shadow-fill");
         if (fill) {
-          fill.style.left = "50%";
+          if (field === xField || field === yField) {
+            fill.style.left = "50%"; // Center for X and Y
+          } else {
+            fill.style.left = "0%"; // Start for Blur and Spread
+          }
           fill.style.width = "0%";
         }
       }
     });
 
+    // Reset color palette UI elements
+    const colorCode = document.getElementById(
+      "button-shadow-border-color-code"
+    );
+    const transparencyCount = document.getElementById(
+      "button-shadow-border-color-transparency-count"
+    );
+
+    if (colorCode) {
+      colorCode.textContent = "Select";
+    }
+    if (transparencyCount) {
+      transparencyCount.textContent = "100%";
+    }
+
+    // Reset color selection bars
+    const colorSelectionBar = document.getElementById(
+      "button-shadow-border-color-selection-bar"
+    );
+    const transparencyBar = document.getElementById(
+      "button-shadow-border-color-transparency-bar"
+    );
+    const allColorBar = document.getElementById(
+      "button-shadow-border-color-all-color-selction-bar"
+    );
+
+    if (colorSelectionBar) {
+      colorSelectionBar.style.left = "0%";
+    }
+    if (transparencyBar) {
+      transparencyBar.style.left = "50%";
+    }
+    if (allColorBar) {
+      allColorBar.style.left = "50%";
+    }
+
     // Apply the reset shadow
     applyShadow(true);
 
     if (typeof showNotification === "function") {
-      showNotification("Shadow reset!", "success");
+      showNotification("All shadows reset!", "success");
     }
   }
 
@@ -3863,12 +3903,11 @@ export function initButtonShadowControls(
 
   // Setup reset button event listeners
   function setupResetButtons() {
-    // Shadow axis reset button
+    // Shadow axis reset button - resets X, Y, Color, Blur, and Spread
     const shadowAxisReset = document.getElementById("shadow-axis-reset");
     if (shadowAxisReset) {
       shadowAxisReset.addEventListener("click", () => {
-        resetShadowAxis("Xaxis");
-        resetShadowAxis("Yaxis");
+        resetAllShadows();
       });
     }
 
