@@ -3535,6 +3535,141 @@ export function initButtonShadowControls(
     }
   }
 
+  // Function to reset all shadow values
+  function resetAllShadows() {
+    const el = getSelectedElement?.();
+    if (!el) return;
+
+    const btn = el.querySelector(
+      ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const typeClass = [...btn.classList].find((cls) =>
+      cls.startsWith("sqs-button-element--")
+    );
+    if (!typeClass) return;
+
+    // Reset shadow state to 0
+    window.shadowStatesByType.set(typeClass, {
+      Xaxis: 0,
+      Yaxis: 0,
+      Blur: 0,
+      Spread: 0,
+      Color: "rgba(0,0,0,0.3)",
+    });
+
+    // Update all UI elements
+    const xBullet = document.getElementById("buttonShadowXaxisBullet");
+    const yBullet = document.getElementById("buttonShadowYaxisBullet");
+    const blurBullet = document.getElementById("buttonShadowBlurBullet");
+    const spreadBullet = document.getElementById("buttonShadowSpreadBullet");
+
+    const xLabel = document.getElementById("buttonShadowXaxisCount");
+    const yLabel = document.getElementById("buttonShadowYaxisCount");
+    const blurLabel = document.getElementById("buttonShadowBlurCount");
+    const spreadLabel = document.getElementById("buttonShadowSpreadCount");
+
+    // Reset bullet positions and labels
+    if (xBullet && xLabel) {
+      xBullet.style.left = "50%"; // Center position for 0
+      xLabel.textContent = "0px";
+    }
+    if (yBullet && yLabel) {
+      yBullet.style.left = "50%"; // Center position for 0
+      yLabel.textContent = "0px";
+    }
+    if (blurBullet && blurLabel) {
+      blurBullet.style.left = "0%"; // Start position for 0
+      blurLabel.textContent = "0px";
+    }
+    if (spreadBullet && spreadLabel) {
+      spreadBullet.style.left = "0%"; // Start position for 0
+      spreadLabel.textContent = "0px";
+    }
+
+    // Update fill bars
+    const xField = document.getElementById("buttonShadowXaxisField");
+    const yField = document.getElementById("buttonShadowYaxisField");
+    const blurField = document.getElementById("buttonShadowBlurField");
+    const spreadField = document.getElementById("buttonShadowSpreadField");
+
+    // Reset fill bars
+    [xField, yField, blurField, spreadField].forEach((field) => {
+      if (field) {
+        const fill = field.querySelector(".sc-shadow-fill");
+        if (fill) {
+          fill.style.left = "50%";
+          fill.style.width = "0%";
+        }
+      }
+    });
+
+    // Apply the reset shadow
+    applyShadow(true);
+
+    if (typeof showNotification === "function") {
+      showNotification("Shadow reset!", "success");
+    }
+  }
+
+  // Function to reset specific shadow axis
+  function resetShadowAxis(axisType) {
+    const el = getSelectedElement?.();
+    if (!el) return;
+
+    const btn = el.querySelector(
+      ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const typeClass = [...btn.classList].find((cls) =>
+      cls.startsWith("sqs-button-element--")
+    );
+    if (!typeClass) return;
+
+    if (!window.shadowStatesByType.has(typeClass)) {
+      window.shadowStatesByType.set(typeClass, {
+        Xaxis: 0,
+        Yaxis: 0,
+        Blur: 0,
+        Spread: 0,
+      });
+    }
+
+    const shadowState = window.shadowStatesByType.get(typeClass);
+    shadowState[axisType] = 0;
+
+    // Update specific UI element
+    const bullet = document.getElementById(`buttonShadow${axisType}Bullet`);
+    const label = document.getElementById(`buttonShadow${axisType}Count`);
+    const field = document.getElementById(`buttonShadow${axisType}Field`);
+
+    if (bullet && label && field) {
+      if (axisType === "Xaxis" || axisType === "Yaxis") {
+        bullet.style.left = "50%"; // Center for X and Y
+      } else {
+        bullet.style.left = "0%"; // Start for Blur and Spread
+      }
+      label.textContent = "0px";
+
+      // Update fill bar
+      const fill = field.querySelector(".sc-shadow-fill");
+      if (fill) {
+        if (axisType === "Xaxis" || axisType === "Yaxis") {
+          fill.style.left = "50%";
+          fill.style.width = "0%";
+        } else {
+          fill.style.left = "0%";
+          fill.style.width = "0%";
+        }
+      }
+    }
+
+    // Apply the updated shadow
+    applyShadow(true);
+  }
+
   function setupShadowControl(type, range = 50) {
     const bullet = document.getElementById(`buttonShadow${type}Bullet`);
     const field = document.getElementById(`buttonShadow${type}Field`);
@@ -3725,6 +3860,37 @@ export function initButtonShadowControls(
   setupShadowControl("Yaxis", 30);
   setupShadowControl("Blur", 50);
   setupShadowControl("Spread", 30);
+
+  // Setup reset button event listeners
+  function setupResetButtons() {
+    // Shadow axis reset button
+    const shadowAxisReset = document.getElementById("shadow-axis-reset");
+    if (shadowAxisReset) {
+      shadowAxisReset.addEventListener("click", () => {
+        resetShadowAxis("Xaxis");
+        resetShadowAxis("Yaxis");
+      });
+    }
+
+    // Shadow blur reset button
+    const shadowBlurReset = document.getElementById("shadow-blur-reset");
+    if (shadowBlurReset) {
+      shadowBlurReset.addEventListener("click", () => {
+        resetShadowAxis("Blur");
+      });
+    }
+
+    // Shadow spread reset button
+    const shadowSpreadReset = document.getElementById("shadow-spread-reset");
+    if (shadowSpreadReset) {
+      shadowSpreadReset.addEventListener("click", () => {
+        resetShadowAxis("Spread");
+      });
+    }
+  }
+
+  // Initialize reset buttons
+  setupResetButtons();
 
   // Initialize the button shadow color palette
   // You may need to pass themeColors from your context or config
