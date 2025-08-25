@@ -3267,189 +3267,6 @@ export function initButtonBorderRadiusControl(
   }, 50);
 }
 
-export function ensurePublishButtonInShadow(
-  getSelectedElement,
-  saveButtonShadowModifications,
-  showNotification
-) {
-  if (window.shadowPublishBound) return;
-
-  const publishButton = document.getElementById("publish");
-  if (!publishButton) return; // widget not ready yet
-  if (publishButton.dataset.shadowBound === "1") return;
-
-  publishButton.dataset.shadowBound = "1";
-  window.shadowPublishBound = true;
-
-  publishButton.addEventListener("click", async () => {
-    try {
-      const currentElement = getSelectedElement?.();
-      const blockId = currentElement?.id;
-
-      if (!blockId) {
-        console.warn("❌ Missing blockId");
-        return;
-      }
-
-      // Check both window.pendingModifications and shadowStatesByType
-      const pendingList = window.pendingModifications?.get(blockId) || [];
-      const shadowMods = pendingList.filter(
-        (m) => m.tagType === "buttonShadow"
-      );
-
-      console.log("🔍 Debug publish data:", {
-        blockId,
-        pendingModifications: window.pendingModifications,
-        pendingList,
-        shadowMods,
-        shadowStatesByType: window.shadowStatesByType,
-      });
-
-      // If no pending modifications, try to get current shadow states
-      let shadowData = null;
-      if (shadowMods.length > 0) {
-        shadowData = shadowMods[0];
-        console.log("✅ Using pending shadow data:", shadowData);
-      } else if (
-        window.shadowStatesByType &&
-        window.shadowStatesByType.size > 0
-      ) {
-        // Create shadow data from current states
-        shadowData = {
-          tagType: "buttonShadow",
-          css: {},
-        };
-
-        // Get all button types that have shadow states
-        for (const [typeClass, state] of window.shadowStatesByType) {
-          if (
-            state &&
-            (state.Xaxis !== 0 ||
-              state.Yaxis !== 0 ||
-              state.Blur !== 0 ||
-              state.Spread !== 0)
-          ) {
-            const typeKey = typeKeyFromClass(typeClass);
-            const color = state.Color || "rgba(0,0,0,0.3)";
-            const shadowValue = `${state.Xaxis}px ${state.Yaxis}px ${state.Blur}px ${state.Spread}px ${color}`;
-
-            shadowData.css[typeKey] = [
-              {
-                selector: typeClass,
-                styles: {
-                  boxShadow: shadowValue,
-                  borderColor: window.__squareCraftBorderColor || "black",
-                },
-              },
-            ];
-          }
-        }
-        console.log("✅ Created shadow data from states:", shadowData);
-      }
-
-      if (
-        !shadowData ||
-        !shadowData.css ||
-        Object.keys(shadowData.css).length === 0
-      ) {
-        console.warn("❌ No shadow data to save");
-        return;
-      }
-
-      // UI state
-      const originalText = publishButton.textContent;
-      const originalBg = publishButton.style.backgroundColor;
-      publishButton.textContent = "Publishing...";
-      publishButton.disabled = true;
-
-      // Merge css by button type
-      const merged = {
-        buttonPrimary: [],
-        buttonSecondary: [],
-        buttonTertiary: [],
-      };
-
-      const pushAll = (src, dest) => {
-        if (Array.isArray(src)) {
-          src.forEach((it) => {
-            if (it?.selector && it?.styles && Object.keys(it.styles).length) {
-              dest.push(it);
-            }
-          });
-        } else if (src?.selector && src?.styles) {
-          dest.push(src);
-        }
-      };
-
-      for (const mod of [shadowData]) {
-        const css = mod?.css || {};
-        pushAll(css.buttonPrimary, merged.buttonPrimary);
-        pushAll(css.buttonSecondary, merged.buttonSecondary);
-        pushAll(css.buttonTertiary, merged.buttonTertiary);
-      }
-
-      if (
-        merged.buttonPrimary.length +
-          merged.buttonSecondary.length +
-          merged.buttonTertiary.length ===
-        0
-      ) {
-        console.warn("❌ No valid shadow data to save");
-        publishButton.textContent = originalText;
-        publishButton.disabled = false;
-        return;
-      }
-
-      console.log("📤 Publishing shadow data:", { blockId, merged });
-      const result = await saveButtonShadowModifications(blockId, merged);
-
-      // Clear only buttonShadow entries if saved OK
-      if (result?.success) {
-        const remaining = pendingList.filter(
-          (m) => m.tagType !== "buttonShadow"
-        );
-        if (remaining.length)
-          window.pendingModifications.set(blockId, remaining);
-        else window.pendingModifications.delete(blockId);
-
-        // Also clear the shadow states after successful save
-        if (window.shadowStatesByType) {
-          window.shadowStatesByType.clear();
-        }
-      }
-
-      // UI feedback
-      publishButton.textContent = "Published";
-      publishButton.style.backgroundColor = "#4CAF50";
-      setTimeout(() => {
-        publishButton.textContent = originalText;
-        publishButton.style.backgroundColor = originalBg || "#EF7C2F";
-        publishButton.disabled = false;
-      }, 1200);
-
-      showNotification?.(
-        "Button shadow changes published",
-        result?.success ? "success" : "error"
-      );
-    } catch (err) {
-      console.error("Error publishing button shadow changes:", err);
-      publishButton.textContent = "Publish";
-      publishButton.style.backgroundColor = "#EF7C2F";
-      publishButton.disabled = false;
-      showNotification?.("Publish failed", "error");
-    }
-  });
-}
-
-// Helper function to get button type key from class
-function typeKeyFromClass(typeClass) {
-  if (!typeClass) return "buttonPrimary";
-  if (typeClass.includes("--primary")) return "buttonPrimary";
-  if (typeClass.includes("--secondary")) return "buttonSecondary";
-  if (typeClass.includes("--tertiary")) return "buttonTertiary";
-  return "buttonPrimary";
-}
-
 export function initButtonShadowControls(
   getSelectedElement,
   addPendingModification,
@@ -3946,6 +3763,98 @@ export function initButtonShadowControls(
     saveButtonShadowModifications,
     showNotification
   );
+}
+
+// Function to ensure publish button handles shadow modifications
+function ensurePublishButtonInShadow(
+  getSelectedElement,
+  saveButtonShadowModifications,
+  showNotification
+) {
+  const publishButton = document.getElementById("publish");
+  if (!publishButton) {
+    console.warn("Publish button not found for shadow controls");
+    return;
+  }
+
+  // Remove existing shadow publish handler to avoid duplicates
+  if (publishButton.shadowPublishHandler) {
+    publishButton.removeEventListener(
+      "click",
+      publishButton.shadowPublishHandler
+    );
+  }
+
+  // Create new shadow publish handler
+  publishButton.shadowPublishHandler = async () => {
+    try {
+      const el = getSelectedElement?.();
+      if (!el) {
+        showNotification("No element selected", "error");
+        return;
+      }
+
+      const btn = el.querySelector(
+        ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+      );
+      if (!btn) {
+        showNotification("No button found in selected element", "error");
+        return;
+      }
+
+      const typeClass = [...btn.classList].find((cls) =>
+        cls.startsWith("sqs-button-element--")
+      );
+      if (!typeClass) {
+        showNotification("No valid button type found", "error");
+        return;
+      }
+
+      // Get current shadow state
+      if (!window.shadowStatesByType.has(typeClass)) {
+        showNotification("No shadow modifications to publish", "info");
+        return;
+      }
+
+      const shadowState = window.shadowStatesByType.get(typeClass);
+      const color = shadowState.Color || "rgba(0,0,0,0.3)";
+      const shadowValue = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${color}`;
+
+      // Prepare style payload for database
+      const stylePayload = {
+        buttonPrimary: {
+          selector: ".sqs-button-element--primary",
+          styles: {
+            boxShadow: shadowValue,
+            borderColor: window.__squareCraftBorderColor || "black",
+          },
+        },
+      };
+
+      // Save to database using the provided function
+      if (typeof saveButtonShadowModifications === "function") {
+        const result = await saveButtonShadowModifications(el.id, stylePayload);
+        if (result?.success) {
+          showNotification(
+            "Shadow modifications published successfully!",
+            "success"
+          );
+        } else {
+          throw new Error(
+            result?.error || "Failed to publish shadow modifications"
+          );
+        }
+      } else {
+        throw new Error("saveButtonShadowModifications function not available");
+      }
+    } catch (error) {
+      console.error("Error publishing shadow modifications:", error);
+      showNotification(error.message, "error");
+    }
+  };
+
+  // Add the event listener
+  publishButton.addEventListener("click", publishButton.shadowPublishHandler);
 }
 
 window.syncButtonStylesFromElement = function (selectedElement) {
