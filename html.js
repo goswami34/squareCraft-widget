@@ -3024,6 +3024,7 @@ export async function removeButtonIcon(blockId) {
   // Structure the payload to match server expectations
   const payload = {
     userId,
+    token,
     widgetId,
     pageId,
     elementId: blockId,
@@ -3044,6 +3045,7 @@ export async function removeButtonIcon(blockId) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       }
