@@ -3027,6 +3027,7 @@ export async function removeButtonIcon(blockId) {
     token,
     widgetId,
     pageId,
+    elementId: blockId,
     buttonType,
     applyToAllTypes: false,
   };
