@@ -3038,13 +3038,16 @@ export async function removeButtonIcon(blockId) {
 
   try {
     console.log("🌐 Making API request to remove button icon...");
-    const response = await fetch("http://localhost:8001/api/v1/remove-icon", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/remove-icon",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
 
     console.log("📡 Response status:", response.status);
 
