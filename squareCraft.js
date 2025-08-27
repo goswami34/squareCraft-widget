@@ -1456,7 +1456,7 @@ window.pendingModifications = pendingModifications;
           ButtonHoverBackgroundColorModification(
             themeColors,
             () => selectedElement,
-            saveButtonHoverIconModifications,
+            saveButtonHoverColorModifications,
             addPendingModification,
             showNotification
           );
