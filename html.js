@@ -3028,7 +3028,7 @@ export async function removeButtonIcon(blockId) {
     widgetId,
     pageId,
     buttonType,
-    applyToAllTypes: true,
+    applyToAllTypes: false,
   };
 
   console.log("📤 Sending remove button icon payload:", {
