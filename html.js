@@ -2963,3 +2963,187 @@ export async function saveButtonHoverEffectModifications(blockId, css) {
 }
 
 // button hover effect save modification code end here
+
+export async function removeButtonIcon(blockId) {
+  console.log("🚀 removeButtonIcon called with:", { blockId });
+
+  const pageId = document
+    .querySelector("article[data-page-sections]")
+    ?.getAttribute("data-page-sections");
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  if (!userId || !token || !widgetId || !pageId || !blockId) {
+    console.log("❌ Missing required data to remove button icon", {
+      userId,
+      token,
+      widgetId,
+      pageId,
+      blockId,
+    });
+    return { success: false, error: "Missing required data" };
+  }
+
+  // Determine button type from the selected element
+  const selectedElement = document.querySelector(`[id="${blockId}"]`);
+  if (!selectedElement) {
+    console.log("❌ Selected element not found");
+    return { success: false, error: "Selected element not found" };
+  }
+
+  const buttonElement =
+    selectedElement.querySelector(
+      "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary"
+    ) ||
+    selectedElement.querySelector(
+      "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
+    );
+
+  if (!buttonElement) {
+    console.log("❌ Button element not found");
+    return { success: false, error: "Button element not found" };
+  }
+
+  const typeClass = [...buttonElement.classList].find((cls) =>
+    cls.startsWith("sqs-button-element--")
+  );
+
+  let buttonType = "tertiary"; // default
+  if (typeClass) {
+    if (typeClass.includes("primary")) {
+      buttonType = "primary";
+    } else if (typeClass.includes("secondary")) {
+      buttonType = "secondary";
+    } else if (typeClass.includes("tertiary")) {
+      buttonType = "tertiary";
+    }
+  }
+
+  // Structure the payload to match server expectations
+  const payload = {
+    userId,
+    widgetId,
+    pageId,
+    elementId: blockId,
+    buttonType,
+    applyToAllTypes: false,
+  };
+
+  console.log("📤 Sending remove button icon payload:", {
+    size: JSON.stringify(payload).length,
+    buttonType,
+  });
+
+  try {
+    console.log("🌐 Making API request to remove button icon...");
+    const response = await fetch("http://localhost:8001/api/v1/remove-icon", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log("📡 Response status:", response.status);
+
+    if (!response.ok) {
+      const result = await response.json();
+      console.error("❌ Server error response:", result);
+      throw new Error(
+        result.message || result.error || `HTTP ${response.status}`
+      );
+    }
+
+    const result = await response.json();
+    console.log("✅ Button icon removed:", result);
+    showNotification("Button icon removed successfully!", "success");
+
+    // Remove the icon from the DOM
+    const iconElement = buttonElement.querySelector(
+      ".sqscraft-button-icon, .sqscraft-image-icon"
+    );
+    if (iconElement) {
+      iconElement.remove();
+      console.log("🗑️ Icon removed from DOM");
+    }
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("❌ Error removing button icon:", error);
+    showNotification(`Failed to remove button icon: ${error.message}`, "error");
+
+    return { success: false, error: error.message };
+  }
+}
+
+export function initRemoveButtonIconHandler(
+  getSelectedElement,
+  showNotification
+) {
+  console.log("🔧 Initializing remove button icon handler...");
+
+  // Wait for the remove button to be available in the DOM
+  const waitForRemoveButton = () => {
+    return new Promise((resolve) => {
+      const checkButton = () => {
+        const removeButton = document.getElementById("removeButtonIcon");
+        if (removeButton) {
+          resolve(removeButton);
+        } else {
+          setTimeout(checkButton, 100);
+        }
+      };
+      checkButton();
+    });
+  };
+
+  waitForRemoveButton()
+    .then((removeButton) => {
+      console.log("✅ Remove button icon found, adding click handler");
+
+      removeButton.addEventListener("click", async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        console.log("🖱️ Remove button icon clicked");
+
+        const selected = getSelectedElement?.();
+        if (!selected) {
+          console.log("❌ No selected element found");
+          showNotification("❌ No button selected", "error");
+          return;
+        }
+
+        const blockId = selected.id;
+        if (!blockId) {
+          console.log("❌ No block ID found");
+          showNotification("❌ No block ID found", "error");
+          return;
+        }
+
+        console.log("🗑️ Removing icon for block:", blockId);
+
+        try {
+          const result = await removeButtonIcon(blockId);
+          if (result.success) {
+            console.log("✅ Icon removal successful");
+          } else {
+            console.log("❌ Icon removal failed:", result.error);
+          }
+        } catch (error) {
+          console.error("❌ Error in remove icon handler:", error);
+          showNotification("❌ Failed to remove icon", "error");
+        }
+      });
+
+      console.log("✅ Remove button icon click handler added successfully");
+    })
+    .catch((error) => {
+      console.error(
+        "❌ Failed to initialize remove button icon handler:",
+        error
+      );
+    });
+}

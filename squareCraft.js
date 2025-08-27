@@ -699,6 +699,10 @@ window.pendingModifications = pendingModifications;
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
 
+  const { initRemoveButtonIconHandler, removeButtonIcon } = await import(
+    "https://goswami34.github.io/squareCraft-widget/html.js"
+  );
+
   const { saveButtonHoverIconModifications } = await import(
     "https://goswami34.github.io/squareCraft-widget/html.js"
   );
@@ -1926,6 +1930,9 @@ window.pendingModifications = pendingModifications;
         },
         showNotification
       );
+
+      // Initialize remove button icon handler
+      initRemoveButtonIconHandler(() => selectedElement, showNotification);
 
       // Icon upload functionality is handled by initImageUploadPreview.js
       // No need to initialize it here as it's already handled elsewhere
