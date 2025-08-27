@@ -3027,9 +3027,8 @@ export async function removeButtonIcon(blockId) {
     token,
     widgetId,
     pageId,
-    elementId: blockId,
     buttonType,
-    applyToAllTypes: false,
+    applyToAllTypes: true,
   };
 
   console.log("📤 Sending remove button icon payload:", {
@@ -3050,15 +3049,24 @@ export async function removeButtonIcon(blockId) {
 
     console.log("📡 Response status:", response.status);
 
-    if (!response.ok) {
-      const result = await response.json();
-      console.error("❌ Server error response:", result);
-      throw new Error(
-        result.message || result.error || `HTTP ${response.status}`
-      );
+    // Read body safely (handles 204 No Content or empty body)
+    const rawText = await response.text();
+    let parsedBody = null;
+    try {
+      parsedBody = rawText ? JSON.parse(rawText) : null;
+    } catch (_) {
+      parsedBody = null;
     }
 
-    const result = await response.json();
+    if (!response.ok) {
+      const message =
+        (parsedBody && (parsedBody.message || parsedBody.error)) ||
+        `HTTP ${response.status}`;
+      console.error("❌ Server error response:", parsedBody || rawText);
+      throw new Error(message);
+    }
+
+    const result = parsedBody || { success: true };
     console.log("✅ Button icon removed:", result);
     showNotification("Button icon removed successfully!", "success");
 
