@@ -193,17 +193,58 @@ export function ButtonHoverColorModification(
     "hover-button-text-color-transparency-bar"
   );
 
-  if (
-    !palette ||
-    !container ||
-    !selectorField ||
-    !bullet ||
-    !colorCode ||
-    !transparencyCount
-  ) {
-    console.warn("❌ ButtonHoverColorModification - Missing required elements");
+  // Check if all required elements exist
+  const missingElements = [];
+  if (!palette)
+    missingElements.push("palette (hover-button-text-color-palette)");
+  if (!container) missingElements.push("container (hover-button-text-colors)");
+  if (!selectorField)
+    missingElements.push(
+      "selectorField (hover-button-text-color-selection-field)"
+    );
+  if (!bullet)
+    missingElements.push("bullet (hover-button-text-color-selection-bar)");
+  if (!colorCode)
+    missingElements.push("colorCode (hover-button-text-color-code)");
+  if (!transparencyCount)
+    missingElements.push(
+      "transparencyCount (hover-button-text-color-transparency-count)"
+    );
+
+  if (missingElements.length > 0) {
+    console.error(
+      "❌ ButtonHoverColorModification - Missing required elements:",
+      missingElements
+    );
+    console.log("🔍 DOM Debug Info:");
+    console.log(
+      "  - Available elements with 'hover' in ID:",
+      document.querySelectorAll("[id*='hover']")
+    );
+    console.log(
+      "  - Available elements with 'color' in ID:",
+      document.querySelectorAll("[id*='color']")
+    );
+    console.log(
+      "  - Available elements with 'text' in ID:",
+      document.querySelectorAll("[id*='text']")
+    );
+
+    // Try to find alternative elements
+    const alternativeColorCode = document.querySelector(
+      "[id*='color-code'], [id*='colorCode'], [class*='color-code']"
+    );
+    if (alternativeColorCode) {
+      console.log(
+        "🔍 Found alternative color code element:",
+        alternativeColorCode
+      );
+    }
+
     return;
   }
+
+  console.log("✅ All required elements found successfully");
 
   let dynamicHue = 0;
   let currentTransparency = 100;
@@ -659,56 +700,8 @@ export function ButtonHoverColorModification(
   // Show the palette
   palette.classList.remove("sc-hidden");
 
-  if (container.innerHTML.trim() !== "") return;
-
-  Object.values(themeColors).forEach((color) => {
-    const cleanColor = color.replace(/['"]+/g, "");
-    const swatch = document.createElement("div");
-    swatch.className = "sc-border-colors sc-cursor-pointer";
-    swatch.style.backgroundColor = cleanColor;
-    swatch.style.width = "18px";
-    swatch.style.height = "18px";
-    swatch.style.borderRadius = "6px";
-    swatch.title = cleanColor;
-
-    swatch.addEventListener("click", () => {
-      console.log("🎨 Color swatch clicked:", cleanColor);
-
-      // Update the color code field immediately using the dedicated function
-      updateColorCodeField(cleanColor);
-
-      // Update dynamic hue for color picker
-      const hsl = rgbToHslFromAny(cleanColor);
-      if (hsl) {
-        dynamicHue = hsl.h;
-        console.log("🎨 Dynamic hue updated to:", dynamicHue);
-      }
-
-      // Render the color picker with the selected color
-      renderVerticalColorShades(cleanColor);
-
-      // Apply the color to button hover
-      applyButtonHoverColor(cleanColor, currentTransparency / 100);
-
-      // Update transparency field background to match new hue
-      if (transparencyField) {
-        transparencyField.style.background = `linear-gradient(to bottom,
-          hsla(${dynamicHue}, 100%, 50%, 1),
-          hsla(${dynamicHue}, 100%, 50%, 0)
-        )`;
-      }
-
-      // Update all color field background to show current hue position
-      if (allColorField && allColorBullet) {
-        const rect = allColorField.getBoundingClientRect();
-        const huePercentage = dynamicHue / 360;
-        const bulletTop = huePercentage * rect.height;
-        allColorBullet.style.top = `${bulletTop}px`;
-      }
-    });
-
-    container.appendChild(swatch);
-  });
+  // Create color swatches using the dedicated function
+  createColorSwatches();
 
   function rgbToHslFromAny(color) {
     let r, g, b;
@@ -931,8 +924,136 @@ export function ButtonHoverColorModification(
     console.log("  - themeColors:", themeColors);
   }
 
+  // Function to wait for DOM elements and retry if needed
+  function waitForElementsAndRetry() {
+    const maxRetries = 10;
+    let retryCount = 0;
+
+    function checkAndRetry() {
+      retryCount++;
+      console.log(
+        `🔄 Retry ${retryCount}/${maxRetries} - Checking for DOM elements...`
+      );
+
+      // Re-check for elements
+      const currentColorCode = document.getElementById(
+        "hover-button-text-color-code"
+      );
+      const currentContainer = document.getElementById(
+        "hover-button-text-colors"
+      );
+
+      if (currentColorCode && currentContainer) {
+        console.log("✅ Elements found on retry, re-initializing...");
+
+        // Re-initialize the color swatches
+        if (container.innerHTML.trim() === "") {
+          console.log("🔄 Re-creating color swatches...");
+          createColorSwatches();
+        }
+
+        // Update color code field
+        if (firstColor) {
+          updateColorCodeField(firstColor);
+        }
+
+        return;
+      }
+
+      if (retryCount < maxRetries) {
+        console.log(`⏳ Elements not found, retrying in 200ms...`);
+        setTimeout(checkAndRetry, 200);
+      } else {
+        console.error("❌ Max retries reached, elements still not found");
+      }
+    }
+
+    // Start checking after a short delay
+    setTimeout(checkAndRetry, 100);
+  }
+
+  // Function to create color swatches (extracted for reuse)
+  function createColorSwatches() {
+    if (container.innerHTML.trim() !== "") return;
+
+    console.log("🎨 Creating color swatches...");
+
+    Object.values(themeColors).forEach((color) => {
+      const cleanColor = color.replace(/['"]+/g, "");
+      const swatch = document.createElement("div");
+      swatch.className = "sc-border-colors sc-cursor-pointer";
+      swatch.style.backgroundColor = cleanColor;
+      swatch.style.width = "18px";
+      swatch.style.height = "18px";
+      swatch.style.borderRadius = "6px";
+      swatch.title = cleanColor;
+
+      swatch.addEventListener("click", () => {
+        console.log("🎨 Color swatch clicked:", cleanColor);
+
+        // DIRECT UPDATE: Update the color code field immediately (like the working code)
+        if (colorCode) {
+          const convertedColor = convertToRGB(cleanColor);
+          colorCode.textContent = convertedColor;
+          console.log(
+            "✅ DIRECT UPDATE: Color code field updated to:",
+            convertedColor
+          );
+
+          // Force DOM update
+          colorCode.style.display = "none";
+          colorCode.offsetHeight;
+          colorCode.style.display = "";
+        } else {
+          console.error("❌ CRITICAL: colorCode element not found!");
+          console.log("🔍 Available elements:", {
+            colorCode: document.getElementById("hover-button-text-color-code"),
+            allColorCodes: document.querySelectorAll("[id*='color-code']"),
+            allElements: document.querySelectorAll("[id*='hover']"),
+          });
+        }
+
+        // Update dynamic hue for color picker
+        const hsl = rgbToHslFromAny(cleanColor);
+        if (hsl) {
+          dynamicHue = hsl.h;
+          console.log("🎨 Dynamic hue updated to:", dynamicHue);
+        }
+
+        // Render the color picker with the selected color
+        renderVerticalColorShades(cleanColor);
+
+        // Apply the color to button hover
+        applyButtonHoverColor(cleanColor, currentTransparency / 100);
+
+        // Update transparency field background to match new hue
+        if (transparencyField) {
+          transparencyField.style.background = `linear-gradient(to bottom,
+            hsla(${dynamicHue}, 100%, 50%, 1),
+            hsla(${dynamicHue}, 100%, 50%, 0)
+          )`;
+        }
+
+        // Update all color field background to show current hue position
+        if (allColorField && allColorBullet) {
+          const rect = allColorField.getBoundingClientRect();
+          const huePercentage = dynamicHue / 360;
+          const bulletTop = huePercentage * rect.height;
+          allColorBullet.style.top = `${bulletTop}px`;
+        }
+      });
+
+      container.appendChild(swatch);
+    });
+
+    console.log("✅ Color swatches created successfully");
+  }
+
   // Run debug check after a short delay to ensure DOM is ready
   setTimeout(debugElementStates, 100);
+
+  // Start the element waiting mechanism
+  waitForElementsAndRetry();
 
   // 👉 call binder immediately (BEFORE any early returns below)
   ensurePublishBoundForHoverTextColor();
