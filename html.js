@@ -857,22 +857,145 @@ export async function saveImageShadowModifications(blockId, css) {
 // image shadow code end here
 
 //button save modification start here
-export async function saveButtonModifications(blockId, css) {
-  const pageId = document
-    .querySelector("article[data-page-sections]")
-    ?.getAttribute("data-page-sections");
+// export async function saveButtonModifications(blockId, css) {
+//   const pageId = document
+//     .querySelector("article[data-page-sections]")
+//     ?.getAttribute("data-page-sections");
+
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
+
+//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+//     console.warn("❌ Missing required data to save button styles", {
+//       userId,
+//       token,
+//       widgetId,
+//       pageId,
+//       blockId,
+//       css,
+//     });
+//     return { success: false, error: "Missing required data" };
+//   }
+
+//   // ✅ Clean and normalize each button type
+//   const cleanCssObject = (rawCss = {}) =>
+//     Object.fromEntries(
+//       Object.entries(rawCss).filter(
+//         ([_, value]) =>
+//           value !== null &&
+//           value !== undefined &&
+//           value !== "" &&
+//           value !== "null"
+//       )
+//     );
+
+//   const toKebabCase = (obj) =>
+//     Object.fromEntries(
+//       Object.entries(obj).map(([key, value]) => [
+//         key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+//         value,
+//       ])
+//     );
+
+//   const cleanedPrimary = css.buttonPrimary
+//     ? {
+//         selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
+//         styles: toKebabCase(cleanCssObject(css.buttonPrimary.styles || {})),
+//       }
+//     : { selector: null, styles: {} };
+
+//   const cleanedSecondary = css.buttonSecondary
+//     ? {
+//         selector:
+//           css.buttonSecondary.selector || ".sqs-button-element--secondary",
+//         styles: toKebabCase(cleanCssObject(css.buttonSecondary.styles || {})),
+//       }
+//     : { selector: null, styles: {} };
+
+//   const cleanedTertiary = css.buttonTertiary
+//     ? {
+//         selector:
+//           css.buttonTertiary.selector || ".sqs-button-element--tertiary",
+//         styles: toKebabCase(cleanCssObject(css.buttonTertiary.styles || {})),
+//       }
+//     : { selector: null, styles: {} };
+
+//   // ✅ At least one valid style
+//   const isEmpty =
+//     Object.keys(cleanedPrimary.styles).length === 0 &&
+//     Object.keys(cleanedSecondary.styles).length === 0 &&
+//     Object.keys(cleanedTertiary.styles).length === 0;
+
+//   if (isEmpty) {
+//     console.warn("⚠️ No valid button styles to save");
+//     return { success: false, error: "No valid button styles to save" };
+//   }
+
+//   const payload = {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId,
+//     elementId: blockId,
+//     css: {
+//       buttonPrimary: cleanedPrimary,
+//       buttonSecondary: cleanedSecondary,
+//       buttonTertiary: cleanedTertiary,
+//     },
+//   };
+
+//   console.log("📤 Sending button style payload:", payload);
+
+//   try {
+//     const response = await fetch(
+//       "https://admin.squareplugin.com/api/v1/save-button-modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     const result = await response.json();
+
+//     if (!response.ok) {
+//       throw new Error(result.message || `HTTP ${response.status}`);
+//     }
+
+//     console.log("✅ Button styles saved:", result);
+//     showNotification("Button styles saved successfully!", "success");
+
+//     return { success: true, data: result };
+//   } catch (error) {
+//     console.error("❌ Error saving button styles:", error);
+//     showNotification(`Failed to save button styles: ${error.message}`, "error");
+
+//     return { success: false, error: error.message };
+//   }
+// }
+
+// Save global or per-element button styles (no pageId)
+export async function saveButtonModifications(blockIdOrCss, maybeCss) {
+  // Backward-compatible signature:
+  // - Old: saveButtonModifications(blockId, css)
+  // - New: saveButtonModifications(css)  -> global
+  const isGlobalCall = typeof blockIdOrCss === "object" && !maybeCss;
+  const css = isGlobalCall ? blockIdOrCss : maybeCss;
+  const elementId = isGlobalCall ? null : blockIdOrCss;
 
   const userId = localStorage.getItem("sc_u_id");
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+  if (!userId || !token || !widgetId || !css) {
     console.warn("❌ Missing required data to save button styles", {
       userId,
       token,
       widgetId,
-      pageId,
-      blockId,
       css,
     });
     return { success: false, error: "Missing required data" };
@@ -882,7 +1005,7 @@ export async function saveButtonModifications(blockId, css) {
   const cleanCssObject = (rawCss = {}) =>
     Object.fromEntries(
       Object.entries(rawCss).filter(
-        ([_, value]) =>
+        ([, value]) =>
           value !== null &&
           value !== undefined &&
           value !== "" &&
@@ -898,14 +1021,14 @@ export async function saveButtonModifications(blockId, css) {
       ])
     );
 
-  const cleanedPrimary = css.buttonPrimary
+  const cleanedPrimary = css?.buttonPrimary
     ? {
         selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
         styles: toKebabCase(cleanCssObject(css.buttonPrimary.styles || {})),
       }
     : { selector: null, styles: {} };
 
-  const cleanedSecondary = css.buttonSecondary
+  const cleanedSecondary = css?.buttonSecondary
     ? {
         selector:
           css.buttonSecondary.selector || ".sqs-button-element--secondary",
@@ -913,7 +1036,7 @@ export async function saveButtonModifications(blockId, css) {
       }
     : { selector: null, styles: {} };
 
-  const cleanedTertiary = css.buttonTertiary
+  const cleanedTertiary = css?.buttonTertiary
     ? {
         selector:
           css.buttonTertiary.selector || ".sqs-button-element--tertiary",
@@ -921,7 +1044,6 @@ export async function saveButtonModifications(blockId, css) {
       }
     : { selector: null, styles: {} };
 
-  // ✅ At least one valid style
   const isEmpty =
     Object.keys(cleanedPrimary.styles).length === 0 &&
     Object.keys(cleanedSecondary.styles).length === 0 &&
@@ -932,12 +1054,17 @@ export async function saveButtonModifications(blockId, css) {
     return { success: false, error: "No valid button styles to save" };
   }
 
+  // 🔁 Decide scope:
+  // - If elementId present => per-element override
+  // - Else => global
+  const scope = elementId ? "element" : "global";
+
   const payload = {
     userId,
     token,
     widgetId,
-    pageId,
-    elementId: blockId,
+    scope,
+    ...(elementId ? { elementId } : {}),
     css: {
       buttonPrimary: cleanedPrimary,
       buttonSecondary: cleanedSecondary,
@@ -963,17 +1090,28 @@ export async function saveButtonModifications(blockId, css) {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || `HTTP ${response.status}`);
+      throw new Error(result?.message || `HTTP ${response.status}`);
     }
 
     console.log("✅ Button styles saved:", result);
-    showNotification("Button styles saved successfully!", "success");
+    if (typeof showNotification === "function") {
+      showNotification(
+        scope === "global"
+          ? "Global button styles saved successfully!"
+          : "Button styles saved for this block!",
+        "success"
+      );
+    }
 
     return { success: true, data: result };
   } catch (error) {
     console.error("❌ Error saving button styles:", error);
-    showNotification(`Failed to save button styles: ${error.message}`, "error");
-
+    if (typeof showNotification === "function") {
+      showNotification(
+        `Failed to save button styles: ${error.message}`,
+        "error"
+      );
+    }
     return { success: false, error: error.message };
   }
 }
