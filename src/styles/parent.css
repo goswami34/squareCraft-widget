@@ -5092,3 +5092,7 @@
 #hover-button-icon-color-transparency-field {
   border-radius: 6px !important;
 }
+
+.button-hover-shadow-color-section {
+  width: 140px;
+}

@@ -560,7 +560,7 @@ export function WidgetButtonHoverState() {
                   </div>
           
                   
-                  <div class="sc-col-span-5">
+                  <div class="sc-col-span-5 button-hover-shadow-color-section">
                         <p class="sc-roboto sc-font-thin sc-universal  sc-font-size-12 sc-font-thin sc-text-gray-300">
                            Shadow
                            Color
