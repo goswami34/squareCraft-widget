@@ -1731,14 +1731,14 @@ export function applyHoverButtonEffects(
     }
 
     styleTag.innerHTML = `
-.${typeClass} {
-  transition: all ${duration}ms ${transition} ${delay}ms !important;
-  transform: none !important;
-}
-.${typeClass}:hover {
-  transform: ${transformRule} !important;
-}
-`;
+      .${typeClass} {
+        transition: all ${duration}ms ${transition} ${delay}ms !important;
+        transform: none !important;
+      }
+      .${typeClass}:hover {
+        transform: ${transformRule} !important;
+      }
+      `;
 
     // Build payload and forward to pending + save
     const blockId = selected.id;
