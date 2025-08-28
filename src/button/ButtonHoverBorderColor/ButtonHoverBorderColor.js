@@ -745,9 +745,52 @@ export function ButtonHoverBorderColorPalateToggle(
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
 
+    // Helper: convert rgb/rgba/hex to hex (alpha discarded)
+    function toHexColor(input) {
+      try {
+        if (!input) return null;
+        let r, g, b;
+        if (input.startsWith("#")) {
+          const hex = input.replace("#", "");
+          if (hex.length === 3) {
+            r = parseInt(hex[0] + hex[0], 16);
+            g = parseInt(hex[1] + hex[1], 16);
+            b = parseInt(hex[2] + hex[2], 16);
+          } else if (hex.length === 6 || hex.length === 8) {
+            r = parseInt(hex.slice(0, 2), 16);
+            g = parseInt(hex.slice(2, 4), 16);
+            b = parseInt(hex.slice(4, 6), 16);
+          }
+        } else if (input.startsWith("rgb")) {
+          const parts = input.match(/\d+\.?\d*/g);
+          if (!parts) return null;
+          r = Math.round(parseFloat(parts[0]));
+          g = Math.round(parseFloat(parts[1]));
+          b = Math.round(parseFloat(parts[2]));
+        } else if (input.startsWith("hsl")) {
+          // Fallback: use current colorCode text if present
+          const txt = document.getElementById("hover-color-code")?.textContent;
+          if (txt && txt.startsWith("rgb")) return toHexColor(txt);
+          return null;
+        } else {
+          return null;
+        }
+        const to2 = (n) => n.toString(16).padStart(2, "0");
+        if ([r, g, b].some((v) => Number.isNaN(v))) return null;
+        return `#${to2(r)}${to2(g)}${to2(b)}`;
+      } catch (_) {
+        return null;
+      }
+    }
+
     // Store the selected color globally (hover-specific and legacy key)
     window.__squareCraftHoverBorderColor = rgbaColor;
     window.__squareCraftBorderColor = rgbaColor;
+    // Also store a hex-only version for database payload compatibility
+    const hexForDb = toHexColor(color) || toHexColor(rgbaColor);
+    if (hexForDb) {
+      window.__squareCraftHoverBorderColorHex = hexForDb;
+    }
 
     const styleId = `sc-border-style-global-${buttonType}`;
     let styleTag = document.getElementById(styleId);

@@ -1090,7 +1090,10 @@ export function initHoverButtonBorderRadiusControl(
     const currentBorderStyle = cleanBorderStyle(
       window.__squareCraftBorderStyle
     );
-    const currentBorderColor = window.__squareCraftHoverBorderColor || "black";
+    const currentBorderColor =
+      window.__squareCraftHoverBorderColorHex ||
+      window.__squareCraftHoverBorderColor ||
+      "black";
     const currentBorderRadius = value; // Current radius value
 
     const cssContent = `
@@ -1134,7 +1137,10 @@ export function initHoverButtonBorderRadiusControl(
         ?.value || 0;
     const currentBorderStyle =
       cleanBorderStyle(window.__squareCraftBorderStyle) || "solid";
-    const currentBorderColor = window.__squareCraftHoverBorderColor || "black";
+    const currentBorderColor =
+      window.__squareCraftHoverBorderColorHex ||
+      window.__squareCraftHoverBorderColor ||
+      "black";
     const currentBorderRadius = value; // Current radius value
 
     // Create complete styles object with all border properties
@@ -1372,7 +1378,9 @@ export function initHoverButtonBorderTypeToggle(
         window.__squareCraftHoverBorderStateMap?.get(`${selected.id}--${cls}`)
           ?.value || 0;
       const currentBorderColor =
-        window.__squareCraftHoverBorderColor || "black";
+        window.__squareCraftHoverBorderColorHex ||
+        window.__squareCraftHoverBorderColor ||
+        "black";
       const currentBorderRadius = window.__squareCraftHoverRadius || 0;
 
       style.innerHTML = `
@@ -1469,7 +1477,11 @@ export function initHoverButtonBorderControl(
     style.innerHTML = `
 .${typeClass}:hover {
   border-style: ${cleanBorderStyle(window.__squareCraftBorderStyle)} !important;
-  border-color: ${window.__squareCraftHoverBorderColor || "black"} !important;
+  border-color: ${
+    window.__squareCraftHoverBorderColorHex ||
+    window.__squareCraftHoverBorderColor ||
+    "black"
+  } !important;
   border-radius: ${window.__squareCraftHoverRadius || 0}px !important;
   border-top-width: ${t} !important;
   border-right-width: ${r} !important;
@@ -1504,7 +1516,10 @@ export function initHoverButtonBorderControl(
       borderBottomWidth: b,
       borderLeftWidth: l,
       borderStyle: cleanBorderStyle(window.__squareCraftBorderStyle),
-      borderColor: window.__squareCraftHoverBorderColor || "black",
+      borderColor:
+        window.__squareCraftHoverBorderColorHex ||
+        window.__squareCraftHoverBorderColor ||
+        "black",
     };
 
     console.log("📤 Complete hover border styles:", completeStyles);
