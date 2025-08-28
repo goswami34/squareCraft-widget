@@ -54,7 +54,7 @@ export function ButtonHoverBackgroundColorModification(
         styleTag.textContent = `
           a.${buttonType}:hover,
           button.${buttonType}:hover {
-            ${cssProperties.join(";\n            ")}
+            ${cssProperties.join(";\n")}
           }
         `;
       }
