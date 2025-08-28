@@ -4106,72 +4106,143 @@ window.pendingModifications = pendingModifications;
     styleTag.textContent = `${hoverSelector} { ${cssRules} }`;
   }
 
-  async function fetchButtonModifications(blockId = null) {
+  // async function fetchButtonModifications(blockId = null) {
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
+
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn("⚠️ Missing credentials or page ID");
+  //     return;
+  //   }
+
+  //   let url = `https://admin.squareplugin.com/api/v1/get-button-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+  //   if (blockId) url += `&elementId=${blockId}`;
+
+  //   try {
+  //     const res = await fetch(url, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     const result = await res.json();
+  //     if (!res.ok) throw new Error(result.message);
+
+  //     // Handle the nested structure: modifications[].elements[]
+  //     const modifications = result.modifications || [];
+  //     modifications.forEach((mod) => {
+  //       const elements = mod.elements || [];
+  //       elements.forEach(({ elementId, css }) => {
+  //         // Apply button styles as external CSS
+  //         const buttonPrimary = css?.buttonPrimary;
+  //         if (buttonPrimary?.selector && buttonPrimary?.styles) {
+  //           applyStylesAsExternalCSS(
+  //             buttonPrimary.selector,
+  //             buttonPrimary.styles
+  //           );
+  //           console.log(
+  //             `✅ Applied button styles to ${elementId}:`,
+  //             buttonPrimary.styles
+  //           );
+  //         }
+  //         // Optionally handle secondary/tertiary
+  //         const buttonSecondary = css?.buttonSecondary;
+  //         if (buttonSecondary?.selector && buttonSecondary?.styles) {
+  //           applyStylesAsExternalCSS(
+  //             buttonSecondary.selector,
+  //             buttonSecondary.styles
+  //           );
+  //         }
+  //         const buttonTertiary = css?.buttonTertiary;
+  //         if (buttonTertiary?.selector && buttonTertiary?.styles) {
+  //           applyStylesAsExternalCSS(
+  //             buttonTertiary.selector,
+  //             buttonTertiary.styles
+  //           );
+  //         }
+  //       });
+  //     });
+  //     console.log("✅ Applied button styles to all elements (external CSS)");
+  //   } catch (error) {
+  //     console.error("❌ Failed to fetch button modifications:", error.message);
+  //   }
+  // }
+
+  // fetch button color modifications from the backend
+
+  // Fetch the single root-level css bundle (no pageId, no elementId)
+  async function fetchButtonModifications() {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
 
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
+    if (!userId || !token || !widgetId) {
+      console.warn("⚠️ Missing credentials (userId/token/widgetId).");
       return;
     }
 
-    let url = `https://admin.squareplugin.com/api/v1/get-button-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-    if (blockId) url += `&elementId=${blockId}`;
+    // NOTE: route name must match your router
+    // router.get("/get-button-modifications", authMiddleware, fetchButtonModification)
+    const url = `https://admin.squareplugin.com/api/v1/get-button-modifications?userId=${encodeURIComponent(
+      userId
+    )}&widgetId=${encodeURIComponent(widgetId)}`;
+
+    // convert any camelCase coming from DB to kebab-case before applying
+    const toKebabCaseObject = (obj = {}) =>
+      Object.fromEntries(
+        Object.entries(obj).map(([k, v]) => [
+          k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+          v,
+        ])
+      );
 
     try {
       const res = await fetch(url, {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message);
 
-      // Handle the nested structure: modifications[].elements[]
-      const modifications = result.modifications || [];
-      modifications.forEach((mod) => {
-        const elements = mod.elements || [];
-        elements.forEach(({ elementId, css }) => {
-          // Apply button styles as external CSS
-          const buttonPrimary = css?.buttonPrimary;
-          if (buttonPrimary?.selector && buttonPrimary?.styles) {
-            applyStylesAsExternalCSS(
-              buttonPrimary.selector,
-              buttonPrimary.styles
-            );
-            console.log(
-              `✅ Applied button styles to ${elementId}:`,
-              buttonPrimary.styles
-            );
-          }
-          // Optionally handle secondary/tertiary
-          const buttonSecondary = css?.buttonSecondary;
-          if (buttonSecondary?.selector && buttonSecondary?.styles) {
-            applyStylesAsExternalCSS(
-              buttonSecondary.selector,
-              buttonSecondary.styles
-            );
-          }
-          const buttonTertiary = css?.buttonTertiary;
-          if (buttonTertiary?.selector && buttonTertiary?.styles) {
-            applyStylesAsExternalCSS(
-              buttonTertiary.selector,
-              buttonTertiary.styles
-            );
-          }
-        });
-      });
-      console.log("✅ Applied button styles to all elements (external CSS)");
-    } catch (error) {
-      console.error("❌ Failed to fetch button modifications:", error.message);
+      const result = await res.json();
+      if (!res.ok) throw new Error(result?.message || `HTTP ${res.status}`);
+
+      // New response shape: { success, message, css, updatedAt }
+      const css = result?.css || {};
+      const blocks = [
+        css.buttonPrimary,
+        css.buttonSecondary,
+        css.buttonTertiary,
+      ].filter(Boolean);
+
+      if (blocks.length === 0) {
+        console.info("ℹ️ No button css saved yet.");
+        return;
+      }
+
+      // Apply each block as external CSS
+      for (const block of blocks) {
+        const selector = block?.selector;
+        const styles = block?.styles || {};
+        if (!selector || !Object.keys(styles).length) continue;
+
+        // protect against camelCase keys stored earlier (e.g., marginRight)
+        const kebabStyles = toKebabCaseObject(styles);
+
+        applyStylesAsExternalCSS(selector, kebabStyles);
+        console.log("✅ Applied button styles:", selector, kebabStyles);
+      }
+
+      console.log("✅ Button styles applied (from root-level css).");
+    } catch (err) {
+      console.error("❌ Failed to fetch button modifications:", err.message);
     }
   }
 
-  // fetch button color modifications from the backend
   async function fetchButtonColorModifications(blockId = null) {
     console.log("🚀 Starting fetchButtonColorModifications...");
     console.log("📋 Parameters:", { blockId });
