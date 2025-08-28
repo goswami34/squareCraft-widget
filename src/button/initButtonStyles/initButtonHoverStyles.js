@@ -1731,8 +1731,11 @@ export function applyHoverButtonEffects(
     }
 
     styleTag.innerHTML = `
-.${typeClass}:hover {
+.${typeClass} {
   transition: all ${duration}ms ${transition} ${delay}ms !important;
+  transform: none !important;
+}
+.${typeClass}:hover {
   transform: ${transformRule} !important;
 }
 `;
@@ -1754,7 +1757,6 @@ export function applyHoverButtonEffects(
         selector: `.${typeClass}`,
         styles: {
           transition: `all ${duration}ms ${transition} ${delay}ms`,
-          transform: transformRule,
         },
       },
     };
