@@ -651,6 +651,68 @@ export function ButtonHoverBorderColorPalateToggle(
     window.__squareCraftBorderColor = "black";
   }
 
+  // Helper function to convert any color format to RGB string
+  // This ensures all colors are displayed in RGB format for consistency
+  function convertToRGB(color) {
+    if (!color) return "rgb(255, 0, 0)";
+
+    // If already RGB format, return as is
+    if (color.startsWith("rgb(")) {
+      return color;
+    }
+
+    // Convert HSL to RGB
+    if (color.startsWith("hsl(")) {
+      const hsl = rgbToHslFromAny(color);
+      if (hsl) {
+        const h = hsl.h / 360;
+        const s = hsl.s;
+        const l = hsl.l;
+
+        function hueToRgb(p, q, t) {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1 / 6) return p + (q - p) * 6 * t;
+          if (t < 1 / 2) return q;
+          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+          return p;
+        }
+
+        let r, g, b;
+        if (s === 0) {
+          r = g = b = l;
+        } else {
+          const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+          const p = 2 * l - q;
+          r = hueToRgb(p, q, h + 1 / 3);
+          g = hueToRgb(p, q, h);
+          b = hueToRgb(p, q, h - 1 / 3);
+        }
+
+        return toRGBString(r * 255, g * 255, b * 255);
+      }
+    }
+
+    // Convert Hex to RGB
+    if (color.startsWith("#")) {
+      const hex = color.replace("#", "");
+      let r, g, b;
+      if (hex.length === 3) {
+        r = parseInt(hex[0] + hex[0], 16);
+        g = parseInt(hex[1] + hex[1], 16);
+        b = parseInt(hex[2] + hex[2], 16);
+      } else {
+        r = parseInt(hex.slice(0, 2), 16);
+        g = parseInt(hex.slice(2, 4), 16);
+        b = parseInt(hex.slice(4, 6), 16);
+      }
+      return toRGBString(r, g, b);
+    }
+
+    // Default fallback
+    return "rgb(255, 0, 0)";
+  }
+
   // Function to apply border color to button
   function applyButtonBorderColor(color, alpha = 1) {
     const currentElement = selectedElement?.();
@@ -806,7 +868,7 @@ export function ButtonHoverBorderColorPalateToggle(
         const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
-          colorCode.textContent = finalColor;
+          colorCode.textContent = finalColor; // Show RGB format directly
         }
 
         if (transparencyField) {
@@ -904,7 +966,7 @@ export function ButtonHoverBorderColorPalateToggle(
         const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
-          colorCode.textContent = finalColor;
+          colorCode.textContent = finalColor; // Show RGB format directly
         }
 
         // Apply the color to button border
@@ -973,7 +1035,7 @@ export function ButtonHoverBorderColorPalateToggle(
       // add color code to the color code from default page color field
       const hsl = rgbToHslFromAny(cleanColor);
       if (hsl) dynamicHue = hsl.h;
-      colorCode.textContent = cleanColor;
+      colorCode.textContent = convertToRGB(cleanColor); // Convert to RGB format
 
       // Apply the color to button border
       applyButtonBorderColor(cleanColor, currentTransparency / 100);
@@ -1040,6 +1102,7 @@ export function ButtonHoverBorderColorPalateToggle(
     return { h: Math.round(h), s, l };
   }
 
+  // Function to create RGB string format - ensures consistent RGB display
   function toRGBString(r, g, b) {
     return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
   }
@@ -1127,7 +1190,7 @@ export function ButtonHoverBorderColorPalateToggle(
         const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
-          colorCode.textContent = finalColor;
+          colorCode.textContent = finalColor; // Show RGB format directly
         }
 
         // Apply the color to button border
@@ -1143,7 +1206,7 @@ export function ButtonHoverBorderColorPalateToggle(
   const firstColor = Object.values(themeColors)[0];
   if (firstColor) {
     renderVerticalColorShades(firstColor);
-    colorCode.textContent = firstColor;
+    colorCode.textContent = convertToRGB(firstColor); // Convert to RGB format
     applyButtonBorderColor(firstColor, currentTransparency / 100);
   }
 }
