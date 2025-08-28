@@ -269,6 +269,27 @@ export function ButtonHoverColorModification(
     return "rgb(255, 0, 0)";
   }
 
+  // Function to force update the color code field
+  function updateColorCodeField(color) {
+    if (!colorCode) {
+      console.warn("⚠️ colorCode element not found in updateColorCodeField");
+      return;
+    }
+
+    const convertedColor = convertToRGB(color);
+    colorCode.textContent = convertedColor;
+    console.log("✅ Color code field updated to:", convertedColor);
+
+    // Force a DOM update by triggering a reflow
+    colorCode.offsetHeight;
+
+    // Also try to dispatch a custom event to notify any listeners
+    const event = new CustomEvent("colorCodeUpdated", {
+      detail: { color: convertedColor, originalColor: color },
+    });
+    colorCode.dispatchEvent(event);
+  }
+
   // Function to apply text color to button on hover
   function applyButtonHoverColor(color, alpha = 1) {
     const currentElement = selectedElement?.();
@@ -651,15 +672,39 @@ export function ButtonHoverColorModification(
     swatch.title = cleanColor;
 
     swatch.addEventListener("click", () => {
+      console.log("🎨 Color swatch clicked:", cleanColor);
+
+      // Update the color code field immediately using the dedicated function
+      updateColorCodeField(cleanColor);
+
+      // Update dynamic hue for color picker
+      const hsl = rgbToHslFromAny(cleanColor);
+      if (hsl) {
+        dynamicHue = hsl.h;
+        console.log("🎨 Dynamic hue updated to:", dynamicHue);
+      }
+
+      // Render the color picker with the selected color
       renderVerticalColorShades(cleanColor);
 
-      // add color code to the color code from default page color field
-      const hsl = rgbToHslFromAny(cleanColor);
-      if (hsl) dynamicHue = hsl.h;
-      colorCode.textContent = convertToRGB(cleanColor);
-
-      // Apply the color to button border
+      // Apply the color to button hover
       applyButtonHoverColor(cleanColor, currentTransparency / 100);
+
+      // Update transparency field background to match new hue
+      if (transparencyField) {
+        transparencyField.style.background = `linear-gradient(to bottom,
+          hsla(${dynamicHue}, 100%, 50%, 1),
+          hsla(${dynamicHue}, 100%, 50%, 0)
+        )`;
+      }
+
+      // Update all color field background to show current hue position
+      if (allColorField && allColorBullet) {
+        const rect = allColorField.getBoundingClientRect();
+        const huePercentage = dynamicHue / 360;
+        const bulletTop = huePercentage * rect.height;
+        allColorBullet.style.top = `${bulletTop}px`;
+      }
     });
 
     container.appendChild(swatch);
@@ -730,14 +775,19 @@ export function ButtonHoverColorModification(
   function renderVerticalColorShades(baseColor) {
     if (!selectorField) return;
 
+    console.log("🎨 Rendering vertical color shades for:", baseColor);
+
     const hsl = rgbToHslFromAny(baseColor);
     if (hsl) {
       dynamicHue = hsl.h;
+      console.log("🎨 Updated dynamic hue to:", dynamicHue);
     }
 
+    // Clear and recreate the selector field
     selectorField.innerHTML = "";
     selectorField.appendChild(bullet);
 
+    // Set the background gradient
     selectorField.style.background = `
               linear-gradient(
                 to right,
@@ -753,6 +803,9 @@ export function ButtonHoverColorModification(
     selectorField.style.backgroundBlendMode = "multiply";
     selectorField.style.backgroundSize = "100% 100%";
     selectorField.style.backgroundRepeat = "no-repeat";
+
+    // Update the color code field with the base color
+    updateColorCodeField(baseColor);
 
     bullet.onmousedown = function (e) {
       e.preventDefault();
@@ -825,14 +878,24 @@ export function ButtonHoverColorModification(
 
   const firstColor = Object.values(themeColors)[0];
   if (firstColor) {
+    console.log("🎨 Initializing with first color:", firstColor);
+
+    // Update the color code field immediately using the dedicated function
+    updateColorCodeField(firstColor);
+
+    // Render the color picker
     renderVerticalColorShades(firstColor);
-    colorCode.textContent = convertToRGB(firstColor);
 
     // Ensure transparency count is properly initialized
     if (transparencyCount) {
       transparencyCount.textContent = `${currentTransparency}%`;
+      console.log(
+        "✅ Transparency count initialized to:",
+        currentTransparency + "%"
+      );
     }
 
+    // Apply the initial color
     applyButtonHoverColor(firstColor, currentTransparency / 100);
   }
 
@@ -843,6 +906,34 @@ export function ButtonHoverColorModification(
       setTimeout(ensurePublishBoundForHoverTextColor, 150);
     }
   }
+
+  // Debug function to check element states
+  function debugElementStates() {
+    console.log("🔍 DEBUG: Element states check:");
+    console.log("  - palette:", palette);
+    console.log("  - container:", container);
+    console.log("  - selectorField:", selectorField);
+    console.log("  - bullet:", bullet);
+    console.log("  - colorCode:", colorCode);
+    console.log("  - transparencyCount:", transparencyCount);
+    console.log("  - allColorField:", allColorField);
+    console.log("  - allColorBullet:", allColorBullet);
+    console.log("  - transparencyField:", transparencyField);
+    console.log("  - transparencyBullet:", transparencyBullet);
+
+    if (colorCode) {
+      console.log("  - colorCode.textContent:", colorCode.textContent);
+      console.log("  - colorCode.style:", colorCode.style);
+    }
+
+    console.log("  - dynamicHue:", dynamicHue);
+    console.log("  - currentTransparency:", currentTransparency);
+    console.log("  - themeColors:", themeColors);
+  }
+
+  // Run debug check after a short delay to ensure DOM is ready
+  setTimeout(debugElementStates, 100);
+
   // 👉 call binder immediately (BEFORE any early returns below)
   ensurePublishBoundForHoverTextColor();
 }
