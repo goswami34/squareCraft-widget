@@ -1,3 +1,8 @@
+/**
+ * Button Hover Border Color Palette Toggle
+ * Displays and manages button hover border color selection
+ * All colors are displayed in RGB format for consistency
+ */
 export function ButtonHoverBorderColorPalateToggle(
   themeColors,
   selectedElement,
@@ -15,6 +20,11 @@ export function ButtonHoverBorderColorPalateToggle(
   const transparencyCount = document.getElementById(
     "hover-color-transparency-count"
   );
+
+  // Ensure color code displays in RGB format
+  if (colorCode) {
+    colorCode.setAttribute("data-format", "rgb");
+  }
   const allColorField = document.getElementById(
     "hover-all-color-selction-field"
   );
@@ -42,6 +52,7 @@ export function ButtonHoverBorderColorPalateToggle(
   let currentTransparency = 100;
 
   // Helper function to convert any color format to RGB string
+  // This ensures all colors are displayed in RGB format for consistency
   function convertToRGB(color) {
     if (!color) return "rgb(255, 0, 0)";
 
@@ -244,7 +255,7 @@ export function ButtonHoverBorderColorPalateToggle(
         const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
-          colorCode.textContent = convertToRGB(finalColor);
+          colorCode.textContent = finalColor; // Show RGB format directly
         }
 
         if (transparencyField) {
@@ -342,7 +353,7 @@ export function ButtonHoverBorderColorPalateToggle(
         const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
-          colorCode.textContent = convertToRGB(finalColor);
+          colorCode.textContent = finalColor; // Show RGB format directly
         }
 
         // Apply the color to button border
@@ -411,7 +422,7 @@ export function ButtonHoverBorderColorPalateToggle(
       // add color code to the color code from default page color field
       const hsl = rgbToHslFromAny(cleanColor);
       if (hsl) dynamicHue = hsl.h;
-      colorCode.textContent = convertToRGB(cleanColor);
+      colorCode.textContent = convertToRGB(cleanColor); // Keep this as convertToRGB since cleanColor might be hex
 
       // Apply the color to button border
       applyButtonBorderColor(cleanColor, currentTransparency / 100);
@@ -478,6 +489,7 @@ export function ButtonHoverBorderColorPalateToggle(
     return { h: Math.round(h), s, l };
   }
 
+  // Function to create RGB string format - ensures consistent RGB display
   function toRGBString(r, g, b) {
     return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
   }
@@ -565,7 +577,7 @@ export function ButtonHoverBorderColorPalateToggle(
         const finalColor = toRGBString(r * 255, g * 255, b * 255);
 
         if (colorCode) {
-          colorCode.textContent = convertToRGB(finalColor);
+          colorCode.textContent = finalColor; // Show RGB format directly
         }
 
         // Apply the color to button border
