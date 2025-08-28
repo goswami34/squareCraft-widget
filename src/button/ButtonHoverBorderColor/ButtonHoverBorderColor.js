@@ -646,9 +646,13 @@ export function ButtonHoverBorderColorPalateToggle(
   let dynamicHue = 0;
   let currentTransparency = 100;
 
-  // Store selected border color globally so other functions can access it
+  // Store selected hover border color globally so other hover controls can access it
+  if (!window.__squareCraftHoverBorderColor) {
+    window.__squareCraftHoverBorderColor = "black";
+  }
+  // Backward compatibility with any legacy reads
   if (!window.__squareCraftBorderColor) {
-    window.__squareCraftBorderColor = "black";
+    window.__squareCraftBorderColor = window.__squareCraftHoverBorderColor;
   }
 
   // Helper function to convert any color format to RGB string
@@ -741,7 +745,8 @@ export function ButtonHoverBorderColorPalateToggle(
       ? color.replace("rgb(", "rgba(").replace(")", `, ${alpha})`)
       : color;
 
-    // Store the selected color globally
+    // Store the selected color globally (hover-specific and legacy key)
+    window.__squareCraftHoverBorderColor = rgbaColor;
     window.__squareCraftBorderColor = rgbaColor;
 
     const styleId = `sc-border-style-global-${buttonType}`;
