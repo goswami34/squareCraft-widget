@@ -1594,7 +1594,7 @@ export async function saveButtonShadowModifications(_blockId, css) {
   const widgetId = localStorage.getItem("sc_w_id");
 
   if (!userId || !token || !widgetId || !css) {
-    console.warn("❌ Missing required data to save button shadow styles", {
+    console.warn("❌ Missing data", {
       userId: !!userId,
       token: !!token,
       widgetId: !!widgetId,
@@ -1606,7 +1606,7 @@ export async function saveButtonShadowModifications(_blockId, css) {
     };
   }
 
-  // --- helpers ---------------------------------------------------------------
+  // ---- helpers --------------------------------------------------------------
   const cleanCssObject = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
@@ -1628,52 +1628,73 @@ export async function saveButtonShadowModifications(_blockId, css) {
     buttonTertiary: ".sqs-button-element--tertiary",
   };
 
-  // Normalize input: support either 3-bucket shape or single bucket with buttonType
-  const normalized = (() => {
-    // case A: already in 3-bucket shape
-    if (css.buttonPrimary || css.buttonSecondary || css.buttonTertiary)
-      return css;
+  const detectBucketFromSelector = (sel = "") => {
+    const s = sel.toLowerCase();
+    if (s.includes("--secondary")) return "buttonSecondary";
+    if (s.includes("--tertiary")) return "buttonTertiary";
+    if (s.includes("--primary")) return "buttonPrimary";
+    return null;
+  };
 
-    // case B: single bucket provided (buttonType + selector/styles)
-    const bt = (css.buttonType || "").toLowerCase();
-    const map = {
+  const mapType = (t = "") =>
+    ({
       primary: "buttonPrimary",
       secondary: "buttonSecondary",
       tertiary: "buttonTertiary",
-    };
-    const key = map[bt] || "buttonPrimary";
-    return { [key]: { selector: css.selector, styles: css.styles } };
-  })();
+    }[t]);
 
-  // Build cleaned payload buckets (send only what has something real)
+  // ---- normalize input to 3-bucket shape -----------------------------------
+  let normalized;
+
+  // A) already 3 buckets
+  if (css.buttonPrimary || css.buttonSecondary || css.buttonTertiary) {
+    normalized = css;
+  } else {
+    // B) single bucket: must specify buttonType OR detectable selector
+    const keyFromType = mapType((css.buttonType || "").toLowerCase());
+    const keyFromSel = detectBucketFromSelector(css.selector);
+    const key = keyFromType || keyFromSel;
+
+    if (!key) {
+      console.warn(
+        "⚠️ Ambiguous single-bucket payload. Provide buttonType: 'primary'|'secondary'|'tertiary' or a selector containing --primary/--secondary/--tertiary.",
+        css
+      );
+      return {
+        success: false,
+        error: "Ambiguous button type: add buttonType or a typed selector.",
+      };
+    }
+    normalized = { [key]: { selector: css.selector, styles: css.styles } };
+  }
+
+  // ---- build cleaned payload buckets ---------------------------------------
   const cleanedCss = {};
-  ["buttonPrimary", "buttonSecondary", "buttonTertiary"].forEach((key) => {
+  for (const key of ["buttonPrimary", "buttonSecondary", "buttonTertiary"]) {
     const bucket = normalized[key];
-    if (!bucket) return;
+    if (!bucket) continue;
 
     const styles = toKebabCaseStyleObject(cleanCssObject(bucket.styles || {}));
-    // if there is at least one valid style, ensure a selector (fallback if empty)
     const hasStyles = Object.keys(styles).length > 0;
+
+    // if there are styles but selector missing, inject a sensible default for THIS bucket
     const selector =
       (bucket.selector && String(bucket.selector).trim()) ||
       (hasStyles ? FALLBACK[key] : null);
 
-    // only include this bucket if selector or styles are present
     if (selector || hasStyles) {
       cleanedCss[key] = { selector: selector || null, styles };
     }
-  });
+  }
 
   if (Object.keys(cleanedCss).length === 0) {
-    console.warn("⚠️ No valid shadow styles found in any button type.", {
-      incoming: css,
-    });
+    console.warn("⚠️ No valid shadow styles to save.", { incoming: css });
     return { success: false, error: "No valid shadow styles to save" };
   }
 
   const payload = { userId, token, widgetId, css: cleanedCss };
 
-  console.log("📤 Sending button shadow payload:", {
+  console.log("📤 Sending shadow payload", {
     userId,
     widgetId,
     buckets: Object.keys(cleanedCss),
@@ -1692,24 +1713,23 @@ export async function saveButtonShadowModifications(_blockId, css) {
         body: JSON.stringify(payload),
       }
     );
-
     const result = await response.json();
     if (!response.ok)
       throw new Error(result.message || `HTTP ${response.status}`);
 
-    console.log("✅ Button shadow styles saved:", result);
+    console.log("✅ Saved button shadow styles", result);
     typeof showNotification === "function" &&
       showNotification("Button shadow styles saved successfully!", "success");
 
     return { success: true, data: result };
-  } catch (error) {
-    console.error("❌ Error saving button shadow styles:", error);
+  } catch (err) {
+    console.error("❌ Save error (shadow)", err);
     typeof showNotification === "function" &&
       showNotification(
-        `Failed to save button shadow styles: ${error.message}`,
+        `Failed to save button shadow styles: ${err.message}`,
         "error"
       );
-    return { success: false, error: error.message };
+    return { success: false, error: err.message };
   }
 }
 
