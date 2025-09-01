@@ -1606,7 +1606,7 @@ export async function saveButtonShadowModifications(_blockId, css) {
     };
   }
 
-  // ---- helpers --------------------------------------------------------------
+  // --- helpers --------------------------------------------------------------
   const cleanCssObject = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
@@ -1643,32 +1643,30 @@ export async function saveButtonShadowModifications(_blockId, css) {
       tertiary: "buttonTertiary",
     }[t]);
 
-  // ---- normalize input to 3-bucket shape -----------------------------------
-  let normalized;
-
-  // A) already 3 buckets
-  if (css.buttonPrimary || css.buttonSecondary || css.buttonTertiary) {
-    normalized = css;
-  } else {
-    // B) single bucket: must specify buttonType OR detectable selector
-    const keyFromType = mapType((css.buttonType || "").toLowerCase());
-    const keyFromSel = detectBucketFromSelector(css.selector);
-    const key = keyFromType || keyFromSel;
-
-    if (!key) {
-      console.warn(
-        "⚠️ Ambiguous single-bucket payload. Provide buttonType: 'primary'|'secondary'|'tertiary' or a selector containing --primary/--secondary/--tertiary.",
-        css
-      );
-      return {
-        success: false,
-        error: "Ambiguous button type: add buttonType or a typed selector.",
-      };
+  const resolveBucket = (single) => {
+    const fromSel = detectBucketFromSelector(single.selector);
+    const fromType = mapType((single.buttonType || "").toLowerCase());
+    if (fromSel && fromType && fromSel !== fromType) {
+      console.warn("⚠️ buttonType and selector disagree; using selector.", {
+        fromSel,
+        fromType,
+        selector: single.selector,
+      });
+      return fromSel;
     }
+    return fromSel || fromType || "buttonPrimary";
+  };
+
+  // --- normalize to 3-bucket shape -----------------------------------------
+  let normalized;
+  if (css.buttonPrimary || css.buttonSecondary || css.buttonTertiary) {
+    normalized = css; // already bucketed
+  } else {
+    const key = resolveBucket(css); // single-bucket payload
     normalized = { [key]: { selector: css.selector, styles: css.styles } };
   }
 
-  // ---- build cleaned payload buckets ---------------------------------------
+  // --- build cleaned payload ------------------------------------------------
   const cleanedCss = {};
   for (const key of ["buttonPrimary", "buttonSecondary", "buttonTertiary"]) {
     const bucket = normalized[key];
@@ -1676,8 +1674,6 @@ export async function saveButtonShadowModifications(_blockId, css) {
 
     const styles = toKebabCaseStyleObject(cleanCssObject(bucket.styles || {}));
     const hasStyles = Object.keys(styles).length > 0;
-
-    // if there are styles but selector missing, inject a sensible default for THIS bucket
     const selector =
       (bucket.selector && String(bucket.selector).trim()) ||
       (hasStyles ? FALLBACK[key] : null);
@@ -1693,13 +1689,7 @@ export async function saveButtonShadowModifications(_blockId, css) {
   }
 
   const payload = { userId, token, widgetId, css: cleanedCss };
-
-  console.log("📤 Sending shadow payload", {
-    userId,
-    widgetId,
-    buckets: Object.keys(cleanedCss),
-    cleanedCss,
-  });
+  console.log("📤 Sending shadow payload", { userId, widgetId, cleanedCss });
 
   try {
     const response = await fetch(
@@ -1713,6 +1703,7 @@ export async function saveButtonShadowModifications(_blockId, css) {
         body: JSON.stringify(payload),
       }
     );
+
     const result = await response.json();
     if (!response.ok)
       throw new Error(result.message || `HTTP ${response.status}`);
@@ -1720,7 +1711,6 @@ export async function saveButtonShadowModifications(_blockId, css) {
     console.log("✅ Saved button shadow styles", result);
     typeof showNotification === "function" &&
       showNotification("Button shadow styles saved successfully!", "success");
-
     return { success: true, data: result };
   } catch (err) {
     console.error("❌ Save error (shadow)", err);
