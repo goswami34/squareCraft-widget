@@ -1091,13 +1091,120 @@ export async function saveButtonModifications(blockIdOrCss, maybeCss) {
 //button save modification end here
 
 // button color save modification start here
+// export async function saveButtonColorModifications(blockId, css) {
+//   console.log("🚀 saveButtonColorModifications called with:", { blockId, css });
+
+//   const pageId = document
+//     .querySelector("article[data-page-sections]")
+//     ?.getAttribute("data-page-sections");
+
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
+
+//   console.log("📋 Required data check:", {
+//     userId: !!userId,
+//     token: !!token,
+//     widgetId: !!widgetId,
+//     pageId: !!pageId,
+//     blockId: !!blockId,
+//     css: !!css,
+//   });
+
+//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+//     console.warn(
+//       "❌ Missing required data to save button color modifications",
+//       {
+//         userId,
+//         token,
+//         widgetId,
+//         pageId,
+//         blockId,
+//         css,
+//       }
+//     );
+//     return { success: false, error: "Missing required data" };
+//   }
+
+//   // Clean & normalize button styles and convert to kebab-case
+//   const cleanCssObject = (obj = {}) =>
+//     Object.fromEntries(
+//       Object.entries(obj).filter(
+//         ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+//       )
+//     );
+
+//   const toKebabCaseStyleObject = (obj = {}) =>
+//     Object.fromEntries(
+//       Object.entries(obj).map(([key, value]) => [
+//         key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+//         value,
+//       ])
+//     );
+
+//   const cleanCss = (block) => ({
+//     selector: block?.selector || null,
+//     styles: toKebabCaseStyleObject(cleanCssObject(block?.styles || {})),
+//   });
+
+//   const payload = {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId,
+//     elementId: blockId,
+//     css: {
+//       buttonPrimary: cleanCss(css.buttonPrimary),
+//       buttonSecondary: cleanCss(css.buttonSecondary),
+//       buttonTertiary: cleanCss(css.buttonTertiary),
+//     },
+//   };
+
+//   console.log("📤 Sending button color payload:", payload);
+//   console.log("🔍 Original CSS received:", css);
+//   console.log("🧹 Cleaned CSS structure:", {
+//     buttonPrimary: cleanCss(css.buttonPrimary),
+//     buttonSecondary: cleanCss(css.buttonSecondary),
+//     buttonTertiary: cleanCss(css.buttonTertiary),
+//   });
+
+//   try {
+//     const response = await fetch(
+//       "https://admin.squareplugin.com/api/v1/save-button-color-modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     const result = await response.json();
+
+//     if (!response.ok) {
+//       throw new Error(result.message || `HTTP ${response.status}`);
+//     }
+
+//     console.log("✅ Button color modifications saved:", result);
+//     showNotification("Button colors saved successfully!", "success");
+
+//     return { success: true, data: result };
+//   } catch (error) {
+//     console.error("❌ Error saving button color modifications:", error);
+//     showNotification(`Failed to save button colors: ${error.message}`, "error");
+
+//     return { success: false, error: error.message };
+//   }
+// }
+
+// ✅ Frontend: no pageId, no elementId — send one CSS blob per (userId, widgetId)
+// ✅ Frontend: no pageId, no elementId — send one CSS blob per (userId, widgetId)
 export async function saveButtonColorModifications(blockId, css) {
   console.log("🚀 saveButtonColorModifications called with:", { blockId, css });
 
-  const pageId = document
-    .querySelector("article[data-page-sections]")
-    ?.getAttribute("data-page-sections");
-
+  // Pull required auth/context
   const userId = localStorage.getItem("sc_u_id");
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
@@ -1106,27 +1213,24 @@ export async function saveButtonColorModifications(blockId, css) {
     userId: !!userId,
     token: !!token,
     widgetId: !!widgetId,
-    pageId: !!pageId,
-    blockId: !!blockId,
     css: !!css,
+    // pageId & blockId intentionally not required anymore
   });
 
-  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+  if (!userId || !token || !widgetId || !css) {
     console.warn(
       "❌ Missing required data to save button color modifications",
       {
         userId,
         token,
         widgetId,
-        pageId,
-        blockId,
         css,
       }
     );
     return { success: false, error: "Missing required data" };
   }
 
-  // Clean & normalize button styles and convert to kebab-case
+  // ---- Helpers: clean + kebab-case ----
   const cleanCssObject = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
@@ -1142,31 +1246,37 @@ export async function saveButtonColorModifications(blockId, css) {
       ])
     );
 
-  const cleanCss = (block) => ({
-    selector: block?.selector || null,
+  const cleanCssBlock = (block) => ({
+    selector: block?.selector ?? null,
     styles: toKebabCaseStyleObject(cleanCssObject(block?.styles || {})),
   });
+
+  const cleaned = {
+    buttonPrimary: cleanCssBlock(css?.buttonPrimary),
+    buttonSecondary: cleanCssBlock(css?.buttonSecondary),
+    buttonTertiary: cleanCssBlock(css?.buttonTertiary),
+  };
+
+  const allEmpty =
+    Object.keys(cleaned.buttonPrimary.styles).length === 0 &&
+    Object.keys(cleaned.buttonSecondary.styles).length === 0 &&
+    Object.keys(cleaned.buttonTertiary.styles).length === 0;
+
+  if (allEmpty) {
+    console.warn("⚠️ No valid button color styles to save.");
+    return { success: false, error: "No valid styles" };
+  }
 
   const payload = {
     userId,
     token,
     widgetId,
-    pageId,
-    elementId: blockId,
-    css: {
-      buttonPrimary: cleanCss(css.buttonPrimary),
-      buttonSecondary: cleanCss(css.buttonSecondary),
-      buttonTertiary: cleanCss(css.buttonTertiary),
-    },
+    css: cleaned, // ✅ single css object, no pageId/elementId
   };
 
   console.log("📤 Sending button color payload:", payload);
   console.log("🔍 Original CSS received:", css);
-  console.log("🧹 Cleaned CSS structure:", {
-    buttonPrimary: cleanCss(css.buttonPrimary),
-    buttonSecondary: cleanCss(css.buttonSecondary),
-    buttonTertiary: cleanCss(css.buttonTertiary),
-  });
+  console.log("🧹 Cleaned CSS structure:", cleaned);
 
   try {
     const response = await fetch(
@@ -1189,12 +1299,10 @@ export async function saveButtonColorModifications(blockId, css) {
 
     console.log("✅ Button color modifications saved:", result);
     showNotification("Button colors saved successfully!", "success");
-
     return { success: true, data: result };
   } catch (error) {
     console.error("❌ Error saving button color modifications:", error);
     showNotification(`Failed to save button colors: ${error.message}`, "error");
-
     return { success: false, error: error.message };
   }
 }
