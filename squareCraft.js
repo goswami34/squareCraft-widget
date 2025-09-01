@@ -4990,65 +4990,152 @@ window.pendingModifications = pendingModifications;
   }
 
   // Fetch button shadow modifications from the backend
-  async function fetchButtonShadowModifications(blockId = null) {
+  // async function fetchButtonShadowModifications(blockId = null) {
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
+
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn("⚠️ Missing credentials or page ID");
+  //     return;
+  //   }
+
+  //   let url = `https://admin.squareplugin.com/api/v1/get-button-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+  //   if (blockId) url += `&elementId=${blockId}`;
+
+  //   try {
+  //     const res = await fetch(url, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     const result = await res.json();
+  //     if (!res.ok) throw new Error(result.message);
+
+  //     const elements = result.elements || [];
+  //     elements.forEach(({ elementId, selector, styles }) => {
+  //       if (!selector || !styles) return;
+
+  //       const styleId = `sc-btn-shadow-style-${elementId}`;
+  //       let styleTag = document.getElementById(styleId);
+  //       if (!styleTag) {
+  //         styleTag = document.createElement("style");
+  //         styleTag.id = styleId;
+  //         document.head.appendChild(styleTag);
+  //       }
+
+  //       let cssText = `${selector} {`;
+  //       Object.entries(styles).forEach(([prop, val]) => {
+  //         if (val !== null && val !== undefined && val !== "null") {
+  //           cssText += `${prop}: ${val} !important; `;
+  //         }
+  //       });
+  //       cssText += "}";
+
+  //       styleTag.textContent = cssText;
+
+  //       console.log(
+  //         `✅ Applied button shadow styles for ${elementId}:`,
+  //         styles
+  //       );
+  //     });
+
+  //     console.log("✅ All button shadow modifications applied (external CSS)");
+  //   } catch (error) {
+  //     console.error(
+  //       "❌ Failed to fetch button shadow modifications:",
+  //       error.message
+  //     );
+  //   }
+  // }
+
+  // Fetch and apply button shadow styles for the whole widget (no pageId/elementId)
+  async function fetchButtonShadowModifications() {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
 
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
+    if (!userId || !token || !widgetId) {
+      console.warn("⚠️ Missing credentials", {
+        userId: !!userId,
+        token: !!token,
+        widgetId: !!widgetId,
+      });
       return;
     }
 
-    let url = `https://admin.squareplugin.com/api/v1/get-button-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-    if (blockId) url += `&elementId=${blockId}`;
+    // Small helper to inject CSS once per bucket
+    const applyCss = (selector, styles, styleId) => {
+      if (!selector || !styles || typeof styles !== "object") return;
+
+      let tag = document.getElementById(styleId);
+      if (!tag) {
+        tag = document.createElement("style");
+        tag.id = styleId;
+        document.head.appendChild(tag);
+      }
+
+      // Build CSS text
+      let cssText = `${selector} {`;
+      for (const [prop, val] of Object.entries(styles)) {
+        if (val !== null && val !== undefined && val !== "" && val !== "null") {
+          cssText += `${prop}: ${val} !important; `;
+        }
+      }
+      cssText += "}";
+
+      tag.textContent = cssText;
+    };
+
+    // Build URL — include prefer=query so it also works in Postman/manual tests
+    const base =
+      "https://admin.squareplugin.com/api/v1/get-button-shadow-modifications";
+    const url = `${base}?userId=${encodeURIComponent(
+      userId
+    )}&widgetId=${encodeURIComponent(widgetId)}&prefer=query`;
 
     try {
       const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       const result = await res.json();
-      if (!res.ok) throw new Error(result.message);
 
-      const elements = result.elements || [];
-      elements.forEach(({ elementId, selector, styles }) => {
-        if (!selector || !styles) return;
+      if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
 
-        const styleId = `sc-btn-shadow-style-${elementId}`;
-        let styleTag = document.getElementById(styleId);
-        if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = styleId;
-          document.head.appendChild(styleTag);
+      const shadow = result.shadow || {};
+      const buckets = [
+        ["buttonPrimary", "primary"],
+        ["buttonSecondary", "secondary"],
+        ["buttonTertiary", "tertiary"],
+      ];
+
+      let applied = 0;
+      for (const [key, label] of buckets) {
+        const bucket = shadow[key];
+        if (
+          bucket?.selector &&
+          bucket?.styles &&
+          Object.keys(bucket.styles).length
+        ) {
+          applyCss(bucket.selector, bucket.styles, `sc-btn-shadow-${label}`);
+          applied++;
+          console.log(`✅ Applied ${label} shadow styles`, bucket);
         }
+      }
 
-        let cssText = `${selector} {`;
-        Object.entries(styles).forEach(([prop, val]) => {
-          if (val !== null && val !== undefined && val !== "null") {
-            cssText += `${prop}: ${val} !important; `;
-          }
-        });
-        cssText += "}";
-
-        styleTag.textContent = cssText;
-
-        console.log(
-          `✅ Applied button shadow styles for ${elementId}:`,
-          styles
-        );
-      });
-
-      console.log("✅ All button shadow modifications applied (external CSS)");
-    } catch (error) {
+      if (applied === 0) {
+        console.log("ℹ️ No button shadow styles to apply.");
+      } else {
+        console.log(`🎉 Applied ${applied} shadow bucket(s).`);
+      }
+    } catch (err) {
       console.error(
-        "❌ Failed to fetch button shadow modifications:",
-        error.message
+        "❌ Failed to fetch/apply button shadow modifications:",
+        err
       );
     }
   }
