@@ -1606,7 +1606,7 @@ export async function saveButtonShadowModifications(_blockId, css) {
     };
   }
 
-  // --- helpers --------------------------------------------------------------
+  // helpers
   const cleanCssObject = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
@@ -1614,7 +1614,7 @@ export async function saveButtonShadowModifications(_blockId, css) {
       )
     );
 
-  const toKebabCaseStyleObject = (obj = {}) =>
+  const toKebab = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).map(([k, v]) => [
         k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
@@ -1628,59 +1628,78 @@ export async function saveButtonShadowModifications(_blockId, css) {
     buttonTertiary: ".sqs-button-element--tertiary",
   };
 
-  const detectBucketFromSelector = (sel = "") => {
-    const s = sel.toLowerCase();
+  const detectFromSelector = (sel = "") => {
+    const s = String(sel).toLowerCase();
     if (s.includes("--secondary")) return "buttonSecondary";
     if (s.includes("--tertiary")) return "buttonTertiary";
     if (s.includes("--primary")) return "buttonPrimary";
     return null;
   };
 
-  const mapType = (t = "") =>
+  const mapType = (t) =>
     ({
       primary: "buttonPrimary",
       secondary: "buttonSecondary",
       tertiary: "buttonTertiary",
-    }[t]);
+    }[String(t).toLowerCase()] || null);
 
-  const resolveBucket = (single) => {
-    const fromSel = detectBucketFromSelector(single.selector);
-    const fromType = mapType((single.buttonType || "").toLowerCase());
-    if (fromSel && fromType && fromSel !== fromType) {
-      console.warn("⚠️ buttonType and selector disagree; using selector.", {
-        fromSel,
-        fromType,
-        selector: single.selector,
+  // --- normalize to correct bucket(s) ---------------------------------------
+  let normalized = { ...css };
+
+  // If the payload has exactly one of the three bucket keys, and it's the “wrong” key
+  // (compared to selector/buttonType), move it to the right key.
+  const bucketKeys = ["buttonPrimary", "buttonSecondary", "buttonTertiary"];
+  const present = bucketKeys.filter(
+    (k) =>
+      normalized[k] &&
+      (normalized[k].selector ||
+        (normalized[k].styles && Object.keys(normalized[k].styles).length))
+  );
+  if (present.length === 1) {
+    const providedKey = present[0];
+    const provided = normalized[providedKey] || {};
+    const wantBySel = detectFromSelector(provided.selector);
+    const wantByType = mapType(normalized.buttonType);
+    const targetKey = wantBySel || wantByType || providedKey;
+
+    if (targetKey !== providedKey) {
+      // remap the single bucket to the correct key
+      normalized[targetKey] = provided;
+      delete normalized[providedKey];
+      console.warn("ℹ️ Remapped single bucket", {
+        from: providedKey,
+        to: targetKey,
+        selector: provided.selector,
+        buttonType: normalized.buttonType,
       });
-      return fromSel;
     }
-    return fromSel || fromType || "buttonPrimary";
-  };
+  }
 
-  // --- normalize to 3-bucket shape -----------------------------------------
-  let normalized;
-  if (css.buttonPrimary || css.buttonSecondary || css.buttonTertiary) {
-    normalized = css; // already bucketed
-  } else {
-    const key = resolveBucket(css); // single-bucket payload
-    normalized = { [key]: { selector: css.selector, styles: css.styles } };
+  // If none of the three keys are present, treat it as single-bucket form
+  if (!bucketKeys.some((k) => normalized[k])) {
+    const targetKey =
+      detectFromSelector(normalized.selector) ||
+      mapType(normalized.buttonType) ||
+      "buttonPrimary";
+    normalized = {
+      [targetKey]: { selector: normalized.selector, styles: normalized.styles },
+    };
   }
 
   // --- build cleaned payload ------------------------------------------------
   const cleanedCss = {};
-  for (const key of ["buttonPrimary", "buttonSecondary", "buttonTertiary"]) {
+  for (const key of bucketKeys) {
     const bucket = normalized[key];
     if (!bucket) continue;
 
-    const styles = toKebabCaseStyleObject(cleanCssObject(bucket.styles || {}));
+    const styles = toKebab(cleanCssObject(bucket.styles || {}));
     const hasStyles = Object.keys(styles).length > 0;
     const selector =
       (bucket.selector && String(bucket.selector).trim()) ||
       (hasStyles ? FALLBACK[key] : null);
 
-    if (selector || hasStyles) {
+    if (selector || hasStyles)
       cleanedCss[key] = { selector: selector || null, styles };
-    }
   }
 
   if (Object.keys(cleanedCss).length === 0) {
@@ -1703,7 +1722,6 @@ export async function saveButtonShadowModifications(_blockId, css) {
         body: JSON.stringify(payload),
       }
     );
-
     const result = await response.json();
     if (!response.ok)
       throw new Error(result.message || `HTTP ${response.status}`);
