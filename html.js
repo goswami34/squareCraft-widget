@@ -1202,91 +1202,208 @@ export async function saveButtonColorModifications(blockId, css) {
 // button color save modification end here
 
 //button border save modification start here
+// export async function saveButtonBorderModifications(blockId, css) {
+//   const pageId = document
+//     .querySelector("article[data-page-sections]")
+//     ?.getAttribute("data-page-sections");
+
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
+
+//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+//     console.warn("❌ Missing required data to save button border styles", {
+//       userId,
+//       token,
+//       widgetId,
+//       pageId,
+//       blockId,
+//       css,
+//     });
+//     return { success: false, error: "Missing required data" };
+//   }
+
+//   // Clean & normalize button styles for all button types
+//   const cleanCssObject = (obj = {}) =>
+//     Object.fromEntries(
+//       Object.entries(obj).filter(
+//         ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+//       )
+//     );
+
+//   const toKebabCaseStyleObject = (obj = {}) =>
+//     Object.fromEntries(
+//       Object.entries(obj).map(([key, value]) => [
+//         key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+//         value,
+//       ])
+//     );
+
+//   // ✅ FIXED: Handle all button types dynamically
+//   const cleanedCss = {};
+//   let hasValidStyles = false;
+
+//   // Process buttonPrimary
+//   if (
+//     css.buttonPrimary &&
+//     Object.keys(css.buttonPrimary.styles || {}).length > 0
+//   ) {
+//     cleanedCss.buttonPrimary = {
+//       selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
+//       styles: toKebabCaseStyleObject(
+//         cleanCssObject(css.buttonPrimary.styles || {})
+//       ),
+//     };
+//     hasValidStyles = true;
+//   }
+
+//   // Process buttonSecondary
+//   if (
+//     css.buttonSecondary &&
+//     Object.keys(css.buttonSecondary.styles || {}).length > 0
+//   ) {
+//     cleanedCss.buttonSecondary = {
+//       selector:
+//         css.buttonSecondary.selector || ".sqs-button-element--secondary",
+//       styles: toKebabCaseStyleObject(
+//         cleanCssObject(css.buttonSecondary.styles || {})
+//       ),
+//     };
+//     hasValidStyles = true;
+//   }
+
+//   // Process buttonTertiary
+//   if (
+//     css.buttonTertiary &&
+//     Object.keys(css.buttonTertiary.styles || {}).length > 0
+//   ) {
+//     cleanedCss.buttonTertiary = {
+//       selector: css.buttonTertiary.selector || ".sqs-button-element--tertiary",
+//       styles: toKebabCaseStyleObject(
+//         cleanCssObject(css.buttonTertiary.styles || {})
+//       ),
+//     };
+//     hasValidStyles = true;
+//   }
+
+//   if (!hasValidStyles) {
+//     console.warn("⚠️ No valid border styles found in any button type.");
+//     return { success: false, error: "No valid border styles to save" };
+//   }
+
+//   const payload = {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId,
+//     elementId: blockId,
+//     css: cleanedCss,
+//   };
+
+//   console.log("📤 Sending button border payload:", {
+//     ...payload,
+//     buttonTypes: Object.keys(cleanedCss),
+//     totalStyles: Object.values(cleanedCss).reduce(
+//       (sum, btn) => sum + Object.keys(btn.styles).length,
+//       0
+//     ),
+//   });
+
+//   try {
+//     const response = await fetch(
+//       "https://admin.squareplugin.com/api/v1/save-button-border-modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     const result = await response.json();
+
+//     if (!response.ok) {
+//       throw new Error(result.message || `HTTP ${response.status}`);
+//     }
+
+//     console.log("✅ Button border styles saved:", result);
+//     showNotification("Button border styles saved successfully!", "success");
+
+//     return { success: true, data: result };
+//   } catch (error) {
+//     console.error("❌ Error saving button border styles:", error);
+//     showNotification(
+//       `Failed to save button border styles: ${error.message}`,
+//       "error"
+//     );
+//     return { success: false, error: error.message };
+//   }
+// }
+
+// Save button BORDER styles (no pageId/elementId – backend expects userId+widgetId+css)
 export async function saveButtonBorderModifications(blockId, css) {
-  const pageId = document
-    .querySelector("article[data-page-sections]")
-    ?.getAttribute("data-page-sections");
+  console.log("🚀 saveButtonBorderModifications called with:", {
+    blockId,
+    css,
+  });
 
   const userId = localStorage.getItem("sc_u_id");
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+  // pageId/elementId are no longer required or sent
+  if (!userId || !token || !widgetId || !css) {
     console.warn("❌ Missing required data to save button border styles", {
-      userId,
-      token,
-      widgetId,
-      pageId,
-      blockId,
-      css,
+      userId: !!userId,
+      token: !!token,
+      widgetId: !!widgetId,
+      hasCss: !!css,
     });
     return { success: false, error: "Missing required data" };
   }
 
-  // Clean & normalize button styles for all button types
-  const cleanCssObject = (obj = {}) =>
+  // helpers
+  const cleanObj = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
-        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+        ([, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
       )
     );
 
-  const toKebabCaseStyleObject = (obj = {}) =>
+  const toKebab = (obj = {}) =>
     Object.fromEntries(
-      Object.entries(obj).map(([key, value]) => [
-        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-        value,
+      Object.entries(obj).map(([k, v]) => [
+        k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        v,
       ])
     );
 
-  // ✅ FIXED: Handle all button types dynamically
+  // build a bucket if it has either a selector or any styles
+  const buildBucket = (bucket, fallbackSelector) => {
+    if (!bucket || typeof bucket !== "object") return null;
+    const rawStyles = bucket.styles || {};
+    const styles = toKebab(cleanObj(rawStyles));
+    const selector = bucket.selector || fallbackSelector || null;
+
+    const hasSelector = selector !== null && selector !== "";
+    const hasStyles = Object.keys(styles).length > 0;
+
+    if (!hasSelector && !hasStyles) return null;
+    return { selector, styles };
+  };
+
+  // Clean buckets to match backend contract (keys optional)
   const cleanedCss = {};
-  let hasValidStyles = false;
+  const bp = buildBucket(css.buttonPrimary, ".sqs-button-element--primary");
+  const bs = buildBucket(css.buttonSecondary, ".sqs-button-element--secondary");
+  const bt = buildBucket(css.buttonTertiary, ".sqs-button-element--tertiary");
+  if (bp) cleanedCss.buttonPrimary = bp;
+  if (bs) cleanedCss.buttonSecondary = bs;
+  if (bt) cleanedCss.buttonTertiary = bt;
 
-  // Process buttonPrimary
-  if (
-    css.buttonPrimary &&
-    Object.keys(css.buttonPrimary.styles || {}).length > 0
-  ) {
-    cleanedCss.buttonPrimary = {
-      selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
-      styles: toKebabCaseStyleObject(
-        cleanCssObject(css.buttonPrimary.styles || {})
-      ),
-    };
-    hasValidStyles = true;
-  }
-
-  // Process buttonSecondary
-  if (
-    css.buttonSecondary &&
-    Object.keys(css.buttonSecondary.styles || {}).length > 0
-  ) {
-    cleanedCss.buttonSecondary = {
-      selector:
-        css.buttonSecondary.selector || ".sqs-button-element--secondary",
-      styles: toKebabCaseStyleObject(
-        cleanCssObject(css.buttonSecondary.styles || {})
-      ),
-    };
-    hasValidStyles = true;
-  }
-
-  // Process buttonTertiary
-  if (
-    css.buttonTertiary &&
-    Object.keys(css.buttonTertiary.styles || {}).length > 0
-  ) {
-    cleanedCss.buttonTertiary = {
-      selector: css.buttonTertiary.selector || ".sqs-button-element--tertiary",
-      styles: toKebabCaseStyleObject(
-        cleanCssObject(css.buttonTertiary.styles || {})
-      ),
-    };
-    hasValidStyles = true;
-  }
-
-  if (!hasValidStyles) {
+  if (Object.keys(cleanedCss).length === 0) {
     console.warn("⚠️ No valid border styles found in any button type.");
     return { success: false, error: "No valid border styles to save" };
   }
@@ -1295,16 +1412,15 @@ export async function saveButtonBorderModifications(blockId, css) {
     userId,
     token,
     widgetId,
-    pageId,
-    elementId: blockId,
-    css: cleanedCss,
+    css: cleanedCss, // {buttonPrimary?, buttonSecondary?, buttonTertiary?}
   };
 
   console.log("📤 Sending button border payload:", {
-    ...payload,
+    userId,
+    widgetId,
     buttonTypes: Object.keys(cleanedCss),
-    totalStyles: Object.values(cleanedCss).reduce(
-      (sum, btn) => sum + Object.keys(btn.styles).length,
+    totalRules: Object.values(cleanedCss).reduce(
+      (n, b) => n + Object.keys(b.styles || {}).length,
       0
     ),
   });
@@ -1323,14 +1439,13 @@ export async function saveButtonBorderModifications(blockId, css) {
     );
 
     const result = await response.json();
-
     if (!response.ok) {
+      console.error("❌ Server error:", result);
       throw new Error(result.message || `HTTP ${response.status}`);
     }
 
     console.log("✅ Button border styles saved:", result);
     showNotification("Button border styles saved successfully!", "success");
-
     return { success: true, data: result };
   } catch (error) {
     console.error("❌ Error saving button border styles:", error);
@@ -1341,333 +1456,8 @@ export async function saveButtonBorderModifications(blockId, css) {
     return { success: false, error: error.message };
   }
 }
+
 //button border save modification end here
-
-// export async function saveButtonIconModifications(blockId, css) {
-//   console.log("🚀 saveButtonIconModifications called with:", { blockId, css });
-
-//   const pageId = document
-//     .querySelector("article[data-page-sections]")
-//     ?.getAttribute("data-page-sections");
-
-//   const userId = localStorage.getItem("sc_u_id");
-//   const token = localStorage.getItem("sc_auth_token");
-//   const widgetId = localStorage.getItem("sc_w_id");
-
-//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-//     console.log("❌ Missing required data to save button icon modifications", {
-//       userId,
-//       token,
-//       widgetId,
-//       pageId,
-//       blockId,
-//       css,
-//     });
-//     return { success: false, error: "Missing required data" };
-//   }
-
-//   // Clean & normalize CSS
-//   const cleanCssObject = (obj = {}) =>
-//     Object.fromEntries(
-//       Object.entries(obj).filter(
-//         ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
-//       )
-//     );
-
-//   const toKebabCaseStyleObject = (obj = {}) =>
-//     Object.fromEntries(
-//       Object.entries(obj).map(([key, value]) => [
-//         key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-//         value,
-//       ])
-//     );
-
-//   // Determine button type from the CSS structure
-//   let buttonType = "tertiary"; // default
-//   if (css?.buttonType) {
-//     buttonType = css.buttonType;
-//   } else if (
-//     css?.iconProperties?.selector?.includes("primary") ||
-//     css?.icon?.selector?.includes("primary")
-//   ) {
-//     buttonType = "primary";
-//   } else if (
-//     css?.iconProperties?.selector?.includes("secondary") ||
-//     css?.icon?.selector?.includes("secondary")
-//   ) {
-//     buttonType = "secondary";
-//   } else if (
-//     css?.iconProperties?.selector?.includes("tertiary") ||
-//     css?.icon?.selector?.includes("tertiary")
-//   ) {
-//     buttonType = "tertiary";
-//   }
-
-//   // Extract icon properties from CSS
-//   const iconProperties = {
-//     selector:
-//       css?.iconProperties?.selector ||
-//       css?.icon?.selector ||
-//       `.sqs-button-element--${buttonType} .sqscraft-button-icon`,
-//     styles: toKebabCaseStyleObject(
-//       cleanCssObject(css?.iconProperties?.styles || css?.icon?.styles || {})
-//     ),
-//   };
-
-//   // Optimize iconData to reduce payload size
-//   if (css?.iconProperties?.iconData || css?.icon?.iconData) {
-//     const iconData = css?.iconProperties?.iconData || css?.icon?.iconData;
-
-//     // If iconData is base64, compress it or store reference only
-//     if (iconData.data && iconData.data.startsWith("data:image/")) {
-//       // Option 1: Store only essential metadata and compress
-//       iconProperties.iconData = {
-//         type: iconData.type || "image/svg+xml",
-//         width: iconData.width,
-//         height: iconData.height,
-//         // Store compressed data or just the reference
-//         data:
-//           iconData.data.length > 100000
-//             ? iconData.data.substring(0, 100000) + "..." // Truncate if too large
-//             : iconData.data,
-//       };
-//     } else {
-//       // Store as is if not base64
-//       iconProperties.iconData = iconData;
-//     }
-//   }
-
-//   // Log the extracted properties for debugging
-//   console.log("🔍 Extracted icon properties:", iconProperties);
-
-//   // Check if we should apply to all types
-//   const applyToAllTypes = css?.applyToAllTypes ?? false;
-
-//   // Structure the payload to match server expectations
-//   const payload = {
-//     userId,
-//     token,
-//     widgetId,
-//     pageId,
-//     elementId: blockId,
-//     iconProperties,
-//     buttonType,
-//     applyToAllTypes: applyToAllTypes,
-//   };
-
-//   // Validate payload size before sending
-//   const payloadSize = JSON.stringify(payload).length;
-//   const maxSize = 10 * 1024 * 1024; // 10MB limit
-
-//   if (payloadSize > maxSize) {
-//     console.warn("⚠️ Payload too large:", payloadSize, "bytes");
-
-//     // Remove iconData if payload is too large
-//     if (iconProperties.iconData) {
-//       delete iconProperties.iconData;
-//       console.log("🗑️ Removed iconData to reduce payload size");
-//     }
-
-//     // Recalculate payload size
-//     const newPayloadSize = JSON.stringify(payload).length;
-//     if (newPayloadSize > maxSize) {
-//       return {
-//         success: false,
-//         error: `Payload too large: ${newPayloadSize} bytes. Please reduce icon size.`,
-//       };
-//     }
-//   }
-
-//   console.log("📤 Sending button icon payload:", {
-//     size: JSON.stringify(payload).length,
-//     buttonType,
-//     applyToAllTypes,
-//   });
-
-//   try {
-//     console.log("�� Making API request to save button icon modifications...");
-//     const response = await fetch(
-//       "https://admin.squareplugin.com/api/v1/save-button-icon-modifications",
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify(payload),
-//       }
-//     );
-
-//     console.log("�� Response status:", response.status);
-
-//     if (!response.ok) {
-//       const result = await response.json();
-//       console.error("❌ Server error response:", result);
-//       throw new Error(
-//         result.message || result.error || `HTTP ${response.status}`
-//       );
-//     }
-
-//     const result = await response.json();
-//     console.log("✅ Button icon modifications saved:", result);
-//     showNotification("Button icon styles saved successfully!", "success");
-
-//     return { success: true, data: result };
-//   } catch (error) {
-//     console.error("❌ Error saving button icon modifications:", error);
-//     showNotification(
-//       `Failed to save button icon styles: ${error.message}`,
-//       "error"
-//     );
-
-//     return { success: false, error: error.message };
-//   }
-// }
-
-// ✅ Frontend aligned with backend saveButtonIconModification
-// export async function saveButtonIconModifications(blockId, css) {
-//   console.log("🚀 saveButtonIconModifications called with:", { blockId, css });
-
-//   const userId = localStorage.getItem("sc_u_id");
-//   const token = localStorage.getItem("sc_auth_token");
-//   const widgetId = localStorage.getItem("sc_w_id");
-
-//   // pageId/elementId no longer required or sent
-//   if (!userId || !token || !widgetId || !css) {
-//     console.log("❌ Missing required data", {
-//       userId,
-//       token: !!token,
-//       widgetId,
-//       css: !!css,
-//     });
-//     return { success: false, error: "Missing required data" };
-//   }
-
-//   // ---- helpers ----
-//   const cleanObj = (obj = {}) =>
-//     Object.fromEntries(
-//       Object.entries(obj).filter(
-//         ([, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
-//       )
-//     );
-
-//   const toKebab = (obj = {}) =>
-//     Object.fromEntries(
-//       Object.entries(obj).map(([k, v]) => [
-//         k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-//         v,
-//       ])
-//     );
-
-//   // ---- decide button type (optional) ----
-//   let buttonType = (css?.buttonType || "").toLowerCase();
-//   if (!["primary", "secondary", "tertiary"].includes(buttonType)) {
-//     const sel = css?.iconProperties?.selector || css?.icon?.selector || "";
-//     if (sel.includes("primary")) buttonType = "primary";
-//     else if (sel.includes("secondary")) buttonType = "secondary";
-//     else buttonType = "tertiary";
-//   }
-
-//   // ---- build iconProperties (required by backend) ----
-//   const baseSelector =
-//     css?.iconProperties?.selector ||
-//     css?.icon?.selector ||
-//     `.sqs-button-element--${buttonType} .sqscraft-button-icon`;
-
-//   const iconProperties = {
-//     selector: baseSelector,
-//     styles: toKebab(
-//       cleanObj(css?.iconProperties?.styles || css?.icon?.styles || {})
-//     ),
-//   };
-
-//   // optional iconData passthrough (kept small if huge)
-//   const incomingIconData = css?.iconProperties?.iconData || css?.icon?.iconData;
-//   if (incomingIconData) {
-//     if (
-//       incomingIconData.data &&
-//       String(incomingIconData.data).startsWith("data:image/")
-//     ) {
-//       iconProperties.iconData = {
-//         mime: incomingIconData.mime || incomingIconData.type || "image/png",
-//         width: incomingIconData.width,
-//         height: incomingIconData.height,
-//         data:
-//           incomingIconData.data.length > 100000
-//             ? incomingIconData.data.slice(0, 100000) + "..."
-//             : incomingIconData.data,
-//       };
-//     } else {
-//       iconProperties.iconData = incomingIconData;
-//     }
-//   }
-
-//   // applyToAllTypes is optional; backend default is true
-//   const applyToAllTypes = css?.applyToAllTypes ?? true;
-
-//   // ---- payload for backend (no pageId/elementId) ----
-//   const payload = {
-//     userId,
-//     token,
-//     widgetId,
-//     iconProperties,
-//     buttonType, // optional if applyToAllTypes=true
-//     applyToAllTypes,
-//   };
-
-//   // size guard (10MB)
-//   const MAX = 10 * 1024 * 1024;
-//   let size = JSON.stringify(payload).length;
-//   if (size > MAX && iconProperties.iconData) {
-//     delete iconProperties.iconData;
-//     size = JSON.stringify(payload).length;
-//     if (size > MAX) {
-//       return {
-//         success: false,
-//         error: `Payload too large (${size} bytes). Reduce icon size.`,
-//       };
-//     }
-//   }
-
-//   console.log("📤 Sending button icon payload:", {
-//     size,
-//     buttonType,
-//     applyToAllTypes,
-//     selector: iconProperties.selector,
-//     stylesKeys: Object.keys(iconProperties.styles || {}),
-//   });
-
-//   try {
-//     const response = await fetch(
-//       "https://admin.squareplugin.com/api/v1/save-button-icon-modifications",
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify(payload),
-//       }
-//     );
-
-//     const result = await response.json();
-
-//     if (!response.ok) {
-//       console.error("❌ Server error response:", result);
-//       throw new Error(
-//         result.message || result.error || `HTTP ${response.status}`
-//       );
-//     }
-
-//     console.log("✅ Button icon modifications saved:", result);
-//     showNotification("Button icon saved successfully!", "success");
-//     return { success: true, data: result };
-//   } catch (error) {
-//     console.error("❌ Error saving button icon modifications:", error);
-//     showNotification(`Failed to save button icon: ${error.message}`, "error");
-//     return { success: false, error: error.message };
-//   }
-// }
 
 // ✅ Frontend aligned with backend saveButtonIconModification
 export async function saveButtonIconModifications(blockId, css) {
