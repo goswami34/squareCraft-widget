@@ -4603,11 +4603,147 @@ window.pendingModifications = pendingModifications;
   }
 
   // Fetch and apply button border modifications from the backend
-  async function fetchButtonBorderModifications(blockId = null) {
-    // ✅ FIXED: Check if we already have cached data
-    if (window.__squareCraftButtonBorderData && !blockId) {
+  // async function fetchButtonBorderModifications(blockId = null) {
+  //   // ✅ FIXED: Check if we already have cached data
+  //   if (window.__squareCraftButtonBorderData && !blockId) {
+  //     console.log("📦 Using cached button border data");
+  //     applyCachedButtonBorderStyles();
+  //     return;
+  //   }
+
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+
+  //   // ✅ DEBUG: Try multiple ways to get pageId
+  //   let pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
+
+  //   // Fallback: try to get pageId from other sources
+  //   if (!pageId) {
+  //     pageId = document
+  //       .querySelector("[data-page-id]")
+  //       ?.getAttribute("data-page-id");
+  //   }
+  //   if (!pageId) {
+  //     pageId = document
+  //       .querySelector("[data-page-sections]")
+  //       ?.getAttribute("data-page-sections");
+  //   }
+  //   if (!pageId) {
+  //     // Try to get from URL path
+  //     const pathMatch = window.location.pathname.match(/\/([a-f0-9]{24})/);
+  //     if (pathMatch) pageId = pathMatch[1];
+  //   }
+
+  //   console.log("🔍 Page ID sources:", {
+  //     fromArticle: document
+  //       .querySelector("article[data-page-sections]")
+  //       ?.getAttribute("data-page-sections"),
+  //     fromDataPageId: document
+  //       .querySelector("[data-page-id]")
+  //       ?.getAttribute("data-page-id"),
+  //     fromDataPageSections: document
+  //       .querySelector("[data-page-sections]")
+  //       ?.getAttribute("data-page-sections"),
+  //     fromURL: window.location.pathname,
+  //     finalPageId: pageId,
+  //   });
+
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn("⚠️ Missing credentials or page ID");
+  //     return;
+  //   }
+
+  //   // ✅ FIXED: Don't filter by elementId initially - get all data for the page
+  //   let url = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+
+  //   // Only add elementId if we're looking for a specific element
+  //   if (blockId && blockId !== "block-id") {
+  //     url += `&elementId=${blockId}`;
+  //   }
+
+  //   try {
+  //     const res = await fetch(url, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     const result = await res.json();
+  //     if (!res.ok) throw new Error(result.message);
+
+  //     // ✅ DEBUG: Log the full API response to understand the structure
+  //     console.log("🔍 Full API Response:", result);
+  //     console.log("🔍 Request URL:", url);
+  //     console.log("🔍 Credentials:", { userId, widgetId, pageId, blockId });
+
+  //     // ✅ FIXED: Handle the new API structure with css buckets
+  //     const elements = result.elements || [];
+  //     console.log("🔄 Processing button border modifications:", elements);
+
+  //     // ✅ FIXED: Track applied styles to avoid duplicates
+  //     const appliedStyles = new Set();
+
+  //     elements.forEach(({ elementId, css }) => {
+  //       if (!css || typeof css !== "object") return;
+
+  //       // Process each button type bucket (buttonPrimary, buttonSecondary, buttonTertiary)
+  //       Object.entries(css).forEach(([buttonType, buttonData]) => {
+  //         if (!buttonData || !buttonData.selector || !buttonData.styles) return;
+
+  //         const { selector, styles } = buttonData;
+  //         const styleKey = `${elementId}-${buttonType}`;
+
+  //         // Avoid applying the same styles multiple times
+  //         if (appliedStyles.has(styleKey)) {
+  //           console.log(
+  //             `⏭️ Skipping duplicate style application for ${styleKey}`
+  //           );
+  //           return;
+  //         }
+
+  //         // Apply button border styles as external CSS
+  //         if (selector && Object.keys(styles).length > 0) {
+  //           applyStylesAsExternalCSS(
+  //             selector,
+  //             styles,
+  //             `sc-btn-border-${buttonType}-${elementId}`
+  //           );
+  //           appliedStyles.add(styleKey);
+  //           console.log(
+  //             `✅ Applied ${buttonType} border styles to ${elementId}:`,
+  //             { selector, styles }
+  //           );
+  //         }
+  //       });
+  //     });
+
+  //     console.log(
+  //       `✅ Applied button border styles to ${elements.length} elements (external CSS)`
+  //     );
+
+  //     // ✅ DEBUG: If no elements found, test the API with different parameters
+  //     if (elements.length === 0) {
+  //       console.log(
+  //         "⚠️ No elements found. Testing API with different parameters..."
+  //       );
+  //       await testAPIWithDifferentParams(userId, token, widgetId);
+  //     }
+  //   } catch (error) {
+  //     console.error(
+  //       "❌ Failed to fetch button border modifications:",
+  //       error.message
+  //     );
+  //   }
+  // }
+
+  // Fetch and apply button BORDER styles (matches new backend contract)
+  async function fetchButtonBorderModifications() {
+    // ✅ Use cached data if we already fetched it
+    if (window.__squareCraftButtonBorderData) {
       console.log("📦 Using cached button border data");
-      applyCachedButtonBorderStyles();
+      applyBorderBuckets(window.__squareCraftButtonBorderData);
       return;
     }
 
@@ -4615,209 +4751,151 @@ window.pendingModifications = pendingModifications;
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
 
-    // ✅ DEBUG: Try multiple ways to get pageId
-    let pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
-
-    // Fallback: try to get pageId from other sources
-    if (!pageId) {
-      pageId = document
-        .querySelector("[data-page-id]")
-        ?.getAttribute("data-page-id");
-    }
-    if (!pageId) {
-      pageId = document
-        .querySelector("[data-page-sections]")
-        ?.getAttribute("data-page-sections");
-    }
-    if (!pageId) {
-      // Try to get from URL path
-      const pathMatch = window.location.pathname.match(/\/([a-f0-9]{24})/);
-      if (pathMatch) pageId = pathMatch[1];
-    }
-
-    console.log("🔍 Page ID sources:", {
-      fromArticle: document
-        .querySelector("article[data-page-sections]")
-        ?.getAttribute("data-page-sections"),
-      fromDataPageId: document
-        .querySelector("[data-page-id]")
-        ?.getAttribute("data-page-id"),
-      fromDataPageSections: document
-        .querySelector("[data-page-sections]")
-        ?.getAttribute("data-page-sections"),
-      fromURL: window.location.pathname,
-      finalPageId: pageId,
-    });
-
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
+    if (!userId || !token || !widgetId) {
+      console.warn("⚠️ Missing credentials (userId/token/widgetId).");
       return;
     }
 
-    // ✅ FIXED: Don't filter by elementId initially - get all data for the page
-    let url = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+    // Base URL (no pageId / elementId)
+    let url =
+      `https://admin.squareplugin.com/api/v1/get-button-border-modifications` +
+      `?userId=${encodeURIComponent(userId)}` +
+      `&widgetId=${encodeURIComponent(widgetId)}`;
 
-    // Only add elementId if we're looking for a specific element
-    if (blockId && blockId !== "block-id") {
-      url += `&elementId=${blockId}`;
-    }
+    // 🔧 Optional (handy for dev if token user differs): force query user
+    if (window.SC_PREFER_QUERY === true) url += `&prefer=query`;
+
+    console.log("🔗 Border fetch URL:", url);
 
     try {
       const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
+
       const result = await res.json();
-      if (!res.ok) throw new Error(result.message);
+      console.log("📡 Border API response:", res.status, result);
 
-      // ✅ DEBUG: Log the full API response to understand the structure
-      console.log("🔍 Full API Response:", result);
-      console.log("🔍 Request URL:", url);
-      console.log("🔍 Credentials:", { userId, widgetId, pageId, blockId });
+      if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
 
-      // ✅ FIXED: Handle the new API structure with css buckets
-      const elements = result.elements || [];
-      console.log("🔄 Processing button border modifications:", elements);
-
-      // ✅ FIXED: Track applied styles to avoid duplicates
-      const appliedStyles = new Set();
-
-      elements.forEach(({ elementId, css }) => {
-        if (!css || typeof css !== "object") return;
-
-        // Process each button type bucket (buttonPrimary, buttonSecondary, buttonTertiary)
-        Object.entries(css).forEach(([buttonType, buttonData]) => {
-          if (!buttonData || !buttonData.selector || !buttonData.styles) return;
-
-          const { selector, styles } = buttonData;
-          const styleKey = `${elementId}-${buttonType}`;
-
-          // Avoid applying the same styles multiple times
-          if (appliedStyles.has(styleKey)) {
-            console.log(
-              `⏭️ Skipping duplicate style application for ${styleKey}`
-            );
-            return;
-          }
-
-          // Apply button border styles as external CSS
-          if (selector && Object.keys(styles).length > 0) {
-            applyStylesAsExternalCSS(
-              selector,
-              styles,
-              `sc-btn-border-${buttonType}-${elementId}`
-            );
-            appliedStyles.add(styleKey);
-            console.log(
-              `✅ Applied ${buttonType} border styles to ${elementId}:`,
-              { selector, styles }
-            );
-          }
-        });
-      });
-
-      console.log(
-        `✅ Applied button border styles to ${elements.length} elements (external CSS)`
-      );
-
-      // ✅ DEBUG: If no elements found, test the API with different parameters
-      if (elements.length === 0) {
-        console.log(
-          "⚠️ No elements found. Testing API with different parameters..."
-        );
-        await testAPIWithDifferentParams(userId, token, widgetId);
-      }
-    } catch (error) {
-      console.error(
-        "❌ Failed to fetch button border modifications:",
-        error.message
-      );
+      // Expecting: { success, message, border: { buttonPrimary?, buttonSecondary?, buttonTertiary? }, count }
+      const border = result.border || {};
+      window.__squareCraftButtonBorderData = border; // cache
+      applyBorderBuckets(border);
+    } catch (err) {
+      console.error("❌ Failed to fetch button border modifications:", err);
     }
   }
 
-  // ✅ NEW: Apply cached button border styles without making API calls
-  function applyCachedButtonBorderStyles() {
-    const elements = window.__squareCraftButtonBorderData || [];
-    if (elements.length === 0) {
-      console.log("📦 No cached button border data available");
+  /**
+   * Apply every available border bucket to the page.
+   * border = { buttonPrimary?, buttonSecondary?, buttonTertiary? }
+   */
+  function applyBorderBuckets(border) {
+    if (!border || typeof border !== "object") return;
+
+    const entries = Object.entries(border);
+    if (!entries.length) {
+      console.log("ℹ️ No border buckets to apply.");
       return;
     }
 
-    console.log(
-      "📦 Applying cached button border styles to",
-      elements.length,
-      "elements"
-    );
+    entries.forEach(([key, bucket]) => {
+      if (!bucket || !bucket.selector) return;
+      const styles = bucket.styles || {};
+      if (!Object.keys(styles).length) return;
 
-    const appliedStyles = new Set();
+      // Reuse your existing helper to inject CSS
+      // ID keeps the style tag stable across re-applies
+      const styleId = `sc-btn-border-${key}`;
+      applyStylesAsExternalCSS(bucket.selector, styles, styleId);
 
-    elements.forEach(({ elementId, css }) => {
-      if (!css || typeof css !== "object") return;
-
-      Object.entries(css).forEach(([buttonType, buttonData]) => {
-        if (!buttonData || !buttonData.selector || !buttonData.styles) return;
-
-        const { selector, styles } = buttonData;
-        const styleKey = `${elementId}-${buttonType}`;
-
-        if (appliedStyles.has(styleKey)) {
-          console.log(
-            `⏭️ Skipping duplicate style application for ${styleKey}`
-          );
-          return;
-        }
-
-        if (selector && Object.keys(styles).length > 0) {
-          applyStylesAsExternalCSS(
-            selector,
-            styles,
-            `sc-btn-border-${buttonType}-${elementId}`
-          );
-          appliedStyles.add(styleKey);
-          console.log(
-            `📦 Applied cached ${buttonType} border styles to ${elementId}:`,
-            { selector, styles }
-          );
-        }
+      console.log(`✅ Applied ${key} border styles`, {
+        selector: bucket.selector,
+        rules: Object.keys(styles).length,
       });
     });
-
-    console.log(
-      `📦 Applied cached button border styles to ${elements.length} elements`
-    );
   }
 
-  // ✅ DEBUG: Test API with different parameters to find the issue
-  async function testAPIWithDifferentParams(userId, token, widgetId) {
-    console.log("🧪 Testing API with different parameters...");
+  // ✅ NEW: Apply cached button border styles without making API calls
+  // function applyCachedButtonBorderStyles() {
+  //   const elements = window.__squareCraftButtonBorderData || [];
+  //   if (elements.length === 0) {
+  //     console.log("📦 No cached button border data available");
+  //     return;
+  //   }
 
-    // Test 1: Without pageId
-    try {
-      const url1 = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}`;
-      const res1 = await fetch(url1, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const result1 = await res1.json();
-      console.log("🧪 Test 1 (no pageId):", result1);
-    } catch (e) {
-      console.log("🧪 Test 1 failed:", e.message);
-    }
+  //   console.log(
+  //     "📦 Applying cached button border styles to",
+  //     elements.length,
+  //     "elements"
+  //   );
 
-    // Test 2: With different pageId format
-    try {
-      const url2 = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=all`;
-      const res2 = await fetch(url2, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const result2 = await res2.json();
-      console.log("🧪 Test 2 (pageId=all):", result2);
-    } catch (e) {
-      console.log("🧪 Test 2 failed:", e.message);
-    }
-  }
+  //   const appliedStyles = new Set();
+
+  //   elements.forEach(({ elementId, css }) => {
+  //     if (!css || typeof css !== "object") return;
+
+  //     Object.entries(css).forEach(([buttonType, buttonData]) => {
+  //       if (!buttonData || !buttonData.selector || !buttonData.styles) return;
+
+  //       const { selector, styles } = buttonData;
+  //       const styleKey = `${elementId}-${buttonType}`;
+
+  //       if (appliedStyles.has(styleKey)) {
+  //         console.log(
+  //           `⏭️ Skipping duplicate style application for ${styleKey}`
+  //         );
+  //         return;
+  //       }
+
+  //       if (selector && Object.keys(styles).length > 0) {
+  //         applyStylesAsExternalCSS(
+  //           selector,
+  //           styles,
+  //           `sc-btn-border-${buttonType}-${elementId}`
+  //         );
+  //         appliedStyles.add(styleKey);
+  //         console.log(
+  //           `📦 Applied cached ${buttonType} border styles to ${elementId}:`,
+  //           { selector, styles }
+  //         );
+  //       }
+  //     });
+  //   });
+
+  //   console.log(
+  //     `📦 Applied cached button border styles to ${elements.length} elements`
+  //   );
+  // }
+
+  // // ✅ DEBUG: Test API with different parameters to find the issue
+  // async function testAPIWithDifferentParams(userId, token, widgetId) {
+  //   console.log("🧪 Testing API with different parameters...");
+
+  //   // Test 1: Without pageId
+  //   try {
+  //     const url1 = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}`;
+  //     const res1 = await fetch(url1, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     const result1 = await res1.json();
+  //     console.log("🧪 Test 1 (no pageId):", result1);
+  //   } catch (e) {
+  //     console.log("🧪 Test 1 failed:", e.message);
+  //   }
+
+  //   // Test 2: With different pageId format
+  //   try {
+  //     const url2 = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=all`;
+  //     const res2 = await fetch(url2, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     const result2 = await res2.json();
+  //     console.log("🧪 Test 2 (pageId=all):", result2);
+  //   } catch (e) {
+  //     console.log("🧪 Test 2 failed:", e.message);
+  //   }
+  // }
 
   // ✅ NEW: Fetch all button border modifications for the page at once
   async function fetchAllButtonBorderModifications() {
