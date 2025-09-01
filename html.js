@@ -1343,7 +1343,6 @@ export async function saveButtonBorderModifications(blockId, css) {
 }
 //button border save modification end here
 
-// button icon save modification code start here
 // export async function saveButtonIconModifications(blockId, css) {
 //   console.log("🚀 saveButtonIconModifications called with:", { blockId, css });
 
@@ -1356,7 +1355,7 @@ export async function saveButtonBorderModifications(blockId, css) {
 //   const widgetId = localStorage.getItem("sc_w_id");
 
 //   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-//     console.warn("❌ Missing required data to save button icon modifications", {
+//     console.log("❌ Missing required data to save button icon modifications", {
 //       userId,
 //       token,
 //       widgetId,
@@ -1415,18 +1414,33 @@ export async function saveButtonBorderModifications(blockId, css) {
 //     ),
 //   };
 
-//   // Add iconData if it exists (for uploaded icons)
-//   if (css?.iconProperties?.iconData) {
-//     iconProperties.iconData = css.iconProperties.iconData;
-//   } else if (css?.icon?.iconData) {
-//     iconProperties.iconData = css.icon.iconData;
+//   // Optimize iconData to reduce payload size
+//   if (css?.iconProperties?.iconData || css?.icon?.iconData) {
+//     const iconData = css?.iconProperties?.iconData || css?.icon?.iconData;
+
+//     // If iconData is base64, compress it or store reference only
+//     if (iconData.data && iconData.data.startsWith("data:image/")) {
+//       // Option 1: Store only essential metadata and compress
+//       iconProperties.iconData = {
+//         type: iconData.type || "image/svg+xml",
+//         width: iconData.width,
+//         height: iconData.height,
+//         // Store compressed data or just the reference
+//         data:
+//           iconData.data.length > 100000
+//             ? iconData.data.substring(0, 100000) + "..." // Truncate if too large
+//             : iconData.data,
+//       };
+//     } else {
+//       // Store as is if not base64
+//       iconProperties.iconData = iconData;
+//     }
 //   }
 
 //   // Log the extracted properties for debugging
 //   console.log("🔍 Extracted icon properties:", iconProperties);
 
 //   // Check if we should apply to all types
-//   // Apply only if explicitly true, otherwise false
 //   const applyToAllTypes = css?.applyToAllTypes ?? false;
 
 //   // Structure the payload to match server expectations
@@ -1441,36 +1455,37 @@ export async function saveButtonBorderModifications(blockId, css) {
 //     applyToAllTypes: applyToAllTypes,
 //   };
 
-//   // Validate that we have valid icon properties to save
-//   console.log("🔍 Icon properties to validate:", iconProperties);
-//   console.log("🔍 CSS received:", css);
+//   // Validate payload size before sending
+//   const payloadSize = JSON.stringify(payload).length;
+//   const maxSize = 10 * 1024 * 1024; // 10MB limit
 
-//   // Check if we have either styles or iconData to save
-//   const hasStyles = Object.keys(iconProperties.styles).length > 0;
-//   const hasIconData =
-//     iconProperties.iconData && Object.keys(iconProperties.iconData).length > 0;
+//   if (payloadSize > maxSize) {
+//     console.warn("⚠️ Payload too large:", payloadSize, "bytes");
 
-//   // More lenient validation - allow saving even with minimal data
-//   if (!iconProperties.selector) {
-//     console.warn("⚠️ No selector found in icon properties:", iconProperties);
-//     return { success: false, error: "No selector found in icon properties" };
+//     // Remove iconData if payload is too large
+//     if (iconProperties.iconData) {
+//       delete iconProperties.iconData;
+//       console.log("🗑️ Removed iconData to reduce payload size");
+//     }
+
+//     // Recalculate payload size
+//     const newPayloadSize = JSON.stringify(payload).length;
+//     if (newPayloadSize > maxSize) {
+//       return {
+//         success: false,
+//         error: `Payload too large: ${newPayloadSize} bytes. Please reduce icon size.`,
+//       };
+//     }
 //   }
 
-//   // If we have no styles and no iconData, still allow the save but log a warning
-//   if (!hasStyles && !hasIconData) {
-//     console.warn(
-//       "⚠️ No styles or iconData found, but proceeding with save:",
-//       iconProperties
-//     );
-//   }
-
-//   console.log(
-//     "📤 Sending button icon payload:",
-//     JSON.stringify(payload, null, 2)
-//   );
+//   console.log("📤 Sending button icon payload:", {
+//     size: JSON.stringify(payload).length,
+//     buttonType,
+//     applyToAllTypes,
+//   });
 
 //   try {
-//     console.log("🌐 Making API request to save button icon modifications...");
+//     console.log("�� Making API request to save button icon modifications...");
 //     const response = await fetch(
 //       "https://admin.squareplugin.com/api/v1/save-button-icon-modifications",
 //       {
@@ -1483,27 +1498,17 @@ export async function saveButtonBorderModifications(blockId, css) {
 //       }
 //     );
 
-//     console.log("📡 Response status:", response.status);
-//     console.log(
-//       "📡 Response headers:",
-//       Object.fromEntries(response.headers.entries())
-//     );
-
-//     const result = await response.json();
+//     console.log("�� Response status:", response.status);
 
 //     if (!response.ok) {
+//       const result = await response.json();
 //       console.error("❌ Server error response:", result);
-//       console.error("❌ Full error details:", {
-//         status: response.status,
-//         statusText: response.statusText,
-//         url: response.url,
-//         result: result,
-//       });
 //       throw new Error(
 //         result.message || result.error || `HTTP ${response.status}`
 //       );
 //     }
 
+//     const result = await response.json();
 //     console.log("✅ Button icon modifications saved:", result);
 //     showNotification("Button icon styles saved successfully!", "success");
 
@@ -1519,149 +1524,120 @@ export async function saveButtonBorderModifications(blockId, css) {
 //   }
 // }
 
+// ✅ Frontend aligned with backend saveButtonIconModification
 export async function saveButtonIconModifications(blockId, css) {
   console.log("🚀 saveButtonIconModifications called with:", { blockId, css });
-
-  const pageId = document
-    .querySelector("article[data-page-sections]")
-    ?.getAttribute("data-page-sections");
 
   const userId = localStorage.getItem("sc_u_id");
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-    console.log("❌ Missing required data to save button icon modifications", {
+  // pageId/elementId no longer required or sent
+  if (!userId || !token || !widgetId || !css) {
+    console.log("❌ Missing required data", {
       userId,
-      token,
+      token: !!token,
       widgetId,
-      pageId,
-      blockId,
-      css,
+      css: !!css,
     });
     return { success: false, error: "Missing required data" };
   }
 
-  // Clean & normalize CSS
-  const cleanCssObject = (obj = {}) =>
+  // ---- helpers ----
+  const cleanObj = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
-        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+        ([, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
       )
     );
 
-  const toKebabCaseStyleObject = (obj = {}) =>
+  const toKebab = (obj = {}) =>
     Object.fromEntries(
-      Object.entries(obj).map(([key, value]) => [
-        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-        value,
+      Object.entries(obj).map(([k, v]) => [
+        k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        v,
       ])
     );
 
-  // Determine button type from the CSS structure
-  let buttonType = "tertiary"; // default
-  if (css?.buttonType) {
-    buttonType = css.buttonType;
-  } else if (
-    css?.iconProperties?.selector?.includes("primary") ||
-    css?.icon?.selector?.includes("primary")
-  ) {
-    buttonType = "primary";
-  } else if (
-    css?.iconProperties?.selector?.includes("secondary") ||
-    css?.icon?.selector?.includes("secondary")
-  ) {
-    buttonType = "secondary";
-  } else if (
-    css?.iconProperties?.selector?.includes("tertiary") ||
-    css?.icon?.selector?.includes("tertiary")
-  ) {
-    buttonType = "tertiary";
+  // ---- decide button type (optional) ----
+  let buttonType = (css?.buttonType || "").toLowerCase();
+  if (!["primary", "secondary", "tertiary"].includes(buttonType)) {
+    const sel = css?.iconProperties?.selector || css?.icon?.selector || "";
+    if (sel.includes("primary")) buttonType = "primary";
+    else if (sel.includes("secondary")) buttonType = "secondary";
+    else buttonType = "tertiary";
   }
 
-  // Extract icon properties from CSS
+  // ---- build iconProperties (required by backend) ----
+  const baseSelector =
+    css?.iconProperties?.selector ||
+    css?.icon?.selector ||
+    `.sqs-button-element--${buttonType} .sqscraft-button-icon`;
+
   const iconProperties = {
-    selector:
-      css?.iconProperties?.selector ||
-      css?.icon?.selector ||
-      `.sqs-button-element--${buttonType} .sqscraft-button-icon`,
-    styles: toKebabCaseStyleObject(
-      cleanCssObject(css?.iconProperties?.styles || css?.icon?.styles || {})
+    selector: baseSelector,
+    styles: toKebab(
+      cleanObj(css?.iconProperties?.styles || css?.icon?.styles || {})
     ),
   };
 
-  // Optimize iconData to reduce payload size
-  if (css?.iconProperties?.iconData || css?.icon?.iconData) {
-    const iconData = css?.iconProperties?.iconData || css?.icon?.iconData;
-
-    // If iconData is base64, compress it or store reference only
-    if (iconData.data && iconData.data.startsWith("data:image/")) {
-      // Option 1: Store only essential metadata and compress
+  // optional iconData passthrough (kept small if huge)
+  const incomingIconData = css?.iconProperties?.iconData || css?.icon?.iconData;
+  if (incomingIconData) {
+    if (
+      incomingIconData.data &&
+      String(incomingIconData.data).startsWith("data:image/")
+    ) {
       iconProperties.iconData = {
-        type: iconData.type || "image/svg+xml",
-        width: iconData.width,
-        height: iconData.height,
-        // Store compressed data or just the reference
+        mime: incomingIconData.mime || incomingIconData.type || "image/png",
+        width: incomingIconData.width,
+        height: incomingIconData.height,
         data:
-          iconData.data.length > 100000
-            ? iconData.data.substring(0, 100000) + "..." // Truncate if too large
-            : iconData.data,
+          incomingIconData.data.length > 100000
+            ? incomingIconData.data.slice(0, 100000) + "..."
+            : incomingIconData.data,
       };
     } else {
-      // Store as is if not base64
-      iconProperties.iconData = iconData;
+      iconProperties.iconData = incomingIconData;
     }
   }
 
-  // Log the extracted properties for debugging
-  console.log("🔍 Extracted icon properties:", iconProperties);
+  // applyToAllTypes is optional; backend default is true
+  const applyToAllTypes = css?.applyToAllTypes ?? true;
 
-  // Check if we should apply to all types
-  const applyToAllTypes = css?.applyToAllTypes ?? false;
-
-  // Structure the payload to match server expectations
+  // ---- payload for backend (no pageId/elementId) ----
   const payload = {
     userId,
     token,
     widgetId,
-    pageId,
-    elementId: blockId,
     iconProperties,
-    buttonType,
-    applyToAllTypes: applyToAllTypes,
+    buttonType, // optional if applyToAllTypes=true
+    applyToAllTypes,
   };
 
-  // Validate payload size before sending
-  const payloadSize = JSON.stringify(payload).length;
-  const maxSize = 10 * 1024 * 1024; // 10MB limit
-
-  if (payloadSize > maxSize) {
-    console.warn("⚠️ Payload too large:", payloadSize, "bytes");
-
-    // Remove iconData if payload is too large
-    if (iconProperties.iconData) {
-      delete iconProperties.iconData;
-      console.log("🗑️ Removed iconData to reduce payload size");
-    }
-
-    // Recalculate payload size
-    const newPayloadSize = JSON.stringify(payload).length;
-    if (newPayloadSize > maxSize) {
+  // size guard (10MB)
+  const MAX = 10 * 1024 * 1024;
+  let size = JSON.stringify(payload).length;
+  if (size > MAX && iconProperties.iconData) {
+    delete iconProperties.iconData;
+    size = JSON.stringify(payload).length;
+    if (size > MAX) {
       return {
         success: false,
-        error: `Payload too large: ${newPayloadSize} bytes. Please reduce icon size.`,
+        error: `Payload too large (${size} bytes). Reduce icon size.`,
       };
     }
   }
 
   console.log("📤 Sending button icon payload:", {
-    size: JSON.stringify(payload).length,
+    size,
     buttonType,
     applyToAllTypes,
+    selector: iconProperties.selector,
+    stylesKeys: Object.keys(iconProperties.styles || {}),
   });
 
   try {
-    console.log("�� Making API request to save button icon modifications...");
     const response = await fetch(
       "https://admin.squareplugin.com/api/v1/save-button-icon-modifications",
       {
@@ -1674,31 +1650,25 @@ export async function saveButtonIconModifications(blockId, css) {
       }
     );
 
-    console.log("�� Response status:", response.status);
+    const result = await response.json();
 
     if (!response.ok) {
-      const result = await response.json();
       console.error("❌ Server error response:", result);
       throw new Error(
         result.message || result.error || `HTTP ${response.status}`
       );
     }
 
-    const result = await response.json();
     console.log("✅ Button icon modifications saved:", result);
-    showNotification("Button icon styles saved successfully!", "success");
-
+    showNotification("Button icon saved successfully!", "success");
     return { success: true, data: result };
   } catch (error) {
     console.error("❌ Error saving button icon modifications:", error);
-    showNotification(
-      `Failed to save button icon styles: ${error.message}`,
-      "error"
-    );
-
+    showNotification(`Failed to save button icon: ${error.message}`, "error");
     return { success: false, error: error.message };
   }
 }
+
 // button icon save modification code end here
 
 // button shadow save modification start here
