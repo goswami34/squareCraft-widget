@@ -4475,7 +4475,7 @@ window.pendingModifications = pendingModifications;
   // Fetch button shadow modifications from the backend
 
   // Fetch & apply hover-color buckets (no pageId/elementId)
-  async function fetchButtonHoverColorModifications() {
+  async function fetchButtonHoverColorModifications(blockId = null) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
