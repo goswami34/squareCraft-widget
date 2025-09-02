@@ -1737,75 +1737,221 @@ export async function saveButtonHoverBorderModifications(_blockId, css) {
 // button hover border save modification code end here
 
 // button hover shadow save modification code start here
-export async function saveButtonHoverShadowModifications(blockId, css) {
-  const pageId = document
-    .querySelector("article[data-page-sections]")
-    ?.getAttribute("data-page-sections");
+// export async function saveButtonHoverShadowModifications(blockId, css) {
+//   const pageId = document
+//     .querySelector("article[data-page-sections]")
+//     ?.getAttribute("data-page-sections");
 
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
+
+//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+//     console.warn(
+//       "❌ Missing required data to save button hover shadow styles",
+//       {
+//         userId,
+//         token,
+//         widgetId,
+//         pageId,
+//         blockId,
+//         css,
+//       }
+//     );
+//     return { success: false, error: "Missing required data" };
+//   }
+
+//   // ✅ Clean null/empty values from style object
+//   const cleanCssObject = (obj = {}) =>
+//     Object.fromEntries(
+//       Object.entries(obj).filter(
+//         ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+//       )
+//     );
+
+//   // ✅ Convert camelCase → kebab-case (e.g., boxShadow → box-shadow)
+//   const toKebabCaseStyleObject = (obj = {}) =>
+//     Object.fromEntries(
+//       Object.entries(obj).map(([key, value]) => [
+//         key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+//         value,
+//       ])
+//     );
+
+//   // ✅ Format buttonPrimary styles (only one supported for now)
+//   const cleanedPrimary = css.buttonPrimary
+//     ? {
+//         selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
+//         styles: toKebabCaseStyleObject(
+//           cleanCssObject(css.buttonPrimary.styles || {})
+//         ),
+//       }
+//     : { selector: null, styles: {} };
+
+//   if (Object.keys(cleanedPrimary.styles).length === 0) {
+//     console.warn("⚠️ No valid hover shadow styles found in buttonPrimary.");
+//     return { success: false, error: "No valid hover shadow styles to save" };
+//   }
+
+//   // ✅ Final payload to send
+//   const payload = {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId,
+//     elementId: blockId,
+//     css: {
+//       buttonPrimary: cleanedPrimary,
+//     },
+//   };
+
+//   console.log("📤 Sending button shadow payload:", payload);
+
+//   try {
+//     const response = await fetch(
+//       "https://admin.squareplugin.com/api/v1/save-button-hover-shadow-modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     const result = await response.json();
+
+//     if (!response.ok) {
+//       throw new Error(result.message || `HTTP ${response.status}`);
+//     }
+
+//     console.log("✅ Button shadow styles saved:", result);
+//     showNotification("Button shadow styles saved successfully!", "success");
+
+//     return { success: true, data: result };
+//   } catch (error) {
+//     console.error("❌ Error saving button shadow styles:", error);
+//     showNotification(
+//       `Failed to save button shadow styles: ${error.message}`,
+//       "error"
+//     );
+//     return { success: false, error: error.message };
+//   }
+// }
+
+// button hover shadow save modification (no pageId/elementId)
+export async function saveButtonHoverShadowModifications(_ignoredBlockId, css) {
   const userId = localStorage.getItem("sc_u_id");
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-    console.warn(
-      "❌ Missing required data to save button hover shadow styles",
-      {
-        userId,
-        token,
-        widgetId,
-        pageId,
-        blockId,
-        css,
-      }
-    );
-    return { success: false, error: "Missing required data" };
+  if (!userId || !token || !widgetId || !css) {
+    console.warn("❌ Missing required data", {
+      userId: !!userId,
+      token: !!token,
+      widgetId: !!widgetId,
+      css: !!css,
+    });
+    return {
+      success: false,
+      error: "Missing required data (userId, token, widgetId, css)",
+    };
   }
 
-  // ✅ Clean null/empty values from style object
+  // --- helpers ---------------------------------------------------------------
   const cleanCssObject = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
-        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+        ([, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
       )
     );
 
-  // ✅ Convert camelCase → kebab-case (e.g., boxShadow → box-shadow)
   const toKebabCaseStyleObject = (obj = {}) =>
     Object.fromEntries(
-      Object.entries(obj).map(([key, value]) => [
-        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-        value,
+      Object.entries(obj).map(([k, v]) => [
+        k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        v,
       ])
     );
 
-  // ✅ Format buttonPrimary styles (only one supported for now)
-  const cleanedPrimary = css.buttonPrimary
-    ? {
-        selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
-        styles: toKebabCaseStyleObject(
-          cleanCssObject(css.buttonPrimary.styles || {})
-        ),
-      }
-    : { selector: null, styles: {} };
+  const FALLBACK = {
+    buttonPrimary: ".sqs-button-element--primary",
+    buttonSecondary: ".sqs-button-element--secondary",
+    buttonTertiary: ".sqs-button-element--tertiary",
+  };
 
-  if (Object.keys(cleanedPrimary.styles).length === 0) {
-    console.warn("⚠️ No valid hover shadow styles found in buttonPrimary.");
+  const detectBucketFromSelector = (sel = "") => {
+    const s = sel.toLowerCase();
+    if (s.includes("--secondary")) return "buttonSecondary";
+    if (s.includes("--tertiary")) return "buttonTertiary";
+    if (s.includes("--primary")) return "buttonPrimary";
+    return null;
+  };
+
+  const mapType = (t = "") =>
+    ({
+      primary: "buttonPrimary",
+      secondary: "buttonSecondary",
+      tertiary: "buttonTertiary",
+    }[t]);
+
+  // --- normalize input to 3-bucket shape ------------------------------------
+  let normalized;
+  if (css.buttonPrimary || css.buttonSecondary || css.buttonTertiary) {
+    // already bucketed
+    normalized = css;
+  } else {
+    // single-bucket: resolve target bucket from buttonType or selector
+    const keyFromType = mapType((css.buttonType || "").toLowerCase());
+    const keyFromSel = detectBucketFromSelector(css.selector);
+    const key = keyFromType || keyFromSel;
+
+    if (!key) {
+      console.warn(
+        "⚠️ Ambiguous payload: add buttonType or use a typed selector",
+        css
+      );
+      return {
+        success: false,
+        error: "Ambiguous button type (need buttonType or selector hint)",
+      };
+    }
+    normalized = { [key]: { selector: css.selector, styles: css.styles } };
+  }
+
+  // --- build cleaned payload -------------------------------------------------
+  const cleanedCss = {};
+  for (const key of ["buttonPrimary", "buttonSecondary", "buttonTertiary"]) {
+    const bucket = normalized[key];
+    if (!bucket) continue;
+
+    const styles = toKebabCaseStyleObject(cleanCssObject(bucket.styles || {}));
+    const hasStyles = Object.keys(styles).length > 0;
+
+    // ensure selector if there are styles; otherwise allow null
+    const selector =
+      (bucket.selector && String(bucket.selector).trim()) ||
+      (hasStyles ? FALLBACK[key] : null);
+
+    if (selector || hasStyles) {
+      cleanedCss[key] = { selector: selector || null, styles };
+    }
+  }
+
+  if (Object.keys(cleanedCss).length === 0) {
+    console.warn("⚠️ No valid hover shadow styles to save.", { incoming: css });
     return { success: false, error: "No valid hover shadow styles to save" };
   }
 
-  // ✅ Final payload to send
-  const payload = {
-    userId,
-    token,
-    widgetId,
-    pageId,
-    elementId: blockId,
-    css: {
-      buttonPrimary: cleanedPrimary,
-    },
-  };
+  const payload = { userId, token, widgetId, css: cleanedCss };
 
-  console.log("📤 Sending button shadow payload:", payload);
+  console.log("📤 Sending hover shadow payload", {
+    userId,
+    widgetId,
+    buckets: Object.keys(cleanedCss),
+    cleanedCss,
+  });
 
   try {
     const response = await fetch(
@@ -1821,22 +1967,25 @@ export async function saveButtonHoverShadowModifications(blockId, css) {
     );
 
     const result = await response.json();
-
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error(result.message || `HTTP ${response.status}`);
-    }
 
-    console.log("✅ Button shadow styles saved:", result);
-    showNotification("Button shadow styles saved successfully!", "success");
+    console.log("✅ Hover shadow styles saved", result);
+    typeof showNotification === "function" &&
+      showNotification(
+        "Button hover shadow styles saved successfully!",
+        "success"
+      );
 
     return { success: true, data: result };
-  } catch (error) {
-    console.error("❌ Error saving button shadow styles:", error);
-    showNotification(
-      `Failed to save button shadow styles: ${error.message}`,
-      "error"
-    );
-    return { success: false, error: error.message };
+  } catch (err) {
+    console.error("❌ Save error (hover shadow)", err);
+    typeof showNotification === "function" &&
+      showNotification(
+        `Failed to save hover shadow styles: ${err.message}`,
+        "error"
+      );
+    return { success: false, error: err.message };
   }
 }
 
