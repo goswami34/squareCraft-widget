@@ -1599,125 +1599,274 @@ export async function saveButtonShadowModifications(_blockId, css) {
 
 // button hover code start here
 //button hover border save modification code start here
-export async function saveButtonHoverBorderModifications(blockId, css) {
-  const pageId = document
-    .querySelector("article[data-page-sections]")
-    ?.getAttribute("data-page-sections");
+// export async function saveButtonHoverBorderModifications(blockId, css) {
+//   const pageId = document
+//     .querySelector("article[data-page-sections]")
+//     ?.getAttribute("data-page-sections");
 
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
+
+//   console.log("🔍 Debug - saveButtonHoverBorderModifications called with:", {
+//     blockId,
+//     css,
+//     pageId,
+//     userId,
+//     token: token ? "present" : "missing",
+//     widgetId,
+//   });
+
+//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+//     console.warn(
+//       "❌ Missing required data to save button hover border styles",
+//       {
+//         userId,
+//         token,
+//         widgetId,
+//         pageId,
+//         blockId,
+//         css,
+//       }
+//     );
+//     return { success: false, error: "Missing required data" };
+//   }
+
+//   // Clean & normalize button styles
+//   const cleanCssObject = (obj = {}) =>
+//     Object.fromEntries(
+//       Object.entries(obj).filter(
+//         ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+//       )
+//     );
+
+//   const toKebabCaseStyleObject = (obj = {}) =>
+//     Object.fromEntries(
+//       Object.entries(obj).map(([key, value]) => [
+//         key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+//         value,
+//       ])
+//     );
+
+//   // Determine button type and create appropriate payload
+//   let buttonType = "buttonPrimary"; // Default
+//   let cleanedStyles = { selector: null, styles: {} };
+
+//   // Check which button type is present in the CSS object
+//   if (css.buttonPrimary) {
+//     buttonType = "buttonPrimary";
+//     cleanedStyles = {
+//       selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
+//       styles: toKebabCaseStyleObject(
+//         cleanCssObject(css.buttonPrimary.styles || {})
+//       ),
+//     };
+//   } else if (css.buttonSecondary) {
+//     buttonType = "buttonSecondary";
+//     cleanedStyles = {
+//       selector:
+//         css.buttonSecondary.selector || ".sqs-button-element--secondary",
+//       styles: toKebabCaseStyleObject(
+//         cleanCssObject(css.buttonSecondary.styles || {})
+//       ),
+//     };
+//   } else if (css.buttonTertiary) {
+//     buttonType = "buttonTertiary";
+//     cleanedStyles = {
+//       selector: css.buttonTertiary.selector || ".sqs-button-element--tertiary",
+//       styles: toKebabCaseStyleObject(
+//         cleanCssObject(css.buttonTertiary.styles || {})
+//       ),
+//     };
+//   } else if (css.styles) {
+//     // Handle direct styles object - determine type from selector
+//     const selector = css.selector || ".sqs-button-element--primary";
+//     if (selector.includes("--secondary")) {
+//       buttonType = "buttonSecondary";
+//     } else if (selector.includes("--tertiary")) {
+//       buttonType = "buttonTertiary";
+//     } else {
+//       buttonType = "buttonPrimary";
+//     }
+//     cleanedStyles = {
+//       selector: selector,
+//       styles: toKebabCaseStyleObject(cleanCssObject(css.styles || {})),
+//     };
+//   }
+
+//   console.log("🔍 Debug - determined button type:", buttonType);
+//   console.log("🔍 Debug - cleaned styles:", cleanedStyles);
+
+//   if (Object.keys(cleanedStyles.styles).length === 0) {
+//     console.warn("⚠️ No valid hover border styles found.");
+//     return { success: false, error: "No valid hover border styles to save" };
+//   }
+
+//   // Create payload with the correct button type
+//   const payload = {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId,
+//     elementId: blockId,
+//     css: {
+//       [buttonType]: cleanedStyles,
+//     },
+//   };
+
+//   console.log("📤 Sending button hover border payload:", payload);
+
+//   try {
+//     console.log("🌐 Making API request to save button hover border styles...");
+//     const response = await fetch(
+//       "https://admin.squareplugin.com/api/v1/save-button-hover-border-modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     console.log("📥 API Response status:", response.status);
+//     console.log(
+//       "📥 API Response headers:",
+//       Object.fromEntries(response.headers.entries())
+//     );
+
+//     const result = await response.json();
+//     console.log("📥 API Response body:", result);
+
+//     if (!response.ok) {
+//       throw new Error(result.message || `HTTP ${response.status}`);
+//     }
+
+//     console.log("✅ Button hover border styles saved:", result);
+//     showNotification(
+//       "Button hover border styles saved successfully!",
+//       "success"
+//     );
+
+//     return { success: true, data: result };
+//   } catch (error) {
+//     console.error("❌ Error saving button hover border styles:", error);
+//     console.error("❌ Error details:", {
+//       message: error.message,
+//       stack: error.stack,
+//     });
+//     showNotification(
+//       `Failed to save button hover border styles: ${error.message}`,
+//       "error"
+//     );
+//     return { success: false, error: error.message };
+//   }
+// }
+
+// NOTE: blockId is ignored now (kept only to avoid breaking existing calls)
+export async function saveButtonHoverBorderModifications(_blockId, css) {
   const userId = localStorage.getItem("sc_u_id");
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  console.log("🔍 Debug - saveButtonHoverBorderModifications called with:", {
-    blockId,
-    css,
-    pageId,
-    userId,
-    token: token ? "present" : "missing",
-    widgetId,
-  });
-
-  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-    console.warn(
-      "❌ Missing required data to save button hover border styles",
-      {
-        userId,
-        token,
-        widgetId,
-        pageId,
-        blockId,
-        css,
-      }
-    );
-    return { success: false, error: "Missing required data" };
+  if (!userId || !token || !widgetId || !css) {
+    console.warn("❌ Missing data for hover border save", {
+      userId: !!userId,
+      token: !!token,
+      widgetId: !!widgetId,
+      css: !!css,
+    });
+    return {
+      success: false,
+      error: "Missing required data (userId, token, widgetId, css)",
+    };
   }
 
-  // Clean & normalize button styles
+  // ---------- helpers ----------
   const cleanCssObject = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
-        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+        ([, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
       )
     );
 
   const toKebabCaseStyleObject = (obj = {}) =>
     Object.fromEntries(
-      Object.entries(obj).map(([key, value]) => [
-        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-        value,
+      Object.entries(obj).map(([k, v]) => [
+        k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        v,
       ])
     );
 
-  // Determine button type and create appropriate payload
-  let buttonType = "buttonPrimary"; // Default
-  let cleanedStyles = { selector: null, styles: {} };
+  const FALLBACK = {
+    buttonPrimary: ".sqs-button-element--primary:hover",
+    buttonSecondary: ".sqs-button-element--secondary:hover",
+    buttonTertiary: ".sqs-button-element--tertiary:hover",
+  };
 
-  // Check which button type is present in the CSS object
-  if (css.buttonPrimary) {
-    buttonType = "buttonPrimary";
-    cleanedStyles = {
-      selector: css.buttonPrimary.selector || ".sqs-button-element--primary",
-      styles: toKebabCaseStyleObject(
-        cleanCssObject(css.buttonPrimary.styles || {})
-      ),
-    };
-  } else if (css.buttonSecondary) {
-    buttonType = "buttonSecondary";
-    cleanedStyles = {
-      selector:
-        css.buttonSecondary.selector || ".sqs-button-element--secondary",
-      styles: toKebabCaseStyleObject(
-        cleanCssObject(css.buttonSecondary.styles || {})
-      ),
-    };
-  } else if (css.buttonTertiary) {
-    buttonType = "buttonTertiary";
-    cleanedStyles = {
-      selector: css.buttonTertiary.selector || ".sqs-button-element--tertiary",
-      styles: toKebabCaseStyleObject(
-        cleanCssObject(css.buttonTertiary.styles || {})
-      ),
-    };
-  } else if (css.styles) {
-    // Handle direct styles object - determine type from selector
-    const selector = css.selector || ".sqs-button-element--primary";
-    if (selector.includes("--secondary")) {
-      buttonType = "buttonSecondary";
-    } else if (selector.includes("--tertiary")) {
-      buttonType = "buttonTertiary";
-    } else {
-      buttonType = "buttonPrimary";
-    }
-    cleanedStyles = {
-      selector: selector,
-      styles: toKebabCaseStyleObject(cleanCssObject(css.styles || {})),
-    };
+  const detectBucketFromSelector = (sel = "") => {
+    const s = String(sel).toLowerCase();
+    if (s.includes("--secondary")) return "buttonSecondary";
+    if (s.includes("--tertiary")) return "buttonTertiary";
+    if (s.includes("--primary")) return "buttonPrimary";
+    return null;
+  };
+
+  const mapType = (t = "") =>
+    ({
+      primary: "buttonPrimary",
+      secondary: "buttonSecondary",
+      tertiary: "buttonTertiary",
+    }[String(t).toLowerCase()]);
+
+  // ---------- normalize input to 3-bucket shape ----------
+  let normalized;
+  if (css.buttonPrimary || css.buttonSecondary || css.buttonTertiary) {
+    // Already bucketed
+    normalized = css;
+  } else {
+    // Single-bucket payload
+    const keyFromType = mapType(css.buttonType);
+    const keyFromSel = detectBucketFromSelector(css.selector);
+    const key = keyFromSel || keyFromType || "buttonPrimary";
+    normalized = { [key]: { selector: css.selector, styles: css.styles } };
   }
 
-  console.log("🔍 Debug - determined button type:", buttonType);
-  console.log("🔍 Debug - cleaned styles:", cleanedStyles);
+  // ---------- build cleaned payload ----------
+  const cleanedCss = {};
+  for (const key of ["buttonPrimary", "buttonSecondary", "buttonTertiary"]) {
+    const bucket = normalized[key];
+    if (!bucket) continue;
 
-  if (Object.keys(cleanedStyles.styles).length === 0) {
-    console.warn("⚠️ No valid hover border styles found.");
+    const styles = toKebabCaseStyleObject(cleanCssObject(bucket.styles || {}));
+    const hasStyles = Object.keys(styles).length > 0;
+
+    // If styles exist but selector missing, provide a sensible fallback for THIS bucket
+    const selector =
+      (bucket.selector && String(bucket.selector).trim()) ||
+      (hasStyles ? FALLBACK[key] : null);
+
+    if (selector || hasStyles) {
+      cleanedCss[key] = { selector: selector || null, styles };
+    }
+  }
+
+  if (Object.keys(cleanedCss).length === 0) {
+    console.warn("⚠️ No valid hover border styles to save.", { incoming: css });
     return { success: false, error: "No valid hover border styles to save" };
   }
 
-  // Create payload with the correct button type
-  const payload = {
-    userId,
-    token,
-    widgetId,
-    pageId,
-    elementId: blockId,
-    css: {
-      [buttonType]: cleanedStyles,
-    },
-  };
+  const payload = { userId, token, widgetId, css: cleanedCss };
 
-  console.log("📤 Sending button hover border payload:", payload);
+  console.log("📤 Saving hover border styles…", {
+    userId,
+    widgetId,
+    buckets: Object.keys(cleanedCss),
+    cleanedCss,
+  });
 
   try {
-    console.log("🌐 Making API request to save button hover border styles...");
     const response = await fetch(
       "https://admin.squareplugin.com/api/v1/save-button-hover-border-modifications",
       {
@@ -1730,36 +1879,25 @@ export async function saveButtonHoverBorderModifications(blockId, css) {
       }
     );
 
-    console.log("📥 API Response status:", response.status);
-    console.log(
-      "📥 API Response headers:",
-      Object.fromEntries(response.headers.entries())
-    );
-
     const result = await response.json();
-    console.log("📥 API Response body:", result);
-
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error(result.message || `HTTP ${response.status}`);
-    }
 
-    console.log("✅ Button hover border styles saved:", result);
-    showNotification(
-      "Button hover border styles saved successfully!",
-      "success"
-    );
+    console.log("✅ Hover border styles saved", result);
+    typeof showNotification === "function" &&
+      showNotification(
+        "Button hover border styles saved successfully!",
+        "success"
+      );
 
     return { success: true, data: result };
   } catch (error) {
-    console.error("❌ Error saving button hover border styles:", error);
-    console.error("❌ Error details:", {
-      message: error.message,
-      stack: error.stack,
-    });
-    showNotification(
-      `Failed to save button hover border styles: ${error.message}`,
-      "error"
-    );
+    console.error("❌ Error saving hover border styles:", error);
+    typeof showNotification === "function" &&
+      showNotification(
+        `Failed to save hover border styles: ${error.message}`,
+        "error"
+      );
     return { success: false, error: error.message };
   }
 }
