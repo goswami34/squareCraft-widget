@@ -727,173 +727,265 @@ window.pendingModifications = pendingModifications;
   // Make fetchButtonIconModifications available globally for testing
   window.fetchButtonIconModifications = fetchButtonIconModifications;
 
-  async function fetchButtonHoverBorderModifications(blockId = null) {
-    console.log(
-      "🚀 fetchButtonHoverBorderModifications called with blockId:",
-      blockId
-    );
+  // async function fetchButtonHoverBorderModifications(blockId = null) {
+  //   console.log(
+  //     "🚀 fetchButtonHoverBorderModifications called with blockId:",
+  //     blockId
+  //   );
+
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
+
+  //   console.log("🔍 Retrieved data from localStorage:", {
+  //     userId: userId ? "present" : "missing",
+  //     token: token ? "present" : "missing",
+  //     widgetId: widgetId ? "present" : "missing",
+  //     pageId: pageId ? "present" : "missing",
+  //   });
+
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn(
+  //       "❌ Missing required data to fetch button hover border styles",
+  //       {
+  //         userId: userId || "MISSING",
+  //         token: token ? "present" : "MISSING",
+  //         widgetId: widgetId || "MISSING",
+  //         pageId: pageId || "MISSING",
+  //       }
+  //     );
+  //     return { success: false, error: "Missing required data" };
+  //   }
+
+  //   console.log("📤 Fetching button hover border styles:", {
+  //     userId,
+  //     widgetId,
+  //     pageId,
+  //     blockId,
+  //   });
+
+  //   try {
+  //     // Build URL with query parameters for GET request
+  //     let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+  //     if (blockId) {
+  //       url += `&elementId=${blockId}`;
+  //     }
+
+  //     console.log("🌐 Making request to URL:", url);
+
+  //     const response = await fetch(url, {
+  //       method: "GET",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     console.log("📡 Response status:", response.status);
+  //     console.log("📡 Response ok:", response.ok);
+
+  //     const result = await response.json();
+  //     console.log("📄 Response data:", result);
+
+  //     if (!response.ok) {
+  //       console.error(
+  //         "❌ HTTP Error:",
+  //         response.status,
+  //         result.message || `HTTP ${response.status}`
+  //       );
+  //       throw new Error(result.message || `HTTP ${response.status}`);
+  //     }
+
+  //     console.log("✅ Button hover border styles fetched:", result);
+
+  //     // Handle the nested structure: elements[].buttonPrimary/buttonSecondary/buttonTertiary
+  //     const elements = result.elements || [];
+  //     console.log("📋 Elements to process:", elements.length);
+
+  //     if (elements.length === 0) {
+  //       console.log("ℹ️ No hover border modifications found in response");
+  //       return {
+  //         success: true,
+  //         message: "No hover border modifications found",
+  //       };
+  //     }
+
+  //     elements.forEach((element, index) => {
+  //       const { elementId } = element;
+  //       console.log(
+  //         `🔍 Processing element ${index + 1} (${elementId}):`,
+  //         element
+  //       );
+
+  //       // Handle buttonPrimary
+  //       if (
+  //         element.buttonPrimary &&
+  //         element.buttonPrimary.selector &&
+  //         element.buttonPrimary.styles
+  //       ) {
+  //         console.log(
+  //           `✅ Applying buttonPrimary hover border styles for ${elementId}:`,
+  //           element.buttonPrimary.styles
+  //         );
+
+  //         applyHoverStylesAsExternalCSS(
+  //           element.buttonPrimary.selector,
+  //           element.buttonPrimary.styles,
+  //           `sc-hover-border-fetched-primary-${elementId}`
+  //         );
+  //         console.log(
+  //           `✅ Applied buttonPrimary hover border styles to ${elementId}:`,
+  //           element.buttonPrimary.styles
+  //         );
+  //       }
+
+  //       // Handle buttonSecondary
+  //       if (
+  //         element.buttonSecondary &&
+  //         element.buttonSecondary.selector &&
+  //         element.buttonSecondary.styles
+  //       ) {
+  //         console.log(
+  //           `✅ Applying buttonSecondary hover border styles for ${elementId}:`,
+  //           element.buttonSecondary.styles
+  //         );
+
+  //         applyHoverStylesAsExternalCSS(
+  //           element.buttonSecondary.selector,
+  //           element.buttonSecondary.styles,
+  //           `sc-hover-border-fetched-secondary-${elementId}`
+  //         );
+  //         console.log(
+  //           `✅ Applied buttonSecondary hover border styles to ${elementId}:`,
+  //           element.buttonSecondary.styles
+  //         );
+  //       }
+
+  //       // Handle buttonTertiary
+  //       if (
+  //         element.buttonTertiary &&
+  //         element.buttonTertiary.selector &&
+  //         element.buttonTertiary.styles
+  //       ) {
+  //         console.log(
+  //           `✅ Applying buttonTertiary hover border styles for ${elementId}:`,
+  //           element.buttonTertiary.styles
+  //         );
+
+  //         applyHoverStylesAsExternalCSS(
+  //           element.buttonTertiary.selector,
+  //           element.buttonTertiary.styles,
+  //           `sc-hover-border-fetched-tertiary-${elementId}`
+  //         );
+  //         console.log(
+  //           `✅ Applied buttonTertiary hover border styles to ${elementId}:`,
+  //           element.buttonTertiary.styles
+  //         );
+  //       }
+  //     });
+
+  //     console.log(
+  //       "🎉 fetchButtonHoverBorderModifications completed successfully"
+  //     );
+  //     return { success: true, modifications: elements.length };
+  //   } catch (error) {
+  //     console.error("❌ Error in fetchButtonHoverBorderModifications:", error);
+  //     console.error("❌ Error stack:", error.stack);
+  //     return { success: false, error: error.message };
+  //   }
+  // }
+
+  // Fetch hover-border styles for the whole widget (no pageId/elementId anymore)
+  async function fetchButtonHoverBorderModifications(opts = {}) {
+    // Back-compat: if someone still passes a blockId as the first arg, ignore it
+    if (typeof opts === "string") {
+      console.warn(
+        "fetchButtonHoverBorderModifications: blockId is ignored now."
+      );
+      opts = {};
+    }
+
+    const { include = "all", prefer } = opts; // include: 'all' | 'primary' | 'secondary' | 'tertiary'
 
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
 
-    console.log("🔍 Retrieved data from localStorage:", {
-      userId: userId ? "present" : "missing",
-      token: token ? "present" : "missing",
-      widgetId: widgetId ? "present" : "missing",
-      pageId: pageId ? "present" : "missing",
+    console.log("🔑 creds", {
+      userId: !!userId,
+      token: !!token,
+      widgetId: !!widgetId,
+      include,
+      prefer,
     });
 
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn(
-        "❌ Missing required data to fetch button hover border styles",
-        {
-          userId: userId || "MISSING",
-          token: token ? "present" : "MISSING",
-          widgetId: widgetId || "MISSING",
-          pageId: pageId || "MISSING",
-        }
-      );
+    if (!userId || !token || !widgetId) {
+      console.warn("❌ Missing required data to fetch hover border styles", {
+        userId,
+        token: token ? "present" : "MISSING",
+        widgetId,
+      });
       return { success: false, error: "Missing required data" };
     }
 
-    console.log("📤 Fetching button hover border styles:", {
+    // Build URL to new endpoint (no pageId/elementId)
+    const params = new URLSearchParams({
       userId,
       widgetId,
-      pageId,
-      blockId,
     });
+    if (include && include !== "all") params.set("include", include);
+    if (prefer === "query") params.set("prefer", "query"); // helpful for Postman tests
+
+    const url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-border-modifications?${params.toString()}`;
+    console.log("🌐 GET", url);
 
     try {
-      // Build URL with query parameters for GET request
-      let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-      if (blockId) {
-        url += `&elementId=${blockId}`;
-      }
-
-      console.log("🌐 Making request to URL:", url);
-
-      const response = await fetch(url, {
+      const res = await fetch(url, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("📡 Response status:", response.status);
-      console.log("📡 Response ok:", response.ok);
+      const result = await res.json();
+      console.log("📥 Response", res.status, result);
 
-      const result = await response.json();
-      console.log("📄 Response data:", result);
+      if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
 
-      if (!response.ok) {
-        console.error(
-          "❌ HTTP Error:",
-          response.status,
-          result.message || `HTTP ${response.status}`
-        );
-        throw new Error(result.message || `HTTP ${response.status}`);
-      }
+      const hover = result.hoverBorder || {};
+      const entries = Object.entries(hover).filter(
+        ([, v]) =>
+          v &&
+          v.selector &&
+          v.styles &&
+          typeof v.styles === "object" &&
+          Object.keys(v.styles).length > 0
+      );
 
-      console.log("✅ Button hover border styles fetched:", result);
-
-      // Handle the nested structure: elements[].buttonPrimary/buttonSecondary/buttonTertiary
-      const elements = result.elements || [];
-      console.log("📋 Elements to process:", elements.length);
-
-      if (elements.length === 0) {
-        console.log("ℹ️ No hover border modifications found in response");
+      if (entries.length === 0) {
+        console.log("ℹ️ No hover border modifications found.");
         return {
           success: true,
-          message: "No hover border modifications found",
+          message: "No hover border modifications found.",
         };
       }
 
-      elements.forEach((element, index) => {
-        const { elementId } = element;
-        console.log(
-          `🔍 Processing element ${index + 1} (${elementId}):`,
-          element
-        );
-
-        // Handle buttonPrimary
-        if (
-          element.buttonPrimary &&
-          element.buttonPrimary.selector &&
-          element.buttonPrimary.styles
-        ) {
-          console.log(
-            `✅ Applying buttonPrimary hover border styles for ${elementId}:`,
-            element.buttonPrimary.styles
-          );
-
-          applyHoverStylesAsExternalCSS(
-            element.buttonPrimary.selector,
-            element.buttonPrimary.styles,
-            `sc-hover-border-fetched-primary-${elementId}`
-          );
-          console.log(
-            `✅ Applied buttonPrimary hover border styles to ${elementId}:`,
-            element.buttonPrimary.styles
-          );
-        }
-
-        // Handle buttonSecondary
-        if (
-          element.buttonSecondary &&
-          element.buttonSecondary.selector &&
-          element.buttonSecondary.styles
-        ) {
-          console.log(
-            `✅ Applying buttonSecondary hover border styles for ${elementId}:`,
-            element.buttonSecondary.styles
-          );
-
-          applyHoverStylesAsExternalCSS(
-            element.buttonSecondary.selector,
-            element.buttonSecondary.styles,
-            `sc-hover-border-fetched-secondary-${elementId}`
-          );
-          console.log(
-            `✅ Applied buttonSecondary hover border styles to ${elementId}:`,
-            element.buttonSecondary.styles
-          );
-        }
-
-        // Handle buttonTertiary
-        if (
-          element.buttonTertiary &&
-          element.buttonTertiary.selector &&
-          element.buttonTertiary.styles
-        ) {
-          console.log(
-            `✅ Applying buttonTertiary hover border styles for ${elementId}:`,
-            element.buttonTertiary.styles
-          );
-
-          applyHoverStylesAsExternalCSS(
-            element.buttonTertiary.selector,
-            element.buttonTertiary.styles,
-            `sc-hover-border-fetched-tertiary-${elementId}`
-          );
-          console.log(
-            `✅ Applied buttonTertiary hover border styles to ${elementId}:`,
-            element.buttonTertiary.styles
-          );
-        }
+      // Apply each bucket's CSS
+      entries.forEach(([bucket, { selector, styles }]) => {
+        // Unique style tag id per bucket (widget-wide)
+        const styleId = `sc-hover-border-${bucket}`;
+        applyHoverStylesAsExternalCSS(selector, styles, styleId);
+        console.log(`✅ Applied ${bucket} hover border styles`, {
+          selector,
+          styles,
+        });
       });
 
-      console.log(
-        "🎉 fetchButtonHoverBorderModifications completed successfully"
-      );
-      return { success: true, modifications: elements.length };
-    } catch (error) {
-      console.error("❌ Error in fetchButtonHoverBorderModifications:", error);
-      console.error("❌ Error stack:", error.stack);
-      return { success: false, error: error.message };
+      console.log("🎉 Hover border styles applied.");
+      return { success: true, count: entries.length };
+    } catch (err) {
+      console.error("❌ Failed to fetch hover border modifications:", err);
+      return { success: false, error: err.message };
     }
   }
 
