@@ -824,72 +824,155 @@ window.pendingModifications = pendingModifications;
     fetchButtonHoverBorderModifications;
 
   // Fetch button hover shadow modifications from the backend
-  async function fetchButtonHoverShadowModifications(blockId = null) {
-    console.log(
-      "🚀 fetchButtonHoverShadowModifications called with blockId:",
-      blockId
-    );
+  // async function fetchButtonHoverShadowModifications(blockId = null) {
+  //   console.log(
+  //     "🚀 fetchButtonHoverShadowModifications called with blockId:",
+  //     blockId
+  //   );
+
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
+
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn("⚠️ Missing credentials or page ID");
+  //     return { success: false, error: "Missing credentials or page ID" };
+  //   }
+
+  //   // Endpoint mirrors hover-border fetch naming
+  //   let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+  //   if (blockId) url += `&elementId=${blockId}`;
+
+  //   try {
+  //     const res = await fetch(url, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     const result = await res.json();
+  //     if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
+
+  //     const elements = result.elements || [];
+  //     elements.forEach((element) => {
+  //       const { elementId } = element;
+
+  //       const applyForType = (typeKey, uniqueIdSuffix) => {
+  //         const data = element?.[typeKey];
+  //         if (!data?.selector || !data?.styles) return;
+
+  //         // Normalize possible camelCase -> hyphen-case keys if needed for CSS output
+  //         const normalized = {};
+  //         Object.entries(data.styles).forEach(([k, v]) => {
+  //           if (v === null || v === undefined || v === "null") return;
+  //           const hyphenKey = k.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+  //           normalized[hyphenKey] = v;
+  //         });
+
+  //         applyHoverStylesAsExternalCSS(
+  //           data.selector,
+  //           normalized,
+  //           `sc-hover-shadow-fetched-${uniqueIdSuffix}-${elementId}`
+  //         );
+  //       };
+
+  //       applyForType("buttonPrimary", "primary");
+  //       applyForType("buttonSecondary", "secondary");
+  //       applyForType("buttonTertiary", "tertiary");
+  //     });
+
+  //     console.log(
+  //       "✅ All button hover shadow modifications applied (external CSS)"
+  //     );
+  //     return { success: true, modifications: (result.elements || []).length };
+  //   } catch (error) {
+  //     console.error(
+  //       "❌ Failed to fetch button hover shadow modifications:",
+  //       error.message
+  //     );
+  //     return { success: false, error: error.message };
+  //   }
+  // }
+
+  // Fetch and apply hover-shadow (no pageId / elementId needed)
+  async function fetchButtonHoverShadowModifications() {
+    console.log("🚀 fetchButtonHoverShadowModifications");
 
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
 
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
-      return { success: false, error: "Missing credentials or page ID" };
+    if (!userId || !token || !widgetId) {
+      console.warn("⚠️ Missing credentials", {
+        userId: !!userId,
+        token: !!token,
+        widgetId: !!widgetId,
+      });
+      return { success: false, error: "Missing credentials" };
     }
 
-    // Endpoint mirrors hover-border fetch naming
-    let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-    if (blockId) url += `&elementId=${blockId}`;
+    // Build URL — backend supports prefer=query for Postman/manual tests too
+    const base =
+      "https://admin.squareplugin.com/api/v1/fetch-button-hover-shadow-modifications";
+    const params = new URLSearchParams({
+      userId, // we explicitly pass userId
+      widgetId, // required
+      include: "all", // get all buckets
+      prefer: "query", // match your API convention
+    });
+    const url = `${base}?${params}`;
+
+    // Helper: normalize style keys to CSS kebab-case
+    const toKebab = (obj = {}) =>
+      Object.fromEntries(
+        Object.entries(obj).flatMap(([k, v]) => {
+          if (v === null || v === undefined || v === "null" || v === "")
+            return [];
+          return [[k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(), v]];
+        })
+      );
 
     try {
+      console.log("🌐 GET", url);
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const result = await res.json();
-      if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
 
-      const elements = result.elements || [];
-      elements.forEach((element) => {
-        const { elementId } = element;
+      if (!res.ok) {
+        console.error("❌ API error", res.status, result);
+        throw new Error(result.message || `HTTP ${res.status}`);
+      }
 
-        const applyForType = (typeKey, uniqueIdSuffix) => {
-          const data = element?.[typeKey];
-          if (!data?.selector || !data?.styles) return;
+      // Backend returns { hoverShadow: { buttonPrimary?, buttonSecondary?, buttonTertiary? }, ... }
+      const hoverShadow = result.hoverShadow || result.shadow || {};
+      console.log("📦 hoverShadow payload:", hoverShadow);
 
-          // Normalize possible camelCase -> hyphen-case keys if needed for CSS output
-          const normalized = {};
-          Object.entries(data.styles).forEach(([k, v]) => {
-            if (v === null || v === undefined || v === "null") return;
-            const hyphenKey = k.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
-            normalized[hyphenKey] = v;
-          });
+      const applyBucket = (bucketKey, styleIdSuffix) => {
+        const bucket = hoverShadow?.[bucketKey];
+        if (!bucket || !bucket.selector || !bucket.styles) return;
 
-          applyHoverStylesAsExternalCSS(
-            data.selector,
-            normalized,
-            `sc-hover-shadow-fetched-${uniqueIdSuffix}-${elementId}`
-          );
-        };
+        const styles = toKebab(bucket.styles);
+        if (Object.keys(styles).length === 0) return;
 
-        applyForType("buttonPrimary", "primary");
-        applyForType("buttonSecondary", "secondary");
-        applyForType("buttonTertiary", "tertiary");
-      });
+        // Stable style tag id per bucket so we don’t duplicate
+        const styleId = `sc-hover-shadow-${styleIdSuffix}`;
+        applyHoverStylesAsExternalCSS(bucket.selector, styles, styleId);
+        console.log(`✅ Applied ${bucketKey} hover-shadow`, {
+          selector: bucket.selector,
+          styles,
+        });
+      };
 
-      console.log(
-        "✅ All button hover shadow modifications applied (external CSS)"
-      );
-      return { success: true, modifications: (result.elements || []).length };
+      // Apply all available buckets
+      applyBucket("buttonPrimary", "primary");
+      applyBucket("buttonSecondary", "secondary");
+      applyBucket("buttonTertiary", "tertiary");
+
+      console.log("🎉 Hover-shadow fetch/apply complete");
+      return { success: true, count: Object.keys(hoverShadow || {}).length };
     } catch (error) {
-      console.error(
-        "❌ Failed to fetch button hover shadow modifications:",
-        error.message
-      );
+      console.error("❌ Failed to fetch/apply hover shadow:", error);
       return { success: false, error: error.message };
     }
   }
