@@ -1886,126 +1886,279 @@ export async function saveButtonHoverShadowModifications(_ignoredBlockId, css) {
 // button hover shadow save modification code end here
 
 // button hover color save modification code start here
-export async function saveButtonHoverColorModifications(blockId, css) {
-  console.log("🚀 saveButtonHoverColorModifications called with:", {
-    blockId,
-    css,
-  });
+// export async function saveButtonHoverColorModifications(blockId, css) {
+//   console.log("🚀 saveButtonHoverColorModifications called with:", {
+//     blockId,
+//     css,
+//   });
 
-  const pageId = document
-    .querySelector("article[data-page-sections]")
-    ?.getAttribute("data-page-sections");
+//   const pageId = document
+//     .querySelector("article[data-page-sections]")
+//     ?.getAttribute("data-page-sections");
 
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
+
+//   console.log("📋 Required data check:", {
+//     userId: !!userId,
+//     token: !!token,
+//     widgetId: !!widgetId,
+//     pageId: !!pageId,
+//     blockId: !!blockId,
+//     css: !!css,
+//   });
+
+//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+//     console.warn(
+//       "❌ Missing required data to save button hover color modifications",
+//       {
+//         userId,
+//         token,
+//         widgetId,
+//         pageId,
+//         blockId,
+//         css,
+//       }
+//     );
+//     return { success: false, error: "Missing required data" };
+//   }
+
+//   // Clean & normalize button styles and convert to kebab-case
+//   const cleanCssObject = (obj = {}) =>
+//     Object.fromEntries(
+//       Object.entries(obj).filter(
+//         ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+//       )
+//     );
+
+//   const toKebabCaseStyleObject = (obj = {}) =>
+//     Object.fromEntries(
+//       Object.entries(obj).map(([key, value]) => [
+//         key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+//         value,
+//       ])
+//     );
+
+//   // Clean each button type's CSS block
+//   const cleanCssBlock = (block) => ({
+//     selector: block?.selector || null,
+//     styles: toKebabCaseStyleObject(cleanCssObject(block?.styles || {})),
+//   });
+
+//   // Process each button type
+//   const cleanedPrimary = cleanCssBlock(css.buttonPrimary);
+//   const cleanedSecondary = cleanCssBlock(css.buttonSecondary);
+//   const cleanedTertiary = cleanCssBlock(css.buttonTertiary);
+
+//   // Check if we have at least one valid style to save
+//   const hasValidStyles =
+//     Object.keys(cleanedPrimary.styles).length > 0 ||
+//     Object.keys(cleanedSecondary.styles).length > 0 ||
+//     Object.keys(cleanedTertiary.styles).length > 0;
+
+//   if (!hasValidStyles) {
+//     console.warn("⚠️ No valid hover color styles to save");
+//     return { success: false, error: "No valid hover color styles to save" };
+//   }
+
+//   // Additional debugging for the cleaning process
+//   console.log("🔍 Cleaning Process Debug:", {
+//     originalCSS: css,
+//     cleanedPrimary: cleanedPrimary,
+//     cleanedSecondary: cleanedSecondary,
+//     cleanedTertiary: cleanedTertiary,
+//     hasValidStyles,
+//     primaryStyleKeys: Object.keys(cleanedPrimary.styles),
+//     secondaryStyleKeys: Object.keys(cleanedSecondary.styles),
+//     tertiaryStyleKeys: Object.keys(cleanedTertiary.styles),
+//   });
+
+//   const payload = {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId,
+//     elementId: blockId,
+//     css: {
+//       buttonPrimary: cleanedPrimary,
+//       buttonSecondary: cleanedSecondary,
+//       buttonTertiary: cleanedTertiary,
+//     },
+//   };
+
+//   console.log("📤 Sending button hover color payload:", payload);
+//   console.log("🔍 Original CSS received:", css);
+//   console.log("🧹 Cleaned CSS structure:", {
+//     buttonPrimary: cleanedPrimary,
+//     buttonSecondary: cleanedSecondary,
+//     buttonTertiary: cleanedTertiary,
+//   });
+//   console.log("🔍 Has valid styles check:", {
+//     primaryStyles: Object.keys(cleanedPrimary.styles),
+//     secondaryStyles: Object.keys(cleanedSecondary.styles),
+//     tertiaryStyles: Object.keys(cleanedTertiary.styles),
+//     hasValidStyles,
+//   });
+
+//   try {
+//     console.log(
+//       "🌐 Making API request to save button hover color modifications..."
+//     );
+//     const response = await fetch(
+//       "https://admin.squareplugin.com/api/v1/save-button-hover-color-modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     console.log("📡 Response status:", response.status);
+//     console.log(
+//       "📡 Response headers:",
+//       Object.fromEntries(response.headers.entries())
+//     );
+
+//     const result = await response.json();
+
+//     if (!response.ok) {
+//       console.error("❌ Server error response:", result);
+//       console.error("❌ Full error details:", {
+//         status: response.status,
+//         statusText: response.statusText,
+//         url: response.url,
+//         result: result,
+//       });
+//       throw new Error(
+//         result.message || result.error || `HTTP ${response.status}`
+//       );
+//     }
+
+//     console.log("✅ Button hover color modifications saved:", result);
+//     showNotification("Button hover colors saved successfully!", "success");
+
+//     return { success: true, data: result };
+//   } catch (error) {
+//     console.error("❌ Error saving button hover color modifications:", error);
+//     showNotification(
+//       `Failed to save button hover colors: ${error.message}`,
+//       "error"
+//     );
+
+//     return { success: false, error: error.message };
+//   }
+// }
+
+// Save Button Hover *Color* (no pageId / elementId)
+export async function saveButtonHoverColorModifications(_blockId, css) {
   const userId = localStorage.getItem("sc_u_id");
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  console.log("📋 Required data check:", {
-    userId: !!userId,
-    token: !!token,
-    widgetId: !!widgetId,
-    pageId: !!pageId,
-    blockId: !!blockId,
-    css: !!css,
-  });
-
-  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-    console.warn(
-      "❌ Missing required data to save button hover color modifications",
-      {
-        userId,
-        token,
-        widgetId,
-        pageId,
-        blockId,
-        css,
-      }
-    );
-    return { success: false, error: "Missing required data" };
+  // Required now: userId, token, widgetId, css
+  if (!userId || !token || !widgetId || !css) {
+    console.warn("❌ Missing data for hover color save", {
+      userId: !!userId,
+      token: !!token,
+      widgetId: !!widgetId,
+      css: !!css,
+    });
+    return {
+      success: false,
+      error: "Missing required data (userId, token, widgetId, css)",
+    };
   }
 
-  // Clean & normalize button styles and convert to kebab-case
-  const cleanCssObject = (obj = {}) =>
+  // ---------- helpers ----------
+  const cleanValues = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
-        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+        ([, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
       )
     );
 
-  const toKebabCaseStyleObject = (obj = {}) =>
+  const toKebabCase = (obj = {}) =>
     Object.fromEntries(
-      Object.entries(obj).map(([key, value]) => [
-        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-        value,
+      Object.entries(obj).map(([k, v]) => [
+        k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        v,
       ])
     );
 
-  // Clean each button type's CSS block
-  const cleanCssBlock = (block) => ({
-    selector: block?.selector || null,
-    styles: toKebabCaseStyleObject(cleanCssObject(block?.styles || {})),
+  const ensureHover = (sel) => {
+    if (!sel) return null;
+    const s = String(sel).trim();
+    return s.endsWith(":hover") ? s : `${s}:hover`;
+    // server also ensures :hover, but we do it here too for clarity
+  };
+
+  const DEFAULTS = {
+    buttonPrimary: ".sqs-button-element--primary:hover",
+    buttonSecondary: ".sqs-button-element--secondary:hover",
+    buttonTertiary: ".sqs-button-element--tertiary:hover",
+  };
+
+  // Accept either a 3-bucket shape or a single bucket (with optional buttonType)
+  const detectBucketFromSelector = (sel = "") => {
+    const s = sel.toLowerCase();
+    if (s.includes("--secondary")) return "buttonSecondary";
+    if (s.includes("--tertiary")) return "buttonTertiary";
+    if (s.includes("--primary")) return "buttonPrimary";
+    return null;
+  };
+  const mapType = (t = "") =>
+    ({
+      primary: "buttonPrimary",
+      secondary: "buttonSecondary",
+      tertiary: "buttonTertiary",
+    }[t.toLowerCase()]);
+
+  let normalized = css;
+  if (!css.buttonPrimary && !css.buttonSecondary && !css.buttonTertiary) {
+    // single-bucket payload support
+    const key =
+      mapType(css.buttonType) ||
+      detectBucketFromSelector(css.selector) ||
+      "buttonPrimary";
+    normalized = { [key]: { selector: css.selector, styles: css.styles } };
+  }
+
+  // ---------- build cleaned payload ----------
+  const cleanedCss = {};
+  ["buttonPrimary", "buttonSecondary", "buttonTertiary"].forEach((key) => {
+    const block = normalized?.[key];
+    if (!block) return;
+
+    const styles = toKebabCase(cleanValues(block.styles || {}));
+    const hasStyles = Object.keys(styles).length > 0;
+
+    // if styles exist but selector missing, fallback to default for THIS bucket
+    let selector =
+      (block.selector && ensureHover(block.selector)) ||
+      (hasStyles ? DEFAULTS[key] : null);
+
+    // only include the bucket if it has a selector or styles
+    if (selector || hasStyles) cleanedCss[key] = { selector, styles };
   });
 
-  // Process each button type
-  const cleanedPrimary = cleanCssBlock(css.buttonPrimary);
-  const cleanedSecondary = cleanCssBlock(css.buttonSecondary);
-  const cleanedTertiary = cleanCssBlock(css.buttonTertiary);
-
-  // Check if we have at least one valid style to save
-  const hasValidStyles =
-    Object.keys(cleanedPrimary.styles).length > 0 ||
-    Object.keys(cleanedSecondary.styles).length > 0 ||
-    Object.keys(cleanedTertiary.styles).length > 0;
-
-  if (!hasValidStyles) {
-    console.warn("⚠️ No valid hover color styles to save");
+  if (Object.keys(cleanedCss).length === 0) {
+    console.warn("⚠️ No valid hover color styles to save", { incoming: css });
     return { success: false, error: "No valid hover color styles to save" };
   }
 
-  // Additional debugging for the cleaning process
-  console.log("🔍 Cleaning Process Debug:", {
-    originalCSS: css,
-    cleanedPrimary: cleanedPrimary,
-    cleanedSecondary: cleanedSecondary,
-    cleanedTertiary: cleanedTertiary,
-    hasValidStyles,
-    primaryStyleKeys: Object.keys(cleanedPrimary.styles),
-    secondaryStyleKeys: Object.keys(cleanedSecondary.styles),
-    tertiaryStyleKeys: Object.keys(cleanedTertiary.styles),
-  });
-
-  const payload = {
+  const payload = { userId, token, widgetId, css: cleanedCss };
+  console.log("📤 Saving hover color payload:", {
     userId,
-    token,
     widgetId,
-    pageId,
-    elementId: blockId,
-    css: {
-      buttonPrimary: cleanedPrimary,
-      buttonSecondary: cleanedSecondary,
-      buttonTertiary: cleanedTertiary,
-    },
-  };
-
-  console.log("📤 Sending button hover color payload:", payload);
-  console.log("🔍 Original CSS received:", css);
-  console.log("🧹 Cleaned CSS structure:", {
-    buttonPrimary: cleanedPrimary,
-    buttonSecondary: cleanedSecondary,
-    buttonTertiary: cleanedTertiary,
-  });
-  console.log("🔍 Has valid styles check:", {
-    primaryStyles: Object.keys(cleanedPrimary.styles),
-    secondaryStyles: Object.keys(cleanedSecondary.styles),
-    tertiaryStyles: Object.keys(cleanedTertiary.styles),
-    hasValidStyles,
+    cleanedCss,
   });
 
   try {
-    console.log(
-      "🌐 Making API request to save button hover color modifications..."
-    );
-    const response = await fetch(
+    const resp = await fetch(
       "https://admin.squareplugin.com/api/v1/save-button-hover-color-modifications",
       {
         method: "POST",
@@ -2016,40 +2169,19 @@ export async function saveButtonHoverColorModifications(blockId, css) {
         body: JSON.stringify(payload),
       }
     );
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.message || `HTTP ${resp.status}`);
 
-    console.log("📡 Response status:", response.status);
-    console.log(
-      "📡 Response headers:",
-      Object.fromEntries(response.headers.entries())
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      console.error("❌ Server error response:", result);
-      console.error("❌ Full error details:", {
-        status: response.status,
-        statusText: response.statusText,
-        url: response.url,
-        result: result,
-      });
-      throw new Error(
-        result.message || result.error || `HTTP ${response.status}`
-      );
-    }
-
-    console.log("✅ Button hover color modifications saved:", result);
-    showNotification("Button hover colors saved successfully!", "success");
+    console.log("✅ Hover color saved:", result);
+    typeof showNotification === "function" &&
+      showNotification("Button hover colors saved successfully!", "success");
 
     return { success: true, data: result };
-  } catch (error) {
-    console.error("❌ Error saving button hover color modifications:", error);
-    showNotification(
-      `Failed to save button hover colors: ${error.message}`,
-      "error"
-    );
-
-    return { success: false, error: error.message };
+  } catch (err) {
+    console.error("❌ Hover color save failed:", err);
+    typeof showNotification === "function" &&
+      showNotification(`Failed to save hover colors: ${err.message}`, "error");
+    return { success: false, error: err.message };
   }
 }
 
