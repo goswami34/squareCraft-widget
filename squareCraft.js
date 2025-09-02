@@ -4292,187 +4292,262 @@ window.pendingModifications = pendingModifications;
     }
   }
 
-  async function fetchButtonHoverColorModifications(blockId = null) {
-    console.log("🚀 Starting fetchButtonHoverColorModifications...");
-    console.log("📋 Parameters:", { blockId });
+  // async function fetchButtonHoverColorModifications(blockId = null) {
+  //   console.log("🚀 Starting fetchButtonHoverColorModifications...");
+  //   console.log("📋 Parameters:", { blockId });
 
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
+
+  //   console.log("🔑 Credentials check:", {
+  //     userId: userId ? "✅ Present" : "❌ Missing",
+  //     token: token ? "✅ Present" : "❌ Missing",
+  //     widgetId: widgetId ? "✅ Present" : "❌ Missing",
+  //     pageId: pageId ? "✅ Present" : "❌ Missing",
+  //   });
+
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn("⚠️ Missing credentials or page ID");
+  //     console.log("❌ Missing data:", {
+  //       userId: !userId,
+  //       token: !token,
+  //       widgetId: !widgetId,
+  //       pageId: !pageId,
+  //     });
+  //     return;
+  //   }
+
+  //   let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-color-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+  //   if (blockId) url += `&elementId=${blockId}`;
+
+  //   console.log("�� API URL:", url);
+  //   console.log("�� Request headers:", {
+  //     Authorization: `Bearer ${token.substring(0, 20)}...`,
+  //   });
+
+  //   try {
+  //     console.log("�� Making API request...");
+  //     const res = await fetch(url, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     console.log("📥 Response received:", {
+  //       status: res.status,
+  //       statusText: res.statusText,
+  //       ok: res.ok,
+  //       headers: Object.fromEntries(res.headers.entries()),
+  //     });
+
+  //     const result = await res.json();
+  //     console.log("📄 Raw API response:", result);
+
+  //     if (!res.ok) {
+  //       console.error("❌ API request failed:", result);
+  //       throw new Error(result.message || `HTTP ${res.status}`);
+  //     }
+
+  //     console.log("✅ Button hover color modifications fetched successfully");
+  //     console.log("�� Response structure analysis:", {
+  //       hasElements: !!result.elements,
+  //       elementsLength: result.elements?.length || 0,
+  //       firstElement: result.elements?.[0],
+  //       hasModifications: !!result.modifications,
+  //       modificationsLength: result.modifications?.length || 0,
+  //       responseKeys: Object.keys(result),
+  //     });
+
+  //     // Handle both possible response structures
+  //     let elements = [];
+
+  //     console.log("🔍 Processing response structure...");
+
+  //     // Try direct structure first: elements[]
+  //     if (result.elements && Array.isArray(result.elements)) {
+  //       elements = result.elements;
+  //       console.log("📋 Using direct elements structure");
+  //       console.log("📋 Elements found:", elements);
+  //     }
+  //     // Try nested structure: modifications[].elements[]
+  //     else if (result.modifications && Array.isArray(result.modifications)) {
+  //       console.log("📋 Using nested modifications structure");
+  //       result.modifications.forEach((mod, index) => {
+  //         console.log(`📋 Processing modification ${index}:`, mod);
+  //         if (mod.elements && Array.isArray(mod.elements)) {
+  //           elements = elements.concat(mod.elements);
+  //           console.log(
+  //             `📋 Added ${mod.elements.length} elements from modification ${index}`
+  //           );
+  //         }
+  //       });
+  //     } else {
+  //       console.log("⚠️ No recognized structure found in response");
+  //       console.log("📋 Available keys:", Object.keys(result));
+  //     }
+
+  //     console.log(`🔍 Total elements found: ${elements.length}`);
+  //     console.log("📋 All elements:", elements);
+
+  //     elements.forEach((element, index) => {
+  //       console.log(`�� Processing element ${index}:`, element);
+
+  //       const { elementId, css } = element;
+
+  //       console.log("🔍 Element structure analysis:", {
+  //         hasCss: !!css,
+  //         elementId,
+  //         cssKeys: css ? Object.keys(css) : [],
+  //       });
+
+  //       if (css) {
+  //         // Process each button type (primary, secondary, tertiary)
+  //         const buttonTypes = [
+  //           "buttonPrimary",
+  //           "buttonSecondary",
+  //           "buttonTertiary",
+  //         ];
+
+  //         buttonTypes.forEach((buttonType) => {
+  //           const buttonData = css[buttonType];
+  //           if (buttonData?.styles) {
+  //             console.log(`🎨 Processing ${buttonType}:`, buttonData);
+
+  //             // ✅ FIXED: Create proper hover selectors for each button type
+  //             const hoverSelectors = {
+  //               buttonPrimary: ".sqs-button-element--primary:hover",
+  //               buttonSecondary: ".sqs-button-element--secondary:hover",
+  //               buttonTertiary: ".sqs-button-element--tertiary:hover",
+  //             };
+
+  //             const hoverSelector = hoverSelectors[buttonType];
+
+  //             if (hoverSelector && Object.keys(buttonData.styles).length > 0) {
+  //               // Apply button hover styles as external CSS with :hover pseudo-class
+  //               applyStylesAsExternalCSS(
+  //                 hoverSelector,
+  //                 buttonData.styles,
+  //                 `sc-btn-hover-${buttonType}-${elementId}`
+  //               );
+  //               console.log(
+  //                 `✅ Applied ${buttonType} hover styles to ${elementId}:`,
+  //                 buttonData.styles
+  //               );
+  //               console.log(`🎯 Hover selector used: ${hoverSelector}`);
+  //             } else {
+  //               console.log(
+  //                 `⚠️ No valid ${buttonType} styles found for element:`,
+  //                 elementId
+  //               );
+  //             }
+  //           } else {
+  //             console.log(
+  //               `⚠️ No valid ${buttonType} data found for element:`,
+  //               elementId
+  //             );
+  //           }
+  //         });
+  //       } else {
+  //         console.log("⚠️ No valid CSS structure found for this element");
+  //       }
+  //     });
+
+  //     console.log(
+  //       "✅ Applied button hover color styles to all elements (external CSS with :hover)"
+  //     );
+  //     console.log(
+  //       "🏁 fetchButtonHoverColorModifications completed successfully"
+  //     );
+  //   } catch (error) {
+  //     console.error(
+  //       "❌ Failed to fetch button hover color modifications:",
+  //       error.message
+  //     );
+  //     console.error("❌ Full error details:", error);
+  //     console.error("❌ Error stack:", error.stack);
+  //   }
+  // }
+
+  // Fetch button shadow modifications from the backend
+
+  // Fetch & apply hover-color buckets (no pageId/elementId)
+  async function fetchButtonHoverColorModifications() {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
 
-    console.log("🔑 Credentials check:", {
-      userId: userId ? "✅ Present" : "❌ Missing",
-      token: token ? "✅ Present" : "❌ Missing",
-      widgetId: widgetId ? "✅ Present" : "❌ Missing",
-      pageId: pageId ? "✅ Present" : "❌ Missing",
-    });
-
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn("⚠️ Missing credentials or page ID");
-      console.log("❌ Missing data:", {
-        userId: !userId,
-        token: !token,
-        widgetId: !widgetId,
-        pageId: !pageId,
+    if (!userId || !token || !widgetId) {
+      console.warn("⚠️ Missing credentials", {
+        userId: !!userId,
+        token: !!token,
+        widgetId: !!widgetId,
       });
-      return;
+      return { success: false, error: "Missing credentials" };
     }
 
-    let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-color-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-    if (blockId) url += `&elementId=${blockId}`;
-
-    console.log("�� API URL:", url);
-    console.log("�� Request headers:", {
-      Authorization: `Bearer ${token.substring(0, 20)}...`,
-    });
+    // Build URL – API supports prefer=token|query and include=all|primary|secondary|tertiary
+    const url = new URL(
+      "https://admin.squareplugin.com/api/v1/fetch-button-hover-color-modifications"
+    );
+    url.searchParams.set("userId", userId);
+    url.searchParams.set("widgetId", widgetId);
+    url.searchParams.set("prefer", "token"); // use "query" for Postman/manual tests if needed
+    url.searchParams.set("include", "all");
 
     try {
-      console.log("�� Making API request...");
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await fetch(url.toString(), {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      console.log("📥 Response received:", {
-        status: res.status,
-        statusText: res.statusText,
-        ok: res.ok,
-        headers: Object.fromEntries(res.headers.entries()),
-      });
-
       const result = await res.json();
-      console.log("📄 Raw API response:", result);
+      if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
 
-      if (!res.ok) {
-        console.error("❌ API request failed:", result);
-        throw new Error(result.message || `HTTP ${res.status}`);
-      }
+      const buckets = result.hoverColor || {}; // { buttonPrimary?, buttonSecondary?, buttonTertiary? }
 
-      console.log("✅ Button hover color modifications fetched successfully");
-      console.log("�� Response structure analysis:", {
-        hasElements: !!result.elements,
-        elementsLength: result.elements?.length || 0,
-        firstElement: result.elements?.[0],
-        hasModifications: !!result.modifications,
-        modificationsLength: result.modifications?.length || 0,
-        responseKeys: Object.keys(result),
-      });
+      // helpers
+      const ensureHover = (sel) => {
+        if (!sel) return null;
+        const s = String(sel).trim();
+        return s.endsWith(":hover") ? s : `${s}:hover`;
+      };
+      const toKebab = (obj = {}) =>
+        Object.fromEntries(
+          Object.entries(obj).flatMap(([k, v]) => {
+            if (v === null || v === undefined || v === "" || v === "null")
+              return [];
+            const kk = k.includes("-")
+              ? k
+              : k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+            return [[kk, v]];
+          })
+        );
 
-      // Handle both possible response structures
-      let elements = [];
+      const applyBucket = (key) => {
+        const data = buckets[key];
+        if (!data || !data.selector || !data.styles) return;
+        const selector = ensureHover(data.selector);
+        const styles = toKebab(data.styles);
+        if (!selector || Object.keys(styles).length === 0) return;
 
-      console.log("🔍 Processing response structure...");
+        // your existing helper that injects a <style> tag
+        applyStylesAsExternalCSS(selector, styles, `sc-hover-color-${key}`);
+        console.log(`✅ Applied hover color for ${key}`, { selector, styles });
+      };
 
-      // Try direct structure first: elements[]
-      if (result.elements && Array.isArray(result.elements)) {
-        elements = result.elements;
-        console.log("📋 Using direct elements structure");
-        console.log("📋 Elements found:", elements);
-      }
-      // Try nested structure: modifications[].elements[]
-      else if (result.modifications && Array.isArray(result.modifications)) {
-        console.log("📋 Using nested modifications structure");
-        result.modifications.forEach((mod, index) => {
-          console.log(`📋 Processing modification ${index}:`, mod);
-          if (mod.elements && Array.isArray(mod.elements)) {
-            elements = elements.concat(mod.elements);
-            console.log(
-              `📋 Added ${mod.elements.length} elements from modification ${index}`
-            );
-          }
-        });
-      } else {
-        console.log("⚠️ No recognized structure found in response");
-        console.log("📋 Available keys:", Object.keys(result));
-      }
-
-      console.log(`🔍 Total elements found: ${elements.length}`);
-      console.log("📋 All elements:", elements);
-
-      elements.forEach((element, index) => {
-        console.log(`�� Processing element ${index}:`, element);
-
-        const { elementId, css } = element;
-
-        console.log("🔍 Element structure analysis:", {
-          hasCss: !!css,
-          elementId,
-          cssKeys: css ? Object.keys(css) : [],
-        });
-
-        if (css) {
-          // Process each button type (primary, secondary, tertiary)
-          const buttonTypes = [
-            "buttonPrimary",
-            "buttonSecondary",
-            "buttonTertiary",
-          ];
-
-          buttonTypes.forEach((buttonType) => {
-            const buttonData = css[buttonType];
-            if (buttonData?.styles) {
-              console.log(`🎨 Processing ${buttonType}:`, buttonData);
-
-              // ✅ FIXED: Create proper hover selectors for each button type
-              const hoverSelectors = {
-                buttonPrimary: ".sqs-button-element--primary:hover",
-                buttonSecondary: ".sqs-button-element--secondary:hover",
-                buttonTertiary: ".sqs-button-element--tertiary:hover",
-              };
-
-              const hoverSelector = hoverSelectors[buttonType];
-
-              if (hoverSelector && Object.keys(buttonData.styles).length > 0) {
-                // Apply button hover styles as external CSS with :hover pseudo-class
-                applyStylesAsExternalCSS(
-                  hoverSelector,
-                  buttonData.styles,
-                  `sc-btn-hover-${buttonType}-${elementId}`
-                );
-                console.log(
-                  `✅ Applied ${buttonType} hover styles to ${elementId}:`,
-                  buttonData.styles
-                );
-                console.log(`🎯 Hover selector used: ${hoverSelector}`);
-              } else {
-                console.log(
-                  `⚠️ No valid ${buttonType} styles found for element:`,
-                  elementId
-                );
-              }
-            } else {
-              console.log(
-                `⚠️ No valid ${buttonType} data found for element:`,
-                elementId
-              );
-            }
-          });
-        } else {
-          console.log("⚠️ No valid CSS structure found for this element");
-        }
-      });
-
-      console.log(
-        "✅ Applied button hover color styles to all elements (external CSS with :hover)"
+      ["buttonPrimary", "buttonSecondary", "buttonTertiary"].forEach(
+        applyBucket
       );
-      console.log(
-        "🏁 fetchButtonHoverColorModifications completed successfully"
-      );
-    } catch (error) {
-      console.error(
-        "❌ Failed to fetch button hover color modifications:",
-        error.message
-      );
-      console.error("❌ Full error details:", error);
-      console.error("❌ Error stack:", error.stack);
+
+      return { success: true, count: Object.keys(buckets).length };
+    } catch (err) {
+      console.error("❌ fetchButtonHoverColorModifications failed:", err);
+      return { success: false, error: err.message };
     }
   }
 
-  // Fetch button shadow modifications from the backend
   async function fetchButtonShadowModifications(blockId = null) {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
