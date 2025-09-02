@@ -907,7 +907,7 @@ window.pendingModifications = pendingModifications;
       opts = {};
     }
 
-    const { include = "all", prefer } = opts; // include: 'all' | 'primary' | 'secondary' | 'tertiary'
+    const { include = "all", prefer } = opts;
 
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
