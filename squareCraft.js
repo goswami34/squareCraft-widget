@@ -5564,7 +5564,6 @@ window.pendingModifications = pendingModifications;
   //   }
   // }
 
-  // Fetch and apply *button hover EFFECT* styles (no pageId/elementId needed)
   async function fetchButtonHoverEffectModifications() {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");

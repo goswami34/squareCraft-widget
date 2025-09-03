@@ -1751,11 +1751,12 @@ export function applyHoverButtonEffects(
       buttonType = "buttonTertiary";
     }
 
-    // Create CSS object for the hover effect
+    // Create CSS object for the hover effect (save both transform and transition on :hover)
     const hoverEffectCSS = {
       [buttonType]: {
-        selector: `.${typeClass}`,
+        selector: `.${typeClass}:hover`,
         styles: {
+          transform: transformRule,
           transition: `all ${duration}ms ${transition} ${delay}ms`,
         },
       },
