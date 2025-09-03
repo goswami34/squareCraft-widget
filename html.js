@@ -2188,146 +2188,277 @@ export async function saveButtonHoverColorModifications(_blockId, css) {
 // button hover color save modification code end here
 
 // button hover icon save modification code start here
-export async function saveButtonHoverIconModifications(blockId, css) {
-  console.log("🚀 saveButtonHoverIconModifications called with:", {
-    blockId,
-    css,
-  });
+// export async function saveButtonHoverIconModifications(blockId, css) {
+//   console.log("🚀 saveButtonHoverIconModifications called with:", {
+//     blockId,
+//     css,
+//   });
 
-  const pageId = document
-    .querySelector("article[data-page-sections]")
-    ?.getAttribute("data-page-sections");
+//   const pageId = document
+//     .querySelector("article[data-page-sections]")
+//     ?.getAttribute("data-page-sections");
 
+//   const userId = localStorage.getItem("sc_u_id");
+//   const token = localStorage.getItem("sc_auth_token");
+//   const widgetId = localStorage.getItem("sc_w_id");
+
+//   console.log("📋 Required data check:", {
+//     userId: !!userId,
+//     token: !!token,
+//     widgetId: !!widgetId,
+//     pageId: !!pageId,
+//     blockId: !!blockId,
+//     css: !!css,
+//   });
+
+//   if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
+//     console.warn(
+//       "❌ Missing required data to save button hover icon modifications",
+//       {
+//         userId,
+//         token,
+//         widgetId,
+//         pageId,
+//         blockId,
+//         css,
+//       }
+//     );
+//     return { success: false, error: "Missing required data" };
+//   }
+
+//   // Clean & normalize CSS and convert to kebab-case
+//   const cleanCssObject = (obj = {}) =>
+//     Object.fromEntries(
+//       Object.entries(obj).filter(
+//         ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+//       )
+//     );
+
+//   const toKebabCaseStyleObject = (obj = {}) =>
+//     Object.fromEntries(
+//       Object.entries(obj).map(([key, value]) => [
+//         key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+//         value,
+//       ])
+//     );
+
+//   // Process each button type's CSS block
+//   const processButtonType = (buttonData) => {
+//     if (!buttonData) return [];
+
+//     // If it's already an array, process each item
+//     if (Array.isArray(buttonData)) {
+//       return buttonData
+//         .map((item) => ({
+//           selector: item?.selector || null,
+//           styles: toKebabCaseStyleObject(cleanCssObject(item?.styles || {})),
+//         }))
+//         .filter((item) => item.selector && Object.keys(item.styles).length > 0);
+//     }
+
+//     // If it's a single object, convert to array format
+//     if (buttonData.selector && buttonData.styles) {
+//       const cleanedStyles = toKebabCaseStyleObject(
+//         cleanCssObject(buttonData.styles)
+//       );
+//       if (Object.keys(cleanedStyles).length > 0) {
+//         return [
+//           {
+//             selector: buttonData.selector,
+//             styles: cleanedStyles,
+//           },
+//         ];
+//       }
+//     }
+
+//     return [];
+//   };
+
+//   // Process each button type
+//   const cleanedPrimary = processButtonType(css.buttonPrimary);
+//   const cleanedSecondary = processButtonType(css.buttonSecondary);
+//   const cleanedTertiary = processButtonType(css.buttonTertiary);
+
+//   // Check if we have at least one valid style to save
+//   const hasValidStyles =
+//     cleanedPrimary.length > 0 ||
+//     cleanedSecondary.length > 0 ||
+//     cleanedTertiary.length > 0;
+
+//   if (!hasValidStyles) {
+//     console.warn("⚠️ No valid hover icon styles to save");
+//     return { success: false, error: "No valid hover icon styles to save" };
+//   }
+
+//   // Additional debugging for the cleaning process
+//   console.log("🔍 Cleaning Process Debug:", {
+//     originalCSS: css,
+//     cleanedPrimary: cleanedPrimary,
+//     cleanedSecondary: cleanedSecondary,
+//     cleanedTertiary: cleanedTertiary,
+//     hasValidStyles,
+//     primaryStyleCount: cleanedPrimary.length,
+//     secondaryStyleCount: cleanedSecondary.length,
+//     tertiaryStyleCount: cleanedTertiary.length,
+//   });
+
+//   const payload = {
+//     userId,
+//     token,
+//     widgetId,
+//     pageId,
+//     elementId: blockId,
+//     css: {
+//       buttonPrimary: cleanedPrimary,
+//       buttonSecondary: cleanedSecondary,
+//       buttonTertiary: cleanedTertiary,
+//     },
+//   };
+
+//   console.log("📤 Sending button hover icon payload:", payload);
+//   console.log("🔍 Original CSS received:", css);
+//   console.log("🧹 Cleaned CSS structure:", {
+//     buttonPrimary: cleanedPrimary,
+//     buttonSecondary: cleanedSecondary,
+//     buttonTertiary: cleanedTertiary,
+//   });
+
+//   try {
+//     console.log(
+//       "🌐 Making API request to save button hover icon modifications..."
+//     );
+//     const response = await fetch(
+//       "https://admin.squareplugin.com/api/v1/save-button-hover-icon-modifications",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     console.log("📡 Response status:", response.status);
+//     console.log(
+//       "📡 Response headers:",
+//       Object.fromEntries(response.headers.entries())
+//     );
+
+//     const result = await response.json();
+
+//     if (!response.ok) {
+//       console.error("❌ Server error response:", result);
+//       console.error("❌ Full error details:", {
+//         status: response.status,
+//         statusText: response.statusText,
+//         url: response.url,
+//         result: result,
+//       });
+//       throw new Error(
+//         result.message || result.error || `HTTP ${response.status}`
+//       );
+//     }
+
+//     console.log("✅ Button hover icon modifications saved:", result);
+//     showNotification("Button hover icon styles saved successfully!", "success");
+
+//     return { success: true, data: result };
+//   } catch (error) {
+//     console.error("❌ Error saving button hover icon modifications:", error);
+//     showNotification(
+//       `Failed to save button hover icon styles: ${error.message}`,
+//       "error"
+//     );
+
+//     return { success: false, error: error.message };
+//   }
+// }
+
+// Save hover icon rules (no pageId / elementId required)
+export async function saveButtonHoverIconModifications(_blockId, css) {
   const userId = localStorage.getItem("sc_u_id");
   const token = localStorage.getItem("sc_auth_token");
   const widgetId = localStorage.getItem("sc_w_id");
 
-  console.log("📋 Required data check:", {
-    userId: !!userId,
-    token: !!token,
-    widgetId: !!widgetId,
-    pageId: !!pageId,
-    blockId: !!blockId,
-    css: !!css,
-  });
-
-  if (!userId || !token || !widgetId || !pageId || !blockId || !css) {
-    console.warn(
-      "❌ Missing required data to save button hover icon modifications",
-      {
-        userId,
-        token,
-        widgetId,
-        pageId,
-        blockId,
-        css,
-      }
-    );
-    return { success: false, error: "Missing required data" };
+  if (!userId || !token || !widgetId || !css) {
+    console.warn("❌ Missing required data", {
+      userId: !!userId,
+      token: !!token,
+      widgetId: !!widgetId,
+      css: !!css,
+    });
+    return {
+      success: false,
+      error: "Missing required data (userId, token, widgetId, css)",
+    };
   }
 
-  // Clean & normalize CSS and convert to kebab-case
-  const cleanCssObject = (obj = {}) =>
+  // ---- helpers -----------------------------------------------------------
+  const clean = (obj = {}) =>
     Object.fromEntries(
       Object.entries(obj).filter(
-        ([_, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
+        ([, v]) => v !== null && v !== undefined && v !== "" && v !== "null"
       )
     );
 
-  const toKebabCaseStyleObject = (obj = {}) =>
+  const toKebab = (obj = {}) =>
     Object.fromEntries(
-      Object.entries(obj).map(([key, value]) => [
-        key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
-        value,
+      Object.entries(obj).map(([k, v]) => [
+        k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        v,
       ])
     );
 
-  // Process each button type's CSS block
-  const processButtonType = (buttonData) => {
-    if (!buttonData) return [];
-
-    // If it's already an array, process each item
-    if (Array.isArray(buttonData)) {
-      return buttonData
-        .map((item) => ({
-          selector: item?.selector || null,
-          styles: toKebabCaseStyleObject(cleanCssObject(item?.styles || {})),
-        }))
-        .filter((item) => item.selector && Object.keys(item.styles).length > 0);
-    }
-
-    // If it's a single object, convert to array format
-    if (buttonData.selector && buttonData.styles) {
-      const cleanedStyles = toKebabCaseStyleObject(
-        cleanCssObject(buttonData.styles)
-      );
-      if (Object.keys(cleanedStyles).length > 0) {
-        return [
-          {
-            selector: buttonData.selector,
-            styles: cleanedStyles,
-          },
-        ];
-      }
-    }
-
-    return [];
+  const addHover = (selector) => {
+    if (!selector) return null;
+    const s = String(selector).trim();
+    return s.includes(":hover") ? s : `${s}:hover`;
   };
 
-  // Process each button type
-  const cleanedPrimary = processButtonType(css.buttonPrimary);
-  const cleanedSecondary = processButtonType(css.buttonSecondary);
-  const cleanedTertiary = processButtonType(css.buttonTertiary);
+  // Accept array or single object for each bucket; return array of {selector, styles}
+  const normalizeBucket = (input) => {
+    const arr = Array.isArray(input) ? input : input ? [input] : [];
+    const dedup = new Map(); // key=selector, value=merged styles
+    for (const item of arr) {
+      const selector = addHover(item?.selector || null);
+      const styles = toKebab(clean(item?.styles || {}));
+      if (!selector || Object.keys(styles).length === 0) continue;
+      // merge by selector
+      dedup.set(selector, { ...(dedup.get(selector) || {}), ...styles });
+    }
+    return Array.from(dedup.entries()).map(([selector, styles]) => ({
+      selector,
+      styles,
+    }));
+  };
 
-  // Check if we have at least one valid style to save
-  const hasValidStyles =
-    cleanedPrimary.length > 0 ||
-    cleanedSecondary.length > 0 ||
-    cleanedTertiary.length > 0;
+  const cleanedPrimary = normalizeBucket(css.buttonPrimary);
+  const cleanedSecondary = normalizeBucket(css.buttonSecondary);
+  const cleanedTertiary = normalizeBucket(css.buttonTertiary);
 
-  if (!hasValidStyles) {
-    console.warn("⚠️ No valid hover icon styles to save");
+  if (
+    cleanedPrimary.length === 0 &&
+    cleanedSecondary.length === 0 &&
+    cleanedTertiary.length === 0
+  ) {
+    console.warn("⚠️ No valid hover icon styles to save.", { css });
     return { success: false, error: "No valid hover icon styles to save" };
   }
-
-  // Additional debugging for the cleaning process
-  console.log("🔍 Cleaning Process Debug:", {
-    originalCSS: css,
-    cleanedPrimary: cleanedPrimary,
-    cleanedSecondary: cleanedSecondary,
-    cleanedTertiary: cleanedTertiary,
-    hasValidStyles,
-    primaryStyleCount: cleanedPrimary.length,
-    secondaryStyleCount: cleanedSecondary.length,
-    tertiaryStyleCount: cleanedTertiary.length,
-  });
 
   const payload = {
     userId,
     token,
     widgetId,
-    pageId,
-    elementId: blockId,
     css: {
-      buttonPrimary: cleanedPrimary,
-      buttonSecondary: cleanedSecondary,
-      buttonTertiary: cleanedTertiary,
+      ...(cleanedPrimary.length ? { buttonPrimary: cleanedPrimary } : {}),
+      ...(cleanedSecondary.length ? { buttonSecondary: cleanedSecondary } : {}),
+      ...(cleanedTertiary.length ? { buttonTertiary: cleanedTertiary } : {}),
     },
   };
 
-  console.log("📤 Sending button hover icon payload:", payload);
-  console.log("🔍 Original CSS received:", css);
-  console.log("🧹 Cleaned CSS structure:", {
-    buttonPrimary: cleanedPrimary,
-    buttonSecondary: cleanedSecondary,
-    buttonTertiary: cleanedTertiary,
-  });
-
   try {
-    console.log(
-      "🌐 Making API request to save button hover icon modifications..."
-    );
-    const response = await fetch(
+    const resp = await fetch(
       "https://admin.squareplugin.com/api/v1/save-button-hover-icon-modifications",
       {
         method: "POST",
@@ -2338,40 +2469,24 @@ export async function saveButtonHoverIconModifications(blockId, css) {
         body: JSON.stringify(payload),
       }
     );
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.message || `HTTP ${resp.status}`);
 
-    console.log("📡 Response status:", response.status);
-    console.log(
-      "📡 Response headers:",
-      Object.fromEntries(response.headers.entries())
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      console.error("❌ Server error response:", result);
-      console.error("❌ Full error details:", {
-        status: response.status,
-        statusText: response.statusText,
-        url: response.url,
-        result: result,
-      });
-      throw new Error(
-        result.message || result.error || `HTTP ${response.status}`
+    console.log("✅ Saved hover icon styles:", result);
+    typeof showNotification === "function" &&
+      showNotification(
+        "Button hover icon styles saved successfully!",
+        "success"
       );
-    }
-
-    console.log("✅ Button hover icon modifications saved:", result);
-    showNotification("Button hover icon styles saved successfully!", "success");
-
     return { success: true, data: result };
-  } catch (error) {
-    console.error("❌ Error saving button hover icon modifications:", error);
-    showNotification(
-      `Failed to save button hover icon styles: ${error.message}`,
-      "error"
-    );
-
-    return { success: false, error: error.message };
+  } catch (err) {
+    console.error("❌ Save hover icon error:", err);
+    typeof showNotification === "function" &&
+      showNotification(
+        `Failed to save hover icon styles: ${err.message}`,
+        "error"
+      );
+    return { success: false, error: err.message };
   }
 }
 
