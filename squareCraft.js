@@ -3967,30 +3967,6 @@ window.pendingModifications = pendingModifications;
     styleTag.textContent = cssText;
   }
 
-  // function applyHoverStylesAsExternalCSS(
-  //   selector,
-  //   styles,
-  //   styleIdPrefix = "sc-btn-hover-style"
-  // ) {
-  //   const styleId = `${styleIdPrefix}-${selector.replace(
-  //     /[^a-zA-Z0-9-_]/g,
-  //     ""
-  //   )}`;
-  //   let styleTag = document.getElementById(styleId);
-  //   if (!styleTag) {
-  //     styleTag = document.createElement("style");
-  //     styleTag.id = styleId;
-  //     document.head.appendChild(styleTag);
-  //   }
-  //   let cssText = `${selector}:hover {`;
-  //   Object.entries(styles).forEach(([prop, value]) => {
-  //     cssText += `${prop}: ${value} !important; `;
-  //   });
-  //   cssText += "}";
-  //   styleTag.textContent = cssText;
-  //   console.log("🎨 Applied hover CSS:", cssText);
-  // }
-
   // Fetch and apply button modifications from the backend
 
   function applyHoverStylesAsExternalCSS(selector, styles, uniqueStyleId) {
@@ -4877,35 +4853,6 @@ window.pendingModifications = pendingModifications;
   //   );
   // }
 
-  // // ✅ DEBUG: Test API with different parameters to find the issue
-  // async function testAPIWithDifferentParams(userId, token, widgetId) {
-  //   console.log("🧪 Testing API with different parameters...");
-
-  //   // Test 1: Without pageId
-  //   try {
-  //     const url1 = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}`;
-  //     const res1 = await fetch(url1, {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-  //     const result1 = await res1.json();
-  //     console.log("🧪 Test 1 (no pageId):", result1);
-  //   } catch (e) {
-  //     console.log("🧪 Test 1 failed:", e.message);
-  //   }
-
-  //   // Test 2: With different pageId format
-  //   try {
-  //     const url2 = `https://admin.squareplugin.com/api/v1/get-button-border-modifications?userId=${userId}&widgetId=${widgetId}&pageId=all`;
-  //     const res2 = await fetch(url2, {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-  //     const result2 = await res2.json();
-  //     console.log("🧪 Test 2 (pageId=all):", result2);
-  //   } catch (e) {
-  //     console.log("🧪 Test 2 failed:", e.message);
-  //   }
-  // }
-
   // ✅ NEW: Fetch all button border modifications for the page at once
   async function fetchAllButtonBorderModifications() {
     const userId = localStorage.getItem("sc_u_id");
@@ -4997,70 +4944,6 @@ window.pendingModifications = pendingModifications;
       );
     }
   }
-
-  // Fetch button shadow modifications from the backend
-  // async function fetchButtonShadowModifications(blockId = null) {
-  //   const userId = localStorage.getItem("sc_u_id");
-  //   const token = localStorage.getItem("sc_auth_token");
-  //   const widgetId = localStorage.getItem("sc_w_id");
-  //   const pageId = document
-  //     .querySelector("article[data-page-sections]")
-  //     ?.getAttribute("data-page-sections");
-
-  //   if (!userId || !token || !widgetId || !pageId) {
-  //     console.warn("⚠️ Missing credentials or page ID");
-  //     return;
-  //   }
-
-  //   let url = `https://admin.squareplugin.com/api/v1/get-button-shadow-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-  //   if (blockId) url += `&elementId=${blockId}`;
-
-  //   try {
-  //     const res = await fetch(url, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     const result = await res.json();
-  //     if (!res.ok) throw new Error(result.message);
-
-  //     const elements = result.elements || [];
-  //     elements.forEach(({ elementId, selector, styles }) => {
-  //       if (!selector || !styles) return;
-
-  //       const styleId = `sc-btn-shadow-style-${elementId}`;
-  //       let styleTag = document.getElementById(styleId);
-  //       if (!styleTag) {
-  //         styleTag = document.createElement("style");
-  //         styleTag.id = styleId;
-  //         document.head.appendChild(styleTag);
-  //       }
-
-  //       let cssText = `${selector} {`;
-  //       Object.entries(styles).forEach(([prop, val]) => {
-  //         if (val !== null && val !== undefined && val !== "null") {
-  //           cssText += `${prop}: ${val} !important; `;
-  //         }
-  //       });
-  //       cssText += "}";
-
-  //       styleTag.textContent = cssText;
-
-  //       console.log(
-  //         `✅ Applied button shadow styles for ${elementId}:`,
-  //         styles
-  //       );
-  //     });
-
-  //     console.log("✅ All button shadow modifications applied (external CSS)");
-  //   } catch (error) {
-  //     console.error(
-  //       "❌ Failed to fetch button shadow modifications:",
-  //       error.message
-  //     );
-  //   }
-  // }
 
   // Fetch and apply button shadow styles for the whole widget (no pageId/elementId)
   async function fetchButtonShadowModifications() {
@@ -5360,238 +5243,333 @@ window.pendingModifications = pendingModifications;
   }
 
   // Fetch button hover icon modifications from the backend
-  async function fetchButtonHoverIconModifications(blockId = null) {
-    console.log("🚀 ========================================");
-    console.log("🚀 fetchButtonHoverIconModifications STARTED");
-    console.log("🚀 Called with blockId:", blockId);
-    console.log("🚀 ========================================");
+  // async function fetchButtonHoverIconModifications(blockId = null) {
+  //   console.log("🚀 ========================================");
+  //   console.log("🚀 fetchButtonHoverIconModifications STARTED");
+  //   console.log("🚀 Called with blockId:", blockId);
+  //   console.log("🚀 ========================================");
 
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+  //   const pageId = document
+  //     .querySelector("article[data-page-sections]")
+  //     ?.getAttribute("data-page-sections");
+
+  //   console.log("🔍 Retrieved data from localStorage:", {
+  //     userId: userId ? "present" : "missing",
+  //     token: token ? "present" : "missing",
+  //     widgetId: widgetId ? "present" : "missing",
+  //     pageId: pageId ? "present" : "missing",
+  //   });
+
+  //   if (!userId || !token || !widgetId || !pageId) {
+  //     console.warn(
+  //       "❌ Missing required data to fetch button hover icon styles",
+  //       {
+  //         userId: userId || "MISSING",
+  //         token: token ? "present" : "MISSING",
+  //         widgetId: widgetId || "MISSING",
+  //         pageId: pageId || "MISSING",
+  //       }
+  //     );
+  //     return { success: false, error: "Missing required data" };
+  //   }
+
+  //   // Normalize incoming blockId to a stable id if possible
+  //   // IMPORTANT: Do NOT fallback to transient yui id. If stable id cannot be resolved,
+  //   // omit elementId from the query so backend returns all for the page.
+  //   const stableBlockId = getStableBlockId(blockId) || null;
+
+  //   console.log("📤 Fetching button hover icon styles:", {
+  //     userId,
+  //     widgetId,
+  //     pageId,
+  //     blockId: stableBlockId,
+  //   });
+
+  //   try {
+  //     // Build URL with query parameters for GET request
+  //     let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-icon-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
+  //     if (stableBlockId) {
+  //       url += `&elementId=${stableBlockId}`;
+  //     }
+
+  //     console.log("🌐 Making request to URL:", url);
+
+  //     const response = await fetch(url, {
+  //       method: "GET",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     console.log("📡 Response status:", response.status);
+  //     console.log("📡 Response ok:", response.ok);
+
+  //     const result = await response.json();
+  //     console.log("📄 Response data:", result);
+
+  //     if (!response.ok) {
+  //       console.error(
+  //         "❌ HTTP Error:",
+  //         response.status,
+  //         result.message || `HTTP ${response.status}`
+  //       );
+  //       throw new Error(result.message || `HTTP ${response.status}`);
+  //     }
+
+  //     console.log("✅ Button hover icon styles fetched:", result);
+
+  //     // Handle the nested structure: elements[].buttonPrimary/buttonSecondary/buttonTertiary
+  //     const elements = result.elements || [];
+  //     console.log("📋 Elements to process:", elements.length);
+
+  //     if (elements.length === 0) {
+  //       console.log("ℹ️ No hover icon modifications found in response");
+  //       return {
+  //         success: true,
+  //         message: "No hover icon modifications found",
+  //       };
+  //     }
+
+  //     elements.forEach((element, index) => {
+  //       const { elementId } = element;
+  //       console.log(
+  //         `🔍 Processing element ${index + 1} (${elementId}):`,
+  //         element
+  //       );
+
+  //       // Skip if we're looking for a specific block and this isn't it
+  //       if (stableBlockId && elementId !== stableBlockId) {
+  //         console.log(
+  //           `⏭️ Skipping element ${elementId} - looking for ${stableBlockId}`
+  //         );
+  //         return;
+  //       }
+
+  //       // Process each button type
+  //       const buttonTypes = [
+  //         "buttonPrimary",
+  //         "buttonSecondary",
+  //         "buttonTertiary",
+  //       ];
+
+  //       buttonTypes.forEach((buttonType) => {
+  //         const buttonData = element[buttonType];
+
+  //         if (
+  //           !buttonData ||
+  //           !Array.isArray(buttonData) ||
+  //           buttonData.length === 0
+  //         ) {
+  //           console.log(
+  //             `⚠️ No ${buttonType} data found for element: ${elementId}`
+  //           );
+  //           return;
+  //         }
+
+  //         console.log(
+  //           `🎨 Processing ${buttonType} for element ${elementId}:`,
+  //           buttonData
+  //         );
+
+  //         buttonData.forEach((styleData, styleIndex) => {
+  //           const { selector, styles } = styleData;
+
+  //           if (!selector || !styles || Object.keys(styles).length === 0) {
+  //             console.log(
+  //               `⚠️ Invalid style data at index ${styleIndex} for ${buttonType}`
+  //             );
+  //             return;
+  //           }
+
+  //           console.log(
+  //             `🎯 Applying ${buttonType} hover icon styles (${
+  //               styleIndex + 1
+  //             }):`,
+  //             {
+  //               selector,
+  //               styles,
+  //             }
+  //           );
+
+  //           // Extract the base button selector (remove the hover and icon parts)
+  //           const baseButtonSelector = selector
+  //             .replace(/:\w+/, "") // Remove :hover
+  //             .replace(/\s+\.[^\s]+$/, "") // Remove the last class (icon class)
+  //             .trim();
+
+  //           // Also store the original selector for CSS generation
+  //           const originalSelector = selector;
+
+  //           console.log(`🔍 Base button selector: "${baseButtonSelector}"`);
+
+  //           // Find buttons with the base selector in host doc and iframe
+  //           let buttons = queryAllInHostAndFrame(baseButtonSelector);
+  //           console.log(
+  //             `🔍 Found ${buttons.length} buttons with selector: "${baseButtonSelector}"`
+  //           );
+
+  //           if (buttons.length === 0) {
+  //             // Try to wait for elements if none found immediately
+  //             try {
+  //               console.log(
+  //                 "⏳ No buttons found immediately, waiting for elements..."
+  //               );
+  //               waitForElement(baseButtonSelector)
+  //                 .then((foundButtons) => {
+  //                   const merged = foundButtons ? Array.from(foundButtons) : [];
+  //                   // Also check iframe after wait
+  //                   const inFrame = queryAllInHostAndFrame(baseButtonSelector);
+  //                   merged.push(...inFrame);
+  //                   if (merged.length > 0) {
+  //                     console.log(
+  //                       `⏳ Wait successful: Found ${merged.length} buttons`
+  //                     );
+  //                     applyHoverIconStylesToButtons(
+  //                       merged,
+  //                       styles,
+  //                       buttonType,
+  //                       elementId,
+  //                       originalSelector
+  //                     );
+  //                   }
+  //                 })
+  //                 .catch((e) => {
+  //                   console.warn(
+  //                     `⛔ ${buttonType} button not found in time for selector: ${baseButtonSelector}`,
+  //                     e
+  //                   );
+  //                 });
+  //             } catch (e) {
+  //               console.warn(`⛔ Error waiting for ${buttonType} button:`, e);
+  //             }
+  //           } else {
+  //             // Apply styles to found buttons
+  //             applyHoverIconStylesToButtons(
+  //               buttons,
+  //               styles,
+  //               buttonType,
+  //               elementId,
+  //               originalSelector
+  //             );
+  //           }
+  //         });
+  //       });
+  //     });
+
+  //     console.log("✅ All hover icon styles processed.");
+  //     console.log("🚀 ========================================");
+  //     console.log(
+  //       "🚀 fetchButtonHoverIconModifications COMPLETED SUCCESSFULLY"
+  //     );
+  //     console.log("🚀 ========================================");
+  //     return { success: true, data: result };
+  //   } catch (error) {
+  //     console.error(
+  //       "❌ Failed to fetch/apply button hover icon modifications:",
+  //       error
+  //     );
+  //     console.log("🚀 ========================================");
+  //     console.log("🚀 fetchButtonHoverIconModifications FAILED");
+  //     console.log("🚀 ========================================");
+  //     return { success: false, error: error.message };
+  //   }
+  // }
+
+  // Fetch + apply hover icon rules (no pageId/elementId)
+  async function fetchButtonHoverIconModifications(include = "all") {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
-    const pageId = document
-      .querySelector("article[data-page-sections]")
-      ?.getAttribute("data-page-sections");
 
-    console.log("🔍 Retrieved data from localStorage:", {
-      userId: userId ? "present" : "missing",
-      token: token ? "present" : "missing",
-      widgetId: widgetId ? "present" : "missing",
-      pageId: pageId ? "present" : "missing",
-    });
-
-    if (!userId || !token || !widgetId || !pageId) {
-      console.warn(
-        "❌ Missing required data to fetch button hover icon styles",
-        {
-          userId: userId || "MISSING",
-          token: token ? "present" : "MISSING",
-          widgetId: widgetId || "MISSING",
-          pageId: pageId || "MISSING",
-        }
-      );
-      return { success: false, error: "Missing required data" };
+    if (!userId || !token || !widgetId) {
+      console.warn("⚠️ Missing credentials to fetch hover icon styles", {
+        userId: !!userId,
+        token: !!token,
+        widgetId: !!widgetId,
+      });
+      return { success: false, error: "Missing credentials" };
     }
 
-    // Normalize incoming blockId to a stable id if possible
-    // IMPORTANT: Do NOT fallback to transient yui id. If stable id cannot be resolved,
-    // omit elementId from the query so backend returns all for the page.
-    const stableBlockId = getStableBlockId(blockId) || null;
-
-    console.log("📤 Fetching button hover icon styles:", {
+    // Build URL for new API. Add include=primary|secondary|tertiary|all if desired.
+    const params = new URLSearchParams({
       userId,
       widgetId,
-      pageId,
-      blockId: stableBlockId,
+      prefer: "query", // make it easy to test from Postman too
     });
+    if (include && include !== "all")
+      params.set("include", include.toLowerCase());
+
+    const url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-icon-modifications?${params.toString()}`;
 
     try {
-      // Build URL with query parameters for GET request
-      let url = `https://admin.squareplugin.com/api/v1/fetch-button-hover-icon-modifications?userId=${userId}&widgetId=${widgetId}&pageId=${pageId}`;
-      if (stableBlockId) {
-        url += `&elementId=${stableBlockId}`;
-      }
-
-      console.log("🌐 Making request to URL:", url);
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
       });
+      const out = await res.json();
+      if (!res.ok) throw new Error(out.message || `HTTP ${res.status}`);
 
-      console.log("📡 Response status:", response.status);
-      console.log("📡 Response ok:", response.ok);
+      // Expected shape:
+      // {
+      //   success: true,
+      //   hoverIcon: {
+      //     buttonPrimary:   [{ selector, styles }, ...],
+      //     buttonSecondary: [{ selector, styles }, ...],
+      //     buttonTertiary:  [{ selector, styles }, ...]
+      //   }
+      // }
+      const hoverIcon = out.hoverIcon || {};
+      const buckets = [
+        ["buttonPrimary", "primary"],
+        ["buttonSecondary", "secondary"],
+        ["buttonTertiary", "tertiary"],
+      ];
 
-      const result = await response.json();
-      console.log("📄 Response data:", result);
+      // Helper: create/update a <style> tag for a rule
+      const applyRule = (selector, styles, key) => {
+        if (!selector || !styles || Object.keys(styles).length === 0) return;
 
-      if (!response.ok) {
-        console.error(
-          "❌ HTTP Error:",
-          response.status,
-          result.message || `HTTP ${response.status}`
-        );
-        throw new Error(result.message || `HTTP ${response.status}`);
-      }
-
-      console.log("✅ Button hover icon styles fetched:", result);
-
-      // Handle the nested structure: elements[].buttonPrimary/buttonSecondary/buttonTertiary
-      const elements = result.elements || [];
-      console.log("📋 Elements to process:", elements.length);
-
-      if (elements.length === 0) {
-        console.log("ℹ️ No hover icon modifications found in response");
-        return {
-          success: true,
-          message: "No hover icon modifications found",
-        };
-      }
-
-      elements.forEach((element, index) => {
-        const { elementId } = element;
-        console.log(
-          `🔍 Processing element ${index + 1} (${elementId}):`,
-          element
-        );
-
-        // Skip if we're looking for a specific block and this isn't it
-        if (stableBlockId && elementId !== stableBlockId) {
-          console.log(
-            `⏭️ Skipping element ${elementId} - looking for ${stableBlockId}`
-          );
-          return;
+        // normalize style keys to kebab-case
+        const normalized = {};
+        for (const [k, v] of Object.entries(styles)) {
+          if (v === null || v === undefined || v === "null" || v === "")
+            continue;
+          const cssKey = k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+          normalized[cssKey] = v;
         }
+        if (Object.keys(normalized).length === 0) return;
 
-        // Process each button type
-        const buttonTypes = [
-          "buttonPrimary",
-          "buttonSecondary",
-          "buttonTertiary",
-        ];
+        const id = `sc-hover-icon-${key}`;
+        let tag = document.getElementById(id);
+        if (!tag) {
+          tag = document.createElement("style");
+          tag.id = id;
+          document.head.appendChild(tag);
+        }
+        const body = Object.entries(normalized)
+          .map(([prop, val]) => `${prop}: ${val} !important;`)
+          .join(" ");
+        tag.textContent = `${selector} { ${body} }`;
+      };
 
-        buttonTypes.forEach((buttonType) => {
-          const buttonData = element[buttonType];
-
-          if (
-            !buttonData ||
-            !Array.isArray(buttonData) ||
-            buttonData.length === 0
-          ) {
-            console.log(
-              `⚠️ No ${buttonType} data found for element: ${elementId}`
-            );
-            return;
-          }
-
-          console.log(
-            `🎨 Processing ${buttonType} for element ${elementId}:`,
-            buttonData
-          );
-
-          buttonData.forEach((styleData, styleIndex) => {
-            const { selector, styles } = styleData;
-
-            if (!selector || !styles || Object.keys(styles).length === 0) {
-              console.log(
-                `⚠️ Invalid style data at index ${styleIndex} for ${buttonType}`
-              );
-              return;
-            }
-
-            console.log(
-              `🎯 Applying ${buttonType} hover icon styles (${
-                styleIndex + 1
-              }):`,
-              {
-                selector,
-                styles,
-              }
-            );
-
-            // Extract the base button selector (remove the hover and icon parts)
-            const baseButtonSelector = selector
-              .replace(/:\w+/, "") // Remove :hover
-              .replace(/\s+\.[^\s]+$/, "") // Remove the last class (icon class)
-              .trim();
-
-            // Also store the original selector for CSS generation
-            const originalSelector = selector;
-
-            console.log(`🔍 Base button selector: "${baseButtonSelector}"`);
-
-            // Find buttons with the base selector in host doc and iframe
-            let buttons = queryAllInHostAndFrame(baseButtonSelector);
-            console.log(
-              `🔍 Found ${buttons.length} buttons with selector: "${baseButtonSelector}"`
-            );
-
-            if (buttons.length === 0) {
-              // Try to wait for elements if none found immediately
-              try {
-                console.log(
-                  "⏳ No buttons found immediately, waiting for elements..."
-                );
-                waitForElement(baseButtonSelector)
-                  .then((foundButtons) => {
-                    const merged = foundButtons ? Array.from(foundButtons) : [];
-                    // Also check iframe after wait
-                    const inFrame = queryAllInHostAndFrame(baseButtonSelector);
-                    merged.push(...inFrame);
-                    if (merged.length > 0) {
-                      console.log(
-                        `⏳ Wait successful: Found ${merged.length} buttons`
-                      );
-                      applyHoverIconStylesToButtons(
-                        merged,
-                        styles,
-                        buttonType,
-                        elementId,
-                        originalSelector
-                      );
-                    }
-                  })
-                  .catch((e) => {
-                    console.warn(
-                      `⛔ ${buttonType} button not found in time for selector: ${baseButtonSelector}`,
-                      e
-                    );
-                  });
-              } catch (e) {
-                console.warn(`⛔ Error waiting for ${buttonType} button:`, e);
-              }
-            } else {
-              // Apply styles to found buttons
-              applyHoverIconStylesToButtons(
-                buttons,
-                styles,
-                buttonType,
-                elementId,
-                originalSelector
-              );
-            }
-          });
+      let applied = 0;
+      for (const [bucketKey, suffix] of buckets) {
+        const rules = Array.isArray(hoverIcon[bucketKey])
+          ? hoverIcon[bucketKey]
+          : [];
+        rules.forEach((rule, idx) => {
+          applyRule(rule.selector, rule.styles, `${suffix}-${idx}`);
+          applied++;
         });
-      });
+      }
 
-      console.log("✅ All hover icon styles processed.");
-      console.log("🚀 ========================================");
-      console.log(
-        "🚀 fetchButtonHoverIconModifications COMPLETED SUCCESSFULLY"
-      );
-      console.log("🚀 ========================================");
-      return { success: true, data: result };
-    } catch (error) {
-      console.error(
-        "❌ Failed to fetch/apply button hover icon modifications:",
-        error
-      );
-      console.log("🚀 ========================================");
-      console.log("🚀 fetchButtonHoverIconModifications FAILED");
-      console.log("🚀 ========================================");
-      return { success: false, error: error.message };
+      console.log(`✅ Applied ${applied} hover icon rule(s).`);
+      return { success: true, applied };
+    } catch (err) {
+      console.error("❌ Failed to fetch/apply hover icon styles:", err);
+      return { success: false, error: err.message };
     }
   }
 
