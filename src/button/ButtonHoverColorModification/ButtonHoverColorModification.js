@@ -104,23 +104,27 @@ export function ButtonHoverColorModification(
         const blockId = dataBlockId || elementId || closestDataBlockId;
         if (!blockId) throw new Error("Could not determine block ID");
 
-        // Gather pending hover text-color mods for this block
-        const textColorMods =
-          window.pendingModifications
-            ?.get(blockId)
-            ?.filter((m) => m.tagType === "buttonHoverTextColor") || [];
+        // Gather pending hover text-color and background-color mods for this block
+        const pendingForBlock = window.pendingModifications?.get(blockId) || [];
+        const textColorMods = pendingForBlock.filter(
+          (m) => m.tagType === "buttonHoverTextColor"
+        );
+        const bgColorMods = pendingForBlock.filter(
+          (m) => m.tagType === "buttonHoverBackgroundColor"
+        );
 
-        if (textColorMods.length === 0) {
-          throw new Error("No text color modifications to save");
+        if (textColorMods.length === 0 && bgColorMods.length === 0) {
+          throw new Error("No hover color/background changes to save");
         }
 
-        // Build payload
+        // Build merged payload so both styles are saved together
         const cssPayload = {
           buttonPrimary: { styles: {} },
           buttonSecondary: { styles: {} },
           buttonTertiary: { styles: {} },
         };
 
+        // Merge text color styles
         textColorMods.forEach((mod) => {
           if (mod.css?.buttonPrimary?.styles?.color) {
             cssPayload.buttonPrimary.styles.color =
@@ -136,6 +140,22 @@ export function ButtonHoverColorModification(
           }
         });
 
+        // Merge background color styles
+        bgColorMods.forEach((mod) => {
+          if (mod.css?.buttonPrimary?.styles?.backgroundColor) {
+            cssPayload.buttonPrimary.styles.backgroundColor =
+              mod.css.buttonPrimary.styles.backgroundColor;
+          }
+          if (mod.css?.buttonSecondary?.styles?.backgroundColor) {
+            cssPayload.buttonSecondary.styles.backgroundColor =
+              mod.css.buttonSecondary.styles.backgroundColor;
+          }
+          if (mod.css?.buttonTertiary?.styles?.backgroundColor) {
+            cssPayload.buttonTertiary.styles.backgroundColor =
+              mod.css.buttonTertiary.styles.backgroundColor;
+          }
+        });
+
         // Save
         const result = await saveButtonHoverColorModifications(
           blockId,
@@ -143,13 +163,17 @@ export function ButtonHoverColorModification(
         );
 
         if (result?.success) {
-          showNotification("✅ Text color saved successfully!", "success");
+          showNotification("✅ Hover colors saved successfully!", "success");
 
-          // Clear only the saved hover-text-color mods for this block
+          // Clear both hover text and background mods for this block
           if (window.pendingModifications?.has(blockId)) {
             const remaining = window.pendingModifications
               .get(blockId)
-              .filter((m) => m.tagType !== "buttonHoverTextColor");
+              .filter(
+                (m) =>
+                  m.tagType !== "buttonHoverTextColor" &&
+                  m.tagType !== "buttonHoverBackgroundColor"
+              );
             if (remaining.length === 0)
               window.pendingModifications.delete(blockId);
             else window.pendingModifications.set(blockId, remaining);

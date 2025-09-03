@@ -76,6 +76,11 @@ export function ButtonHoverBackgroundColorModification(
     if (publishButton.dataset.hoverBgBound === "1") {
       return publishButton;
     }
+
+    // If the text-color publish is already bound and performs merged save, reuse it
+    if (publishButton.dataset.hoverTextColorBound === "1") {
+      return publishButton;
+    }
     publishButton.dataset.hoverBgBound = "1";
     publishButton.classList.add("sc-background-color-publish-btn");
 
@@ -88,7 +93,7 @@ export function ButtonHoverBackgroundColorModification(
       publishButton.textContent = state ? "⏳ Saving..." : "Publish";
     };
 
-    // Attach click handler (migrated from your previous create button code)
+    // Attach click handler (merged save for bg + text color)
     publishButton.addEventListener("click", async () => {
       try {
         setLoading(true);
@@ -104,23 +109,27 @@ export function ButtonHoverBackgroundColorModification(
         const blockId = dataBlockId || elementId || closestDataBlockId;
         if (!blockId) throw new Error("Could not determine block ID");
 
-        // Gather pending hover background-color mods for this block
-        const backgroundColorMods =
-          window.pendingModifications
-            ?.get(blockId)
-            ?.filter((m) => m.tagType === "buttonHoverBackgroundColor") || [];
+        // Gather pending hover background-color and text-color mods for this block
+        const pendingForBlock = window.pendingModifications?.get(blockId) || [];
+        const backgroundColorMods = pendingForBlock.filter(
+          (m) => m.tagType === "buttonHoverBackgroundColor"
+        );
+        const textColorMods = pendingForBlock.filter(
+          (m) => m.tagType === "buttonHoverTextColor"
+        );
 
-        if (backgroundColorMods.length === 0) {
-          throw new Error("No background color modifications to save");
+        if (backgroundColorMods.length === 0 && textColorMods.length === 0) {
+          throw new Error("No hover color/background changes to save");
         }
 
-        // Build payload
+        // Build merged payload so both styles are saved together
         const cssPayload = {
           buttonPrimary: { styles: {} },
           buttonSecondary: { styles: {} },
           buttonTertiary: { styles: {} },
         };
 
+        // Merge background color styles
         backgroundColorMods.forEach((mod) => {
           if (mod.css?.buttonPrimary?.styles?.backgroundColor) {
             cssPayload.buttonPrimary.styles.backgroundColor =
@@ -136,6 +145,22 @@ export function ButtonHoverBackgroundColorModification(
           }
         });
 
+        // Merge text color styles
+        textColorMods.forEach((mod) => {
+          if (mod.css?.buttonPrimary?.styles?.color) {
+            cssPayload.buttonPrimary.styles.color =
+              mod.css.buttonPrimary.styles.color;
+          }
+          if (mod.css?.buttonSecondary?.styles?.color) {
+            cssPayload.buttonSecondary.styles.color =
+              mod.css.buttonSecondary.styles.color;
+          }
+          if (mod.css?.buttonTertiary?.styles?.color) {
+            cssPayload.buttonTertiary.styles.color =
+              mod.css.buttonTertiary.styles.color;
+          }
+        });
+
         // Save
         const result = await saveButtonHoverColorModifications(
           blockId,
@@ -143,16 +168,17 @@ export function ButtonHoverBackgroundColorModification(
         );
 
         if (result?.success) {
-          showNotification(
-            "✅ Background color saved successfully!",
-            "success"
-          );
+          showNotification("✅ Hover colors saved successfully!", "success");
 
-          // Clear only the saved hover-bg-color mods for this block
+          // Clear both hover text and background mods for this block
           if (window.pendingModifications?.has(blockId)) {
             const remaining = window.pendingModifications
               .get(blockId)
-              .filter((m) => m.tagType !== "buttonHoverBackgroundColor");
+              .filter(
+                (m) =>
+                  m.tagType !== "buttonHoverTextColor" &&
+                  m.tagType !== "buttonHoverBackgroundColor"
+              );
             if (remaining.length === 0)
               window.pendingModifications.delete(blockId);
             else window.pendingModifications.set(blockId, remaining);
