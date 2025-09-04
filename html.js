@@ -350,7 +350,7 @@ async function handlePublish() {
             result = await saveButtonShadowModifications(blockId, mod.css);
             break;
           case "buttonBorder":
-            result = await saveButtonBorderModifications(blockId, mod.css);
+            result = await saveButtonBorderElements();
             break;
           case "buttonHoverBorder":
             result = await saveButtonHoverBorderModifications(blockId, mod.css);
@@ -2568,6 +2568,213 @@ export async function saveButtonHoverEffectModifications(_blockId, css) {
 }
 
 // button hover effect save modification code end here
+
+// Save button border elements function
+export async function saveButtonBorderElements() {
+  console.log("🚀 saveButtonBorderElements called");
+
+  const userId = localStorage.getItem("sc_u_id");
+  const token = localStorage.getItem("sc_auth_token");
+  const widgetId = localStorage.getItem("sc_w_id");
+
+  if (!userId || !token || !widgetId) {
+    console.warn("❌ Missing required data to save button border elements", {
+      userId: !!userId,
+      token: !!token,
+      widgetId: !!widgetId,
+    });
+    return { success: false, error: "Missing required data" };
+  }
+
+  // Collect all border-related styles from the global state maps
+  const borderStyles = {};
+  const borderTypeStyles = {};
+  const borderRadiusStyles = {};
+
+  // Collect from border control state
+  if (window.__squareCraftBorderStateMap) {
+    for (const [key, state] of window.__squareCraftBorderStateMap.entries()) {
+      const [blockId, typeClass] = key.split("--");
+      if (!blockId || !typeClass) continue;
+
+      const buttonType = typeClass.includes("--primary")
+        ? "buttonPrimary"
+        : typeClass.includes("--secondary")
+        ? "buttonSecondary"
+        : typeClass.includes("--tertiary")
+        ? "buttonTertiary"
+        : "buttonPrimary";
+
+      if (!borderStyles[buttonType]) {
+        borderStyles[buttonType] = {
+          selector: `.${typeClass}`,
+          styles: {},
+        };
+      }
+
+      // Add border width styles
+      if (state.values) {
+        if (state.values.Top !== undefined)
+          borderStyles[
+            buttonType
+          ].styles.borderTopWidth = `${state.values.Top}px`;
+        if (state.values.Right !== undefined)
+          borderStyles[
+            buttonType
+          ].styles.borderRightWidth = `${state.values.Right}px`;
+        if (state.values.Bottom !== undefined)
+          borderStyles[
+            buttonType
+          ].styles.borderBottomWidth = `${state.values.Bottom}px`;
+        if (state.values.Left !== undefined)
+          borderStyles[
+            buttonType
+          ].styles.borderLeftWidth = `${state.values.Left}px`;
+      }
+
+      // Add border style and color
+      if (state.borderStyle)
+        borderStyles[buttonType].styles.borderStyle = state.borderStyle;
+      if (state.color)
+        borderStyles[buttonType].styles.borderColor = state.color;
+      if (window.__squareCraftBorderColor)
+        borderStyles[buttonType].styles.borderColor =
+          window.__squareCraftBorderColor;
+    }
+  }
+
+  // Collect from button style map (border radius)
+  if (window.__scButtonStyleMap) {
+    for (const [blockId, styles] of window.__scButtonStyleMap.entries()) {
+      for (const [typeClass, data] of Object.entries(styles)) {
+        if (typeof data === "object" && data.styles) {
+          const buttonType = typeClass.includes("--primary")
+            ? "buttonPrimary"
+            : typeClass.includes("--secondary")
+            ? "buttonSecondary"
+            : typeClass.includes("--tertiary")
+            ? "buttonTertiary"
+            : "buttonPrimary";
+
+          if (!borderRadiusStyles[buttonType]) {
+            borderRadiusStyles[buttonType] = {
+              selector: `.${typeClass}`,
+              styles: {},
+            };
+          }
+
+          // Add border radius styles
+          Object.entries(data.styles).forEach(([key, value]) => {
+            if (key.includes("border") && key.includes("radius")) {
+              borderRadiusStyles[buttonType].styles[key] = value;
+            }
+          });
+        }
+      }
+    }
+  }
+
+  // Merge all styles
+  const allStyles = {};
+
+  // Merge border styles
+  Object.entries(borderStyles).forEach(([buttonType, data]) => {
+    if (!allStyles[buttonType]) {
+      allStyles[buttonType] = { selector: data.selector, styles: {} };
+    }
+    Object.assign(allStyles[buttonType].styles, data.styles);
+  });
+
+  // Merge border radius styles
+  Object.entries(borderRadiusStyles).forEach(([buttonType, data]) => {
+    if (!allStyles[buttonType]) {
+      allStyles[buttonType] = { selector: data.selector, styles: {} };
+    }
+    Object.assign(allStyles[buttonType].styles, data.styles);
+  });
+
+  // Clean up empty styles
+  const cleanedStyles = {};
+  Object.entries(allStyles).forEach(([buttonType, data]) => {
+    const cleanedStylesObj = Object.fromEntries(
+      Object.entries(data.styles).filter(
+        ([_, value]) =>
+          value !== null &&
+          value !== undefined &&
+          value !== "" &&
+          value !== "null"
+      )
+    );
+
+    if (Object.keys(cleanedStylesObj).length > 0) {
+      cleanedStyles[buttonType] = {
+        selector: data.selector,
+        styles: cleanedStylesObj,
+      };
+    }
+  });
+
+  if (Object.keys(cleanedStyles).length === 0) {
+    console.log("ℹ️ No border styles to save");
+    return { success: true, message: "No border styles to save" };
+  }
+
+  // Convert to kebab-case
+  const toKebabCase = (obj) =>
+    Object.fromEntries(
+      Object.entries(obj).map(([k, v]) => [
+        k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+        v,
+      ])
+    );
+
+  const finalStyles = {};
+  Object.entries(cleanedStyles).forEach(([buttonType, data]) => {
+    finalStyles[buttonType] = {
+      selector: data.selector,
+      styles: toKebabCase(data.styles),
+    };
+  });
+
+  const payload = {
+    userId,
+    token,
+    widgetId,
+    css: finalStyles,
+  };
+
+  console.log("📤 Sending button border elements payload:", payload);
+
+  try {
+    const response = await fetch(
+      "https://admin.squareplugin.com/api/v1/save-button-border-modifications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || `HTTP ${response.status}`);
+    }
+
+    console.log("✅ Button border elements saved:", result);
+    showNotification("Button border elements saved successfully!", "success");
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("❌ Error saving button border elements:", error);
+    showNotification(
+      `Failed to save border elements: ${error.message}`,
+      "error"
+    );
+    return { success: false, error: error.message };
+  }
+}
 
 export async function removeButtonIcon(blockId) {
   console.log("🚀 removeButtonIcon called with:", { blockId });
