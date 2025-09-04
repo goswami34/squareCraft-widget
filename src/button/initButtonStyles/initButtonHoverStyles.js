@@ -1072,7 +1072,8 @@ export function initHoverButtonBorderRadiusControl(
     );
     if (!cls) return;
 
-    const id = `sc-hover-radius-${cls.replace(/--/g, "-")}`;
+    const blockId = el.id || "block-id";
+    const id = `sc-hover-radius-${blockId}-${cls.replace(/--/g, "-")}`;
     let style = document.getElementById(id);
     if (!style) {
       style = document.createElement("style");
@@ -1096,17 +1097,22 @@ export function initHoverButtonBorderRadiusControl(
       "black";
     const currentBorderRadius = value; // Current radius value
 
+    const selectorBase = `#${blockId} a.${cls}:hover`;
     const cssContent = `
-    .${cls}:hover {
-      border-radius: ${currentBorderRadius}px !important;
-      overflow: hidden !important;
-      border-top-width: ${currentBorderWidth}px !important;
-      border-right-width: ${currentBorderWidth}px !important;
-      border-bottom-width: ${currentBorderWidth}px !important;
-      border-left-width: ${currentBorderWidth}px !important;
-      border-style: ${currentBorderStyle} !important;
-      border-color: ${currentBorderColor} !important;
-    }
+${selectorBase},
+${selectorBase}::before,
+${selectorBase}::after {
+  border-radius: ${currentBorderRadius}px !important;
+}
+${selectorBase} {
+  overflow: hidden !important;
+  border-top-width: ${currentBorderWidth}px !important;
+  border-right-width: ${currentBorderWidth}px !important;
+  border-bottom-width: ${currentBorderWidth}px !important;
+  border-left-width: ${currentBorderWidth}px !important;
+  border-style: ${currentBorderStyle} !important;
+  border-color: ${currentBorderColor} !important;
+}
 `;
     style.innerHTML = cssContent;
     console.log(
