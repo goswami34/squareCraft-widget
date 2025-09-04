@@ -1097,16 +1097,21 @@ export function initHoverButtonBorderRadiusControl(
     const currentBorderRadius = value; // Current radius value
 
     const cssContent = `
-    .${cls}:hover {
-      border-radius: ${currentBorderRadius}px !important;
-      overflow: hidden !important;
-      border-top-width: ${currentBorderWidth}px !important;
-      border-right-width: ${currentBorderWidth}px !important;
-      border-bottom-width: ${currentBorderWidth}px !important;
-      border-left-width: ${currentBorderWidth}px !important;
-      border-style: ${currentBorderStyle} !important;
-      border-color: ${currentBorderColor} !important;
-    }
+a.${cls}:hover,
+a.${cls}:hover::before,
+a.${cls}:hover::after,
+a.${cls}:hover .sqs-button-element__label {
+  border-radius: ${currentBorderRadius}px !important;
+}
+a.${cls}:hover {
+  overflow: hidden !important;
+  border-top-width: ${currentBorderWidth}px !important;
+  border-right-width: ${currentBorderWidth}px !important;
+  border-bottom-width: ${currentBorderWidth}px !important;
+  border-left-width: ${currentBorderWidth}px !important;
+  border-style: ${currentBorderStyle} !important;
+  border-color: ${currentBorderColor} !important;
+}
 `;
     style.innerHTML = cssContent;
     console.log(
