@@ -3316,9 +3316,11 @@ export function initButtonShadowControls(
     styleTag.innerHTML = `
       .${typeClass} {
         box-shadow: ${value} !important;
+        border-color: transparent !important;
       }
       .${typeClass}:hover {
         box-shadow: ${value} !important;
+        border-color: transparent !important;
       }
     `;
 
