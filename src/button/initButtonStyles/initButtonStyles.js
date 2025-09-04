@@ -2257,6 +2257,9 @@ export function initButtonBorderControl(
         },
       };
       addPendingModification(blockId, stylePayload, "button", "border");
+      if (saveToDB && typeof saveButtonBorderModifications === "function") {
+        saveButtonBorderModifications(blockId, stylePayload);
+      }
       if (typeof showNotification === "function") {
         showNotification("Border updated locally!", "info");
       }
@@ -2425,8 +2428,17 @@ export function initButtonBorderTypeToggle(
 
       addPendingModification(blockId, stylePayload, "button", "border");
 
+      // ✅ CRITICAL FIX: Always save to DB when border type changes
+      if (typeof saveButtonBorderModifications === "function") {
+        console.log("💾 Saving to database with payload:", stylePayload);
+        saveButtonBorderModifications(blockId, stylePayload);
+      }
+
       if (typeof showNotification === "function") {
-        showNotification("Border style updated locally!", "info");
+        showNotification(
+          "Border style updated and saved to database!",
+          "success"
+        );
       }
     } catch (error) {
       console.error("❌ Error updating border type:", error);
