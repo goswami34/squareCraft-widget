@@ -3334,7 +3334,7 @@ export function initButtonShadowControls(
         selector: ".sqs-button-element--primary",
         styles: {
           boxShadow: value,
-          borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
+          // borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
         },
       },
     };
