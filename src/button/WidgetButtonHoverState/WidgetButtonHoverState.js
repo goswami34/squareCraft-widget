@@ -426,39 +426,6 @@ export function WidgetButtonHoverState() {
                         </div>
                      </div>
 
-
-
-
-                     <div class="sc-col-span-7">
-                        <p class="sc-roboto sc-font-thin sc-universal  sc-font-size-12 sc-font-thin sc-text-gray-300">
-                           Border
-                           Style
-                        </p>
-                        <div style="padding: 3px 0px;"
-                           class="sc-bg-3f3f3f sc-flex sc-font-size-11 sc-gap-1 sc-mt-3 sc-rounded-4px   sc-border sc-border-solid sc-border-3f3f3f   sc-justify-between  sc-px-1 ">
-          
-          
-                           <div id="hover-buttonBorderTypeSolid" class="sc-py-4px  sc-w-full sc-rounded-4px ">
-                              <p style="padding: 2px 0px;" class="sc-font-thin sc-roboto  sc-text-center sc-universal  sc-cursor-pointer   ">
-                                 Solid
-                              </p>
-                           </div>
-          
-          
-                           <div id="hover-buttonBorderTypeDashed" class="sc-py-4px  sc-w-full sc-rounded-4px ">
-                              <p class="sc-font-thin sc-roboto  sc-text-center sc-universal  sc-cursor-pointer  ">
-                                 Dashed
-                              </p>
-                           </div>
-                           <div id="hover-buttonBorderTypeDotted" class="sc-py-4px  sc-w-full sc-rounded-4px">
-          
-                              <p 
-                                 class="sc-font-thin sc-roboto  sc-text-center sc-universal  sc-cursor-pointer  sc-rounded-4px">
-                                 Dotted</p>
-                           </div>
-          
-                        </div>
-                     </div>
                   </div>
           
                   <div class="sc-mt-4">
