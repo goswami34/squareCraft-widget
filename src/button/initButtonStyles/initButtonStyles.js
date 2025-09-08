@@ -2058,6 +2058,112 @@ export function initButtonIconColorPalate(
   }
 }
 
+// ✅ Publish Button Function for Button Border Controls
+export function initButtonBorderPublishButton(
+  getSelectedElement,
+  addPendingModification,
+  showNotification,
+  saveButtonBorderModifications
+) {
+  const publishButton = document.getElementById("publish");
+  if (!publishButton) {
+    console.warn("Publish button not found for button border controls");
+    return;
+  }
+
+  // Store original click handler
+  const originalClickHandler = publishButton.onclick;
+
+  publishButton.addEventListener("click", async () => {
+    try {
+      // Show loading state
+      publishButton.disabled = true;
+      publishButton.textContent = "Publishing...";
+
+      // Get selected element
+      const selectedElement = getSelectedElement?.();
+      if (!selectedElement) {
+        showNotification("No element selected", "error");
+        return;
+      }
+
+      const btn = selectedElement.querySelector(
+        "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
+      );
+      if (!btn) {
+        showNotification("No button found in selected element", "error");
+        return;
+      }
+
+      const typeClass = [...btn.classList].find((c) =>
+        c.startsWith("sqs-button-element--")
+      );
+      const blockId = selectedElement.id || "block-id";
+
+      // Get all pending border modifications
+      const key = `${blockId}--${typeClass}`;
+      const borderState = window.__squareCraftBorderStateMap?.get(key);
+      const buttonStyleMap = window.__scButtonStyleMap?.get(blockId);
+
+      if (borderState || buttonStyleMap) {
+        // Determine button type
+        const buttonType = typeClass.includes("--primary")
+          ? "buttonPrimary"
+          : typeClass.includes("--secondary")
+          ? "buttonSecondary"
+          : typeClass.includes("--tertiary")
+          ? "buttonTertiary"
+          : "buttonPrimary";
+
+        // Create comprehensive style payload
+        const stylePayload = {
+          [buttonType]: {
+            selector: `.${typeClass}`,
+            styles: {
+              boxSizing: "border-box",
+              borderStyle: borderState?.borderStyle || "solid",
+              borderColor:
+                borderState?.color ||
+                window.__squareCraftBorderColor ||
+                "black",
+              borderTopWidth: `${borderState?.values?.Top || 0}px`,
+              borderRightWidth: `${borderState?.values?.Right || 0}px`,
+              borderBottomWidth: `${borderState?.values?.Bottom || 0}px`,
+              borderLeftWidth: `${borderState?.values?.Left || 0}px`,
+              borderRadius: btn
+                ? window.getComputedStyle(btn).borderRadius
+                : "0px",
+              overflow: btn ? window.getComputedStyle(btn).overflow : "hidden",
+              ...(buttonStyleMap?.[buttonType]?.styles || {}),
+            },
+          },
+        };
+
+        // Save to database
+        if (typeof saveButtonBorderModifications === "function") {
+          await saveButtonBorderModifications(blockId, stylePayload);
+          showNotification(
+            "Button border styles published successfully!",
+            "success"
+          );
+        }
+      }
+
+      // Call original handler if it exists
+      if (originalClickHandler) {
+        await originalClickHandler();
+      }
+    } catch (error) {
+      console.error("❌ Error publishing button border styles:", error);
+      showNotification(`Failed to publish: ${error.message}`, "error");
+    } finally {
+      // Reset button state
+      publishButton.disabled = false;
+      publishButton.textContent = "Publish";
+    }
+  });
+}
+
 export function initButtonBorderControl(
   getSelectedElement,
   addPendingModification,
@@ -2239,7 +2345,7 @@ export function initButtonBorderControl(
       }
     `;
 
-    // Only update local state, do not save to DB
+    // Only update local state, do not save to DB - removed auto-save
     if (blockId && blockId !== "block-id") {
       // ✅ CRITICAL FIX: Create payload based on ACTUAL button type being modified
       const buttonType = typeClass.includes("--primary")
@@ -2257,11 +2363,12 @@ export function initButtonBorderControl(
         },
       };
       addPendingModification(blockId, stylePayload, "button", "border");
-      if (saveToDB && typeof saveButtonBorderModifications === "function") {
-        saveButtonBorderModifications(blockId, stylePayload);
-      }
+      // ✅ REMOVED: Auto-save to database - now only saves on publish button click
       if (typeof showNotification === "function") {
-        showNotification("Border updated locally!", "info");
+        showNotification(
+          "Border updated locally - click Publish to save!",
+          "info"
+        );
       }
     }
   }
@@ -2428,16 +2535,11 @@ export function initButtonBorderTypeToggle(
 
       addPendingModification(blockId, stylePayload, "button", "border");
 
-      // ✅ CRITICAL FIX: Always save to DB when border type changes
-      if (typeof saveButtonBorderModifications === "function") {
-        console.log("💾 Saving to database with payload:", stylePayload);
-        saveButtonBorderModifications(blockId, stylePayload);
-      }
-
+      // ✅ REMOVED: Auto-save to database - now only saves on publish button click
       if (typeof showNotification === "function") {
         showNotification(
-          "Border style updated and saved to database!",
-          "success"
+          "Border style updated locally - click Publish to save!",
+          "info"
         );
       }
     } catch (error) {
@@ -2510,8 +2612,8 @@ export function initButtonBorderTypeToggle(
         type,
       });
 
-      // ✅ CRITICAL FIX: Pass the actual border type, not rely on global state
-      updateBorderType(blockId, typeClass, type, true);
+      // ✅ CRITICAL FIX: Pass the actual border type, not rely on global state - removed auto-save
+      updateBorderType(blockId, typeClass, type, false);
     };
   });
 }
@@ -2699,7 +2801,10 @@ export function initButtonBorderRadiusControl(
       mergeAndSaveButtonRadiusStyles(blockId, typeClass, styleData);
 
       if (typeof showNotification === "function") {
-        showNotification("Border radius updated locally!", "info");
+        showNotification(
+          "Border radius updated locally - click Publish to save!",
+          "info"
+        );
       }
     }
   }
