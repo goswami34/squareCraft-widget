@@ -2362,7 +2362,7 @@ export function initButtonBorderControl(
           styles: borderStyles,
         },
       };
-      // addPendingModification(blockId, stylePayload, "button", "border");
+      initButtonBorderPublishButton(blockId, stylePayload, "button", "border");
       // ✅ REMOVED: Auto-save to database - now only saves on publish button click
       if (typeof showNotification === "function") {
         showNotification(
@@ -2533,7 +2533,7 @@ export function initButtonBorderTypeToggle(
         storedBorderStyle: updatedState.borderStyle,
       });
 
-      // addPendingModification(blockId, stylePayload, "button", "border");
+      initButtonBorderPublishButton(blockId, stylePayload, "button", "border");
 
       // ✅ REMOVED: Auto-save to database - now only saves on publish button click
       if (typeof showNotification === "function") {
