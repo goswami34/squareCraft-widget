@@ -3175,9 +3175,16 @@ export function initButtonShadowControls(
       return;
     }
 
+    // Build payload for the actual button type (primary/secondary/tertiary)
+    const buttonTypeKey = typeClass.includes("--secondary")
+      ? "buttonSecondary"
+      : typeClass.includes("--tertiary")
+      ? "buttonTertiary"
+      : "buttonPrimary";
+
     const stylePayload = {
-      buttonPrimary: {
-        selector: ".sqs-button-element--primary",
+      [buttonTypeKey]: {
+        selector: `.${typeClass}`,
         styles: {
           boxShadow: value,
           // borderColor: window.__squareCraftBorderColor || "black", // Include selected border color
@@ -3474,9 +3481,14 @@ export function initButtonShadowControls(
             if (typeClass && window.shadowStatesByType.has(typeClass)) {
               const shadowState = window.shadowStatesByType.get(typeClass);
               const value = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px rgba(0,0,0,0.3)`;
+              const buttonTypeKey = typeClass.includes("--secondary")
+                ? "buttonSecondary"
+                : typeClass.includes("--tertiary")
+                ? "buttonTertiary"
+                : "buttonPrimary";
               const stylePayload = {
-                buttonPrimary: {
-                  selector: ".sqs-button-element--primary",
+                [buttonTypeKey]: {
+                  selector: `.${typeClass}`,
                   styles: { boxShadow: value },
                 },
               };
