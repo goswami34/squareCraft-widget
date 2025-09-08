@@ -104,11 +104,8 @@ export function ButtonBorderColorPalateToggle(
     });
     console.log("🖌️ APPLYING BORDER COLOR:", rgbaColor, "on", buttonType);
 
-    // Save modifications if functions are provided
-    if (
-      typeof saveButtonBorderModifications === "function" &&
-      typeof addPendingModification === "function"
-    ) {
+    // Save modifications locally only; publishing will save to DB
+    if (typeof addPendingModification === "function") {
       const blockId = currentElement.id;
       if (blockId) {
         // ✅ FIXED: Create payload based on ACTUAL button type being modified
@@ -128,11 +125,11 @@ export function ButtonBorderColorPalateToggle(
         };
         addPendingModification(blockId, stylePayload, "button");
 
-        // Actually save to database
-        saveButtonBorderModifications(blockId, stylePayload);
-
         if (showNotification) {
-          showNotification(`Border color applied to ${buttonType}`, "success");
+          showNotification(
+            `Border color applied locally - click Publish to save!`,
+            "info"
+          );
         }
       }
     }
@@ -545,4 +542,86 @@ export function ButtonBorderColorPalateToggle(
     colorCode.textContent = firstColor;
     applyButtonBorderColor(firstColor, currentTransparency / 100);
   }
+}
+
+// Bind publish button to save border color modifications to DB
+export function initButtonBorderColorPublishButton(
+  selectedElement,
+  showNotification,
+  saveButtonBorderModifications
+) {
+  const publishButton = document.getElementById("publish");
+  if (!publishButton) {
+    console.warn("Publish button not found for border color palette");
+    return;
+  }
+
+  publishButton.addEventListener("click", async () => {
+    try {
+      publishButton.disabled = true;
+      publishButton.textContent = "Publishing...";
+
+      const currentElement = selectedElement?.();
+      if (!currentElement) {
+        if (showNotification) showNotification("No element selected", "error");
+        return;
+      }
+
+      const buttonTypes = [
+        "sqs-button-element--primary",
+        "sqs-button-element--secondary",
+        "sqs-button-element--tertiary",
+      ];
+
+      let buttonType = null;
+      for (let type of buttonTypes) {
+        if (currentElement.querySelector(`.${type}`)) {
+          buttonType = type;
+          break;
+        }
+      }
+
+      if (!buttonType) {
+        if (showNotification) showNotification("No button found", "error");
+        return;
+      }
+
+      const blockId = currentElement.id;
+      if (!blockId) {
+        if (showNotification) showNotification("Missing block id", "error");
+        return;
+      }
+
+      // Use the last selected color from global state as source of truth
+      const rgbaColor = window.__squareCraftBorderColor || "black";
+
+      const buttonTypeKey = buttonType.includes("--primary")
+        ? "buttonPrimary"
+        : buttonType.includes("--secondary")
+        ? "buttonSecondary"
+        : buttonType.includes("--tertiary")
+        ? "buttonTertiary"
+        : "buttonPrimary";
+
+      const stylePayload = {
+        [buttonTypeKey]: {
+          selector: `.${buttonType}`,
+          styles: { borderColor: rgbaColor },
+        },
+      };
+
+      if (typeof saveButtonBorderModifications === "function") {
+        await saveButtonBorderModifications(blockId, stylePayload);
+        if (showNotification)
+          showNotification("Border color published successfully!", "success");
+      }
+    } catch (err) {
+      console.error("❌ Error publishing border color:", err);
+      if (showNotification)
+        showNotification(`Failed to publish: ${err.message}`, "error");
+    } finally {
+      publishButton.disabled = false;
+      publishButton.textContent = "Publish";
+    }
+  });
 }
