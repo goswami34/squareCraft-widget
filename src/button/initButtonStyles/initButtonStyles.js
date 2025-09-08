@@ -3678,10 +3678,16 @@ function ensurePublishButtonInShadow(
       const color = shadowState.Color || "rgba(0,0,0,0.3)";
       const shadowValue = `${shadowState.Xaxis}px ${shadowState.Yaxis}px ${shadowState.Blur}px ${shadowState.Spread}px ${color}`;
 
-      // Prepare style payload for database
+      // Prepare style payload for database using actual button type
+      const buttonTypeKey = typeClass.includes("--secondary")
+        ? "buttonSecondary"
+        : typeClass.includes("--tertiary")
+        ? "buttonTertiary"
+        : "buttonPrimary";
+
       const stylePayload = {
-        buttonPrimary: {
-          selector: ".sqs-button-element--primary",
+        [buttonTypeKey]: {
+          selector: `.${typeClass}`,
           styles: {
             boxShadow: shadowValue,
             borderColor: window.__squareCraftBorderColor || "black",
