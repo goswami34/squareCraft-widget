@@ -4769,7 +4769,7 @@ window.pendingModifications = pendingModifications;
         if (styles.color) icon.style.color = styles.color;
         if (styles.fill) icon.style.fill = styles.fill;
         if (styles.stroke) icon.style.stroke = styles.stroke;
-        if (styles.src?.startsWith("data:image")) {
+        if (styles.src) {
           icon.src = styles.src;
         }
         console.log("✅ Updated existing icon");
@@ -4780,8 +4780,8 @@ window.pendingModifications = pendingModifications;
         .querySelectorAll(".sqscraft-button-icon, .sqscraft-image-icon")
         .forEach((el) => el.remove());
 
-      // Add new uploaded icon
-      if (styles.src?.startsWith("data:image")) {
+      // Add new uploaded icon (supports data URIs and regular URLs)
+      if (styles.src) {
         const icon = document.createElement("img");
         icon.src = styles.src;
         icon.alt = "Button Icon";
