@@ -141,14 +141,9 @@ async function updateIconStyles(blockId, typeClass, newStyles) {
 
     console.log("🔀 Merged styles:", mergedStyles);
 
-    // CRITICAL: Don't save if we don't have a src property
-    // This prevents the icon from being removed
-    if (!mergedStyles.src) {
-      console.warn(
-        "⚠️ No src property found, skipping save to prevent icon removal"
-      );
-      return { success: false, error: "No src property found" };
-    }
+    // Allow saves even if there is no src (e.g., when icons are inline SVGs)
+    // We still preserve any existing src when present, but color-only updates
+    // should be persisted without requiring an image source.
 
     // Debug: Log what we're sending to the database
     console.log("🟢 Saving to DB:", {
@@ -747,11 +742,14 @@ async function replaceImgWithInlineSVG(imgElement) {
     if (!svgElement) return null;
 
     svgElement.classList.add(...imgElement.classList);
-    svgElement.setAttribute("width", imgElement.getAttribute("width") || "20");
-    svgElement.setAttribute(
-      "height",
-      imgElement.getAttribute("height") || "20"
-    );
+
+    // Preserve displayed size from the original image (computed CSS wins)
+    const computed = getComputedStyle(imgElement);
+    const imgWidth = imgElement.getAttribute("width") || computed.width || "";
+    const imgHeight =
+      imgElement.getAttribute("height") || computed.height || "";
+    if (imgWidth) svgElement.style.width = imgWidth;
+    if (imgHeight) svgElement.style.height = imgHeight;
 
     // Remove all fill, stroke, color, and style attributes to make it colorable
     svgElement.querySelectorAll("*").forEach((el) => {
