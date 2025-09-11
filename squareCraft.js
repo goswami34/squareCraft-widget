@@ -3119,6 +3119,17 @@ window.pendingModifications = pendingModifications;
     }
   });
 
+  // Reset Button (WidgetButtonSection) – delegated click handler
+  document.addEventListener("click", (event) => {
+    const resetTrigger = event.target.closest(
+      "#buttonResetAll, #buttonResetAll-icon"
+    );
+    if (resetTrigger) {
+      event.preventDefault();
+      resetButtonModifications();
+    }
+  });
+
   async function fetchModifications(retries = 3) {
     const module = await import(
       "https://goswami34.github.io/squareCraft-widget/html.js"
@@ -3278,6 +3289,48 @@ window.pendingModifications = pendingModifications;
     } catch (error) {
       console.error("❌ Error fetching typography modifications:", error);
       return null;
+    }
+  }
+
+  // Call backend to reset button modifications
+  async function resetButtonModifications() {
+    try {
+      const storedUserId = localStorage.getItem("sc_u_id");
+      const storedWidgetId = localStorage.getItem("sc_w_id");
+
+      // Fallback to provided IDs if not present in storage
+      const userId = storedUserId || "6849538de25f4bba56084418";
+      const widgetId = storedWidgetId || "68495390e25f4bba5608441c";
+
+      const url = `http://0.0.0.0:8001/api/v1/reset-button-modifications?userId=${encodeURIComponent(
+        userId
+      )}&widgetId=${encodeURIComponent(widgetId)}`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP ${response.status}: ${text}`);
+      }
+
+      // Optionally parse response if needed
+      // const data = await response.json();
+
+      if (typeof showNotification === "function") {
+        showNotification("Button modifications reset successfully.", "success");
+      } else {
+        console.log("✅ Button modifications reset successfully");
+      }
+    } catch (error) {
+      console.error("❌ Failed to reset button modifications:", error);
+      if (typeof showNotification === "function") {
+        showNotification("Failed to reset button modifications.", "error");
+      }
     }
   }
 
