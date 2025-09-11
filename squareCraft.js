@@ -3295,22 +3295,29 @@ window.pendingModifications = pendingModifications;
   // Call backend to reset button modifications
   async function resetButtonModifications() {
     try {
-      const storedUserId = localStorage.getItem("sc_u_id");
-      const storedWidgetId = localStorage.getItem("sc_w_id");
+      const userId = localStorage.getItem("sc_u_id");
+      const widgetId = localStorage.getItem("sc_w_id");
+      const token = localStorage.getItem("sc_auth_token");
 
-      // Fallback to provided IDs if not present in storage
-      const userId = storedUserId || "6849538de25f4bba56084418";
-      const widgetId = storedWidgetId || "68495390e25f4bba5608441c";
+      if (!userId || !widgetId) {
+        console.warn(
+          "⚠️ Missing userId or widgetId in localStorage; aborting reset"
+        );
+        if (typeof showNotification === "function") {
+          showNotification("Missing user/widget ID. Cannot reset.", "error");
+        }
+        return;
+      }
 
-      const url = `https://admin.squareplugin.com/api/v1/reset-button-modifications?userId=${encodeURIComponent(
-        userId
-      )}&widgetId=${encodeURIComponent(widgetId)}`;
+      const url = `https://admin.squareplugin.com/api/v1/reset-button-modifications`;
 
       const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
+        body: JSON.stringify({ userId, widgetId, prefer: "query" }),
       });
 
       if (!response.ok) {
@@ -3318,8 +3325,25 @@ window.pendingModifications = pendingModifications;
         throw new Error(`HTTP ${response.status}: ${text}`);
       }
 
-      // Optionally parse response if needed
-      // const data = await response.json();
+      // Clear any injected button-related styles on the client
+      try {
+        const idsToClearPrefixes = [
+          "sc-button-text-color-",
+          "sc-button-icon-color-",
+          "sc-button-border-",
+          "sc-button-shadow-",
+          "sc-button-radius-",
+        ];
+        const styleTags = Array.from(
+          document.querySelectorAll('style[id^="sc-button-"]')
+        );
+        styleTags.forEach((tag) => {
+          const id = tag.id || "";
+          if (idsToClearPrefixes.some((p) => id.startsWith(p))) {
+            tag.remove();
+          }
+        });
+      } catch (_) {}
 
       if (typeof showNotification === "function") {
         showNotification("Button modifications reset successfully.", "success");
