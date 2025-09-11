@@ -2128,10 +2128,14 @@ export function initButtonBorderPublishButton(
               borderRightWidth: `${borderState?.values?.Right || 0}px`,
               borderBottomWidth: `${borderState?.values?.Bottom || 0}px`,
               borderLeftWidth: `${borderState?.values?.Left || 0}px`,
-              borderRadius: btn
-                ? window.getComputedStyle(btn).borderRadius
-                : "0px",
-              overflow: btn ? window.getComputedStyle(btn).overflow : "hidden",
+              // ✅ FIXED: Use stored border-radius from buttonStyleMap instead of computed style
+              borderRadius:
+                buttonStyleMap?.[buttonType]?.styles?.borderRadius ||
+                buttonStyleMap?.[buttonType]?.styles?.["border-radius"] ||
+                "0px",
+              overflow:
+                buttonStyleMap?.[buttonType]?.styles?.overflow || "hidden",
+              // ✅ FIXED: Merge all button styles (including border-radius) properly
               ...(buttonStyleMap?.[buttonType]?.styles || {}),
             },
           },
@@ -2319,8 +2323,18 @@ export function initButtonBorderControl(
       borderRightWidth: `${state.values.Right || 0}px`,
       borderBottomWidth: `${state.values.Bottom || 0}px`,
       borderLeftWidth: `${state.values.Left || 0}px`,
-      borderRadius: btn ? window.getComputedStyle(btn).borderRadius : "0px",
-      overflow: btn ? window.getComputedStyle(btn).overflow : "hidden",
+      // ✅ FIXED: Use stored border-radius from buttonStyleMap instead of computed style
+      borderRadius:
+        window.__scButtonStyleMap?.get(blockId)?.[buttonType]?.styles
+          ?.borderRadius ||
+        window.__scButtonStyleMap?.get(blockId)?.[buttonType]?.styles?.[
+          "border-radius"
+        ] ||
+        (btn ? window.getComputedStyle(btn).borderRadius : "0px"),
+      overflow:
+        window.__scButtonStyleMap?.get(blockId)?.[buttonType]?.styles
+          ?.overflow ||
+        (btn ? window.getComputedStyle(btn).overflow : "hidden"),
     };
 
     styleTag.innerHTML = `
@@ -2334,12 +2348,8 @@ export function initButtonBorderControl(
         border-right-width: ${state.values.Right || 0}px !important;
         border-bottom-width: ${state.values.Bottom || 0}px !important;
         border-left-width: ${state.values.Left || 0}px !important;
-        border-radius: ${
-          btn ? window.getComputedStyle(btn).borderRadius : "0px"
-        } !important;
-        overflow: ${
-          btn ? window.getComputedStyle(btn).overflow : "hidden"
-        } !important;
+        border-radius: ${borderStyles.borderRadius} !important;
+        overflow: ${borderStyles.overflow} !important;
       }
     `;
 
