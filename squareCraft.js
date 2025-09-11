@@ -3327,22 +3327,14 @@ window.pendingModifications = pendingModifications;
 
       // Clear any injected button-related styles on the client
       try {
-        const idsToClearPrefixes = [
-          "sc-button-text-color-",
-          "sc-button-icon-color-",
-          "sc-button-border-",
-          "sc-button-shadow-",
-          "sc-button-radius-",
+        const selectors = [
+          'style[id^="sc-button-"]',
+          'style[id^="sc-btn-"]',
+          // Backward/explicit ids used in various helpers
+          "#sc-btn-border-style",
         ];
-        const styleTags = Array.from(
-          document.querySelectorAll('style[id^="sc-button-"]')
-        );
-        styleTags.forEach((tag) => {
-          const id = tag.id || "";
-          if (idsToClearPrefixes.some((p) => id.startsWith(p))) {
-            tag.remove();
-          }
-        });
+        const styleTags = document.querySelectorAll(selectors.join(","));
+        styleTags.forEach((tag) => tag.remove());
       } catch (_) {}
 
       if (typeof showNotification === "function") {
