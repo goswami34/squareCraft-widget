@@ -3302,7 +3302,7 @@ window.pendingModifications = pendingModifications;
       const userId = storedUserId || "6849538de25f4bba56084418";
       const widgetId = storedWidgetId || "68495390e25f4bba5608441c";
 
-      const url = `http://0.0.0.0:8001/api/v1/reset-button-modifications?userId=${encodeURIComponent(
+      const url = `https://admin.squareplugin.com/api/v1/reset-button-modifications?userId=${encodeURIComponent(
         userId
       )}&widgetId=${encodeURIComponent(widgetId)}`;
 
