@@ -806,7 +806,7 @@ export function injectNavbarIcon() {
 
   function insertToolbarIcon() {
     const toolbarContainers = parent.document.querySelectorAll(
-      "div.js-section-toolbar"
+      ".tidILMJ7AVANuKwS, div[data-block-toolbar='true'], div[role='menu']"
     );
 
     toolbarContainers.forEach((toolbarContainer) => {
