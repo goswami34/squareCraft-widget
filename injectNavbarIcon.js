@@ -382,15 +382,22 @@ export function injectNavbarIcon() {
       link.href =
         "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
       head.appendChild(link);
+      console.log("✅ CSS stylesheet loaded");
     }
   }
 
   function insertToolbarIcon() {
     const toolbarContainers = parent.document.querySelectorAll(
-      "div.js-section-toolbar"
+      ".tidILMJ7AVANuKwS, div[data-block-toolbar='true'], div[role='menu']"
     );
 
-    toolbarContainers.forEach((toolbarContainer) => {
+    console.log("🔍 Found toolbar containers:", toolbarContainers.length);
+
+    toolbarContainers.forEach((toolbarContainer, index) => {
+      console.log(
+        `🔍 Processing toolbar container ${index}:`,
+        toolbarContainer
+      );
       if (!toolbarContainer.querySelector(".sc-toolbar")) {
         const iconSrc =
           localStorage.getItem("sc_icon") ||
@@ -407,6 +414,10 @@ export function injectNavbarIcon() {
           padding: "6px",
           gap: "6px",
           cursor: "pointer",
+          position: "relative",
+          zIndex: "99999",
+          opacity: "1",
+          visibility: "visible",
         });
 
         const icon = document.createElement("img");
@@ -428,6 +439,11 @@ export function injectNavbarIcon() {
         scDiv.appendChild(icon);
         scDiv.appendChild(text);
         toolbarContainer.appendChild(scDiv);
+
+        console.log(
+          "✅ Successfully created toolbar icon in container:",
+          toolbarContainer
+        );
 
         let sectionPanel = null;
 
@@ -519,8 +535,14 @@ export function injectNavbarIcon() {
     });
   }
 
-  insertToolbarIcon();
-  insertAdminIcon();
+  // Load CSS first
+  injectGlobalStylesheet();
+
+  // Wait a bit for CSS to load, then inject icons
+  setTimeout(() => {
+    insertToolbarIcon();
+    insertAdminIcon();
+  }, 500);
 
   new MutationObserver(() => insertToolbarIcon()).observe(
     parent.document.body,
