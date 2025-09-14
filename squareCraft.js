@@ -6767,7 +6767,8 @@ window.pendingModifications = pendingModifications;
 
   try {
     const { injectNavbarIcon } = await import(
-      "https://fatin-webefo.github.io/squareCraft-plugin/injectNavbarIcon.js"
+      // "https://fatin-webefo.github.io/squareCraft-plugin/injectNavbarIcon.js"
+      "https://goswami34.github.io/squareCraft-widget/injectNavbarIcon.js"
     );
     injectNavbarIcon();
   } catch (error) {
