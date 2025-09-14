@@ -1,145 +1,30 @@
-// export function injectNavbarIcon() {
-//   function insertAdminIcon() {
-//     if (!parent.document.querySelector(".sc-admin-icon")) {
-//       const navContainer = parent.document.querySelector("ul.css-1tn5iw9");
-//       if (navContainer) {
-//         const iconSrc =
-//           localStorage.getItem("sc_icon") ||
-//           "https://i.ibb.co.com/kg9fn02s/Frame-33.png";
-//         const icon = document.createElement("img");
-//         icon.src = iconSrc;
-//         icon.alt = "sc";
-//         icon.style.width = "30px";
-//         icon.style.height = "30px";
-//         icon.style.borderRadius = "20%";
-//         icon.style.marginRight = "6px";
-//         icon.style.cursor = "pointer";
-//         icon.style.display = "inline-block";
-//         icon.classList.add("sc-admin-icon", "sc-z-99999");
-
-//         navContainer.parentNode.insertBefore(icon, navContainer);
-
-//         const message = document.createElement("div");
-//         message.classList.add("sc-floating-message");
-//         message.innerHTML = `
-//                     <div class="sc-message-content">
-//                         ✅ SquareCraft installed!
-//                     </div>
-//                     <div class="sc-message-arrow"></div>
-//                 `;
-
-//         message.style.position = "absolute";
-//         message.style.backgroundColor = "#2c2c2c";
-//         message.style.color = "white";
-//         message.style.padding = "10px 14px";
-//         message.style.borderRadius = "8px";
-//         message.style.fontSize = "12px";
-//         message.style.fontWeight = "400";
-//         message.style.zIndex = "99999";
-//         message.style.opacity = "1";
-//         message.style.transition =
-//           "opacity 0.5s ease-in-out, transform 0.3s ease-in-out";
-//         message.style.animation = "scFadeIn 0.5s ease-in-out";
-//         message.style.whiteSpace = "nowrap";
-//         message.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.3)";
-//         message.style.top = "60px";
-//         message.style.right = "10%";
-//         message.style.transform = "translateX(-17%)";
-
-//         navContainer.parentNode.insertBefore(message, navContainer);
-
-//         const messageArrow = message.querySelector(".sc-message-arrow");
-//         messageArrow.style.position = "absolute";
-//         messageArrow.style.top = "-8px";
-//         messageArrow.style.left = "50%";
-//         messageArrow.style.transform = "translateX(-50%)";
-//         messageArrow.style.width = "0";
-//         messageArrow.style.height = "0";
-//         messageArrow.style.borderLeft = "8px solid transparent";
-//         messageArrow.style.borderRight = "8px solid transparent";
-//         messageArrow.style.borderBottom = "8px solid #2c2c2c";
-
-//         setTimeout(() => {
-//           message.style.opacity = "0";
-//           setTimeout(() => message.remove(), 500);
-//         }, 5000);
-//       }
-//     }
-//   }
-
-//   function insertToolbarIcon() {
-//     const toolbarContainers = parent.document.querySelectorAll(
-//       ".tidILMJ7AVANuKwS, div[data-block-toolbar='true'], div[role='menu']"
-//     );
-
-//     console.log("🔍 Found toolbar containers:", toolbarContainers.length);
-
-//     toolbarContainers.forEach((toolbarContainer) => {
-//       if (!toolbarContainer.querySelector(".sc-toolbar")) {
-//         const iconSrc =
-//           localStorage.getItem("sc_icon") ||
-//           "https://i.ibb.co.com/kg9fn02s/Frame-33.png";
-
-//         const scDiv = document.createElement("div");
-//         scDiv.classList.add("sc-toolbar");
-//         scDiv.style.display = "flex";
-//         scDiv.style.alignItems = "center";
-//         scDiv.style.border = "1px solid #E5E4E2";
-//         scDiv.style.background = "rgba(255, 127, 23, 0.06)";
-//         scDiv.style.borderRadius = "6px";
-//         scDiv.style.padding = "6px";
-//         scDiv.style.gap = "6px";
-//         scDiv.style.position = "relative";
-//         scDiv.style.zIndex = "99999";
-//         scDiv.style.opacity = "1";
-//         scDiv.style.visibility = "visible";
-
-//         scDiv.addEventListener("mouseenter", () => {
-//           scDiv.style.backgroundColor = "rgba(177, 176, 176, 0.2)";
-//         });
-
-//         scDiv.addEventListener("mouseleave", () => {
-//           scDiv.style.backgroundColor = "transparent";
-//         });
-
-//         const icon = document.createElement("img");
-//         icon.src = iconSrc;
-//         icon.alt = "sc";
-//         icon.style.width = "30px";
-//         icon.style.height = "30px";
-//         icon.style.borderRadius = "20%";
-//         icon.style.cursor = "pointer";
-
-//         const text = document.createElement("span");
-//         text.innerText = "SquareCraft";
-//         text.style.fontSize = "14px";
-//         text.style.fontWeight = "bold";
-//         text.style.cursor = "pointer";
-
-//         scDiv.appendChild(icon);
-//         scDiv.appendChild(text);
-
-//         toolbarContainer.appendChild(scDiv);
-//       }
-//     });
-//   }
-
-//   insertToolbarIcon();
-//   insertAdminIcon();
-
-//   const observer = new MutationObserver(() => {
-//     insertToolbarIcon();
-//   });
-
-//   observer.observe(parent.document.body, { childList: true, subtree: true });
-// }
-
 // import { NavbarIconHtml } from "https://fatin-webefo.github.io/squareCraft-plugin/NavbarIconHtml.js";
 
 // export function injectNavbarIcon() {
+//   // Prevent multiple executions
+//   if (window.scIconInjected) {
+//     console.log("⚠️ SquareCraft icons already injected, skipping...");
+//     return;
+//   }
+//   window.scIconInjected = true;
+
 //   function insertAdminIcon() {
 //     if (!parent.document.querySelector(".sc-admin-icon-wrapper")) {
-//       const navContainer = parent.document.querySelector("ul.css-1tn5iw9");
+//       // const navContainer = parent.document.querySelector("ul.css-1tn5iw9");
+//       const navContainer =
+//         parent.document
+//           .querySelector('button[data-test="frameToolbarSiteStyles"]')
+//           ?.closest("ul") ||
+//         parent.document
+//           .querySelector('button[aria-label="Preview"]')
+//           ?.closest("ul") ||
+//         parent.document.querySelector('[role="tablist"]')?.closest("ul") ||
+//         parent.document
+//           .querySelector(
+//             '[data-guidance-engine*="device-view-button-container"]'
+//           )
+//           ?.closest("ul");
+
 //       if (!navContainer) return;
 
 //       const iconSrc =
@@ -382,156 +267,162 @@
 //       link.href =
 //         "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
 //       head.appendChild(link);
-//       console.log("✅ CSS stylesheet loaded");
 //     }
 //   }
 
 //   function insertToolbarIcon() {
+//     // const toolbarContainers = parent.document.querySelectorAll(
+//     //   ".tidILMJ7AVANuKwS, div[data-block-toolbar='true'], div[role='menu']"
+//     // );
+
 //     const toolbarContainers = parent.document.querySelectorAll(
-//       ".tidILMJ7AVANuKwS, div[data-block-toolbar='true'], div[role='menu']"
+//       "div.js-section-toolbar"
 //     );
 
 //     console.log("🔍 Found toolbar containers:", toolbarContainers.length);
 
 //     toolbarContainers.forEach((toolbarContainer, index) => {
+//       // Check if this container already has a toolbar icon
+//       if (toolbarContainer.querySelector(".sc-toolbar")) {
+//         console.log(`⚠️ Container ${index} already has toolbar, skipping...`);
+//         return;
+//       }
+
 //       console.log(
 //         `🔍 Processing toolbar container ${index}:`,
 //         toolbarContainer
 //       );
-//       if (!toolbarContainer.querySelector(".sc-toolbar")) {
-//         const iconSrc =
-//           localStorage.getItem("sc_icon") ||
-//           "https://fatin-webefo.github.io/squareCraft-plugin/public/squarecraft-only-logo.svg";
 
-//         const scDiv = document.createElement("div");
-//         scDiv.classList.add("sc-toolbar");
-//         Object.assign(scDiv.style, {
-//           display: "flex",
-//           alignItems: "center",
-//           border: "1px solid #E5E4E2",
-//           background: "rgba(255, 127, 23, 0.06)",
-//           borderRadius: "6px",
-//           padding: "6px",
-//           gap: "6px",
-//           cursor: "pointer",
-//           position: "relative",
+//       const iconSrc =
+//         localStorage.getItem("sc_icon") ||
+//         "https://fatin-webefo.github.io/squareCraft-plugin/public/squarecraft-only-logo.svg";
+
+//       const scDiv = document.createElement("div");
+//       scDiv.classList.add("sc-toolbar");
+//       scDiv.setAttribute("data-sc-toolbar", "true"); // Add unique identifier
+//       Object.assign(scDiv.style, {
+//         display: "flex",
+//         alignItems: "center",
+//         border: "1px solid #E5E4E2",
+//         background: "rgba(255, 127, 23, 0.06)",
+//         borderRadius: "6px",
+//         padding: "6px",
+//         gap: "6px",
+//         cursor: "pointer",
+//         position: "relative",
+//         zIndex: "99999",
+//         opacity: "1",
+//         visibility: "visible",
+//       });
+
+//       const icon = document.createElement("img");
+//       icon.src = iconSrc;
+//       icon.alt = "sc";
+//       Object.assign(icon.style, {
+//         width: "30px",
+//         height: "30px",
+//         borderRadius: "20%",
+//       });
+
+//       const text = document.createElement("span");
+//       text.innerText = "SquareCraft";
+//       Object.assign(text.style, {
+//         fontSize: "14px",
+//         fontWeight: "bold",
+//       });
+
+//       scDiv.appendChild(icon);
+//       scDiv.appendChild(text);
+//       toolbarContainer.appendChild(scDiv);
+
+//       console.log(`✅ Successfully created toolbar icon in container ${index}`);
+
+//       let sectionPanel = null;
+
+//       scDiv.addEventListener("click", async (e) => {
+//         e.stopPropagation();
+//         injectGlobalStylesheet();
+
+//         const mainWidget =
+//           parent.document.querySelector("#sc-widget-container") ||
+//           document.querySelector("#sc-widget-container");
+
+//         const adminPanel =
+//           parent.document.querySelector("#sc-admin-panel") ||
+//           document.querySelector("#sc-admin-panel");
+
+//         if (mainWidget) mainWidget.style.display = "none";
+//         if (adminPanel) adminPanel.remove();
+
+//         // Close panel if already open
+//         if (sectionPanel) {
+//           sectionPanel.remove();
+//           sectionPanel = null;
+//           document.removeEventListener("click", outsideClickHandler);
+//           return;
+//         }
+
+//         // Create panel
+//         sectionPanel = parent.document.createElement("div");
+//         sectionPanel.id = "sc-section-widget";
+//         sectionPanel.className =
+//           "sc-p-2 z-index-high sc-text-color-white sc-border sc-border-solid sc-border-3d3d3d sc-bg-color-2c2c2c sc-rounded-15px sc-w-300px";
+//         Object.assign(sectionPanel.style, {
+//           position: "fixed",
+//           top: "100px",
+//           left: "100px",
 //           zIndex: "99999",
-//           opacity: "1",
-//           visibility: "visible",
 //         });
 
-//         const icon = document.createElement("img");
-//         icon.src = iconSrc;
-//         icon.alt = "sc";
-//         Object.assign(icon.style, {
-//           width: "30px",
-//           height: "30px",
-//           borderRadius: "20%",
-//         });
-
-//         const text = document.createElement("span");
-//         text.innerText = "SquareCraft";
-//         Object.assign(text.style, {
-//           fontSize: "14px",
-//           fontWeight: "bold",
-//         });
-
-//         scDiv.appendChild(icon);
-//         scDiv.appendChild(text);
-//         toolbarContainer.appendChild(scDiv);
-
-//         console.log(
-//           "✅ Successfully created toolbar icon in container:",
-//           toolbarContainer
+//         const mod = await import(
+//           "https://fatin-webefo.github.io/squareCraft-plugin/ToolbarIconHtml.js"
 //         );
+//         sectionPanel.innerHTML = mod.ToolbarIconHtml();
 
-//         let sectionPanel = null;
+//         parent.document.body.appendChild(sectionPanel);
 
-//         scDiv.addEventListener("click", async (e) => {
-//           e.stopPropagation();
-//           injectGlobalStylesheet();
+//         const grab = sectionPanel.querySelector("#sc-grabbing");
+//         let isDragging = false;
+//         let offsetX = 0,
+//           offsetY = 0;
 
-//           const mainWidget =
-//             parent.document.querySelector("#sc-widget-container") ||
-//             document.querySelector("#sc-widget-container");
+//         grab.addEventListener("mousedown", (e) => {
+//           isDragging = true;
+//           const rect = sectionPanel.getBoundingClientRect();
+//           offsetX = e.clientX - rect.left;
+//           offsetY = e.clientY - rect.top;
+//           sectionPanel.style.pointerEvents = "none";
 
-//           const adminPanel =
-//             parent.document.querySelector("#sc-admin-panel") ||
-//             document.querySelector("#sc-admin-panel");
+//           document.addEventListener("mousemove", move);
+//           document.addEventListener("mouseup", stop);
+//         });
 
-//           if (mainWidget) mainWidget.style.display = "none";
-//           if (adminPanel) adminPanel.remove();
+//         function move(e) {
+//           if (!isDragging) return;
+//           sectionPanel.style.left = `${e.clientX - offsetX}px`;
+//           sectionPanel.style.top = `${e.clientY - offsetY}px`;
+//         }
 
-//           // Close panel if already open
-//           if (sectionPanel) {
+//         function stop() {
+//           isDragging = false;
+//           sectionPanel.style.pointerEvents = "auto";
+//           document.removeEventListener("mousemove", move);
+//           document.removeEventListener("mouseup", stop);
+//         }
+
+//         // Outside click close
+//         function outsideClickHandler(e) {
+//           if (!sectionPanel.contains(e.target) && !scDiv.contains(e.target)) {
 //             sectionPanel.remove();
 //             sectionPanel = null;
 //             document.removeEventListener("click", outsideClickHandler);
-//             return;
 //           }
+//         }
 
-//           // Create panel
-//           sectionPanel = parent.document.createElement("div");
-//           sectionPanel.id = "sc-section-widget";
-//           sectionPanel.className =
-//             "sc-p-2 z-index-high sc-text-color-white sc-border sc-border-solid sc-border-3d3d3d sc-bg-color-2c2c2c sc-rounded-15px sc-w-300px";
-//           Object.assign(sectionPanel.style, {
-//             position: "fixed",
-//             top: "100px",
-//             left: "100px",
-//             zIndex: "99999",
-//           });
-
-//           const mod = await import(
-//             "https://fatin-webefo.github.io/squareCraft-plugin/ToolbarIconHtml.js"
-//           );
-//           sectionPanel.innerHTML = mod.ToolbarIconHtml();
-
-//           parent.document.body.appendChild(sectionPanel);
-
-//           const grab = sectionPanel.querySelector("#sc-grabbing");
-//           let isDragging = false;
-//           let offsetX = 0,
-//             offsetY = 0;
-
-//           grab.addEventListener("mousedown", (e) => {
-//             isDragging = true;
-//             const rect = sectionPanel.getBoundingClientRect();
-//             offsetX = e.clientX - rect.left;
-//             offsetY = e.clientY - rect.top;
-//             sectionPanel.style.pointerEvents = "none";
-
-//             document.addEventListener("mousemove", move);
-//             document.addEventListener("mouseup", stop);
-//           });
-
-//           function move(e) {
-//             if (!isDragging) return;
-//             sectionPanel.style.left = `${e.clientX - offsetX}px`;
-//             sectionPanel.style.top = `${e.clientY - offsetY}px`;
-//           }
-
-//           function stop() {
-//             isDragging = false;
-//             sectionPanel.style.pointerEvents = "auto";
-//             document.removeEventListener("mousemove", move);
-//             document.removeEventListener("mouseup", stop);
-//           }
-
-//           // Outside click close
-//           function outsideClickHandler(e) {
-//             if (!sectionPanel.contains(e.target) && !scDiv.contains(e.target)) {
-//               sectionPanel.remove();
-//               sectionPanel = null;
-//               document.removeEventListener("click", outsideClickHandler);
-//             }
-//           }
-
-//           setTimeout(() => {
-//             document.addEventListener("click", outsideClickHandler);
-//           }, 0);
-//         });
-//       }
+//         setTimeout(() => {
+//           document.addEventListener("click", outsideClickHandler);
+//         }, 0);
+//       });
 //     });
 //   }
 
@@ -544,28 +435,31 @@
 //     insertAdminIcon();
 //   }, 500);
 
-//   new MutationObserver(() => insertToolbarIcon()).observe(
-//     parent.document.body,
-//     {
+//   // Only create one MutationObserver
+//   if (!window.scMutationObserver) {
+//     window.scMutationObserver = new MutationObserver(() => {
+//       // Only run if not already processing
+//       if (!window.scProcessingIcons) {
+//         window.scProcessingIcons = true;
+//         insertToolbarIcon();
+//         setTimeout(() => {
+//           window.scProcessingIcons = false;
+//         }, 1000);
+//       }
+//     });
+
+//     window.scMutationObserver.observe(parent.document.body, {
 //       childList: true,
 //       subtree: true,
-//     }
-//   );
+//     });
+//   }
 // }
 
 import { NavbarIconHtml } from "https://fatin-webefo.github.io/squareCraft-plugin/NavbarIconHtml.js";
 
 export function injectNavbarIcon() {
-  // Prevent multiple executions
-  if (window.scIconInjected) {
-    console.log("⚠️ SquareCraft icons already injected, skipping...");
-    return;
-  }
-  window.scIconInjected = true;
-
   function insertAdminIcon() {
     if (!parent.document.querySelector(".sc-admin-icon-wrapper")) {
-      // const navContainer = parent.document.querySelector("ul.css-1tn5iw9");
       const navContainer =
         parent.document
           .querySelector('button[data-test="frameToolbarSiteStyles"]')
@@ -579,7 +473,6 @@ export function injectNavbarIcon() {
             '[data-guidance-engine*="device-view-button-container"]'
           )
           ?.closest("ul");
-
       if (!navContainer) return;
 
       const iconSrc =
@@ -766,44 +659,44 @@ export function injectNavbarIcon() {
 
       const message = parent.document.createElement("div");
       message.innerHTML = `
-        <div style="
-          position: absolute;
-          background-color: #2c2c2c;
-          color: white;
-          padding: 2rem 2rem;
-          border-radius: 8px;
-          z-index: 99999;
-          opacity: 1;
-          transition: opacity 0.5s ease-in-out;
-          animation: scFadeIn 0.5s ease-in-out;
-          white-space: nowrap;
-          box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-          top: 54px;
-          left: 40%;
-          transform: translateX(-50%);
-        ">
-          <div style="text-align: center;">
-            <p style="font-size: 13px; font-weight: 300; color: #EF7C2F; margin: 0;">SquareCraft Edits Saved</p>
-            <p style="font-weight: 300; font-size: 11px; margin: 4px 0 0;">
-              Your SquareCraft Plugin has successfully injected<br> to the Current website
-            </p>
-          </div>
-          <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/cross.png"
-            width="14"
-            style="position: absolute; top: 12px; right: 12px; cursor: pointer;" alt="">
           <div style="
             position: absolute;
-            top: -8px;
-            left: 50%;
+            background-color: #2c2c2c;
+            color: white;
+            padding: 2rem 2rem;
+            border-radius: 8px;
+            z-index: 99999;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+            animation: scFadeIn 0.5s ease-in-out;
+            white-space: nowrap;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            top: 54px;
+            left: 40%;
             transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-bottom: 8px solid #2c2c2c;
-          "></div>
-        </div>
-      `;
+          ">
+            <div style="text-align: center;">
+              <p style="font-size: 13px; font-weight: 300; color: #EF7C2F; margin: 0;">SquareCraft Edits Saved</p>
+              <p style="font-weight: 300; font-size: 11px; margin: 4px 0 0;">
+                Your SquareCraft Plugin has successfully injected<br> to the Current website
+              </p>
+            </div>
+            <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/cross.png"
+              width="14"
+              style="position: absolute; top: 12px; right: 12px; cursor: pointer;" alt="">
+            <div style="
+              position: absolute;
+              top: -8px;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 0;
+              height: 0;
+              border-left: 8px solid transparent;
+              border-right: 8px solid transparent;
+              border-bottom: 8px solid #2c2c2c;
+            "></div>
+          </div>
+        `;
       wrapper.appendChild(message);
       const innerMsg = message.querySelector("div");
       setTimeout(() => {
@@ -826,186 +719,147 @@ export function injectNavbarIcon() {
   }
 
   function insertToolbarIcon() {
-    // const toolbarContainers = parent.document.querySelectorAll(
-    //   ".tidILMJ7AVANuKwS, div[data-block-toolbar='true'], div[role='menu']"
-    // );
-
     const toolbarContainers = parent.document.querySelectorAll(
       "div.js-section-toolbar"
     );
 
-    console.log("🔍 Found toolbar containers:", toolbarContainers.length);
+    toolbarContainers.forEach((toolbarContainer) => {
+      if (!toolbarContainer.querySelector(".sc-toolbar")) {
+        const iconSrc =
+          localStorage.getItem("sc_icon") ||
+          "https://fatin-webefo.github.io/squareCraft-plugin/public/squarecraft-only-logo.svg";
 
-    toolbarContainers.forEach((toolbarContainer, index) => {
-      // Check if this container already has a toolbar icon
-      if (toolbarContainer.querySelector(".sc-toolbar")) {
-        console.log(`⚠️ Container ${index} already has toolbar, skipping...`);
-        return;
-      }
-
-      console.log(
-        `🔍 Processing toolbar container ${index}:`,
-        toolbarContainer
-      );
-
-      const iconSrc =
-        localStorage.getItem("sc_icon") ||
-        "https://fatin-webefo.github.io/squareCraft-plugin/public/squarecraft-only-logo.svg";
-
-      const scDiv = document.createElement("div");
-      scDiv.classList.add("sc-toolbar");
-      scDiv.setAttribute("data-sc-toolbar", "true"); // Add unique identifier
-      Object.assign(scDiv.style, {
-        display: "flex",
-        alignItems: "center",
-        border: "1px solid #E5E4E2",
-        background: "rgba(255, 127, 23, 0.06)",
-        borderRadius: "6px",
-        padding: "6px",
-        gap: "6px",
-        cursor: "pointer",
-        position: "relative",
-        zIndex: "99999",
-        opacity: "1",
-        visibility: "visible",
-      });
-
-      const icon = document.createElement("img");
-      icon.src = iconSrc;
-      icon.alt = "sc";
-      Object.assign(icon.style, {
-        width: "30px",
-        height: "30px",
-        borderRadius: "20%",
-      });
-
-      const text = document.createElement("span");
-      text.innerText = "SquareCraft";
-      Object.assign(text.style, {
-        fontSize: "14px",
-        fontWeight: "bold",
-      });
-
-      scDiv.appendChild(icon);
-      scDiv.appendChild(text);
-      toolbarContainer.appendChild(scDiv);
-
-      console.log(`✅ Successfully created toolbar icon in container ${index}`);
-
-      let sectionPanel = null;
-
-      scDiv.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        injectGlobalStylesheet();
-
-        const mainWidget =
-          parent.document.querySelector("#sc-widget-container") ||
-          document.querySelector("#sc-widget-container");
-
-        const adminPanel =
-          parent.document.querySelector("#sc-admin-panel") ||
-          document.querySelector("#sc-admin-panel");
-
-        if (mainWidget) mainWidget.style.display = "none";
-        if (adminPanel) adminPanel.remove();
-
-        // Close panel if already open
-        if (sectionPanel) {
-          sectionPanel.remove();
-          sectionPanel = null;
-          document.removeEventListener("click", outsideClickHandler);
-          return;
-        }
-
-        // Create panel
-        sectionPanel = parent.document.createElement("div");
-        sectionPanel.id = "sc-section-widget";
-        sectionPanel.className =
-          "sc-p-2 z-index-high sc-text-color-white sc-border sc-border-solid sc-border-3d3d3d sc-bg-color-2c2c2c sc-rounded-15px sc-w-300px";
-        Object.assign(sectionPanel.style, {
-          position: "fixed",
-          top: "100px",
-          left: "100px",
-          zIndex: "99999",
+        const scDiv = document.createElement("div");
+        scDiv.classList.add("sc-toolbar");
+        Object.assign(scDiv.style, {
+          display: "flex",
+          alignItems: "center",
+          border: "1px solid #E5E4E2",
+          background: "rgba(255, 127, 23, 0.06)",
+          borderRadius: "6px",
+          padding: "6px",
+          gap: "6px",
+          cursor: "pointer",
         });
 
-        const mod = await import(
-          "https://fatin-webefo.github.io/squareCraft-plugin/ToolbarIconHtml.js"
-        );
-        sectionPanel.innerHTML = mod.ToolbarIconHtml();
-
-        parent.document.body.appendChild(sectionPanel);
-
-        const grab = sectionPanel.querySelector("#sc-grabbing");
-        let isDragging = false;
-        let offsetX = 0,
-          offsetY = 0;
-
-        grab.addEventListener("mousedown", (e) => {
-          isDragging = true;
-          const rect = sectionPanel.getBoundingClientRect();
-          offsetX = e.clientX - rect.left;
-          offsetY = e.clientY - rect.top;
-          sectionPanel.style.pointerEvents = "none";
-
-          document.addEventListener("mousemove", move);
-          document.addEventListener("mouseup", stop);
+        const icon = document.createElement("img");
+        icon.src = iconSrc;
+        icon.alt = "sc";
+        Object.assign(icon.style, {
+          width: "30px",
+          height: "30px",
+          borderRadius: "20%",
         });
 
-        function move(e) {
-          if (!isDragging) return;
-          sectionPanel.style.left = `${e.clientX - offsetX}px`;
-          sectionPanel.style.top = `${e.clientY - offsetY}px`;
-        }
+        const text = document.createElement("span");
+        text.innerText = "SquareCraft";
+        Object.assign(text.style, {
+          fontSize: "14px",
+          fontWeight: "bold",
+        });
 
-        function stop() {
-          isDragging = false;
-          sectionPanel.style.pointerEvents = "auto";
-          document.removeEventListener("mousemove", move);
-          document.removeEventListener("mouseup", stop);
-        }
+        scDiv.appendChild(icon);
+        scDiv.appendChild(text);
+        toolbarContainer.appendChild(scDiv);
 
-        // Outside click close
-        function outsideClickHandler(e) {
-          if (!sectionPanel.contains(e.target) && !scDiv.contains(e.target)) {
+        let sectionPanel = null;
+
+        scDiv.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          injectGlobalStylesheet();
+
+          const mainWidget =
+            parent.document.querySelector("#sc-widget-container") ||
+            document.querySelector("#sc-widget-container");
+
+          const adminPanel =
+            parent.document.querySelector("#sc-admin-panel") ||
+            document.querySelector("#sc-admin-panel");
+
+          if (mainWidget) mainWidget.style.display = "none";
+          if (adminPanel) adminPanel.remove();
+
+          // Close panel if already open
+          if (sectionPanel) {
             sectionPanel.remove();
             sectionPanel = null;
             document.removeEventListener("click", outsideClickHandler);
+            return;
           }
-        }
 
-        setTimeout(() => {
-          document.addEventListener("click", outsideClickHandler);
-        }, 0);
-      });
-    });
-  }
+          // Create panel
+          sectionPanel = parent.document.createElement("div");
+          sectionPanel.id = "sc-section-widget";
+          sectionPanel.className =
+            "sc-p-2 z-index-high sc-text-color-white sc-border sc-border-solid sc-border-3d3d3d sc-bg-color-2c2c2c sc-rounded-15px sc-w-300px";
+          Object.assign(sectionPanel.style, {
+            position: "fixed",
+            top: "100px",
+            left: "100px",
+            zIndex: "99999",
+          });
 
-  // Load CSS first
-  injectGlobalStylesheet();
+          const mod = await import(
+            "https://fatin-webefo.github.io/squareCraft-plugin/ToolbarIconHtml.js"
+          );
+          sectionPanel.innerHTML = mod.ToolbarIconHtml();
 
-  // Wait a bit for CSS to load, then inject icons
-  setTimeout(() => {
-    insertToolbarIcon();
-    insertAdminIcon();
-  }, 500);
+          parent.document.body.appendChild(sectionPanel);
 
-  // Only create one MutationObserver
-  if (!window.scMutationObserver) {
-    window.scMutationObserver = new MutationObserver(() => {
-      // Only run if not already processing
-      if (!window.scProcessingIcons) {
-        window.scProcessingIcons = true;
-        insertToolbarIcon();
-        setTimeout(() => {
-          window.scProcessingIcons = false;
-        }, 1000);
+          const grab = sectionPanel.querySelector("#sc-grabbing");
+          let isDragging = false;
+          let offsetX = 0,
+            offsetY = 0;
+
+          grab.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            const rect = sectionPanel.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            sectionPanel.style.pointerEvents = "none";
+
+            document.addEventListener("mousemove", move);
+            document.addEventListener("mouseup", stop);
+          });
+
+          function move(e) {
+            if (!isDragging) return;
+            sectionPanel.style.left = `${e.clientX - offsetX}px`;
+            sectionPanel.style.top = `${e.clientY - offsetY}px`;
+          }
+
+          function stop() {
+            isDragging = false;
+            sectionPanel.style.pointerEvents = "auto";
+            document.removeEventListener("mousemove", move);
+            document.removeEventListener("mouseup", stop);
+          }
+
+          // Outside click close
+          function outsideClickHandler(e) {
+            if (!sectionPanel.contains(e.target) && !scDiv.contains(e.target)) {
+              sectionPanel.remove();
+              sectionPanel = null;
+              document.removeEventListener("click", outsideClickHandler);
+            }
+          }
+
+          setTimeout(() => {
+            document.addEventListener("click", outsideClickHandler);
+          }, 0);
+        });
       }
     });
+  }
 
-    window.scMutationObserver.observe(parent.document.body, {
+  insertToolbarIcon();
+  insertAdminIcon();
+
+  new MutationObserver(() => insertToolbarIcon()).observe(
+    parent.document.body,
+    {
       childList: true,
       subtree: true,
-    });
-  }
+    }
+  );
 }
