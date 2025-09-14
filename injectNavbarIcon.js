@@ -364,11 +364,26 @@ export function injectNavbarIcon() {
         document.querySelector('[id^="block-"]');
 
       if (closestBlock) {
-        // Trigger the main widget creation from squareCraft.js
-        const event = new CustomEvent("sc-toolbar-click", {
-          detail: { target: closestBlock },
-        });
-        parent.document.dispatchEvent(event);
+        console.log(
+          "🔧 SquareCraft toolbar clicked, closest block:",
+          closestBlock
+        );
+        // Try to call the main widget function directly if available
+        if (window.toggleWidgetVisibility) {
+          console.log("✅ Calling toggleWidgetVisibility directly");
+          window.toggleWidgetVisibility({ target: closestBlock });
+        } else {
+          console.log(
+            "⚠️ toggleWidgetVisibility not available, using event fallback"
+          );
+          // Fallback: Trigger the main widget creation from squareCraft.js
+          const event = new CustomEvent("sc-toolbar-click", {
+            detail: { target: closestBlock },
+          });
+          parent.document.dispatchEvent(event);
+        }
+      } else {
+        console.warn("❌ No closest block found for SquareCraft toolbar");
       }
     });
   }

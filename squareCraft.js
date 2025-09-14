@@ -8004,8 +8004,12 @@ window.pendingModifications = pendingModifications;
   // Make saveButtonColorModifications available globally
   window.saveButtonColorModifications = saveButtonColorModifications;
 
+  // Make toggleWidgetVisibility available globally
+  window.toggleWidgetVisibility = toggleWidgetVisibility;
+
   // Listen for toolbar click events from injectNavbarIcon.js
-  document.addEventListener("sc-toolbar-click", async (event) => {
+  const targetDocument = isSameOrigin ? parent.document : document;
+  targetDocument.addEventListener("sc-toolbar-click", async (event) => {
     const clickedBlock = event.detail.target;
     if (clickedBlock) {
       await toggleWidgetVisibility({ target: clickedBlock });
