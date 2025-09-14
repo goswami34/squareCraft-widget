@@ -371,7 +371,13 @@ export function injectNavbarIcon() {
         // Try to call the main widget function directly if available
         if (window.toggleWidgetVisibility) {
           console.log("✅ Calling toggleWidgetVisibility directly");
-          window.toggleWidgetVisibility({ target: closestBlock });
+          // Create a mock event object with the required methods
+          const mockEvent = {
+            target: closestBlock,
+            stopPropagation: () => {},
+            preventDefault: () => {},
+          };
+          window.toggleWidgetVisibility(mockEvent);
         } else {
           console.log(
             "⚠️ toggleWidgetVisibility not available, using event fallback"
