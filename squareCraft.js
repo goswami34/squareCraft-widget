@@ -6766,15 +6766,15 @@ window.pendingModifications = pendingModifications;
   addHeadingEventListeners();
 
   // Load CSS first
-  try {
-    const cssLink = document.createElement("link");
-    cssLink.rel = "stylesheet";
-    cssLink.href =
-      "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
-    document.head.appendChild(cssLink);
-  } catch (error) {
-    console.error("🚨 Failed to load CSS", error);
-  }
+  // try {
+  //   const cssLink = document.createElement("link");
+  //   cssLink.rel = "stylesheet";
+  //   cssLink.href =
+  //     "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
+  //   document.head.appendChild(cssLink);
+  // } catch (error) {
+  //   console.error("🚨 Failed to load CSS", error);
+  // }
 
   // Wait for CSS to load before injecting icons
   setTimeout(async () => {
