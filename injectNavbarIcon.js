@@ -334,77 +334,42 @@ export function injectNavbarIcon() {
         parent.document.querySelector("#sc-admin-panel") ||
         document.querySelector("#sc-admin-panel");
 
-      if (mainWidget) mainWidget.style.display = "none";
       if (adminPanel) adminPanel.remove();
 
-      // Close panel if already open
+      // Close section panel if already open
       if (sectionPanel) {
         sectionPanel.remove();
         sectionPanel = null;
         document.removeEventListener("click", outsideClickHandler);
+      }
+
+      // Toggle main widget visibility instead of creating section panel
+      if (mainWidget) {
+        if (
+          mainWidget.style.display === "none" ||
+          mainWidget.style.display === ""
+        ) {
+          mainWidget.style.display = "block";
+        } else {
+          mainWidget.style.display = "none";
+        }
         return;
       }
 
-      // Create panel
-      sectionPanel = parent.document.createElement("div");
-      sectionPanel.id = "sc-section-widget";
-      sectionPanel.className =
-        "sc-p-2 z-index-high sc-text-color-white sc-border sc-border-solid sc-border-3d3d3d sc-bg-color-2c2c2c sc-rounded-15px sc-w-300px";
-      Object.assign(sectionPanel.style, {
-        position: "fixed",
-        top: "100px",
-        left: "100px",
-        zIndex: "99999",
-      });
+      // If main widget doesn't exist, create it by triggering the main widget creation
+      // Find the closest block element to trigger the main widget
+      const closestBlock =
+        scDiv.closest('[id^="block-"]') ||
+        parent.document.querySelector('[id^="block-"]') ||
+        document.querySelector('[id^="block-"]');
 
-      const mod = await import(
-        "https://fatin-webefo.github.io/squareCraft-plugin/ToolbarIconHtml.js"
-      );
-      sectionPanel.innerHTML = mod.ToolbarIconHtml();
-
-      parent.document.body.appendChild(sectionPanel);
-
-      const grab = sectionPanel.querySelector("#sc-grabbing");
-      let isDragging = false;
-      let offsetX = 0,
-        offsetY = 0;
-
-      grab.addEventListener("mousedown", (e) => {
-        isDragging = true;
-        const rect = sectionPanel.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-        sectionPanel.style.pointerEvents = "none";
-
-        document.addEventListener("mousemove", move);
-        document.addEventListener("mouseup", stop);
-      });
-
-      function move(e) {
-        if (!isDragging) return;
-        sectionPanel.style.left = `${e.clientX - offsetX}px`;
-        sectionPanel.style.top = `${e.clientY - offsetY}px`;
+      if (closestBlock) {
+        // Trigger the main widget creation from squareCraft.js
+        const event = new CustomEvent("sc-toolbar-click", {
+          detail: { target: closestBlock },
+        });
+        parent.document.dispatchEvent(event);
       }
-
-      function stop() {
-        isDragging = false;
-        sectionPanel.style.pointerEvents = "auto";
-        document.removeEventListener("mousemove", move);
-        document.removeEventListener("mouseup", stop);
-      }
-
-      // Outside click close
-      function outsideClickHandler(e) {
-        if (!sectionPanel.contains(e.target) && !scDiv.contains(e.target)) {
-          sectionPanel.remove();
-          sectionPanel = null;
-          document.removeEventListener("click", outsideClickHandler);
-        }
-      }
-
-      setTimeout(() => {
-        document.addEventListener("click", outsideClickHandler);
-      }, 0);
     });
   }
 
