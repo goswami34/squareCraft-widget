@@ -826,8 +826,12 @@ export function injectNavbarIcon() {
   }
 
   function insertToolbarIcon() {
+    // const toolbarContainers = parent.document.querySelectorAll(
+    //   ".tidILMJ7AVANuKwS, div[data-block-toolbar='true'], div[role='menu']"
+    // );
+
     const toolbarContainers = parent.document.querySelectorAll(
-      ".tidILMJ7AVANuKwS, div[data-block-toolbar='true'], div[role='menu']"
+      "div.js-section-toolbar"
     );
 
     console.log("🔍 Found toolbar containers:", toolbarContainers.length);
