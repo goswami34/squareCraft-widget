@@ -6765,15 +6765,29 @@ window.pendingModifications = pendingModifications;
 
   addHeadingEventListeners();
 
+  // Load CSS first
   try {
-    const { injectNavbarIcon } = await import(
-      "https://fatin-webefo.github.io/squareCraft-plugin/injectNavbarIcon.js"
-      // "https://goswami34.github.io/squareCraft-widget/injectNavbarIcon.js"
-    );
-    injectNavbarIcon();
+    const cssLink = document.createElement("link");
+    cssLink.rel = "stylesheet";
+    cssLink.href =
+      "https://fatin-webefo.github.io/squareCraft-plugin/src/styles/parent.css";
+    document.head.appendChild(cssLink);
   } catch (error) {
-    console.error("🚨 Failed to load navbar icon script", error);
+    console.error("🚨 Failed to load CSS", error);
   }
+
+  // Wait for CSS to load before injecting icons
+  setTimeout(async () => {
+    try {
+      const { injectNavbarIcon } = await import(
+        //"https://fatin-webefo.github.io/squareCraft-plugin/injectNavbarIcon.js"
+        "https://goswami34.github.io/squareCraft-widget/injectNavbarIcon.js"
+      );
+      injectNavbarIcon();
+    } catch (error) {
+      console.error("🚨 Failed to load navbar icon script", error);
+    }
+  }, 1000);
 
   async function toggleWidgetVisibility(event) {
     event.stopPropagation();

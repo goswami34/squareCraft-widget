@@ -69,8 +69,10 @@ export function injectNavbarIcon() {
 
   function insertToolbarIcon() {
     const toolbarContainers = parent.document.querySelectorAll(
-      "div.js-section-toolbar"
+      ".tidILMJ7AVANuKwS, div[data-block-toolbar='true'], div[role='menu']"
     );
+
+    console.log("🔍 Found toolbar containers:", toolbarContainers.length);
 
     toolbarContainers.forEach((toolbarContainer) => {
       if (!toolbarContainer.querySelector(".sc-toolbar")) {
@@ -87,6 +89,10 @@ export function injectNavbarIcon() {
         scDiv.style.borderRadius = "6px";
         scDiv.style.padding = "6px";
         scDiv.style.gap = "6px";
+        scDiv.style.position = "relative";
+        scDiv.style.zIndex = "99999";
+        scDiv.style.opacity = "1";
+        scDiv.style.visibility = "visible";
 
         scDiv.addEventListener("mouseenter", () => {
           scDiv.style.backgroundColor = "rgba(177, 176, 176, 0.2)";
