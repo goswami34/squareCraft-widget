@@ -3119,17 +3119,6 @@ window.pendingModifications = pendingModifications;
     }
   });
 
-  //Reset Button (WidgetButtonSection) – delegated click handler
-  document.addEventListener("click", (event) => {
-    const resetTrigger = event.target.closest(
-      "#buttonResetAll, #buttonResetAll-icon"
-    );
-    if (resetTrigger) {
-      event.preventDefault();
-      resetButtonModifications();
-    }
-  });
-
   async function fetchModifications(retries = 3) {
     const module = await import(
       "https://goswami34.github.io/squareCraft-widget/html.js"
@@ -3349,6 +3338,9 @@ window.pendingModifications = pendingModifications;
   //     }
   //   }
   // }
+
+  //Reset Button (WidgetButtonSection) – delegated click handler
+  // Note: Removed unscoped reset call to avoid resetting all button types unintentionally.
 
   const VALID_TYPES = ["primary", "secondary", "tertiary"];
 
