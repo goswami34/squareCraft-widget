@@ -3350,6 +3350,49 @@ window.pendingModifications = pendingModifications;
   //   }
   // }
 
+  const VALID_TYPES = ["primary", "secondary", "tertiary"];
+
+  function getSelectedButtonType() {
+    const explicit =
+      document
+        .querySelector("[data-sc-button-tab].active")
+        ?.getAttribute("data-type") ||
+      document
+        .querySelector("[data-sc-selected-button]")
+        ?.getAttribute("data-type");
+    const v = (explicit || "").toLowerCase();
+    if (VALID_TYPES.includes(v)) return v;
+    const el =
+      typeof getSelectedElement === "function" ? getSelectedElement() : null;
+    if (el && el.classList) {
+      if (el.classList.contains("sqs-button-element--primary"))
+        return "primary";
+      if (el.classList.contains("sqs-button-element--secondary"))
+        return "secondary";
+      if (el.classList.contains("sqs-button-element--tertiary"))
+        return "tertiary";
+    }
+    return null;
+  }
+
+  document.addEventListener("click", (event) => {
+    const resetTrigger = event.target.closest(
+      "#buttonResetAll, #buttonResetAll-icon, [data-sc-reset-button]"
+    );
+    if (!resetTrigger) return;
+    event.preventDefault();
+    const datasetType = (
+      resetTrigger.getAttribute("data-button") ||
+      resetTrigger.getAttribute("data-type") ||
+      resetTrigger.dataset.buttonType ||
+      ""
+    ).toLowerCase();
+    const type = VALID_TYPES.includes(datasetType)
+      ? datasetType
+      : getSelectedButtonType();
+    resetButtonModifications(type);
+  });
+
   async function resetButtonModifications(button) {
     try {
       const userId = localStorage.getItem("sc_u_id");
@@ -3362,13 +3405,13 @@ window.pendingModifications = pendingModifications;
       }
 
       const b = (button || "").toLowerCase();
-      const valid = ["primary", "secondary", "tertiary"];
-      const isScoped = valid.includes(b);
+      const isScoped = VALID_TYPES.includes(b);
 
-      const base =
-        "https://admin.squareplugin.com/api/v1/reset-button-modifications";
-      const qs = new URLSearchParams({ userId, widgetId, prefer: "query" });
+      const SC_API_BASE = "https://admin.squareplugin.com";
+      const base = `${SC_API_BASE}/api/v1/reset-button-modifications`;
+      const qs = new URLSearchParams({ userId, widgetId });
       if (isScoped) qs.append("button", b);
+      if (!token) qs.append("prefer", "query");
       const url = `${base}?${qs.toString()}`;
 
       const res = await fetch(url, {
@@ -3407,6 +3450,9 @@ window.pendingModifications = pendingModifications;
       };
       isScoped ? removeScoped(b) : removeAll();
 
+      if (typeof window.syncButtonStylesFromElement === "function")
+        window.syncButtonStylesFromElement();
+
       if (typeof showNotification === "function") {
         showNotification(
           isScoped
@@ -3416,7 +3462,6 @@ window.pendingModifications = pendingModifications;
         );
       }
     } catch (e) {
-      console.error(e);
       if (typeof showNotification === "function")
         showNotification("Failed to reset button modifications.", "error");
     }
