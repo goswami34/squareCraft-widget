@@ -3293,60 +3293,132 @@ window.pendingModifications = pendingModifications;
   }
 
   // Call backend to reset button modifications
-  async function resetButtonModifications() {
+  // async function resetButtonModifications() {
+  //   try {
+  //     const userId = localStorage.getItem("sc_u_id");
+  //     const widgetId = localStorage.getItem("sc_w_id");
+  //     const token = localStorage.getItem("sc_auth_token");
+
+  //     if (!userId || !widgetId) {
+  //       console.warn(
+  //         "⚠️ Missing userId or widgetId in localStorage; aborting reset"
+  //       );
+  //       if (typeof showNotification === "function") {
+  //         showNotification("Missing user/widget ID. Cannot reset.", "error");
+  //       }
+  //       return;
+  //     }
+
+  //     const url = `https://admin.squareplugin.com/api/v1/reset-button-modifications`;
+
+  //     const response = await fetch(url, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  //       },
+  //       body: JSON.stringify({ userId, widgetId, prefer: "query" }),
+  //     });
+
+  //     if (!response.ok) {
+  //       const text = await response.text();
+  //       throw new Error(`HTTP ${response.status}: ${text}`);
+  //     }
+
+  //     // Clear any injected button-related styles on the client
+  //     try {
+  //       const selectors = [
+  //         'style[id^="sc-button-"]',
+  //         'style[id^="sc-btn-"]',
+  //         // Backward/explicit ids used in various helpers
+  //         "#sc-btn-border-style",
+  //       ];
+  //       const styleTags = document.querySelectorAll(selectors.join(","));
+  //       styleTags.forEach((tag) => tag.remove());
+  //     } catch (_) {}
+
+  //     if (typeof showNotification === "function") {
+  //       showNotification("Button modifications reset successfully.", "success");
+  //     } else {
+  //       console.log("✅ Button modifications reset successfully");
+  //     }
+  //   } catch (error) {
+  //     console.error("❌ Failed to reset button modifications:", error);
+  //     if (typeof showNotification === "function") {
+  //       showNotification("Failed to reset button modifications.", "error");
+  //     }
+  //   }
+  // }
+
+  async function resetButtonModifications(button) {
     try {
       const userId = localStorage.getItem("sc_u_id");
       const widgetId = localStorage.getItem("sc_w_id");
       const token = localStorage.getItem("sc_auth_token");
-
       if (!userId || !widgetId) {
-        console.warn(
-          "⚠️ Missing userId or widgetId in localStorage; aborting reset"
-        );
-        if (typeof showNotification === "function") {
+        if (typeof showNotification === "function")
           showNotification("Missing user/widget ID. Cannot reset.", "error");
-        }
         return;
       }
 
-      const url = `https://admin.squareplugin.com/api/v1/reset-button-modifications`;
+      const b = (button || "").toLowerCase();
+      const valid = ["primary", "secondary", "tertiary"];
+      const isScoped = valid.includes(b);
 
-      const response = await fetch(url, {
+      const base =
+        "https://admin.squareplugin.com/api/v1/reset-button-modifications";
+      const qs = new URLSearchParams({ userId, widgetId, prefer: "query" });
+      if (isScoped) qs.append("button", b);
+      const url = `${base}?${qs.toString()}`;
+
+      const res = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ userId, widgetId, prefer: "query" }),
+        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`HTTP ${response.status}: ${text}`);
-      }
-
-      // Clear any injected button-related styles on the client
-      try {
+      const suffix = {
+        primary: "--primary",
+        secondary: "--secondary",
+        tertiary: "--tertiary",
+      };
+      const removeAll = () => {
         const selectors = [
           'style[id^="sc-button-"]',
           'style[id^="sc-btn-"]',
-          // Backward/explicit ids used in various helpers
           "#sc-btn-border-style",
         ];
-        const styleTags = document.querySelectorAll(selectors.join(","));
-        styleTags.forEach((tag) => tag.remove());
-      } catch (_) {}
+        document
+          .querySelectorAll(selectors.join(","))
+          .forEach((n) => n.remove());
+      };
+      const removeScoped = (type) => {
+        const suf = suffix[type];
+        const selectors = [
+          `style[id^="sc-button-"][id*="${suf}"]`,
+          `style[id^="sc-btn-"][id*="${suf}"]`,
+          `style[data-sc-button-type="${type}"]`,
+          `style[data-button-type="${type}"]`,
+          `style[data-type="${type}"]`,
+        ];
+        document
+          .querySelectorAll(selectors.join(","))
+          .forEach((n) => n.remove());
+      };
+      isScoped ? removeScoped(b) : removeAll();
 
       if (typeof showNotification === "function") {
-        showNotification("Button modifications reset successfully.", "success");
-      } else {
-        console.log("✅ Button modifications reset successfully");
+        showNotification(
+          isScoped
+            ? `Reset ${b} button modifications.`
+            : "Reset all button modifications.",
+          "success"
+        );
       }
-    } catch (error) {
-      console.error("❌ Failed to reset button modifications:", error);
-      if (typeof showNotification === "function") {
+    } catch (e) {
+      console.error(e);
+      if (typeof showNotification === "function")
         showNotification("Failed to reset button modifications.", "error");
-      }
     }
   }
 
