@@ -3120,15 +3120,15 @@ window.pendingModifications = pendingModifications;
   });
 
   // Reset Button (WidgetButtonSection) – delegated click handler
-  document.addEventListener("click", (event) => {
-    const resetTrigger = event.target.closest(
-      "#buttonResetAll, #buttonResetAll-icon"
-    );
-    if (resetTrigger) {
-      event.preventDefault();
-      resetButtonModifications();
-    }
-  });
+  // document.addEventListener("click", (event) => {
+  //   const resetTrigger = event.target.closest(
+  //     "#buttonResetAll, #buttonResetAll-icon"
+  //   );
+  //   if (resetTrigger) {
+  //     event.preventDefault();
+  //     resetButtonModifications();
+  //   }
+  // });
 
   async function fetchModifications(retries = 3) {
     const module = await import(
