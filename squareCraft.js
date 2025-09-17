@@ -4974,10 +4974,17 @@ window.pendingModifications = pendingModifications;
       : "primary";
   }
 
+  function npx(v, d = 0) {
+    if (v === null || v === undefined) return d;
+    if (typeof v === "number") return v;
+    const m = String(v).match(/-?\d+(\.\d+)?/);
+    return m ? parseFloat(m[0]) : d;
+  }
+
   function parseBoxShadow(str) {
     if (!str || typeof str !== "string") return null;
     const rx =
-      /(-?\d+\.?\d*)px\s+(-?\d+\.?\d*)px\s+(\d+\.?\d*)px(?:\s+(\d+\.?\d*)px)?\s+(rgba?\([^)]+\)|#[a-fA-F0-9]{3,8})/i;
+      /(-?\d+\.?\d*)px\s+(-?\d+\.?\d*)px\s+(\d+\.?\d*)px(?:\s+(-?\d+\.?\d*)px)?\s+(rgba?\([^)]+\)|#[a-fA-F0-9]{3,8})/i;
     const m = str.match(rx);
     if (!m) return null;
     return {
@@ -4989,22 +4996,98 @@ window.pendingModifications = pendingModifications;
     };
   }
 
+  function parseDropShadow(str) {
+    if (!str || typeof str !== "string") return null;
+    const rx =
+      /drop-shadow\(\s*(-?\d+\.?\d*)px\s+(-?\d+\.?\d*)px\s+(\d+\.?\d*)px(?:\s+(-?\d+\.?\d*)px)?\s+(rgba?\([^)]+\)|#[a-fA-F0-9]{3,8})\s*\)/i;
+    const m = str.match(rx);
+    if (!m) return null;
+    return {
+      x: parseFloat(m[1]),
+      y: parseFloat(m[2]),
+      blur: parseFloat(m[3]),
+      spread: m[4] ? parseFloat(m[4]) : 0,
+      color: m[5],
+    };
+  }
+
+  function pickColor(obj) {
+    return (
+      obj?.color ||
+      obj?.shadowColor ||
+      obj?.["--sc-shadow-color"] ||
+      obj?.["--shadow-color"] ||
+      obj?.["box-shadow-color"] ||
+      "rgba(0,0,0,0.25)"
+    );
+  }
+
   function extractShadowValues(bucket) {
     if (!bucket) return null;
-    const v = bucket.values || bucket.meta || null;
-    if (v && (v.x !== undefined || v.y !== undefined)) {
+    const v = bucket.values || bucket.meta;
+    if (
+      v &&
+      (v.x !== undefined ||
+        v.y !== undefined ||
+        v.blur !== undefined ||
+        v.spread !== undefined ||
+        v.color)
+    ) {
       return {
-        x: Number(v.x || 0),
-        y: Number(v.y || 0),
-        blur: Number(v.blur || 0),
-        spread: Number(v.spread || 0),
-        color: v.color || "rgba(0,0,0,0.25)",
+        x: npx(v.x),
+        y: npx(v.y),
+        blur: npx(v.blur),
+        spread: npx(v.spread),
+        color: pickColor(v),
       };
     }
-    const styles = bucket.styles || {};
-    const bs = styles["box-shadow"] || styles["boxShadow"] || "";
-    const parsed = parseBoxShadow(bs);
-    if (parsed) return parsed;
+    const s = bucket.styles || {};
+    const bs = s["box-shadow"] || s["boxShadow"];
+    const parsedBox = parseBoxShadow(bs);
+    if (parsedBox) return parsedBox;
+    const filt = s.filter || s["-webkit-filter"];
+    const parsedDrop = parseDropShadow(filt);
+    if (parsedDrop) return parsedDrop;
+    const x =
+      s["--sc-shadow-x"] ||
+      s["--shadow-x"] ||
+      s["shadowX"] ||
+      s["x"] ||
+      s["xAxis"] ||
+      s["box-shadow-x"];
+    const y =
+      s["--sc-shadow-y"] ||
+      s["--shadow-y"] ||
+      s["shadowY"] ||
+      s["y"] ||
+      s["yAxis"] ||
+      s["box-shadow-y"];
+    const blur =
+      s["--sc-shadow-blur"] ||
+      s["shadowBlur"] ||
+      s["blur"] ||
+      s["box-shadow-blur"];
+    const spread =
+      s["--sc-shadow-spread"] ||
+      s["shadowSpread"] ||
+      s["spread"] ||
+      s["box-shadow-spread"];
+    const color = pickColor(s);
+    if (
+      x !== undefined ||
+      y !== undefined ||
+      blur !== undefined ||
+      spread !== undefined ||
+      color
+    ) {
+      return {
+        x: npx(x),
+        y: npx(y),
+        blur: npx(blur),
+        spread: npx(spread),
+        color,
+      };
+    }
     return null;
   }
 
@@ -5018,7 +5101,7 @@ window.pendingModifications = pendingModifications;
     const minV = min ?? Number(field?.min ?? 0);
     const maxV = max ?? Number(field?.max ?? 100);
     const clamped = Math.max(minV, Math.min(maxV, Number(value)));
-    const pct = ((clamped - minV) / (maxV - minV)) * 100;
+    const pct = maxV === minV ? 0 : ((clamped - minV) / (maxV - minV)) * 100;
     if (fill) fill.style.width = pct + "%";
     if (bullet) bullet.style.left = pct + "%";
   }
@@ -5032,11 +5115,11 @@ window.pendingModifications = pendingModifications;
 
   function syncShadowUIFor(bucketLabel, shadow) {
     if (!shadow) return;
-    const prefix = "buttonShadow";
-    setFieldValue(prefix + "X", shadow.x, -100, 100);
-    setFieldValue(prefix + "Y", shadow.y, -100, 100);
-    setFieldValue(prefix + "Blur", shadow.blur, 0, 200);
-    setFieldValue(prefix + "Spread", shadow.spread, -100, 100);
+    const p = "buttonShadow";
+    setFieldValue(p + "X", shadow.x, -100, 100);
+    setFieldValue(p + "Y", shadow.y, -100, 100);
+    setFieldValue(p + "Blur", shadow.blur, 0, 200);
+    setFieldValue(p + "Spread", shadow.spread, -100, 100);
     setColorValue(shadow.color || "rgba(0,0,0,0.25)");
     localStorage.setItem("sc_shadow_active_type", bucketLabel);
     localStorage.setItem(
@@ -5074,49 +5157,43 @@ window.pendingModifications = pendingModifications;
       userId
     )}&widgetId=${encodeURIComponent(widgetId)}&prefer=query`;
 
-    try {
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
 
-      const shadow = result.shadow || {};
-      const buckets = [
-        ["buttonPrimary", "primary"],
-        ["buttonSecondary", "secondary"],
-        ["buttonTertiary", "tertiary"],
-      ];
+    const shadow = result.shadow || {};
+    const buckets = [
+      ["buttonPrimary", "primary"],
+      ["buttonSecondary", "secondary"],
+      ["buttonTertiary", "tertiary"],
+    ];
 
-      let applied = 0;
-      const active = getActiveButtonType();
-      let activeValues = null;
+    const active = getActiveButtonType();
+    let activeValues = null;
 
-      for (const [key, label] of buckets) {
-        const bucket = shadow[key];
-        if (
-          bucket?.selector &&
-          bucket?.styles &&
-          Object.keys(bucket.styles).length
-        ) {
-          applyCss(bucket.selector, bucket.styles, `sc-btn-shadow-${label}`);
-          applied++;
-        }
-        const vals = extractShadowValues(bucket);
-        if (vals) {
-          localStorage.setItem("sc_shadow_vals_" + label, JSON.stringify(vals));
-          if (label === active) activeValues = vals;
-        }
+    for (const [key, label] of buckets) {
+      const bucket = shadow[key];
+      if (
+        bucket?.selector &&
+        bucket?.styles &&
+        Object.keys(bucket.styles).length
+      ) {
+        applyCss(bucket.selector, bucket.styles, `sc-btn-shadow-${label}`);
       }
-
-      if (!activeValues) {
-        const fallback = localStorage.getItem("sc_shadow_vals_" + active);
-        if (fallback) activeValues = JSON.parse(fallback);
+      const vals = extractShadowValues(bucket);
+      if (vals) {
+        localStorage.setItem("sc_shadow_vals_" + label, JSON.stringify(vals));
+        if (label === active) activeValues = vals;
       }
-      if (activeValues) syncShadowUIFor(active, activeValues);
-    } catch (err) {
-      console.error("Failed to fetch/apply button shadow modifications:", err);
     }
+
+    if (!activeValues) {
+      const fallback = localStorage.getItem("sc_shadow_vals_" + active);
+      if (fallback) activeValues = JSON.parse(fallback);
+    }
+    if (activeValues) syncShadowUIFor(active, activeValues);
   }
 
   document.addEventListener("change", (e) => {
@@ -5126,6 +5203,15 @@ window.pendingModifications = pendingModifications;
       const vals = localStorage.getItem("sc_shadow_vals_" + type);
       if (vals) syncShadowUIFor(type, JSON.parse(vals));
     }
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchButtonShadowModifications().catch(() => {});
+    setTimeout(() => {
+      const type = getActiveButtonType();
+      const vals = localStorage.getItem("sc_shadow_vals_" + type);
+      if (vals) syncShadowUIFor(type, JSON.parse(vals));
+    }, 200);
   });
 
   // Utility: Wait until selector appears in DOM
