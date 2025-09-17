@@ -2380,6 +2380,47 @@ export function initButtonBorderControl(
     applyBorder();
   }
 
+  // Expose a helper to sync the border slider from the currently selected element
+  // So other modules (e.g., fetch routines) can refresh the UI after styles are applied
+  window.syncBorderSliderFromComputed = () => {
+    try {
+      const selected = getSelectedElement?.();
+      const btn = selected?.querySelector(
+        "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
+      );
+      if (!btn) return;
+
+      const typeClass = [...btn.classList].find((c) =>
+        c.startsWith("sqs-button-element--")
+      );
+      const blockId = selected.id || "block-id";
+      const key = `${blockId}--${typeClass}`;
+
+      const cs = window.getComputedStyle(btn);
+      // Use top width as canonical, clamp to slider range
+      const widthPx = parseInt(cs.borderTopWidth || "0", 10) || 0;
+      const clamped = Math.max(0, Math.min(max, widthPx));
+
+      // Persist into state map so future re-opens restore properly
+      const state = window.__squareCraftBorderStateMap?.get(key) || {
+        values: {},
+        side: "All",
+      };
+      state.values.Top = clamped;
+      state.values.Right = clamped;
+      state.values.Bottom = clamped;
+      state.values.Left = clamped;
+      state.side = state.side || "All";
+      if (!window.__squareCraftBorderStateMap)
+        window.__squareCraftBorderStateMap = new Map();
+      window.__squareCraftBorderStateMap.set(key, state);
+
+      updateUIFromValue(clamped);
+    } catch (e) {
+      console.warn("syncBorderSliderFromComputed failed", e);
+    }
+  };
+
   bullet.addEventListener("mousedown", (e) => {
     e.preventDefault();
     const move = (eMove) => {

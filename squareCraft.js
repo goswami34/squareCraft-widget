@@ -4714,6 +4714,11 @@ window.pendingModifications = pendingModifications;
         rules: Object.keys(styles).length,
       });
     });
+
+    // After applying styles from API, sync the UI slider to reflect computed value
+    if (typeof window.syncBorderSliderFromComputed === "function") {
+      window.syncBorderSliderFromComputed();
+    }
   }
 
   // ✅ NEW: Fetch all button border modifications for the page at once
@@ -4800,6 +4805,11 @@ window.pendingModifications = pendingModifications;
 
       // Store the fetched data globally to avoid multiple API calls
       window.__squareCraftButtonBorderData = elements;
+
+      // Sync the UI control after bulk apply as well
+      if (typeof window.syncBorderSliderFromComputed === "function") {
+        window.syncBorderSliderFromComputed();
+      }
     } catch (error) {
       console.error(
         "❌ Failed to fetch all button border modifications:",
