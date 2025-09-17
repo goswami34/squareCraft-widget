@@ -4962,6 +4962,8 @@ window.pendingModifications = pendingModifications;
   //   }
   // }
 
+  // fetch button shadow modifications start
+
   function getActiveButtonType() {
     const el =
       document.querySelector('[name="sc-button-type"]:checked') ||
@@ -5241,6 +5243,8 @@ window.pendingModifications = pendingModifications;
       if (vals) syncShadowUIFor(type, JSON.parse(vals));
     }, 200);
   });
+
+  //fetch button shadow modifications end
 
   // Utility: Wait until selector appears in DOM
   function waitForElement(selector, timeout = 3000) {
