@@ -4795,6 +4795,40 @@ window.pendingModifications = pendingModifications;
               `✅ Applied ${buttonType} border styles to ${elementId}:`,
               { selector, styles }
             );
+
+            // If this element is currently selected in the widget, seed the border slider state
+            try {
+              const selected =
+                typeof getSelectedElement === "function"
+                  ? getSelectedElement()
+                  : null;
+              const selectedId = selected?.id;
+              if (selectedId && selectedId === elementId) {
+                const typeClass =
+                  buttonType === "buttonPrimary"
+                    ? "sqs-button-element--primary"
+                    : buttonType === "buttonSecondary"
+                    ? "sqs-button-element--secondary"
+                    : "sqs-button-element--tertiary";
+
+                const widthStr =
+                  styles["border-top-width"] || styles["border-width"] || "0px";
+                const width = parseInt(String(widthStr), 10) || 0;
+
+                if (!window.__squareCraftBorderStateMap)
+                  window.__squareCraftBorderStateMap = new Map();
+                const key = `${elementId}--${typeClass}`;
+                const state = window.__squareCraftBorderStateMap.get(key) || {
+                  values: {},
+                  side: "All",
+                };
+                state.values.Top = width;
+                state.values.Right = width;
+                state.values.Bottom = width;
+                state.values.Left = width;
+                window.__squareCraftBorderStateMap.set(key, state);
+              }
+            } catch (_) {}
           }
         });
       });
