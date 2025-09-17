@@ -3458,6 +3458,7 @@ window.pendingModifications = pendingModifications;
   //       showNotification("Failed to reset button modifications.", "error");
   //   }
   // }
+  //Reset Button (WidgetButtonSection) – delegated click handler
 
   const VALID_TYPES = ["primary", "secondary", "tertiary"];
   const TYPE_CLASS = {
