@@ -3342,118 +3342,216 @@ window.pendingModifications = pendingModifications;
   //Reset Button (WidgetButtonSection) – delegated click handler
   // Note: Removed unscoped reset call to avoid resetting all button types unintentionally.
 
+  // const VALID_TYPES = ["primary", "secondary", "tertiary"];
+
+  // function getSelectedButtonType() {
+  //   const explicit =
+  //     document
+  //       .querySelector("[data-sc-button-tab].active")
+  //       ?.getAttribute("data-type") ||
+  //     document
+  //       .querySelector("[data-sc-selected-button]")
+  //       ?.getAttribute("data-type");
+  //   const v = (explicit || "").toLowerCase();
+  //   if (VALID_TYPES.includes(v)) return v;
+  //   const el =
+  //     typeof getSelectedElement === "function" ? getSelectedElement() : null;
+  //   if (el && el.classList) {
+  //     if (el.classList.contains("sqs-button-element--primary"))
+  //       return "primary";
+  //     if (el.classList.contains("sqs-button-element--secondary"))
+  //       return "secondary";
+  //     if (el.classList.contains("sqs-button-element--tertiary"))
+  //       return "tertiary";
+  //   }
+  //   return null;
+  // }
+
+  // document.addEventListener("click", (event) => {
+  //   const resetTrigger = event.target.closest(
+  //     "#buttonResetAll, #buttonResetAll-icon, [data-sc-reset-button]"
+  //   );
+  //   if (!resetTrigger) return;
+  //   event.preventDefault();
+  //   const datasetType = (
+  //     resetTrigger.getAttribute("data-button") ||
+  //     resetTrigger.getAttribute("data-type") ||
+  //     resetTrigger.dataset.buttonType ||
+  //     ""
+  //   ).toLowerCase();
+  //   const type = VALID_TYPES.includes(datasetType)
+  //     ? datasetType
+  //     : getSelectedButtonType();
+  //   resetButtonModifications(type);
+  // });
+
+  // async function resetButtonModifications(button) {
+  //   try {
+  //     const userId = localStorage.getItem("sc_u_id");
+  //     const widgetId = localStorage.getItem("sc_w_id");
+  //     const token = localStorage.getItem("sc_auth_token");
+  //     if (!userId || !widgetId) {
+  //       if (typeof showNotification === "function")
+  //         showNotification("Missing user/widget ID. Cannot reset.", "error");
+  //       return;
+  //     }
+
+  //     const b = (button || "").toLowerCase();
+  //     const isScoped = VALID_TYPES.includes(b);
+
+  //     const SC_API_BASE = "https://admin.squareplugin.com";
+  //     const base = `${SC_API_BASE}/api/v1/reset-button-modifications`;
+  //     const qs = new URLSearchParams({ userId, widgetId });
+  //     if (isScoped) qs.append("button", b);
+  //     if (!token) qs.append("prefer", "query");
+  //     const url = `${base}?${qs.toString()}`;
+
+  //     const res = await fetch(url, {
+  //       method: "POST",
+  //       headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  //     });
+  //     if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+  //     const suffix = {
+  //       primary: "--primary",
+  //       secondary: "--secondary",
+  //       tertiary: "--tertiary",
+  //     };
+  //     const removeAll = () => {
+  //       const selectors = [
+  //         'style[id^="sc-button-"]',
+  //         'style[id^="sc-btn-"]',
+  //         "#sc-btn-border-style",
+  //       ];
+  //       document
+  //         .querySelectorAll(selectors.join(","))
+  //         .forEach((n) => n.remove());
+  //     };
+  //     const removeScoped = (type) => {
+  //       const suf = suffix[type];
+  //       const selectors = [
+  //         `style[id^="sc-button-"][id*="${suf}"]`,
+  //         `style[id^="sc-btn-"][id*="${suf}"]`,
+  //         `style[data-sc-button-type="${type}"]`,
+  //         `style[data-button-type="${type}"]`,
+  //         `style[data-type="${type}"]`,
+  //       ];
+  //       document
+  //         .querySelectorAll(selectors.join(","))
+  //         .forEach((n) => n.remove());
+  //     };
+  //     isScoped ? removeScoped(b) : removeAll();
+
+  //     if (typeof window.syncButtonStylesFromElement === "function")
+  //       window.syncButtonStylesFromElement();
+
+  //     if (typeof showNotification === "function") {
+  //       showNotification(
+  //         isScoped
+  //           ? `Reset ${b} button modifications.`
+  //           : "Reset all button modifications.",
+  //         "success"
+  //       );
+  //     }
+  //   } catch (e) {
+  //     if (typeof showNotification === "function")
+  //       showNotification("Failed to reset button modifications.", "error");
+  //   }
+  // }
+
   const VALID_TYPES = ["primary", "secondary", "tertiary"];
+  const TYPE_CLASS = {
+    primary: "sqs-button-element--primary",
+    secondary: "sqs-button-element--secondary",
+    tertiary: "sqs-button-element--tertiary",
+  };
 
   function getSelectedButtonType() {
-    const explicit =
+    const t = (
       document
         .querySelector("[data-sc-button-tab].active")
         ?.getAttribute("data-type") ||
       document
         .querySelector("[data-sc-selected-button]")
-        ?.getAttribute("data-type");
-    const v = (explicit || "").toLowerCase();
-    if (VALID_TYPES.includes(v)) return v;
+        ?.getAttribute("data-type") ||
+      ""
+    )
+      .toLowerCase()
+      .trim();
+    if (VALID_TYPES.includes(t)) return t;
     const el =
       typeof getSelectedElement === "function" ? getSelectedElement() : null;
     if (el && el.classList) {
-      if (el.classList.contains("sqs-button-element--primary"))
-        return "primary";
-      if (el.classList.contains("sqs-button-element--secondary"))
-        return "secondary";
-      if (el.classList.contains("sqs-button-element--tertiary"))
-        return "tertiary";
+      if (el.classList.contains(TYPE_CLASS.primary)) return "primary";
+      if (el.classList.contains(TYPE_CLASS.secondary)) return "secondary";
+      if (el.classList.contains(TYPE_CLASS.tertiary)) return "tertiary";
     }
     return null;
   }
 
-  document.addEventListener("click", (event) => {
-    const resetTrigger = event.target.closest(
-      "#buttonResetAll, #buttonResetAll-icon, [data-sc-reset-button]"
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(
+      '[data-sc-reset-button],[data-button="primary"],[data-button="secondary"],[data-button="tertiary"]'
     );
-    if (!resetTrigger) return;
-    event.preventDefault();
-    const datasetType = (
-      resetTrigger.getAttribute("data-button") ||
-      resetTrigger.getAttribute("data-type") ||
-      resetTrigger.dataset.buttonType ||
+    if (!btn) return;
+    e.preventDefault();
+    const forced = (
+      btn.getAttribute("data-button") ||
+      btn.getAttribute("data-type") ||
+      btn.dataset.buttonType ||
       ""
-    ).toLowerCase();
-    const type = VALID_TYPES.includes(datasetType)
-      ? datasetType
+    )
+      .toLowerCase()
+      .trim();
+    const type = VALID_TYPES.includes(forced)
+      ? forced
       : getSelectedButtonType();
-    resetButtonModifications(type);
+    if (!type) return;
+    resetButtonType(type);
   });
 
-  async function resetButtonModifications(button) {
+  async function resetButtonType(type) {
     try {
-      const userId = localStorage.getItem("sc_u_id");
-      const widgetId = localStorage.getItem("sc_w_id");
-      const token = localStorage.getItem("sc_auth_token");
-      if (!userId || !widgetId) {
-        if (typeof showNotification === "function")
-          showNotification("Missing user/widget ID. Cannot reset.", "error");
-        return;
-      }
-
-      const b = (button || "").toLowerCase();
-      const isScoped = VALID_TYPES.includes(b);
-
-      const SC_API_BASE = "https://admin.squareplugin.com";
-      const base = `${SC_API_BASE}/api/v1/reset-button-modifications`;
-      const qs = new URLSearchParams({ userId, widgetId });
-      if (isScoped) qs.append("button", b);
-      if (!token) qs.append("prefer", "query");
-      const url = `${base}?${qs.toString()}`;
-
-      const res = await fetch(url, {
+      const userId = localStorage.getItem("sc_u_id") || "";
+      const widgetId = localStorage.getItem("sc_w_id") || "";
+      const token = localStorage.getItem("sc_auth_token") || "";
+      if (!userId || !widgetId) return;
+      const base =
+        "https://admin.squareplugin.com/api/v1/reset-button-modifications";
+      const qs = new URLSearchParams({
+        userId,
+        widgetId,
+        button: type,
+        prefer: "query",
+      });
+      const res = await fetch(`${base}?${qs.toString()}`, {
         method: "POST",
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      const suffix = {
-        primary: "--primary",
-        secondary: "--secondary",
-        tertiary: "--tertiary",
-      };
-      const removeAll = () => {
-        const selectors = [
-          'style[id^="sc-button-"]',
-          'style[id^="sc-btn-"]',
-          "#sc-btn-border-style",
-        ];
-        document
-          .querySelectorAll(selectors.join(","))
-          .forEach((n) => n.remove());
-      };
-      const removeScoped = (type) => {
-        const suf = suffix[type];
-        const selectors = [
-          `style[id^="sc-button-"][id*="${suf}"]`,
-          `style[id^="sc-btn-"][id*="${suf}"]`,
-          `style[data-sc-button-type="${type}"]`,
-          `style[data-button-type="${type}"]`,
-          `style[data-type="${type}"]`,
-        ];
-        document
-          .querySelectorAll(selectors.join(","))
-          .forEach((n) => n.remove());
-      };
-      isScoped ? removeScoped(b) : removeAll();
-
+      if (!res.ok) throw new Error();
+      const nodes = [
+        ...document.querySelectorAll(
+          'style[data-sc-scope="button"],style[id^="sc-button-"],style[id^="sc-btn-"]'
+        ),
+      ];
+      const cls = TYPE_CLASS[type];
+      nodes.forEach((n) => {
+        const id = (n.id || "").toLowerCase();
+        const ds = (
+          n.dataset.scButtonType ||
+          n.dataset.buttonType ||
+          n.dataset.type ||
+          ""
+        ).toLowerCase();
+        const txt = n.textContent || "";
+        if (ds === type || id.includes(type) || txt.includes(`.${cls}`))
+          n.remove();
+      });
       if (typeof window.syncButtonStylesFromElement === "function")
         window.syncButtonStylesFromElement();
-
-      if (typeof showNotification === "function") {
-        showNotification(
-          isScoped
-            ? `Reset ${b} button modifications.`
-            : "Reset all button modifications.",
-          "success"
-        );
-      }
-    } catch (e) {
+      if (typeof showNotification === "function")
+        showNotification(`Reset ${type} button modifications.`, "success");
+    } catch (err) {
       if (typeof showNotification === "function")
         showNotification("Failed to reset button modifications.", "error");
     }
