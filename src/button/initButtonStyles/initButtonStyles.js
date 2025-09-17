@@ -2421,6 +2421,36 @@ export function initButtonBorderControl(
     }
   };
 
+  // Also expose a helper to sync border style/color controls from fetched styles
+  window.syncBorderControlsFromFetched = (borderStyle, borderColor) => {
+    try {
+      if (borderStyle) {
+        window.__squareCraftBorderStyle = borderStyle;
+        [
+          { id: "buttonBorderTypeSolid", type: "solid" },
+          { id: "buttonBorderTypeDashed", type: "dashed" },
+          { id: "buttonBorderTypeDotted", type: "dotted" },
+        ].forEach(({ id, type }) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.classList.toggle("sc-bg-454545", type === borderStyle);
+        });
+      }
+      if (borderColor) {
+        window.__squareCraftBorderColor = borderColor;
+        const colorPreview = document
+          .querySelector("#buttonBorderCount")
+          ?.closest(".sc-flex")
+          ?.querySelector(".sc-bg-454545");
+        // Not all UIs have a preview element; setting the global is enough for consistency
+      }
+      if (typeof window.syncBorderSliderFromComputed === "function")
+        window.syncBorderSliderFromComputed();
+    } catch (e) {
+      console.warn("syncBorderControlsFromFetched failed", e);
+    }
+  };
+
   bullet.addEventListener("mousedown", (e) => {
     e.preventDefault();
     const move = (eMove) => {

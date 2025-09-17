@@ -4719,6 +4719,18 @@ window.pendingModifications = pendingModifications;
     if (typeof window.syncBorderSliderFromComputed === "function") {
       window.syncBorderSliderFromComputed();
     }
+    // Also sync border style and color from fetched payload
+    const anyBucket = entries.find(([, b]) => b && b.styles)?.[1];
+    if (
+      anyBucket &&
+      typeof window.syncBorderControlsFromFetched === "function"
+    ) {
+      const st = anyBucket.styles || {};
+      window.syncBorderControlsFromFetched(
+        st["border-style"],
+        st["border-color"]
+      );
+    }
   }
 
   // ✅ NEW: Fetch all button border modifications for the page at once
@@ -4843,6 +4855,17 @@ window.pendingModifications = pendingModifications;
       // Sync the UI control after bulk apply as well
       if (typeof window.syncBorderSliderFromComputed === "function") {
         window.syncBorderSliderFromComputed();
+      }
+      const first = elements.find((e) => e && e.css);
+      if (first && typeof window.syncBorderControlsFromFetched === "function") {
+        const map = first.css || {};
+        const btnKey = Object.keys(map)[0];
+        const st = btnKey ? map[btnKey]?.styles : undefined;
+        if (st)
+          window.syncBorderControlsFromFetched(
+            st["border-style"],
+            st["border-color"]
+          );
       }
     } catch (error) {
       console.error(
