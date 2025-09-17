@@ -5158,6 +5158,55 @@ window.pendingModifications = pendingModifications;
     );
   }
 
+  // Ensure UI sync runs after the panel renders or re-renders
+  function whenShadowControlsReady(callback, timeoutMs = 5000) {
+    const start = Date.now();
+    const present = () =>
+      document.getElementById("buttonShadowXField") ||
+      document.getElementById("buttonShadowXaxisField");
+    if (present()) return void callback();
+
+    const obs = new MutationObserver(() => {
+      if (present()) {
+        obs.disconnect();
+        callback();
+      } else if (Date.now() - start > timeoutMs) {
+        obs.disconnect();
+      }
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+  }
+
+  function syncActiveTypeFromCacheIfAvailable() {
+    const type = getActiveButtonType();
+    const vals = localStorage.getItem("sc_shadow_vals_" + type);
+    if (!vals) return;
+    const parsed = JSON.parse(vals);
+    syncShadowUIFor(type, parsed);
+  }
+
+  function startShadowUiAutoSync() {
+    let lastAppliedKey = null;
+    const present = () =>
+      document.getElementById("buttonShadowXField") ||
+      document.getElementById("buttonShadowXaxisField");
+    const applyIfNeeded = () => {
+      const type = getActiveButtonType();
+      const key = "sc_shadow_vals_" + type;
+      if (!localStorage.getItem(key)) return;
+      // Avoid thrashing if the same state was just applied
+      if (lastAppliedKey === key && present()) return;
+      lastAppliedKey = key;
+      syncActiveTypeFromCacheIfAvailable();
+    };
+    const obs = new MutationObserver(() => {
+      if (present()) applyIfNeeded();
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+    // Initial attempt
+    whenShadowControlsReady(applyIfNeeded, 3000);
+  }
+
   async function fetchButtonShadowModifications() {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
@@ -5236,12 +5285,11 @@ window.pendingModifications = pendingModifications;
   });
 
   document.addEventListener("DOMContentLoaded", () => {
-    fetchButtonShadowModifications().catch(() => {});
-    setTimeout(() => {
-      const type = getActiveButtonType();
-      const vals = localStorage.getItem("sc_shadow_vals_" + type);
-      if (vals) syncShadowUIFor(type, JSON.parse(vals));
-    }, 200);
+    fetchButtonShadowModifications()
+      .then(() => whenShadowControlsReady(syncActiveTypeFromCacheIfAvailable))
+      .catch(() => {});
+    // Kick off continuous auto-sync so rerenders don't reset to 0px
+    startShadowUiAutoSync();
   });
 
   //fetch button shadow modifications end
