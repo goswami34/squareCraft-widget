@@ -3696,6 +3696,91 @@ export function initButtonShadowControls(
   setupShadowControl("Blur", 50);
   setupShadowControl("Spread", 30);
 
+  // Hydrate controls from cached values (populated after fetch by squareCraft.js)
+  function hydrateControlsFromCache() {
+    const el = getSelectedElement?.();
+    if (!el) return;
+
+    const btn = el.querySelector(
+      ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+    );
+    if (!btn) return;
+
+    const typeClass = [...btn.classList].find((cls) =>
+      cls.startsWith("sqs-button-element--")
+    );
+    if (!typeClass) return;
+
+    const activeLabel = typeClass.includes("--secondary")
+      ? "secondary"
+      : typeClass.includes("--tertiary")
+      ? "tertiary"
+      : "primary";
+
+    try {
+      const cached = localStorage.getItem("sc_shadow_vals_" + activeLabel);
+      if (!cached) return;
+      const vals = JSON.parse(cached);
+      const color = vals.color || "rgba(0,0,0,0.3)";
+
+      // Ensure state exists
+      if (!window.shadowStatesByType.has(typeClass)) {
+        window.shadowStatesByType.set(typeClass, {
+          Xaxis: 0,
+          Yaxis: 0,
+          Blur: 0,
+          Spread: 0,
+          Color: color,
+        });
+      }
+      const s = window.shadowStatesByType.get(typeClass);
+      s.Xaxis = Number(vals.x ?? 0);
+      s.Yaxis = Number(vals.y ?? 0);
+      s.Blur = Number(vals.blur ?? 0);
+      s.Spread = Number(vals.spread ?? 0);
+      s.Color = color;
+
+      // Helper to update a single control's visuals
+      function applyToControl(type, value, range, centerAtZero) {
+        const bullet = document.getElementById(`buttonShadow${type}Bullet`);
+        const field = document.getElementById(`buttonShadow${type}Field`);
+        const label = document.getElementById(`buttonShadow${type}Count`);
+        const fill = field?.querySelector?.(".sc-shadow-fill");
+        if (!field || !bullet || !label) return;
+        const minValue = centerAtZero ? -range : 0;
+        const maxValue = range;
+        const val = Math.max(minValue, Math.min(maxValue, Number(value) || 0));
+        const percent = ((val - minValue) / (maxValue - minValue)) * 100;
+        const centerPercent = ((0 - minValue) / (maxValue - minValue)) * 100;
+        bullet.style.left = percent + "%";
+        if (fill) {
+          if (centerAtZero) {
+            fill.style.left = Math.min(percent, centerPercent) + "%";
+            fill.style.width = Math.abs(percent - centerPercent) + "%";
+          } else {
+            fill.style.left = "0%";
+            fill.style.width = percent + "%";
+          }
+        }
+        label.textContent = String(val) + "px";
+      }
+
+      applyToControl("Xaxis", s.Xaxis, 30, true);
+      applyToControl("Yaxis", s.Yaxis, 30, true);
+      applyToControl("Blur", s.Blur, 50, false);
+      applyToControl("Spread", s.Spread, 30, false);
+
+      // Update color UI if present
+      const colorCode = document.getElementById(
+        "button-shadow-border-color-code"
+      );
+      if (colorCode) colorCode.textContent = color;
+
+      // Apply to DOM (no DB write)
+      applyShadow(false);
+    } catch (_) {}
+  }
+
   // Setup reset button event listeners
   function setupResetButtons() {
     // Shadow axis reset button - resets X, Y, Color, Blur, and Spread
@@ -3725,6 +3810,9 @@ export function initButtonShadowControls(
 
   // Initialize reset buttons
   setupResetButtons();
+
+  // Hydrate once on init
+  hydrateControlsFromCache();
 
   // Initialize the button shadow color palette
   // You may need to pass themeColors from your context or config
