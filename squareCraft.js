@@ -4876,44 +4876,198 @@ window.pendingModifications = pendingModifications;
   }
 
   // Fetch and apply button shadow styles for the whole widget (no pageId/elementId)
+  // async function fetchButtonShadowModifications() {
+  //   const userId = localStorage.getItem("sc_u_id");
+  //   const token = localStorage.getItem("sc_auth_token");
+  //   const widgetId = localStorage.getItem("sc_w_id");
+
+  //   if (!userId || !token || !widgetId) {
+  //     console.warn("⚠️ Missing credentials", {
+  //       userId: !!userId,
+  //       token: !!token,
+  //       widgetId: !!widgetId,
+  //     });
+  //     return;
+  //   }
+
+  //   // Small helper to inject CSS once per bucket
+  //   const applyCss = (selector, styles, styleId) => {
+  //     if (!selector || !styles || typeof styles !== "object") return;
+
+  //     let tag = document.getElementById(styleId);
+  //     if (!tag) {
+  //       tag = document.createElement("style");
+  //       tag.id = styleId;
+  //       document.head.appendChild(tag);
+  //     }
+
+  //     // Build CSS text
+  //     let cssText = `${selector} {`;
+  //     for (const [prop, val] of Object.entries(styles)) {
+  //       if (val !== null && val !== undefined && val !== "" && val !== "null") {
+  //         cssText += `${prop}: ${val} !important; `;
+  //       }
+  //     }
+  //     cssText += "}";
+
+  //     tag.textContent = cssText;
+  //   };
+
+  //   // Build URL — include prefer=query so it also works in Postman/manual tests
+  //   const base =
+  //     "https://admin.squareplugin.com/api/v1/get-button-shadow-modifications";
+  //   const url = `${base}?userId=${encodeURIComponent(
+  //     userId
+  //   )}&widgetId=${encodeURIComponent(widgetId)}&prefer=query`;
+
+  //   try {
+  //     const res = await fetch(url, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     const result = await res.json();
+
+  //     if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
+
+  //     const shadow = result.shadow || {};
+  //     const buckets = [
+  //       ["buttonPrimary", "primary"],
+  //       ["buttonSecondary", "secondary"],
+  //       ["buttonTertiary", "tertiary"],
+  //     ];
+
+  //     let applied = 0;
+  //     for (const [key, label] of buckets) {
+  //       const bucket = shadow[key];
+  //       if (
+  //         bucket?.selector &&
+  //         bucket?.styles &&
+  //         Object.keys(bucket.styles).length
+  //       ) {
+  //         applyCss(bucket.selector, bucket.styles, `sc-btn-shadow-${label}`);
+  //         applied++;
+  //         console.log(`✅ Applied ${label} shadow styles`, bucket);
+  //       }
+  //     }
+
+  //     if (applied === 0) {
+  //       console.log("ℹ️ No button shadow styles to apply.");
+  //     } else {
+  //       console.log(`🎉 Applied ${applied} shadow bucket(s).`);
+  //     }
+  //   } catch (err) {
+  //     console.error(
+  //       "❌ Failed to fetch/apply button shadow modifications:",
+  //       err
+  //     );
+  //   }
+  // }
+
+  function getActiveButtonType() {
+    const el =
+      document.querySelector('[name="sc-button-type"]:checked') ||
+      document.getElementById("sc-button-type");
+    const v = el?.value || el?.dataset?.value || "primary";
+    return v === "secondary"
+      ? "secondary"
+      : v === "tertiary"
+      ? "tertiary"
+      : "primary";
+  }
+
+  function parseBoxShadow(str) {
+    if (!str || typeof str !== "string") return null;
+    const rx =
+      /(-?\d+\.?\d*)px\s+(-?\d+\.?\d*)px\s+(\d+\.?\d*)px(?:\s+(\d+\.?\d*)px)?\s+(rgba?\([^)]+\)|#[a-fA-F0-9]{3,8})/i;
+    const m = str.match(rx);
+    if (!m) return null;
+    return {
+      x: parseFloat(m[1]),
+      y: parseFloat(m[2]),
+      blur: parseFloat(m[3]),
+      spread: m[4] ? parseFloat(m[4]) : 0,
+      color: m[5],
+    };
+  }
+
+  function extractShadowValues(bucket) {
+    if (!bucket) return null;
+    const v = bucket.values || bucket.meta || null;
+    if (v && (v.x !== undefined || v.y !== undefined)) {
+      return {
+        x: Number(v.x || 0),
+        y: Number(v.y || 0),
+        blur: Number(v.blur || 0),
+        spread: Number(v.spread || 0),
+        color: v.color || "rgba(0,0,0,0.25)",
+      };
+    }
+    const styles = bucket.styles || {};
+    const bs = styles["box-shadow"] || styles["boxShadow"] || "";
+    const parsed = parseBoxShadow(bs);
+    if (parsed) return parsed;
+    return null;
+  }
+
+  function setFieldValue(idBase, value, min = null, max = null) {
+    const field = document.getElementById(idBase + "Field");
+    const fill = document.getElementById(idBase + "Fill");
+    const bullet = document.getElementById(idBase + "Bullet");
+    const count = document.getElementById(idBase + "Count");
+    if (field) field.value = String(value);
+    if (count) count.textContent = String(value) + "px";
+    const minV = min ?? Number(field?.min ?? 0);
+    const maxV = max ?? Number(field?.max ?? 100);
+    const clamped = Math.max(minV, Math.min(maxV, Number(value)));
+    const pct = ((clamped - minV) / (maxV - minV)) * 100;
+    if (fill) fill.style.width = pct + "%";
+    if (bullet) bullet.style.left = pct + "%";
+  }
+
+  function setColorValue(color) {
+    const input = document.getElementById("buttonShadowColorField");
+    const swatch = document.getElementById("buttonShadowColorSwatch");
+    if (input) input.value = color;
+    if (swatch) swatch.style.background = color;
+  }
+
+  function syncShadowUIFor(bucketLabel, shadow) {
+    if (!shadow) return;
+    const prefix = "buttonShadow";
+    setFieldValue(prefix + "X", shadow.x, -100, 100);
+    setFieldValue(prefix + "Y", shadow.y, -100, 100);
+    setFieldValue(prefix + "Blur", shadow.blur, 0, 200);
+    setFieldValue(prefix + "Spread", shadow.spread, -100, 100);
+    setColorValue(shadow.color || "rgba(0,0,0,0.25)");
+    localStorage.setItem("sc_shadow_active_type", bucketLabel);
+    localStorage.setItem(
+      "sc_shadow_vals_" + bucketLabel,
+      JSON.stringify(shadow)
+    );
+  }
+
   async function fetchButtonShadowModifications() {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
     const widgetId = localStorage.getItem("sc_w_id");
+    if (!userId || !token || !widgetId) return;
 
-    if (!userId || !token || !widgetId) {
-      console.warn("⚠️ Missing credentials", {
-        userId: !!userId,
-        token: !!token,
-        widgetId: !!widgetId,
-      });
-      return;
-    }
-
-    // Small helper to inject CSS once per bucket
     const applyCss = (selector, styles, styleId) => {
       if (!selector || !styles || typeof styles !== "object") return;
-
       let tag = document.getElementById(styleId);
       if (!tag) {
         tag = document.createElement("style");
         tag.id = styleId;
         document.head.appendChild(tag);
       }
-
-      // Build CSS text
       let cssText = `${selector} {`;
       for (const [prop, val] of Object.entries(styles)) {
-        if (val !== null && val !== undefined && val !== "" && val !== "null") {
+        if (val !== null && val !== undefined && val !== "" && val !== "null")
           cssText += `${prop}: ${val} !important; `;
-        }
       }
       cssText += "}";
-
       tag.textContent = cssText;
     };
 
-    // Build URL — include prefer=query so it also works in Postman/manual tests
     const base =
       "https://admin.squareplugin.com/api/v1/get-button-shadow-modifications";
     const url = `${base}?userId=${encodeURIComponent(
@@ -4925,7 +5079,6 @@ window.pendingModifications = pendingModifications;
         headers: { Authorization: `Bearer ${token}` },
       });
       const result = await res.json();
-
       if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
 
       const shadow = result.shadow || {};
@@ -4936,6 +5089,9 @@ window.pendingModifications = pendingModifications;
       ];
 
       let applied = 0;
+      const active = getActiveButtonType();
+      let activeValues = null;
+
       for (const [key, label] of buckets) {
         const bucket = shadow[key];
         if (
@@ -4945,22 +5101,32 @@ window.pendingModifications = pendingModifications;
         ) {
           applyCss(bucket.selector, bucket.styles, `sc-btn-shadow-${label}`);
           applied++;
-          console.log(`✅ Applied ${label} shadow styles`, bucket);
+        }
+        const vals = extractShadowValues(bucket);
+        if (vals) {
+          localStorage.setItem("sc_shadow_vals_" + label, JSON.stringify(vals));
+          if (label === active) activeValues = vals;
         }
       }
 
-      if (applied === 0) {
-        console.log("ℹ️ No button shadow styles to apply.");
-      } else {
-        console.log(`🎉 Applied ${applied} shadow bucket(s).`);
+      if (!activeValues) {
+        const fallback = localStorage.getItem("sc_shadow_vals_" + active);
+        if (fallback) activeValues = JSON.parse(fallback);
       }
+      if (activeValues) syncShadowUIFor(active, activeValues);
     } catch (err) {
-      console.error(
-        "❌ Failed to fetch/apply button shadow modifications:",
-        err
-      );
+      console.error("Failed to fetch/apply button shadow modifications:", err);
     }
   }
+
+  document.addEventListener("change", (e) => {
+    const t = e.target;
+    if (t && (t.name === "sc-button-type" || t.id === "sc-button-type")) {
+      const type = getActiveButtonType();
+      const vals = localStorage.getItem("sc_shadow_vals_" + type);
+      if (vals) syncShadowUIFor(type, JSON.parse(vals));
+    }
+  });
 
   // Utility: Wait until selector appears in DOM
   function waitForElement(selector, timeout = 3000) {
