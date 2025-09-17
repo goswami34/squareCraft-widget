@@ -5092,25 +5092,53 @@ window.pendingModifications = pendingModifications;
   }
 
   function setFieldValue(idBase, value, min = null, max = null) {
-    const field = document.getElementById(idBase + "Field");
-    const fill = document.getElementById(idBase + "Fill");
-    const bullet = document.getElementById(idBase + "Bullet");
-    const count = document.getElementById(idBase + "Count");
-    if (field) field.value = String(value);
+    // Primary IDs used by this file
+    let field = document.getElementById(idBase + "Field");
+    let fill = document.getElementById(idBase + "Fill");
+    let bullet = document.getElementById(idBase + "Bullet");
+    let count = document.getElementById(idBase + "Count");
+
+    // Fallback IDs used by initButtonStyles (Xaxis/Yaxis naming and fill as .sc-shadow-fill)
+    const fallbackIdBaseMap = {
+      buttonShadowX: "buttonShadowXaxis",
+      buttonShadowY: "buttonShadowYaxis",
+      buttonShadowBlur: "buttonShadowBlur",
+      buttonShadowSpread: "buttonShadowSpread",
+    };
+    const alt = fallbackIdBaseMap[idBase];
+    if (!field && alt) field = document.getElementById(alt + "Field");
+    if (!bullet && alt) bullet = document.getElementById(alt + "Bullet");
+    if (!count && alt) count = document.getElementById(alt + "Count");
+    if (!fill) {
+      // If no dedicated Fill element, try to find the dynamic fill inside the field
+      const fillContainer =
+        field || (alt ? document.getElementById(alt + "Field") : null);
+      const foundFill = fillContainer?.querySelector?.(".sc-shadow-fill");
+      if (foundFill) fill = foundFill;
+    }
+
+    if (field && "value" in field) field.value = String(value);
     if (count) count.textContent = String(value) + "px";
+
     const minV = min ?? Number(field?.min ?? 0);
     const maxV = max ?? Number(field?.max ?? 100);
     const clamped = Math.max(minV, Math.min(maxV, Number(value)));
     const pct = maxV === minV ? 0 : ((clamped - minV) / (maxV - minV)) * 100;
+
     if (fill) fill.style.width = pct + "%";
     if (bullet) bullet.style.left = pct + "%";
   }
 
   function setColorValue(color) {
+    // Primary IDs
     const input = document.getElementById("buttonShadowColorField");
     const swatch = document.getElementById("buttonShadowColorSwatch");
     if (input) input.value = color;
     if (swatch) swatch.style.background = color;
+
+    // Fallback IDs used by the shadow color palette in initButtonStyles
+    const codeEl = document.getElementById("button-shadow-border-color-code");
+    if (codeEl) codeEl.textContent = color;
   }
 
   function syncShadowUIFor(bucketLabel, shadow) {
