@@ -3342,353 +3342,123 @@ window.pendingModifications = pendingModifications;
   //Reset Button (WidgetButtonSection) – delegated click handler
   // Note: Removed unscoped reset call to avoid resetting all button types unintentionally.
 
-  // const VALID_TYPES = ["primary", "secondary", "tertiary"];
-
-  // function getSelectedButtonType() {
-  //   const explicit =
-  //     document
-  //       .querySelector("[data-sc-button-tab].active")
-  //       ?.getAttribute("data-type") ||
-  //     document
-  //       .querySelector("[data-sc-selected-button]")
-  //       ?.getAttribute("data-type");
-  //   const v = (explicit || "").toLowerCase();
-  //   if (VALID_TYPES.includes(v)) return v;
-  //   const el =
-  //     typeof getSelectedElement === "function" ? getSelectedElement() : null;
-  //   if (el && el.classList) {
-  //     if (el.classList.contains("sqs-button-element--primary"))
-  //       return "primary";
-  //     if (el.classList.contains("sqs-button-element--secondary"))
-  //       return "secondary";
-  //     if (el.classList.contains("sqs-button-element--tertiary"))
-  //       return "tertiary";
-  //   }
-  //   return null;
-  // }
-
-  // document.addEventListener("click", (event) => {
-  //   const resetTrigger = event.target.closest(
-  //     "#buttonResetAll, #buttonResetAll-icon, [data-sc-reset-button]"
-  //   );
-  //   if (!resetTrigger) return;
-  //   event.preventDefault();
-  //   const datasetType = (
-  //     resetTrigger.getAttribute("data-button") ||
-  //     resetTrigger.getAttribute("data-type") ||
-  //     resetTrigger.dataset.buttonType ||
-  //     ""
-  //   ).toLowerCase();
-  //   const type = VALID_TYPES.includes(datasetType)
-  //     ? datasetType
-  //     : getSelectedButtonType();
-  //   resetButtonModifications(type);
-  // });
-
-  // async function resetButtonModifications(button) {
-  //   try {
-  //     const userId = localStorage.getItem("sc_u_id");
-  //     const widgetId = localStorage.getItem("sc_w_id");
-  //     const token = localStorage.getItem("sc_auth_token");
-  //     if (!userId || !widgetId) {
-  //       if (typeof showNotification === "function")
-  //         showNotification("Missing user/widget ID. Cannot reset.", "error");
-  //       return;
-  //     }
-
-  //     const b = (button || "").toLowerCase();
-  //     const isScoped = VALID_TYPES.includes(b);
-
-  //     const SC_API_BASE = "https://admin.squareplugin.com";
-  //     const base = `${SC_API_BASE}/api/v1/reset-button-modifications`;
-  //     const qs = new URLSearchParams({ userId, widgetId });
-  //     if (isScoped) qs.append("button", b);
-  //     if (!token) qs.append("prefer", "query");
-  //     const url = `${base}?${qs.toString()}`;
-
-  //     const res = await fetch(url, {
-  //       method: "POST",
-  //       headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-  //     });
-  //     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-  //     const suffix = {
-  //       primary: "--primary",
-  //       secondary: "--secondary",
-  //       tertiary: "--tertiary",
-  //     };
-  //     const removeAll = () => {
-  //       const selectors = [
-  //         'style[id^="sc-button-"]',
-  //         'style[id^="sc-btn-"]',
-  //         "#sc-btn-border-style",
-  //       ];
-  //       document
-  //         .querySelectorAll(selectors.join(","))
-  //         .forEach((n) => n.remove());
-  //     };
-  //     const removeScoped = (type) => {
-  //       const suf = suffix[type];
-  //       const selectors = [
-  //         `style[id^="sc-button-"][id*="${suf}"]`,
-  //         `style[id^="sc-btn-"][id*="${suf}"]`,
-  //         `style[data-sc-button-type="${type}"]`,
-  //         `style[data-button-type="${type}"]`,
-  //         `style[data-type="${type}"]`,
-  //       ];
-  //       document
-  //         .querySelectorAll(selectors.join(","))
-  //         .forEach((n) => n.remove());
-  //     };
-  //     isScoped ? removeScoped(b) : removeAll();
-
-  //     if (typeof window.syncButtonStylesFromElement === "function")
-  //       window.syncButtonStylesFromElement();
-
-  //     if (typeof showNotification === "function") {
-  //       showNotification(
-  //         isScoped
-  //           ? `Reset ${b} button modifications.`
-  //           : "Reset all button modifications.",
-  //         "success"
-  //       );
-  //     }
-  //   } catch (e) {
-  //     if (typeof showNotification === "function")
-  //       showNotification("Failed to reset button modifications.", "error");
-  //   }
-  // }
-  //Reset Button (WidgetButtonSection) – delegated click handler
-
   const VALID_TYPES = ["primary", "secondary", "tertiary"];
-  const TYPE_CLASS = {
-    primary: "sqs-button-element--primary",
-    secondary: "sqs-button-element--secondary",
-    tertiary: "sqs-button-element--tertiary",
-  };
-
-  // Helper function to create individual reset buttons for each button type
-  function createButtonTypeResetButtons() {
-    const buttonSection = document.getElementById("buttonSection");
-    if (!buttonSection) return;
-
-    // Check if reset buttons already exist
-    if (document.querySelector('[data-button="primary"]')) return;
-
-    const resetContainer = document.createElement("div");
-    resetContainer.className = "sc-flex sc-gap-2 sc-px-2 sc-mt-2";
-    resetContainer.innerHTML = `
-      <div data-button="primary" class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-1 sc-gradiant-border sc-px-2 sc-py-1 sc-bg-3f3f3f">
-        <p class="sc-font-light sc-universal sc-font-size-10">Reset Primary</p>
-        <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/reset.svg" alt="reset" width="10px">
-      </div>
-      <div data-button="secondary" class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-1 sc-gradiant-border sc-px-2 sc-py-1 sc-bg-3f3f3f">
-        <p class="sc-font-light sc-universal sc-font-size-10">Reset Secondary</p>
-        <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/reset.svg" alt="reset" width="10px">
-      </div>
-      <div data-button="tertiary" class="sc-flex sc-cursor-pointer sc-items-center sc-rounded-15px sc-gap-1 sc-gradiant-border sc-px-2 sc-py-1 sc-bg-3f3f3f">
-        <p class="sc-font-light sc-universal sc-font-size-10">Reset Tertiary</p>
-        <img src="https://fatin-webefo.github.io/squareCraft-plugin/public/reset.svg" alt="reset" width="10px">
-      </div>
-    `;
-
-    // Insert after the main reset button
-    const mainResetButton = document.getElementById("buttonResetAll");
-    if (mainResetButton && mainResetButton.parentNode) {
-      mainResetButton.parentNode.insertBefore(
-        resetContainer,
-        mainResetButton.nextSibling
-      );
-    }
-  }
-
-  // Initialize individual reset buttons when DOM is ready
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", createButtonTypeResetButtons);
-  } else {
-    createButtonTypeResetButtons();
-  }
 
   function getSelectedButtonType() {
-    // First try to get from button type tabs if they exist
-    const tabType = (
+    const explicit =
       document
         .querySelector("[data-sc-button-tab].active")
         ?.getAttribute("data-type") ||
       document
         .querySelector("[data-sc-selected-button]")
-        ?.getAttribute("data-type") ||
-      ""
-    )
-      .toLowerCase()
-      .trim();
-    if (VALID_TYPES.includes(tabType)) return tabType;
-
-    // If no tab type found, try to detect from selected element
+        ?.getAttribute("data-type");
+    const v = (explicit || "").toLowerCase();
+    if (VALID_TYPES.includes(v)) return v;
     const el =
       typeof getSelectedElement === "function" ? getSelectedElement() : null;
-    if (el) {
-      // Look for button elements within the selected element
-      const button = el.querySelector(
-        "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, " +
-          "button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
-      );
-
-      if (button) {
-        if (button.classList.contains(TYPE_CLASS.primary)) return "primary";
-        if (button.classList.contains(TYPE_CLASS.secondary)) return "secondary";
-        if (button.classList.contains(TYPE_CLASS.tertiary)) return "tertiary";
-      }
-
-      // Fallback: check if the selected element itself is a button
-      if (el.classList.contains(TYPE_CLASS.primary)) return "primary";
-      if (el.classList.contains(TYPE_CLASS.secondary)) return "secondary";
-      if (el.classList.contains(TYPE_CLASS.tertiary)) return "tertiary";
+    if (el && el.classList) {
+      if (el.classList.contains("sqs-button-element--primary"))
+        return "primary";
+      if (el.classList.contains("sqs-button-element--secondary"))
+        return "secondary";
+      if (el.classList.contains("sqs-button-element--tertiary"))
+        return "tertiary";
     }
-
     return null;
   }
 
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest(
-      '[data-sc-reset-button],[data-button="primary"],[data-button="secondary"],[data-button="tertiary"]'
+  document.addEventListener("click", (event) => {
+    const resetTrigger = event.target.closest(
+      "#buttonResetAll, #buttonResetAll-icon, [data-sc-reset-button]"
     );
-    if (!btn) return;
-    e.preventDefault();
-
-    console.log("🔄 Reset button clicked:", btn);
-
-    const forced = (
-      btn.getAttribute("data-button") ||
-      btn.getAttribute("data-type") ||
-      btn.dataset.buttonType ||
+    if (!resetTrigger) return;
+    event.preventDefault();
+    const datasetType = (
+      resetTrigger.getAttribute("data-button") ||
+      resetTrigger.getAttribute("data-type") ||
+      resetTrigger.dataset.buttonType ||
       ""
-    )
-      .toLowerCase()
-      .trim();
-
-    console.log("🎯 Forced type from button:", forced);
-
-    const type = VALID_TYPES.includes(forced)
-      ? forced
+    ).toLowerCase();
+    const type = VALID_TYPES.includes(datasetType)
+      ? datasetType
       : getSelectedButtonType();
-
-    console.log("🔍 Detected button type:", type);
-
-    if (!type) {
-      console.warn("❌ No button type detected for reset");
-      if (typeof showNotification === "function")
-        showNotification("Please select a button first", "error");
-      return;
-    }
-
-    resetButtonType(type);
+    resetButtonModifications(type);
   });
 
-  async function resetButtonType(type) {
+  async function resetButtonModifications(button) {
     try {
-      console.log(`🔄 Starting reset for ${type} button...`);
-
-      const userId = localStorage.getItem("sc_u_id") || "";
-      const widgetId = localStorage.getItem("sc_w_id") || "";
-      const token = localStorage.getItem("sc_auth_token") || "";
-
+      const userId = localStorage.getItem("sc_u_id");
+      const widgetId = localStorage.getItem("sc_w_id");
+      const token = localStorage.getItem("sc_auth_token");
       if (!userId || !widgetId) {
-        console.warn("❌ Missing userId or widgetId");
+        if (typeof showNotification === "function")
+          showNotification("Missing user/widget ID. Cannot reset.", "error");
         return;
       }
 
-      console.log("📡 Calling reset API...");
-      const base =
-        "https://admin.squareplugin.com/api/v1/reset-button-modifications";
-      const qs = new URLSearchParams({
-        userId,
-        widgetId,
-        button: type,
-        prefer: "query",
-      });
+      const b = (button || "").toLowerCase();
+      const isScoped = VALID_TYPES.includes(b);
 
-      const res = await fetch(`${base}?${qs.toString()}`, {
+      const SC_API_BASE = "https://admin.squareplugin.com";
+      const base = `${SC_API_BASE}/api/v1/reset-button-modifications`;
+      const qs = new URLSearchParams({ userId, widgetId });
+      if (isScoped) qs.append("button", b);
+      if (!token) qs.append("prefer", "query");
+      const url = `${base}?${qs.toString()}`;
+
+      const res = await fetch(url, {
         method: "POST",
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      if (!res.ok) {
-        console.error("❌ API call failed:", res.status, res.statusText);
-        throw new Error(`API call failed: ${res.status}`);
-      }
+      const suffix = {
+        primary: "--primary",
+        secondary: "--secondary",
+        tertiary: "--tertiary",
+      };
+      const removeAll = () => {
+        const selectors = [
+          'style[id^="sc-button-"]',
+          'style[id^="sc-btn-"]',
+          "#sc-btn-border-style",
+        ];
+        document
+          .querySelectorAll(selectors.join(","))
+          .forEach((n) => n.remove());
+      };
+      const removeScoped = (type) => {
+        const suf = suffix[type];
+        const selectors = [
+          `style[id^="sc-button-"][id*="${suf}"]`,
+          `style[id^="sc-btn-"][id*="${suf}"]`,
+          `style[data-sc-button-type="${type}"]`,
+          `style[data-button-type="${type}"]`,
+          `style[data-type="${type}"]`,
+        ];
+        document
+          .querySelectorAll(selectors.join(","))
+          .forEach((n) => n.remove());
+      };
+      isScoped ? removeScoped(b) : removeAll();
 
-      console.log("✅ API call successful, removing styles...");
-
-      // Remove all button-related style tags
-      const styleSelectors = [
-        'style[data-sc-scope="button"]',
-        'style[id^="sc-button-"]',
-        'style[id^="sc-btn-"]',
-        `style[id*="${type}"]`,
-        `style[data-sc-button-type="${type}"]`,
-        `style[data-button-type="${type}"]`,
-        `style[data-type="${type}"]`,
-      ];
-
-      const nodes = document.querySelectorAll(styleSelectors.join(","));
-      console.log(`🗑️ Found ${nodes.length} style nodes to check`);
-
-      const cls = TYPE_CLASS[type];
-      let removedCount = 0;
-
-      nodes.forEach((n) => {
-        const id = (n.id || "").toLowerCase();
-        const ds = (
-          n.dataset.scButtonType ||
-          n.dataset.buttonType ||
-          n.dataset.type ||
-          ""
-        ).toLowerCase();
-        const txt = n.textContent || "";
-
-        // Check if this style node is related to the button type we're resetting
-        const shouldRemove =
-          ds === type ||
-          id.includes(type) ||
-          txt.includes(`.${cls}`) ||
-          txt.includes(`sqs-button-element--${type}`);
-
-        if (shouldRemove) {
-          console.log(`🗑️ Removing style node:`, n.id || "no-id", n);
-          n.remove();
-          removedCount++;
-        }
-      });
-
-      console.log(`✅ Removed ${removedCount} style nodes`);
-
-      // Also remove any inline styles from button elements
-      const buttonElements = document.querySelectorAll(`.${cls}`);
-      buttonElements.forEach((btn) => {
-        btn.removeAttribute("style");
-        console.log(`🧹 Cleaned inline styles from button:`, btn);
-      });
-
-      // Call sync function if available
-      if (typeof window.syncButtonStylesFromElement === "function") {
-        console.log("🔄 Syncing button styles...");
+      if (typeof window.syncButtonStylesFromElement === "function")
         window.syncButtonStylesFromElement();
-      }
 
-      if (typeof showNotification === "function")
+      if (typeof showNotification === "function") {
         showNotification(
-          `Reset ${type} button modifications successfully!`,
+          isScoped
+            ? `Reset ${b} button modifications.`
+            : "Reset all button modifications.",
           "success"
         );
-
-      console.log(`✅ Reset completed for ${type} button`);
-    } catch (err) {
-      console.error("❌ Reset failed:", err);
+      }
+    } catch (e) {
       if (typeof showNotification === "function")
         showNotification("Failed to reset button modifications.", "error");
     }
   }
+  //Reset Button (WidgetButtonSection) – delegated click handler
 
   async function fetchTypographyModifications() {
     console.log("🚀 Starting fetchTypographyModifications...");
