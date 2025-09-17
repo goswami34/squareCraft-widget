@@ -3264,6 +3264,28 @@ export function initButtonShadowControls(
     // Add to pending modifications
     addPendingModification(blockId, stylePayload, "button", "shadow");
 
+    // Persist a local cache so UI can restore without waiting for network
+    try {
+      const activeLabel =
+        buttonTypeKey === "buttonSecondary"
+          ? "secondary"
+          : buttonTypeKey === "buttonTertiary"
+          ? "tertiary"
+          : "primary";
+      const cacheObj = {
+        x: Number(shadowState.Xaxis) || 0,
+        y: Number(shadowState.Yaxis) || 0,
+        blur: Number(shadowState.Blur) || 0,
+        spread: Number(shadowState.Spread) || 0,
+        color,
+      };
+      localStorage.setItem(
+        "sc_shadow_vals_" + activeLabel,
+        JSON.stringify(cacheObj)
+      );
+      localStorage.setItem("sc_shadow_active_type", activeLabel);
+    } catch (_) {}
+
     // Save to database if requested
     if (saveToDB && typeof saveButtonShadowModifications === "function") {
       saveButtonShadowModifications(blockId, stylePayload);
@@ -3386,6 +3408,35 @@ export function initButtonShadowControls(
 
     // Apply the reset shadow
     applyShadow(true);
+    try {
+      const activeLabel = (function () {
+        const el = getSelectedElement?.();
+        const btn = el?.querySelector(
+          ".sqs-button-element--primary, .sqs-button-element--secondary, .sqs-button-element--tertiary"
+        );
+        const typeClass = btn
+          ? [...btn.classList].find((c) => c.startsWith("sqs-button-element--"))
+          : null;
+        if (!typeClass) return "primary";
+        return typeClass.includes("--secondary")
+          ? "secondary"
+          : typeClass.includes("--tertiary")
+          ? "tertiary"
+          : "primary";
+      })();
+      const cacheObj = {
+        x: 0,
+        y: 0,
+        blur: 0,
+        spread: 0,
+        color: "rgba(0,0,0,0.3)",
+      };
+      localStorage.setItem(
+        "sc_shadow_vals_" + activeLabel,
+        JSON.stringify(cacheObj)
+      );
+      localStorage.setItem("sc_shadow_active_type", activeLabel);
+    } catch (_) {}
 
     if (typeof showNotification === "function") {
       showNotification("All shadows reset!", "success");
