@@ -4280,9 +4280,7 @@ window.pendingModifications = pendingModifications;
               );
             } catch (_) {}
             if (window.syncFontUIFromFetched)
-              whenFontControlsReady(() =>
-                window.syncFontUIFromFetched(fontData)
-              );
+              window.syncFontUIFromFetched(fontData);
           }
         } catch (_) {}
       }
@@ -4301,30 +4299,9 @@ window.pendingModifications = pendingModifications;
         const raw = localStorage.getItem(`sc_font_vals_${b}`);
         if (!raw) return;
         const data = JSON.parse(raw);
-        if (window.syncFontUIFromFetched)
-          whenFontControlsReady(() => window.syncFontUIFromFetched(data));
+        if (window.syncFontUIFromFetched) window.syncFontUIFromFetched(data);
       });
     } catch (_) {}
-  }
-
-  // ✅ Wait until Font controls are rendered before syncing
-  function whenFontControlsReady(callback, timeoutMs = 5000) {
-    const start = Date.now();
-    const present = () =>
-      document.getElementById("scButtonFontSizeInput") ||
-      document.getElementById("font-name") ||
-      document.getElementById("scButtonFontWeightSelected");
-    if (present()) return void callback();
-
-    const obs = new MutationObserver(() => {
-      if (present()) {
-        obs.disconnect();
-        callback();
-      } else if (Date.now() - start > timeoutMs) {
-        obs.disconnect();
-      }
-    });
-    obs.observe(document.body, { childList: true, subtree: true });
   }
 
   // ✅ Frontend fetch aligned to backend (no pageId/elementId)

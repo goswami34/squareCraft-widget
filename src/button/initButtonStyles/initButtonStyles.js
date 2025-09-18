@@ -2679,41 +2679,6 @@ export function initButtonBorderControl(
     }
   };
 
-  // ✅ Ensure font UI sync logic exists and updates inputs properly
-  if (!window.syncFontUIFromFetched) {
-    window.syncFontUIFromFetched = (data) => {
-      try {
-        if (!data) return;
-        const nameLabel = document.getElementById("font-name");
-        if (nameLabel && data.family) nameLabel.innerText = data.family;
-
-        const weightLabel = document.getElementById(
-          "scButtonFontWeightSelected"
-        );
-        if (weightLabel && data.weight)
-          weightLabel.innerText = String(data.weight);
-
-        const sizeInput = document.getElementById("scButtonFontSizeInput");
-        if (sizeInput && data.size) {
-          const parsed = parseInt(String(data.size), 10) || 0;
-          if (String(sizeInput.value) !== String(parsed)) {
-            sizeInput.value = parsed;
-            sizeInput.dispatchEvent(new Event("input"));
-          }
-        }
-
-        const lsInput = document.getElementById("scButtonLetterSpacingInput");
-        if (lsInput && data.letterSpacing) {
-          const parsedLs = parseInt(String(data.letterSpacing), 10) || 0;
-          if (String(lsInput.value) !== String(parsedLs)) {
-            lsInput.value = parsedLs;
-            lsInput.dispatchEvent(new Event("input"));
-          }
-        }
-      } catch (_) {}
-    };
-  }
-
   bullet.addEventListener("mousedown", (e) => {
     e.preventDefault();
     const move = (eMove) => {
