@@ -2361,6 +2361,24 @@ export function initButtonBorderControl(
         },
       };
       addPendingModification(blockId, stylePayload, "button", "border");
+
+      // ✅ NEW: Store border values in localStorage for persistence
+      const borderData = {
+        style: state.borderStyle || window.__squareCraftBorderStyle || "solid",
+        color: window.__squareCraftBorderColor || "black",
+        width: currentValue,
+        values: {
+          Top: state.values.Top || 0,
+          Right: state.values.Right || 0,
+          Bottom: state.values.Bottom || 0,
+          Left: state.values.Left || 0,
+        },
+      };
+
+      if (typeof window.storeBorderValues === "function") {
+        window.storeBorderValues(buttonType, borderData);
+      }
+
       // ✅ REMOVED: Auto-save to database - now only saves on publish button click
       if (typeof showNotification === "function") {
         showNotification(
@@ -2424,6 +2442,11 @@ export function initButtonBorderControl(
   // Also expose a helper to sync border style/color controls from fetched styles
   window.syncBorderControlsFromFetched = (borderStyle, borderColor) => {
     try {
+      console.log("🔄 syncBorderControlsFromFetched called with:", {
+        borderStyle,
+        borderColor,
+      });
+
       if (borderStyle) {
         window.__squareCraftBorderStyle = borderStyle;
         [
@@ -2435,7 +2458,9 @@ export function initButtonBorderControl(
           if (!el) return;
           el.classList.toggle("sc-bg-454545", type === borderStyle);
         });
+        console.log("✅ Border style synced:", borderStyle);
       }
+
       if (borderColor) {
         window.__squareCraftBorderColor = borderColor;
         const colorPreview = document
@@ -2443,11 +2468,89 @@ export function initButtonBorderControl(
           ?.closest(".sc-flex")
           ?.querySelector(".sc-bg-454545");
         // Not all UIs have a preview element; setting the global is enough for consistency
+        console.log("✅ Border color synced:", borderColor);
       }
-      if (typeof window.syncBorderSliderFromComputed === "function")
+
+      // ✅ CRITICAL: Always sync the slider from computed styles after setting style/color
+      if (typeof window.syncBorderSliderFromComputed === "function") {
+        console.log("🔄 Syncing border slider from computed styles...");
         window.syncBorderSliderFromComputed();
+      }
     } catch (e) {
       console.warn("syncBorderControlsFromFetched failed", e);
+    }
+  };
+
+  // ✅ NEW: Function to store border values in localStorage (similar to shadow implementation)
+  window.storeBorderValues = (buttonType, borderData) => {
+    try {
+      const key = `sc_border_vals_${buttonType}`;
+      localStorage.setItem(key, JSON.stringify(borderData));
+      console.log("💾 Stored border values for", buttonType, ":", borderData);
+    } catch (e) {
+      console.warn("Failed to store border values:", e);
+    }
+  };
+
+  // ✅ NEW: Function to retrieve border values from localStorage
+  window.getStoredBorderValues = (buttonType) => {
+    try {
+      const key = `sc_border_vals_${buttonType}`;
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : null;
+    } catch (e) {
+      console.warn("Failed to get stored border values:", e);
+      return null;
+    }
+  };
+
+  // ✅ NEW: Function to sync border UI when element is selected (similar to shadow)
+  window.syncBorderUIForSelectedElement = () => {
+    try {
+      const selected = getSelectedElement?.();
+      if (!selected) return;
+
+      const btn = selected.querySelector(
+        "a.sqs-button-element--primary, a.sqs-button-element--secondary, a.sqs-button-element--tertiary, button.sqs-button-element--primary, button.sqs-button-element--secondary, button.sqs-button-element--tertiary"
+      );
+      if (!btn) return;
+
+      const typeClass = [...btn.classList].find((c) =>
+        c.startsWith("sqs-button-element--")
+      );
+      if (!typeClass) return;
+
+      const buttonType = typeClass.includes("--primary")
+        ? "buttonPrimary"
+        : typeClass.includes("--secondary")
+        ? "buttonSecondary"
+        : typeClass.includes("--tertiary")
+        ? "buttonTertiary"
+        : "buttonPrimary";
+
+      // Get stored values for this button type
+      const storedValues = window.getStoredBorderValues?.(buttonType);
+      if (storedValues) {
+        console.log("🔄 Syncing border UI for selected element:", storedValues);
+
+        // Set global values
+        if (storedValues.style) {
+          window.__squareCraftBorderStyle = storedValues.style;
+        }
+        if (storedValues.color) {
+          window.__squareCraftBorderColor = storedValues.color;
+        }
+
+        // Sync UI controls
+        if (typeof window.syncBorderControlsFromFetched === "function") {
+          window.syncBorderControlsFromFetched(
+            storedValues.style,
+            storedValues.color
+          );
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to sync border UI for selected element:", e);
     }
   };
 
@@ -2603,6 +2706,23 @@ export function initButtonBorderTypeToggle(
       });
 
       addPendingModification(blockId, stylePayload, "button", "border");
+
+      // ✅ NEW: Store border values in localStorage for persistence
+      const borderData = {
+        style: borderType,
+        color: currentState.color || window.__squareCraftBorderColor || "black",
+        width: currentState.values.Top || 0,
+        values: {
+          Top: currentState.values.Top || 0,
+          Right: currentState.values.Right || 0,
+          Bottom: currentState.values.Bottom || 0,
+          Left: currentState.values.Left || 0,
+        },
+      };
+
+      if (typeof window.storeBorderValues === "function") {
+        window.storeBorderValues(buttonType, borderData);
+      }
 
       // ✅ REMOVED: Auto-save to database - now only saves on publish button click
       if (typeof showNotification === "function") {

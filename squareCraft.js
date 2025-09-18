@@ -52,6 +52,14 @@ window.pendingModifications = pendingModifications;
   function setSelectedElement(val) {
     selectedElement = val;
     window.lastClickedElement = val;
+
+    // ✅ NEW: Sync border UI when element is selected
+    if (val && typeof window.syncBorderUIForSelectedElement === "function") {
+      // Use setTimeout to ensure the element is fully processed
+      setTimeout(() => {
+        window.syncBorderUIForSelectedElement();
+      }, 100);
+    }
   }
 
   // Wrapper function to update selectedSingleTextType and global variable
@@ -4734,6 +4742,7 @@ window.pendingModifications = pendingModifications;
   }
 
   // ✅ NEW: Fetch all button border modifications for the page at once
+
   async function fetchAllButtonBorderModifications() {
     const userId = localStorage.getItem("sc_u_id");
     const token = localStorage.getItem("sc_auth_token");
@@ -4852,26 +4861,130 @@ window.pendingModifications = pendingModifications;
       // Store the fetched data globally to avoid multiple API calls
       window.__squareCraftButtonBorderData = elements;
 
+      // ✅ NEW: Also restore border values from cache after fetching
+      restoreBorderValuesFromCache();
+
       // Sync the UI control after bulk apply as well
       if (typeof window.syncBorderSliderFromComputed === "function") {
         window.syncBorderSliderFromComputed();
       }
-      const first = elements.find((e) => e && e.css);
-      if (first && typeof window.syncBorderControlsFromFetched === "function") {
-        const map = first.css || {};
-        const btnKey = Object.keys(map)[0];
-        const st = btnKey ? map[btnKey]?.styles : undefined;
-        if (st)
-          window.syncBorderControlsFromFetched(
-            st["border-style"],
-            st["border-color"]
-          );
-      }
+
+      // ✅ IMPROVED: Sync border controls for all elements, not just the first one
+      elements.forEach(({ elementId, css }) => {
+        if (!css || typeof css !== "object") return;
+
+        Object.entries(css).forEach(([buttonType, buttonData]) => {
+          if (!buttonData || !buttonData.styles) return;
+
+          const styles = buttonData.styles;
+          const borderStyle = styles["border-style"] || styles["borderStyle"];
+          const borderColor = styles["border-color"] || styles["borderColor"];
+          const borderWidth =
+            styles["border-top-width"] || styles["borderTopWidth"] || "0px";
+
+          // Store border values in localStorage (similar to shadow implementation)
+          const borderData = {
+            style: borderStyle || "solid",
+            color: borderColor || "black",
+            width: parseInt(borderWidth) || 0,
+            values: {
+              Top: parseInt(borderWidth) || 0,
+              Right:
+                parseInt(
+                  styles["border-right-width"] ||
+                    styles["borderRightWidth"] ||
+                    borderWidth
+                ) || 0,
+              Bottom:
+                parseInt(
+                  styles["border-bottom-width"] ||
+                    styles["borderBottomWidth"] ||
+                    borderWidth
+                ) || 0,
+              Left:
+                parseInt(
+                  styles["border-left-width"] ||
+                    styles["borderLeftWidth"] ||
+                    borderWidth
+                ) || 0,
+            },
+          };
+
+          // Store in localStorage for UI persistence
+          if (typeof window.storeBorderValues === "function") {
+            window.storeBorderValues(buttonType, borderData);
+          }
+
+          if (borderStyle || borderColor) {
+            // Store the values globally for UI sync
+            if (borderStyle) {
+              window.__squareCraftBorderStyle = borderStyle;
+            }
+            if (borderColor) {
+              window.__squareCraftBorderColor = borderColor;
+            }
+
+            // Sync the UI controls
+            if (typeof window.syncBorderControlsFromFetched === "function") {
+              window.syncBorderControlsFromFetched(borderStyle, borderColor);
+            }
+          }
+        });
+      });
     } catch (error) {
       console.error(
         "❌ Failed to fetch all button border modifications:",
         error.message
       );
+    }
+  }
+
+  // ✅ NEW: Function to restore border values from localStorage on page load
+  function restoreBorderValuesFromCache() {
+    try {
+      console.log("🔄 restoreBorderValuesFromCache called");
+      const buttonTypes = ["primary", "secondary", "tertiary"];
+
+      buttonTypes.forEach((buttonType) => {
+        const key = `sc_border_vals_button${
+          buttonType.charAt(0).toUpperCase() + buttonType.slice(1)
+        }`;
+        const stored = localStorage.getItem(key);
+        console.log(`🔍 Checking localStorage for key ${key}:`, stored);
+
+        if (stored) {
+          const borderData = JSON.parse(stored);
+          console.log(
+            `🔄 Restoring border values for ${buttonType}:`,
+            borderData
+          );
+
+          // Set global values
+          if (borderData.style) {
+            window.__squareCraftBorderStyle = borderData.style;
+            console.log(`✅ Set global border style: ${borderData.style}`);
+          }
+          if (borderData.color) {
+            window.__squareCraftBorderColor = borderData.color;
+            console.log(`✅ Set global border color: ${borderData.color}`);
+          }
+
+          // Sync UI controls
+          if (typeof window.syncBorderControlsFromFetched === "function") {
+            console.log("🔄 Calling syncBorderControlsFromFetched...");
+            window.syncBorderControlsFromFetched(
+              borderData.style,
+              borderData.color
+            );
+          } else {
+            console.warn(
+              "⚠️ syncBorderControlsFromFetched function not available"
+            );
+          }
+        }
+      });
+    } catch (e) {
+      console.warn("Failed to restore border values from cache:", e);
     }
   }
 
@@ -5290,6 +5403,9 @@ window.pendingModifications = pendingModifications;
       .catch(() => {});
     // Kick off continuous auto-sync so rerenders don't reset to 0px
     startShadowUiAutoSync();
+
+    // ✅ NEW: Restore border values from cache on page load
+    restoreBorderValuesFromCache();
   });
 
   //fetch button shadow modifications end
