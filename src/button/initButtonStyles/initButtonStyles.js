@@ -476,6 +476,62 @@ export function initButtonFontFamilyControls(
           "font"
         );
 
+        // ✅ Persist current font state for this button type (family + other computed values)
+        try {
+          const buttonType = typeClass.includes("--primary")
+            ? "buttonPrimary"
+            : typeClass.includes("--secondary")
+            ? "buttonSecondary"
+            : typeClass.includes("--tertiary")
+            ? "buttonTertiary"
+            : "buttonPrimary";
+
+          const cs = window.getComputedStyle(btn);
+          const fontData = {
+            family: fontFace,
+            weight: cs.fontWeight || "400",
+            size: cs.fontSize || "16px",
+            letterSpacing: cs.letterSpacing || "0px",
+            transform: cs.textTransform || "none",
+          };
+          if (!window.storeFontValues) {
+            window.storeFontValues = (type, data) => {
+              try {
+                localStorage.setItem(
+                  `sc_font_vals_${type}`,
+                  JSON.stringify(data)
+                );
+              } catch (_) {}
+            };
+          }
+          window.storeFontValues(buttonType, fontData);
+
+          if (!window.syncFontUIFromFetched) {
+            window.syncFontUIFromFetched = (data) => {
+              try {
+                const nameLabel = document.getElementById("font-name");
+                if (nameLabel && data.family) nameLabel.innerText = data.family;
+                const weightLabel = document.getElementById(
+                  "scButtonFontWeightSelected"
+                );
+                if (weightLabel && data.weight)
+                  weightLabel.innerText = String(data.weight);
+                const sizeInput = document.getElementById(
+                  "scButtonFontSizeInput"
+                );
+                if (sizeInput && data.size)
+                  sizeInput.value = parseInt(String(data.size), 10) || 0;
+                const lsInput = document.getElementById(
+                  "scButtonLetterSpacingInput"
+                );
+                if (lsInput && data.letterSpacing)
+                  lsInput.value = parseInt(String(data.letterSpacing), 10) || 0;
+              } catch (_) {}
+            };
+          }
+          window.syncFontUIFromFetched(fontData);
+        } catch (_) {}
+
         // Handle font weight options
         const fontWeightOptions = document.getElementById(
           "scButtonFontWeightOptions"
@@ -642,6 +698,43 @@ export function initButtonStyles(
         "button"
       );
     }
+
+    // ✅ Persist font-related properties to localStorage for UI restore
+    if (["font-size", "letter-spacing", "text-transform"].includes(property)) {
+      try {
+        const buttonType = typeClass.includes("--primary")
+          ? "buttonPrimary"
+          : typeClass.includes("--secondary")
+          ? "buttonSecondary"
+          : typeClass.includes("--tertiary")
+          ? "buttonTertiary"
+          : "buttonPrimary";
+        const current = (() => {
+          try {
+            const raw = localStorage.getItem(`sc_font_vals_${buttonType}`);
+            return raw ? JSON.parse(raw) : {};
+          } catch (_) {
+            return {};
+          }
+        })();
+        const updated = {
+          family: current.family,
+          weight: current.weight,
+          size: property === "font-size" ? String(value) : current.size,
+          letterSpacing:
+            property === "letter-spacing"
+              ? String(value)
+              : current.letterSpacing,
+          transform:
+            property === "text-transform" ? String(value) : current.transform,
+        };
+        localStorage.setItem(
+          `sc_font_vals_${buttonType}`,
+          JSON.stringify(updated)
+        );
+        if (window.syncFontUIFromFetched) window.syncFontUIFromFetched(updated);
+      } catch (_) {}
+    }
   }
 
   if (fontSizeOptions && fontSizeInput) {
@@ -692,6 +785,22 @@ export function initButtonStyles(
       button.classList.add("sc-activeTab-border");
 
       updateGlobalStyle("text-transform", value);
+
+      // ✅ Persist transform into cache for UI restore
+      try {
+        const buttonType = typeClass.includes("--primary")
+          ? "buttonPrimary"
+          : typeClass.includes("--secondary")
+          ? "buttonSecondary"
+          : typeClass.includes("--tertiary")
+          ? "buttonTertiary"
+          : "buttonPrimary";
+        const raw = localStorage.getItem(`sc_font_vals_${buttonType}`);
+        const obj = raw ? JSON.parse(raw) : {};
+        obj.transform = value;
+        localStorage.setItem(`sc_font_vals_${buttonType}`, JSON.stringify(obj));
+        if (window.syncFontUIFromFetched) window.syncFontUIFromFetched(obj);
+      } catch (_) {}
     });
   });
 
@@ -724,6 +833,22 @@ export function initButtonStyles(
       button.classList.add("sc-activeTab-border");
 
       updateGlobalStyle("font-weight", value);
+
+      // ✅ Persist weight into cache for UI restore
+      try {
+        const buttonType = typeClass.includes("--primary")
+          ? "buttonPrimary"
+          : typeClass.includes("--secondary")
+          ? "buttonSecondary"
+          : typeClass.includes("--tertiary")
+          ? "buttonTertiary"
+          : "buttonPrimary";
+        const raw = localStorage.getItem(`sc_font_vals_${buttonType}`);
+        const obj = raw ? JSON.parse(raw) : {};
+        obj.weight = value;
+        localStorage.setItem(`sc_font_vals_${buttonType}`, JSON.stringify(obj));
+        if (window.syncFontUIFromFetched) window.syncFontUIFromFetched(obj);
+      } catch (_) {}
     });
   });
 }

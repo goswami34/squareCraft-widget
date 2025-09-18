@@ -4250,12 +4250,58 @@ window.pendingModifications = pendingModifications;
 
         applyStylesAsExternalCSS(selector, kebabStyles);
         console.log("✅ Applied button styles:", selector, kebabStyles);
+
+        // ✅ Persist and sync font-related controls if present
+        try {
+          const type = selector.includes("--secondary")
+            ? "buttonSecondary"
+            : selector.includes("--tertiary")
+            ? "buttonTertiary"
+            : "buttonPrimary";
+          const fontData = {
+            family: styles.fontFamily || styles["font-family"],
+            weight: styles.fontWeight || styles["font-weight"],
+            size: styles.fontSize || styles["font-size"],
+            letterSpacing: styles.letterSpacing || styles["letter-spacing"],
+            transform: styles.textTransform || styles["text-transform"],
+          };
+          // If at least one font prop exists, cache and sync UI
+          if (
+            fontData.family ||
+            fontData.weight ||
+            fontData.size ||
+            fontData.letterSpacing ||
+            fontData.transform
+          ) {
+            try {
+              localStorage.setItem(
+                `sc_font_vals_${type}`,
+                JSON.stringify(fontData)
+              );
+            } catch (_) {}
+            if (window.syncFontUIFromFetched)
+              window.syncFontUIFromFetched(fontData);
+          }
+        } catch (_) {}
       }
 
       console.log("✅ Button styles applied (from root-level css).");
     } catch (err) {
       console.error("❌ Failed to fetch button modifications:", err.message);
     }
+  }
+
+  // ✅ Restore font values from cache on load (mirrors border restore)
+  function restoreFontValuesFromCache() {
+    try {
+      const buckets = ["buttonPrimary", "buttonSecondary", "buttonTertiary"];
+      buckets.forEach((b) => {
+        const raw = localStorage.getItem(`sc_font_vals_${b}`);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (window.syncFontUIFromFetched) window.syncFontUIFromFetched(data);
+      });
+    } catch (_) {}
   }
 
   // ✅ Frontend fetch aligned to backend (no pageId/elementId)
@@ -5406,6 +5452,9 @@ window.pendingModifications = pendingModifications;
 
     // ✅ NEW: Restore border values from cache on page load
     restoreBorderValuesFromCache();
+
+    // ✅ NEW: Also restore font values from cache on page load
+    restoreFontValuesFromCache();
   });
 
   //fetch button shadow modifications end
